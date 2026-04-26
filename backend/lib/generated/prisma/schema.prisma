@@ -1,0 +1,402 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id    String @id @default(uuid())
+  name  String @unique
+  users User[]
+
+  @@map("roles")
+}
+
+enum TransactionType {
+  income
+  expense
+}
+
+enum TaskStatus {
+  pending
+  overdue
+  completed
+}
+
+enum TaskPriority {
+  normal
+  medium
+  urgent
+}
+
+enum EntityType {
+  users
+  tasks
+  clients
+  services
+  subservices
+  payments
+  invoice
+  tax
+}
+
+model User {
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name          String
+  email         String  @unique
+  emailVerified Boolean
+  image         String?
+  gender        String?
+  salary        String?
+
+  department String?
+
+  sessions        Session[]
+  accounts        Account[]
+  assignedTasks   Task[]      @relation("TaskAssignee")
+  supervisedTasks Task[]      @relation("TaskSupervisor")
+  userFiles       UserFiles[]
+
+  roleId             String?
+  dynamicRole        Role?                @relation(fields: [roleId], references: [id])
+  role               String?              @default("user")
+  banned             Boolean?
+  banReason          String?
+  banExpires         DateTime?
+  incomeTransaction  IncomeTransaction[]
+  expenseTransaction ExpenseTransaction[]
+
+  reciever   UserSalary[] @relation(name: "Reciever")
+  registerer UserSalary[] @relation(name: "Registerer")
+
+  @@map("Users")
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  token     String  @unique
+  ipAddress String?
+  userAgent String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
+
+  @@map("sessions")
+}
+
+model Account {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accountId  String
+  providerId String
+
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+
+  @@map("accounts")
+}
+
+model Verification {
+  id        String    @id @default(uuid())
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  identifier String
+  value      String
+  expiresAt  DateTime
+
+  @@map("verifications")
+}
+
+model Client {
+  id        String    @id
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  institution String
+  email       String @unique
+  phone       String @unique
+  source      String
+
+  clientService    ClientService[]
+  clientTask       ClientTask[]
+  clientSubService ClientSubService[]
+
+  serviceAgreements IncomeServiceAgreement[]
+
+  @@map("clients")
+}
+
+model Service {
+  id String @id
+
+  serviceName   String          @unique
+  clientService ClientService[]
+  subService    SubService[]
+
+  serviceAgreements IncomeServiceAgreement[]
+
+  @@map("services")
+}
+
+model SubService {
+  id   String @id
+  name String
+
+  categoryId String
+  service    Service @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  clientSubService ClientSubService[]
+
+  serviceAgreements IncomeServiceAgreement[]
+
+  @@map("subservices")
+}
+
+model ClientSubService {
+  subServiceId String
+  count        Int
+  subService   SubService @relation(fields: [subServiceId], references: [id], onDelete: Cascade)
+
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([subServiceId, clientId])
+  @@map("ClientSubServices")
+}
+
+model ClientService {
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  serviceId String
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceId, clientId])
+  @@map("clientServices")
+}
+
+model Task {
+  id        String    @id
+  createdAt DateTime? @default(now())
+
+  description String
+  status      TaskStatus
+  priority    TaskPriority @default(normal)
+  department  String
+  deadline    DateTime
+
+  assgineeId   String
+  user         User   @relation("TaskAssignee", fields: [assgineeId], references: [id], onDelete: Cascade)
+  supervisorId String
+  supervisor   User   @relation("TaskSupervisor", fields: [supervisorId], references: [id], onDelete: Cascade)
+
+  clientTask ClientTask[]
+
+  @@map("tasks")
+}
+
+model ClientTask {
+  createdAt DateTime? @default(now())
+
+  clientId String
+  taskId   String
+
+  Client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, taskId])
+  @@map("clienttasks")
+}
+
+model Counter {
+  id        Int       @id @default(autoincrement())
+  updatedAt DateTime? @updatedAt
+
+  entity   EntityType
+  year     Int
+  month    Int
+  sequence Int        @default(0)
+
+  @@unique([entity, year, month])
+}
+
+model Income {
+  id                String              @id
+  createdAt         DateTime            @default(now())
+  incomeType        String
+  incomeTransaction IncomeTransaction[]
+
+  @@map("incomes")
+}
+
+model Expense {
+  id          String   @id
+  createdAt   DateTime @default(now())
+  expenseType String
+
+  expenseTransaction ExpenseTransaction[]
+
+  @@map("expenses")
+}
+
+model IncomeTransaction {
+  id        String   @id
+  createdAt DateTime @default(now())
+
+  userId           String
+  user             User    @relation(fields: [userId], references: [id])
+  incomeCategoryId String?
+
+  duetoDate DateTime?
+  status    String
+  method    String
+  notes     String
+  discount  String?
+
+  taxType  String
+  taxValue Float
+
+  totalAmount Float
+  amountPaid  Float
+  subTotal    Float?
+
+  income Income? @relation(fields: [incomeCategoryId], references: [id])
+
+  agreementId      String
+  serviceAgreement IncomeServiceAgreement @relation(fields: [agreementId], references: [id], onDelete: Cascade)
+
+  transactionDetails IncomeTransactionDetails[]
+
+  @@map("IncomeTransactions")
+}
+
+model ExpenseTransaction {
+  id        String   @id
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  duetoDate DateTime?
+  status    String
+  method    String
+  notes     String
+
+  totalAmount Float
+  amountPaid  Float
+
+  expenseCategoryId String
+
+  expense Expense @relation(fields: [expenseCategoryId], references: [id], onDelete: Cascade)
+
+  expneseAgreementId      String
+  expenseServiceAgreement ExpenseServiceAgreement @relation(fields: [expneseAgreementId], references: [id], onDelete: Cascade)
+
+  expenseTransactionDetails ExpenseTransactionDetails[]
+
+  @@map("ExpenseTransactions")
+}
+
+model IncomeTransactionDetails {
+  id                  String            @id @default(uuid())
+  createdAt           DateTime          @default(now())
+  paidAmount          Float
+  incomeTransactionId String
+  transction          IncomeTransaction @relation(fields: [incomeTransactionId], references: [id], onDelete: Cascade)
+}
+
+model UserFiles {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  url       String
+  name      String
+  fileSize  Int
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model IncomeServiceAgreement {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  base        Float
+  discount    Float
+  description String
+  serviceId   String
+  service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  subServiceId String
+  subService   SubService @relation(fields: [subServiceId], references: [id], onDelete: Cascade)
+
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  incomeTransaction IncomeTransaction[]
+}
+
+model ExpenseServiceAgreement {
+  id                 String               @id @default(uuid())
+  createdAt          DateTime             @default(now())
+  base               Float
+  description        String
+  expenseTransaction ExpenseTransaction[]
+}
+
+model ExpenseTransactionDetails {
+  id                   String             @id @default(uuid())
+  createdAt            DateTime           @default(now())
+  paidAmount           Float
+  expenseTransactionId String
+  expenseTransaction   ExpenseTransaction @relation(fields: [expenseTransactionId], references: [id], onDelete: Cascade)
+}
+
+model UserSalary {
+  id           String    @id @default(uuid())
+  createdAt    DateTime  @default(now())
+  dueToDate    DateTime?
+  totalAmount  Float
+  tax          String
+  status       String
+  method       String
+  notes        String?
+  taxType      String
+  recieverId   String
+  registeredBy String
+
+  registeredUser User @relation(name: "Registerer", fields: [registeredBy], references: [id])
+  recieverUser   User @relation(name: "Reciever", fields: [recieverId], references: [id])
+
+  UserSalaryDetails UserSalaryDetails[]
+}
+
+model UserSalaryDetails {
+  id         String     @id @default(uuid())
+  createdAt  DateTime   @default(now())
+  paidAmount Float
+  salaryId   String
+  userSalary UserSalary @relation(fields: [salaryId], references: [id], onDelete: Cascade)
+}

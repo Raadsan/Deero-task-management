@@ -1,0 +1,210 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-secondary-100: hsl(1deg, 100%, 20%);
+  --color-orange-100: hsl(14deg, 99%, 38%);
+  --color-orange-200: hsl(11deg, 83%, 53%);
+  --color-secondary-200: hsl(1deg, 79%, 22%);
+  --color-orange-300: hsl(11deg, 84%, 53%);
+  --color-dark-red: hsl(1deg, 73%, 23%);
+  --color-foreground: hsla(323deg, 98%, 3%, 1);
+  --color-dark-gray: hsl(180deg, 1%, 37%);
+  --color-light-gray: hsl(120deg, 1%, 84%);
+  --color-primary: hsl(224deg, 82%, 56%);
+  --color-light: hsl(212deg, 48%, 94%);
+  --color-secondary: hsl(234deg, 25%, 29%);
+  --color-success: hsl(154deg, 85%, 37%);
+  --color-warning: hsl(11deg, 84%, 53%);
+  --color-mint: hsl(124deg, 29%, 73%);
+  --color-cream: hsl(55deg, 62%, 73%);
+  --color-light-blue: hsl(225deg, 88%, 94%);
+  --color-light-pink: hsl(0deg, 51%, 93%);
+  --color-pale-yellow: hsl(55deg, 79%, 89%);
+  --color-brown: hsl(28deg, 73%, 40%);
+  --color-royal-blue: hsl(218deg, 65%, 52%);
+  --color-copper: hsl(26deg, 70%, 45%);
+  --color-light-dark: hsl(0deg, 0%, 0% / 0.7);
+  --color-bright-blue: hsl(233deg, 83%, 66%);
+  --color-lavender: hsl(255deg, 86%, 97%);
+  --color-coral: hsl(0deg, 56%, 55%);
+  --color-light-rose: hsl(0deg, 44%, 96%);
+}
+html,
+body,
+:root {
+  height: 100%;
+  width: 100%;
+}
+html > body[data-scroll-locked] {
+  overflow: visible !important;
+  margin-right: 0 !important;
+}
+body {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  min-width: 100% !important;
+}
+@utility applyInterFont {
+  font-family: var(--interfont);
+}
+/* shadows */
+@utility loginWrapperDropShadow {
+  box-shadow: 0px 4px 4px hsl(0deg 0% 0% / 0.25);
+}
+
+@utility shadow-medium {
+  box-shadow: 1px 0px 4px 2px hsl(0deg 0% 0% / 0.25);
+}
+
+@utility shadow-large {
+  box-shadow: 4px 4px 20px hsl(0deg 0% 0% / 0.25);
+}
+
+@utility shadow-md-1x {
+  box-shadow: 2px 0px 14px hsl(0deg 0% 0% / 0.25);
+}
+@utility shadow-md-2x {
+  box-shadow: 0px 0px 5.9px hsl(0deg 0% 0% / 0.25);
+}
+
+@utility gradientBg {
+  background: linear-gradient(
+    to bottom,
+    var(--color-secondary-100),
+    var(--color-secondary-200),
+    var(--color-dark-red),
+    var(--color-secondary-200),
+    var(--color-orange-300)
+  );
+}
+
+@utility bannerGradinetBg {
+  background: linear-gradient(
+    to right,
+    var(--color-secondary-100),
+    var(--color-secondary-200),
+    var(--color-orange-200)
+  );
+}
+/* grid systems utitlies */
+@utility dashbordMetrictsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 80%);
+  column-gap: 122px;
+  row-gap: 25px;
+  place-content: center;
+  /* at start take 80% of widht, and from larger devices  be 270px wide */
+  @variant lg {
+    grid-template-columns: repeat(auto-fit, 270px);
+  }
+}
+
+/* loader */
+.loader {
+  width: 50px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 8px solid;
+  border-color: #3e1212 #9d101000;
+  animation: l1 1s infinite;
+}
+
+@utility usersGrid {
+  grid-template-columns:
+    9rem repeat(3, minmax(7rem, 100%)) repeat(2, minmax(4rem, 100%))
+    repeat(3, minmax(7rem, 100%));
+}
+
+@utility tasksGrid {
+  grid-template-columns: 9rem 3fr repeat(5, 10rem);
+}
+
+@utility expensesGrid {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+@utility incomesGrid {
+  grid-template-columns: 9rem minmax(4rem, 7rem) repeat(8, minmax(7rem, 100%));
+}
+
+@utility clamped-text {
+  font-size: 80%;
+}
+@utility clientsGrid {
+  grid-template-columns: 9rem minmax(8rem, 100%) minmax(15rem, 100%) repeat(
+      4,
+      minmax(10rem, 100%)
+    );
+}
+
+@keyframes l1 {
+  to {
+    transform: rotate(0.5turn);
+  }
+}
+
+/* diaglog animation */
+@utility diaglogFadeIn {
+  animation: fadeIn 160ms ease-in;
+}
+@utility diaglogFadeOut {
+  animation: fadeOut 300ms ease-out;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fadeOut {
+  from {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+}
+
+@page {
+  size: letter;
+  margin: 0;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  /* Ensure content stays on one page by slightly scaling */
+  .print-scale {
+    transform: scale(1);
+    transform-origin: top center;
+  }
+  /* Avoid artificial page breaks inside blocks */
+  .no-break {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  /* Use full width, remove shadows/margins for clean PDF */
+  .print-full-width {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+  .no-shadow {
+    box-shadow: none !important;
+  }
+  .show-in-print {
+    display: inline-block !important;
+  }
+  .hide-in-print {
+    display: none !important;
+  }
+}
