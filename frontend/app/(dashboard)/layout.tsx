@@ -16,7 +16,7 @@ export default async function DashboardLayout({
     <SidebarProvider className="h-full w-full">
       <div className="flex h-full w-full shrink-0">
         <Suspense fallback={<SidebarSkeletonLoader />}>
-          <AppSidebarWrapper data={data} />
+          <AppSidebarWrapper />
         </Suspense>
         <main className="h-full w-full">
           <SidebarTrigger />
