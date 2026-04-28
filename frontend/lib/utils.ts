@@ -259,7 +259,7 @@ export function getTaskStatus(
       return Object.values(TaskStatus);
     case "own:edit":
       return Object.values(TaskStatus).filter(
-        (each: TaskStatus) => each === "completed",
+        (each: TaskStatus) => each === "completed" || each === "pending",
       );
     case "add":
       return Object.values(TaskStatus).filter(

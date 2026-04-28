@@ -46,4 +46,5 @@ export default function SideBarItem({
   } else if (canUserSee && currentUserRole === "user") {
     return item;
   }
+  return null;
 }

@@ -3,6 +3,8 @@
 import { AllClients, TableExpense, TableIncome, Task, User } from "@/lib/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
+import { updateTaskProgress } from "@/lib/actions/task.action";
+import { authClient } from "@/lib/auth-client";
 
 export const taskColumns: ColumnDef<Task>[] = [
   {
@@ -10,28 +12,30 @@ export const taskColumns: ColumnDef<Task>[] = [
     header: "ID",
   },
   {
-    accessorKey: "description",
-    header: "Description",
+    accessorKey: "assignedTo",
+    header: "Assigned To",
   },
   {
     accessorKey: "institutions",
     header: "Client Name",
   },
   {
-    accessorKey: "assignedTo",
-    header: "Assigned To",
+    accessorKey: "description",
+    header: "Description",
+    cell: ({ row }) => (
+      <div className="max-w-[200px] truncate" title={row.getValue("description")}>
+        {row.getValue("description")}
+      </div>
+    ),
   },
   {
     accessorKey: "supervisor",
     header: "Supervisor",
+    cell: ({ row }) => (row.original.supervisor || "—")
   },
   {
     accessorKey: "department",
     header: "Department",
-  },
-  {
-    accessorKey: "priority",
-    header: "Priority",
   },
   {
     accessorKey: "status",
@@ -43,6 +47,21 @@ export const taskColumns: ColumnDef<Task>[] = [
         />
       );
     },
+    cell: ({ row }) => {
+      const status = row.getValue("status") as string;
+      return (
+        <span className={`capitalize font-medium ${status === "pending" ? "text-orange-500" : status === "completed" ? "text-green-500" : ""}`}>
+          {status}
+        </span>
+      );
+    }
+  },
+  {
+    accessorKey: "progress",
+    header: "Progress",
+    cell: ({ row }) => (
+      <span className="font-semibold text-gray-700">{row.original.progress || 0}%</span>
+    ),
   },
   {
     accessorKey: "deadline",
@@ -157,6 +176,11 @@ export const expenseColumns: ColumnDef<TableExpense>[] = [
   {
     accessorKey: "description",
     header: "Description",
+    cell: ({ row }) => (
+      <div className="max-w-[200px] truncate" title={row.getValue("description")}>
+        {row.getValue("description")}
+      </div>
+    ),
   },
   {
     accessorKey: "createdAt",

@@ -1,16 +1,14 @@
 "use client";
 
-import { getTaskNotifications } from "@/lib/actions/task.action";
+import { getTaskNotifications, markNotificationAsSeen } from "@/lib/actions/task.action";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import { TaskNotification } from "@/lib/types";
 import { formatTaskDeadline } from "@/lib/utils";
 import { Bell } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import useSWR from "swr";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-
-const TASK_NOTIFICATIONS_SEEN_STORAGE_KEY = "task-notifications-seen-ids";
 
 const notificationLabels: Record<TaskNotification["type"], string> = {
   "new-assignment":
@@ -20,11 +18,11 @@ const notificationLabels: Record<TaskNotification["type"], string> = {
   "supervisor-assignment":
     "You are supervisor for this task. See the details below.",
   "task-completed": "Your assigned user completed this task.",
+  "task-updated": "A user updated the status or progress of this task.",
 };
 
 export default function TaskNotifications() {
   const [open, setOpen] = useState(false);
-  const [seenNotificationIds, setSeenNotificationIds] = useState<string[]>([]);
 
   const { data: notificationsResponse } = useSWR(
     SWR_CACH_KEYS.taskNotifications.key,
@@ -35,46 +33,14 @@ export default function TaskNotifications() {
   );
 
   const notifications = notificationsResponse?.data ?? [];
-  const unreadNotifications = useMemo(
-    () =>
-      notifications.filter(
-        (notification) => !seenNotificationIds.includes(notification.id),
-      ),
-    [notifications, seenNotificationIds],
-  );
+  const unreadNotifications = notifications;
   const hasNotifications = unreadNotifications.length > 0;
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const cachedValue = localStorage.getItem(
-      TASK_NOTIFICATIONS_SEEN_STORAGE_KEY,
-    );
-    if (!cachedValue) return;
-    try {
-      const parsed = JSON.parse(cachedValue);
-      if (Array.isArray(parsed)) {
-        setSeenNotificationIds(
-          parsed.filter((item) => typeof item === "string"),
-        );
-      }
-    } catch {
-      setSeenNotificationIds([]);
-    }
-  }, []);
-
-  const markAsRead = (idsToMark: string[]) => {
+  const markAsRead = async (idsToMark: string[]) => {
     if (!idsToMark.length) return;
-    const nextSeenIds = Array.from(
-      new Set([...seenNotificationIds, ...idsToMark]),
-    );
-    setSeenNotificationIds(nextSeenIds);
-
-    if (typeof window !== "undefined") {
-      localStorage.setItem(
-        TASK_NOTIFICATIONS_SEEN_STORAGE_KEY,
-        JSON.stringify(nextSeenIds),
-      );
-    }
+    
+    // Call backend for each notification
+    await Promise.all(idsToMark.map(id => markNotificationAsSeen(id)));
   };
 
   return (

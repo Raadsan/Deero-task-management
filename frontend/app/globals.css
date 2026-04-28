@@ -29,24 +29,29 @@
   --color-coral: hsl(0deg, 56%, 55%);
   --color-light-rose: hsl(0deg, 44%, 96%);
 }
+
 html,
 body,
 :root {
   height: 100%;
   width: 100%;
 }
-html > body[data-scroll-locked] {
+
+html>body[data-scroll-locked] {
   overflow: visible !important;
   margin-right: 0 !important;
 }
+
 body {
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
   min-width: 100% !important;
 }
+
 @utility applyInterFont {
   font-family: var(--interfont);
 }
+
 /* shadows */
 @utility loginWrapperDropShadow {
   box-shadow: 0px 4px 4px hsl(0deg 0% 0% / 0.25);
@@ -63,29 +68,27 @@ body {
 @utility shadow-md-1x {
   box-shadow: 2px 0px 14px hsl(0deg 0% 0% / 0.25);
 }
+
 @utility shadow-md-2x {
   box-shadow: 0px 0px 5.9px hsl(0deg 0% 0% / 0.25);
 }
 
 @utility gradientBg {
-  background: linear-gradient(
-    to bottom,
-    var(--color-secondary-100),
-    var(--color-secondary-200),
-    var(--color-dark-red),
-    var(--color-secondary-200),
-    var(--color-orange-300)
-  );
+  background: linear-gradient(to bottom,
+      var(--color-secondary-100),
+      var(--color-secondary-200),
+      var(--color-dark-red),
+      var(--color-secondary-200),
+      var(--color-orange-300));
 }
 
 @utility bannerGradinetBg {
-  background: linear-gradient(
-    to right,
-    var(--color-secondary-100),
-    var(--color-secondary-200),
-    var(--color-orange-200)
-  );
+  background: linear-gradient(to right,
+      var(--color-secondary-100),
+      var(--color-secondary-200),
+      var(--color-orange-200));
 }
+
 /* grid systems utitlies */
 @utility dashbordMetrictsGrid {
   display: grid;
@@ -93,6 +96,7 @@ body {
   column-gap: 122px;
   row-gap: 25px;
   place-content: center;
+
   /* at start take 80% of widht, and from larger devices  be 270px wide */
   @variant lg {
     grid-template-columns: repeat(auto-fit, 270px);
@@ -111,8 +115,7 @@ body {
 
 @utility usersGrid {
   grid-template-columns:
-    9rem repeat(3, minmax(7rem, 100%)) repeat(2, minmax(4rem, 100%))
-    repeat(3, minmax(7rem, 100%));
+    9rem repeat(3, minmax(7rem, 100%)) repeat(2, minmax(4rem, 100%)) repeat(3, minmax(7rem, 100%));
 }
 
 @utility tasksGrid {
@@ -132,11 +135,10 @@ body {
 @utility clamped-text {
   font-size: 80%;
 }
+
 @utility clientsGrid {
-  grid-template-columns: 9rem minmax(8rem, 100%) minmax(15rem, 100%) repeat(
-      4,
-      minmax(10rem, 100%)
-    );
+  grid-template-columns: 9rem minmax(8rem, 100%) minmax(15rem, 100%) repeat(4,
+      minmax(10rem, 100%));
 }
 
 @keyframes l1 {
@@ -149,24 +151,29 @@ body {
 @utility diaglogFadeIn {
   animation: fadeIn 160ms ease-in;
 }
+
 @utility diaglogFadeOut {
   animation: fadeOut 300ms ease-out;
 }
+
 @keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
+
 @keyframes fadeOut {
   from {
     transform: translateY(0px);
     opacity: 1;
   }
+
   to {
     transform: translateY(50px);
     opacity: 0;
@@ -182,28 +189,34 @@ body {
   .no-print {
     display: none !important;
   }
+
   /* Ensure content stays on one page by slightly scaling */
   .print-scale {
     transform: scale(1);
     transform-origin: top center;
   }
+
   /* Avoid artificial page breaks inside blocks */
   .no-break {
     break-inside: avoid;
     page-break-inside: avoid;
   }
+
   /* Use full width, remove shadows/margins for clean PDF */
   .print-full-width {
     max-width: 100% !important;
     width: 100% !important;
     margin: 0 !important;
   }
+
   .no-shadow {
     box-shadow: none !important;
   }
+
   .show-in-print {
     display: inline-block !important;
   }
+
   .hide-in-print {
     display: none !important;
   }

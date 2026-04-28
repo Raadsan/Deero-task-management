@@ -224,8 +224,9 @@ exports.Prisma.TaskScalarFieldEnum = {
   priority: 'priority',
   department: 'department',
   deadline: 'deadline',
+  progress: 'progress',
   assgineeId: 'assgineeId',
-  supervisorId: 'supervisorId'
+  supervisor: 'supervisor'
 };
 
 exports.Prisma.ClientTaskScalarFieldEnum = {
@@ -349,6 +350,18 @@ exports.Prisma.UserSalaryDetailsScalarFieldEnum = {
   salaryId: 'salaryId'
 };
 
+exports.Prisma.NotificationScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  taskId: 'taskId',
+  taskName: 'taskName',
+  assigneeName: 'assigneeName',
+  deadline: 'deadline',
+  type: 'type',
+  userId: 'userId',
+  isSeen: 'isSeen'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -405,7 +418,8 @@ exports.Prisma.ModelName = {
   ExpenseServiceAgreement: 'ExpenseServiceAgreement',
   ExpenseTransactionDetails: 'ExpenseTransactionDetails',
   UserSalary: 'UserSalary',
-  UserSalaryDetails: 'UserSalaryDetails'
+  UserSalaryDetails: 'UserSalaryDetails',
+  Notification: 'Notification'
 };
 
 /**

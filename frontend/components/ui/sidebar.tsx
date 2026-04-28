@@ -199,7 +199,7 @@ function Sidebar({
 
   return (
     <div
-      className="group peer text-sidebar-foreground hidden max-w-[200px] md:block"
+      className="group peer text-sidebar-foreground hidden md:block"
       data-state={state}
       data-collapsible={state === "collapsed" ? collapsible : ""}
       data-variant={variant}
@@ -210,7 +210,7 @@ function Sidebar({
       <div
         data-slot="sidebar-gap"
         className={cn(
-          "relative w-(--sidebar-width) bg-red-500 transition-[width] duration-200 ease-linear",
+          "relative w-(--sidebar-width) transition-[width] duration-200 ease-linear",
           "group-data-[collapsible=offcanvas]:w-0",
           "group-data-[side=right]:rotate-180",
           variant === "floating" || variant === "inset"

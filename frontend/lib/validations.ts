@@ -54,7 +54,7 @@ export const TaskSchema = z.object({
   department: z.string().min(1, "Department is required"),
   priority: z.enum(TaskPriority),
   assigneeId: z.string(),
-  supervisorId: z.string().min(1, "Supervisor is required"),
+  supervisor: z.string().min(1, "Supervisor is required"),
   status: z.enum(TaskStatus),
   deadline: z
     .date({
@@ -63,6 +63,7 @@ export const TaskSchema = z.object({
     .refine((date) => {
       return date.getTime() >= Date.now();
     }, "deadline must be now or a future date"),
+  progress: z.number().min(0).max(100).optional().default(0),
 });
 
 export const EditCreateUserSchema = z.object({

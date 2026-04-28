@@ -27,6 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full w-full" suppressHydrationWarning>
       <body
+        suppressHydrationWarning
         className={` ${popins.className} ${interfont.className} h-full antialiased`}
       >
         {children}

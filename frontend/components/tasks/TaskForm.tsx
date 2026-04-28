@@ -16,6 +16,7 @@ import {
   DatePicker,
   GetSelectItem,
   SelectElement,
+  TextInput,
   TextInputWithTaxtArea,
 } from "../Shared/FormElements";
 
@@ -55,14 +56,15 @@ export default function TaskForm({
     defaultValues: {
       description: currentTask?.description,
       assigneeId: currentTask?.assignedTo.id,
-      status: undefined,
+      status: currentTask?.status,
       clientInstitutionId: String(getDefaultInsitution?.id ?? ""),
       department: currentTask?.department ?? "",
       priority: currentTask?.priority ?? "normal",
-      supervisorId: currentTask?.supervisorId ?? "",
+      supervisor: currentTask?.supervisor ?? "",
       deadline: currentTask?.deadline
         ? new Date(currentTask.deadline)
         : new Date(),
+      progress: currentTask?.progress || 0,
     },
     resolver: standardSchemaResolver(TaskSchema),
   });
@@ -80,46 +82,26 @@ export default function TaskForm({
     (eachOne) => eachOne.id === watchInstitutionId,
   );
   const watchAssingneeId = watch("assigneeId");
-  const watchSupervisorId = watch("supervisorId");
   const currentUserId = session.data?.user.id;
+  const isAssignee = String(currentUserId) === String(watchAssingneeId);
 
-  const supervisorOptions = (() => {
-    const options = [...(assignees ?? [])];
-    if (
-      currentUserId &&
-      !options.some(({ id }) => String(id) === String(currentUserId))
-    ) {
-      options.unshift({
-        id: currentUserId,
-        name: session.data?.user.name ?? "You",
-        email: session.data?.user.email ?? "",
-        role: session.data?.user.role ?? "admin",
-      } as Pick<User, "name" | "id" | "email" | "role">);
+  useEffect(() => {
+    if (currentTask) {
+      reset({
+        description: currentTask.description,
+        assigneeId: currentTask.assignedTo.id,
+        status: currentTask.status,
+        clientInstitutionId: String(currentTask.institutions[0]?.id || ""),
+        department: currentTask.department,
+        priority: currentTask.priority,
+        supervisor: currentTask.supervisor,
+        deadline: new Date(currentTask.deadline),
+        progress: currentTask.progress || 0,
+      });
     }
+  }, [currentTask, reset]);
 
-    return options.filter(({ id, role }) => {
-      const isNotAssignee = String(id) !== String(watchAssingneeId);
-      const isAdmin = role === "admin" || role === "superadmin";
-      return isNotAssignee && isAdmin;
-    });
-  })();
-
-  useEffect(function () {
-    reset();
-  }, []);
-
-  useEffect(
-    function ensureSupervisorIsNotAssignee() {
-      if (
-        watchAssingneeId &&
-        watchSupervisorId &&
-        String(watchAssingneeId) === String(watchSupervisorId)
-      ) {
-        setValue("supervisorId", "", { shouldValidate: true });
-      }
-    },
-    [setValue, watchAssingneeId, watchSupervisorId],
-  );
+  console.log(taskStatus);
 
   console.log(taskStatus);
   function handleSubmitForm(data: z.infer<typeof TaskSchema>) {
@@ -138,8 +120,9 @@ export default function TaskForm({
           status: data.status,
           department: data.department,
           priority: data.priority,
-          supervisorId: data.supervisorId,
+          supervisor: data.supervisor,
           deadline: data.deadline,
+          progress: data.progress,
         });
         if (result?.success) {
           toast.success("Successfully Created Task.");
@@ -157,7 +140,8 @@ export default function TaskForm({
           description: data.description,
           department: data.department,
           priority: data.priority,
-          supervisorId: data.supervisorId,
+          supervisor: data.supervisor,
+          progress: data.progress,
         });
         if (result.success) {
           toast.success("Successfully Edited Task");
@@ -176,7 +160,8 @@ export default function TaskForm({
           description: data.description,
           department: data.department,
           priority: data.priority,
-          supervisorId: data.supervisorId,
+          supervisor: data.supervisor,
+          progress: data.progress,
         });
         if (result.success) {
           toast.success("Successfully Edited Task");
@@ -265,27 +250,20 @@ export default function TaskForm({
           setValue("priority", value as TaskPriority, { shouldValidate: true });
         }}
       />
-      <SelectElement
+      <TextInput
+        labelId="supervisor"
         labelText="Supervisor"
-        placeholder="Select supervisor"
-        defaultValue={watchSupervisorId}
-        disbaleSelect={transiton || formType === "own:edit"}
-        errorMessage={errors.supervisorId?.message}
-        elementRenderer={() => {
-          return supervisorOptions.map(({ name, id }, index) => {
-            return (
-              <GetSelectItem key={index} value={String(id)} label={name} />
-            );
-          });
-        }}
-        onChange={(value) => {
-          setValue("supervisorId", value, { shouldValidate: true });
-        }}
+        placeholder="Enter Supervisor Name"
+        defaultValue={getValues("supervisor")}
+        otherProps={{ ...register("supervisor") }}
+        disbaled={transiton || formType === "own:edit"}
+        errorMessage={errors.supervisor?.message}
       />
       <SelectElement
         disbaleSelect={transiton}
         labelText="Select Task Status"
         placeholder="Select Status"
+        defaultValue={getValues("status")}
         errorMessage={errors.status?.message}
         elements={taskStatus}
         onChange={(value) => {
@@ -302,6 +280,22 @@ export default function TaskForm({
         }}
         errorMessage={errors.deadline?.message}
       />
+
+      <TextInput
+        labelId="progress"
+        labelText="Completion Percentage (%)"
+        placeholder="Enter percentage (0-100)"
+        type="number"
+        defaultValue={String(getValues("progress"))}
+        otherProps={{ ...register("progress", { valueAsNumber: true }) }}
+        disbaled={!isAssignee || transiton}
+        errorMessage={errors.progress?.message}
+      />
+      {!isAssignee && session.data?.user.role !== "user" && (
+        <p className="text-[10px] text-gray-400 font-medium">
+          Only the assigned user can update the progress.
+        </p>
+      )}
 
       <div className="mt-[40px] flex w-full items-center justify-center gap-[20px]">
         {transiton ? (

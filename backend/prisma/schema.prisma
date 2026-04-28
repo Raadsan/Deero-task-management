@@ -61,7 +61,6 @@ model User {
   sessions  Session[]
   accounts  Account[]
   assignedTasks   Task[] @relation("TaskAssignee")
-  supervisedTasks Task[] @relation("TaskSupervisor")
   userFiles UserFiles[]
 
   roleId      String?
@@ -211,11 +210,11 @@ model Task {
   priority    TaskPriority @default(normal)
   department  String
   deadline    DateTime
+  progress    Int @default(0)
 
   assgineeId String
   user       User   @relation("TaskAssignee", fields: [assgineeId], references: [id], onDelete: Cascade)
-  supervisorId String
-  supervisor   User   @relation("TaskSupervisor", fields: [supervisorId], references: [id], onDelete: Cascade)
+  supervisor String @default("")
 
   clientTask ClientTask[]
 
@@ -405,4 +404,18 @@ model UserSalaryDetails{
   paidAmount Float 
   salaryId String 
   userSalary UserSalary @relation(fields: [salaryId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id           String   @id @default(uuid())
+  createdAt    DateTime @default(now())
+  taskId       String
+  taskName     String
+  assigneeName String
+  deadline     DateTime
+  type         String   
+  userId       String   
+  isSeen       Boolean  @default(false)
+
+  @@map("notifications")
 }

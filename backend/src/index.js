@@ -12,6 +12,7 @@ import transactionRoutes from "./routes/transactionrouter.js";
 import salaryRoutes from "./routes/salaryrouter.js";
 import roleRoutes from "./routes/rolerouter.js";
 import utilRoutes from "./routes/utilrouter.js";
+import notificationRoutes from "./routes/notificationrouter.js";
 
 dotenv.config();
 
@@ -37,6 +38,7 @@ app.use("/api/transactions", transactionRoutes);
 app.use("/api/salaries", salaryRoutes);
 app.use("/api/roles", roleRoutes);
 app.use("/api/utils", utilRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.get("/", (req, res) => {
   res.send("Deero Management API is running...");

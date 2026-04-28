@@ -12,12 +12,15 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   SortingState,
+  VisibilityState,
   useReactTable,
 } from "@tanstack/react-table";
 import { ReactNode, useState } from "react";
 import PaginatedButton from "../Shared/PaginatedButtons";
 import ShowActions from "../Shared/ShowActions";
 import TableSearchInput from "../Shared/TableSearchInput";
+import TaskViewModal from "../tasks/TaskViewModal";
+import { Task } from "@/lib/types";
 
 // Custom filter function for exact matching
 const exactMatchFilter = (row: any, columnId: string, filterValue: any) => {
@@ -57,6 +60,10 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [viewingTask, setViewingTask] = useState<Task | null>(null);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    id: false,
+  });
 
   const table = useReactTable({
     data,
@@ -79,7 +86,9 @@ export function DataTable<TData, TValue>({
     state: {
       sorting,
       columnFilters,
+      columnVisibility,
     },
+    onColumnVisibilityChange: setColumnVisibility,
   });
 
   const pageCounts = table?.getPageCount();
@@ -90,8 +99,12 @@ export function DataTable<TData, TValue>({
   const currentPage = table?.getState().pagination.pageIndex;
   const colCount = columns.length;
 
-  const gridTemplate = Array.from({ length: colCount })
-    .map(() => "minmax(120px, 1fr)")
+  const gridTemplate = columns
+    .map((col) => {
+      const id = (col as any).accessorKey || col.id;
+      if (id === "actions") return "180px";
+      return "minmax(120px, 1fr)";
+    })
     .join(" ");
 
   return (
@@ -119,9 +132,9 @@ export function DataTable<TData, TValue>({
                   {header.isPlaceholder
                     ? null
                     : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
+                      header.column.columnDef.header,
+                      header.getContext(),
+                    )}
                 </div>
               ))}
             </div>
@@ -144,7 +157,7 @@ export function DataTable<TData, TValue>({
               >
                 {row.getVisibleCells().map((cell) => {
                   const columnId = cell.column.id;
-                  const rowId = String(cell.row.getValue("id"));
+                  const rowId = String((cell.row.original as any).id);
 
                   // actions
                   if (columnId === "actions") {
@@ -207,20 +220,27 @@ export function DataTable<TData, TValue>({
                       }
 
                       return (
-                        <ShowActions
-                          key={cell.id}
-                          tableType={tableType}
-                          deleteActionKeyId={rowId}
-                          buttonInfo={[
-                            {
-                              btnText: "Edit",
-                              href:
-                                tableType === "tasks"
-                                  ? ROUTES.editTask(rowId)
-                                  : ROUTES["my-tasks-edit"](rowId),
-                            },
-                          ]}
-                        />
+                        <div key={cell.id} className="flex items-start gap-2.5">
+                          <button
+                            onClick={() => setViewingTask(cell.row.original as Task)}
+                            className="to-secondary-200 cursor-pointer rounded-[3px] bg-linear-to-br from-orange-200 px-3 py-[4px] font-normal text-white"
+                          >
+                            View
+                          </button>
+                          <ShowActions
+                            tableType={tableType}
+                            deleteActionKeyId={rowId}
+                            buttonInfo={[
+                              {
+                                btnText: "Edit",
+                                href:
+                                  tableType === "tasks"
+                                    ? ROUTES.editTask(rowId)
+                                    : ROUTES["my-tasks-edit"](rowId),
+                              },
+                            ]}
+                          />
+                        </div>
                       );
                     } else if (
                       tableType === "incomes" ||
@@ -352,11 +372,8 @@ export function DataTable<TData, TValue>({
                     columnId === "supervisor" &&
                     (tableType === "tasks" || tableType == "my-tasks")
                   ) {
-                    const { name } = cell.getValue() as {
-                      id: string;
-                      name: string;
-                    };
-                    return <RenderItem key={cell.id}>{name}</RenderItem>;
+                    const value = cell.getValue() as string;
+                    return <RenderItem key={cell.id}>{value || "—"}</RenderItem>;
                   }
 
                   if (
@@ -449,6 +466,9 @@ export function DataTable<TData, TValue>({
           </div>
         )}
       </div>
+      {viewingTask && (
+        <TaskViewModal task={viewingTask} onClose={() => setViewingTask(null)} />
+      )}
     </section>
   );
 }

@@ -4,7 +4,7 @@ import { auth } from "../lib/auth.js";
 
 async function main() {
   const email = "admin@gmail.com";
-  const password = "123456";
+  const password = "password123";
   const name = "Admin";
 
   console.log(`Checking if user ${email} exists...`);

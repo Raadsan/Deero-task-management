@@ -38,12 +38,9 @@ interface Task {
   priority: TaskPriority;
   status: TaskStatus;
   deadline: string | Date;
-  supervisor: {
-    id: string;
-    name: string;
-  };
-  supervisorId: string;
+  supervisor: string;
   isAssignedToCurrentUser?: boolean;
+  progress: number;
 }
 
 type StatusColorConfig = {
@@ -376,7 +373,8 @@ type TaskNotificationType =
   | "new-assignment"
   | "deadline-soon"
   | "supervisor-assignment"
-  | "task-completed";
+  | "task-completed"
+  | "task-updated";
 
 interface TaskNotification {
   id: string;

@@ -104,12 +104,13 @@ export function TextInput<T>({
   paddingLeft,
   showEyeIcon,
   type,
+  wrapperStyle,
 }: Props<T> & {
   prefixValue?: string;
   paddingLeft?: string;
 }) {
   return (
-    <div className="flex h-fit w-full max-w-[min(800px,100%)] flex-col gap-2">
+    <div className={cn("h-fit w-full max-w-[min(800px,100%)] space-y-2", wrapperStyle)}>
       <label
         htmlFor={labelId}
         style={{
@@ -137,7 +138,7 @@ export function TextInput<T>({
           placeholder={placeholder}
           {...otherProps}
           className={cn(
-            "focus:outline-dark-red absolute inset-0 overflow-hidden rounded-[inherit] text-[1.3rem] text-wrap outline outline-black/10 placeholder:text-gray-400 focus:outline-2 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-700",
+            "focus:outline-dark-red absolute inset-0 overflow-hidden rounded-[inherit] text-[1.3rem] text-wrap border border-black/10 placeholder:text-gray-400 focus:outline-2 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-700",
             inputStyle,
           )}
         />
@@ -163,7 +164,7 @@ export function SelectElement<T>({
 }: SelectProps<T>) {
   return (
     <div
-      className={cn("h-fit w-[min(800px,100%)] space-y-2 p-0", wrapperStyle)}
+      className={cn("h-fit w-full max-w-[min(800px,100%)] space-y-2 p-0", wrapperStyle)}
     >
       {labelText && <p className="text-dark-gray font-medium">{labelText}</p>}
       <Select
@@ -231,7 +232,7 @@ export function TextInputWithTaxtArea<T>({
           disabled={disbaled}
           placeholder={placeholder}
           className={cn(
-            "focus:outline-dark-red min-h-[100px] w-full resize-none rounded-md pt-5 pl-[21px] outline outline-black/10 placeholder:text-gray-400 focus:outline-2 disabled:cursor-not-allowed disabled:bg-gray-200",
+            "focus:outline-dark-red min-h-[100px] w-full resize-none rounded-md pt-5 pl-[21px] border border-black/10 placeholder:text-gray-400 focus:outline-2 disabled:cursor-not-allowed disabled:bg-gray-200",
             inputStyle,
           )}
         />

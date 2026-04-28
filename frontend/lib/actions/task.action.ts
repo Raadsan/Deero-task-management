@@ -146,6 +146,62 @@ export async function getYearlyDashbaordGraph({
   }
 }
 
-export async function getDashboardMetricData() { return { success: true, data: [] }; }
+export async function getDashboardMetricData({
+  startDate,
+  endDate,
+}: {
+  startDate?: Date;
+  endDate?: Date;
+} = {}) {
+  try {
+    const params = new URLSearchParams();
+    if (startDate) params.set("startDate", startDate.toISOString());
+    if (endDate) params.set("endDate", endDate.toISOString());
+    const response = await api.get(`/api/tasks/metrics?${params.toString()}`);
+    if (response.data.success) return { success: true, data: response.data.data };
+    return { success: false, data: [] };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}
 export async function getTasksReport() { return { success: true, data: { meta: {}, tasks: [] } }; }
-export async function getTaskNotifications() { return { success: true, data: [] }; }
+export async function getTaskNotifications(): Promise<ActionResponse<TaskNotification[]>> {
+  try {
+    const session = await getUserSession();
+    if (!session.data) return { success: true, data: [] };
+    
+    const response = await api.get(`/api/notifications?userId=${session.data.user.id}`);
+    if (response.data.success) {
+      return { success: true, data: response.data.data };
+    }
+    return { success: false, data: [] };
+  } catch (error) {
+    return { success: false, data: [] };
+  }
+}
+
+export async function markNotificationAsSeen(notificationId: string): Promise<ActionResponse> {
+  try {
+    const response = await api.put(`/api/notifications/${notificationId}/seen`);
+    if (response.data.success) {
+      return { success: true };
+    }
+    return { success: false };
+  } catch (error) {
+    return { success: false };
+  }
+}
+
+export async function updateTaskProgress(taskId: string, progress: number): Promise<ActionResponse> {
+  try {
+    const response = await api.put(`/api/tasks/${taskId}`, { progress });
+    if (response.data.success) {
+      revalidatePath(ROUTES.tasks);
+      revalidatePath(ROUTES["my-tasks"]);
+      return { success: true };
+    }
+    return { success: false, errors: { message: response.data.error } };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}

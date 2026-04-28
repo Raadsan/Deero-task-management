@@ -78,7 +78,7 @@ export function DashboardCharts() {
     return <ChartSkeletonLoader />;
 
   return (
-    <Card className="mx-auto h-fit w-full max-w-7xl border-0">
+    <Card className="h-full w-full border-none shadow-md">
       <CardHeader className="grid grid-cols-[1fr_auto] place-content-center">
         <CardTitle className="text-2xl font-semibold">
           {startDate && endDate
