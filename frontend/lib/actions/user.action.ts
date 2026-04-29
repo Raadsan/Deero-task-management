@@ -111,9 +111,10 @@ export async function saveUserFiles({ userId, files }: { userId: string; files: 
   }
 }
 
-export async function listCurrentUserSessions(): Promise<ActionResponse<any[]>> {
+export async function listCurrentUserSessions(params?: any): Promise<ActionResponse<any[]>> {
   try {
-    const response = await api.get("/api/auth/sessions");
+    const url = params?.userId ? `/api/auth/list-sessions?userId=${params.userId}` : "/api/auth/list-sessions";
+    const response = await api.get(url);
     return { success: true, data: response.data || [] };
   } catch (error) {
     return handleError({ errors: error, type: "server" }) as ErrorResponse;
