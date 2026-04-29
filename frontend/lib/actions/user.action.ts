@@ -93,7 +93,7 @@ export async function getUserUploadedFiles(userId: string): Promise<ActionRespon
   }
 }
 
-export async function deleteUserFileById({ fileId, userId }: { fileId: string; userId: string }): Promise<ActionResponse> {
+export async function deleteUserFileById({ fileId, userI}d, filePath : { fileId: string; userId: string; filePath?: string }): Promise<ActionResponse> {
   try {
     const response = await api.delete(`/api/users/${userId}/files/${fileId}`);
     return { success: true };
