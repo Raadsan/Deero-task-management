@@ -1,6 +1,7 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import { auth } from "./lib/auth.js";
 import { toNodeHandler } from "better-auth/node";
 import userRoutes from "./routes/userrouter.js";
@@ -14,13 +15,13 @@ import roleRoutes from "./routes/rolerouter.js";
 import utilRoutes from "./routes/utilrouter.js";
 import notificationRoutes from "./routes/notificationrouter.js";
 
-dotenv.config();
+
 
 const app = express();
 const port = process.env.PORT || 7000;
 
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: process.env.FRONTEND_URL || "http://localhost:3000",
   credentials: true
 }));
 app.use(express.json());

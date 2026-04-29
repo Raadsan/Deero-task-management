@@ -4,11 +4,11 @@
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
-    "dev": "nodemon --watch src src/index.js",
+    "dev:server": "nodemon --watch src src/index.js",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev --prefix ../frontend\"",
     "start": "node dist/index.js",
     "db:generate": "prisma generate",
-    "db:push": "prisma db push",
-    "start:both": "concurrently \"npm run dev\" \"cd ../frontend && npm run dev\""
+    "db:push": "prisma db push"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

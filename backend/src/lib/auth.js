@@ -16,9 +16,13 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "mysql",
   }),
-  trustedOrigins: ["http://localhost:3000", "http://localhost:5000"],
+  trustedOrigins: [
+    "http://localhost:3000",
+    "http://localhost:5000",
+    process.env.FRONTEND_URL
+  ].filter(Boolean),
   advanced: {
-    useSecureCookies: false,
+    useSecureCookies: process.env.NODE_ENV === "production",
     database: {
       generateId: false,
     },
