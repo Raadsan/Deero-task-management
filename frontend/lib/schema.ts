@@ -3,28 +3,17 @@
  * This ensures the frontend stays lightweight and doesn't require Prisma generation.
  */
 
-export enum UserRole {
-  user = "user",
-  admin = "admin",
-  superadmin = "superadmin",
-}
+export const UserRole = ["user", "admin", "superadmin"] as const;
+export type UserRole = (typeof UserRole)[number];
 
-export enum TaskStatus {
-  pending = "pending",
-  overdue = "overdue",
-  completed = "completed",
-}
+export const TaskStatus = ["pending", "overdue", "completed"] as const;
+export type TaskStatus = (typeof TaskStatus)[number];
 
-export enum TaskPriority {
-  normal = "normal",
-  medium = "medium",
-  urgent = "urgent",
-}
+export const TaskPriority = ["normal", "medium", "urgent"] as const;
+export type TaskPriority = (typeof TaskPriority)[number];
 
-export enum TransactionType {
-  income = "income",
-  expense = "expense",
-}
+export const TransactionType = ["income", "expense"] as const;
+export type TransactionType = (typeof TransactionType)[number];
 
 export interface UserFiles {
   id: string;
