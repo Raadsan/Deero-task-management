@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import api from "../api";
 import { ROUTES } from "../constants";
 import { handleError } from "../error/handle-error";
-import { ActionResponse, ErrorResponse, Task } from "../types";
+import { ActionResponse, ErrorResponse, Task, TaskNotification } from "../types";
 import { getUserSession } from "./auth.action";
 
 export async function createTask(task: any): Promise<ActionResponse> {
@@ -164,7 +164,28 @@ export async function getDashboardMetricData({
     return handleError({ errors: error, type: "server" }) as ErrorResponse;
   }
 }
-export async function getTasksReport() { return { success: true, data: { meta: {}, tasks: [] } }; }
+export async function getTasksReport({
+  userIdForTaskReport,
+  startDate,
+  endDate,
+}: {
+  userIdForTaskReport: string;
+  startDate?: Date;
+  endDate?: Date;
+}) {
+  try {
+    const params = new URLSearchParams();
+    params.set("userIdForTaskReport", userIdForTaskReport);
+    if (startDate) params.set("startDate", startDate.toISOString());
+    if (endDate) params.set("endDate", endDate.toISOString());
+    
+    const response = await api.get(`/api/tasks/report/data?${params.toString()}`);
+    if (response.data.success) return { success: true, data: response.data.data };
+    return { success: false, data: { meta: {}, tasks: [] } };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}
 export async function getTaskNotifications(): Promise<ActionResponse<TaskNotification[]>> {
   try {
     const session = await getUserSession();

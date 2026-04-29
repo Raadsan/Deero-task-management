@@ -321,3 +321,51 @@ export const getDashboardMetrics = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+export const getTasksReport = async (req, res) => {
+  const { userIdForTaskReport, startDate, endDate } = req.query;
+  try {
+    const from = startDate ? new Date(startDate) : undefined;
+    const to = endDate ? new Date(endDate) : undefined;
+    const where = {
+      assgineeId: userIdForTaskReport,
+    };
+    if (from || to) {
+      where.createdAt = { gte: from, lte: to };
+    }
+
+    const tasks = await prisma.task.findMany({
+      where,
+      include: {
+        clientTask: { include: { Client: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const user = await prisma.user.findUnique({ where: { id: userIdForTaskReport } });
+
+    const data = {
+      meta: {
+        userName: user?.name || "Unknown User",
+        userEmail: user?.email || "",
+        period: startDate && endDate ? `From ${startDate} to ${endDate}` : "All Time",
+        totalTasks: tasks.length,
+        completedTasks: tasks.filter(t => t.status === "completed").length,
+      },
+      tasks: tasks.map(t => ({
+        id: t.id,
+        description: t.description,
+        status: t.status,
+        priority: t.priority,
+        deadline: t.deadline,
+        createdAt: t.createdAt,
+        client: t.clientTask[0]?.Client?.institution || "N/A",
+        progress: t.progress
+      }))
+    };
+
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
