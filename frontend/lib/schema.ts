@@ -48,6 +48,9 @@ export interface User {
   gender?: string | null;
   salary?: string | null;
   department?: string | null;
+  banned?: boolean | null;
+  banReason?: string | null;
+  banExpires?: Date | string | null;
   createdAt: Date | string;
   updatedAt: Date | string;
 }
