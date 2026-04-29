@@ -52,10 +52,10 @@ export const TaskSchema = z.object({
     ),
   clientInstitutionId: z.string(),
   department: z.string().min(1, "Department is required"),
-  priority: z.enum(TaskPriority),
+  priority: z.nativeEnum(TaskPriority),
   assigneeId: z.string(),
   supervisor: z.string().min(1, "Supervisor is required"),
-  status: z.enum(TaskStatus),
+  status: z.nativeEnum(TaskStatus),
   deadline: z
     .date({
       error: "Deadline is required.",
@@ -88,7 +88,7 @@ export const EditCreateUserSchema = z.object({
     .min(5, "Email is required.")
     .max(50, "Email must not exceed 50 characters."),
 
-  role: z.enum(UserRole),
+  role: z.nativeEnum(UserRole),
 
   password: z
     .string()

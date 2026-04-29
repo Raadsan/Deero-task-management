@@ -3,17 +3,32 @@
  * This ensures the frontend stays lightweight and doesn't require Prisma generation.
  */
 
-export const UserRole = ["user", "admin", "superadmin"] as const;
-export type UserRole = (typeof UserRole)[number];
+export const UserRole = {
+  user: "user",
+  admin: "admin",
+  superadmin: "superadmin",
+} as const;
+export type UserRole = (typeof UserRole)[keyof typeof UserRole];
 
-export const TaskStatus = ["pending", "overdue", "completed"] as const;
-export type TaskStatus = (typeof TaskStatus)[number];
+export const TaskStatus = {
+  pending: "pending",
+  overdue: "overdue",
+  completed: "completed",
+} as const;
+export type TaskStatus = (typeof TaskStatus)[keyof typeof TaskStatus];
 
-export const TaskPriority = ["normal", "medium", "urgent"] as const;
-export type TaskPriority = (typeof TaskPriority)[number];
+export const TaskPriority = {
+  normal: "normal",
+  medium: "medium",
+  urgent: "urgent",
+} as const;
+export type TaskPriority = (typeof TaskPriority)[keyof typeof TaskPriority];
 
-export const TransactionType = ["income", "expense"] as const;
-export type TransactionType = (typeof TransactionType)[number];
+export const TransactionType = {
+  income: "income",
+  expense: "expense",
+} as const;
+export type TransactionType = (typeof TransactionType)[keyof typeof TransactionType];
 
 export interface UserFiles {
   id: string;
