@@ -185,7 +185,7 @@ export function formatTexts({ type, formatType }: Params) {
   }
 }
 
-export function dateDifferenceInMilliSeconds(date: Date | null | undefined) {
+export function dateDifferenceInMilliSeconds(date: Date | string | null | undefined) {
   if (!date) return "0";
 
   const currentDate = new Date();
