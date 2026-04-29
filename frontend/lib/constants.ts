@@ -105,6 +105,7 @@ export const ROUTES = {
   paySalary: (userId: string) => `/users/pay/${userId}`,
   transactionDetails: (id: string, type: "income" | "expense") =>
     type === "income" ? `/payments/income/${id}` : `/payments/expense/${id}`,
+  settings: "/settings",
 };
 
 export const MONTH_NAMES = [
