@@ -66,3 +66,35 @@ export interface Expense {
   createdAt: Date | string;
   expenseType: string;
 }
+
+export interface IncomeTransaction {
+  id: string;
+  createdAt: Date | string;
+  userId: string;
+  incomeCategoryId?: string | null;
+  duetoDate?: Date | string | null;
+  status: string;
+  method: string;
+  notes: string;
+  discount?: string | null;
+  taxType: string;
+  taxValue: number;
+  totalAmount: number;
+  amountPaid: number;
+  subTotal?: number | null;
+  agreementId: string;
+}
+
+export interface ExpenseTransaction {
+  id: string;
+  createdAt: Date | string;
+  userId: string;
+  duetoDate?: Date | string | null;
+  status: string;
+  method: string;
+  notes: string;
+  totalAmount: number;
+  amountPaid: number;
+  expenseCategoryId: string;
+  expneseAgreementId: string;
+}
