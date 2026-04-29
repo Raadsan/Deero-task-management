@@ -1,6 +1,7 @@
-import { prisma } from "@/prisma/prisma";
+// Prisma removed from frontend
+// import { prisma } from "@/prisma/prisma";
 import { betterAuth } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
+// import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { admin } from "better-auth/plugins/admin";
 import { generateCustomId } from "./actions/shared.action";
@@ -14,14 +15,17 @@ import {
 export const auth = betterAuth({
   basePath: "/api/auth",
   baseURL: process.env.BETTER_AUTH_URL,
-  database: prismaAdapter(prisma, {
-    provider: "postgresql",
-  }),
+  // Database removed from frontend - auth is handled by backend
+  // database: prismaAdapter(prisma, {
+  //   provider: "postgresql",
+  // }),
 
   emailAndPassword: {
     enabled: true,
   },
 
+  // Database hooks removed from frontend
+  /*
   databaseHooks: {
     user: {
       create: {
@@ -38,6 +42,7 @@ export const auth = betterAuth({
       },
     },
   },
+  */
   advanced: {
     database: {
       generateId: false,
