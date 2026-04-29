@@ -62,6 +62,18 @@ export const auth = betterAuth({
         type: ["admin", "user", "superadmin"],
         input: true,
       },
+      gender: {
+        type: "string",
+        input: true,
+      },
+      salary: {
+        type: "string",
+        input: true,
+      },
+      department: {
+        type: "string",
+        input: true,
+      },
       banReason: {
         type: "string",
         input: false,
