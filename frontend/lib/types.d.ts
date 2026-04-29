@@ -1,7 +1,7 @@
 import { Session } from "better-auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { TaskPriority, TaskStatus, UserRole } from "./generated/prisma";
+import { TaskPriority, TaskStatus, UserRole } from "./schema";
 import { ExpenseSchema } from "./validations";
 
 interface SidebarItem {
@@ -316,10 +316,7 @@ type Expense = Omit<
   };
 };
 
-type CustomPrismaType = Omit<
-  PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
-  "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends"
->;
+
 
 type PaymentSummaryType = {
   totalIncomes: string;
@@ -425,7 +422,7 @@ type UserTaskReport = {
   status: string;
 };
 
-type UserRole = "admin" | "manager" | "user";
+// UserRole is now imported from ./schema.ts
 
 type UserSalaryReport = {
   paidAt: string;

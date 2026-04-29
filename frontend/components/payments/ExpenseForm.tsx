@@ -6,7 +6,7 @@ import {
   PAYMENT_METHODS,
 } from "@/lib/constants";
 
-import { Expense } from "@/lib/generated/prisma";
+import { Expense } from "@/lib/schema";
 import { ExpenseSchema } from "@/lib/validations";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useRouter } from "next/navigation";

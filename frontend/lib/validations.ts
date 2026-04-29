@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { TaskPriority, TaskStatus, UserRole } from "./generated/prisma";
+import { TaskPriority, TaskStatus, UserRole } from "./schema";
 
 // schemas.
 export const loginSchema = z.object({

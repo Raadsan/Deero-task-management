@@ -1,6 +1,6 @@
 import { listCurrentUserSessions } from "@/lib/actions/user.action";
 import { authClient } from "@/lib/auth-client";
-import { User, UserRole } from "@/lib/generated/prisma";
+import { User, UserRole } from "@/lib/schema";
 import {
   computeFontSize,
   dateDifferenceInMilliSeconds,

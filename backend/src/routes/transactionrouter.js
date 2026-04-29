@@ -15,7 +15,11 @@ import {
   getExpenseTableData,
   getIncomeTransactionDetails,
   getExpenseTransactionDetails,
-  payDebt
+  payDebt,
+  getMonthlyPaymentData,
+  getYearlyPaymentData,
+  getInvoiceInfo,
+  getPaymentReport
 } from "../controllers/transactioncontroller.js";
 
 const router = Router();
@@ -35,6 +39,10 @@ router.get("/overviews", getPaymentOverviews);
 router.get("/sources", getExpensesIncomesBySource);
 router.get("/incomes-table", getIncomeTableData);
 router.get("/expenses-table", getExpenseTableData);
+router.get("/monthly-data", getMonthlyPaymentData);
+router.get("/yearly-data", getYearlyPaymentData);
+router.get("/invoice", getInvoiceInfo);
+router.get("/report", getPaymentReport);
 
 // Transaction details routes
 router.get("/incomes/details/:clientId", getIncomeTransactionDetails);

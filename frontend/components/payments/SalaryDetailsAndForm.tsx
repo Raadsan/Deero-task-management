@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "@/lib/generated/prisma";
+import { User } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Button } from "../ui/button";

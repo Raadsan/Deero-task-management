@@ -21,7 +21,7 @@ import {
 } from "../Shared/FormElements";
 
 import { authClient } from "@/lib/auth-client";
-import { TaskPriority, TaskStatus } from "@/lib/generated/prisma";
+import { TaskPriority, TaskStatus } from "@/lib/schema";
 import { Client, Task, User } from "@/lib/types";
 import Loader from "../Shared/Loader";
 

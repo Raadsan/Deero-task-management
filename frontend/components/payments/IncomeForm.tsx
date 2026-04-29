@@ -12,7 +12,7 @@ import {
   ROUTES,
   Taxs,
 } from "@/lib/constants";
-import { Income as IncomeModel } from "@/lib/generated/prisma";
+import { Income as IncomeModel } from "@/lib/schema";
 import { Client, TableIncome } from "@/lib/types";
 import { formatDate, getRandomUUID } from "@/lib/utils";
 import { IncomeSchema } from "@/lib/validations";

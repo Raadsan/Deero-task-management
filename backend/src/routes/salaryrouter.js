@@ -1,9 +1,11 @@
 import { Router } from "express";
-import { getAllSalaries, createSalaryRecord } from "../controllers/salarycontroller.js";
+import { getAllSalaries, paySalary, getUserSalaryDetails, getSalaryReport } from "../controllers/salarycontroller.js";
 
 const router = Router();
 
 router.get("/", getAllSalaries);
-router.post("/", createSalaryRecord);
+router.post("/pay", paySalary);
+router.get("/user/:userId", getUserSalaryDetails);
+router.get("/report", getSalaryReport);
 
 export default router;

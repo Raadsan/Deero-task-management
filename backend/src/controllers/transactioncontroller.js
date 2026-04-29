@@ -569,3 +569,221 @@ export const payDebt = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+export const getMonthlyPaymentData = async (req, res) => {
+  const { startDate, endDate } = req.query;
+  try {
+    const fromDate = startDate ? new Date(startDate) : undefined;
+    const toDate = endDate ? new Date(endDate) : undefined;
+    const filterConditions = { createdAt: { gte: fromDate, lte: toDate } };
+
+    const [incomes, expenses] = await prisma.$transaction([
+      prisma.incomeTransaction.findMany({
+        where: { AND: filterConditions, status: "Paid" },
+        select: { createdAt: true, subTotal: true }
+      }),
+      prisma.expenseTransaction.findMany({
+        where: { AND: filterConditions, status: "Paid" },
+        select: { createdAt: true, totalAmount: true }
+      })
+    ]);
+
+    const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const monthlyData = MONTH_NAMES.map(month => ({ month, income: 0, expense: 0 }));
+
+    incomes.forEach(item => {
+      const monthIndex = new Date(item.createdAt).getMonth();
+      monthlyData[monthIndex].income += item.subTotal || 0;
+    });
+
+    expenses.forEach(item => {
+      const monthIndex = new Date(item.createdAt).getMonth();
+      monthlyData[monthIndex].expense += item.totalAmount || 0;
+    });
+
+    res.json({ success: true, data: monthlyData });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const getYearlyPaymentData = async (req, res) => {
+  try {
+    const [weeklyIncomes, weeklyExpenses] = await prisma.$transaction([
+      prisma.incomeTransaction.findMany({ where: { status: "Paid" }, select: { createdAt: true, subTotal: true } }),
+      prisma.expenseTransaction.findMany({ where: { status: "Paid" }, select: { createdAt: true, totalAmount: true } })
+    ]);
+
+    const yearlyData = new Map();
+
+    weeklyIncomes.forEach(item => {
+      const year = new Date(item.createdAt).getFullYear().toString();
+      if (!yearlyData.has(year)) yearlyData.set(year, { year, income: 0, expense: 0 });
+      yearlyData.get(year).income += item.subTotal || 0;
+    });
+
+    weeklyExpenses.forEach(item => {
+      const year = new Date(item.createdAt).getFullYear().toString();
+      if (!yearlyData.has(year)) yearlyData.set(year, { year, income: 0, expense: 0 });
+      yearlyData.get(year).expense += item.totalAmount || 0;
+    });
+
+    const currentYear = new Date().getFullYear();
+    const result = [];
+    for (let i = 0; i < 10; i++) {
+      const year = (currentYear - i).toString();
+      result.push(yearlyData.get(year) || { year, income: 0, expense: 0 });
+    }
+
+    res.json({ success: true, data: result.reverse() });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const getInvoiceInfo = async (req, res) => {
+  const { type, transactionId, detailsId } = req.query;
+  try {
+    if (type === "income") {
+      const [incomeTransaction, details, allDetails] = await prisma.$transaction([
+        prisma.incomeTransaction.findUnique({
+          where: { id: transactionId },
+          include: {
+            serviceAgreement: {
+              include: { service: true, subService: true, client: true }
+            }
+          }
+        }),
+        prisma.incomeTransactionDetails.findUnique({ where: { id: detailsId } }),
+        prisma.incomeTransactionDetails.findMany({ where: { incomeTransactionId: transactionId } })
+      ]);
+
+      const detailsSum = allDetails.reduce((prev, current) => prev + current.paidAmount, 0);
+      const pending = (incomeTransaction.subTotal || 0) - detailsSum;
+
+      res.json({
+        success: true,
+        data: {
+          description: incomeTransaction.serviceAgreement.description,
+          headerInfo: {
+            createdAt: details.createdAt,
+            duetoDate: incomeTransaction.duetoDate,
+            id: incomeTransaction.id,
+            clientName: incomeTransaction.serviceAgreement.client.institution,
+            phone: incomeTransaction.serviceAgreement.client.phone,
+            email: incomeTransaction.serviceAgreement.client.email,
+            subTotal: incomeTransaction.subTotal,
+          },
+          items: [{
+            service: incomeTransaction.serviceAgreement.service.serviceName,
+            package: incomeTransaction.serviceAgreement.subService.name,
+            totalAmount: incomeTransaction.totalAmount,
+            discount: incomeTransaction.discount,
+            tax: `${incomeTransaction.taxValue} | ${incomeTransaction.taxType}`,
+            subTotal: incomeTransaction.subTotal,
+            paidNow: details.paidAmount,
+            pending: pending.toFixed(2),
+          }]
+        }
+      });
+    } else {
+      const [expenseTransaction, details, allDetails] = await prisma.$transaction([
+        prisma.expenseTransaction.findUnique({
+          where: { id: transactionId },
+          include: { expenseServiceAgreement: true, expense: true }
+        }),
+        prisma.expenseTransactionDetails.findUnique({ where: { id: detailsId } }),
+        prisma.expenseTransactionDetails.findMany({ where: { expenseTransactionId: transactionId } })
+      ]);
+
+      const detailsSum = allDetails.reduce((prev, current) => prev + current.paidAmount, 0);
+      const pending = expenseTransaction.totalAmount - detailsSum;
+
+      res.json({
+        success: true,
+        data: {
+          description: expenseTransaction.expenseServiceAgreement.description,
+          headerInfo: {
+            createdAt: details.createdAt,
+            duetoDate: expenseTransaction.duetoDate,
+            id: expenseTransaction.id,
+            clientName: "Expense Transaction",
+          },
+          items: [{
+            expenseType: expenseTransaction.expense.expenseType,
+            totalAmount: expenseTransaction.totalAmount,
+            paidNow: details.paidAmount,
+            pending: pending.toFixed(2),
+          }]
+        }
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+export const getPaymentReport = async (req, res) => {
+  const { fromMonth, toMonth, type } = req.query;
+  try {
+    const from = fromMonth ? new Date(fromMonth) : undefined;
+    const to = toMonth ? new Date(toMonth) : undefined;
+    const filterConditions = { createdAt: { gte: from, lte: to } };
+
+    if (type === "income") {
+      const incomes = await prisma.incomeTransaction.findMany({
+        where: { AND: filterConditions, status: "Paid" },
+        include: { income: true }
+      });
+
+      const grouped = incomes.reduce((acc, curr) => {
+        const key = curr.incomeCategoryId || "unknown";
+        if (!acc[key]) acc[key] = { amount: 0, type: curr.income?.incomeType || "Other" };
+        acc[key].amount += curr.subTotal || 0;
+        return acc;
+      }, {});
+
+      const items = Object.values(grouped).map(item => ({
+        Date: fromMonth && toMonth ? `From ${fromMonth} to ${toMonth}` : "All Dates",
+        Amount: item.amount.toFixed(2),
+        "Paid By": "System",
+        incomeType: item.type
+      }));
+
+      res.json({ success: true, data: { items, total: items.reduce((sum, i) => sum + parseFloat(i.Amount), 0).toFixed(2) } });
+    } else {
+      const [expenses, salaries] = await prisma.$transaction([
+        prisma.expenseTransaction.findMany({
+          where: { AND: filterConditions, status: "Paid" },
+          include: { expense: true }
+        }),
+        prisma.userSalary.findMany({
+          where: { AND: filterConditions, status: "Paid" }
+        })
+      ]);
+
+      const grouped = expenses.reduce((acc, curr) => {
+        const key = curr.expenseCategoryId || "unknown";
+        if (!acc[key]) acc[key] = { amount: 0, type: curr.expense?.expenseType || "Other" };
+        acc[key].amount += curr.totalAmount || 0;
+        return acc;
+      }, {});
+
+      const items = Object.values(grouped).map(item => ({
+        Date: fromMonth && toMonth ? `From ${fromMonth} to ${toMonth}` : "All Dates",
+        Amount: item.amount.toFixed(2),
+        "Expense Type": item.type
+      }));
+
+      if (salaries.length > 0) {
+        items.push({
+          Date: fromMonth && toMonth ? `From ${fromMonth} to ${toMonth}` : "All Dates",
+          Amount: salaries.reduce((sum, s) => sum + s.totalAmount, 0).toFixed(2),
+          "Expense Type": "Staff Salaries"
+        });
+      }
+
+      res.json({ success: true, data: { items, total: items.reduce((sum, i) => sum + parseFloat(i.Amount), 0).toFixed(2) } });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};

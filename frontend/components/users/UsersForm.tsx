@@ -3,7 +3,7 @@
 import { createUser, updateUserData } from "@/lib/actions/user.action";
 import { authClient } from "@/lib/auth-client";
 import { DEPARTMENTS, ROUTES } from "@/lib/constants";
-import { User, UserRole } from "@/lib/generated/prisma";
+import { User, UserRole } from "@/lib/schema";
 import { getRandomUUID } from "@/lib/utils";
 import { EditCreateUserSchema } from "@/lib/validations";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";

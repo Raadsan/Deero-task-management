@@ -1,5 +1,5 @@
 "use client";
-import { UserRole } from "@/lib/generated/prisma";
+import { UserRole } from "@/lib/schema";
 import { SidebarItem } from "@/lib/types";
 import Link from "next/link";
 import { usePathname } from "next/navigation";

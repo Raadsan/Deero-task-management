@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge";
 import { DEEERO_SERVICE_SUBCATEGORIES, ROUTES } from "./constants";
 
 import { v4 as uuid } from "uuid";
-import { TaskStatus, UserRole } from "./generated/prisma";
+import { TaskStatus, UserRole } from "./schema";
 import {
   DashboardViewMetric,
   PrefixType,

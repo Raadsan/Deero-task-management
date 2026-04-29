@@ -10,7 +10,7 @@ import {
   SidebarGroupContent,
 } from "@/components/ui/sidebar";
 import { ICONS, ROUTES } from "@/lib/constants";
-import { UserRole } from "@/lib/generated/prisma";
+import { UserRole } from "@/lib/schema";
 import { AuthSession, SidebarItem } from "@/lib/types";
 import {
   BriefcaseBusiness,

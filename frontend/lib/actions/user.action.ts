@@ -83,3 +83,39 @@ export async function updateUserData(params: {
     return handleError({ errors: error, type: "server" }) as ErrorResponse;
   }
 }
+
+export async function getUserUploadedFiles(userId: string): Promise<ActionResponse<any[]>> {
+  try {
+    const response = await api.get(`/api/users/${userId}/files`);
+    return { success: true, data: response.data.data || [] };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}
+
+export async function deleteUserFileById({ fileId, userId }: { fileId: string; userId: string }): Promise<ActionResponse> {
+  try {
+    const response = await api.delete(`/api/users/${userId}/files/${fileId}`);
+    return { success: true };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}
+
+export async function saveUserFiles({ userId, files }: { userId: string; files: any[] }): Promise<ActionResponse> {
+  try {
+    const response = await api.post(`/api/users/${userId}/files`, { files });
+    return { success: true };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}
+
+export async function listCurrentUserSessions(): Promise<ActionResponse<any[]>> {
+  try {
+    const response = await api.get("/api/auth/sessions");
+    return { success: true, data: response.data || [] };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}

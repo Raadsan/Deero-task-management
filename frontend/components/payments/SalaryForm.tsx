@@ -3,7 +3,7 @@
 import { payUserSalary } from "@/lib/actions/payment.action";
 import { authClient } from "@/lib/auth-client";
 import { EXPENSE_STATUS, PAYMENT_METHODS, Taxs } from "@/lib/constants";
-import { User } from "@/lib/generated/prisma";
+import { User } from "@/lib/schema";
 import { formatDate } from "@/lib/utils";
 import { SalarySchema } from "@/lib/validations";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";

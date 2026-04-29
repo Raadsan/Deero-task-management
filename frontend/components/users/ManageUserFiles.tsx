@@ -6,7 +6,7 @@ import {
 } from "@/lib/actions/user.action";
 import { Trash } from "lucide-react";
 
-import { UserFiles } from "@/lib/generated/prisma";
+import { UserFiles } from "@/lib/schema";
 import { useTransition } from "react";
 import toast from "react-hot-toast";
 import useSWR, { mutate } from "swr";
