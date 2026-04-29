@@ -119,4 +119,4 @@ export async function listCurrentUserSessions(): Promise<ActionResponse<any[]>> 
     return handleError({ errors: error, type: "server" }) as ErrorResponse;
   }
 }
-export async function getUsersSalariesReport(params: any): Promise<ActionResponse<any>> { return { success: true, data: [] }; }
+export async function getUsersSalariesReport(params?: any): Promise<ActionResponse<any>> { return { success: true, data: [] }; }

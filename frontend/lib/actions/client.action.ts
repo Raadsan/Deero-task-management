@@ -196,4 +196,4 @@ export async function getInsitutionsbyId({ id }: { id: string }): Promise<Action
     return handleError({ errors: error, type: "server" }) as ErrorResponse;
   }
 }
-export async function getClientReport(params: any): Promise<ActionResponse<any>> { return { success: true, data: [] }; }
+export async function getClientReport(params?: any): Promise<ActionResponse<any>> { return { success: true, data: [] }; }
