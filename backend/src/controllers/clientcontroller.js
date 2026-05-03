@@ -120,12 +120,59 @@ export const createClient = async (req, res) => {
 
 export const updateClient = async (req, res) => {
   const { id } = req.params;
+  const { institution, email, phone, source, discount, createdAt } = req.body;
   try {
     const client = await prisma.client.update({
       where: { id },
-      data: req.body,
+      data: {
+        institution,
+        email,
+        phone,
+        source,
+        createdAt: createdAt ? new Date(createdAt) : undefined,
+      },
     });
+
+    if (discount !== undefined) {
+      await prisma.incomeServiceAgreement.updateMany({
+        where: { clientId: id },
+        data: { discount: Number(discount) }
+      });
+    }
+
     res.json({ success: true, data: client });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const deleteClientAgreement = async (req, res) => {
+  const { agreementId } = req.params;
+  try {
+    await prisma.incomeServiceAgreement.delete({
+      where: { id: agreementId }
+    });
+    res.json({ success: true, message: "Agreement deleted" });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const updateClientAgreement = async (req, res) => {
+  const { agreementId } = req.params;
+  const { base, description, subServiceName } = req.body;
+  try {
+    const agreement = await prisma.incomeServiceAgreement.update({
+      where: { id: agreementId },
+      data: {
+        base: Number(base),
+        description,
+        subService: subServiceName ? {
+          update: { name: subServiceName }
+        } : undefined
+      }
+    });
+    res.json({ success: true, data: agreement });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

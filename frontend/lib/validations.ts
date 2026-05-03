@@ -213,9 +213,9 @@ export const ClientSchema = z.object({
       message: "Amount  should be a valid number, e.g. 200 ",
     })
     .default("0"),
-  discount: z.string().regex(/^(0\.(0[1-9]|[1-9]\d?)|1(\.0{1,2})?)$/, {
+  discount: z.string().regex(/^(0(\.\d{1,2})?|1(\.0{1,2})?)$/, {
     message:
-      "Discount must be a decimal between 0.01 and 1 (e.g. 0.1, 0.25, 1)",
+      "Discount must be a decimal between 0 and 1 (e.g. 0, 0.1, 1)",
   }),
 });
 
@@ -223,9 +223,9 @@ export const IncomeSchema = z.object({
   totalAmount: z.string().regex(/^\d+(\.\d{1,2})?$/, {
     message: "Base amount should be a valid number, e.g. 200 or 200.00",
   }),
-  discount: z.string().regex(/^(0\.(0[1-9]|[1-9]\d?)|1(\.0{1,2})?)$/, {
+  discount: z.string().regex(/^(0(\.\d{1,2})?|1(\.0{1,2})?)$/, {
     message:
-      "Discount must be a decimal between 0.01 and 1 (e.g. 0.1, 0.25, 1)",
+      "Discount must be a decimal between 0 and 1 (e.g. 0, 0.1, 1)",
   }),
   amountAfterDiscount: z.string().regex(/^\d+(\.\d{1,2})?$/, {
     message:

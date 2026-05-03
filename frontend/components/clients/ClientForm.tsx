@@ -95,7 +95,7 @@ export default function ClientForm({ formType, currentClient }: Props) {
       toast.error("Please select Service from the Dropdown");
       return;
     }
-    if (data.service === DEERO_SERVICES.at(-1)) {
+    if (formType !== "edit" && data.service === DEERO_SERVICES.at(-1)) {
       if (
         !getValues("customSubServiceInput") &&
         !getValues("customSubServiceSelect")
@@ -150,11 +150,14 @@ export default function ClientForm({ formType, currentClient }: Props) {
             phone: data.phone,
             email: data.email,
             source: data.source!,
+            discount: data.discount,
+            createdAt: data.createdAt,
           },
         });
 
         if (result.success) {
           toast.success("Successfully Edited Client");
+          router.push(ROUTES.clients);
           return;
         }
         toast.error(result?.errors?.message || "Failed to Edit Client");

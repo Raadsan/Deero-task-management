@@ -147,11 +147,41 @@ export async function getCustomSubServices(serviceId: string): Promise<ActionRes
 export async function addAnotherService(params: any): Promise<ActionResponse> {
   return { success: false, errors: { message: "Not implemented yet" } };
 }
-export async function editClientService(params: any): Promise<ActionResponse> {
-  return { success: false, errors: { message: "Not implemented yet" } };
+export async function editClientService(params: {
+  agreementId: string;
+  clientId: string;
+  base: number;
+  description: string;
+  subServiceName: string;
+}): Promise<ActionResponse> {
+  try {
+    const { agreementId, clientId, ...data } = params;
+    const response = await api.put(`/api/clients/agreement/${agreementId}`, data);
+    if (response.data.success) {
+      revalidatePath(ROUTES.viewClient(clientId), "page");
+      return { success: true };
+    }
+    return { success: false, errors: { message: response.data.error } };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
 }
-export async function deleteClientAgreement(params: any): Promise<ActionResponse> {
-  return { success: false, errors: { message: "Not implemented yet" } };
+
+export async function deleteClientAgreement(params: {
+  agreementId: string;
+  clientId: string;
+}): Promise<ActionResponse> {
+  try {
+    const { agreementId, clientId } = params;
+    const response = await api.delete(`/api/clients/agreement/${agreementId}`);
+    if (response.data.success) {
+      revalidatePath(ROUTES.viewClient(clientId), "page");
+      return { success: true };
+    }
+    return { success: false, errors: { message: response.data.error } };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
 }
 export async function getPaymentClients(params: {
   page: number;
