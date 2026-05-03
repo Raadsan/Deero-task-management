@@ -29,7 +29,7 @@ interface Props {
   formType: "edit" | "create" | "own:edit";
   currentTask?: Task;
   institutions?: Pick<Client, "id" | "institution">[] | undefined;
-  assignees?: Pick<User, "name" | "id" | "email" | "role">[];
+  assignees?: Pick<User, "name" | "id" | "email" | "role" | "department">[];
 }
 export default function TaskForm({
   formType,
@@ -59,7 +59,7 @@ export default function TaskForm({
       status: currentTask?.status,
       clientInstitutionId: String(getDefaultInsitution?.id ?? ""),
       department: currentTask?.department ?? "",
-      priority: currentTask?.priority ?? "normal",
+      priority: currentTask?.priority ?? "Normal",
       supervisor: currentTask?.supervisor ?? "",
       deadline: currentTask?.deadline
         ? new Date(currentTask.deadline)
@@ -84,6 +84,10 @@ export default function TaskForm({
   const watchAssingneeId = watch("assigneeId");
   const currentUserId = session.data?.user.id;
   const isAssignee = String(currentUserId) === String(watchAssingneeId);
+
+  const watchedDepartment = watch("department");
+  const watchedPriority = watch("priority");
+  const watchedStatus = watch("status");
 
   useEffect(() => {
     if (currentTask) {
@@ -226,12 +230,19 @@ export default function TaskForm({
         }}
         onChange={(value) => {
           setValue("assigneeId", value, { shouldValidate: true });
+          const selectedUser = assignees?.find((u) => String(u.id) === value);
+          if (selectedUser?.department) {
+            setValue("department", selectedUser.department, {
+              shouldValidate: true,
+            });
+          }
         }}
       />
       <SelectElement
         labelText="Department"
         placeholder="Select department"
-        defaultValue={getValues("department")}
+        value={watchedDepartment}
+        defaultValue={watchedDepartment}
         disbaleSelect={transiton || formType === "own:edit"}
         errorMessage={errors.department?.message}
         elements={[...DEPARTMENTS]}
@@ -242,10 +253,21 @@ export default function TaskForm({
       <SelectElement
         labelText="Priority"
         placeholder="Select priority"
-        defaultValue={getValues("priority")}
+        value={watchedPriority}
+        defaultValue={watchedPriority}
         disbaleSelect={transiton || formType === "own:edit"}
         errorMessage={errors.priority?.message}
-        elements={[...TASK_PRIORITIES]}
+        elementRenderer={() => {
+          return TASK_PRIORITIES.map((priority, index) => {
+            return (
+              <GetSelectItem
+                key={index}
+                value={priority}
+                label={priority.charAt(0).toUpperCase() + priority.slice(1)}
+              />
+            );
+          });
+        }}
         onChange={(value) => {
           setValue("priority", value as TaskPriority, { shouldValidate: true });
         }}
@@ -263,7 +285,8 @@ export default function TaskForm({
         disbaleSelect={transiton}
         labelText="Select Task Status"
         placeholder="Select Status"
-        defaultValue={getValues("status")}
+        value={watchedStatus}
+        defaultValue={watchedStatus}
         errorMessage={errors.status?.message}
         elements={taskStatus}
         onChange={(value) => {

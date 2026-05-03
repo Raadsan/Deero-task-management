@@ -333,4 +333,4 @@ export const DEPARTMENTS = [
   "Operations Controller",
 ];
 
-export const TASK_PRIORITIES = ["normal", "medium", "urgent"] as const;
+export const TASK_PRIORITIES = ["Normal", "Medium", "Urgent"] as const;

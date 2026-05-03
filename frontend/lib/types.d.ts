@@ -145,6 +145,7 @@ type AuthSession = {
     updatedAt: Date;
     image?: string | null | undefined | undefined;
     role: UserRole;
+    department?: string | null;
     banned: boolean;
     banReason?: string | undefined;
     banExpires?: Date | undefined;

@@ -35,7 +35,7 @@ interface SelectProps<T>
   elementChecker?: (value: string) => boolean;
   disbaleSelect?: boolean;
   defaultValue?: string;
-  value?: { value: string; label: string };
+  value?: string;
   otherProps?: Record<any, any>;
 }
 
@@ -161,6 +161,7 @@ export function SelectElement<T>({
   otherProps,
   placeholder,
   disbaleSelect,
+  value,
 }: SelectProps<T>) {
   return (
     <div
@@ -169,7 +170,7 @@ export function SelectElement<T>({
       {labelText && <p className="text-dark-gray font-medium">{labelText}</p>}
       <Select
         {...otherProps}
-        defaultValue={defaultValue}
+        value={value || defaultValue}
         disabled={disbaleSelect}
         onValueChange={(e) => onChange(e)}
       >

@@ -18,9 +18,9 @@ export const TaskStatus = {
 export type TaskStatus = (typeof TaskStatus)[keyof typeof TaskStatus];
 
 export const TaskPriority = {
-  normal: "normal",
-  medium: "medium",
-  urgent: "urgent",
+  normal: "Normal",
+  medium: "Medium",
+  urgent: "Urgent",
 } as const;
 export type TaskPriority = (typeof TaskPriority)[keyof typeof TaskPriority];
 

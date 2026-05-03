@@ -14,7 +14,7 @@ export async function GetAssigneesAndInstitutions({
 }): Promise<
   ActionResponse<{
     institutions: Pick<Client, "id" | "institution">[] | undefined;
-    assignees: Pick<User, "name" | "id" | "email" | "role">[] | undefined;
+    assignees: Pick<User, "name" | "id" | "email" | "role" | "department">[] | undefined;
   }>
 > {
   try {
@@ -57,7 +57,7 @@ export async function getAllAssignees({
   ownAssigned,
 }: {
   ownAssigned?: boolean;
-}): Promise<ActionResponse<Pick<User, "name" | "email" | "id" | "role">[]>> {
+}): Promise<ActionResponse<Pick<User, "name" | "email" | "id" | "role" | "department">[]>> {
   try {
     const session = await getUserSession();
     if (!session.data) return { success: false, errors: { message: "Unauthorized" } };
@@ -68,7 +68,7 @@ export async function getAllAssignees({
     if (ownAssigned) {
       return {
         success: true,
-        data: [{ id: currentUserId, name: session.data.user.name, email: session.data.user.email, role: currentUserRole }],
+        data: [{ id: currentUserId, name: session.data.user.name, email: session.data.user.email, role: currentUserRole, department: session.data.user.department }],
       };
     }
 
@@ -89,6 +89,7 @@ export async function getAllAssignees({
         name: u.name,
         email: u.email,
         role: u.role,
+        department: u.department,
       }));
       return { success: true, data };
     }
