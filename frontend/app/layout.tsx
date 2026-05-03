@@ -17,6 +17,9 @@ const interfont = Inter({
 export const metadata: Metadata = {
   title: "Deero Management System",
   description: "Centralized management system for Deero Company",
+  icons: {
+    icon: "/logo1.png",
+  },
 };
 
 export default function RootLayout({

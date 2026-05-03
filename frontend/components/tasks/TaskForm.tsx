@@ -56,7 +56,7 @@ export default function TaskForm({
     defaultValues: {
       description: currentTask?.description,
       assigneeId: currentTask?.assignedTo.id,
-      status: currentTask?.status,
+      status: currentTask?.status as TaskStatus,
       clientInstitutionId: String(getDefaultInsitution?.id ?? ""),
       department: currentTask?.department ?? "",
       priority: currentTask?.priority
@@ -97,8 +97,7 @@ export default function TaskForm({
       reset({
         description: currentTask.description,
         assigneeId: currentTask.assignedTo.id,
-        status: (currentTask.status.charAt(0).toUpperCase() +
-          currentTask.status.slice(1)) as TaskStatus,
+        status: currentTask.status.toLowerCase() as TaskStatus,
         clientInstitutionId: String(currentTask.institutions[0]?.id || ""),
         department: currentTask.department,
         priority: (currentTask.priority.charAt(0).toUpperCase() +
