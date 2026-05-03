@@ -59,7 +59,10 @@ export default function TaskForm({
       status: currentTask?.status,
       clientInstitutionId: String(getDefaultInsitution?.id ?? ""),
       department: currentTask?.department ?? "",
-      priority: currentTask?.priority ?? "Normal",
+      priority: currentTask?.priority
+        ? (currentTask.priority.charAt(0).toUpperCase() +
+            currentTask.priority.slice(1)) as TaskPriority
+        : "Normal",
       supervisor: currentTask?.supervisor ?? "",
       deadline: currentTask?.deadline
         ? new Date(currentTask.deadline)
@@ -94,10 +97,12 @@ export default function TaskForm({
       reset({
         description: currentTask.description,
         assigneeId: currentTask.assignedTo.id,
-        status: currentTask.status,
+        status: (currentTask.status.charAt(0).toUpperCase() +
+          currentTask.status.slice(1)) as TaskStatus,
         clientInstitutionId: String(currentTask.institutions[0]?.id || ""),
         department: currentTask.department,
-        priority: currentTask.priority,
+        priority: (currentTask.priority.charAt(0).toUpperCase() +
+          currentTask.priority.slice(1)) as TaskPriority,
         supervisor: currentTask.supervisor,
         deadline: new Date(currentTask.deadline),
         progress: currentTask.progress || 0,

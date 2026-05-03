@@ -1,3 +1,4 @@
+import { authClient } from "@/lib/auth-client";
 import { TableType } from "@/lib/types";
 import { formatTexts } from "@/lib/utils";
 import Link from "next/link";
@@ -16,6 +17,7 @@ export default function ShowActions({
   buttonInfo,
   deleteActionKeyId,
 }: Props) {
+  const session = authClient.useSession();
   const description = formatTexts({
     type: tableType,
     formatType: "description",
@@ -37,13 +39,15 @@ export default function ShowActions({
           </Link>
         );
       })}
-      <DeleteAction
-        key={deleteActionKeyId + new Date().getTime()}
-        dialogTitle={dialog}
-        idToDelete={deleteActionKeyId}
-        typeOfDataToDelete={tableType === "my-tasks" ? "tasks" : tableType}
-        description={description}
-      />
+      {session.data?.user.role !== "user" && (
+        <DeleteAction
+          key={deleteActionKeyId + new Date().getTime()}
+          dialogTitle={dialog}
+          idToDelete={deleteActionKeyId}
+          typeOfDataToDelete={tableType === "my-tasks" ? "tasks" : tableType}
+          description={description}
+        />
+      )}
     </div>
   );
 }
