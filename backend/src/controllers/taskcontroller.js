@@ -52,8 +52,8 @@ export const createTask = async (req, res) => {
         data: {
           id: taskId,
           description: data.description,
-          status: data.status,
-          priority: data.priority,
+          status: data.status?.toLowerCase(),
+          priority: data.priority?.toLowerCase(),
           department: data.department,
           deadline: new Date(data.deadline),
           assgineeId: data.assgineeId,
@@ -124,8 +124,8 @@ export const updateTask = async (req, res) => {
       where: { id },
       data: {
         description,
-        status,
-        priority,
+        status: status?.toLowerCase(),
+        priority: priority?.toLowerCase(),
         department,
         deadline: deadline ? new Date(deadline) : undefined,
         assgineeId,
