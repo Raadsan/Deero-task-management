@@ -13,15 +13,21 @@ export default async function DashboardLayout({
   const { data } = await getUserSession();
 
   return (
-    <SidebarProvider className="h-full w-full">
-      <div className="flex h-full w-full shrink-0">
+    <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "200px",
+        } as React.CSSProperties
+      }
+      className="h-full w-full"
+    >
+      <div className="flex h-full w-full shrink-0 gap-0 p-0">
         <Suspense fallback={<SidebarSkeletonLoader />}>
           <AppSidebarWrapper />
         </Suspense>
-        <main className="h-full w-full">
-          <SidebarTrigger />
+        <SidebarInset className="h-full w-full p-0 m-0">
           {children}
-        </main>
+        </SidebarInset>
       </div>
     </SidebarProvider>
   );

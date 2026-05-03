@@ -69,7 +69,7 @@ interface Props {
 
 export function AppSidebar({ data }: Props) {
   return (
-    <Sidebar className="gradientBg flex h-full w-full max-w-[200px] min-w-[100px] shrink-0 flex-col">
+    <Sidebar className="gradientBg border-none flex h-full flex-col">
       <SidebarHeader>
         <div className="m-0 flex h-[92.81px] w-full items-center justify-center border-b border-white/10">
           <Image

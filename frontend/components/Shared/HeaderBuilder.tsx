@@ -36,13 +36,15 @@ export default function HeaderBuilder({
       >
         {headerText}
       </h2>
-      <div className="flex items-center gap-[10px]">
-        {children}
-        {showButton && (
-          <Link href={link ?? ""}>
-            <ButtonBuilder type={"normal"}>{buttonText}</ButtonBuilder>
-          </Link>
-        )}
+      <div className="flex items-center gap-6">
+        <div className="flex items-center gap-[10px]">
+          {children}
+          {showButton && (
+            <Link href={link ?? ""}>
+              <ButtonBuilder type={"normal"}>{buttonText}</ButtonBuilder>
+            </Link>
+          )}
+        </div>
       </div>
 
       {showBlurLine && (

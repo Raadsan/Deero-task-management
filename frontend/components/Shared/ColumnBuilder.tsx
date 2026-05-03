@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
+import { SidebarTrigger } from "../ui/sidebar";
 
 interface Props {
   children: ReactNode[] | ReactNode;
@@ -13,11 +14,14 @@ export default function ColumnBuilder({ children, headerClassNames }: Props) {
         <>
           <div
             className={cn(
-              "relative flex min-h-[100.82px] w-full shrink-0 items-center-safe py-2.5 pr-[30px] pl-[100px]",
+              "relative flex min-h-[120px] w-full shrink-0 items-center-safe py-2.5 pr-[30px] pl-[20px] gap-[20px]",
               headerClassNames,
             )}
           >
-            {children.at(0)}
+            <SidebarTrigger className="relative top-0 ml-0 scale-125" />
+            <div className="flex flex-1 items-center justify-end">
+               {children.at(0)}
+            </div>
           </div>
           <div className="w-full shrink-0 grow px-[30px] pb-[100px]">
             {children.at(1)}

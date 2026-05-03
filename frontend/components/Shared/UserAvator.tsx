@@ -8,13 +8,13 @@ export default async function UserAvator() {
 
   const nameUppercased = capitalizeName(data?.user.name ?? "");
   return (
-    <article className="w-fi max-w-w-[300px] flex h-fit gap-[20px]">
-      <div className="border-light flex grow gap-[10.07px] rounded-[8.19] border-[1.02px] p-[7.8px]">
+    <article className="w-fit flex h-fit gap-[10px]">
+      <div className="bg-white border-gray-100 flex min-w-[220px] items-center gap-[15px] rounded-xl border-[1px] p-4 shadow-sm">
         {data?.user.image ? (
-          <Bell />
+          <Bell className="h-5 w-5 text-gray-400" />
         ) : (
-          <div className="flex h-[40px] w-[40px] items-center justify-center rounded-full border border-black/10 bg-white shadow-sm">
-            <span className="text-xl text-black">
+          <div className="flex h-[45px] w-[45px] items-center justify-center rounded-full border border-gray-200 bg-white">
+            <span className="text-lg font-bold text-gray-900">
               {data?.user.name
                 ? data.user.name.substring(0, 1).toUpperCase()
                 : "U"}
@@ -25,17 +25,17 @@ export default async function UserAvator() {
         <div className="flex flex-col">
           <p
             style={{
-              fontSize: computeFontSize(15.24),
+              fontSize: computeFontSize(15),
             }}
-            className="text-foreground line-clamp-1 font-medium"
+            className="text-gray-900 line-clamp-1 font-bold leading-tight"
           >
             {nameUppercased || "User Name"}
           </p>
           <p
             style={{
-              fontSize: computeFontSize(17.24),
+              fontSize: computeFontSize(12),
             }}
-            className="text-secondary font-bold"
+            className="text-[#2B3674] font-black mt-1 leading-none uppercase tracking-tight"
           >
             Role: {data?.user.role.toUpperCase()}
           </p>
