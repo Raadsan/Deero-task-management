@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getUserSession } from "./lib/actions/auth.action";
 import { ROUTES } from "./lib/constants";
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const authResult = await getUserSession();
   const session = authResult.data;
   const pathName = request.nextUrl.pathname;

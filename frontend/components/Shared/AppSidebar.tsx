@@ -103,7 +103,7 @@ export function AppSidebar({ data }: Props) {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="pb-[30px]">
-        <SettingAndLogoutMenu userId={data?.user.id!} />
+        {data?.user && <SettingAndLogoutMenu userId={data.user.id} />}
       </SidebarFooter>
     </Sidebar>
   );

@@ -17,12 +17,14 @@ export const auth = betterAuth({
     provider: "mysql",
   }),
   trustedOrigins: [
+    "https://task.deero.so",
     "http://localhost:3000",
     "http://localhost:5000",
+    "http://localhost:2003",
     process.env.FRONTEND_URL
   ].filter(Boolean),
   advanced: {
-    useSecureCookies: process.env.NODE_ENV === "production",
+    useSecureCookies: process.env.NODE_ENV === "production" || process.env.BETTER_AUTH_URL?.startsWith("https"),
     database: {
       generateId: false,
     },

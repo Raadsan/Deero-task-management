@@ -91,8 +91,9 @@ export default function UserForm({ formType, data }: Props) {
     } else if (formType === "edit") {
       startTransition(async function () {
         const updateResult = await updateUserData({
-          id: data?.id,
+          id: data?.id as string,
           name: formData.name,
+          email: formData.email,
           gender: formData.gender,
           department: formData.department,
           salary: formData.salary,
@@ -100,7 +101,8 @@ export default function UserForm({ formType, data }: Props) {
 
         if (updateResult.success) {
           reset();
-          toast.success("Upated User Data successfully!");
+          toast.success("Updated User Data successfully!");
+          router.push(ROUTES.users);
           router.refresh();
         } else {
           toast.error(

@@ -134,11 +134,6 @@ export const updateClient = async (req, res) => {
 export const deleteClient = async (req, res) => {
   const { id } = req.params;
   try {
-    // Check for tasks before deleting
-    const tasks = await prisma.clientTask.findFirst({ where: { clientId: id } });
-    if (tasks) {
-      return res.status(400).json({ success: false, error: "Client has active tasks. Delete tasks first." });
-    }
     await prisma.client.delete({ where: { id } });
     res.json({ success: true, message: "Client deleted" });
   } catch (error) {

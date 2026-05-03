@@ -82,7 +82,11 @@ const app = express();
 const port = process.env.PORT || 7003;
 
 app.use(cors({
-  origin: frontendUrl,
+  origin: [
+    "http://localhost:2003",
+    "http://127.0.0.1:2003",
+    process.env.FRONTEND_URL
+  ].filter(Boolean),
   credentials: true
 }));
 
