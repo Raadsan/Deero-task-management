@@ -79,7 +79,9 @@ export default function EditClientCategory({
         <TextInput
           labelText="Service Category Name"
           defaultValue={subServiceName}
-          onChange={(e) => setSubServiceName(e.target.value)}
+          otherProps={{
+            onChange: (e: any) => setSubServiceName(e.target.value),
+          }}
           labelId={labelId}
           placeholder={placeholder}
           wrapperStyle="flex-1"
@@ -87,7 +89,9 @@ export default function EditClientCategory({
         <TextInput
           labelText="Amount (USD $)"
           defaultValue={baseValue}
-          onChange={(e) => setBaseValue(e.target.value)}
+          otherProps={{
+            onChange: (e: any) => setBaseValue(e.target.value),
+          }}
           labelId={`${labelId}-base`}
           placeholder="0.00"
           wrapperStyle="w-[150px]"
@@ -119,7 +123,9 @@ export default function EditClientCategory({
       <TextInput
         labelText="Agreement Description"
         defaultValue={desc}
-        onChange={(e) => setDesc(e.target.value)}
+        otherProps={{
+          onChange: (e: any) => setDesc(e.target.value),
+        }}
         labelId={`${labelId}-desc`}
         placeholder="Enter description..."
         wrapperStyle="w-full"
