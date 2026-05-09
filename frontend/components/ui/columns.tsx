@@ -17,45 +17,45 @@ export const taskColumns: ColumnDef<Task>[] = [
   },
   {
     accessorKey: "institutions",
-    header: "Client Name",
+    header: "Service Information",
   },
-  {
-    accessorKey: "description",
-    header: "Description",
-    cell: ({ row }) => (
-      <div className="max-w-[200px] truncate" title={row.getValue("description")}>
-        {row.getValue("description")}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "supervisor",
-    header: "Supervisor",
-    cell: ({ row }) => (row.original.supervisor || "—")
-  },
-  {
-    accessorKey: "department",
-    header: "Department",
-  },
-  {
-    accessorKey: "status",
-    header: ({ column }) => {
-      return (
-        <ColumnSortButtonBuilder
-          headerText="Status"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        />
-      );
-    },
-    cell: ({ row }) => {
-      const status = row.getValue("status") as string;
-      return (
-        <span className={`capitalize font-medium ${status === "pending" ? "text-orange-500" : status === "completed" ? "text-green-500" : ""}`}>
-          {status}
-        </span>
-      );
-    }
-  },
+  // {
+  //   accessorKey: "description",
+  //   header: "Description",
+  //   cell: ({ row }) => (
+  //     <div className="max-w-[200px] truncate" title={row.getValue("description")}>
+  //       {row.getValue("description")}
+  //     </div>
+  //   ),
+  // },
+  // {
+  //   accessorKey: "supervisor",
+  //   header: "Supervisor",
+  //   cell: ({ row }) => (row.original.supervisor || "—")
+  // },
+  // {
+  //   accessorKey: "department",
+  //   header: "Department",
+  // },
+  // {
+  //   accessorKey: "status",
+  //   header: ({ column }) => {
+  //     return (
+  //       <ColumnSortButtonBuilder
+  //         headerText="Status"
+  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+  //       />
+  //     );
+  //   },
+  //   cell: ({ row }) => {
+  //     const status = row.getValue("status") as string;
+  //     return (
+  //       <span className={`capitalize font-medium ${status === "pending" ? "text-orange-500" : status === "completed" ? "text-green-500" : ""}`}>
+  //         {status}
+  //       </span>
+  //     );
+  //   }
+  // },
   {
     accessorKey: "progress",
     header: "Progress",

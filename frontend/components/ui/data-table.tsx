@@ -337,7 +337,7 @@ export function DataTable<TData, TValue>({
 
                   // amount info under incomes and expenses
 
-                  // client name under tasks and my-tasks
+                  // service info under tasks and my-tasks
                   if (
                     columnId === "institutions" &&
                     (tableType === "tasks" || tableType == "my-tasks")
@@ -345,12 +345,16 @@ export function DataTable<TData, TValue>({
                     const result = cell.getValue() as Array<{
                       institution: string;
                       id: string;
+                      services?: string[];
                     }>;
 
                     return (
                       <RenderItem key={cell.id}>
-                        {result.map(({ institution }, index) => {
-                          return <span key={index}>{institution}</span>;
+                        {result.map(({ services }, index) => {
+                          const serviceList = services?.length
+                            ? services.join(", ")
+                            : "—";
+                          return <span key={index}>{serviceList}</span>;
                         })}
                       </RenderItem>
                     );

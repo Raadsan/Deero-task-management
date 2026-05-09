@@ -6,7 +6,7 @@ export const getAllTasks = async (req, res) => {
     const tasks = await prisma.task.findMany({
       include: {
         user: true,
-        clientTask: { include: { Client: true } },
+        clientTask: { include: { Client: { include: { clientSubService: { include: { subService: true } } } } } },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -337,7 +337,7 @@ export const getTasksReport = async (req, res) => {
     const tasks = await prisma.task.findMany({
       where,
       include: {
-        clientTask: { include: { Client: true } },
+        clientTask: { include: { Client: { include: { clientSubService: { include: { subService: true } } } } } },
       },
       orderBy: { createdAt: "desc" },
     });

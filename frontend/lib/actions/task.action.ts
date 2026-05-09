@@ -30,7 +30,10 @@ export async function getTaskById(taskId: string): Promise<ActionResponse<Task>>
         data: {
           ...task,
           assignedTo: task.user,
-          institutions: task.clientTask.map((ct: any) => ct.Client),
+          institutions: task.clientTask.map((ct: any) => ({
+          ...ct.Client,
+          services: ct.Client?.clientSubService?.map((css: any) => css.subService?.name).filter(Boolean) || [],
+        })),
         } as unknown as Task
       };
     }
@@ -61,7 +64,10 @@ export async function getAllTasks(): Promise<ActionResponse<Task[]>> {
       const tasks = response.data.data.map((task: any) => ({
         ...task,
         assignedTo: task.user,
-        institutions: task.clientTask.map((ct: any) => ct.Client),
+        institutions: task.clientTask.map((ct: any) => ({
+          ...ct.Client,
+          services: ct.Client?.clientSubService?.map((css: any) => css.subService?.name).filter(Boolean) || [],
+        })),
       }));
       return { success: true, data: tasks as unknown as Task[] };
     }
@@ -98,7 +104,10 @@ export async function getAssginedTasks(): Promise<ActionResponse<Task[]>> {
           ...task,
           assignedTo: task.user,
           isAssignedToCurrentUser: task.assgineeId === currentUserId,
-          institutions: task.clientTask.map((ct: any) => ct.Client),
+          institutions: task.clientTask.map((ct: any) => ({
+            ...ct.Client,
+            services: ct.Client?.clientSubService?.map((css: any) => css.subService?.name).filter(Boolean) || [],
+          })),
         }));
       return { success: true, data: tasks as unknown as Task[] };
     }
