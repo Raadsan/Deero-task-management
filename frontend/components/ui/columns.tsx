@@ -16,8 +16,17 @@ export const taskColumns: ColumnDef<Task>[] = [
     header: "Assigned To",
   },
   {
-    accessorKey: "institutions",
+    accessorKey: "serviceInformation",
     header: "Service Information",
+    cell: ({ row }) => {
+      const task = row.original;
+      const institution = task.institutions?.[0]?.institution;
+      return (
+        <span className="font-medium text-gray-700">
+          {task.serviceInformation || institution || "—"}
+        </span>
+      );
+    },
   },
   // {
   //   accessorKey: "description",

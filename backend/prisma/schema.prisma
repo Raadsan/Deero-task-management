@@ -215,6 +215,7 @@ model Task {
   assgineeId String
   user       User   @relation("TaskAssignee", fields: [assgineeId], references: [id], onDelete: Cascade)
   supervisor String @default("")
+  serviceInformation String?
 
   clientTask ClientTask[]
 

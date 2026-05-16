@@ -68,6 +68,7 @@ export default function TaskForm({
         ? new Date(currentTask.deadline)
         : new Date(),
       progress: currentTask?.progress || 0,
+      serviceInformation: currentTask?.serviceInformation || "",
     },
     resolver: standardSchemaResolver(TaskSchema),
   });
@@ -105,6 +106,7 @@ export default function TaskForm({
         supervisor: currentTask.supervisor,
         deadline: new Date(currentTask.deadline),
         progress: currentTask.progress || 0,
+        serviceInformation: currentTask.serviceInformation || "",
       });
     }
   }, [currentTask, reset]);
@@ -115,14 +117,9 @@ export default function TaskForm({
   function handleSubmitForm(data: z.infer<typeof TaskSchema>) {
     if (formType === "create") {
       setStartTransition(async () => {
-        if (!data.clientInstitutionId) {
-          return setError("clientInstitutionId", {
-            type: "manual",
-            message: "Please select a client institution",
-          });
-        }
         const result = await createTask({
           clientId: data.clientInstitutionId,
+          serviceInformation: data.serviceInformation,
           assgineeId: data.assigneeId,
           description: data.description,
           status: data.status,
@@ -150,6 +147,7 @@ export default function TaskForm({
           priority: data.priority,
           supervisor: data.supervisor,
           progress: data.progress,
+          serviceInformation: data.serviceInformation,
         });
         if (result.success) {
           toast.success("Successfully Edited Task");
@@ -170,6 +168,7 @@ export default function TaskForm({
           priority: data.priority,
           supervisor: data.supervisor,
           progress: data.progress,
+          serviceInformation: data.serviceInformation,
         });
         if (result.success) {
           toast.success("Successfully Edited Task");
@@ -195,28 +194,14 @@ export default function TaskForm({
         errorMessage={errors.description?.message}
         wrapperStyle="h-fit"
       />
-      <SelectElement
-        disbaleSelect={formType === "edit" || formType === "own:edit"}
-        labelText="Select client Institution"
-        placeholder="Select  Institution"
-        defaultValue={getValues("clientInstitutionId")}
-        errorMessage={errors.clientInstitutionId?.message}
-        elementRenderer={() => {
-          return institutions?.map(({ id, institution }, index) => {
-            return (
-              <GetSelectItem
-                key={index}
-                value={String(id)}
-                label={institution}
-              />
-            );
-          });
-        }}
-        onChange={(value) => {
-          setValue("clientInstitutionId", value, {
-            shouldValidate: true,
-          });
-        }}
+      <TextInput
+        labelId="serviceInformation"
+        labelText="Service Information"
+        placeholder="Enter service information"
+        defaultValue={currentTask?.serviceInformation}
+        otherProps={{ ...register("serviceInformation") }}
+        disbaled={transiton || formType === "own:edit"}
+        errorMessage={errors.serviceInformation?.message}
       />
 
       <SelectElement

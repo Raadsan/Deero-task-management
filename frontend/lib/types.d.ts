@@ -41,6 +41,7 @@ interface Task {
   supervisor: string;
   isAssignedToCurrentUser?: boolean;
   progress: number;
+  serviceInformation?: string;
 }
 
 type StatusColorConfig = {

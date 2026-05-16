@@ -226,7 +226,8 @@ exports.Prisma.TaskScalarFieldEnum = {
   deadline: 'deadline',
   progress: 'progress',
   assgineeId: 'assgineeId',
-  supervisor: 'supervisor'
+  supervisor: 'supervisor',
+  serviceInformation: 'serviceInformation'
 };
 
 exports.Prisma.ClientTaskScalarFieldEnum = {

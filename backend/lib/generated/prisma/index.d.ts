@@ -12790,6 +12790,7 @@ export namespace Prisma {
     progress: number | null
     assgineeId: string | null
     supervisor: string | null
+    serviceInformation: string | null
   }
 
   export type TaskMaxAggregateOutputType = {
@@ -12803,6 +12804,7 @@ export namespace Prisma {
     progress: number | null
     assgineeId: string | null
     supervisor: string | null
+    serviceInformation: string | null
   }
 
   export type TaskCountAggregateOutputType = {
@@ -12816,6 +12818,7 @@ export namespace Prisma {
     progress: number
     assgineeId: number
     supervisor: number
+    serviceInformation: number
     _all: number
   }
 
@@ -12839,6 +12842,7 @@ export namespace Prisma {
     progress?: true
     assgineeId?: true
     supervisor?: true
+    serviceInformation?: true
   }
 
   export type TaskMaxAggregateInputType = {
@@ -12852,6 +12856,7 @@ export namespace Prisma {
     progress?: true
     assgineeId?: true
     supervisor?: true
+    serviceInformation?: true
   }
 
   export type TaskCountAggregateInputType = {
@@ -12865,6 +12870,7 @@ export namespace Prisma {
     progress?: true
     assgineeId?: true
     supervisor?: true
+    serviceInformation?: true
     _all?: true
   }
 
@@ -12965,6 +12971,7 @@ export namespace Prisma {
     progress: number
     assgineeId: string
     supervisor: string
+    serviceInformation: string | null
     _count: TaskCountAggregateOutputType | null
     _avg: TaskAvgAggregateOutputType | null
     _sum: TaskSumAggregateOutputType | null
@@ -12997,6 +13004,7 @@ export namespace Prisma {
     progress?: boolean
     assgineeId?: boolean
     supervisor?: boolean
+    serviceInformation?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     clientTask?: boolean | Task$clientTaskArgs<ExtArgs>
     _count?: boolean | TaskCountOutputTypeDefaultArgs<ExtArgs>
@@ -13014,6 +13022,7 @@ export namespace Prisma {
     progress?: boolean
     assgineeId?: boolean
     supervisor?: boolean
+    serviceInformation?: boolean
   }
 
   export type TaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -13039,6 +13048,7 @@ export namespace Prisma {
       progress: number
       assgineeId: string
       supervisor: string
+      serviceInformation: string | null
     }, ExtArgs["result"]["task"]>
     composites: {}
   }
@@ -13420,6 +13430,7 @@ export namespace Prisma {
     readonly progress: FieldRef<"Task", 'Int'>
     readonly assgineeId: FieldRef<"Task", 'String'>
     readonly supervisor: FieldRef<"Task", 'String'>
+    readonly serviceInformation: FieldRef<"Task", 'String'>
   }
     
 
@@ -26933,7 +26944,8 @@ export namespace Prisma {
     deadline: 'deadline',
     progress: 'progress',
     assgineeId: 'assgineeId',
-    supervisor: 'supervisor'
+    supervisor: 'supervisor',
+    serviceInformation: 'serviceInformation'
   };
 
   export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof TaskScalarFieldEnum]
@@ -27880,6 +27892,7 @@ export namespace Prisma {
     progress?: IntFilter<"Task"> | number
     assgineeId?: StringFilter<"Task"> | string
     supervisor?: StringFilter<"Task"> | string
+    serviceInformation?: StringNullableFilter<"Task"> | string | null
     user?: XOR<UserRelationFilter, UserWhereInput>
     clientTask?: ClientTaskListRelationFilter
   }
@@ -27895,6 +27908,7 @@ export namespace Prisma {
     progress?: SortOrder
     assgineeId?: SortOrder
     supervisor?: SortOrder
+    serviceInformation?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
     clientTask?: ClientTaskOrderByRelationAggregateInput
   }
@@ -27913,6 +27927,7 @@ export namespace Prisma {
     progress?: IntFilter<"Task"> | number
     assgineeId?: StringFilter<"Task"> | string
     supervisor?: StringFilter<"Task"> | string
+    serviceInformation?: StringNullableFilter<"Task"> | string | null
     user?: XOR<UserRelationFilter, UserWhereInput>
     clientTask?: ClientTaskListRelationFilter
   }, "id">
@@ -27928,6 +27943,7 @@ export namespace Prisma {
     progress?: SortOrder
     assgineeId?: SortOrder
     supervisor?: SortOrder
+    serviceInformation?: SortOrderInput | SortOrder
     _count?: TaskCountOrderByAggregateInput
     _avg?: TaskAvgOrderByAggregateInput
     _max?: TaskMaxOrderByAggregateInput
@@ -27949,6 +27965,7 @@ export namespace Prisma {
     progress?: IntWithAggregatesFilter<"Task"> | number
     assgineeId?: StringWithAggregatesFilter<"Task"> | string
     supervisor?: StringWithAggregatesFilter<"Task"> | string
+    serviceInformation?: StringNullableWithAggregatesFilter<"Task"> | string | null
   }
 
   export type ClientTaskWhereInput = {
@@ -29610,6 +29627,7 @@ export namespace Prisma {
     deadline: Date | string
     progress?: number
     supervisor?: string
+    serviceInformation?: string | null
     user: UserCreateNestedOneWithoutAssignedTasksInput
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
   }
@@ -29625,6 +29643,7 @@ export namespace Prisma {
     progress?: number
     assgineeId: string
     supervisor?: string
+    serviceInformation?: string | null
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
   }
 
@@ -29638,6 +29657,7 @@ export namespace Prisma {
     deadline?: DateTimeFieldUpdateOperationsInput | Date | string
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
+    serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
     user?: UserUpdateOneRequiredWithoutAssignedTasksNestedInput
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
   }
@@ -29653,6 +29673,7 @@ export namespace Prisma {
     progress?: IntFieldUpdateOperationsInput | number
     assgineeId?: StringFieldUpdateOperationsInput | string
     supervisor?: StringFieldUpdateOperationsInput | string
+    serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
   }
 
@@ -29667,6 +29688,7 @@ export namespace Prisma {
     progress?: number
     assgineeId: string
     supervisor?: string
+    serviceInformation?: string | null
   }
 
   export type TaskUpdateManyMutationInput = {
@@ -29679,6 +29701,7 @@ export namespace Prisma {
     deadline?: DateTimeFieldUpdateOperationsInput | Date | string
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
+    serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TaskUncheckedUpdateManyInput = {
@@ -29692,6 +29715,7 @@ export namespace Prisma {
     progress?: IntFieldUpdateOperationsInput | number
     assgineeId?: StringFieldUpdateOperationsInput | string
     supervisor?: StringFieldUpdateOperationsInput | string
+    serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ClientTaskCreateInput = {
@@ -31283,6 +31307,7 @@ export namespace Prisma {
     progress?: SortOrder
     assgineeId?: SortOrder
     supervisor?: SortOrder
+    serviceInformation?: SortOrder
   }
 
   export type TaskAvgOrderByAggregateInput = {
@@ -31300,6 +31325,7 @@ export namespace Prisma {
     progress?: SortOrder
     assgineeId?: SortOrder
     supervisor?: SortOrder
+    serviceInformation?: SortOrder
   }
 
   export type TaskMinOrderByAggregateInput = {
@@ -31313,6 +31339,7 @@ export namespace Prisma {
     progress?: SortOrder
     assgineeId?: SortOrder
     supervisor?: SortOrder
+    serviceInformation?: SortOrder
   }
 
   export type TaskSumOrderByAggregateInput = {
@@ -33966,6 +33993,7 @@ export namespace Prisma {
     deadline: Date | string
     progress?: number
     supervisor?: string
+    serviceInformation?: string | null
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
   }
 
@@ -33979,6 +34007,7 @@ export namespace Prisma {
     deadline: Date | string
     progress?: number
     supervisor?: string
+    serviceInformation?: string | null
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
   }
 
@@ -34289,6 +34318,7 @@ export namespace Prisma {
     progress?: IntFilter<"Task"> | number
     assgineeId?: StringFilter<"Task"> | string
     supervisor?: StringFilter<"Task"> | string
+    serviceInformation?: StringNullableFilter<"Task"> | string | null
   }
 
   export type UserFilesUpsertWithWhereUniqueWithoutUserInput = {
@@ -35571,6 +35601,7 @@ export namespace Prisma {
     deadline: Date | string
     progress?: number
     supervisor?: string
+    serviceInformation?: string | null
     user: UserCreateNestedOneWithoutAssignedTasksInput
   }
 
@@ -35585,6 +35616,7 @@ export namespace Prisma {
     progress?: number
     assgineeId: string
     supervisor?: string
+    serviceInformation?: string | null
   }
 
   export type TaskCreateOrConnectWithoutClientTaskInput = {
@@ -35650,6 +35682,7 @@ export namespace Prisma {
     deadline?: DateTimeFieldUpdateOperationsInput | Date | string
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
+    serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
     user?: UserUpdateOneRequiredWithoutAssignedTasksNestedInput
   }
 
@@ -35664,6 +35697,7 @@ export namespace Prisma {
     progress?: IntFieldUpdateOperationsInput | number
     assgineeId?: StringFieldUpdateOperationsInput | string
     supervisor?: StringFieldUpdateOperationsInput | string
+    serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type IncomeTransactionCreateWithoutIncomeInput = {
@@ -37314,6 +37348,7 @@ export namespace Prisma {
     deadline: Date | string
     progress?: number
     supervisor?: string
+    serviceInformation?: string | null
   }
 
   export type UserFilesCreateManyUserInput = {
@@ -37468,6 +37503,7 @@ export namespace Prisma {
     deadline?: DateTimeFieldUpdateOperationsInput | Date | string
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
+    serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
   }
 
@@ -37481,6 +37517,7 @@ export namespace Prisma {
     deadline?: DateTimeFieldUpdateOperationsInput | Date | string
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
+    serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
   }
 
@@ -37494,6 +37531,7 @@ export namespace Prisma {
     deadline?: DateTimeFieldUpdateOperationsInput | Date | string
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
+    serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserFilesUpdateWithoutUserInput = {

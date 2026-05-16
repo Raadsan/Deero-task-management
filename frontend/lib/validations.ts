@@ -50,7 +50,8 @@ export const TaskSchema = z.object({
         .min(6, "Category is required.")
         .max(60, "Category must not exceed 50 characters."),
     ),
-  clientInstitutionId: z.string(),
+  clientInstitutionId: z.string().optional(),
+  serviceInformation: z.string().optional(),
   department: z.string().min(1, "Department is required"),
   priority: z.nativeEnum(TaskPriority),
   assigneeId: z.string(),

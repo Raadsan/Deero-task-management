@@ -59,6 +59,7 @@ export const createTask = async (req, res) => {
           assgineeId: data.assgineeId,
           supervisor: data.supervisor || "",
           progress: data.progress ? Number(data.progress) : 0,
+          serviceInformation: data.serviceInformation || "",
         },
       });
       console.log("Task created in DB:", task.id);
@@ -112,7 +113,7 @@ export const createTask = async (req, res) => {
 
 export const updateTask = async (req, res) => {
   const { id } = req.params;
-  const { description, status, priority, department, deadline, assgineeId, supervisor, progress } = req.body;
+  const { description, status, priority, department, deadline, assgineeId, supervisor, progress, serviceInformation } = req.body;
   try {
     // Get original task for comparison
     const originalTask = await prisma.task.findUnique({ 
@@ -131,6 +132,7 @@ export const updateTask = async (req, res) => {
         assgineeId,
         supervisor,
         progress: progress !== undefined ? Number(progress) : undefined,
+        serviceInformation,
       },
       include: { user: true }
     });
