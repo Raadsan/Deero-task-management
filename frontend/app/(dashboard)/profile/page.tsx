@@ -1,15 +1,13 @@
 import EditUserForm from "@/components/profile/EditUserProfile";
-import ColumnBuilder from "@/components/Shared/ColumnBuilder";
-import HeaderBuilder from "@/components/Shared/HeaderBuilder";
+import ManagementPageShell from "@/components/Shared/ManagementPageShell";
 import { Suspense } from "react";
 
 export default function UserProfile() {
   return (
-    <ColumnBuilder>
-      <HeaderBuilder headerText={"User Profile"} showBlurLine={false} />
+    <ManagementPageShell title="User Profile">
       <Suspense>
         <EditUserForm />
       </Suspense>
-    </ColumnBuilder>
+    </ManagementPageShell>
   );
 }

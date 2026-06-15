@@ -1,4 +1,5 @@
 import { APIError } from "better-auth/api";
+import axios from "axios";
 import { NextResponse } from "next/server";
 import { z, ZodError } from "zod";
 import { ActionResponse, APIResponse } from "../types";
@@ -48,6 +49,24 @@ function formatErrorResponse({
   errors,
 }: ActionResponse) {
   return { statusCode, errors, success };
+}
+
+function sanitizeApiMessage(message?: string) {
+  if (!message) return message;
+
+  if (
+    message.includes("Transaction already closed") ||
+    message.includes("interactive transaction timeout") ||
+    message.includes("timeout for this transaction")
+  ) {
+    return "Saving took too long. Please try again.";
+  }
+
+  if (message.includes("Invalid `prisma.") || message.includes("prisma.")) {
+    return "Something went wrong while saving. Please try again.";
+  }
+
+  return message;
 }
 
 export function handleError({
@@ -101,6 +120,24 @@ export function handleError({
         details: errorInfo.cause as string,
       },
       success: false,
+    });
+  }
+
+  // axios / API response errors
+  if (axios.isAxiosError(errors)) {
+    const apiMessage =
+      (errors.response?.data as { error?: string; message?: string })?.error ||
+      (errors.response?.data as { error?: string; message?: string })?.message;
+
+    return formatErrorResponse({
+      statusCode: errors.response?.status ?? 500,
+      success: false,
+      errors: {
+        message:
+          sanitizeApiMessage(apiMessage) ||
+          errors.message ||
+          "Request failed. Please try again.",
+      },
     });
   }
 

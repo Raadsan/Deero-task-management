@@ -2,7 +2,7 @@
 
 import { ClientSchema } from "@/lib/validations";
 import { useRouter } from "next/navigation";
-import { useEffect, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import ButtonBuilder from "../Shared/ButtonBuilder";
@@ -12,37 +12,95 @@ import {
   addAnotherService,
   createClient,
   editBasicClientInfo,
+  editClientService,
+  getClientsForForm,
   getCustomSubServices,
 } from "@/lib/actions/client.action";
-import { DEERO_SERVICES, DEERO_SOURCES, ROUTES } from "@/lib/constants";
+import { getAllServices } from "@/lib/actions/service.action";
+import { getTaskFormBranchOptions } from "@/lib/actions/shared.action";
+import { ROUTES, SWR_CACH_KEYS } from "@/lib/constants";
+import { btnFormCancel, btnFormSubmit } from "@/lib/dashboard-ui";
 import { Client } from "@/lib/types";
 import {
+  cn,
   computeFontSize,
   formatDate,
-  getRandomUUID,
-  getSubServices,
 } from "@/lib/utils";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import toast from "react-hot-toast";
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 import {
   DatePicker,
+  GetSelectItem,
   PhoneInput,
   SelectElement,
   TextInput,
   TextInputWithTaxtArea,
 } from "../Shared/FormElements";
 import { SelectItem } from "../ui/select";
+import { Button } from "../ui/button";
+import { Search } from "lucide-react";
+
+const CUSTOM_SERVICE = "Custom Service";
+
+type ClientMode = "existing" | "new";
+
+type ClientAgreementForm = {
+  agreementId: string;
+  serviceName: string;
+  subServiceName: string;
+  serviceStatus: "pending" | "completed";
+  branchId?: string | null;
+  base?: number;
+  description?: string;
+  discount?: number;
+  createdAt?: string;
+  rawCreatedAt?: string;
+};
+
+function getAgreementSubServiceName(
+  agreement: ClientAgreementForm,
+  client?: Client,
+) {
+  if (agreement.subServiceName) return agreement.subServiceName;
+  const linked = client?.subServices?.find(
+    (item) => item.agreementId === agreement.agreementId,
+  );
+  return linked?.name ?? "";
+}
 
 interface Props {
   formType: "edit" | "create" | "addService";
   currentClient?: Client;
+  onSuccess?: () => void;
+  onCancel?: () => void;
 }
-export default function ClientForm({ formType, currentClient }: Props) {
+
+export default function ClientForm({
+  formType,
+  currentClient,
+  onSuccess,
+  onCancel,
+}: Props) {
+  const isModal = Boolean(onSuccess || onCancel);
+  const fieldCompact = isModal;
+  const isCreateFlow = formType === "create";
+  const isEditFlow = formType === "edit";
+  const showServiceFlow =
+    formType === "create" || formType === "addService" || formType === "edit";
   const computeTheDate =
     formType == "create" || formType === "addService"
       ? new Date()
       : formatDate(currentClient?.createdAt ?? "");
+
+  type ClientFormValues = z.infer<typeof ClientSchema>;
+
+  const serviceAgreements = useMemo(() => {
+    return (
+      (currentClient as Client & { serviceAgreements?: ClientAgreementForm[] })
+        ?.serviceAgreements ?? []
+    );
+  }, [currentClient]);
 
   const {
     handleSubmit,
@@ -52,8 +110,8 @@ export default function ClientForm({ formType, currentClient }: Props) {
     reset,
     watch,
     setError,
-    formState: { errors },
-  } = useForm<z.infer<typeof ClientSchema>>({
+    formState: { errors, touchedFields },
+  } = useForm<ClientFormValues>({
     defaultValues: {
       institution: currentClient?.institution,
       email: currentClient?.email ?? "",
@@ -64,103 +122,414 @@ export default function ClientForm({ formType, currentClient }: Props) {
       discount: currentClient?.discount?.toString() ?? "0",
       customSubServiceSelect: "",
       source: currentClient?.source ?? "",
-      base: undefined,
+      base: "0",
       description: undefined,
+      serviceStatus: "pending",
       createdAt:
         typeof computeTheDate === "string"
           ? new Date(computeTheDate)
           : (computeTheDate ?? undefined),
     },
     resolver: standardSchemaResolver(ClientSchema),
+    mode: "onTouched",
+    reValidateMode: "onChange",
   });
+
+  function fieldError(field: keyof z.infer<typeof ClientSchema>) {
+    return touchedFields[field] ? errors[field]?.message : undefined;
+  }
 
   const [transition, startTransition] = useTransition();
   const router = useRouter();
+  const { mutate } = useSWRConfig();
 
-  const { data } = useSWR("clientCustomSubService", getCustomSubServices);
+  const [clientMode, setClientMode] = useState<ClientMode>("new");
+  const [clientSearch, setClientSearch] = useState("");
+  const [selectedExistingClientId, setSelectedExistingClientId] = useState("");
+  const [selectedBranchId, setSelectedBranchId] = useState("");
+  const [editingAgreementId, setEditingAgreementId] = useState("");
 
-  const customSubServices = data?.data;
+  const { data: branchOptionsRes } = useSWR(
+    showServiceFlow ? "client-form-branches" : null,
+    getTaskFormBranchOptions,
+  );
+  const branchOptions = branchOptionsRes?.data?.branches ?? [];
+  const singleBranch = branchOptionsRes?.data?.singleBranch ?? false;
+
+  const { data: clientsRes } = useSWR(
+    isCreateFlow ? "client-form-clients" : null,
+    getClientsForForm,
+  );
+  const allClients = clientsRes?.data ?? [];
+
+  const { data: branchServicesRes, isLoading: isLoadingBranchServices } = useSWR(
+    selectedBranchId ? ["client-branch-services", selectedBranchId] : null,
+    () => getAllServices({ branchId: selectedBranchId }),
+  );
+
+  const branchServices = branchServicesRes?.data ?? [];
+
   const watchService = watch("service");
   const watchDiscount = watch("discount");
   const watchBaseValue = watch("base");
+  const watchSubService = watch("subService");
+  const watchServiceStatus = watch("serviceStatus");
+
+  const activeEditAgreement = useMemo(() => {
+    if (!isEditFlow || !editingAgreementId) return undefined;
+    return serviceAgreements.find(
+      (item) => item.agreementId === editingAgreementId,
+    );
+  }, [isEditFlow, editingAgreementId, serviceAgreements]);
+
+  const savedEditSubService = useMemo(() => {
+    if (!activeEditAgreement) return "";
+    return getAgreementSubServiceName(activeEditAgreement, currentClient);
+  }, [activeEditAgreement, currentClient]);
+
+  const serviceOptions = useMemo(() => {
+    const savedService = activeEditAgreement?.serviceName ?? "";
+    if (!selectedBranchId) {
+      return savedService ? [savedService] : [];
+    }
+    const fromBranch = [
+      ...new Set(branchServices.map((service) => service.serviceName)),
+    ];
+    const currentService = watchService || savedService;
+    if (currentService && !fromBranch.includes(currentService)) {
+      return [currentService, ...fromBranch];
+    }
+    return fromBranch;
+  }, [
+    branchServices,
+    selectedBranchId,
+    watchService,
+    activeEditAgreement?.serviceName,
+  ]);
+
+  const selectedServiceRecord = useMemo(() => {
+    return branchServices.find((service) => service.serviceName === watchService);
+  }, [branchServices, watchService]);
+
+  const { data: customSubServicesRes } = useSWR(
+    watchService === CUSTOM_SERVICE && selectedServiceRecord?.id
+      ? ["client-custom-subs", selectedServiceRecord.id]
+      : null,
+    () => getCustomSubServices(selectedServiceRecord!.id),
+  );
+  const customSubServices = customSubServicesRes?.data;
+
+  const subCategories = useMemo(() => {
+    const seed = watchSubService || savedEditSubService;
+    if (!selectedBranchId) {
+      return seed ? [seed] : [];
+    }
+    if (selectedServiceRecord?.subService?.length) {
+      const names = selectedServiceRecord.subService.map((sub) => sub.name);
+      if (seed && !names.includes(seed)) {
+        return [seed, ...names];
+      }
+      return names;
+    }
+    return seed ? [seed] : [];
+  }, [selectedServiceRecord, watchSubService, savedEditSubService, selectedBranchId]);
+
+  const filteredClients = useMemo(() => {
+    const query = clientSearch.trim().toLowerCase();
+    if (!query) return allClients;
+    return allClients.filter(
+      (client) =>
+        client.institution.toLowerCase().includes(query) ||
+        client.phone.includes(query) ||
+        (client.email ?? "").toLowerCase().includes(query),
+    );
+  }, [allClients, clientSearch]);
+
+  const selectedExistingClient = allClients.find(
+    (client) => String(client.id) === selectedExistingClientId,
+  );
+
+  const selectedBranchName =
+    branchOptions.find((branch) => branch.id === selectedBranchId)?.name ?? "";
 
   const parseDiscount = Number.parseFloat(watchDiscount) || 0;
   const parseBase = Number.parseFloat(watchBaseValue) || 0;
   const totalAfterDiscount = parseBase - parseBase * parseDiscount;
 
-  const subCategories = getSubServices(watchService);
+  useEffect(() => {
+    if (!showServiceFlow || isEditFlow) return;
+    if (branchOptionsRes?.data?.defaultBranchId) {
+      setSelectedBranchId(branchOptionsRes.data.defaultBranchId);
+    }
+  }, [showServiceFlow, isEditFlow, branchOptionsRes?.data?.defaultBranchId]);
 
-  function handleSubmitForm(data: z.infer<typeof ClientSchema>) {
-    if (!data.service) {
-      toast.error("Please select Service from the Dropdown");
+  useEffect(() => {
+    if (!isEditFlow || !currentClient?.id || !serviceAgreements.length) return;
+    setEditingAgreementId((prev) => prev || serviceAgreements[0].agreementId);
+  }, [isEditFlow, currentClient?.id, serviceAgreements]);
+
+  useEffect(() => {
+    if (!isEditFlow || !currentClient || !editingAgreementId) return;
+
+    const agreement = serviceAgreements.find(
+      (item) => item.agreementId === editingAgreementId,
+    );
+    if (!agreement) return;
+
+    const createdAtValue = agreement.rawCreatedAt
+      ? new Date(agreement.rawCreatedAt)
+      : currentClient.createdAt
+        ? new Date(currentClient.createdAt)
+        : new Date();
+
+    const branchId =
+      agreement.branchId ??
+      (currentClient.service?.[0] as { branchId?: string } | undefined)?.branchId ??
+      branchOptionsRes?.data?.defaultBranchId ??
+      "";
+
+    const subServiceName = getAgreementSubServiceName(agreement, currentClient);
+    const isCustomService = agreement.serviceName === CUSTOM_SERVICE;
+
+    setSelectedBranchId(branchId);
+
+    reset({
+      institution: currentClient.institution ?? "",
+      email: currentClient.email ?? "",
+      phone: currentClient.phone ?? "",
+      source: currentClient.source ?? "",
+      discount: String(agreement.discount ?? currentClient.discount ?? 0),
+      service: agreement.serviceName ?? "",
+      subService: isCustomService ? "" : subServiceName,
+      base: String(agreement.base ?? 0),
+      description: agreement.description ?? "",
+      serviceStatus: agreement.serviceStatus ?? "pending",
+      createdAt: createdAtValue,
+      customSubServiceInput: isCustomService ? subServiceName : "",
+      customSubServiceSelect: "",
+    });
+  }, [
+    isEditFlow,
+    currentClient,
+    editingAgreementId,
+    serviceAgreements,
+    branchOptionsRes?.data?.defaultBranchId,
+    reset,
+  ]);
+
+  useEffect(() => {
+    if (!isEditFlow || !activeEditAgreement || isLoadingBranchServices) return;
+
+    const subServiceName = getAgreementSubServiceName(
+      activeEditAgreement,
+      currentClient,
+    );
+    if (!subServiceName) return;
+
+    if (getValues("service") === CUSTOM_SERVICE) {
+      setValue("customSubServiceInput", subServiceName, { shouldValidate: false });
       return;
     }
-    if (formType !== "edit" && data.service === DEERO_SERVICES.at(-1)) {
-      if (
-        !getValues("customSubServiceInput") &&
-        !getValues("customSubServiceSelect")
-      ) {
+
+    setValue("subService", subServiceName, { shouldValidate: false });
+  }, [
+    isEditFlow,
+    activeEditAgreement,
+    isLoadingBranchServices,
+    branchServices,
+    currentClient,
+    getValues,
+    setValue,
+  ]);
+
+  useEffect(() => {
+    if (!selectedExistingClient) return;
+    setValue("institution", selectedExistingClient.institution, {
+      shouldValidate: true,
+    });
+    setValue("phone", selectedExistingClient.phone, { shouldValidate: true });
+    setValue("email", selectedExistingClient.email ?? "", {
+      shouldValidate: true,
+    });
+  }, [selectedExistingClient, setValue]);
+
+  function handleClientModeChange(mode: ClientMode) {
+    setClientMode(mode);
+    setClientSearch("");
+    setSelectedExistingClientId("");
+    if (mode === "new") {
+      setValue("institution", "", { shouldValidate: true });
+      setValue("phone", "", { shouldValidate: true });
+      setValue("email", "", { shouldValidate: true });
+    }
+  }
+
+  function handleBranchChange(branchName: string) {
+    const branch = branchOptions.find((item) => item.name === branchName);
+    const nextBranchId = branch?.id ?? "";
+    setSelectedBranchId(nextBranchId);
+    if (isEditFlow) return;
+    setValue("service", "", { shouldValidate: true });
+    setValue("subService", "", { shouldValidate: true });
+    setValue("customSubServiceInput", "", { shouldValidate: true });
+    setValue("customSubServiceSelect", "", { shouldValidate: true });
+  }
+
+  function handleServiceChange(value: string) {
+    const previousService = getValues("service");
+    setValue("service", value, { shouldValidate: true });
+    if (isEditFlow && value === previousService) return;
+    setValue("subService", "", { shouldValidate: true });
+    setValue("customSubServiceInput", "", { shouldValidate: true });
+    setValue("customSubServiceSelect", "", { shouldValidate: true });
+  }
+
+  function resolveSubService(data: z.infer<typeof ClientSchema>) {
+    if (data.subService) return data.subService;
+    if (data.customSubServiceInput?.length) return data.customSubServiceInput;
+    return data.customSubServiceSelect ?? "";
+  }
+
+  function handleSubmitForm(data: z.infer<typeof ClientSchema>) {
+    if (showServiceFlow && !selectedBranchId) {
+      toast.error("Please select a branch first");
+      return;
+    }
+
+    if (isCreateFlow && clientMode === "existing" && !selectedExistingClientId) {
+      toast.error("Please search and select an existing client");
+      return;
+    }
+
+    if (!data.service) {
+      toast.error("Please select a service");
+      return;
+    }
+
+    if (data.service === CUSTOM_SERVICE) {
+      if (!getValues("customSubServiceInput") && !getValues("customSubServiceSelect")) {
         toast.error(
-          "Please write custom Name or select from prevously Created Customs",
+          "Please write a custom name or select from previously created customs",
         );
         return;
       }
-    }
-    if (
-      formType !== "edit" &&
-      data.service !== DEERO_SERVICES.at(-1) &&
-      !data.subService
-    ) {
-      toast.error("Please select Sub Service from the list.");
+    } else if (!data.subService) {
+      toast.error("Please select a sub-service");
       return;
     }
 
-    if (!data.subService) {
-      if (data.customSubServiceInput?.length) {
-        data.subService = data.customSubServiceInput;
-      } else {
-        data.subService = data.customSubServiceSelect;
-      }
+    if (isCreateFlow && !data.source?.trim()) {
+      toast.error("Please enter the client source");
+      return;
     }
+
+    const subServiceName = resolveSubService(data);
+    const agreementPayload = {
+      serviceName: data.service!,
+      subServiceName,
+      base: parseFloat(data.base),
+      description: data.description,
+      discount: Number.parseFloat(data.discount) || 0,
+      branchId: selectedBranchId,
+      createdAt: data.createdAt,
+      serviceStatus: data.serviceStatus ?? "pending",
+    };
 
     startTransition(async () => {
       if (formType === "create") {
-        const { errors, success } = await createClient({
-          institution: data.institution,
+        if (clientMode === "existing" && selectedExistingClientId) {
+          const addServiceResult = await addAnotherService({
+            clientId: selectedExistingClientId,
+            newService: agreementPayload.serviceName,
+            newSubService: agreementPayload.subServiceName,
+            ...agreementPayload,
+          });
+
+          if (addServiceResult?.success) {
+            toast.success("Successfully added service for existing client");
+            await mutate(SWR_CACH_KEYS.clients.key);
+            if (onSuccess) {
+              onSuccess();
+              return;
+            }
+            router.push(ROUTES.clients);
+            return;
+          }
+          toast.error(
+            addServiceResult.errors?.message ||
+              "Failed to add service for existing client",
+          );
+          return;
+        }
+
+        const clientName = data.institution?.trim() || `Client ${data.phone}`;
+
+        const { errors: createErrors, success } = await createClient({
+          institution: clientName,
           phone: data.phone,
-          email: data.email,
+          email: data.email?.trim() || undefined,
           source: data.source!,
-          serviceName: data.service!,
-          subServiceName: data.subService!,
-          base: parseFloat(data.base),
-          description: data.description,
-          discount: Number.parseFloat(data.discount) || 0,
+          ...agreementPayload,
         });
-        if (success && !errors) {
-          toast.success("Successfully Created Client");
+        if (success && !createErrors) {
+          toast.success("Successfully created client");
+          await mutate(SWR_CACH_KEYS.clients.key);
+          if (onSuccess) {
+            onSuccess();
+            return;
+          }
           router.push(ROUTES.clients);
           return;
         }
-        toast.error(errors?.message || "Failed to Create Client");
+        toast.error(createErrors?.message || "Failed to create client");
       } else if (formType === "edit") {
-        const result = await editBasicClientInfo({
+        if (!editingAgreementId) {
+          toast.error("No service agreement found to update");
+          return;
+        }
+
+        const basicResult = await editBasicClientInfo({
           clientId: String(currentClient?.id!),
           newData: {
-            institution: data.institution,
+            institution: data.institution?.trim() || `Client ${data.phone}`,
             phone: data.phone,
             email: data.email,
-            source: data.source!,
-            discount: data.discount,
+            source: data.source ?? "",
             createdAt: data.createdAt,
           },
         });
 
-        if (result.success) {
-          toast.success("Successfully Edited Client");
+        if (!basicResult.success) {
+          toast.error(basicResult?.errors?.message || "Failed to edit client");
+          return;
+        }
+
+        const agreementResult = await editClientService({
+          agreementId: editingAgreementId,
+          clientId: String(currentClient?.id!),
+          serviceName: data.service!,
+          subServiceName,
+          branchId: selectedBranchId,
+          base: parseFloat(data.base),
+          description: data.description ?? "",
+          discount: Number.parseFloat(data.discount) || 0,
+          serviceStatus: data.serviceStatus ?? "pending",
+          createdAt: data.createdAt,
+        });
+
+        if (agreementResult.success) {
+          toast.success("Successfully edited client");
+          await mutate(SWR_CACH_KEYS.clients.key);
+          if (onSuccess) {
+            onSuccess();
+            return;
+          }
           router.push(ROUTES.clients);
           return;
         }
-        toast.error(result?.errors?.message || "Failed to Edit Client");
+        toast.error(
+          agreementResult?.errors?.message || "Failed to update service agreement",
+        );
       } else if (formType === "addService") {
         if (!data.service) {
           return setError("service", {
@@ -169,234 +538,456 @@ export default function ClientForm({ formType, currentClient }: Props) {
           });
         }
 
-        if (!data.subService) {
+        if (!subServiceName) {
           return setError("subService", {
             type: "manual",
-            message: "subService is required",
+            message: "Sub-service is required",
           });
         }
 
         const addServiceResult = await addAnotherService({
           clientId: String(currentClient?.id),
           newService: data.service!,
-          newSubService: data.subService!,
-          base: parseFloat(data.base),
-          description: data.description,
-          discount: Number.parseFloat(data.discount) || 0,
+          newSubService: subServiceName,
+          ...agreementPayload,
         });
 
         if (addServiceResult?.success) {
-          toast.success("Succesfully Added Another Service.");
+          toast.success("Successfully added another service");
           router.push(ROUTES.clients);
           return;
         }
         toast.error(
           addServiceResult.errors?.message ||
-            "Faield to Add Another Serivec! please try again.",
+            "Failed to add another service. Please try again.",
         );
       }
     });
   }
 
-  useEffect(function () {
-    reset();
-  }, []);
+  const showClientDetails =
+    (isCreateFlow &&
+      (clientMode === "new" ||
+        (clientMode === "existing" && Boolean(selectedExistingClientId)))) ||
+    isEditFlow;
+
+  const lockClientIdentity =
+    isCreateFlow &&
+    clientMode === "existing" &&
+    Boolean(selectedExistingClientId);
 
   return (
     <form
       onSubmit={handleSubmit(handleSubmitForm)}
-      className="flex w-full flex-col items-center gap-y-[20px] not-last:justify-center"
+      className={cn(
+        "flex w-full flex-col",
+        isModal
+          ? "min-h-0 flex-1 overflow-hidden"
+          : "items-center gap-y-[20px] not-last:justify-center",
+      )}
     >
-      <TextInput
-        disbaled={formType === "addService"}
-        labelId="institution"
-        labelText="Write Client Name"
-        placeholder="Write the Client Name"
-        defaultValue={getValues("institution")}
-        otherProps={{ ...register("institution") }}
-        errorMessage={errors.institution?.message}
-      />
+      <div
+        className={cn(
+          "flex w-full flex-col",
+          isModal
+            ? "min-h-0 flex-1 gap-4 overflow-y-auto px-6 pt-5"
+            : "items-center gap-y-[20px]",
+        )}
+      >
+        {isCreateFlow && (
+          <div className="w-full max-w-[min(800px,100%)] space-y-3">
+            <p className="text-sm font-medium text-zinc-700">Client type</p>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant={clientMode === "new" ? "default" : "outline"}
+                className="h-9"
+                onClick={() => handleClientModeChange("new")}
+              >
+                New client
+              </Button>
+              <Button
+                type="button"
+                variant={clientMode === "existing" ? "default" : "outline"}
+                className="h-9"
+                onClick={() => handleClientModeChange("existing")}
+              >
+                Existing client
+              </Button>
+            </div>
+          </div>
+        )}
 
-      {/* select service Category */}
-      {(formType === "create" || formType === "addService") && (
-        <>
+        {isCreateFlow && clientMode === "existing" && (
+          <div className="w-full max-w-[min(800px,100%)] space-y-3">
+            <p className="text-sm font-medium text-zinc-700">Search client</p>
+            <div className="relative">
+              <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-400" />
+              <input
+                type="text"
+                value={clientSearch}
+                onChange={(e) => setClientSearch(e.target.value)}
+                placeholder="Search by name, phone, or email..."
+                className="h-10 w-full rounded-md border border-zinc-200 bg-white pr-3 pl-9 text-sm text-zinc-700 outline-none focus:border-primary focus:ring-1 focus:ring-primary/10"
+              />
+            </div>
+            <div className="max-h-40 overflow-y-auto rounded-md border border-zinc-200 bg-white">
+              {filteredClients.length === 0 ? (
+                <p className="px-3 py-4 text-sm text-zinc-500">No clients found</p>
+              ) : (
+                filteredClients.map((client) => (
+                  <button
+                    key={client.id}
+                    type="button"
+                    onClick={() => setSelectedExistingClientId(String(client.id))}
+                    className={cn(
+                      "flex w-full flex-col gap-0.5 border-b border-zinc-100 px-3 py-2.5 text-left text-sm transition-colors last:border-b-0 hover:bg-zinc-50",
+                      selectedExistingClientId === String(client.id) && "bg-primary/5",
+                    )}
+                  >
+                    <span className="font-medium text-zinc-800">
+                      {client.institution}
+                    </span>
+                    <span className="text-xs text-zinc-500">
+                      {client.phone}
+                      {client.email ? ` · ${client.email}` : ""}
+                    </span>
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {isEditFlow && serviceAgreements.length > 1 && (
           <SelectElement
-            key={getRandomUUID()}
-            labelText="Select Service"
-            placeholder="Select Service Category"
-            defaultValue={getValues("service")}
-            errorMessage={errors.service?.message}
-            elements={DEERO_SERVICES}
+            labelText="Service agreement"
+            placeholder="Select agreement to edit"
+            value={
+              serviceAgreements.find((item) => item.agreementId === editingAgreementId)
+                ? `${serviceAgreements.find((item) => item.agreementId === editingAgreementId)?.serviceName} — ${serviceAgreements.find((item) => item.agreementId === editingAgreementId)?.subServiceName}`
+                : ""
+            }
+            disbaleSelect={transition}
+            compact={fieldCompact}
+            elementRenderer={() =>
+              serviceAgreements.map((agreement) => (
+                <GetSelectItem
+                  key={agreement.agreementId}
+                  value={`${agreement.serviceName} — ${agreement.subServiceName}`}
+                  label={`${agreement.serviceName} — ${agreement.subServiceName}`}
+                />
+              ))
+            }
             onChange={(value) => {
-              setValue("service", value, {
-                shouldValidate: true,
-              });
+              const agreement = serviceAgreements.find(
+                (item) =>
+                  `${item.serviceName} — ${item.subServiceName}` === value,
+              );
+              if (agreement) {
+                setEditingAgreementId(agreement.agreementId);
+              }
             }}
           />
-        </>
-      )}
+        )}
 
-      {(formType === "create" || formType === "addService") &&
-        getValues("service") === DEERO_SERVICES.at(-1) && (
-          <div className="flex h-full min-h-[50px] w-full max-w-[min(800px,100%)] flex-col gap-[20px] lg:flex-row">
+        {showServiceFlow && (
+          <SelectElement
+            labelText="Branch"
+            placeholder="Select branch first"
+            value={selectedBranchName}
+            disbaleSelect={transition || singleBranch}
+            compact={fieldCompact}
+            elementRenderer={() =>
+              branchOptions.map((branch) => (
+                <GetSelectItem key={branch.id} value={branch.name} label={branch.name} />
+              ))
+            }
+            onChange={handleBranchChange}
+          />
+        )}
+
+        {showClientDetails && (
+          <>
             <TextInput
-              disbaled={transition}
-              labelId="customService"
-              wrapperStyle="max-w-full"
-              labelText="Describe the Custom Service"
-              placeholder="Your custom Service Name"
-              otherProps={{ ...register("customSubServiceInput") }}
-              errorMessage={errors.customSubServiceInput?.message}
+              disbaled={lockClientIdentity}
+              labelId="institution"
+              labelText="Client name"
+              placeholder="Write the client name"
+              defaultValue={getValues("institution")}
+              otherProps={{ ...register("institution") }}
+              errorMessage={fieldError("institution")}
+              compact={fieldCompact}
             />
-            {customSubServices && (
-              <>
-                <div className="text-dark-gray mx-auto my-auto h-fit w-fit translate-y-[50%] transform italic lg:mx-0">
-                  OR
-                </div>
-                <SelectElement
-                  key={getRandomUUID()}
-                  wrapperStyle="w-full"
-                  labelText="Select From Previously Created Customs"
-                  placeholder="Select Custom Service"
-                  defaultValue={getValues("customSubServiceSelect")}
-                  errorMessage={errors.customSubServiceSelect?.message}
-                  elementRenderer={() => {
-                    return customSubServices.map(({ id, name }) => {
-                      return (
+
+            <PhoneInput
+              labelText="Client phone number"
+              placeholder="612343434"
+              disbaled={lockClientIdentity}
+              labelId="phone"
+              otherProps={{ ...register("phone") }}
+              errorMessage={fieldError("phone")}
+              compact={fieldCompact}
+            />
+          </>
+        )}
+
+        {showServiceFlow && (
+          <SelectElement
+            labelText="Service"
+            placeholder={
+              !selectedBranchId
+                ? "Select branch first"
+                : isLoadingBranchServices
+                  ? "Loading branch services..."
+                  : serviceOptions.length
+                    ? "Select service"
+                    : "No services found for this branch"
+            }
+            value={watchService}
+            disbaleSelect={
+              !selectedBranchId || transition || isLoadingBranchServices
+            }
+            errorMessage={fieldError("service")}
+            elements={serviceOptions}
+            compact={fieldCompact}
+            onChange={handleServiceChange}
+          />
+        )}
+
+        {showServiceFlow && watchService === CUSTOM_SERVICE && (
+            <div className="flex h-full min-h-[50px] w-full max-w-[min(800px,100%)] flex-col gap-[20px] lg:flex-row">
+              <TextInput
+                disbaled={transition}
+                labelId="customService"
+                wrapperStyle="max-w-full"
+                labelText="Describe the custom service"
+                placeholder="Your custom service name"
+                otherProps={{ ...register("customSubServiceInput") }}
+                errorMessage={fieldError("customSubServiceInput")}
+                compact={fieldCompact}
+              />
+              {customSubServices && customSubServices.length > 0 && (
+                <>
+                  <div className="text-dark-gray mx-auto my-auto h-fit w-fit translate-y-[50%] transform italic lg:mx-0">
+                    OR
+                  </div>
+                  <SelectElement
+                    wrapperStyle="w-full"
+                    labelText="Select from previously created customs"
+                    placeholder="Select custom service"
+                    value={watch("customSubServiceSelect")}
+                    errorMessage={fieldError("customSubServiceSelect")}
+                    compact={fieldCompact}
+                    elementRenderer={() =>
+                      customSubServices.map(({ id, name }) => (
                         <SelectItem
-                          style={{
-                            fontSize: computeFontSize(14),
-                          }}
+                          style={{ fontSize: computeFontSize(14) }}
                           className="focus:bg-dark-red font-light text-black focus:text-white"
                           key={id}
                           value={name}
                         >
                           {name}
                         </SelectItem>
-                      );
-                    });
-                  }}
-                  onChange={(value) => {
-                    setValue("customSubServiceSelect", value, {
-                      shouldValidate: true,
-                    });
-                  }}
-                />
-              </>
-            )}
-          </div>
-        )}
-      {formType !== "edit" &&
-        getValues("service") &&
-        getValues("service") !== DEERO_SERVICES.at(-1) && (
+                      ))
+                    }
+                    onChange={(value) => {
+                      setValue("customSubServiceSelect", value, {
+                        shouldValidate: true,
+                      });
+                    }}
+                  />
+                </>
+              )}
+            </div>
+          )}
+
+        {showServiceFlow && watchService && watchService !== CUSTOM_SERVICE && (
+            <SelectElement
+              key={`sub-service-${editingAgreementId || "new"}-${subCategories.join("|")}`}
+              elementChecker={(value: string) => {
+                if (formType !== "addService") return true;
+                return (
+                  currentClient?.service.some(
+                    (each) =>
+                      each.serviceName.toLowerCase() === value.toLowerCase(),
+                  ) ?? false
+                );
+              }}
+            labelText="Sub-service"
+            placeholder={
+              !selectedBranchId
+                ? "Select branch first"
+                : !watchService
+                  ? "Select service first"
+                  : subCategories.length
+                    ? "Select sub-service"
+                    : "No sub-services for this service"
+            }
+            value={watchSubService || savedEditSubService}
+            disbaleSelect={
+              !watchService ||
+              transition ||
+              (!subCategories.length && !watchSubService && !savedEditSubService)
+            }
+              errorMessage={fieldError("subService")}
+              elements={subCategories}
+              compact={fieldCompact}
+              onChange={(value) => {
+                setValue("subService", value, { shouldValidate: true });
+              }}
+            />
+          )}
+
+        {showServiceFlow && (
           <SelectElement
-            key={getRandomUUID()}
-            elementChecker={(value: string) => {
-              return (
-                currentClient?.service.some(
-                  (each) =>
-                    each.serviceName.toLowerCase() === value.toLowerCase(),
-                ) ?? false
-              );
-            }}
-            labelText="Select Sub Service"
-            placeholder="Select Sub Category"
-            defaultValue={getValues("subService")}
-            errorMessage={errors.subService?.message}
-            elements={subCategories}
+            labelText="Service status"
+            placeholder="Select status"
+            value={watchServiceStatus ?? "pending"}
+            disbaleSelect={transition}
+            compact={fieldCompact}
+            elements={["pending", "completed"]}
             onChange={(value) => {
-              setValue("subService", value, {
+              setValue("serviceStatus", value as "pending" | "completed", {
                 shouldValidate: true,
               });
             }}
           />
         )}
-      {formType === "create" && (
-        <SelectElement
-          key={getRandomUUID()}
-          labelText="Select The Source"
-          placeholder="Select The Source"
-          defaultValue={getValues("source")}
-          errorMessage={errors.source?.message}
-          elements={DEERO_SOURCES}
-          onChange={(value) => {
-            setValue("source", value, {
-              shouldValidate: true,
-            });
+
+        {(isCreateFlow || isEditFlow) && (
+          <TextInput
+            labelId="source"
+            disbaled={transition}
+            labelText="Client source"
+            placeholder={
+              isCreateFlow
+                ? "e.g. Referral, Social Media, Walk-in..."
+                : "Client source"
+            }
+            otherProps={{ ...register("source") }}
+            errorMessage={fieldError("source")}
+            compact={fieldCompact}
+          />
+        )}
+
+        {showServiceFlow && (
+          <div className="grid w-full max-w-[min(800px,100%)] grid-cols-1 gap-4 sm:grid-cols-3">
+            <TextInput
+              labelId="base"
+              disbaled={transition}
+              labelText="Service amount (USD)"
+              placeholder="200"
+              otherProps={{ ...register("base") }}
+              errorMessage={fieldError("base")}
+              compact={fieldCompact}
+            />
+            <TextInput
+              labelId="discount"
+              disbaled={transition}
+              labelText="Discount (0–1)"
+              placeholder="0"
+              otherProps={{ ...register("discount") }}
+              errorMessage={fieldError("discount")}
+              compact={fieldCompact}
+            />
+            <TextInput
+              key={totalAfterDiscount.toFixed(2)}
+              labelId="netAmount"
+              disbaled
+              labelText="Net amount (USD)"
+              placeholder="0"
+              defaultValue={Number.isFinite(totalAfterDiscount) ? totalAfterDiscount.toFixed(2) : "0"}
+              otherProps={{ readOnly: true }}
+              compact={fieldCompact}
+            />
+          </div>
+        )}
+
+        {(isCreateFlow && clientMode === "new") || isEditFlow ? (
+          <TextInput
+            labelId="email"
+            disbaled={transition}
+            labelText="Email (optional)"
+            placeholder="company@example.com"
+            otherProps={{ ...register("email") }}
+            errorMessage={fieldError("email")}
+            compact={fieldCompact}
+          />
+        ) : null}
+
+        <DatePicker
+          labelText="Date"
+          disbaled={transition}
+          date={watch("createdAt")}
+          errorMessage={fieldError("createdAt")}
+          compact={fieldCompact}
+          setDate={(date: Date) => {
+            setValue("createdAt", date, { shouldValidate: true });
           }}
         />
-      )}
-      {formType !== "edit" && (
-        <TextInput
-          labelId="base"
-          disbaled={transition}
-          labelText="Enter the Agreement base(in USD $)"
-          placeholder="200"
-          otherProps={{ ...register("base") }}
-          errorMessage={errors.base?.message}
-        />
-      )}
-      <TextInput
-        labelId="discount"
-        disbaled={transition}
-        labelText={`Enter the Discount ( After Discount : ${totalAfterDiscount})`}
-        placeholder="0.0"
-        otherProps={{ ...register("discount") }}
-        errorMessage={errors.discount?.message}
-      />
 
-      <TextInput
-        labelId="email"
-        disbaled={formType === "addService"}
-        labelText="Email Address"
-        placeholder="username@gmail.com"
-        otherProps={{ ...register("email") }}
-        errorMessage={errors.email?.message}
-      />
-      <PhoneInput
-        labelText="Client Phone Number (e.g 612343434)"
-        placeholder="Your phone number"
-        disbaled={formType === "addService"}
-        labelId="phone"
-        otherProps={{ ...register("phone") }}
-        errorMessage={errors.phone?.message}
-      />
-      <DatePicker
-        labelText="Select Created Date"
-        disbaled={transition}
-        date={getValues("createdAt")}
-        errorMessage={errors.createdAt?.message}
-        setDate={(date: Date) => {
-          setValue("createdAt", date, { shouldValidate: true });
-        }}
-      />
+        {showServiceFlow && (
+          <TextInputWithTaxtArea
+            labelId="description"
+            disbaled={transition}
+            labelText="Description"
+            placeholder="Agreement details..."
+            otherProps={{ ...register("description") }}
+            errorMessage={fieldError("description")}
+            compact={isModal}
+          />
+        )}
+      </div>
 
-      {formType !== "edit" && (
-        <TextInputWithTaxtArea
-          labelId="description"
-          disbaled={transition}
-          labelText="Enter The detailas"
-          placeholder="Your Description will be here ...."
-          otherProps={{ ...register("description") }}
-          errorMessage={errors.description?.message}
-        />
-      )}
-
-      <div className="mt-[60px] flex w-full items-center justify-center gap-[20px]">
+      <div
+        className={cn(
+          "flex w-full items-center gap-3",
+          isModal
+            ? "shrink-0 justify-end border-t border-zinc-100 bg-white px-6 py-4"
+            : "mt-[60px] justify-center",
+        )}
+      >
         {transition ? (
           <Loader />
         ) : (
-          <ButtonBuilder
-            htmlType="submit"
-            classNames="text-white"
-            type="normal"
-          >
-            {formType === "edit"
-              ? "Save Changes"
-              : formType === "addService"
-                ? "Add Service"
-                : "Create Client"}
-          </ButtonBuilder>
+          <>
+            {isModal && onCancel && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onCancel}
+                className={btnFormCancel}
+              >
+                Cancel
+              </Button>
+            )}
+            {isModal ? (
+              <Button type="submit" className={btnFormSubmit}>
+                {formType === "edit"
+                  ? "Save"
+                  : formType === "addService"
+                    ? "Add service"
+                    : clientMode === "existing"
+                      ? "Add service"
+                      : "Create client"}
+              </Button>
+            ) : (
+              <ButtonBuilder
+                htmlType="submit"
+                classNames="text-white"
+                type="normal"
+              >
+                {formType === "edit"
+                  ? "Save changes"
+                  : formType === "addService"
+                    ? "Add service"
+                    : clientMode === "existing"
+                      ? "Add service"
+                      : "Create client"}
+              </ButtonBuilder>
+            )}
+          </>
         )}
       </div>
     </form>

@@ -4,8 +4,9 @@ import { getTaskNotifications, markNotificationAsSeen } from "@/lib/actions/task
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import { TaskNotification } from "@/lib/types";
 import { formatTaskDeadline } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { Bell } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -19,12 +20,52 @@ const notificationLabels: Record<TaskNotification["type"], string> = {
     "You are supervisor for this task. See the details below.",
   "task-completed": "Your assigned user completed this task.",
   "task-updated": "A user updated the status or progress of this task.",
+  "user-login": "A user logged into the system.",
 };
+
+function getNotificationDetails(notification: TaskNotification) {
+  if (notification.type === "user-login") {
+    return {
+      primary: notification.taskName,
+      secondary: notification.assigneeName,
+      metaLabel: "Logged in",
+      metaValue: formatTaskDeadline(notification.deadline),
+    };
+  }
+
+  if (
+    notification.type === "supervisor-assignment" ||
+    notification.type === "task-completed" ||
+    notification.type === "task-updated"
+  ) {
+    return {
+      primary:
+        notification.type === "task-updated"
+          ? `Updated by: ${notification.assigneeName}`
+          : `Assigned user: ${notification.assigneeName}`,
+      secondary: notification.taskName,
+      metaLabel: "Deadline",
+      metaValue: formatTaskDeadline(notification.deadline),
+    };
+  }
+
+  return {
+    primary: "You are the assigned user",
+    secondary: notification.taskName,
+    metaLabel: "Deadline",
+    metaValue: formatTaskDeadline(notification.deadline),
+  };
+}
 
 export default function TaskNotifications() {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  const { data: notificationsResponse } = useSWR(
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const { data: notificationsResponse, mutate } = useSWR(
     SWR_CACH_KEYS.taskNotifications.key,
     getTaskNotifications,
     {
@@ -32,81 +73,91 @@ export default function TaskNotifications() {
     },
   );
 
-  const notifications = notificationsResponse?.data ?? [];
-  const unreadNotifications = notifications;
+  const unreadNotifications = notificationsResponse?.data ?? [];
   const hasNotifications = unreadNotifications.length > 0;
 
   const markAsRead = async (idsToMark: string[]) => {
     if (!idsToMark.length) return;
-    
-    // Call backend for each notification
-    await Promise.all(idsToMark.map(id => markNotificationAsSeen(id)));
+
+    await Promise.all(idsToMark.map((id) => markNotificationAsSeen(id)));
+    await mutate();
   };
+
+  const triggerButton = (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      aria-label="Notifications"
+      className="relative size-8 rounded-full text-zinc-700 hover:bg-zinc-100"
+    >
+      <Bell className="size-4" strokeWidth={1.75} />
+      {hasNotifications ? (
+        <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-0.5 text-[9px] font-bold leading-none text-white">
+          {unreadNotifications.length > 9 ? "9+" : unreadNotifications.length}
+        </span>
+      ) : null}
+    </Button>
+  );
+
+  if (!mounted) {
+    return triggerButton;
+  }
 
   return (
     <Popover
       open={open}
       onOpenChange={(nextOpen) => {
         if (!nextOpen && open) {
-          // Mark current unread items as seen only after user closes popover.
-          markAsRead(
-            unreadNotifications.map((notification) => notification.id),
-          );
+          markAsRead(unreadNotifications.map((notification) => notification.id));
         }
         setOpen(nextOpen);
       }}
     >
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          className="relative h-10 w-10 rounded-full border-black/20 p-0"
-          aria-label="Task notifications"
-        >
-          <Bell className="h-5 w-5" />
-          {hasNotifications ? (
-            <span className="bg-secondary-100 absolute -top-1.5 -right-1.5 flex h-7 min-w-7 animate-pulse items-center justify-center rounded-full px-1.5 text-sm font-bold text-white shadow-md">
-              {unreadNotifications.length > 9
-                ? "9+"
-                : unreadNotifications.length}
-            </span>
-          ) : null}
-        </Button>
-      </PopoverTrigger>
+      <PopoverTrigger asChild>{triggerButton}</PopoverTrigger>
       <PopoverContent
         align="end"
-        className="border-secondary-100 w-[360px] bg-white p-0 opacity-100"
+        className="w-[360px] border-zinc-200 bg-white p-0"
       >
-        <div className="border-b border-black/10 px-4 py-3">
-          <h4 className="text-sm font-semibold">Task Notifications</h4>
+        <div className="border-b border-zinc-200 px-4 py-3">
+          <h4 className="text-sm font-semibold text-zinc-900">Notifications</h4>
         </div>
 
         {hasNotifications ? (
           <div className="max-h-[360px] space-y-3 overflow-y-auto px-4 py-3">
-            {unreadNotifications.map((notification) => (
-              <div
-                key={notification.id}
-                className="space-y-1 rounded-md border border-black/10 p-2.5"
-              >
-                <p className="text-xs font-medium text-black/75">
-                  {notificationLabels[notification.type]}
-                </p>
-                <p className="text-sm font-semibold">
-                  {notification.type === "supervisor-assignment" ||
-                  notification.type === "task-completed"
-                    ? `Assigned user: ${notification.assigneeName}`
-                    : "You are the assigned user"}
-                </p>
-                <p className="text-xs text-black/80">
-                  Description: {notification.taskName}
-                </p>
-                <p className="text-xs text-black/80">
-                  Deadline: {formatTaskDeadline(notification.deadline)}
-                </p>
-              </div>
-            ))}
+            {unreadNotifications.map((notification) => {
+              const details = getNotificationDetails(notification);
+
+              return (
+                <div
+                  key={notification.id}
+                  className="space-y-1 rounded-md border border-zinc-200 p-2.5"
+                >
+                  <p className="text-xs font-medium text-zinc-600">
+                    {notificationLabels[notification.type]}
+                  </p>
+                  <p className="text-sm font-semibold text-zinc-900">
+                    {details.primary}
+                  </p>
+                  <p
+                    className={cn(
+                      "text-xs text-zinc-700",
+                      notification.type === "user-login" ? "" : "line-clamp-2",
+                    )}
+                  >
+                    {notification.type === "user-login"
+                      ? `Email: ${details.secondary}`
+                      : `Description: ${details.secondary}`}
+                  </p>
+                  <p className="text-xs text-zinc-600">
+                    {details.metaLabel}: {details.metaValue}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         ) : (
-          <div className="px-4 py-8 text-center text-sm text-black/60">
+          <div className="px-4 py-8 text-center text-sm text-zinc-500">
             No new notifications.
           </div>
         )}

@@ -124,7 +124,11 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 
 exports.Prisma.RoleScalarFieldEnum = {
   id: 'id',
-  name: 'name'
+  name: 'name',
+  description: 'description',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.UserScalarFieldEnum = {
@@ -138,6 +142,7 @@ exports.Prisma.UserScalarFieldEnum = {
   gender: 'gender',
   salary: 'salary',
   department: 'department',
+  branchId: 'branchId',
   roleId: 'roleId',
   role: 'role',
   banned: 'banned',
@@ -194,13 +199,46 @@ exports.Prisma.ClientScalarFieldEnum = {
 
 exports.Prisma.ServiceScalarFieldEnum = {
   id: 'id',
-  serviceName: 'serviceName'
+  serviceName: 'serviceName',
+  description: 'description',
+  branchId: 'branchId'
 };
 
 exports.Prisma.SubServiceScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  description: 'description',
   categoryId: 'categoryId'
+};
+
+exports.Prisma.BranchScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  name: 'name',
+  slug: 'slug',
+  description: 'description',
+  location: 'location',
+  phone: 'phone',
+  logoUrl: 'logoUrl',
+  iconLogoUrl: 'iconLogoUrl',
+  isMain: 'isMain',
+  usesRootLogin: 'usesRootLogin',
+  slugClearedOnce: 'slugClearedOnce',
+  primaryColor: 'primaryColor',
+  secondaryColor: 'secondaryColor',
+  customDomain: 'customDomain',
+  isActive: 'isActive'
+};
+
+exports.Prisma.DepartmentScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  name: 'name',
+  description: 'description',
+  isActive: 'isActive',
+  branchId: 'branchId'
 };
 
 exports.Prisma.ClientSubServiceScalarFieldEnum = {
@@ -313,7 +351,8 @@ exports.Prisma.IncomeServiceAgreementScalarFieldEnum = {
   description: 'description',
   serviceId: 'serviceId',
   subServiceId: 'subServiceId',
-  clientId: 'clientId'
+  clientId: 'clientId',
+  serviceStatus: 'serviceStatus'
 };
 
 exports.Prisma.ExpenseServiceAgreementScalarFieldEnum = {
@@ -363,6 +402,62 @@ exports.Prisma.NotificationScalarFieldEnum = {
   isSeen: 'isSeen'
 };
 
+exports.Prisma.NavMenuScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  title: 'title',
+  url: 'url',
+  icon: 'icon',
+  order: 'order',
+  isActive: 'isActive'
+};
+
+exports.Prisma.NavSubMenuScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  menuId: 'menuId',
+  title: 'title',
+  url: 'url',
+  order: 'order',
+  isActive: 'isActive'
+};
+
+exports.Prisma.RoleMenuAccessScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  roleId: 'roleId',
+  menuId: 'menuId',
+  canView: 'canView',
+  canAdd: 'canAdd',
+  canEdit: 'canEdit',
+  canDelete: 'canDelete'
+};
+
+exports.Prisma.RoleSubMenuAccessScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  roleMenuAccessId: 'roleMenuAccessId',
+  subMenuId: 'subMenuId',
+  canView: 'canView',
+  canAdd: 'canAdd',
+  canEdit: 'canEdit',
+  canDelete: 'canDelete'
+};
+
+exports.Prisma.AuditLogScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  userId: 'userId',
+  action: 'action',
+  entity: 'entity',
+  entityId: 'entityId',
+  description: 'description'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -392,7 +487,14 @@ exports.EntityType = exports.$Enums.EntityType = {
   subservices: 'subservices',
   payments: 'payments',
   invoice: 'invoice',
-  tax: 'tax'
+  tax: 'tax',
+  branches: 'branches',
+  departments: 'departments'
+};
+
+exports.ClientServiceStatus = exports.$Enums.ClientServiceStatus = {
+  pending: 'pending',
+  completed: 'completed'
 };
 
 exports.Prisma.ModelName = {
@@ -404,6 +506,8 @@ exports.Prisma.ModelName = {
   Client: 'Client',
   Service: 'Service',
   SubService: 'SubService',
+  Branch: 'Branch',
+  Department: 'Department',
   ClientSubService: 'ClientSubService',
   ClientService: 'ClientService',
   Task: 'Task',
@@ -420,7 +524,12 @@ exports.Prisma.ModelName = {
   ExpenseTransactionDetails: 'ExpenseTransactionDetails',
   UserSalary: 'UserSalary',
   UserSalaryDetails: 'UserSalaryDetails',
-  Notification: 'Notification'
+  Notification: 'Notification',
+  NavMenu: 'NavMenu',
+  NavSubMenu: 'NavSubMenu',
+  RoleMenuAccess: 'RoleMenuAccess',
+  RoleSubMenuAccess: 'RoleSubMenuAccess',
+  AuditLog: 'AuditLog'
 };
 
 /**

@@ -4,11 +4,17 @@ import { z } from "zod";
 import { TaskPriority, TaskStatus, UserRole } from "./schema";
 import { ExpenseSchema } from "./validations";
 
+interface SidebarSubItem {
+  name: string;
+  href: string;
+}
+
 interface SidebarItem {
   name: string;
   href: string;
   icon: ReactNode;
   role?: UserRole[];
+  items?: SidebarSubItem[];
 }
 
 interface DashboardViewMetric {
@@ -31,6 +37,7 @@ interface Task {
   assignedTo: {
     id: string;
     name: string;
+    branchId?: string | null;
   };
   assignedToId: string;
   description: string;
@@ -99,6 +106,17 @@ interface Client {
   source?: string;
 }
 interface AllClients extends Omit<Client, "subServices" | "service"> {
+  serviceAgreements?: Array<{
+    agreementId: string;
+    serviceName: string;
+    subServiceName: string;
+    serviceStatus: "pending" | "completed";
+    branchId?: string | null;
+    branchName?: string;
+    base?: number;
+    description?: string;
+    createdAt?: string;
+  }>;
   serviceInfo: {
     service: {
       serviceName: string;
@@ -122,6 +140,7 @@ type ActionResponse<T = null> = {
   errors?: {
     message?: string;
     details?: string;
+    loginPath?: string;
   };
   statusCode?: number;
 };
@@ -146,7 +165,9 @@ type AuthSession = {
     updatedAt: Date;
     image?: string | null | undefined | undefined;
     role: UserRole;
+    roleId?: string | null;
     department?: string | null;
+    branchId?: string | null;
     banned: boolean;
     banReason?: string | undefined;
     banExpires?: Date | undefined;
@@ -373,7 +394,8 @@ type TaskNotificationType =
   | "deadline-soon"
   | "supervisor-assignment"
   | "task-completed"
-  | "task-updated";
+  | "task-updated"
+  | "user-login";
 
 interface TaskNotification {
   id: string;

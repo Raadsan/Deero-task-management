@@ -159,6 +159,7 @@ export default function PaymentDashboard() {
           <GeneralTableSkeletonLoader />
         ) : (
           <TableRenderer
+            useShell={false}
             columns={incomeColumns}
             data={incomeResult?.data ?? []}
             tableType={"incomes"}
@@ -169,6 +170,7 @@ export default function PaymentDashboard() {
           <GeneralTableSkeletonLoader />
         ) : (
           <TableRenderer
+            useShell={false}
             columns={expenseColumns}
             data={expenseResult?.data ?? []}
             tableType={"expenses"}

@@ -9,6 +9,7 @@ import {
   superAdminRole,
   userRole,
 } from "./permissions.js";
+import { createNotificationForAdmins } from "./notifications.js";
 
 export const auth = betterAuth({
   basePath: "/api/auth",
@@ -49,6 +50,31 @@ export const auth = betterAuth({
         },
       },
     },
+    session: {
+      create: {
+        async after(session) {
+          try {
+            const user = await prisma.user.findUnique({
+              where: { id: session.userId },
+              select: { id: true, name: true, email: true, role: true },
+            });
+
+            if (!user) return;
+
+            await createNotificationForAdmins({
+              taskId: user.id,
+              taskName: user.name || user.email,
+              assigneeName: user.email || user.role,
+              deadline: new Date(),
+              type: "user-login",
+              excludeUserId: user.id,
+            });
+          } catch (err) {
+            console.error("Failed to create login notification:", err);
+          }
+        },
+      },
+    },
   },
   session: {
     expiresIn: 60 * 60 * 24 * 30, // 30 days
@@ -78,6 +104,16 @@ export const auth = betterAuth({
       department: {
         type: "string",
         input: true,
+      },
+      branchId: {
+        type: "string",
+        input: true,
+        required: false,
+      },
+      roleId: {
+        type: "string",
+        input: true,
+        required: false,
       },
       banReason: {
         type: "string",

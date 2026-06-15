@@ -1,9 +1,21 @@
 "use client";
+
 import { UserRole } from "@/lib/schema";
 import { SidebarItem } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
+
+function isNavActive(pathname: string, href: string) {
+  if (href === "/") {
+    return pathname === "/";
+  }
+  if (pathname === href) {
+    return true;
+  }
+  return pathname.startsWith(`${href}/`);
+}
 
 export default function SideBarItem({
   href,
@@ -14,36 +26,49 @@ export default function SideBarItem({
 }: SidebarItem & {
   currentRole?: UserRole;
 }) {
-  const pathName = usePathname();
-  const currentUserRole = currentRole;
+  const pathname = usePathname();
+  const isActive = isNavActive(pathname, href);
 
-  const isCurrentPath =
-    (href.length === 1 && pathName.length === 1) ||
-    (pathName.length > 1 && href.includes(pathName));
   const canManageSee = role?.includes(UserRole.superadmin);
   const canAdminSee = role?.includes(UserRole.admin);
   const canUserSee = role?.includes(UserRole.user);
+
   const item = (
-    <SidebarMenuItem
-      key={name}
-      className={`w-full px-[10px] py-[6px] font-medium text-white ${isCurrentPath ? "bg-foreground" : ""}`}
-    >
-      <SidebarMenuButton asChild>
+    <SidebarMenuItem className="w-full">
+      <SidebarMenuButton
+        asChild
+        isActive={isActive}
+        tooltip={name}
+        className={cn(
+          "h-11 w-full rounded-xl px-4 text-[15px] font-medium transition-all",
+          isActive
+            ? "sidebar-brand-active !text-white shadow-sm hover:opacity-90 data-[active=true]:sidebar-brand-active data-[active=true]:!text-white"
+            : "!text-white/90 hover:!bg-white/10 hover:!text-white data-[active=true]:!bg-transparent",
+          "group-data-[collapsible=icon]:!mx-auto group-data-[collapsible=icon]:!flex group-data-[collapsible=icon]:!h-10 group-data-[collapsible=icon]:!w-10 group-data-[collapsible=icon]:!items-center group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-0 group-data-[collapsible=icon]:!px-0",
+        )}
+      >
         <Link
           href={href}
-          className="mx-auto flex w-full max-w-[150px] items-center justify-start gap-[10px] font-medium"
+          className="flex w-full items-center justify-start group-data-[collapsible=icon]:justify-center"
         >
-          {icon}
-          <span> {name}</span>
+          <span className="shrink-0 text-white [&_svg]:text-white">
+            {icon}
+          </span>
+          <span className="ml-3 flex-1 overflow-hidden text-ellipsis whitespace-nowrap group-data-[collapsible=icon]:hidden">
+            {name}
+          </span>
         </Link>
       </SidebarMenuButton>
     </SidebarMenuItem>
   );
-  if (canManageSee && currentUserRole === "superadmin") {
+
+  if (canManageSee && currentRole === "superadmin") {
     return item;
-  } else if (canAdminSee && currentUserRole === "admin") {
+  }
+  if (canAdminSee && currentRole === "admin") {
     return item;
-  } else if (canUserSee && currentUserRole === "user") {
+  }
+  if (canUserSee && currentRole === "user") {
     return item;
   }
   return null;

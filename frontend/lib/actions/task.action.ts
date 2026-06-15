@@ -7,6 +7,21 @@ import { handleError } from "../error/handle-error";
 import { ActionResponse, ErrorResponse, Task, TaskNotification } from "../types";
 import { getUserSession } from "./auth.action";
 
+function mapAssignedTo(user: {
+  id?: string;
+  name?: string;
+  branchId?: string | null;
+} | null | undefined) {
+  if (!user?.id) {
+    return { id: "", name: "Unassigned", branchId: null };
+  }
+  return {
+    id: user.id,
+    name: user.name ?? "Unassigned",
+    branchId: user.branchId ?? null,
+  };
+}
+
 export async function createTask(task: any): Promise<ActionResponse> {
   try {
     const response = await api.post("/api/tasks", task);
@@ -29,7 +44,7 @@ export async function getTaskById(taskId: string): Promise<ActionResponse<Task>>
         success: true,
         data: {
           ...task,
-          assignedTo: task.user,
+          assignedTo: mapAssignedTo(task.user),
           institutions: task.clientTask.map((ct: any) => ({
           ...ct.Client,
           services: ct.Client?.clientSubService?.map((css: any) => css.subService?.name).filter(Boolean) || [],
@@ -63,7 +78,7 @@ export async function getAllTasks(): Promise<ActionResponse<Task[]>> {
     if (response.data.success) {
       const tasks = response.data.data.map((task: any) => ({
         ...task,
-        assignedTo: task.user,
+        assignedTo: mapAssignedTo(task.user),
         institutions: task.clientTask.map((ct: any) => ({
           ...ct.Client,
           services: ct.Client?.clientSubService?.map((css: any) => css.subService?.name).filter(Boolean) || [],
@@ -102,7 +117,7 @@ export async function getAssginedTasks(): Promise<ActionResponse<Task[]>> {
         .filter((t: any) => t.assgineeId === currentUserId || t.supervisorId === currentUserId)
         .map((task: any) => ({
           ...task,
-          assignedTo: task.user,
+          assignedTo: mapAssignedTo(task.user),
           isAssignedToCurrentUser: task.assgineeId === currentUserId,
           institutions: task.clientTask.map((ct: any) => ({
             ...ct.Client,

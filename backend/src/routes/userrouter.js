@@ -1,9 +1,21 @@
 import { Router } from "express";
-import { getAllUsers, getUserById, createUser, updateUser, deleteUser } from "../controllers/usercontroller.js";
+import {
+  createUser,
+  deleteUser,
+  deleteUserFile,
+  getAllUsers,
+  getUserById,
+  getUserFiles,
+  updateUser,
+  uploadUserFiles,
+} from "../controllers/usercontroller.js";
 
 const router = Router();
 
 router.get("/", getAllUsers);
+router.get("/:id/files", getUserFiles);
+router.post("/:id/files", uploadUserFiles);
+router.delete("/:id/files/:fileId", deleteUserFile);
 router.get("/:id", getUserById);
 router.post("/", createUser);
 router.put("/:id", updateUser);

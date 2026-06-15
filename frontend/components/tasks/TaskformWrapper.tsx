@@ -8,23 +8,23 @@ interface Props {
 }
 export default async function TaskformWrapper({ formType, params }: Props) {
   let taskResult = undefined;
-  let result = undefined;
+  let institutions = undefined;
 
   if (formType !== "create" && params) {
     const { id: taskId } = await params;
     taskResult = await getTaskById(taskId);
   }
 
-  result = await GetAssigneesAndInstitutions({
-    ownAssigned: formType === "own:edit",
-  });
+  if (formType === "create") {
+    const result = await GetAssigneesAndInstitutions({});
+    institutions = result?.data?.institutions;
+  }
 
   return (
     <section className="h-full w-full">
       <TaskForm
         formType={formType}
-        institutions={result?.data?.institutions}
-        assignees={result?.data?.assignees}
+        institutions={institutions}
         currentTask={taskResult?.data}
       />
     </section>

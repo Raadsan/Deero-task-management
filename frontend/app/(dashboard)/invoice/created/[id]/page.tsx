@@ -1,5 +1,5 @@
 import InvoiceWrapper from "@/components/invoice/InvoiceWrapper";
-import ColumnBuilder from "@/components/Shared/ColumnBuilder";
+import ManagementPageShell from "@/components/Shared/ManagementPageShell";
 import PageBreadcrumb from "@/components/Shared/PageBreadcrumb";
 import { ROUTES } from "@/lib/constants";
 import { PageParams } from "@/lib/types";
@@ -10,7 +10,7 @@ export default async function CreateInvoice({
   searchParams,
 }: PageParams) {
   return (
-    <ColumnBuilder>
+    <ManagementPageShell title="Invoice">
       <PageBreadcrumb
         links={[
           {
@@ -22,6 +22,6 @@ export default async function CreateInvoice({
       <Suspense>
         <InvoiceWrapper searchParams={searchParams} params={params} />
       </Suspense>
-    </ColumnBuilder>
+    </ManagementPageShell>
   );
 }

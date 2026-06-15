@@ -296,37 +296,19 @@ export function ViewClientDashboardSkeletonLoader() {
 
 export function SidebarSkeletonLoader() {
   return (
-    <div className="gradientBg flex h-full w-full max-w-[200px] min-w-[100px] shrink-0 flex-col">
-      {/* Header skeleton */}
-      <div className="m-0 flex h-[92.81px] w-full justify-center border-b border-white/10">
-        <Skeleton className="my-auto h-8 w-8 rounded-full" />
+    <div className="flex h-full w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar">
+      <div className="flex h-[96px] items-center justify-center border-b border-sidebar-border">
+        <Skeleton className="h-8 w-24 rounded bg-white/20" />
       </div>
-
-      {/* Navigation items skeleton */}
-      <div className="min-h-fit px-4 pt-[40.2px]">
-        <div className="flex w-full flex-col gap-5">
+      <div className="min-h-fit px-3 pt-5">
+        <div className="flex w-full flex-col gap-2">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="flex items-center gap-3">
-              <Skeleton className="h-5 w-5" />
-              <Skeleton className="h-4 w-20" />
-            </div>
+            <Skeleton key={i} className="h-11 w-full rounded-xl bg-white/10" />
           ))}
         </div>
       </div>
-
-      {/* Footer skeleton */}
-      <div className="mt-auto pb-[30px]">
-        <div className="flex flex-col gap-4 px-4">
-          <div className="flex items-center gap-3">
-            <Skeleton className="h-5 w-5" />
-            <Skeleton className="h-4 w-16" />
-          </div>
-          <Skeleton className="h-px w-full" />
-          <div className="flex items-center gap-3">
-            <Skeleton className="h-5 w-5" />
-            <Skeleton className="h-4 w-16" />
-          </div>
-        </div>
+      <div className="mt-auto border-t border-sidebar-border p-3">
+        <Skeleton className="h-12 w-full rounded-xl bg-white/10" />
       </div>
     </div>
   );

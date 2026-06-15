@@ -74,6 +74,16 @@ export const auth = betterAuth({
         type: "string",
         input: true,
       },
+      branchId: {
+        type: "string",
+        input: true,
+        required: false,
+      },
+      roleId: {
+        type: "string",
+        input: true,
+        required: false,
+      },
       banReason: {
         type: "string",
         input: false,

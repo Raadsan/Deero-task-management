@@ -1,4 +1,5 @@
 "use client";
+
 import { getAssginedTasks } from "@/lib/actions/task.action";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import { Task } from "@/lib/types";
@@ -14,8 +15,10 @@ export default function MyTasksTable() {
   );
 
   if (isLoading) return <GeneralTableSkeletonLoader />;
+
   return (
     <TableRenderer
+      title="My tasks"
       tableType="my-tasks"
       columns={taskColumns}
       data={(myTasksData?.data as Task[]) ?? []}

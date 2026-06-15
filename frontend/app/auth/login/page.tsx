@@ -1,12 +1,5 @@
-import LoginForm from "@/components/auth/LoginForm";
-import { Suspense } from "react";
+import { redirect } from "next/navigation";
 
-export default function LoginPage() {
-  return (
-    <Suspense>
-      <div className="flex h-full w-full items-center justify-center">
-        <LoginForm />
-      </div>
-    </Suspense>
-  );
+export default function LegacyLoginPage() {
+  redirect("/");
 }

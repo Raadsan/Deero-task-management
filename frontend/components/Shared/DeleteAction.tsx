@@ -19,12 +19,16 @@ interface Props {
   dialogTitle: string;
   typeOfDataToDelete: TableType;
   idToDelete: string;
+  triggerClassNames?: string;
+  trigger?: React.ReactNode;
 }
 export default function DeleteAction({
   description,
   dialogTitle,
   typeOfDataToDelete,
   idToDelete,
+  triggerClassNames,
+  trigger,
 }: Props) {
   const [{ state }, setIsDeleting] = useState<StateType>({ state: "yet" });
   const [openDialog, setOpenDialog] = useState<boolean | undefined>(undefined);
@@ -158,7 +162,11 @@ export default function DeleteAction({
   return (
     <ShowDialog
       openDialog={openDialog}
-      triggerClassess=" cursor-pointer rounded-[3px]  px-[6px] py-[4px] font-normal text-white bg-rose-600 px-3"
+      triggerClassess={
+        triggerClassNames ??
+        " cursor-pointer rounded-[3px]  px-[6px] py-[4px] font-normal text-white bg-rose-600 px-3"
+      }
+      trigger={trigger}
       title={dialogTitle}
       description={description}
     >

@@ -6,11 +6,72 @@ import { handleError } from "../error/handle-error";
 import api from "../api";
 import { ActionResponse, ErrorResponse, Client, User } from "../types";
 import { getUserSession } from "./auth.action";
+import { getAllBranches, getBranchById, BranchRecord } from "./branch.action";
+import { isMainBranch } from "../branch-access";
+
+export async function getTaskFormBranchOptions(): Promise<
+  ActionResponse<{
+    branches: Array<{ id: string; name: string }>;
+    defaultBranchId: string;
+    singleBranch: boolean;
+  }>
+> {
+  try {
+    const session = await getUserSession();
+    if (!session.data) {
+      return { success: false, errors: { message: "Unauthorized" } };
+    }
+
+    const user = session.data.user as { branchId?: string | null };
+    const branchesRes = await getAllBranches();
+    const activeBranches = (branchesRes.data ?? []).filter(
+      (branch) => branch.isActive !== false,
+    );
+
+    let userBranch: BranchRecord | null =
+      activeBranches.find((branch) => branch.id === user.branchId) ?? null;
+
+    if (!userBranch && user.branchId) {
+      const branchResult = await getBranchById(user.branchId);
+      if (branchResult.success && branchResult.data) {
+        userBranch = branchResult.data;
+      }
+    }
+
+    const seesAllBranches = isMainBranch(userBranch);
+    const branches = seesAllBranches
+      ? activeBranches
+      : user.branchId
+        ? activeBranches.filter((branch) => branch.id === user.branchId)
+        : activeBranches;
+
+    const defaultBranchId =
+      user.branchId && branches.some((branch) => branch.id === user.branchId)
+        ? user.branchId
+        : (branches.find((branch) => branch.isMain)?.id ?? branches[0]?.id ?? "");
+
+    return {
+      success: true,
+      data: {
+        branches: branches.map((branch) => ({
+          id: branch.id,
+          name: branch.name,
+        })),
+        defaultBranchId,
+        singleBranch: branches.length <= 1,
+      },
+    };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}
 
 export async function GetAssigneesAndInstitutions({
   ownAssigned,
+  branchId,
 }: {
   ownAssigned?: boolean;
+  branchId?: string;
 }): Promise<
   ActionResponse<{
     institutions: Pick<Client, "id" | "institution">[] | undefined;
@@ -20,7 +81,7 @@ export async function GetAssigneesAndInstitutions({
   try {
     const [institutionsRes, assigneesRes] = await Promise.all([
       getAllInstitutions(),
-      getAllAssignees({ ownAssigned }),
+      getAllAssignees({ ownAssigned, branchId }),
     ]);
 
     return {
@@ -55,8 +116,10 @@ export async function getAllInstitutions(): Promise<
 
 export async function getAllAssignees({
   ownAssigned,
+  branchId,
 }: {
   ownAssigned?: boolean;
+  branchId?: string;
 }): Promise<ActionResponse<Pick<User, "name" | "email" | "id" | "role" | "department">[]>> {
   try {
     const session = await getUserSession();
@@ -76,15 +139,28 @@ export async function getAllAssignees({
     if (response.data.success) {
       let users = response.data.data;
 
+      if (branchId) {
+        users = users.filter((u: { branchId?: string | null }) => u.branchId === branchId);
+      }
+
       if (currentUserRole === "superadmin") {
-        users = users.filter((u: any) => u.id !== currentUserId);
+        users = users.filter((u: { id: string }) => u.id !== currentUserId);
       } else if (currentUserRole === "admin") {
-        users = users.filter((u: any) => u.role !== "superadmin" && u.id !== currentUserId);
+        users = users.filter(
+          (u: { role?: string; id: string }) =>
+            u.role !== "superadmin" && u.id !== currentUserId,
+        );
       } else {
         users = [];
       }
 
-      const data = users.map((u: any) => ({
+      const data = users.map((u: {
+        id: string;
+        name: string;
+        email: string;
+        role: string;
+        department?: string | null;
+      }) => ({
         id: u.id,
         name: u.name,
         email: u.email,

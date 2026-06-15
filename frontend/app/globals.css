@@ -1,20 +1,29 @@
 @import "tailwindcss";
 
-@theme inline {
-  --color-secondary-100: hsl(1deg, 100%, 20%);
-  --color-orange-100: hsl(14deg, 99%, 38%);
-  --color-orange-200: hsl(11deg, 83%, 53%);
-  --color-secondary-200: hsl(1deg, 79%, 22%);
-  --color-orange-300: hsl(11deg, 84%, 53%);
-  --color-dark-red: hsl(1deg, 73%, 23%);
+:root {
+  --branch-primary: #651210;
+  --branch-secondary: #ec4724;
+}
+
+@theme {
+  --color-brand-primary: var(--branch-primary);
+  --color-brand-secondary: var(--branch-secondary);
+  --color-primary: var(--branch-primary);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--branch-secondary);
+  --color-secondary-foreground: #ffffff;
+  --color-secondary-100: var(--branch-primary);
+  --color-orange-100: var(--branch-secondary);
+  --color-orange-200: var(--branch-secondary);
+  --color-secondary-200: var(--branch-primary);
+  --color-orange-300: var(--branch-secondary);
+  --color-dark-red: var(--branch-primary);
   --color-foreground: hsla(323deg, 98%, 3%, 1);
   --color-dark-gray: hsl(180deg, 1%, 37%);
   --color-light-gray: hsl(120deg, 1%, 84%);
-  --color-primary: hsl(224deg, 82%, 56%);
   --color-light: hsl(212deg, 48%, 94%);
-  --color-secondary: hsl(234deg, 25%, 29%);
   --color-success: hsl(154deg, 85%, 37%);
-  --color-warning: hsl(11deg, 84%, 53%);
+  --color-warning: var(--branch-secondary);
   --color-mint: hsl(124deg, 29%, 73%);
   --color-cream: hsl(55deg, 62%, 73%);
   --color-light-blue: hsl(225deg, 88%, 94%);
@@ -23,11 +32,89 @@
   --color-brown: hsl(28deg, 73%, 40%);
   --color-royal-blue: hsl(218deg, 65%, 52%);
   --color-copper: hsl(26deg, 70%, 45%);
-  --color-light-dark: hsl(0deg, 0%, 0% / 0.7);
+  --color-light-dark: hsl(0deg 0% 0% / 0.7);
   --color-bright-blue: hsl(233deg, 83%, 66%);
   --color-lavender: hsl(255deg, 86%, 97%);
   --color-coral: hsl(0deg, 56%, 55%);
   --color-light-rose: hsl(0deg, 44%, 96%);
+  --color-muted: hsl(210deg, 40%, 96%);
+  --color-muted-foreground: hsl(215deg, 16%, 47%);
+  --color-sidebar: var(--branch-primary);
+  --color-sidebar-foreground: #ffffff;
+  --color-sidebar-primary: var(--branch-primary);
+  --color-sidebar-primary-foreground: #ffffff;
+  --color-sidebar-accent: var(--branch-secondary);
+  --color-sidebar-accent-foreground: #ffffff;
+  --color-sidebar-border: rgb(255 255 255 / 0.12);
+  --color-sidebar-ring: var(--branch-secondary);
+}
+
+@layer components {
+  .btn-brand {
+    background-color: var(--branch-primary);
+    color: #ffffff;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .btn-brand:hover:not(:disabled) {
+    background-color: var(--branch-secondary);
+    color: #ffffff;
+  }
+
+  .table-head-brand {
+    background-color: var(--branch-primary);
+    border-color: var(--branch-primary);
+  }
+
+  .action-icon-view {
+    color: var(--branch-primary);
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  [data-slot="button"].action-icon-view:hover:not(:disabled),
+  a.action-icon-view:hover {
+    color: #16a34a !important;
+    background-color: #ecfdf5;
+  }
+
+  .action-icon-edit {
+    color: var(--branch-primary);
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  [data-slot="button"].action-icon-edit:hover:not(:disabled),
+  a.action-icon-edit:hover {
+    color: #2563eb !important;
+    background-color: #eff6ff;
+  }
+
+  .action-icon-delete {
+    color: #e11d48;
+    transition: background-color 0.2s ease;
+  }
+
+  [data-slot="button"].action-icon-delete:hover:not(:disabled),
+  a.action-icon-delete:hover {
+    color: #e11d48 !important;
+    background-color: #fff1f2;
+  }
+
+  .sidebar-brand {
+    background-color: var(--branch-primary);
+    color: #ffffff;
+  }
+
+  .sidebar-brand-active {
+    background-color: var(--branch-secondary);
+    color: #ffffff;
+  }
 }
 
 html,
@@ -50,6 +137,87 @@ body {
 
 @utility applyInterFont {
   font-family: var(--interfont);
+}
+
+@utility trezo-card {
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid hsl(214deg 32% 91%);
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+}
+
+@utility auth-brand-panel {
+  background-color: var(--color-brand-primary);
+}
+
+@utility auth-input {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid hsl(0deg 0% 0% / 0.08);
+  background-color: hsl(0deg 0% 98%);
+  padding: 0.875rem 1rem 0.875rem 2.75rem;
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus {
+    border-color: var(--color-brand-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand-primary) 18%, transparent);
+    outline: none;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.app-toast-container {
+  top: 1.25rem !important;
+  right: 1.25rem !important;
+}
+
+.app-toast {
+  animation: toast-slide-in 0.35s ease-out;
+  min-width: 360px;
+  max-width: 420px;
+  border-radius: 12px !important;
+  border: none !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+}
+
+.app-toast-success {
+  background: #ecfdf5 !important;
+  color: #15803d !important;
+}
+
+.app-toast-error {
+  background: #fef2f2 !important;
+  color: #dc2626 !important;
+}
+
+@keyframes toast-slide-in {
+  from {
+    transform: translateX(calc(100% + 1.25rem));
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-slide-out {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateX(calc(100% + 1.25rem));
+    opacity: 0;
+  }
 }
 
 /* shadows */

@@ -1,26 +1,23 @@
-import { DashboardCharts } from "@/components/home/DashboardCharts";
-import DashboardMetric from "@/components/home/DashboardMetric";
-import Sources from "@/components/home/Sources";
-import ColumnBuilder from "@/components/Shared/ColumnBuilder";
-import { UserSkelton } from "@/components/Shared/Loader";
-import PageDatePicker from "@/components/Shared/PageDatePicker";
-import UserAvator from "@/components/Shared/UserAvator";
+"use client";
+
+import AdminDashboard from "@/components/dashboard/AdminDashboard";
 import { Suspense } from "react";
 
-export default async function Home() {
+export default function Home() {
   return (
-    <ColumnBuilder headerClassNames="flex justify-end">
-      <Suspense fallback={<UserSkelton />}>
-        <UserAvator />
-      </Suspense>
-      <main className="flex h-full w-full shrink-0 grow flex-col gap-[54px]">
-        <Suspense>
-          <PageDatePicker classNames="ml-auto" />
-          <DashboardMetric />
-          <Sources />
-          <DashboardCharts />
-        </Suspense>
-      </main>
-    </ColumnBuilder>
+    <Suspense
+      fallback={
+        <div className="space-y-8 animate-pulse px-1">
+          <div className="h-20 rounded-xl bg-muted/20" />
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-32 rounded-xl bg-muted/20" />
+            ))}
+          </div>
+        </div>
+      }
+    >
+      <AdminDashboard />
+    </Suspense>
   );
 }

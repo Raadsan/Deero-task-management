@@ -1,8 +1,13 @@
 import { prisma } from "../lib/prisma.js";
 import { generateCustomId } from "../lib/id-generator.js";
+import {
+  normalizeTaskWriteStatus,
+  syncOverdueTasks,
+} from "../lib/task-status.js";
 
 export const getAllTasks = async (req, res) => {
   try {
+    await syncOverdueTasks(prisma);
     const tasks = await prisma.task.findMany({
       include: {
         user: true,
@@ -19,6 +24,7 @@ export const getAllTasks = async (req, res) => {
 export const getTaskById = async (req, res) => {
   const { id } = req.params;
   try {
+    await syncOverdueTasks(prisma);
     const task = await prisma.task.findUnique({
       where: { id },
       include: {
@@ -48,17 +54,28 @@ export const createTask = async (req, res) => {
       }
       console.log("Task ID:", taskId);
 
+      const normalized = normalizeTaskWriteStatus({
+        status: data.status,
+        progress: data.progress,
+        deadline: data.deadline,
+        currentStatus: "pending",
+        currentProgress: data.progress ?? 0,
+      });
+      if (normalized.error) {
+        throw new Error(normalized.error);
+      }
+
       const task = await tx.task.create({
         data: {
           id: taskId,
           description: data.description,
-          status: data.status?.toLowerCase(),
+          status: normalized.status,
           priority: data.priority?.toLowerCase(),
           department: data.department,
           deadline: new Date(data.deadline),
           assgineeId: data.assgineeId,
           supervisor: data.supervisor || "",
-          progress: data.progress ? Number(data.progress) : 0,
+          progress: normalized.progress,
           serviceInformation: data.serviceInformation || "",
         },
       });
@@ -107,7 +124,9 @@ export const createTask = async (req, res) => {
     res.status(201).json({ success: true, data: result });
   } catch (error) {
     console.error("Create Task Error Full Details:", error);
-    res.status(500).json({ success: false, error: error.message || "Internal Server Error" });
+    const message = error.message || "Internal Server Error";
+    const statusCode = message.includes("completed") ? 400 : 500;
+    res.status(statusCode).json({ success: false, error: message });
   }
 };
 
@@ -121,17 +140,33 @@ export const updateTask = async (req, res) => {
       include: { user: true }
     });
 
+    if (!originalTask) {
+      return res.status(404).json({ success: false, error: "Task not found" });
+    }
+
+    const normalized = normalizeTaskWriteStatus({
+      status,
+      progress,
+      deadline,
+      currentStatus: originalTask.status,
+      currentProgress: originalTask.progress,
+    });
+
+    if (normalized.error) {
+      return res.status(400).json({ success: false, error: normalized.error });
+    }
+
     const task = await prisma.task.update({
       where: { id },
       data: {
         description,
-        status: status?.toLowerCase(),
+        status: normalized.status,
         priority: priority?.toLowerCase(),
         department,
         deadline: deadline ? new Date(deadline) : undefined,
         assgineeId,
         supervisor,
-        progress: progress !== undefined ? Number(progress) : undefined,
+        progress: normalized.progress,
         serviceInformation,
       },
       include: { user: true }
@@ -294,6 +329,8 @@ export const getYearlyGraphData = async (req, res) => {
 export const getDashboardMetrics = async (req, res) => {
   const { startDate, endDate } = req.query;
   try {
+    await syncOverdueTasks(prisma);
+
     const fromDate = startDate ? new Date(startDate) : undefined;
     const toDate = endDate ? new Date(endDate) : undefined;
     if (toDate) toDate.setHours(23, 59, 59, 999);
@@ -303,10 +340,11 @@ export const getDashboardMetrics = async (req, res) => {
       where.createdAt = { gte: fromDate, lte: toDate };
     }
 
-    const [totalTasks, completedTasks, pendingTasks, totalClients] = await Promise.all([
+    const [totalTasks, completedTasks, pendingTasks, overdueTasks, totalClients] = await Promise.all([
       prisma.task.count({ where }),
       prisma.task.count({ where: { ...where, status: "completed" } }),
       prisma.task.count({ where: { ...where, status: "pending" } }),
+      prisma.task.count({ where: { ...where, status: "overdue" } }),
       prisma.client.count({ where: fromDate || toDate ? { createdAt: { gte: fromDate, lte: toDate } } : {} }),
     ]);
 
@@ -316,6 +354,7 @@ export const getDashboardMetrics = async (req, res) => {
         { title: "Total Tasks", totalTasks },
         { title: "Completed Tasks", totalTasks: completedTasks },
         { title: "Pending Tasks", totallPending: pendingTasks },
+        { title: "Overdue Tasks", totalTasks: overdueTasks },
         { title: "Total Clients", totalEarning: totalClients },
       ],
     });
@@ -327,6 +366,8 @@ export const getDashboardMetrics = async (req, res) => {
 export const getTasksReport = async (req, res) => {
   const { userIdForTaskReport, startDate, endDate } = req.query;
   try {
+    await syncOverdueTasks(prisma);
+
     const from = startDate ? new Date(startDate) : undefined;
     const to = endDate ? new Date(endDate) : undefined;
     const where = {
@@ -352,7 +393,9 @@ export const getTasksReport = async (req, res) => {
         userEmail: user?.email || "",
         period: startDate && endDate ? `From ${startDate} to ${endDate}` : "All Time",
         totalTasks: tasks.length,
-        completedTasks: tasks.filter(t => t.status === "completed").length,
+        completedTasks: tasks.filter((t) => t.status === "completed").length,
+        pending: tasks.filter((t) => t.status === "pending").length,
+        overdue: tasks.filter((t) => t.status === "overdue").length,
       },
       tasks: tasks.map(t => ({
         id: t.id,

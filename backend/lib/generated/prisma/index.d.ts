@@ -54,6 +54,16 @@ export type Service = $Result.DefaultSelection<Prisma.$ServicePayload>
  */
 export type SubService = $Result.DefaultSelection<Prisma.$SubServicePayload>
 /**
+ * Model Branch
+ * 
+ */
+export type Branch = $Result.DefaultSelection<Prisma.$BranchPayload>
+/**
+ * Model Department
+ * 
+ */
+export type Department = $Result.DefaultSelection<Prisma.$DepartmentPayload>
+/**
  * Model ClientSubService
  * 
  */
@@ -138,6 +148,31 @@ export type UserSalaryDetails = $Result.DefaultSelection<Prisma.$UserSalaryDetai
  * 
  */
 export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
+/**
+ * Model NavMenu
+ * 
+ */
+export type NavMenu = $Result.DefaultSelection<Prisma.$NavMenuPayload>
+/**
+ * Model NavSubMenu
+ * 
+ */
+export type NavSubMenu = $Result.DefaultSelection<Prisma.$NavSubMenuPayload>
+/**
+ * Model RoleMenuAccess
+ * 
+ */
+export type RoleMenuAccess = $Result.DefaultSelection<Prisma.$RoleMenuAccessPayload>
+/**
+ * Model RoleSubMenuAccess
+ * 
+ */
+export type RoleSubMenuAccess = $Result.DefaultSelection<Prisma.$RoleSubMenuAccessPayload>
+/**
+ * Model AuditLog
+ * 
+ */
+export type AuditLog = $Result.DefaultSelection<Prisma.$AuditLogPayload>
 
 /**
  * Enums
@@ -169,10 +204,20 @@ export const EntityType: {
   subservices: 'subservices',
   payments: 'payments',
   invoice: 'invoice',
-  tax: 'tax'
+  tax: 'tax',
+  branches: 'branches',
+  departments: 'departments'
 };
 
 export type EntityType = (typeof EntityType)[keyof typeof EntityType]
+
+
+export const ClientServiceStatus: {
+  pending: 'pending',
+  completed: 'completed'
+};
+
+export type ClientServiceStatus = (typeof ClientServiceStatus)[keyof typeof ClientServiceStatus]
 
 }
 
@@ -187,6 +232,10 @@ export const TaskPriority: typeof $Enums.TaskPriority
 export type EntityType = $Enums.EntityType
 
 export const EntityType: typeof $Enums.EntityType
+
+export type ClientServiceStatus = $Enums.ClientServiceStatus
+
+export const ClientServiceStatus: typeof $Enums.ClientServiceStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -392,6 +441,26 @@ export class PrismaClient<
   get subService(): Prisma.SubServiceDelegate<ExtArgs>;
 
   /**
+   * `prisma.branch`: Exposes CRUD operations for the **Branch** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Branches
+    * const branches = await prisma.branch.findMany()
+    * ```
+    */
+  get branch(): Prisma.BranchDelegate<ExtArgs>;
+
+  /**
+   * `prisma.department`: Exposes CRUD operations for the **Department** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Departments
+    * const departments = await prisma.department.findMany()
+    * ```
+    */
+  get department(): Prisma.DepartmentDelegate<ExtArgs>;
+
+  /**
    * `prisma.clientSubService`: Exposes CRUD operations for the **ClientSubService** model.
     * Example usage:
     * ```ts
@@ -560,6 +629,56 @@ export class PrismaClient<
     * ```
     */
   get notification(): Prisma.NotificationDelegate<ExtArgs>;
+
+  /**
+   * `prisma.navMenu`: Exposes CRUD operations for the **NavMenu** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more NavMenus
+    * const navMenus = await prisma.navMenu.findMany()
+    * ```
+    */
+  get navMenu(): Prisma.NavMenuDelegate<ExtArgs>;
+
+  /**
+   * `prisma.navSubMenu`: Exposes CRUD operations for the **NavSubMenu** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more NavSubMenus
+    * const navSubMenus = await prisma.navSubMenu.findMany()
+    * ```
+    */
+  get navSubMenu(): Prisma.NavSubMenuDelegate<ExtArgs>;
+
+  /**
+   * `prisma.roleMenuAccess`: Exposes CRUD operations for the **RoleMenuAccess** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more RoleMenuAccesses
+    * const roleMenuAccesses = await prisma.roleMenuAccess.findMany()
+    * ```
+    */
+  get roleMenuAccess(): Prisma.RoleMenuAccessDelegate<ExtArgs>;
+
+  /**
+   * `prisma.roleSubMenuAccess`: Exposes CRUD operations for the **RoleSubMenuAccess** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more RoleSubMenuAccesses
+    * const roleSubMenuAccesses = await prisma.roleSubMenuAccess.findMany()
+    * ```
+    */
+  get roleSubMenuAccess(): Prisma.RoleSubMenuAccessDelegate<ExtArgs>;
+
+  /**
+   * `prisma.auditLog`: Exposes CRUD operations for the **AuditLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AuditLogs
+    * const auditLogs = await prisma.auditLog.findMany()
+    * ```
+    */
+  get auditLog(): Prisma.AuditLogDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -1009,6 +1128,8 @@ export namespace Prisma {
     Client: 'Client',
     Service: 'Service',
     SubService: 'SubService',
+    Branch: 'Branch',
+    Department: 'Department',
     ClientSubService: 'ClientSubService',
     ClientService: 'ClientService',
     Task: 'Task',
@@ -1025,7 +1146,12 @@ export namespace Prisma {
     ExpenseTransactionDetails: 'ExpenseTransactionDetails',
     UserSalary: 'UserSalary',
     UserSalaryDetails: 'UserSalaryDetails',
-    Notification: 'Notification'
+    Notification: 'Notification',
+    NavMenu: 'NavMenu',
+    NavSubMenu: 'NavSubMenu',
+    RoleMenuAccess: 'RoleMenuAccess',
+    RoleSubMenuAccess: 'RoleSubMenuAccess',
+    AuditLog: 'AuditLog'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1041,7 +1167,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "role" | "user" | "session" | "account" | "verification" | "client" | "service" | "subService" | "clientSubService" | "clientService" | "task" | "clientTask" | "counter" | "income" | "expense" | "incomeTransaction" | "expenseTransaction" | "incomeTransactionDetails" | "userFiles" | "incomeServiceAgreement" | "expenseServiceAgreement" | "expenseTransactionDetails" | "userSalary" | "userSalaryDetails" | "notification"
+      modelProps: "role" | "user" | "session" | "account" | "verification" | "client" | "service" | "subService" | "branch" | "department" | "clientSubService" | "clientService" | "task" | "clientTask" | "counter" | "income" | "expense" | "incomeTransaction" | "expenseTransaction" | "incomeTransactionDetails" | "userFiles" | "incomeServiceAgreement" | "expenseServiceAgreement" | "expenseTransactionDetails" | "userSalary" | "userSalaryDetails" | "notification" | "navMenu" | "navSubMenu" | "roleMenuAccess" | "roleSubMenuAccess" | "auditLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1570,6 +1696,138 @@ export namespace Prisma {
           count: {
             args: Prisma.SubServiceCountArgs<ExtArgs>
             result: $Utils.Optional<SubServiceCountAggregateOutputType> | number
+          }
+        }
+      }
+      Branch: {
+        payload: Prisma.$BranchPayload<ExtArgs>
+        fields: Prisma.BranchFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BranchFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BranchFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchPayload>
+          }
+          findFirst: {
+            args: Prisma.BranchFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BranchFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchPayload>
+          }
+          findMany: {
+            args: Prisma.BranchFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchPayload>[]
+          }
+          create: {
+            args: Prisma.BranchCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchPayload>
+          }
+          createMany: {
+            args: Prisma.BranchCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.BranchDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchPayload>
+          }
+          update: {
+            args: Prisma.BranchUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchPayload>
+          }
+          deleteMany: {
+            args: Prisma.BranchDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BranchUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.BranchUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BranchPayload>
+          }
+          aggregate: {
+            args: Prisma.BranchAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBranch>
+          }
+          groupBy: {
+            args: Prisma.BranchGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BranchGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BranchCountArgs<ExtArgs>
+            result: $Utils.Optional<BranchCountAggregateOutputType> | number
+          }
+        }
+      }
+      Department: {
+        payload: Prisma.$DepartmentPayload<ExtArgs>
+        fields: Prisma.DepartmentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DepartmentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DepartmentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>
+          }
+          findFirst: {
+            args: Prisma.DepartmentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DepartmentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>
+          }
+          findMany: {
+            args: Prisma.DepartmentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>[]
+          }
+          create: {
+            args: Prisma.DepartmentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>
+          }
+          createMany: {
+            args: Prisma.DepartmentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.DepartmentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>
+          }
+          update: {
+            args: Prisma.DepartmentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>
+          }
+          deleteMany: {
+            args: Prisma.DepartmentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DepartmentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.DepartmentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>
+          }
+          aggregate: {
+            args: Prisma.DepartmentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDepartment>
+          }
+          groupBy: {
+            args: Prisma.DepartmentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DepartmentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DepartmentCountArgs<ExtArgs>
+            result: $Utils.Optional<DepartmentCountAggregateOutputType> | number
           }
         }
       }
@@ -2695,6 +2953,336 @@ export namespace Prisma {
           }
         }
       }
+      NavMenu: {
+        payload: Prisma.$NavMenuPayload<ExtArgs>
+        fields: Prisma.NavMenuFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NavMenuFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavMenuPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NavMenuFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavMenuPayload>
+          }
+          findFirst: {
+            args: Prisma.NavMenuFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavMenuPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NavMenuFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavMenuPayload>
+          }
+          findMany: {
+            args: Prisma.NavMenuFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavMenuPayload>[]
+          }
+          create: {
+            args: Prisma.NavMenuCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavMenuPayload>
+          }
+          createMany: {
+            args: Prisma.NavMenuCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.NavMenuDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavMenuPayload>
+          }
+          update: {
+            args: Prisma.NavMenuUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavMenuPayload>
+          }
+          deleteMany: {
+            args: Prisma.NavMenuDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NavMenuUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.NavMenuUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavMenuPayload>
+          }
+          aggregate: {
+            args: Prisma.NavMenuAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNavMenu>
+          }
+          groupBy: {
+            args: Prisma.NavMenuGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NavMenuGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NavMenuCountArgs<ExtArgs>
+            result: $Utils.Optional<NavMenuCountAggregateOutputType> | number
+          }
+        }
+      }
+      NavSubMenu: {
+        payload: Prisma.$NavSubMenuPayload<ExtArgs>
+        fields: Prisma.NavSubMenuFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NavSubMenuFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavSubMenuPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NavSubMenuFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavSubMenuPayload>
+          }
+          findFirst: {
+            args: Prisma.NavSubMenuFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavSubMenuPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NavSubMenuFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavSubMenuPayload>
+          }
+          findMany: {
+            args: Prisma.NavSubMenuFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavSubMenuPayload>[]
+          }
+          create: {
+            args: Prisma.NavSubMenuCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavSubMenuPayload>
+          }
+          createMany: {
+            args: Prisma.NavSubMenuCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.NavSubMenuDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavSubMenuPayload>
+          }
+          update: {
+            args: Prisma.NavSubMenuUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavSubMenuPayload>
+          }
+          deleteMany: {
+            args: Prisma.NavSubMenuDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NavSubMenuUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.NavSubMenuUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavSubMenuPayload>
+          }
+          aggregate: {
+            args: Prisma.NavSubMenuAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNavSubMenu>
+          }
+          groupBy: {
+            args: Prisma.NavSubMenuGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NavSubMenuGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NavSubMenuCountArgs<ExtArgs>
+            result: $Utils.Optional<NavSubMenuCountAggregateOutputType> | number
+          }
+        }
+      }
+      RoleMenuAccess: {
+        payload: Prisma.$RoleMenuAccessPayload<ExtArgs>
+        fields: Prisma.RoleMenuAccessFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.RoleMenuAccessFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RoleMenuAccessPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.RoleMenuAccessFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RoleMenuAccessPayload>
+          }
+          findFirst: {
+            args: Prisma.RoleMenuAccessFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RoleMenuAccessPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.RoleMenuAccessFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RoleMenuAccessPayload>
+          }
+          findMany: {
+            args: Prisma.RoleMenuAccessFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RoleMenuAccessPayload>[]
+          }
+          create: {
+            args: Prisma.RoleMenuAccessCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RoleMenuAccessPayload>
+          }
+          createMany: {
+            args: Prisma.RoleMenuAccessCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.RoleMenuAccessDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RoleMenuAccessPayload>
+          }
+          update: {
+            args: Prisma.RoleMenuAccessUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RoleMenuAccessPayload>
+          }
+          deleteMany: {
+            args: Prisma.RoleMenuAccessDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.RoleMenuAccessUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.RoleMenuAccessUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RoleMenuAccessPayload>
+          }
+          aggregate: {
+            args: Prisma.RoleMenuAccessAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRoleMenuAccess>
+          }
+          groupBy: {
+            args: Prisma.RoleMenuAccessGroupByArgs<ExtArgs>
+            result: $Utils.Optional<RoleMenuAccessGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.RoleMenuAccessCountArgs<ExtArgs>
+            result: $Utils.Optional<RoleMenuAccessCountAggregateOutputType> | number
+          }
+        }
+      }
+      RoleSubMenuAccess: {
+        payload: Prisma.$RoleSubMenuAccessPayload<ExtArgs>
+        fields: Prisma.RoleSubMenuAccessFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.RoleSubMenuAccessFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RoleSubMenuAccessPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.RoleSubMenuAccessFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RoleSubMenuAccessPayload>
+          }
+          findFirst: {
+            args: Prisma.RoleSubMenuAccessFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RoleSubMenuAccessPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.RoleSubMenuAccessFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RoleSubMenuAccessPayload>
+          }
+          findMany: {
+            args: Prisma.RoleSubMenuAccessFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RoleSubMenuAccessPayload>[]
+          }
+          create: {
+            args: Prisma.RoleSubMenuAccessCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RoleSubMenuAccessPayload>
+          }
+          createMany: {
+            args: Prisma.RoleSubMenuAccessCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.RoleSubMenuAccessDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RoleSubMenuAccessPayload>
+          }
+          update: {
+            args: Prisma.RoleSubMenuAccessUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RoleSubMenuAccessPayload>
+          }
+          deleteMany: {
+            args: Prisma.RoleSubMenuAccessDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.RoleSubMenuAccessUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.RoleSubMenuAccessUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RoleSubMenuAccessPayload>
+          }
+          aggregate: {
+            args: Prisma.RoleSubMenuAccessAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRoleSubMenuAccess>
+          }
+          groupBy: {
+            args: Prisma.RoleSubMenuAccessGroupByArgs<ExtArgs>
+            result: $Utils.Optional<RoleSubMenuAccessGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.RoleSubMenuAccessCountArgs<ExtArgs>
+            result: $Utils.Optional<RoleSubMenuAccessCountAggregateOutputType> | number
+          }
+        }
+      }
+      AuditLog: {
+        payload: Prisma.$AuditLogPayload<ExtArgs>
+        fields: Prisma.AuditLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AuditLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AuditLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          findFirst: {
+            args: Prisma.AuditLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AuditLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          findMany: {
+            args: Prisma.AuditLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>[]
+          }
+          create: {
+            args: Prisma.AuditLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          createMany: {
+            args: Prisma.AuditLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.AuditLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          update: {
+            args: Prisma.AuditLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.AuditLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AuditLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.AuditLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogPayload>
+          }
+          aggregate: {
+            args: Prisma.AuditLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAuditLog>
+          }
+          groupBy: {
+            args: Prisma.AuditLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AuditLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AuditLogCountArgs<ExtArgs>
+            result: $Utils.Optional<AuditLogCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2857,10 +3445,12 @@ export namespace Prisma {
 
   export type RoleCountOutputType = {
     users: number
+    menuAccess: number
   }
 
   export type RoleCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | RoleCountOutputTypeCountUsersArgs
+    menuAccess?: boolean | RoleCountOutputTypeCountMenuAccessArgs
   }
 
   // Custom InputTypes
@@ -2881,6 +3471,13 @@ export namespace Prisma {
     where?: UserWhereInput
   }
 
+  /**
+   * RoleCountOutputType without action
+   */
+  export type RoleCountOutputTypeCountMenuAccessArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RoleMenuAccessWhereInput
+  }
+
 
   /**
    * Count Type UserCountOutputType
@@ -2895,6 +3492,7 @@ export namespace Prisma {
     expenseTransaction: number
     reciever: number
     registerer: number
+    auditLogs: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2906,6 +3504,7 @@ export namespace Prisma {
     expenseTransaction?: boolean | UserCountOutputTypeCountExpenseTransactionArgs
     reciever?: boolean | UserCountOutputTypeCountRecieverArgs
     registerer?: boolean | UserCountOutputTypeCountRegistererArgs
+    auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
   }
 
   // Custom InputTypes
@@ -2973,6 +3572,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountRegistererArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserSalaryWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountAuditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuditLogWhereInput
   }
 
 
@@ -3120,6 +3726,55 @@ export namespace Prisma {
    */
   export type SubServiceCountOutputTypeCountServiceAgreementsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: IncomeServiceAgreementWhereInput
+  }
+
+
+  /**
+   * Count Type BranchCountOutputType
+   */
+
+  export type BranchCountOutputType = {
+    users: number
+    services: number
+    departments: number
+  }
+
+  export type BranchCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    users?: boolean | BranchCountOutputTypeCountUsersArgs
+    services?: boolean | BranchCountOutputTypeCountServicesArgs
+    departments?: boolean | BranchCountOutputTypeCountDepartmentsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * BranchCountOutputType without action
+   */
+  export type BranchCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BranchCountOutputType
+     */
+    select?: BranchCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * BranchCountOutputType without action
+   */
+  export type BranchCountOutputTypeCountUsersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserWhereInput
+  }
+
+  /**
+   * BranchCountOutputType without action
+   */
+  export type BranchCountOutputTypeCountServicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ServiceWhereInput
+  }
+
+  /**
+   * BranchCountOutputType without action
+   */
+  export type BranchCountOutputTypeCountDepartmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DepartmentWhereInput
   }
 
 
@@ -3372,6 +4027,108 @@ export namespace Prisma {
 
 
   /**
+   * Count Type NavMenuCountOutputType
+   */
+
+  export type NavMenuCountOutputType = {
+    subMenus: number
+    roleAccess: number
+  }
+
+  export type NavMenuCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    subMenus?: boolean | NavMenuCountOutputTypeCountSubMenusArgs
+    roleAccess?: boolean | NavMenuCountOutputTypeCountRoleAccessArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * NavMenuCountOutputType without action
+   */
+  export type NavMenuCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavMenuCountOutputType
+     */
+    select?: NavMenuCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * NavMenuCountOutputType without action
+   */
+  export type NavMenuCountOutputTypeCountSubMenusArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NavSubMenuWhereInput
+  }
+
+  /**
+   * NavMenuCountOutputType without action
+   */
+  export type NavMenuCountOutputTypeCountRoleAccessArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RoleMenuAccessWhereInput
+  }
+
+
+  /**
+   * Count Type NavSubMenuCountOutputType
+   */
+
+  export type NavSubMenuCountOutputType = {
+    roleAccess: number
+  }
+
+  export type NavSubMenuCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    roleAccess?: boolean | NavSubMenuCountOutputTypeCountRoleAccessArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * NavSubMenuCountOutputType without action
+   */
+  export type NavSubMenuCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavSubMenuCountOutputType
+     */
+    select?: NavSubMenuCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * NavSubMenuCountOutputType without action
+   */
+  export type NavSubMenuCountOutputTypeCountRoleAccessArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RoleSubMenuAccessWhereInput
+  }
+
+
+  /**
+   * Count Type RoleMenuAccessCountOutputType
+   */
+
+  export type RoleMenuAccessCountOutputType = {
+    subAccess: number
+  }
+
+  export type RoleMenuAccessCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    subAccess?: boolean | RoleMenuAccessCountOutputTypeCountSubAccessArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * RoleMenuAccessCountOutputType without action
+   */
+  export type RoleMenuAccessCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleMenuAccessCountOutputType
+     */
+    select?: RoleMenuAccessCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * RoleMenuAccessCountOutputType without action
+   */
+  export type RoleMenuAccessCountOutputTypeCountSubAccessArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RoleSubMenuAccessWhereInput
+  }
+
+
+  /**
    * Models
    */
 
@@ -3388,16 +4145,28 @@ export namespace Prisma {
   export type RoleMinAggregateOutputType = {
     id: string | null
     name: string | null
+    description: string | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type RoleMaxAggregateOutputType = {
     id: string | null
     name: string | null
+    description: string | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type RoleCountAggregateOutputType = {
     id: number
     name: number
+    description: number
+    isActive: number
+    createdAt: number
+    updatedAt: number
     _all: number
   }
 
@@ -3405,16 +4174,28 @@ export namespace Prisma {
   export type RoleMinAggregateInputType = {
     id?: true
     name?: true
+    description?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
   }
 
   export type RoleMaxAggregateInputType = {
     id?: true
     name?: true
+    description?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
   }
 
   export type RoleCountAggregateInputType = {
     id?: true
     name?: true
+    description?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -3493,6 +4274,10 @@ export namespace Prisma {
   export type RoleGroupByOutputType = {
     id: string
     name: string
+    description: string | null
+    isActive: boolean
+    createdAt: Date
+    updatedAt: Date
     _count: RoleCountAggregateOutputType | null
     _min: RoleMinAggregateOutputType | null
     _max: RoleMaxAggregateOutputType | null
@@ -3515,7 +4300,12 @@ export namespace Prisma {
   export type RoleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    description?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
     users?: boolean | Role$usersArgs<ExtArgs>
+    menuAccess?: boolean | Role$menuAccessArgs<ExtArgs>
     _count?: boolean | RoleCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["role"]>
 
@@ -3523,10 +4313,15 @@ export namespace Prisma {
   export type RoleSelectScalar = {
     id?: boolean
     name?: boolean
+    description?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
   }
 
   export type RoleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | Role$usersArgs<ExtArgs>
+    menuAccess?: boolean | Role$menuAccessArgs<ExtArgs>
     _count?: boolean | RoleCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -3534,10 +4329,15 @@ export namespace Prisma {
     name: "Role"
     objects: {
       users: Prisma.$UserPayload<ExtArgs>[]
+      menuAccess: Prisma.$RoleMenuAccessPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
+      description: string | null
+      isActive: boolean
+      createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["role"]>
     composites: {}
   }
@@ -3879,6 +4679,7 @@ export namespace Prisma {
   export interface Prisma__RoleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     users<T extends Role$usersArgs<ExtArgs> = {}>(args?: Subset<T, Role$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany"> | Null>
+    menuAccess<T extends Role$menuAccessArgs<ExtArgs> = {}>(args?: Subset<T, Role$menuAccessArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RoleMenuAccessPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3910,6 +4711,10 @@ export namespace Prisma {
   interface RoleFieldRefs {
     readonly id: FieldRef<"Role", 'String'>
     readonly name: FieldRef<"Role", 'String'>
+    readonly description: FieldRef<"Role", 'String'>
+    readonly isActive: FieldRef<"Role", 'Boolean'>
+    readonly createdAt: FieldRef<"Role", 'DateTime'>
+    readonly updatedAt: FieldRef<"Role", 'DateTime'>
   }
     
 
@@ -4229,6 +5034,26 @@ export namespace Prisma {
   }
 
   /**
+   * Role.menuAccess
+   */
+  export type Role$menuAccessArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleMenuAccess
+     */
+    select?: RoleMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleMenuAccessInclude<ExtArgs> | null
+    where?: RoleMenuAccessWhereInput
+    orderBy?: RoleMenuAccessOrderByWithRelationInput | RoleMenuAccessOrderByWithRelationInput[]
+    cursor?: RoleMenuAccessWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RoleMenuAccessScalarFieldEnum | RoleMenuAccessScalarFieldEnum[]
+  }
+
+  /**
    * Role without action
    */
   export type RoleDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4264,6 +5089,7 @@ export namespace Prisma {
     gender: string | null
     salary: string | null
     department: string | null
+    branchId: string | null
     roleId: string | null
     role: string | null
     banned: boolean | null
@@ -4282,6 +5108,7 @@ export namespace Prisma {
     gender: string | null
     salary: string | null
     department: string | null
+    branchId: string | null
     roleId: string | null
     role: string | null
     banned: boolean | null
@@ -4300,6 +5127,7 @@ export namespace Prisma {
     gender: number
     salary: number
     department: number
+    branchId: number
     roleId: number
     role: number
     banned: number
@@ -4320,6 +5148,7 @@ export namespace Prisma {
     gender?: true
     salary?: true
     department?: true
+    branchId?: true
     roleId?: true
     role?: true
     banned?: true
@@ -4338,6 +5167,7 @@ export namespace Prisma {
     gender?: true
     salary?: true
     department?: true
+    branchId?: true
     roleId?: true
     role?: true
     banned?: true
@@ -4356,6 +5186,7 @@ export namespace Prisma {
     gender?: true
     salary?: true
     department?: true
+    branchId?: true
     roleId?: true
     role?: true
     banned?: true
@@ -4447,6 +5278,7 @@ export namespace Prisma {
     gender: string | null
     salary: string | null
     department: string | null
+    branchId: string | null
     roleId: string | null
     role: string | null
     banned: boolean | null
@@ -4482,11 +5314,13 @@ export namespace Prisma {
     gender?: boolean
     salary?: boolean
     department?: boolean
+    branchId?: boolean
     roleId?: boolean
     role?: boolean
     banned?: boolean
     banReason?: boolean
     banExpires?: boolean
+    branch?: boolean | User$branchArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
     assignedTasks?: boolean | User$assignedTasksArgs<ExtArgs>
@@ -4496,6 +5330,7 @@ export namespace Prisma {
     expenseTransaction?: boolean | User$expenseTransactionArgs<ExtArgs>
     reciever?: boolean | User$recieverArgs<ExtArgs>
     registerer?: boolean | User$registererArgs<ExtArgs>
+    auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4511,6 +5346,7 @@ export namespace Prisma {
     gender?: boolean
     salary?: boolean
     department?: boolean
+    branchId?: boolean
     roleId?: boolean
     role?: boolean
     banned?: boolean
@@ -4519,6 +5355,7 @@ export namespace Prisma {
   }
 
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    branch?: boolean | User$branchArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
     assignedTasks?: boolean | User$assignedTasksArgs<ExtArgs>
@@ -4528,12 +5365,14 @@ export namespace Prisma {
     expenseTransaction?: boolean | User$expenseTransactionArgs<ExtArgs>
     reciever?: boolean | User$recieverArgs<ExtArgs>
     registerer?: boolean | User$registererArgs<ExtArgs>
+    auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
 
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {
+      branch: Prisma.$BranchPayload<ExtArgs> | null
       sessions: Prisma.$SessionPayload<ExtArgs>[]
       accounts: Prisma.$AccountPayload<ExtArgs>[]
       assignedTasks: Prisma.$TaskPayload<ExtArgs>[]
@@ -4543,6 +5382,7 @@ export namespace Prisma {
       expenseTransaction: Prisma.$ExpenseTransactionPayload<ExtArgs>[]
       reciever: Prisma.$UserSalaryPayload<ExtArgs>[]
       registerer: Prisma.$UserSalaryPayload<ExtArgs>[]
+      auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4555,6 +5395,7 @@ export namespace Prisma {
       gender: string | null
       salary: string | null
       department: string | null
+      branchId: string | null
       roleId: string | null
       role: string | null
       banned: boolean | null
@@ -4900,6 +5741,7 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    branch<T extends User$branchArgs<ExtArgs> = {}>(args?: Subset<T, User$branchArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany"> | Null>
     accounts<T extends User$accountsArgs<ExtArgs> = {}>(args?: Subset<T, User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany"> | Null>
     assignedTasks<T extends User$assignedTasksArgs<ExtArgs> = {}>(args?: Subset<T, User$assignedTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany"> | Null>
@@ -4909,6 +5751,7 @@ export namespace Prisma {
     expenseTransaction<T extends User$expenseTransactionArgs<ExtArgs> = {}>(args?: Subset<T, User$expenseTransactionArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExpenseTransactionPayload<ExtArgs>, T, "findMany"> | Null>
     reciever<T extends User$recieverArgs<ExtArgs> = {}>(args?: Subset<T, User$recieverArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserSalaryPayload<ExtArgs>, T, "findMany"> | Null>
     registerer<T extends User$registererArgs<ExtArgs> = {}>(args?: Subset<T, User$registererArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserSalaryPayload<ExtArgs>, T, "findMany"> | Null>
+    auditLogs<T extends User$auditLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4948,6 +5791,7 @@ export namespace Prisma {
     readonly gender: FieldRef<"User", 'String'>
     readonly salary: FieldRef<"User", 'String'>
     readonly department: FieldRef<"User", 'String'>
+    readonly branchId: FieldRef<"User", 'String'>
     readonly roleId: FieldRef<"User", 'String'>
     readonly role: FieldRef<"User", 'String'>
     readonly banned: FieldRef<"User", 'Boolean'>
@@ -5252,6 +6096,21 @@ export namespace Prisma {
   }
 
   /**
+   * User.branch
+   */
+  export type User$branchArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Branch
+     */
+    select?: BranchSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchInclude<ExtArgs> | null
+    where?: BranchWhereInput
+  }
+
+  /**
    * User.sessions
    */
   export type User$sessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5424,6 +6283,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: UserSalaryScalarFieldEnum | UserSalaryScalarFieldEnum[]
+  }
+
+  /**
+   * User.auditLogs
+   */
+  export type User$auditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    where?: AuditLogWhereInput
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    cursor?: AuditLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
   }
 
   /**
@@ -9182,16 +10061,22 @@ export namespace Prisma {
   export type ServiceMinAggregateOutputType = {
     id: string | null
     serviceName: string | null
+    description: string | null
+    branchId: string | null
   }
 
   export type ServiceMaxAggregateOutputType = {
     id: string | null
     serviceName: string | null
+    description: string | null
+    branchId: string | null
   }
 
   export type ServiceCountAggregateOutputType = {
     id: number
     serviceName: number
+    description: number
+    branchId: number
     _all: number
   }
 
@@ -9199,16 +10084,22 @@ export namespace Prisma {
   export type ServiceMinAggregateInputType = {
     id?: true
     serviceName?: true
+    description?: true
+    branchId?: true
   }
 
   export type ServiceMaxAggregateInputType = {
     id?: true
     serviceName?: true
+    description?: true
+    branchId?: true
   }
 
   export type ServiceCountAggregateInputType = {
     id?: true
     serviceName?: true
+    description?: true
+    branchId?: true
     _all?: true
   }
 
@@ -9287,6 +10178,8 @@ export namespace Prisma {
   export type ServiceGroupByOutputType = {
     id: string
     serviceName: string
+    description: string | null
+    branchId: string | null
     _count: ServiceCountAggregateOutputType | null
     _min: ServiceMinAggregateOutputType | null
     _max: ServiceMaxAggregateOutputType | null
@@ -9309,6 +10202,9 @@ export namespace Prisma {
   export type ServiceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     serviceName?: boolean
+    description?: boolean
+    branchId?: boolean
+    branch?: boolean | Service$branchArgs<ExtArgs>
     clientService?: boolean | Service$clientServiceArgs<ExtArgs>
     subService?: boolean | Service$subServiceArgs<ExtArgs>
     serviceAgreements?: boolean | Service$serviceAgreementsArgs<ExtArgs>
@@ -9319,9 +10215,12 @@ export namespace Prisma {
   export type ServiceSelectScalar = {
     id?: boolean
     serviceName?: boolean
+    description?: boolean
+    branchId?: boolean
   }
 
   export type ServiceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    branch?: boolean | Service$branchArgs<ExtArgs>
     clientService?: boolean | Service$clientServiceArgs<ExtArgs>
     subService?: boolean | Service$subServiceArgs<ExtArgs>
     serviceAgreements?: boolean | Service$serviceAgreementsArgs<ExtArgs>
@@ -9331,6 +10230,7 @@ export namespace Prisma {
   export type $ServicePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Service"
     objects: {
+      branch: Prisma.$BranchPayload<ExtArgs> | null
       clientService: Prisma.$ClientServicePayload<ExtArgs>[]
       subService: Prisma.$SubServicePayload<ExtArgs>[]
       serviceAgreements: Prisma.$IncomeServiceAgreementPayload<ExtArgs>[]
@@ -9338,6 +10238,8 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       serviceName: string
+      description: string | null
+      branchId: string | null
     }, ExtArgs["result"]["service"]>
     composites: {}
   }
@@ -9678,6 +10580,7 @@ export namespace Prisma {
    */
   export interface Prisma__ServiceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    branch<T extends Service$branchArgs<ExtArgs> = {}>(args?: Subset<T, Service$branchArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     clientService<T extends Service$clientServiceArgs<ExtArgs> = {}>(args?: Subset<T, Service$clientServiceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientServicePayload<ExtArgs>, T, "findMany"> | Null>
     subService<T extends Service$subServiceArgs<ExtArgs> = {}>(args?: Subset<T, Service$subServiceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SubServicePayload<ExtArgs>, T, "findMany"> | Null>
     serviceAgreements<T extends Service$serviceAgreementsArgs<ExtArgs> = {}>(args?: Subset<T, Service$serviceAgreementsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IncomeServiceAgreementPayload<ExtArgs>, T, "findMany"> | Null>
@@ -9712,6 +10615,8 @@ export namespace Prisma {
   interface ServiceFieldRefs {
     readonly id: FieldRef<"Service", 'String'>
     readonly serviceName: FieldRef<"Service", 'String'>
+    readonly description: FieldRef<"Service", 'String'>
+    readonly branchId: FieldRef<"Service", 'String'>
   }
     
 
@@ -10011,6 +10916,21 @@ export namespace Prisma {
   }
 
   /**
+   * Service.branch
+   */
+  export type Service$branchArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Branch
+     */
+    select?: BranchSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchInclude<ExtArgs> | null
+    where?: BranchWhereInput
+  }
+
+  /**
    * Service.clientService
    */
   export type Service$clientServiceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -10098,18 +11018,21 @@ export namespace Prisma {
   export type SubServiceMinAggregateOutputType = {
     id: string | null
     name: string | null
+    description: string | null
     categoryId: string | null
   }
 
   export type SubServiceMaxAggregateOutputType = {
     id: string | null
     name: string | null
+    description: string | null
     categoryId: string | null
   }
 
   export type SubServiceCountAggregateOutputType = {
     id: number
     name: number
+    description: number
     categoryId: number
     _all: number
   }
@@ -10118,18 +11041,21 @@ export namespace Prisma {
   export type SubServiceMinAggregateInputType = {
     id?: true
     name?: true
+    description?: true
     categoryId?: true
   }
 
   export type SubServiceMaxAggregateInputType = {
     id?: true
     name?: true
+    description?: true
     categoryId?: true
   }
 
   export type SubServiceCountAggregateInputType = {
     id?: true
     name?: true
+    description?: true
     categoryId?: true
     _all?: true
   }
@@ -10209,6 +11135,7 @@ export namespace Prisma {
   export type SubServiceGroupByOutputType = {
     id: string
     name: string
+    description: string | null
     categoryId: string
     _count: SubServiceCountAggregateOutputType | null
     _min: SubServiceMinAggregateOutputType | null
@@ -10232,6 +11159,7 @@ export namespace Prisma {
   export type SubServiceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    description?: boolean
     categoryId?: boolean
     service?: boolean | ServiceDefaultArgs<ExtArgs>
     clientSubService?: boolean | SubService$clientSubServiceArgs<ExtArgs>
@@ -10243,6 +11171,7 @@ export namespace Prisma {
   export type SubServiceSelectScalar = {
     id?: boolean
     name?: boolean
+    description?: boolean
     categoryId?: boolean
   }
 
@@ -10263,6 +11192,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
+      description: string | null
       categoryId: string
     }, ExtArgs["result"]["subService"]>
     composites: {}
@@ -10638,6 +11568,7 @@ export namespace Prisma {
   interface SubServiceFieldRefs {
     readonly id: FieldRef<"SubService", 'String'>
     readonly name: FieldRef<"SubService", 'String'>
+    readonly description: FieldRef<"SubService", 'String'>
     readonly categoryId: FieldRef<"SubService", 'String'>
   }
     
@@ -10989,6 +11920,1988 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: SubServiceInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Branch
+   */
+
+  export type AggregateBranch = {
+    _count: BranchCountAggregateOutputType | null
+    _min: BranchMinAggregateOutputType | null
+    _max: BranchMaxAggregateOutputType | null
+  }
+
+  export type BranchMinAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    name: string | null
+    slug: string | null
+    description: string | null
+    location: string | null
+    phone: string | null
+    logoUrl: string | null
+    iconLogoUrl: string | null
+    isMain: boolean | null
+    usesRootLogin: boolean | null
+    slugClearedOnce: boolean | null
+    primaryColor: string | null
+    secondaryColor: string | null
+    customDomain: string | null
+    isActive: boolean | null
+  }
+
+  export type BranchMaxAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    name: string | null
+    slug: string | null
+    description: string | null
+    location: string | null
+    phone: string | null
+    logoUrl: string | null
+    iconLogoUrl: string | null
+    isMain: boolean | null
+    usesRootLogin: boolean | null
+    slugClearedOnce: boolean | null
+    primaryColor: string | null
+    secondaryColor: string | null
+    customDomain: string | null
+    isActive: boolean | null
+  }
+
+  export type BranchCountAggregateOutputType = {
+    id: number
+    createdAt: number
+    updatedAt: number
+    name: number
+    slug: number
+    description: number
+    location: number
+    phone: number
+    logoUrl: number
+    iconLogoUrl: number
+    isMain: number
+    usesRootLogin: number
+    slugClearedOnce: number
+    primaryColor: number
+    secondaryColor: number
+    customDomain: number
+    isActive: number
+    _all: number
+  }
+
+
+  export type BranchMinAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    name?: true
+    slug?: true
+    description?: true
+    location?: true
+    phone?: true
+    logoUrl?: true
+    iconLogoUrl?: true
+    isMain?: true
+    usesRootLogin?: true
+    slugClearedOnce?: true
+    primaryColor?: true
+    secondaryColor?: true
+    customDomain?: true
+    isActive?: true
+  }
+
+  export type BranchMaxAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    name?: true
+    slug?: true
+    description?: true
+    location?: true
+    phone?: true
+    logoUrl?: true
+    iconLogoUrl?: true
+    isMain?: true
+    usesRootLogin?: true
+    slugClearedOnce?: true
+    primaryColor?: true
+    secondaryColor?: true
+    customDomain?: true
+    isActive?: true
+  }
+
+  export type BranchCountAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    name?: true
+    slug?: true
+    description?: true
+    location?: true
+    phone?: true
+    logoUrl?: true
+    iconLogoUrl?: true
+    isMain?: true
+    usesRootLogin?: true
+    slugClearedOnce?: true
+    primaryColor?: true
+    secondaryColor?: true
+    customDomain?: true
+    isActive?: true
+    _all?: true
+  }
+
+  export type BranchAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Branch to aggregate.
+     */
+    where?: BranchWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Branches to fetch.
+     */
+    orderBy?: BranchOrderByWithRelationInput | BranchOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BranchWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Branches from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Branches.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Branches
+    **/
+    _count?: true | BranchCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BranchMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BranchMaxAggregateInputType
+  }
+
+  export type GetBranchAggregateType<T extends BranchAggregateArgs> = {
+        [P in keyof T & keyof AggregateBranch]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBranch[P]>
+      : GetScalarType<T[P], AggregateBranch[P]>
+  }
+
+
+
+
+  export type BranchGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BranchWhereInput
+    orderBy?: BranchOrderByWithAggregationInput | BranchOrderByWithAggregationInput[]
+    by: BranchScalarFieldEnum[] | BranchScalarFieldEnum
+    having?: BranchScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BranchCountAggregateInputType | true
+    _min?: BranchMinAggregateInputType
+    _max?: BranchMaxAggregateInputType
+  }
+
+  export type BranchGroupByOutputType = {
+    id: string
+    createdAt: Date
+    updatedAt: Date
+    name: string
+    slug: string | null
+    description: string | null
+    location: string | null
+    phone: string | null
+    logoUrl: string | null
+    iconLogoUrl: string | null
+    isMain: boolean
+    usesRootLogin: boolean
+    slugClearedOnce: boolean
+    primaryColor: string
+    secondaryColor: string
+    customDomain: string | null
+    isActive: boolean
+    _count: BranchCountAggregateOutputType | null
+    _min: BranchMinAggregateOutputType | null
+    _max: BranchMaxAggregateOutputType | null
+  }
+
+  type GetBranchGroupByPayload<T extends BranchGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BranchGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BranchGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BranchGroupByOutputType[P]>
+            : GetScalarType<T[P], BranchGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BranchSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    name?: boolean
+    slug?: boolean
+    description?: boolean
+    location?: boolean
+    phone?: boolean
+    logoUrl?: boolean
+    iconLogoUrl?: boolean
+    isMain?: boolean
+    usesRootLogin?: boolean
+    slugClearedOnce?: boolean
+    primaryColor?: boolean
+    secondaryColor?: boolean
+    customDomain?: boolean
+    isActive?: boolean
+    users?: boolean | Branch$usersArgs<ExtArgs>
+    services?: boolean | Branch$servicesArgs<ExtArgs>
+    departments?: boolean | Branch$departmentsArgs<ExtArgs>
+    _count?: boolean | BranchCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["branch"]>
+
+
+  export type BranchSelectScalar = {
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    name?: boolean
+    slug?: boolean
+    description?: boolean
+    location?: boolean
+    phone?: boolean
+    logoUrl?: boolean
+    iconLogoUrl?: boolean
+    isMain?: boolean
+    usesRootLogin?: boolean
+    slugClearedOnce?: boolean
+    primaryColor?: boolean
+    secondaryColor?: boolean
+    customDomain?: boolean
+    isActive?: boolean
+  }
+
+  export type BranchInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    users?: boolean | Branch$usersArgs<ExtArgs>
+    services?: boolean | Branch$servicesArgs<ExtArgs>
+    departments?: boolean | Branch$departmentsArgs<ExtArgs>
+    _count?: boolean | BranchCountOutputTypeDefaultArgs<ExtArgs>
+  }
+
+  export type $BranchPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Branch"
+    objects: {
+      users: Prisma.$UserPayload<ExtArgs>[]
+      services: Prisma.$ServicePayload<ExtArgs>[]
+      departments: Prisma.$DepartmentPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      createdAt: Date
+      updatedAt: Date
+      name: string
+      slug: string | null
+      description: string | null
+      location: string | null
+      phone: string | null
+      logoUrl: string | null
+      iconLogoUrl: string | null
+      isMain: boolean
+      usesRootLogin: boolean
+      slugClearedOnce: boolean
+      primaryColor: string
+      secondaryColor: string
+      customDomain: string | null
+      isActive: boolean
+    }, ExtArgs["result"]["branch"]>
+    composites: {}
+  }
+
+  type BranchGetPayload<S extends boolean | null | undefined | BranchDefaultArgs> = $Result.GetResult<Prisma.$BranchPayload, S>
+
+  type BranchCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<BranchFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: BranchCountAggregateInputType | true
+    }
+
+  export interface BranchDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Branch'], meta: { name: 'Branch' } }
+    /**
+     * Find zero or one Branch that matches the filter.
+     * @param {BranchFindUniqueArgs} args - Arguments to find a Branch
+     * @example
+     * // Get one Branch
+     * const branch = await prisma.branch.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BranchFindUniqueArgs>(args: SelectSubset<T, BranchFindUniqueArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Branch that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {BranchFindUniqueOrThrowArgs} args - Arguments to find a Branch
+     * @example
+     * // Get one Branch
+     * const branch = await prisma.branch.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BranchFindUniqueOrThrowArgs>(args: SelectSubset<T, BranchFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Branch that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BranchFindFirstArgs} args - Arguments to find a Branch
+     * @example
+     * // Get one Branch
+     * const branch = await prisma.branch.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BranchFindFirstArgs>(args?: SelectSubset<T, BranchFindFirstArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Branch that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BranchFindFirstOrThrowArgs} args - Arguments to find a Branch
+     * @example
+     * // Get one Branch
+     * const branch = await prisma.branch.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BranchFindFirstOrThrowArgs>(args?: SelectSubset<T, BranchFindFirstOrThrowArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Branches that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BranchFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Branches
+     * const branches = await prisma.branch.findMany()
+     * 
+     * // Get first 10 Branches
+     * const branches = await prisma.branch.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const branchWithIdOnly = await prisma.branch.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BranchFindManyArgs>(args?: SelectSubset<T, BranchFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Branch.
+     * @param {BranchCreateArgs} args - Arguments to create a Branch.
+     * @example
+     * // Create one Branch
+     * const Branch = await prisma.branch.create({
+     *   data: {
+     *     // ... data to create a Branch
+     *   }
+     * })
+     * 
+     */
+    create<T extends BranchCreateArgs>(args: SelectSubset<T, BranchCreateArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Branches.
+     * @param {BranchCreateManyArgs} args - Arguments to create many Branches.
+     * @example
+     * // Create many Branches
+     * const branch = await prisma.branch.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BranchCreateManyArgs>(args?: SelectSubset<T, BranchCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Branch.
+     * @param {BranchDeleteArgs} args - Arguments to delete one Branch.
+     * @example
+     * // Delete one Branch
+     * const Branch = await prisma.branch.delete({
+     *   where: {
+     *     // ... filter to delete one Branch
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BranchDeleteArgs>(args: SelectSubset<T, BranchDeleteArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Branch.
+     * @param {BranchUpdateArgs} args - Arguments to update one Branch.
+     * @example
+     * // Update one Branch
+     * const branch = await prisma.branch.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BranchUpdateArgs>(args: SelectSubset<T, BranchUpdateArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Branches.
+     * @param {BranchDeleteManyArgs} args - Arguments to filter Branches to delete.
+     * @example
+     * // Delete a few Branches
+     * const { count } = await prisma.branch.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BranchDeleteManyArgs>(args?: SelectSubset<T, BranchDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Branches.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BranchUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Branches
+     * const branch = await prisma.branch.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BranchUpdateManyArgs>(args: SelectSubset<T, BranchUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Branch.
+     * @param {BranchUpsertArgs} args - Arguments to update or create a Branch.
+     * @example
+     * // Update or create a Branch
+     * const branch = await prisma.branch.upsert({
+     *   create: {
+     *     // ... data to create a Branch
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Branch we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BranchUpsertArgs>(args: SelectSubset<T, BranchUpsertArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Branches.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BranchCountArgs} args - Arguments to filter Branches to count.
+     * @example
+     * // Count the number of Branches
+     * const count = await prisma.branch.count({
+     *   where: {
+     *     // ... the filter for the Branches we want to count
+     *   }
+     * })
+    **/
+    count<T extends BranchCountArgs>(
+      args?: Subset<T, BranchCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BranchCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Branch.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BranchAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BranchAggregateArgs>(args: Subset<T, BranchAggregateArgs>): Prisma.PrismaPromise<GetBranchAggregateType<T>>
+
+    /**
+     * Group by Branch.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BranchGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BranchGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BranchGroupByArgs['orderBy'] }
+        : { orderBy?: BranchGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BranchGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBranchGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Branch model
+   */
+  readonly fields: BranchFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Branch.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BranchClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    users<T extends Branch$usersArgs<ExtArgs> = {}>(args?: Subset<T, Branch$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany"> | Null>
+    services<T extends Branch$servicesArgs<ExtArgs> = {}>(args?: Subset<T, Branch$servicesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findMany"> | Null>
+    departments<T extends Branch$departmentsArgs<ExtArgs> = {}>(args?: Subset<T, Branch$departmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Branch model
+   */ 
+  interface BranchFieldRefs {
+    readonly id: FieldRef<"Branch", 'String'>
+    readonly createdAt: FieldRef<"Branch", 'DateTime'>
+    readonly updatedAt: FieldRef<"Branch", 'DateTime'>
+    readonly name: FieldRef<"Branch", 'String'>
+    readonly slug: FieldRef<"Branch", 'String'>
+    readonly description: FieldRef<"Branch", 'String'>
+    readonly location: FieldRef<"Branch", 'String'>
+    readonly phone: FieldRef<"Branch", 'String'>
+    readonly logoUrl: FieldRef<"Branch", 'String'>
+    readonly iconLogoUrl: FieldRef<"Branch", 'String'>
+    readonly isMain: FieldRef<"Branch", 'Boolean'>
+    readonly usesRootLogin: FieldRef<"Branch", 'Boolean'>
+    readonly slugClearedOnce: FieldRef<"Branch", 'Boolean'>
+    readonly primaryColor: FieldRef<"Branch", 'String'>
+    readonly secondaryColor: FieldRef<"Branch", 'String'>
+    readonly customDomain: FieldRef<"Branch", 'String'>
+    readonly isActive: FieldRef<"Branch", 'Boolean'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Branch findUnique
+   */
+  export type BranchFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Branch
+     */
+    select?: BranchSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchInclude<ExtArgs> | null
+    /**
+     * Filter, which Branch to fetch.
+     */
+    where: BranchWhereUniqueInput
+  }
+
+  /**
+   * Branch findUniqueOrThrow
+   */
+  export type BranchFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Branch
+     */
+    select?: BranchSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchInclude<ExtArgs> | null
+    /**
+     * Filter, which Branch to fetch.
+     */
+    where: BranchWhereUniqueInput
+  }
+
+  /**
+   * Branch findFirst
+   */
+  export type BranchFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Branch
+     */
+    select?: BranchSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchInclude<ExtArgs> | null
+    /**
+     * Filter, which Branch to fetch.
+     */
+    where?: BranchWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Branches to fetch.
+     */
+    orderBy?: BranchOrderByWithRelationInput | BranchOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Branches.
+     */
+    cursor?: BranchWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Branches from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Branches.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Branches.
+     */
+    distinct?: BranchScalarFieldEnum | BranchScalarFieldEnum[]
+  }
+
+  /**
+   * Branch findFirstOrThrow
+   */
+  export type BranchFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Branch
+     */
+    select?: BranchSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchInclude<ExtArgs> | null
+    /**
+     * Filter, which Branch to fetch.
+     */
+    where?: BranchWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Branches to fetch.
+     */
+    orderBy?: BranchOrderByWithRelationInput | BranchOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Branches.
+     */
+    cursor?: BranchWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Branches from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Branches.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Branches.
+     */
+    distinct?: BranchScalarFieldEnum | BranchScalarFieldEnum[]
+  }
+
+  /**
+   * Branch findMany
+   */
+  export type BranchFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Branch
+     */
+    select?: BranchSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchInclude<ExtArgs> | null
+    /**
+     * Filter, which Branches to fetch.
+     */
+    where?: BranchWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Branches to fetch.
+     */
+    orderBy?: BranchOrderByWithRelationInput | BranchOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Branches.
+     */
+    cursor?: BranchWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Branches from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Branches.
+     */
+    skip?: number
+    distinct?: BranchScalarFieldEnum | BranchScalarFieldEnum[]
+  }
+
+  /**
+   * Branch create
+   */
+  export type BranchCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Branch
+     */
+    select?: BranchSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Branch.
+     */
+    data: XOR<BranchCreateInput, BranchUncheckedCreateInput>
+  }
+
+  /**
+   * Branch createMany
+   */
+  export type BranchCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Branches.
+     */
+    data: BranchCreateManyInput | BranchCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Branch update
+   */
+  export type BranchUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Branch
+     */
+    select?: BranchSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Branch.
+     */
+    data: XOR<BranchUpdateInput, BranchUncheckedUpdateInput>
+    /**
+     * Choose, which Branch to update.
+     */
+    where: BranchWhereUniqueInput
+  }
+
+  /**
+   * Branch updateMany
+   */
+  export type BranchUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Branches.
+     */
+    data: XOR<BranchUpdateManyMutationInput, BranchUncheckedUpdateManyInput>
+    /**
+     * Filter which Branches to update
+     */
+    where?: BranchWhereInput
+  }
+
+  /**
+   * Branch upsert
+   */
+  export type BranchUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Branch
+     */
+    select?: BranchSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Branch to update in case it exists.
+     */
+    where: BranchWhereUniqueInput
+    /**
+     * In case the Branch found by the `where` argument doesn't exist, create a new Branch with this data.
+     */
+    create: XOR<BranchCreateInput, BranchUncheckedCreateInput>
+    /**
+     * In case the Branch was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BranchUpdateInput, BranchUncheckedUpdateInput>
+  }
+
+  /**
+   * Branch delete
+   */
+  export type BranchDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Branch
+     */
+    select?: BranchSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchInclude<ExtArgs> | null
+    /**
+     * Filter which Branch to delete.
+     */
+    where: BranchWhereUniqueInput
+  }
+
+  /**
+   * Branch deleteMany
+   */
+  export type BranchDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Branches to delete
+     */
+    where?: BranchWhereInput
+  }
+
+  /**
+   * Branch.users
+   */
+  export type Branch$usersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    cursor?: UserWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+  }
+
+  /**
+   * Branch.services
+   */
+  export type Branch$servicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Service
+     */
+    select?: ServiceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceInclude<ExtArgs> | null
+    where?: ServiceWhereInput
+    orderBy?: ServiceOrderByWithRelationInput | ServiceOrderByWithRelationInput[]
+    cursor?: ServiceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ServiceScalarFieldEnum | ServiceScalarFieldEnum[]
+  }
+
+  /**
+   * Branch.departments
+   */
+  export type Branch$departmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+    where?: DepartmentWhereInput
+    orderBy?: DepartmentOrderByWithRelationInput | DepartmentOrderByWithRelationInput[]
+    cursor?: DepartmentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DepartmentScalarFieldEnum | DepartmentScalarFieldEnum[]
+  }
+
+  /**
+   * Branch without action
+   */
+  export type BranchDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Branch
+     */
+    select?: BranchSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BranchInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Department
+   */
+
+  export type AggregateDepartment = {
+    _count: DepartmentCountAggregateOutputType | null
+    _min: DepartmentMinAggregateOutputType | null
+    _max: DepartmentMaxAggregateOutputType | null
+  }
+
+  export type DepartmentMinAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    name: string | null
+    description: string | null
+    isActive: boolean | null
+    branchId: string | null
+  }
+
+  export type DepartmentMaxAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    name: string | null
+    description: string | null
+    isActive: boolean | null
+    branchId: string | null
+  }
+
+  export type DepartmentCountAggregateOutputType = {
+    id: number
+    createdAt: number
+    updatedAt: number
+    name: number
+    description: number
+    isActive: number
+    branchId: number
+    _all: number
+  }
+
+
+  export type DepartmentMinAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    name?: true
+    description?: true
+    isActive?: true
+    branchId?: true
+  }
+
+  export type DepartmentMaxAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    name?: true
+    description?: true
+    isActive?: true
+    branchId?: true
+  }
+
+  export type DepartmentCountAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    name?: true
+    description?: true
+    isActive?: true
+    branchId?: true
+    _all?: true
+  }
+
+  export type DepartmentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Department to aggregate.
+     */
+    where?: DepartmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Departments to fetch.
+     */
+    orderBy?: DepartmentOrderByWithRelationInput | DepartmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DepartmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Departments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Departments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Departments
+    **/
+    _count?: true | DepartmentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DepartmentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DepartmentMaxAggregateInputType
+  }
+
+  export type GetDepartmentAggregateType<T extends DepartmentAggregateArgs> = {
+        [P in keyof T & keyof AggregateDepartment]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDepartment[P]>
+      : GetScalarType<T[P], AggregateDepartment[P]>
+  }
+
+
+
+
+  export type DepartmentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DepartmentWhereInput
+    orderBy?: DepartmentOrderByWithAggregationInput | DepartmentOrderByWithAggregationInput[]
+    by: DepartmentScalarFieldEnum[] | DepartmentScalarFieldEnum
+    having?: DepartmentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DepartmentCountAggregateInputType | true
+    _min?: DepartmentMinAggregateInputType
+    _max?: DepartmentMaxAggregateInputType
+  }
+
+  export type DepartmentGroupByOutputType = {
+    id: string
+    createdAt: Date
+    updatedAt: Date
+    name: string
+    description: string | null
+    isActive: boolean
+    branchId: string
+    _count: DepartmentCountAggregateOutputType | null
+    _min: DepartmentMinAggregateOutputType | null
+    _max: DepartmentMaxAggregateOutputType | null
+  }
+
+  type GetDepartmentGroupByPayload<T extends DepartmentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DepartmentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DepartmentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DepartmentGroupByOutputType[P]>
+            : GetScalarType<T[P], DepartmentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DepartmentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    name?: boolean
+    description?: boolean
+    isActive?: boolean
+    branchId?: boolean
+    branch?: boolean | BranchDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["department"]>
+
+
+  export type DepartmentSelectScalar = {
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    name?: boolean
+    description?: boolean
+    isActive?: boolean
+    branchId?: boolean
+  }
+
+  export type DepartmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    branch?: boolean | BranchDefaultArgs<ExtArgs>
+  }
+
+  export type $DepartmentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Department"
+    objects: {
+      branch: Prisma.$BranchPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      createdAt: Date
+      updatedAt: Date
+      name: string
+      description: string | null
+      isActive: boolean
+      branchId: string
+    }, ExtArgs["result"]["department"]>
+    composites: {}
+  }
+
+  type DepartmentGetPayload<S extends boolean | null | undefined | DepartmentDefaultArgs> = $Result.GetResult<Prisma.$DepartmentPayload, S>
+
+  type DepartmentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<DepartmentFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: DepartmentCountAggregateInputType | true
+    }
+
+  export interface DepartmentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Department'], meta: { name: 'Department' } }
+    /**
+     * Find zero or one Department that matches the filter.
+     * @param {DepartmentFindUniqueArgs} args - Arguments to find a Department
+     * @example
+     * // Get one Department
+     * const department = await prisma.department.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DepartmentFindUniqueArgs>(args: SelectSubset<T, DepartmentFindUniqueArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Department that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {DepartmentFindUniqueOrThrowArgs} args - Arguments to find a Department
+     * @example
+     * // Get one Department
+     * const department = await prisma.department.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DepartmentFindUniqueOrThrowArgs>(args: SelectSubset<T, DepartmentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Department that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DepartmentFindFirstArgs} args - Arguments to find a Department
+     * @example
+     * // Get one Department
+     * const department = await prisma.department.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DepartmentFindFirstArgs>(args?: SelectSubset<T, DepartmentFindFirstArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Department that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DepartmentFindFirstOrThrowArgs} args - Arguments to find a Department
+     * @example
+     * // Get one Department
+     * const department = await prisma.department.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DepartmentFindFirstOrThrowArgs>(args?: SelectSubset<T, DepartmentFindFirstOrThrowArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Departments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DepartmentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Departments
+     * const departments = await prisma.department.findMany()
+     * 
+     * // Get first 10 Departments
+     * const departments = await prisma.department.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const departmentWithIdOnly = await prisma.department.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DepartmentFindManyArgs>(args?: SelectSubset<T, DepartmentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Department.
+     * @param {DepartmentCreateArgs} args - Arguments to create a Department.
+     * @example
+     * // Create one Department
+     * const Department = await prisma.department.create({
+     *   data: {
+     *     // ... data to create a Department
+     *   }
+     * })
+     * 
+     */
+    create<T extends DepartmentCreateArgs>(args: SelectSubset<T, DepartmentCreateArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Departments.
+     * @param {DepartmentCreateManyArgs} args - Arguments to create many Departments.
+     * @example
+     * // Create many Departments
+     * const department = await prisma.department.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DepartmentCreateManyArgs>(args?: SelectSubset<T, DepartmentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Department.
+     * @param {DepartmentDeleteArgs} args - Arguments to delete one Department.
+     * @example
+     * // Delete one Department
+     * const Department = await prisma.department.delete({
+     *   where: {
+     *     // ... filter to delete one Department
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DepartmentDeleteArgs>(args: SelectSubset<T, DepartmentDeleteArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Department.
+     * @param {DepartmentUpdateArgs} args - Arguments to update one Department.
+     * @example
+     * // Update one Department
+     * const department = await prisma.department.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DepartmentUpdateArgs>(args: SelectSubset<T, DepartmentUpdateArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Departments.
+     * @param {DepartmentDeleteManyArgs} args - Arguments to filter Departments to delete.
+     * @example
+     * // Delete a few Departments
+     * const { count } = await prisma.department.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DepartmentDeleteManyArgs>(args?: SelectSubset<T, DepartmentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Departments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DepartmentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Departments
+     * const department = await prisma.department.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DepartmentUpdateManyArgs>(args: SelectSubset<T, DepartmentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Department.
+     * @param {DepartmentUpsertArgs} args - Arguments to update or create a Department.
+     * @example
+     * // Update or create a Department
+     * const department = await prisma.department.upsert({
+     *   create: {
+     *     // ... data to create a Department
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Department we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DepartmentUpsertArgs>(args: SelectSubset<T, DepartmentUpsertArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Departments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DepartmentCountArgs} args - Arguments to filter Departments to count.
+     * @example
+     * // Count the number of Departments
+     * const count = await prisma.department.count({
+     *   where: {
+     *     // ... the filter for the Departments we want to count
+     *   }
+     * })
+    **/
+    count<T extends DepartmentCountArgs>(
+      args?: Subset<T, DepartmentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DepartmentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Department.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DepartmentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DepartmentAggregateArgs>(args: Subset<T, DepartmentAggregateArgs>): Prisma.PrismaPromise<GetDepartmentAggregateType<T>>
+
+    /**
+     * Group by Department.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DepartmentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DepartmentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DepartmentGroupByArgs['orderBy'] }
+        : { orderBy?: DepartmentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DepartmentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDepartmentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Department model
+   */
+  readonly fields: DepartmentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Department.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DepartmentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    branch<T extends BranchDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BranchDefaultArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Department model
+   */ 
+  interface DepartmentFieldRefs {
+    readonly id: FieldRef<"Department", 'String'>
+    readonly createdAt: FieldRef<"Department", 'DateTime'>
+    readonly updatedAt: FieldRef<"Department", 'DateTime'>
+    readonly name: FieldRef<"Department", 'String'>
+    readonly description: FieldRef<"Department", 'String'>
+    readonly isActive: FieldRef<"Department", 'Boolean'>
+    readonly branchId: FieldRef<"Department", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Department findUnique
+   */
+  export type DepartmentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+    /**
+     * Filter, which Department to fetch.
+     */
+    where: DepartmentWhereUniqueInput
+  }
+
+  /**
+   * Department findUniqueOrThrow
+   */
+  export type DepartmentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+    /**
+     * Filter, which Department to fetch.
+     */
+    where: DepartmentWhereUniqueInput
+  }
+
+  /**
+   * Department findFirst
+   */
+  export type DepartmentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+    /**
+     * Filter, which Department to fetch.
+     */
+    where?: DepartmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Departments to fetch.
+     */
+    orderBy?: DepartmentOrderByWithRelationInput | DepartmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Departments.
+     */
+    cursor?: DepartmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Departments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Departments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Departments.
+     */
+    distinct?: DepartmentScalarFieldEnum | DepartmentScalarFieldEnum[]
+  }
+
+  /**
+   * Department findFirstOrThrow
+   */
+  export type DepartmentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+    /**
+     * Filter, which Department to fetch.
+     */
+    where?: DepartmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Departments to fetch.
+     */
+    orderBy?: DepartmentOrderByWithRelationInput | DepartmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Departments.
+     */
+    cursor?: DepartmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Departments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Departments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Departments.
+     */
+    distinct?: DepartmentScalarFieldEnum | DepartmentScalarFieldEnum[]
+  }
+
+  /**
+   * Department findMany
+   */
+  export type DepartmentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+    /**
+     * Filter, which Departments to fetch.
+     */
+    where?: DepartmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Departments to fetch.
+     */
+    orderBy?: DepartmentOrderByWithRelationInput | DepartmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Departments.
+     */
+    cursor?: DepartmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Departments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Departments.
+     */
+    skip?: number
+    distinct?: DepartmentScalarFieldEnum | DepartmentScalarFieldEnum[]
+  }
+
+  /**
+   * Department create
+   */
+  export type DepartmentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Department.
+     */
+    data: XOR<DepartmentCreateInput, DepartmentUncheckedCreateInput>
+  }
+
+  /**
+   * Department createMany
+   */
+  export type DepartmentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Departments.
+     */
+    data: DepartmentCreateManyInput | DepartmentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Department update
+   */
+  export type DepartmentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Department.
+     */
+    data: XOR<DepartmentUpdateInput, DepartmentUncheckedUpdateInput>
+    /**
+     * Choose, which Department to update.
+     */
+    where: DepartmentWhereUniqueInput
+  }
+
+  /**
+   * Department updateMany
+   */
+  export type DepartmentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Departments.
+     */
+    data: XOR<DepartmentUpdateManyMutationInput, DepartmentUncheckedUpdateManyInput>
+    /**
+     * Filter which Departments to update
+     */
+    where?: DepartmentWhereInput
+  }
+
+  /**
+   * Department upsert
+   */
+  export type DepartmentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Department to update in case it exists.
+     */
+    where: DepartmentWhereUniqueInput
+    /**
+     * In case the Department found by the `where` argument doesn't exist, create a new Department with this data.
+     */
+    create: XOR<DepartmentCreateInput, DepartmentUncheckedCreateInput>
+    /**
+     * In case the Department was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DepartmentUpdateInput, DepartmentUncheckedUpdateInput>
+  }
+
+  /**
+   * Department delete
+   */
+  export type DepartmentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
+    /**
+     * Filter which Department to delete.
+     */
+    where: DepartmentWhereUniqueInput
+  }
+
+  /**
+   * Department deleteMany
+   */
+  export type DepartmentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Departments to delete
+     */
+    where?: DepartmentWhereInput
+  }
+
+  /**
+   * Department without action
+   */
+  export type DepartmentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Department
+     */
+    select?: DepartmentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DepartmentInclude<ExtArgs> | null
   }
 
 
@@ -21230,6 +24143,7 @@ export namespace Prisma {
     serviceId: string | null
     subServiceId: string | null
     clientId: string | null
+    serviceStatus: $Enums.ClientServiceStatus | null
   }
 
   export type IncomeServiceAgreementMaxAggregateOutputType = {
@@ -21241,6 +24155,7 @@ export namespace Prisma {
     serviceId: string | null
     subServiceId: string | null
     clientId: string | null
+    serviceStatus: $Enums.ClientServiceStatus | null
   }
 
   export type IncomeServiceAgreementCountAggregateOutputType = {
@@ -21252,6 +24167,7 @@ export namespace Prisma {
     serviceId: number
     subServiceId: number
     clientId: number
+    serviceStatus: number
     _all: number
   }
 
@@ -21275,6 +24191,7 @@ export namespace Prisma {
     serviceId?: true
     subServiceId?: true
     clientId?: true
+    serviceStatus?: true
   }
 
   export type IncomeServiceAgreementMaxAggregateInputType = {
@@ -21286,6 +24203,7 @@ export namespace Prisma {
     serviceId?: true
     subServiceId?: true
     clientId?: true
+    serviceStatus?: true
   }
 
   export type IncomeServiceAgreementCountAggregateInputType = {
@@ -21297,6 +24215,7 @@ export namespace Prisma {
     serviceId?: true
     subServiceId?: true
     clientId?: true
+    serviceStatus?: true
     _all?: true
   }
 
@@ -21395,6 +24314,7 @@ export namespace Prisma {
     serviceId: string
     subServiceId: string
     clientId: string
+    serviceStatus: $Enums.ClientServiceStatus
     _count: IncomeServiceAgreementCountAggregateOutputType | null
     _avg: IncomeServiceAgreementAvgAggregateOutputType | null
     _sum: IncomeServiceAgreementSumAggregateOutputType | null
@@ -21425,6 +24345,7 @@ export namespace Prisma {
     serviceId?: boolean
     subServiceId?: boolean
     clientId?: boolean
+    serviceStatus?: boolean
     service?: boolean | ServiceDefaultArgs<ExtArgs>
     subService?: boolean | SubServiceDefaultArgs<ExtArgs>
     client?: boolean | ClientDefaultArgs<ExtArgs>
@@ -21442,6 +24363,7 @@ export namespace Prisma {
     serviceId?: boolean
     subServiceId?: boolean
     clientId?: boolean
+    serviceStatus?: boolean
   }
 
   export type IncomeServiceAgreementInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -21469,6 +24391,7 @@ export namespace Prisma {
       serviceId: string
       subServiceId: string
       clientId: string
+      serviceStatus: $Enums.ClientServiceStatus
     }, ExtArgs["result"]["incomeServiceAgreement"]>
     composites: {}
   }
@@ -21850,6 +24773,7 @@ export namespace Prisma {
     readonly serviceId: FieldRef<"IncomeServiceAgreement", 'String'>
     readonly subServiceId: FieldRef<"IncomeServiceAgreement", 'String'>
     readonly clientId: FieldRef<"IncomeServiceAgreement", 'String'>
+    readonly serviceStatus: FieldRef<"IncomeServiceAgreement", 'ClientServiceStatus'>
   }
     
 
@@ -26797,6 +29721,4766 @@ export namespace Prisma {
 
 
   /**
+   * Model NavMenu
+   */
+
+  export type AggregateNavMenu = {
+    _count: NavMenuCountAggregateOutputType | null
+    _avg: NavMenuAvgAggregateOutputType | null
+    _sum: NavMenuSumAggregateOutputType | null
+    _min: NavMenuMinAggregateOutputType | null
+    _max: NavMenuMaxAggregateOutputType | null
+  }
+
+  export type NavMenuAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type NavMenuSumAggregateOutputType = {
+    order: number | null
+  }
+
+  export type NavMenuMinAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    title: string | null
+    url: string | null
+    icon: string | null
+    order: number | null
+    isActive: boolean | null
+  }
+
+  export type NavMenuMaxAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    title: string | null
+    url: string | null
+    icon: string | null
+    order: number | null
+    isActive: boolean | null
+  }
+
+  export type NavMenuCountAggregateOutputType = {
+    id: number
+    createdAt: number
+    updatedAt: number
+    title: number
+    url: number
+    icon: number
+    order: number
+    isActive: number
+    _all: number
+  }
+
+
+  export type NavMenuAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type NavMenuSumAggregateInputType = {
+    order?: true
+  }
+
+  export type NavMenuMinAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    title?: true
+    url?: true
+    icon?: true
+    order?: true
+    isActive?: true
+  }
+
+  export type NavMenuMaxAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    title?: true
+    url?: true
+    icon?: true
+    order?: true
+    isActive?: true
+  }
+
+  export type NavMenuCountAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    title?: true
+    url?: true
+    icon?: true
+    order?: true
+    isActive?: true
+    _all?: true
+  }
+
+  export type NavMenuAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NavMenu to aggregate.
+     */
+    where?: NavMenuWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NavMenus to fetch.
+     */
+    orderBy?: NavMenuOrderByWithRelationInput | NavMenuOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: NavMenuWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NavMenus from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NavMenus.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned NavMenus
+    **/
+    _count?: true | NavMenuCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: NavMenuAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: NavMenuSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NavMenuMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NavMenuMaxAggregateInputType
+  }
+
+  export type GetNavMenuAggregateType<T extends NavMenuAggregateArgs> = {
+        [P in keyof T & keyof AggregateNavMenu]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNavMenu[P]>
+      : GetScalarType<T[P], AggregateNavMenu[P]>
+  }
+
+
+
+
+  export type NavMenuGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NavMenuWhereInput
+    orderBy?: NavMenuOrderByWithAggregationInput | NavMenuOrderByWithAggregationInput[]
+    by: NavMenuScalarFieldEnum[] | NavMenuScalarFieldEnum
+    having?: NavMenuScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NavMenuCountAggregateInputType | true
+    _avg?: NavMenuAvgAggregateInputType
+    _sum?: NavMenuSumAggregateInputType
+    _min?: NavMenuMinAggregateInputType
+    _max?: NavMenuMaxAggregateInputType
+  }
+
+  export type NavMenuGroupByOutputType = {
+    id: string
+    createdAt: Date
+    updatedAt: Date
+    title: string
+    url: string
+    icon: string | null
+    order: number
+    isActive: boolean
+    _count: NavMenuCountAggregateOutputType | null
+    _avg: NavMenuAvgAggregateOutputType | null
+    _sum: NavMenuSumAggregateOutputType | null
+    _min: NavMenuMinAggregateOutputType | null
+    _max: NavMenuMaxAggregateOutputType | null
+  }
+
+  type GetNavMenuGroupByPayload<T extends NavMenuGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NavMenuGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NavMenuGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NavMenuGroupByOutputType[P]>
+            : GetScalarType<T[P], NavMenuGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NavMenuSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    title?: boolean
+    url?: boolean
+    icon?: boolean
+    order?: boolean
+    isActive?: boolean
+    subMenus?: boolean | NavMenu$subMenusArgs<ExtArgs>
+    roleAccess?: boolean | NavMenu$roleAccessArgs<ExtArgs>
+    _count?: boolean | NavMenuCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["navMenu"]>
+
+
+  export type NavMenuSelectScalar = {
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    title?: boolean
+    url?: boolean
+    icon?: boolean
+    order?: boolean
+    isActive?: boolean
+  }
+
+  export type NavMenuInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    subMenus?: boolean | NavMenu$subMenusArgs<ExtArgs>
+    roleAccess?: boolean | NavMenu$roleAccessArgs<ExtArgs>
+    _count?: boolean | NavMenuCountOutputTypeDefaultArgs<ExtArgs>
+  }
+
+  export type $NavMenuPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "NavMenu"
+    objects: {
+      subMenus: Prisma.$NavSubMenuPayload<ExtArgs>[]
+      roleAccess: Prisma.$RoleMenuAccessPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      createdAt: Date
+      updatedAt: Date
+      title: string
+      url: string
+      icon: string | null
+      order: number
+      isActive: boolean
+    }, ExtArgs["result"]["navMenu"]>
+    composites: {}
+  }
+
+  type NavMenuGetPayload<S extends boolean | null | undefined | NavMenuDefaultArgs> = $Result.GetResult<Prisma.$NavMenuPayload, S>
+
+  type NavMenuCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<NavMenuFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: NavMenuCountAggregateInputType | true
+    }
+
+  export interface NavMenuDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NavMenu'], meta: { name: 'NavMenu' } }
+    /**
+     * Find zero or one NavMenu that matches the filter.
+     * @param {NavMenuFindUniqueArgs} args - Arguments to find a NavMenu
+     * @example
+     * // Get one NavMenu
+     * const navMenu = await prisma.navMenu.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NavMenuFindUniqueArgs>(args: SelectSubset<T, NavMenuFindUniqueArgs<ExtArgs>>): Prisma__NavMenuClient<$Result.GetResult<Prisma.$NavMenuPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one NavMenu that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {NavMenuFindUniqueOrThrowArgs} args - Arguments to find a NavMenu
+     * @example
+     * // Get one NavMenu
+     * const navMenu = await prisma.navMenu.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NavMenuFindUniqueOrThrowArgs>(args: SelectSubset<T, NavMenuFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NavMenuClient<$Result.GetResult<Prisma.$NavMenuPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first NavMenu that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavMenuFindFirstArgs} args - Arguments to find a NavMenu
+     * @example
+     * // Get one NavMenu
+     * const navMenu = await prisma.navMenu.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NavMenuFindFirstArgs>(args?: SelectSubset<T, NavMenuFindFirstArgs<ExtArgs>>): Prisma__NavMenuClient<$Result.GetResult<Prisma.$NavMenuPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first NavMenu that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavMenuFindFirstOrThrowArgs} args - Arguments to find a NavMenu
+     * @example
+     * // Get one NavMenu
+     * const navMenu = await prisma.navMenu.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NavMenuFindFirstOrThrowArgs>(args?: SelectSubset<T, NavMenuFindFirstOrThrowArgs<ExtArgs>>): Prisma__NavMenuClient<$Result.GetResult<Prisma.$NavMenuPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more NavMenus that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavMenuFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all NavMenus
+     * const navMenus = await prisma.navMenu.findMany()
+     * 
+     * // Get first 10 NavMenus
+     * const navMenus = await prisma.navMenu.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const navMenuWithIdOnly = await prisma.navMenu.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends NavMenuFindManyArgs>(args?: SelectSubset<T, NavMenuFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NavMenuPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a NavMenu.
+     * @param {NavMenuCreateArgs} args - Arguments to create a NavMenu.
+     * @example
+     * // Create one NavMenu
+     * const NavMenu = await prisma.navMenu.create({
+     *   data: {
+     *     // ... data to create a NavMenu
+     *   }
+     * })
+     * 
+     */
+    create<T extends NavMenuCreateArgs>(args: SelectSubset<T, NavMenuCreateArgs<ExtArgs>>): Prisma__NavMenuClient<$Result.GetResult<Prisma.$NavMenuPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many NavMenus.
+     * @param {NavMenuCreateManyArgs} args - Arguments to create many NavMenus.
+     * @example
+     * // Create many NavMenus
+     * const navMenu = await prisma.navMenu.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends NavMenuCreateManyArgs>(args?: SelectSubset<T, NavMenuCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a NavMenu.
+     * @param {NavMenuDeleteArgs} args - Arguments to delete one NavMenu.
+     * @example
+     * // Delete one NavMenu
+     * const NavMenu = await prisma.navMenu.delete({
+     *   where: {
+     *     // ... filter to delete one NavMenu
+     *   }
+     * })
+     * 
+     */
+    delete<T extends NavMenuDeleteArgs>(args: SelectSubset<T, NavMenuDeleteArgs<ExtArgs>>): Prisma__NavMenuClient<$Result.GetResult<Prisma.$NavMenuPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one NavMenu.
+     * @param {NavMenuUpdateArgs} args - Arguments to update one NavMenu.
+     * @example
+     * // Update one NavMenu
+     * const navMenu = await prisma.navMenu.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends NavMenuUpdateArgs>(args: SelectSubset<T, NavMenuUpdateArgs<ExtArgs>>): Prisma__NavMenuClient<$Result.GetResult<Prisma.$NavMenuPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more NavMenus.
+     * @param {NavMenuDeleteManyArgs} args - Arguments to filter NavMenus to delete.
+     * @example
+     * // Delete a few NavMenus
+     * const { count } = await prisma.navMenu.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends NavMenuDeleteManyArgs>(args?: SelectSubset<T, NavMenuDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NavMenus.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavMenuUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many NavMenus
+     * const navMenu = await prisma.navMenu.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends NavMenuUpdateManyArgs>(args: SelectSubset<T, NavMenuUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one NavMenu.
+     * @param {NavMenuUpsertArgs} args - Arguments to update or create a NavMenu.
+     * @example
+     * // Update or create a NavMenu
+     * const navMenu = await prisma.navMenu.upsert({
+     *   create: {
+     *     // ... data to create a NavMenu
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the NavMenu we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NavMenuUpsertArgs>(args: SelectSubset<T, NavMenuUpsertArgs<ExtArgs>>): Prisma__NavMenuClient<$Result.GetResult<Prisma.$NavMenuPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of NavMenus.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavMenuCountArgs} args - Arguments to filter NavMenus to count.
+     * @example
+     * // Count the number of NavMenus
+     * const count = await prisma.navMenu.count({
+     *   where: {
+     *     // ... the filter for the NavMenus we want to count
+     *   }
+     * })
+    **/
+    count<T extends NavMenuCountArgs>(
+      args?: Subset<T, NavMenuCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NavMenuCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a NavMenu.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavMenuAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NavMenuAggregateArgs>(args: Subset<T, NavMenuAggregateArgs>): Prisma.PrismaPromise<GetNavMenuAggregateType<T>>
+
+    /**
+     * Group by NavMenu.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavMenuGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends NavMenuGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NavMenuGroupByArgs['orderBy'] }
+        : { orderBy?: NavMenuGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NavMenuGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNavMenuGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the NavMenu model
+   */
+  readonly fields: NavMenuFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for NavMenu.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NavMenuClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    subMenus<T extends NavMenu$subMenusArgs<ExtArgs> = {}>(args?: Subset<T, NavMenu$subMenusArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NavSubMenuPayload<ExtArgs>, T, "findMany"> | Null>
+    roleAccess<T extends NavMenu$roleAccessArgs<ExtArgs> = {}>(args?: Subset<T, NavMenu$roleAccessArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RoleMenuAccessPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the NavMenu model
+   */ 
+  interface NavMenuFieldRefs {
+    readonly id: FieldRef<"NavMenu", 'String'>
+    readonly createdAt: FieldRef<"NavMenu", 'DateTime'>
+    readonly updatedAt: FieldRef<"NavMenu", 'DateTime'>
+    readonly title: FieldRef<"NavMenu", 'String'>
+    readonly url: FieldRef<"NavMenu", 'String'>
+    readonly icon: FieldRef<"NavMenu", 'String'>
+    readonly order: FieldRef<"NavMenu", 'Int'>
+    readonly isActive: FieldRef<"NavMenu", 'Boolean'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * NavMenu findUnique
+   */
+  export type NavMenuFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavMenu
+     */
+    select?: NavMenuSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavMenuInclude<ExtArgs> | null
+    /**
+     * Filter, which NavMenu to fetch.
+     */
+    where: NavMenuWhereUniqueInput
+  }
+
+  /**
+   * NavMenu findUniqueOrThrow
+   */
+  export type NavMenuFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavMenu
+     */
+    select?: NavMenuSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavMenuInclude<ExtArgs> | null
+    /**
+     * Filter, which NavMenu to fetch.
+     */
+    where: NavMenuWhereUniqueInput
+  }
+
+  /**
+   * NavMenu findFirst
+   */
+  export type NavMenuFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavMenu
+     */
+    select?: NavMenuSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavMenuInclude<ExtArgs> | null
+    /**
+     * Filter, which NavMenu to fetch.
+     */
+    where?: NavMenuWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NavMenus to fetch.
+     */
+    orderBy?: NavMenuOrderByWithRelationInput | NavMenuOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NavMenus.
+     */
+    cursor?: NavMenuWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NavMenus from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NavMenus.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NavMenus.
+     */
+    distinct?: NavMenuScalarFieldEnum | NavMenuScalarFieldEnum[]
+  }
+
+  /**
+   * NavMenu findFirstOrThrow
+   */
+  export type NavMenuFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavMenu
+     */
+    select?: NavMenuSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavMenuInclude<ExtArgs> | null
+    /**
+     * Filter, which NavMenu to fetch.
+     */
+    where?: NavMenuWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NavMenus to fetch.
+     */
+    orderBy?: NavMenuOrderByWithRelationInput | NavMenuOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NavMenus.
+     */
+    cursor?: NavMenuWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NavMenus from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NavMenus.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NavMenus.
+     */
+    distinct?: NavMenuScalarFieldEnum | NavMenuScalarFieldEnum[]
+  }
+
+  /**
+   * NavMenu findMany
+   */
+  export type NavMenuFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavMenu
+     */
+    select?: NavMenuSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavMenuInclude<ExtArgs> | null
+    /**
+     * Filter, which NavMenus to fetch.
+     */
+    where?: NavMenuWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NavMenus to fetch.
+     */
+    orderBy?: NavMenuOrderByWithRelationInput | NavMenuOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing NavMenus.
+     */
+    cursor?: NavMenuWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NavMenus from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NavMenus.
+     */
+    skip?: number
+    distinct?: NavMenuScalarFieldEnum | NavMenuScalarFieldEnum[]
+  }
+
+  /**
+   * NavMenu create
+   */
+  export type NavMenuCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavMenu
+     */
+    select?: NavMenuSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavMenuInclude<ExtArgs> | null
+    /**
+     * The data needed to create a NavMenu.
+     */
+    data: XOR<NavMenuCreateInput, NavMenuUncheckedCreateInput>
+  }
+
+  /**
+   * NavMenu createMany
+   */
+  export type NavMenuCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many NavMenus.
+     */
+    data: NavMenuCreateManyInput | NavMenuCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NavMenu update
+   */
+  export type NavMenuUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavMenu
+     */
+    select?: NavMenuSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavMenuInclude<ExtArgs> | null
+    /**
+     * The data needed to update a NavMenu.
+     */
+    data: XOR<NavMenuUpdateInput, NavMenuUncheckedUpdateInput>
+    /**
+     * Choose, which NavMenu to update.
+     */
+    where: NavMenuWhereUniqueInput
+  }
+
+  /**
+   * NavMenu updateMany
+   */
+  export type NavMenuUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update NavMenus.
+     */
+    data: XOR<NavMenuUpdateManyMutationInput, NavMenuUncheckedUpdateManyInput>
+    /**
+     * Filter which NavMenus to update
+     */
+    where?: NavMenuWhereInput
+  }
+
+  /**
+   * NavMenu upsert
+   */
+  export type NavMenuUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavMenu
+     */
+    select?: NavMenuSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavMenuInclude<ExtArgs> | null
+    /**
+     * The filter to search for the NavMenu to update in case it exists.
+     */
+    where: NavMenuWhereUniqueInput
+    /**
+     * In case the NavMenu found by the `where` argument doesn't exist, create a new NavMenu with this data.
+     */
+    create: XOR<NavMenuCreateInput, NavMenuUncheckedCreateInput>
+    /**
+     * In case the NavMenu was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NavMenuUpdateInput, NavMenuUncheckedUpdateInput>
+  }
+
+  /**
+   * NavMenu delete
+   */
+  export type NavMenuDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavMenu
+     */
+    select?: NavMenuSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavMenuInclude<ExtArgs> | null
+    /**
+     * Filter which NavMenu to delete.
+     */
+    where: NavMenuWhereUniqueInput
+  }
+
+  /**
+   * NavMenu deleteMany
+   */
+  export type NavMenuDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NavMenus to delete
+     */
+    where?: NavMenuWhereInput
+  }
+
+  /**
+   * NavMenu.subMenus
+   */
+  export type NavMenu$subMenusArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavSubMenu
+     */
+    select?: NavSubMenuSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavSubMenuInclude<ExtArgs> | null
+    where?: NavSubMenuWhereInput
+    orderBy?: NavSubMenuOrderByWithRelationInput | NavSubMenuOrderByWithRelationInput[]
+    cursor?: NavSubMenuWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NavSubMenuScalarFieldEnum | NavSubMenuScalarFieldEnum[]
+  }
+
+  /**
+   * NavMenu.roleAccess
+   */
+  export type NavMenu$roleAccessArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleMenuAccess
+     */
+    select?: RoleMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleMenuAccessInclude<ExtArgs> | null
+    where?: RoleMenuAccessWhereInput
+    orderBy?: RoleMenuAccessOrderByWithRelationInput | RoleMenuAccessOrderByWithRelationInput[]
+    cursor?: RoleMenuAccessWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RoleMenuAccessScalarFieldEnum | RoleMenuAccessScalarFieldEnum[]
+  }
+
+  /**
+   * NavMenu without action
+   */
+  export type NavMenuDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavMenu
+     */
+    select?: NavMenuSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavMenuInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model NavSubMenu
+   */
+
+  export type AggregateNavSubMenu = {
+    _count: NavSubMenuCountAggregateOutputType | null
+    _avg: NavSubMenuAvgAggregateOutputType | null
+    _sum: NavSubMenuSumAggregateOutputType | null
+    _min: NavSubMenuMinAggregateOutputType | null
+    _max: NavSubMenuMaxAggregateOutputType | null
+  }
+
+  export type NavSubMenuAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type NavSubMenuSumAggregateOutputType = {
+    order: number | null
+  }
+
+  export type NavSubMenuMinAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    menuId: string | null
+    title: string | null
+    url: string | null
+    order: number | null
+    isActive: boolean | null
+  }
+
+  export type NavSubMenuMaxAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    menuId: string | null
+    title: string | null
+    url: string | null
+    order: number | null
+    isActive: boolean | null
+  }
+
+  export type NavSubMenuCountAggregateOutputType = {
+    id: number
+    createdAt: number
+    updatedAt: number
+    menuId: number
+    title: number
+    url: number
+    order: number
+    isActive: number
+    _all: number
+  }
+
+
+  export type NavSubMenuAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type NavSubMenuSumAggregateInputType = {
+    order?: true
+  }
+
+  export type NavSubMenuMinAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    menuId?: true
+    title?: true
+    url?: true
+    order?: true
+    isActive?: true
+  }
+
+  export type NavSubMenuMaxAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    menuId?: true
+    title?: true
+    url?: true
+    order?: true
+    isActive?: true
+  }
+
+  export type NavSubMenuCountAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    menuId?: true
+    title?: true
+    url?: true
+    order?: true
+    isActive?: true
+    _all?: true
+  }
+
+  export type NavSubMenuAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NavSubMenu to aggregate.
+     */
+    where?: NavSubMenuWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NavSubMenus to fetch.
+     */
+    orderBy?: NavSubMenuOrderByWithRelationInput | NavSubMenuOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: NavSubMenuWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NavSubMenus from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NavSubMenus.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned NavSubMenus
+    **/
+    _count?: true | NavSubMenuCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: NavSubMenuAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: NavSubMenuSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NavSubMenuMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NavSubMenuMaxAggregateInputType
+  }
+
+  export type GetNavSubMenuAggregateType<T extends NavSubMenuAggregateArgs> = {
+        [P in keyof T & keyof AggregateNavSubMenu]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNavSubMenu[P]>
+      : GetScalarType<T[P], AggregateNavSubMenu[P]>
+  }
+
+
+
+
+  export type NavSubMenuGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NavSubMenuWhereInput
+    orderBy?: NavSubMenuOrderByWithAggregationInput | NavSubMenuOrderByWithAggregationInput[]
+    by: NavSubMenuScalarFieldEnum[] | NavSubMenuScalarFieldEnum
+    having?: NavSubMenuScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NavSubMenuCountAggregateInputType | true
+    _avg?: NavSubMenuAvgAggregateInputType
+    _sum?: NavSubMenuSumAggregateInputType
+    _min?: NavSubMenuMinAggregateInputType
+    _max?: NavSubMenuMaxAggregateInputType
+  }
+
+  export type NavSubMenuGroupByOutputType = {
+    id: string
+    createdAt: Date
+    updatedAt: Date
+    menuId: string
+    title: string
+    url: string
+    order: number
+    isActive: boolean
+    _count: NavSubMenuCountAggregateOutputType | null
+    _avg: NavSubMenuAvgAggregateOutputType | null
+    _sum: NavSubMenuSumAggregateOutputType | null
+    _min: NavSubMenuMinAggregateOutputType | null
+    _max: NavSubMenuMaxAggregateOutputType | null
+  }
+
+  type GetNavSubMenuGroupByPayload<T extends NavSubMenuGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NavSubMenuGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NavSubMenuGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NavSubMenuGroupByOutputType[P]>
+            : GetScalarType<T[P], NavSubMenuGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NavSubMenuSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    menuId?: boolean
+    title?: boolean
+    url?: boolean
+    order?: boolean
+    isActive?: boolean
+    menu?: boolean | NavMenuDefaultArgs<ExtArgs>
+    roleAccess?: boolean | NavSubMenu$roleAccessArgs<ExtArgs>
+    _count?: boolean | NavSubMenuCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["navSubMenu"]>
+
+
+  export type NavSubMenuSelectScalar = {
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    menuId?: boolean
+    title?: boolean
+    url?: boolean
+    order?: boolean
+    isActive?: boolean
+  }
+
+  export type NavSubMenuInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    menu?: boolean | NavMenuDefaultArgs<ExtArgs>
+    roleAccess?: boolean | NavSubMenu$roleAccessArgs<ExtArgs>
+    _count?: boolean | NavSubMenuCountOutputTypeDefaultArgs<ExtArgs>
+  }
+
+  export type $NavSubMenuPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "NavSubMenu"
+    objects: {
+      menu: Prisma.$NavMenuPayload<ExtArgs>
+      roleAccess: Prisma.$RoleSubMenuAccessPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      createdAt: Date
+      updatedAt: Date
+      menuId: string
+      title: string
+      url: string
+      order: number
+      isActive: boolean
+    }, ExtArgs["result"]["navSubMenu"]>
+    composites: {}
+  }
+
+  type NavSubMenuGetPayload<S extends boolean | null | undefined | NavSubMenuDefaultArgs> = $Result.GetResult<Prisma.$NavSubMenuPayload, S>
+
+  type NavSubMenuCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<NavSubMenuFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: NavSubMenuCountAggregateInputType | true
+    }
+
+  export interface NavSubMenuDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NavSubMenu'], meta: { name: 'NavSubMenu' } }
+    /**
+     * Find zero or one NavSubMenu that matches the filter.
+     * @param {NavSubMenuFindUniqueArgs} args - Arguments to find a NavSubMenu
+     * @example
+     * // Get one NavSubMenu
+     * const navSubMenu = await prisma.navSubMenu.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NavSubMenuFindUniqueArgs>(args: SelectSubset<T, NavSubMenuFindUniqueArgs<ExtArgs>>): Prisma__NavSubMenuClient<$Result.GetResult<Prisma.$NavSubMenuPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one NavSubMenu that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {NavSubMenuFindUniqueOrThrowArgs} args - Arguments to find a NavSubMenu
+     * @example
+     * // Get one NavSubMenu
+     * const navSubMenu = await prisma.navSubMenu.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NavSubMenuFindUniqueOrThrowArgs>(args: SelectSubset<T, NavSubMenuFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NavSubMenuClient<$Result.GetResult<Prisma.$NavSubMenuPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first NavSubMenu that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavSubMenuFindFirstArgs} args - Arguments to find a NavSubMenu
+     * @example
+     * // Get one NavSubMenu
+     * const navSubMenu = await prisma.navSubMenu.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NavSubMenuFindFirstArgs>(args?: SelectSubset<T, NavSubMenuFindFirstArgs<ExtArgs>>): Prisma__NavSubMenuClient<$Result.GetResult<Prisma.$NavSubMenuPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first NavSubMenu that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavSubMenuFindFirstOrThrowArgs} args - Arguments to find a NavSubMenu
+     * @example
+     * // Get one NavSubMenu
+     * const navSubMenu = await prisma.navSubMenu.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NavSubMenuFindFirstOrThrowArgs>(args?: SelectSubset<T, NavSubMenuFindFirstOrThrowArgs<ExtArgs>>): Prisma__NavSubMenuClient<$Result.GetResult<Prisma.$NavSubMenuPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more NavSubMenus that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavSubMenuFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all NavSubMenus
+     * const navSubMenus = await prisma.navSubMenu.findMany()
+     * 
+     * // Get first 10 NavSubMenus
+     * const navSubMenus = await prisma.navSubMenu.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const navSubMenuWithIdOnly = await prisma.navSubMenu.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends NavSubMenuFindManyArgs>(args?: SelectSubset<T, NavSubMenuFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NavSubMenuPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a NavSubMenu.
+     * @param {NavSubMenuCreateArgs} args - Arguments to create a NavSubMenu.
+     * @example
+     * // Create one NavSubMenu
+     * const NavSubMenu = await prisma.navSubMenu.create({
+     *   data: {
+     *     // ... data to create a NavSubMenu
+     *   }
+     * })
+     * 
+     */
+    create<T extends NavSubMenuCreateArgs>(args: SelectSubset<T, NavSubMenuCreateArgs<ExtArgs>>): Prisma__NavSubMenuClient<$Result.GetResult<Prisma.$NavSubMenuPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many NavSubMenus.
+     * @param {NavSubMenuCreateManyArgs} args - Arguments to create many NavSubMenus.
+     * @example
+     * // Create many NavSubMenus
+     * const navSubMenu = await prisma.navSubMenu.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends NavSubMenuCreateManyArgs>(args?: SelectSubset<T, NavSubMenuCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a NavSubMenu.
+     * @param {NavSubMenuDeleteArgs} args - Arguments to delete one NavSubMenu.
+     * @example
+     * // Delete one NavSubMenu
+     * const NavSubMenu = await prisma.navSubMenu.delete({
+     *   where: {
+     *     // ... filter to delete one NavSubMenu
+     *   }
+     * })
+     * 
+     */
+    delete<T extends NavSubMenuDeleteArgs>(args: SelectSubset<T, NavSubMenuDeleteArgs<ExtArgs>>): Prisma__NavSubMenuClient<$Result.GetResult<Prisma.$NavSubMenuPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one NavSubMenu.
+     * @param {NavSubMenuUpdateArgs} args - Arguments to update one NavSubMenu.
+     * @example
+     * // Update one NavSubMenu
+     * const navSubMenu = await prisma.navSubMenu.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends NavSubMenuUpdateArgs>(args: SelectSubset<T, NavSubMenuUpdateArgs<ExtArgs>>): Prisma__NavSubMenuClient<$Result.GetResult<Prisma.$NavSubMenuPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more NavSubMenus.
+     * @param {NavSubMenuDeleteManyArgs} args - Arguments to filter NavSubMenus to delete.
+     * @example
+     * // Delete a few NavSubMenus
+     * const { count } = await prisma.navSubMenu.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends NavSubMenuDeleteManyArgs>(args?: SelectSubset<T, NavSubMenuDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NavSubMenus.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavSubMenuUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many NavSubMenus
+     * const navSubMenu = await prisma.navSubMenu.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends NavSubMenuUpdateManyArgs>(args: SelectSubset<T, NavSubMenuUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one NavSubMenu.
+     * @param {NavSubMenuUpsertArgs} args - Arguments to update or create a NavSubMenu.
+     * @example
+     * // Update or create a NavSubMenu
+     * const navSubMenu = await prisma.navSubMenu.upsert({
+     *   create: {
+     *     // ... data to create a NavSubMenu
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the NavSubMenu we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NavSubMenuUpsertArgs>(args: SelectSubset<T, NavSubMenuUpsertArgs<ExtArgs>>): Prisma__NavSubMenuClient<$Result.GetResult<Prisma.$NavSubMenuPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of NavSubMenus.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavSubMenuCountArgs} args - Arguments to filter NavSubMenus to count.
+     * @example
+     * // Count the number of NavSubMenus
+     * const count = await prisma.navSubMenu.count({
+     *   where: {
+     *     // ... the filter for the NavSubMenus we want to count
+     *   }
+     * })
+    **/
+    count<T extends NavSubMenuCountArgs>(
+      args?: Subset<T, NavSubMenuCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NavSubMenuCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a NavSubMenu.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavSubMenuAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NavSubMenuAggregateArgs>(args: Subset<T, NavSubMenuAggregateArgs>): Prisma.PrismaPromise<GetNavSubMenuAggregateType<T>>
+
+    /**
+     * Group by NavSubMenu.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavSubMenuGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends NavSubMenuGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NavSubMenuGroupByArgs['orderBy'] }
+        : { orderBy?: NavSubMenuGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NavSubMenuGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNavSubMenuGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the NavSubMenu model
+   */
+  readonly fields: NavSubMenuFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for NavSubMenu.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NavSubMenuClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    menu<T extends NavMenuDefaultArgs<ExtArgs> = {}>(args?: Subset<T, NavMenuDefaultArgs<ExtArgs>>): Prisma__NavMenuClient<$Result.GetResult<Prisma.$NavMenuPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    roleAccess<T extends NavSubMenu$roleAccessArgs<ExtArgs> = {}>(args?: Subset<T, NavSubMenu$roleAccessArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RoleSubMenuAccessPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the NavSubMenu model
+   */ 
+  interface NavSubMenuFieldRefs {
+    readonly id: FieldRef<"NavSubMenu", 'String'>
+    readonly createdAt: FieldRef<"NavSubMenu", 'DateTime'>
+    readonly updatedAt: FieldRef<"NavSubMenu", 'DateTime'>
+    readonly menuId: FieldRef<"NavSubMenu", 'String'>
+    readonly title: FieldRef<"NavSubMenu", 'String'>
+    readonly url: FieldRef<"NavSubMenu", 'String'>
+    readonly order: FieldRef<"NavSubMenu", 'Int'>
+    readonly isActive: FieldRef<"NavSubMenu", 'Boolean'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * NavSubMenu findUnique
+   */
+  export type NavSubMenuFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavSubMenu
+     */
+    select?: NavSubMenuSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavSubMenuInclude<ExtArgs> | null
+    /**
+     * Filter, which NavSubMenu to fetch.
+     */
+    where: NavSubMenuWhereUniqueInput
+  }
+
+  /**
+   * NavSubMenu findUniqueOrThrow
+   */
+  export type NavSubMenuFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavSubMenu
+     */
+    select?: NavSubMenuSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavSubMenuInclude<ExtArgs> | null
+    /**
+     * Filter, which NavSubMenu to fetch.
+     */
+    where: NavSubMenuWhereUniqueInput
+  }
+
+  /**
+   * NavSubMenu findFirst
+   */
+  export type NavSubMenuFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavSubMenu
+     */
+    select?: NavSubMenuSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavSubMenuInclude<ExtArgs> | null
+    /**
+     * Filter, which NavSubMenu to fetch.
+     */
+    where?: NavSubMenuWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NavSubMenus to fetch.
+     */
+    orderBy?: NavSubMenuOrderByWithRelationInput | NavSubMenuOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NavSubMenus.
+     */
+    cursor?: NavSubMenuWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NavSubMenus from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NavSubMenus.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NavSubMenus.
+     */
+    distinct?: NavSubMenuScalarFieldEnum | NavSubMenuScalarFieldEnum[]
+  }
+
+  /**
+   * NavSubMenu findFirstOrThrow
+   */
+  export type NavSubMenuFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavSubMenu
+     */
+    select?: NavSubMenuSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavSubMenuInclude<ExtArgs> | null
+    /**
+     * Filter, which NavSubMenu to fetch.
+     */
+    where?: NavSubMenuWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NavSubMenus to fetch.
+     */
+    orderBy?: NavSubMenuOrderByWithRelationInput | NavSubMenuOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NavSubMenus.
+     */
+    cursor?: NavSubMenuWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NavSubMenus from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NavSubMenus.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NavSubMenus.
+     */
+    distinct?: NavSubMenuScalarFieldEnum | NavSubMenuScalarFieldEnum[]
+  }
+
+  /**
+   * NavSubMenu findMany
+   */
+  export type NavSubMenuFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavSubMenu
+     */
+    select?: NavSubMenuSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavSubMenuInclude<ExtArgs> | null
+    /**
+     * Filter, which NavSubMenus to fetch.
+     */
+    where?: NavSubMenuWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NavSubMenus to fetch.
+     */
+    orderBy?: NavSubMenuOrderByWithRelationInput | NavSubMenuOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing NavSubMenus.
+     */
+    cursor?: NavSubMenuWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NavSubMenus from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NavSubMenus.
+     */
+    skip?: number
+    distinct?: NavSubMenuScalarFieldEnum | NavSubMenuScalarFieldEnum[]
+  }
+
+  /**
+   * NavSubMenu create
+   */
+  export type NavSubMenuCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavSubMenu
+     */
+    select?: NavSubMenuSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavSubMenuInclude<ExtArgs> | null
+    /**
+     * The data needed to create a NavSubMenu.
+     */
+    data: XOR<NavSubMenuCreateInput, NavSubMenuUncheckedCreateInput>
+  }
+
+  /**
+   * NavSubMenu createMany
+   */
+  export type NavSubMenuCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many NavSubMenus.
+     */
+    data: NavSubMenuCreateManyInput | NavSubMenuCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NavSubMenu update
+   */
+  export type NavSubMenuUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavSubMenu
+     */
+    select?: NavSubMenuSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavSubMenuInclude<ExtArgs> | null
+    /**
+     * The data needed to update a NavSubMenu.
+     */
+    data: XOR<NavSubMenuUpdateInput, NavSubMenuUncheckedUpdateInput>
+    /**
+     * Choose, which NavSubMenu to update.
+     */
+    where: NavSubMenuWhereUniqueInput
+  }
+
+  /**
+   * NavSubMenu updateMany
+   */
+  export type NavSubMenuUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update NavSubMenus.
+     */
+    data: XOR<NavSubMenuUpdateManyMutationInput, NavSubMenuUncheckedUpdateManyInput>
+    /**
+     * Filter which NavSubMenus to update
+     */
+    where?: NavSubMenuWhereInput
+  }
+
+  /**
+   * NavSubMenu upsert
+   */
+  export type NavSubMenuUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavSubMenu
+     */
+    select?: NavSubMenuSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavSubMenuInclude<ExtArgs> | null
+    /**
+     * The filter to search for the NavSubMenu to update in case it exists.
+     */
+    where: NavSubMenuWhereUniqueInput
+    /**
+     * In case the NavSubMenu found by the `where` argument doesn't exist, create a new NavSubMenu with this data.
+     */
+    create: XOR<NavSubMenuCreateInput, NavSubMenuUncheckedCreateInput>
+    /**
+     * In case the NavSubMenu was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NavSubMenuUpdateInput, NavSubMenuUncheckedUpdateInput>
+  }
+
+  /**
+   * NavSubMenu delete
+   */
+  export type NavSubMenuDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavSubMenu
+     */
+    select?: NavSubMenuSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavSubMenuInclude<ExtArgs> | null
+    /**
+     * Filter which NavSubMenu to delete.
+     */
+    where: NavSubMenuWhereUniqueInput
+  }
+
+  /**
+   * NavSubMenu deleteMany
+   */
+  export type NavSubMenuDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NavSubMenus to delete
+     */
+    where?: NavSubMenuWhereInput
+  }
+
+  /**
+   * NavSubMenu.roleAccess
+   */
+  export type NavSubMenu$roleAccessArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleSubMenuAccess
+     */
+    select?: RoleSubMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleSubMenuAccessInclude<ExtArgs> | null
+    where?: RoleSubMenuAccessWhereInput
+    orderBy?: RoleSubMenuAccessOrderByWithRelationInput | RoleSubMenuAccessOrderByWithRelationInput[]
+    cursor?: RoleSubMenuAccessWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RoleSubMenuAccessScalarFieldEnum | RoleSubMenuAccessScalarFieldEnum[]
+  }
+
+  /**
+   * NavSubMenu without action
+   */
+  export type NavSubMenuDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavSubMenu
+     */
+    select?: NavSubMenuSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavSubMenuInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model RoleMenuAccess
+   */
+
+  export type AggregateRoleMenuAccess = {
+    _count: RoleMenuAccessCountAggregateOutputType | null
+    _min: RoleMenuAccessMinAggregateOutputType | null
+    _max: RoleMenuAccessMaxAggregateOutputType | null
+  }
+
+  export type RoleMenuAccessMinAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    roleId: string | null
+    menuId: string | null
+    canView: boolean | null
+    canAdd: boolean | null
+    canEdit: boolean | null
+    canDelete: boolean | null
+  }
+
+  export type RoleMenuAccessMaxAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    roleId: string | null
+    menuId: string | null
+    canView: boolean | null
+    canAdd: boolean | null
+    canEdit: boolean | null
+    canDelete: boolean | null
+  }
+
+  export type RoleMenuAccessCountAggregateOutputType = {
+    id: number
+    createdAt: number
+    updatedAt: number
+    roleId: number
+    menuId: number
+    canView: number
+    canAdd: number
+    canEdit: number
+    canDelete: number
+    _all: number
+  }
+
+
+  export type RoleMenuAccessMinAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    roleId?: true
+    menuId?: true
+    canView?: true
+    canAdd?: true
+    canEdit?: true
+    canDelete?: true
+  }
+
+  export type RoleMenuAccessMaxAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    roleId?: true
+    menuId?: true
+    canView?: true
+    canAdd?: true
+    canEdit?: true
+    canDelete?: true
+  }
+
+  export type RoleMenuAccessCountAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    roleId?: true
+    menuId?: true
+    canView?: true
+    canAdd?: true
+    canEdit?: true
+    canDelete?: true
+    _all?: true
+  }
+
+  export type RoleMenuAccessAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RoleMenuAccess to aggregate.
+     */
+    where?: RoleMenuAccessWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RoleMenuAccesses to fetch.
+     */
+    orderBy?: RoleMenuAccessOrderByWithRelationInput | RoleMenuAccessOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: RoleMenuAccessWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RoleMenuAccesses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RoleMenuAccesses.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned RoleMenuAccesses
+    **/
+    _count?: true | RoleMenuAccessCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: RoleMenuAccessMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: RoleMenuAccessMaxAggregateInputType
+  }
+
+  export type GetRoleMenuAccessAggregateType<T extends RoleMenuAccessAggregateArgs> = {
+        [P in keyof T & keyof AggregateRoleMenuAccess]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRoleMenuAccess[P]>
+      : GetScalarType<T[P], AggregateRoleMenuAccess[P]>
+  }
+
+
+
+
+  export type RoleMenuAccessGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RoleMenuAccessWhereInput
+    orderBy?: RoleMenuAccessOrderByWithAggregationInput | RoleMenuAccessOrderByWithAggregationInput[]
+    by: RoleMenuAccessScalarFieldEnum[] | RoleMenuAccessScalarFieldEnum
+    having?: RoleMenuAccessScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: RoleMenuAccessCountAggregateInputType | true
+    _min?: RoleMenuAccessMinAggregateInputType
+    _max?: RoleMenuAccessMaxAggregateInputType
+  }
+
+  export type RoleMenuAccessGroupByOutputType = {
+    id: string
+    createdAt: Date
+    updatedAt: Date
+    roleId: string
+    menuId: string
+    canView: boolean
+    canAdd: boolean
+    canEdit: boolean
+    canDelete: boolean
+    _count: RoleMenuAccessCountAggregateOutputType | null
+    _min: RoleMenuAccessMinAggregateOutputType | null
+    _max: RoleMenuAccessMaxAggregateOutputType | null
+  }
+
+  type GetRoleMenuAccessGroupByPayload<T extends RoleMenuAccessGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<RoleMenuAccessGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof RoleMenuAccessGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], RoleMenuAccessGroupByOutputType[P]>
+            : GetScalarType<T[P], RoleMenuAccessGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type RoleMenuAccessSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    roleId?: boolean
+    menuId?: boolean
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+    role?: boolean | RoleDefaultArgs<ExtArgs>
+    menu?: boolean | NavMenuDefaultArgs<ExtArgs>
+    subAccess?: boolean | RoleMenuAccess$subAccessArgs<ExtArgs>
+    _count?: boolean | RoleMenuAccessCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["roleMenuAccess"]>
+
+
+  export type RoleMenuAccessSelectScalar = {
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    roleId?: boolean
+    menuId?: boolean
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+  }
+
+  export type RoleMenuAccessInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    role?: boolean | RoleDefaultArgs<ExtArgs>
+    menu?: boolean | NavMenuDefaultArgs<ExtArgs>
+    subAccess?: boolean | RoleMenuAccess$subAccessArgs<ExtArgs>
+    _count?: boolean | RoleMenuAccessCountOutputTypeDefaultArgs<ExtArgs>
+  }
+
+  export type $RoleMenuAccessPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "RoleMenuAccess"
+    objects: {
+      role: Prisma.$RolePayload<ExtArgs>
+      menu: Prisma.$NavMenuPayload<ExtArgs>
+      subAccess: Prisma.$RoleSubMenuAccessPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      createdAt: Date
+      updatedAt: Date
+      roleId: string
+      menuId: string
+      canView: boolean
+      canAdd: boolean
+      canEdit: boolean
+      canDelete: boolean
+    }, ExtArgs["result"]["roleMenuAccess"]>
+    composites: {}
+  }
+
+  type RoleMenuAccessGetPayload<S extends boolean | null | undefined | RoleMenuAccessDefaultArgs> = $Result.GetResult<Prisma.$RoleMenuAccessPayload, S>
+
+  type RoleMenuAccessCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<RoleMenuAccessFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: RoleMenuAccessCountAggregateInputType | true
+    }
+
+  export interface RoleMenuAccessDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['RoleMenuAccess'], meta: { name: 'RoleMenuAccess' } }
+    /**
+     * Find zero or one RoleMenuAccess that matches the filter.
+     * @param {RoleMenuAccessFindUniqueArgs} args - Arguments to find a RoleMenuAccess
+     * @example
+     * // Get one RoleMenuAccess
+     * const roleMenuAccess = await prisma.roleMenuAccess.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends RoleMenuAccessFindUniqueArgs>(args: SelectSubset<T, RoleMenuAccessFindUniqueArgs<ExtArgs>>): Prisma__RoleMenuAccessClient<$Result.GetResult<Prisma.$RoleMenuAccessPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one RoleMenuAccess that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {RoleMenuAccessFindUniqueOrThrowArgs} args - Arguments to find a RoleMenuAccess
+     * @example
+     * // Get one RoleMenuAccess
+     * const roleMenuAccess = await prisma.roleMenuAccess.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends RoleMenuAccessFindUniqueOrThrowArgs>(args: SelectSubset<T, RoleMenuAccessFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RoleMenuAccessClient<$Result.GetResult<Prisma.$RoleMenuAccessPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first RoleMenuAccess that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RoleMenuAccessFindFirstArgs} args - Arguments to find a RoleMenuAccess
+     * @example
+     * // Get one RoleMenuAccess
+     * const roleMenuAccess = await prisma.roleMenuAccess.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends RoleMenuAccessFindFirstArgs>(args?: SelectSubset<T, RoleMenuAccessFindFirstArgs<ExtArgs>>): Prisma__RoleMenuAccessClient<$Result.GetResult<Prisma.$RoleMenuAccessPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first RoleMenuAccess that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RoleMenuAccessFindFirstOrThrowArgs} args - Arguments to find a RoleMenuAccess
+     * @example
+     * // Get one RoleMenuAccess
+     * const roleMenuAccess = await prisma.roleMenuAccess.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends RoleMenuAccessFindFirstOrThrowArgs>(args?: SelectSubset<T, RoleMenuAccessFindFirstOrThrowArgs<ExtArgs>>): Prisma__RoleMenuAccessClient<$Result.GetResult<Prisma.$RoleMenuAccessPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more RoleMenuAccesses that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RoleMenuAccessFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all RoleMenuAccesses
+     * const roleMenuAccesses = await prisma.roleMenuAccess.findMany()
+     * 
+     * // Get first 10 RoleMenuAccesses
+     * const roleMenuAccesses = await prisma.roleMenuAccess.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const roleMenuAccessWithIdOnly = await prisma.roleMenuAccess.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends RoleMenuAccessFindManyArgs>(args?: SelectSubset<T, RoleMenuAccessFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RoleMenuAccessPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a RoleMenuAccess.
+     * @param {RoleMenuAccessCreateArgs} args - Arguments to create a RoleMenuAccess.
+     * @example
+     * // Create one RoleMenuAccess
+     * const RoleMenuAccess = await prisma.roleMenuAccess.create({
+     *   data: {
+     *     // ... data to create a RoleMenuAccess
+     *   }
+     * })
+     * 
+     */
+    create<T extends RoleMenuAccessCreateArgs>(args: SelectSubset<T, RoleMenuAccessCreateArgs<ExtArgs>>): Prisma__RoleMenuAccessClient<$Result.GetResult<Prisma.$RoleMenuAccessPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many RoleMenuAccesses.
+     * @param {RoleMenuAccessCreateManyArgs} args - Arguments to create many RoleMenuAccesses.
+     * @example
+     * // Create many RoleMenuAccesses
+     * const roleMenuAccess = await prisma.roleMenuAccess.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends RoleMenuAccessCreateManyArgs>(args?: SelectSubset<T, RoleMenuAccessCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a RoleMenuAccess.
+     * @param {RoleMenuAccessDeleteArgs} args - Arguments to delete one RoleMenuAccess.
+     * @example
+     * // Delete one RoleMenuAccess
+     * const RoleMenuAccess = await prisma.roleMenuAccess.delete({
+     *   where: {
+     *     // ... filter to delete one RoleMenuAccess
+     *   }
+     * })
+     * 
+     */
+    delete<T extends RoleMenuAccessDeleteArgs>(args: SelectSubset<T, RoleMenuAccessDeleteArgs<ExtArgs>>): Prisma__RoleMenuAccessClient<$Result.GetResult<Prisma.$RoleMenuAccessPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one RoleMenuAccess.
+     * @param {RoleMenuAccessUpdateArgs} args - Arguments to update one RoleMenuAccess.
+     * @example
+     * // Update one RoleMenuAccess
+     * const roleMenuAccess = await prisma.roleMenuAccess.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends RoleMenuAccessUpdateArgs>(args: SelectSubset<T, RoleMenuAccessUpdateArgs<ExtArgs>>): Prisma__RoleMenuAccessClient<$Result.GetResult<Prisma.$RoleMenuAccessPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more RoleMenuAccesses.
+     * @param {RoleMenuAccessDeleteManyArgs} args - Arguments to filter RoleMenuAccesses to delete.
+     * @example
+     * // Delete a few RoleMenuAccesses
+     * const { count } = await prisma.roleMenuAccess.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends RoleMenuAccessDeleteManyArgs>(args?: SelectSubset<T, RoleMenuAccessDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RoleMenuAccesses.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RoleMenuAccessUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many RoleMenuAccesses
+     * const roleMenuAccess = await prisma.roleMenuAccess.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends RoleMenuAccessUpdateManyArgs>(args: SelectSubset<T, RoleMenuAccessUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one RoleMenuAccess.
+     * @param {RoleMenuAccessUpsertArgs} args - Arguments to update or create a RoleMenuAccess.
+     * @example
+     * // Update or create a RoleMenuAccess
+     * const roleMenuAccess = await prisma.roleMenuAccess.upsert({
+     *   create: {
+     *     // ... data to create a RoleMenuAccess
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the RoleMenuAccess we want to update
+     *   }
+     * })
+     */
+    upsert<T extends RoleMenuAccessUpsertArgs>(args: SelectSubset<T, RoleMenuAccessUpsertArgs<ExtArgs>>): Prisma__RoleMenuAccessClient<$Result.GetResult<Prisma.$RoleMenuAccessPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of RoleMenuAccesses.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RoleMenuAccessCountArgs} args - Arguments to filter RoleMenuAccesses to count.
+     * @example
+     * // Count the number of RoleMenuAccesses
+     * const count = await prisma.roleMenuAccess.count({
+     *   where: {
+     *     // ... the filter for the RoleMenuAccesses we want to count
+     *   }
+     * })
+    **/
+    count<T extends RoleMenuAccessCountArgs>(
+      args?: Subset<T, RoleMenuAccessCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], RoleMenuAccessCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a RoleMenuAccess.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RoleMenuAccessAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends RoleMenuAccessAggregateArgs>(args: Subset<T, RoleMenuAccessAggregateArgs>): Prisma.PrismaPromise<GetRoleMenuAccessAggregateType<T>>
+
+    /**
+     * Group by RoleMenuAccess.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RoleMenuAccessGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends RoleMenuAccessGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: RoleMenuAccessGroupByArgs['orderBy'] }
+        : { orderBy?: RoleMenuAccessGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, RoleMenuAccessGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRoleMenuAccessGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the RoleMenuAccess model
+   */
+  readonly fields: RoleMenuAccessFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for RoleMenuAccess.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__RoleMenuAccessClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    role<T extends RoleDefaultArgs<ExtArgs> = {}>(args?: Subset<T, RoleDefaultArgs<ExtArgs>>): Prisma__RoleClient<$Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    menu<T extends NavMenuDefaultArgs<ExtArgs> = {}>(args?: Subset<T, NavMenuDefaultArgs<ExtArgs>>): Prisma__NavMenuClient<$Result.GetResult<Prisma.$NavMenuPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    subAccess<T extends RoleMenuAccess$subAccessArgs<ExtArgs> = {}>(args?: Subset<T, RoleMenuAccess$subAccessArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RoleSubMenuAccessPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the RoleMenuAccess model
+   */ 
+  interface RoleMenuAccessFieldRefs {
+    readonly id: FieldRef<"RoleMenuAccess", 'String'>
+    readonly createdAt: FieldRef<"RoleMenuAccess", 'DateTime'>
+    readonly updatedAt: FieldRef<"RoleMenuAccess", 'DateTime'>
+    readonly roleId: FieldRef<"RoleMenuAccess", 'String'>
+    readonly menuId: FieldRef<"RoleMenuAccess", 'String'>
+    readonly canView: FieldRef<"RoleMenuAccess", 'Boolean'>
+    readonly canAdd: FieldRef<"RoleMenuAccess", 'Boolean'>
+    readonly canEdit: FieldRef<"RoleMenuAccess", 'Boolean'>
+    readonly canDelete: FieldRef<"RoleMenuAccess", 'Boolean'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * RoleMenuAccess findUnique
+   */
+  export type RoleMenuAccessFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleMenuAccess
+     */
+    select?: RoleMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleMenuAccessInclude<ExtArgs> | null
+    /**
+     * Filter, which RoleMenuAccess to fetch.
+     */
+    where: RoleMenuAccessWhereUniqueInput
+  }
+
+  /**
+   * RoleMenuAccess findUniqueOrThrow
+   */
+  export type RoleMenuAccessFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleMenuAccess
+     */
+    select?: RoleMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleMenuAccessInclude<ExtArgs> | null
+    /**
+     * Filter, which RoleMenuAccess to fetch.
+     */
+    where: RoleMenuAccessWhereUniqueInput
+  }
+
+  /**
+   * RoleMenuAccess findFirst
+   */
+  export type RoleMenuAccessFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleMenuAccess
+     */
+    select?: RoleMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleMenuAccessInclude<ExtArgs> | null
+    /**
+     * Filter, which RoleMenuAccess to fetch.
+     */
+    where?: RoleMenuAccessWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RoleMenuAccesses to fetch.
+     */
+    orderBy?: RoleMenuAccessOrderByWithRelationInput | RoleMenuAccessOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RoleMenuAccesses.
+     */
+    cursor?: RoleMenuAccessWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RoleMenuAccesses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RoleMenuAccesses.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RoleMenuAccesses.
+     */
+    distinct?: RoleMenuAccessScalarFieldEnum | RoleMenuAccessScalarFieldEnum[]
+  }
+
+  /**
+   * RoleMenuAccess findFirstOrThrow
+   */
+  export type RoleMenuAccessFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleMenuAccess
+     */
+    select?: RoleMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleMenuAccessInclude<ExtArgs> | null
+    /**
+     * Filter, which RoleMenuAccess to fetch.
+     */
+    where?: RoleMenuAccessWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RoleMenuAccesses to fetch.
+     */
+    orderBy?: RoleMenuAccessOrderByWithRelationInput | RoleMenuAccessOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RoleMenuAccesses.
+     */
+    cursor?: RoleMenuAccessWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RoleMenuAccesses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RoleMenuAccesses.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RoleMenuAccesses.
+     */
+    distinct?: RoleMenuAccessScalarFieldEnum | RoleMenuAccessScalarFieldEnum[]
+  }
+
+  /**
+   * RoleMenuAccess findMany
+   */
+  export type RoleMenuAccessFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleMenuAccess
+     */
+    select?: RoleMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleMenuAccessInclude<ExtArgs> | null
+    /**
+     * Filter, which RoleMenuAccesses to fetch.
+     */
+    where?: RoleMenuAccessWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RoleMenuAccesses to fetch.
+     */
+    orderBy?: RoleMenuAccessOrderByWithRelationInput | RoleMenuAccessOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing RoleMenuAccesses.
+     */
+    cursor?: RoleMenuAccessWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RoleMenuAccesses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RoleMenuAccesses.
+     */
+    skip?: number
+    distinct?: RoleMenuAccessScalarFieldEnum | RoleMenuAccessScalarFieldEnum[]
+  }
+
+  /**
+   * RoleMenuAccess create
+   */
+  export type RoleMenuAccessCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleMenuAccess
+     */
+    select?: RoleMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleMenuAccessInclude<ExtArgs> | null
+    /**
+     * The data needed to create a RoleMenuAccess.
+     */
+    data: XOR<RoleMenuAccessCreateInput, RoleMenuAccessUncheckedCreateInput>
+  }
+
+  /**
+   * RoleMenuAccess createMany
+   */
+  export type RoleMenuAccessCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many RoleMenuAccesses.
+     */
+    data: RoleMenuAccessCreateManyInput | RoleMenuAccessCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * RoleMenuAccess update
+   */
+  export type RoleMenuAccessUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleMenuAccess
+     */
+    select?: RoleMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleMenuAccessInclude<ExtArgs> | null
+    /**
+     * The data needed to update a RoleMenuAccess.
+     */
+    data: XOR<RoleMenuAccessUpdateInput, RoleMenuAccessUncheckedUpdateInput>
+    /**
+     * Choose, which RoleMenuAccess to update.
+     */
+    where: RoleMenuAccessWhereUniqueInput
+  }
+
+  /**
+   * RoleMenuAccess updateMany
+   */
+  export type RoleMenuAccessUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update RoleMenuAccesses.
+     */
+    data: XOR<RoleMenuAccessUpdateManyMutationInput, RoleMenuAccessUncheckedUpdateManyInput>
+    /**
+     * Filter which RoleMenuAccesses to update
+     */
+    where?: RoleMenuAccessWhereInput
+  }
+
+  /**
+   * RoleMenuAccess upsert
+   */
+  export type RoleMenuAccessUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleMenuAccess
+     */
+    select?: RoleMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleMenuAccessInclude<ExtArgs> | null
+    /**
+     * The filter to search for the RoleMenuAccess to update in case it exists.
+     */
+    where: RoleMenuAccessWhereUniqueInput
+    /**
+     * In case the RoleMenuAccess found by the `where` argument doesn't exist, create a new RoleMenuAccess with this data.
+     */
+    create: XOR<RoleMenuAccessCreateInput, RoleMenuAccessUncheckedCreateInput>
+    /**
+     * In case the RoleMenuAccess was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<RoleMenuAccessUpdateInput, RoleMenuAccessUncheckedUpdateInput>
+  }
+
+  /**
+   * RoleMenuAccess delete
+   */
+  export type RoleMenuAccessDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleMenuAccess
+     */
+    select?: RoleMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleMenuAccessInclude<ExtArgs> | null
+    /**
+     * Filter which RoleMenuAccess to delete.
+     */
+    where: RoleMenuAccessWhereUniqueInput
+  }
+
+  /**
+   * RoleMenuAccess deleteMany
+   */
+  export type RoleMenuAccessDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RoleMenuAccesses to delete
+     */
+    where?: RoleMenuAccessWhereInput
+  }
+
+  /**
+   * RoleMenuAccess.subAccess
+   */
+  export type RoleMenuAccess$subAccessArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleSubMenuAccess
+     */
+    select?: RoleSubMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleSubMenuAccessInclude<ExtArgs> | null
+    where?: RoleSubMenuAccessWhereInput
+    orderBy?: RoleSubMenuAccessOrderByWithRelationInput | RoleSubMenuAccessOrderByWithRelationInput[]
+    cursor?: RoleSubMenuAccessWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: RoleSubMenuAccessScalarFieldEnum | RoleSubMenuAccessScalarFieldEnum[]
+  }
+
+  /**
+   * RoleMenuAccess without action
+   */
+  export type RoleMenuAccessDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleMenuAccess
+     */
+    select?: RoleMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleMenuAccessInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model RoleSubMenuAccess
+   */
+
+  export type AggregateRoleSubMenuAccess = {
+    _count: RoleSubMenuAccessCountAggregateOutputType | null
+    _min: RoleSubMenuAccessMinAggregateOutputType | null
+    _max: RoleSubMenuAccessMaxAggregateOutputType | null
+  }
+
+  export type RoleSubMenuAccessMinAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    roleMenuAccessId: string | null
+    subMenuId: string | null
+    canView: boolean | null
+    canAdd: boolean | null
+    canEdit: boolean | null
+    canDelete: boolean | null
+  }
+
+  export type RoleSubMenuAccessMaxAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    roleMenuAccessId: string | null
+    subMenuId: string | null
+    canView: boolean | null
+    canAdd: boolean | null
+    canEdit: boolean | null
+    canDelete: boolean | null
+  }
+
+  export type RoleSubMenuAccessCountAggregateOutputType = {
+    id: number
+    createdAt: number
+    updatedAt: number
+    roleMenuAccessId: number
+    subMenuId: number
+    canView: number
+    canAdd: number
+    canEdit: number
+    canDelete: number
+    _all: number
+  }
+
+
+  export type RoleSubMenuAccessMinAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    roleMenuAccessId?: true
+    subMenuId?: true
+    canView?: true
+    canAdd?: true
+    canEdit?: true
+    canDelete?: true
+  }
+
+  export type RoleSubMenuAccessMaxAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    roleMenuAccessId?: true
+    subMenuId?: true
+    canView?: true
+    canAdd?: true
+    canEdit?: true
+    canDelete?: true
+  }
+
+  export type RoleSubMenuAccessCountAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    roleMenuAccessId?: true
+    subMenuId?: true
+    canView?: true
+    canAdd?: true
+    canEdit?: true
+    canDelete?: true
+    _all?: true
+  }
+
+  export type RoleSubMenuAccessAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RoleSubMenuAccess to aggregate.
+     */
+    where?: RoleSubMenuAccessWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RoleSubMenuAccesses to fetch.
+     */
+    orderBy?: RoleSubMenuAccessOrderByWithRelationInput | RoleSubMenuAccessOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: RoleSubMenuAccessWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RoleSubMenuAccesses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RoleSubMenuAccesses.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned RoleSubMenuAccesses
+    **/
+    _count?: true | RoleSubMenuAccessCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: RoleSubMenuAccessMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: RoleSubMenuAccessMaxAggregateInputType
+  }
+
+  export type GetRoleSubMenuAccessAggregateType<T extends RoleSubMenuAccessAggregateArgs> = {
+        [P in keyof T & keyof AggregateRoleSubMenuAccess]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRoleSubMenuAccess[P]>
+      : GetScalarType<T[P], AggregateRoleSubMenuAccess[P]>
+  }
+
+
+
+
+  export type RoleSubMenuAccessGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RoleSubMenuAccessWhereInput
+    orderBy?: RoleSubMenuAccessOrderByWithAggregationInput | RoleSubMenuAccessOrderByWithAggregationInput[]
+    by: RoleSubMenuAccessScalarFieldEnum[] | RoleSubMenuAccessScalarFieldEnum
+    having?: RoleSubMenuAccessScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: RoleSubMenuAccessCountAggregateInputType | true
+    _min?: RoleSubMenuAccessMinAggregateInputType
+    _max?: RoleSubMenuAccessMaxAggregateInputType
+  }
+
+  export type RoleSubMenuAccessGroupByOutputType = {
+    id: string
+    createdAt: Date
+    updatedAt: Date
+    roleMenuAccessId: string
+    subMenuId: string
+    canView: boolean
+    canAdd: boolean
+    canEdit: boolean
+    canDelete: boolean
+    _count: RoleSubMenuAccessCountAggregateOutputType | null
+    _min: RoleSubMenuAccessMinAggregateOutputType | null
+    _max: RoleSubMenuAccessMaxAggregateOutputType | null
+  }
+
+  type GetRoleSubMenuAccessGroupByPayload<T extends RoleSubMenuAccessGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<RoleSubMenuAccessGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof RoleSubMenuAccessGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], RoleSubMenuAccessGroupByOutputType[P]>
+            : GetScalarType<T[P], RoleSubMenuAccessGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type RoleSubMenuAccessSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    roleMenuAccessId?: boolean
+    subMenuId?: boolean
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+    roleMenuAccess?: boolean | RoleMenuAccessDefaultArgs<ExtArgs>
+    subMenu?: boolean | NavSubMenuDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["roleSubMenuAccess"]>
+
+
+  export type RoleSubMenuAccessSelectScalar = {
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    roleMenuAccessId?: boolean
+    subMenuId?: boolean
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+  }
+
+  export type RoleSubMenuAccessInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    roleMenuAccess?: boolean | RoleMenuAccessDefaultArgs<ExtArgs>
+    subMenu?: boolean | NavSubMenuDefaultArgs<ExtArgs>
+  }
+
+  export type $RoleSubMenuAccessPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "RoleSubMenuAccess"
+    objects: {
+      roleMenuAccess: Prisma.$RoleMenuAccessPayload<ExtArgs>
+      subMenu: Prisma.$NavSubMenuPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      createdAt: Date
+      updatedAt: Date
+      roleMenuAccessId: string
+      subMenuId: string
+      canView: boolean
+      canAdd: boolean
+      canEdit: boolean
+      canDelete: boolean
+    }, ExtArgs["result"]["roleSubMenuAccess"]>
+    composites: {}
+  }
+
+  type RoleSubMenuAccessGetPayload<S extends boolean | null | undefined | RoleSubMenuAccessDefaultArgs> = $Result.GetResult<Prisma.$RoleSubMenuAccessPayload, S>
+
+  type RoleSubMenuAccessCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<RoleSubMenuAccessFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: RoleSubMenuAccessCountAggregateInputType | true
+    }
+
+  export interface RoleSubMenuAccessDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['RoleSubMenuAccess'], meta: { name: 'RoleSubMenuAccess' } }
+    /**
+     * Find zero or one RoleSubMenuAccess that matches the filter.
+     * @param {RoleSubMenuAccessFindUniqueArgs} args - Arguments to find a RoleSubMenuAccess
+     * @example
+     * // Get one RoleSubMenuAccess
+     * const roleSubMenuAccess = await prisma.roleSubMenuAccess.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends RoleSubMenuAccessFindUniqueArgs>(args: SelectSubset<T, RoleSubMenuAccessFindUniqueArgs<ExtArgs>>): Prisma__RoleSubMenuAccessClient<$Result.GetResult<Prisma.$RoleSubMenuAccessPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one RoleSubMenuAccess that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {RoleSubMenuAccessFindUniqueOrThrowArgs} args - Arguments to find a RoleSubMenuAccess
+     * @example
+     * // Get one RoleSubMenuAccess
+     * const roleSubMenuAccess = await prisma.roleSubMenuAccess.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends RoleSubMenuAccessFindUniqueOrThrowArgs>(args: SelectSubset<T, RoleSubMenuAccessFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RoleSubMenuAccessClient<$Result.GetResult<Prisma.$RoleSubMenuAccessPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first RoleSubMenuAccess that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RoleSubMenuAccessFindFirstArgs} args - Arguments to find a RoleSubMenuAccess
+     * @example
+     * // Get one RoleSubMenuAccess
+     * const roleSubMenuAccess = await prisma.roleSubMenuAccess.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends RoleSubMenuAccessFindFirstArgs>(args?: SelectSubset<T, RoleSubMenuAccessFindFirstArgs<ExtArgs>>): Prisma__RoleSubMenuAccessClient<$Result.GetResult<Prisma.$RoleSubMenuAccessPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first RoleSubMenuAccess that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RoleSubMenuAccessFindFirstOrThrowArgs} args - Arguments to find a RoleSubMenuAccess
+     * @example
+     * // Get one RoleSubMenuAccess
+     * const roleSubMenuAccess = await prisma.roleSubMenuAccess.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends RoleSubMenuAccessFindFirstOrThrowArgs>(args?: SelectSubset<T, RoleSubMenuAccessFindFirstOrThrowArgs<ExtArgs>>): Prisma__RoleSubMenuAccessClient<$Result.GetResult<Prisma.$RoleSubMenuAccessPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more RoleSubMenuAccesses that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RoleSubMenuAccessFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all RoleSubMenuAccesses
+     * const roleSubMenuAccesses = await prisma.roleSubMenuAccess.findMany()
+     * 
+     * // Get first 10 RoleSubMenuAccesses
+     * const roleSubMenuAccesses = await prisma.roleSubMenuAccess.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const roleSubMenuAccessWithIdOnly = await prisma.roleSubMenuAccess.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends RoleSubMenuAccessFindManyArgs>(args?: SelectSubset<T, RoleSubMenuAccessFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RoleSubMenuAccessPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a RoleSubMenuAccess.
+     * @param {RoleSubMenuAccessCreateArgs} args - Arguments to create a RoleSubMenuAccess.
+     * @example
+     * // Create one RoleSubMenuAccess
+     * const RoleSubMenuAccess = await prisma.roleSubMenuAccess.create({
+     *   data: {
+     *     // ... data to create a RoleSubMenuAccess
+     *   }
+     * })
+     * 
+     */
+    create<T extends RoleSubMenuAccessCreateArgs>(args: SelectSubset<T, RoleSubMenuAccessCreateArgs<ExtArgs>>): Prisma__RoleSubMenuAccessClient<$Result.GetResult<Prisma.$RoleSubMenuAccessPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many RoleSubMenuAccesses.
+     * @param {RoleSubMenuAccessCreateManyArgs} args - Arguments to create many RoleSubMenuAccesses.
+     * @example
+     * // Create many RoleSubMenuAccesses
+     * const roleSubMenuAccess = await prisma.roleSubMenuAccess.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends RoleSubMenuAccessCreateManyArgs>(args?: SelectSubset<T, RoleSubMenuAccessCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a RoleSubMenuAccess.
+     * @param {RoleSubMenuAccessDeleteArgs} args - Arguments to delete one RoleSubMenuAccess.
+     * @example
+     * // Delete one RoleSubMenuAccess
+     * const RoleSubMenuAccess = await prisma.roleSubMenuAccess.delete({
+     *   where: {
+     *     // ... filter to delete one RoleSubMenuAccess
+     *   }
+     * })
+     * 
+     */
+    delete<T extends RoleSubMenuAccessDeleteArgs>(args: SelectSubset<T, RoleSubMenuAccessDeleteArgs<ExtArgs>>): Prisma__RoleSubMenuAccessClient<$Result.GetResult<Prisma.$RoleSubMenuAccessPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one RoleSubMenuAccess.
+     * @param {RoleSubMenuAccessUpdateArgs} args - Arguments to update one RoleSubMenuAccess.
+     * @example
+     * // Update one RoleSubMenuAccess
+     * const roleSubMenuAccess = await prisma.roleSubMenuAccess.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends RoleSubMenuAccessUpdateArgs>(args: SelectSubset<T, RoleSubMenuAccessUpdateArgs<ExtArgs>>): Prisma__RoleSubMenuAccessClient<$Result.GetResult<Prisma.$RoleSubMenuAccessPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more RoleSubMenuAccesses.
+     * @param {RoleSubMenuAccessDeleteManyArgs} args - Arguments to filter RoleSubMenuAccesses to delete.
+     * @example
+     * // Delete a few RoleSubMenuAccesses
+     * const { count } = await prisma.roleSubMenuAccess.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends RoleSubMenuAccessDeleteManyArgs>(args?: SelectSubset<T, RoleSubMenuAccessDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RoleSubMenuAccesses.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RoleSubMenuAccessUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many RoleSubMenuAccesses
+     * const roleSubMenuAccess = await prisma.roleSubMenuAccess.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends RoleSubMenuAccessUpdateManyArgs>(args: SelectSubset<T, RoleSubMenuAccessUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one RoleSubMenuAccess.
+     * @param {RoleSubMenuAccessUpsertArgs} args - Arguments to update or create a RoleSubMenuAccess.
+     * @example
+     * // Update or create a RoleSubMenuAccess
+     * const roleSubMenuAccess = await prisma.roleSubMenuAccess.upsert({
+     *   create: {
+     *     // ... data to create a RoleSubMenuAccess
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the RoleSubMenuAccess we want to update
+     *   }
+     * })
+     */
+    upsert<T extends RoleSubMenuAccessUpsertArgs>(args: SelectSubset<T, RoleSubMenuAccessUpsertArgs<ExtArgs>>): Prisma__RoleSubMenuAccessClient<$Result.GetResult<Prisma.$RoleSubMenuAccessPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of RoleSubMenuAccesses.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RoleSubMenuAccessCountArgs} args - Arguments to filter RoleSubMenuAccesses to count.
+     * @example
+     * // Count the number of RoleSubMenuAccesses
+     * const count = await prisma.roleSubMenuAccess.count({
+     *   where: {
+     *     // ... the filter for the RoleSubMenuAccesses we want to count
+     *   }
+     * })
+    **/
+    count<T extends RoleSubMenuAccessCountArgs>(
+      args?: Subset<T, RoleSubMenuAccessCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], RoleSubMenuAccessCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a RoleSubMenuAccess.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RoleSubMenuAccessAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends RoleSubMenuAccessAggregateArgs>(args: Subset<T, RoleSubMenuAccessAggregateArgs>): Prisma.PrismaPromise<GetRoleSubMenuAccessAggregateType<T>>
+
+    /**
+     * Group by RoleSubMenuAccess.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RoleSubMenuAccessGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends RoleSubMenuAccessGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: RoleSubMenuAccessGroupByArgs['orderBy'] }
+        : { orderBy?: RoleSubMenuAccessGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, RoleSubMenuAccessGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRoleSubMenuAccessGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the RoleSubMenuAccess model
+   */
+  readonly fields: RoleSubMenuAccessFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for RoleSubMenuAccess.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__RoleSubMenuAccessClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    roleMenuAccess<T extends RoleMenuAccessDefaultArgs<ExtArgs> = {}>(args?: Subset<T, RoleMenuAccessDefaultArgs<ExtArgs>>): Prisma__RoleMenuAccessClient<$Result.GetResult<Prisma.$RoleMenuAccessPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    subMenu<T extends NavSubMenuDefaultArgs<ExtArgs> = {}>(args?: Subset<T, NavSubMenuDefaultArgs<ExtArgs>>): Prisma__NavSubMenuClient<$Result.GetResult<Prisma.$NavSubMenuPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the RoleSubMenuAccess model
+   */ 
+  interface RoleSubMenuAccessFieldRefs {
+    readonly id: FieldRef<"RoleSubMenuAccess", 'String'>
+    readonly createdAt: FieldRef<"RoleSubMenuAccess", 'DateTime'>
+    readonly updatedAt: FieldRef<"RoleSubMenuAccess", 'DateTime'>
+    readonly roleMenuAccessId: FieldRef<"RoleSubMenuAccess", 'String'>
+    readonly subMenuId: FieldRef<"RoleSubMenuAccess", 'String'>
+    readonly canView: FieldRef<"RoleSubMenuAccess", 'Boolean'>
+    readonly canAdd: FieldRef<"RoleSubMenuAccess", 'Boolean'>
+    readonly canEdit: FieldRef<"RoleSubMenuAccess", 'Boolean'>
+    readonly canDelete: FieldRef<"RoleSubMenuAccess", 'Boolean'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * RoleSubMenuAccess findUnique
+   */
+  export type RoleSubMenuAccessFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleSubMenuAccess
+     */
+    select?: RoleSubMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleSubMenuAccessInclude<ExtArgs> | null
+    /**
+     * Filter, which RoleSubMenuAccess to fetch.
+     */
+    where: RoleSubMenuAccessWhereUniqueInput
+  }
+
+  /**
+   * RoleSubMenuAccess findUniqueOrThrow
+   */
+  export type RoleSubMenuAccessFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleSubMenuAccess
+     */
+    select?: RoleSubMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleSubMenuAccessInclude<ExtArgs> | null
+    /**
+     * Filter, which RoleSubMenuAccess to fetch.
+     */
+    where: RoleSubMenuAccessWhereUniqueInput
+  }
+
+  /**
+   * RoleSubMenuAccess findFirst
+   */
+  export type RoleSubMenuAccessFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleSubMenuAccess
+     */
+    select?: RoleSubMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleSubMenuAccessInclude<ExtArgs> | null
+    /**
+     * Filter, which RoleSubMenuAccess to fetch.
+     */
+    where?: RoleSubMenuAccessWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RoleSubMenuAccesses to fetch.
+     */
+    orderBy?: RoleSubMenuAccessOrderByWithRelationInput | RoleSubMenuAccessOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RoleSubMenuAccesses.
+     */
+    cursor?: RoleSubMenuAccessWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RoleSubMenuAccesses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RoleSubMenuAccesses.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RoleSubMenuAccesses.
+     */
+    distinct?: RoleSubMenuAccessScalarFieldEnum | RoleSubMenuAccessScalarFieldEnum[]
+  }
+
+  /**
+   * RoleSubMenuAccess findFirstOrThrow
+   */
+  export type RoleSubMenuAccessFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleSubMenuAccess
+     */
+    select?: RoleSubMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleSubMenuAccessInclude<ExtArgs> | null
+    /**
+     * Filter, which RoleSubMenuAccess to fetch.
+     */
+    where?: RoleSubMenuAccessWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RoleSubMenuAccesses to fetch.
+     */
+    orderBy?: RoleSubMenuAccessOrderByWithRelationInput | RoleSubMenuAccessOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RoleSubMenuAccesses.
+     */
+    cursor?: RoleSubMenuAccessWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RoleSubMenuAccesses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RoleSubMenuAccesses.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RoleSubMenuAccesses.
+     */
+    distinct?: RoleSubMenuAccessScalarFieldEnum | RoleSubMenuAccessScalarFieldEnum[]
+  }
+
+  /**
+   * RoleSubMenuAccess findMany
+   */
+  export type RoleSubMenuAccessFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleSubMenuAccess
+     */
+    select?: RoleSubMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleSubMenuAccessInclude<ExtArgs> | null
+    /**
+     * Filter, which RoleSubMenuAccesses to fetch.
+     */
+    where?: RoleSubMenuAccessWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RoleSubMenuAccesses to fetch.
+     */
+    orderBy?: RoleSubMenuAccessOrderByWithRelationInput | RoleSubMenuAccessOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing RoleSubMenuAccesses.
+     */
+    cursor?: RoleSubMenuAccessWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RoleSubMenuAccesses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RoleSubMenuAccesses.
+     */
+    skip?: number
+    distinct?: RoleSubMenuAccessScalarFieldEnum | RoleSubMenuAccessScalarFieldEnum[]
+  }
+
+  /**
+   * RoleSubMenuAccess create
+   */
+  export type RoleSubMenuAccessCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleSubMenuAccess
+     */
+    select?: RoleSubMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleSubMenuAccessInclude<ExtArgs> | null
+    /**
+     * The data needed to create a RoleSubMenuAccess.
+     */
+    data: XOR<RoleSubMenuAccessCreateInput, RoleSubMenuAccessUncheckedCreateInput>
+  }
+
+  /**
+   * RoleSubMenuAccess createMany
+   */
+  export type RoleSubMenuAccessCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many RoleSubMenuAccesses.
+     */
+    data: RoleSubMenuAccessCreateManyInput | RoleSubMenuAccessCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * RoleSubMenuAccess update
+   */
+  export type RoleSubMenuAccessUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleSubMenuAccess
+     */
+    select?: RoleSubMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleSubMenuAccessInclude<ExtArgs> | null
+    /**
+     * The data needed to update a RoleSubMenuAccess.
+     */
+    data: XOR<RoleSubMenuAccessUpdateInput, RoleSubMenuAccessUncheckedUpdateInput>
+    /**
+     * Choose, which RoleSubMenuAccess to update.
+     */
+    where: RoleSubMenuAccessWhereUniqueInput
+  }
+
+  /**
+   * RoleSubMenuAccess updateMany
+   */
+  export type RoleSubMenuAccessUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update RoleSubMenuAccesses.
+     */
+    data: XOR<RoleSubMenuAccessUpdateManyMutationInput, RoleSubMenuAccessUncheckedUpdateManyInput>
+    /**
+     * Filter which RoleSubMenuAccesses to update
+     */
+    where?: RoleSubMenuAccessWhereInput
+  }
+
+  /**
+   * RoleSubMenuAccess upsert
+   */
+  export type RoleSubMenuAccessUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleSubMenuAccess
+     */
+    select?: RoleSubMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleSubMenuAccessInclude<ExtArgs> | null
+    /**
+     * The filter to search for the RoleSubMenuAccess to update in case it exists.
+     */
+    where: RoleSubMenuAccessWhereUniqueInput
+    /**
+     * In case the RoleSubMenuAccess found by the `where` argument doesn't exist, create a new RoleSubMenuAccess with this data.
+     */
+    create: XOR<RoleSubMenuAccessCreateInput, RoleSubMenuAccessUncheckedCreateInput>
+    /**
+     * In case the RoleSubMenuAccess was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<RoleSubMenuAccessUpdateInput, RoleSubMenuAccessUncheckedUpdateInput>
+  }
+
+  /**
+   * RoleSubMenuAccess delete
+   */
+  export type RoleSubMenuAccessDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleSubMenuAccess
+     */
+    select?: RoleSubMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleSubMenuAccessInclude<ExtArgs> | null
+    /**
+     * Filter which RoleSubMenuAccess to delete.
+     */
+    where: RoleSubMenuAccessWhereUniqueInput
+  }
+
+  /**
+   * RoleSubMenuAccess deleteMany
+   */
+  export type RoleSubMenuAccessDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RoleSubMenuAccesses to delete
+     */
+    where?: RoleSubMenuAccessWhereInput
+  }
+
+  /**
+   * RoleSubMenuAccess without action
+   */
+  export type RoleSubMenuAccessDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RoleSubMenuAccess
+     */
+    select?: RoleSubMenuAccessSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RoleSubMenuAccessInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AuditLog
+   */
+
+  export type AggregateAuditLog = {
+    _count: AuditLogCountAggregateOutputType | null
+    _min: AuditLogMinAggregateOutputType | null
+    _max: AuditLogMaxAggregateOutputType | null
+  }
+
+  export type AuditLogMinAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    userId: string | null
+    action: string | null
+    entity: string | null
+    entityId: string | null
+    description: string | null
+  }
+
+  export type AuditLogMaxAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    userId: string | null
+    action: string | null
+    entity: string | null
+    entityId: string | null
+    description: string | null
+  }
+
+  export type AuditLogCountAggregateOutputType = {
+    id: number
+    createdAt: number
+    userId: number
+    action: number
+    entity: number
+    entityId: number
+    description: number
+    _all: number
+  }
+
+
+  export type AuditLogMinAggregateInputType = {
+    id?: true
+    createdAt?: true
+    userId?: true
+    action?: true
+    entity?: true
+    entityId?: true
+    description?: true
+  }
+
+  export type AuditLogMaxAggregateInputType = {
+    id?: true
+    createdAt?: true
+    userId?: true
+    action?: true
+    entity?: true
+    entityId?: true
+    description?: true
+  }
+
+  export type AuditLogCountAggregateInputType = {
+    id?: true
+    createdAt?: true
+    userId?: true
+    action?: true
+    entity?: true
+    entityId?: true
+    description?: true
+    _all?: true
+  }
+
+  export type AuditLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuditLog to aggregate.
+     */
+    where?: AuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditLogs to fetch.
+     */
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AuditLogs
+    **/
+    _count?: true | AuditLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AuditLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AuditLogMaxAggregateInputType
+  }
+
+  export type GetAuditLogAggregateType<T extends AuditLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateAuditLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAuditLog[P]>
+      : GetScalarType<T[P], AggregateAuditLog[P]>
+  }
+
+
+
+
+  export type AuditLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuditLogWhereInput
+    orderBy?: AuditLogOrderByWithAggregationInput | AuditLogOrderByWithAggregationInput[]
+    by: AuditLogScalarFieldEnum[] | AuditLogScalarFieldEnum
+    having?: AuditLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AuditLogCountAggregateInputType | true
+    _min?: AuditLogMinAggregateInputType
+    _max?: AuditLogMaxAggregateInputType
+  }
+
+  export type AuditLogGroupByOutputType = {
+    id: string
+    createdAt: Date
+    userId: string | null
+    action: string
+    entity: string
+    entityId: string | null
+    description: string | null
+    _count: AuditLogCountAggregateOutputType | null
+    _min: AuditLogMinAggregateOutputType | null
+    _max: AuditLogMaxAggregateOutputType | null
+  }
+
+  type GetAuditLogGroupByPayload<T extends AuditLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AuditLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AuditLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AuditLogGroupByOutputType[P]>
+            : GetScalarType<T[P], AuditLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AuditLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    userId?: boolean
+    action?: boolean
+    entity?: boolean
+    entityId?: boolean
+    description?: boolean
+    user?: boolean | AuditLog$userArgs<ExtArgs>
+  }, ExtArgs["result"]["auditLog"]>
+
+
+  export type AuditLogSelectScalar = {
+    id?: boolean
+    createdAt?: boolean
+    userId?: boolean
+    action?: boolean
+    entity?: boolean
+    entityId?: boolean
+    description?: boolean
+  }
+
+  export type AuditLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | AuditLog$userArgs<ExtArgs>
+  }
+
+  export type $AuditLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AuditLog"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      createdAt: Date
+      userId: string | null
+      action: string
+      entity: string
+      entityId: string | null
+      description: string | null
+    }, ExtArgs["result"]["auditLog"]>
+    composites: {}
+  }
+
+  type AuditLogGetPayload<S extends boolean | null | undefined | AuditLogDefaultArgs> = $Result.GetResult<Prisma.$AuditLogPayload, S>
+
+  type AuditLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<AuditLogFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: AuditLogCountAggregateInputType | true
+    }
+
+  export interface AuditLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AuditLog'], meta: { name: 'AuditLog' } }
+    /**
+     * Find zero or one AuditLog that matches the filter.
+     * @param {AuditLogFindUniqueArgs} args - Arguments to find a AuditLog
+     * @example
+     * // Get one AuditLog
+     * const auditLog = await prisma.auditLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AuditLogFindUniqueArgs>(args: SelectSubset<T, AuditLogFindUniqueArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one AuditLog that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {AuditLogFindUniqueOrThrowArgs} args - Arguments to find a AuditLog
+     * @example
+     * // Get one AuditLog
+     * const auditLog = await prisma.auditLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AuditLogFindUniqueOrThrowArgs>(args: SelectSubset<T, AuditLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first AuditLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogFindFirstArgs} args - Arguments to find a AuditLog
+     * @example
+     * // Get one AuditLog
+     * const auditLog = await prisma.auditLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AuditLogFindFirstArgs>(args?: SelectSubset<T, AuditLogFindFirstArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first AuditLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogFindFirstOrThrowArgs} args - Arguments to find a AuditLog
+     * @example
+     * // Get one AuditLog
+     * const auditLog = await prisma.auditLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AuditLogFindFirstOrThrowArgs>(args?: SelectSubset<T, AuditLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more AuditLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AuditLogs
+     * const auditLogs = await prisma.auditLog.findMany()
+     * 
+     * // Get first 10 AuditLogs
+     * const auditLogs = await prisma.auditLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const auditLogWithIdOnly = await prisma.auditLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AuditLogFindManyArgs>(args?: SelectSubset<T, AuditLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a AuditLog.
+     * @param {AuditLogCreateArgs} args - Arguments to create a AuditLog.
+     * @example
+     * // Create one AuditLog
+     * const AuditLog = await prisma.auditLog.create({
+     *   data: {
+     *     // ... data to create a AuditLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends AuditLogCreateArgs>(args: SelectSubset<T, AuditLogCreateArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many AuditLogs.
+     * @param {AuditLogCreateManyArgs} args - Arguments to create many AuditLogs.
+     * @example
+     * // Create many AuditLogs
+     * const auditLog = await prisma.auditLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AuditLogCreateManyArgs>(args?: SelectSubset<T, AuditLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a AuditLog.
+     * @param {AuditLogDeleteArgs} args - Arguments to delete one AuditLog.
+     * @example
+     * // Delete one AuditLog
+     * const AuditLog = await prisma.auditLog.delete({
+     *   where: {
+     *     // ... filter to delete one AuditLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AuditLogDeleteArgs>(args: SelectSubset<T, AuditLogDeleteArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one AuditLog.
+     * @param {AuditLogUpdateArgs} args - Arguments to update one AuditLog.
+     * @example
+     * // Update one AuditLog
+     * const auditLog = await prisma.auditLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AuditLogUpdateArgs>(args: SelectSubset<T, AuditLogUpdateArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more AuditLogs.
+     * @param {AuditLogDeleteManyArgs} args - Arguments to filter AuditLogs to delete.
+     * @example
+     * // Delete a few AuditLogs
+     * const { count } = await prisma.auditLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AuditLogDeleteManyArgs>(args?: SelectSubset<T, AuditLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AuditLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AuditLogs
+     * const auditLog = await prisma.auditLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AuditLogUpdateManyArgs>(args: SelectSubset<T, AuditLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one AuditLog.
+     * @param {AuditLogUpsertArgs} args - Arguments to update or create a AuditLog.
+     * @example
+     * // Update or create a AuditLog
+     * const auditLog = await prisma.auditLog.upsert({
+     *   create: {
+     *     // ... data to create a AuditLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AuditLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AuditLogUpsertArgs>(args: SelectSubset<T, AuditLogUpsertArgs<ExtArgs>>): Prisma__AuditLogClient<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of AuditLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogCountArgs} args - Arguments to filter AuditLogs to count.
+     * @example
+     * // Count the number of AuditLogs
+     * const count = await prisma.auditLog.count({
+     *   where: {
+     *     // ... the filter for the AuditLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends AuditLogCountArgs>(
+      args?: Subset<T, AuditLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AuditLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AuditLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AuditLogAggregateArgs>(args: Subset<T, AuditLogAggregateArgs>): Prisma.PrismaPromise<GetAuditLogAggregateType<T>>
+
+    /**
+     * Group by AuditLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AuditLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AuditLogGroupByArgs['orderBy'] }
+        : { orderBy?: AuditLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AuditLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAuditLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AuditLog model
+   */
+  readonly fields: AuditLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AuditLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AuditLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends AuditLog$userArgs<ExtArgs> = {}>(args?: Subset<T, AuditLog$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AuditLog model
+   */ 
+  interface AuditLogFieldRefs {
+    readonly id: FieldRef<"AuditLog", 'String'>
+    readonly createdAt: FieldRef<"AuditLog", 'DateTime'>
+    readonly userId: FieldRef<"AuditLog", 'String'>
+    readonly action: FieldRef<"AuditLog", 'String'>
+    readonly entity: FieldRef<"AuditLog", 'String'>
+    readonly entityId: FieldRef<"AuditLog", 'String'>
+    readonly description: FieldRef<"AuditLog", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AuditLog findUnique
+   */
+  export type AuditLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AuditLog to fetch.
+     */
+    where: AuditLogWhereUniqueInput
+  }
+
+  /**
+   * AuditLog findUniqueOrThrow
+   */
+  export type AuditLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AuditLog to fetch.
+     */
+    where: AuditLogWhereUniqueInput
+  }
+
+  /**
+   * AuditLog findFirst
+   */
+  export type AuditLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AuditLog to fetch.
+     */
+    where?: AuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditLogs to fetch.
+     */
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuditLogs.
+     */
+    cursor?: AuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuditLogs.
+     */
+    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * AuditLog findFirstOrThrow
+   */
+  export type AuditLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AuditLog to fetch.
+     */
+    where?: AuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditLogs to fetch.
+     */
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuditLogs.
+     */
+    cursor?: AuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuditLogs.
+     */
+    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * AuditLog findMany
+   */
+  export type AuditLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * Filter, which AuditLogs to fetch.
+     */
+    where?: AuditLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditLogs to fetch.
+     */
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AuditLogs.
+     */
+    cursor?: AuditLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditLogs.
+     */
+    skip?: number
+    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * AuditLog create
+   */
+  export type AuditLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AuditLog.
+     */
+    data: XOR<AuditLogCreateInput, AuditLogUncheckedCreateInput>
+  }
+
+  /**
+   * AuditLog createMany
+   */
+  export type AuditLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AuditLogs.
+     */
+    data: AuditLogCreateManyInput | AuditLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AuditLog update
+   */
+  export type AuditLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AuditLog.
+     */
+    data: XOR<AuditLogUpdateInput, AuditLogUncheckedUpdateInput>
+    /**
+     * Choose, which AuditLog to update.
+     */
+    where: AuditLogWhereUniqueInput
+  }
+
+  /**
+   * AuditLog updateMany
+   */
+  export type AuditLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AuditLogs.
+     */
+    data: XOR<AuditLogUpdateManyMutationInput, AuditLogUncheckedUpdateManyInput>
+    /**
+     * Filter which AuditLogs to update
+     */
+    where?: AuditLogWhereInput
+  }
+
+  /**
+   * AuditLog upsert
+   */
+  export type AuditLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AuditLog to update in case it exists.
+     */
+    where: AuditLogWhereUniqueInput
+    /**
+     * In case the AuditLog found by the `where` argument doesn't exist, create a new AuditLog with this data.
+     */
+    create: XOR<AuditLogCreateInput, AuditLogUncheckedCreateInput>
+    /**
+     * In case the AuditLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AuditLogUpdateInput, AuditLogUncheckedUpdateInput>
+  }
+
+  /**
+   * AuditLog delete
+   */
+  export type AuditLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
+     * Filter which AuditLog to delete.
+     */
+    where: AuditLogWhereUniqueInput
+  }
+
+  /**
+   * AuditLog deleteMany
+   */
+  export type AuditLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuditLogs to delete
+     */
+    where?: AuditLogWhereInput
+  }
+
+  /**
+   * AuditLog.user
+   */
+  export type AuditLog$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * AuditLog without action
+   */
+  export type AuditLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -26812,7 +34496,11 @@ export namespace Prisma {
 
   export const RoleScalarFieldEnum: {
     id: 'id',
-    name: 'name'
+    name: 'name',
+    description: 'description',
+    isActive: 'isActive',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type RoleScalarFieldEnum = (typeof RoleScalarFieldEnum)[keyof typeof RoleScalarFieldEnum]
@@ -26829,6 +34517,7 @@ export namespace Prisma {
     gender: 'gender',
     salary: 'salary',
     department: 'department',
+    branchId: 'branchId',
     roleId: 'roleId',
     role: 'role',
     banned: 'banned',
@@ -26900,7 +34589,9 @@ export namespace Prisma {
 
   export const ServiceScalarFieldEnum: {
     id: 'id',
-    serviceName: 'serviceName'
+    serviceName: 'serviceName',
+    description: 'description',
+    branchId: 'branchId'
   };
 
   export type ServiceScalarFieldEnum = (typeof ServiceScalarFieldEnum)[keyof typeof ServiceScalarFieldEnum]
@@ -26909,10 +34600,47 @@ export namespace Prisma {
   export const SubServiceScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    description: 'description',
     categoryId: 'categoryId'
   };
 
   export type SubServiceScalarFieldEnum = (typeof SubServiceScalarFieldEnum)[keyof typeof SubServiceScalarFieldEnum]
+
+
+  export const BranchScalarFieldEnum: {
+    id: 'id',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    name: 'name',
+    slug: 'slug',
+    description: 'description',
+    location: 'location',
+    phone: 'phone',
+    logoUrl: 'logoUrl',
+    iconLogoUrl: 'iconLogoUrl',
+    isMain: 'isMain',
+    usesRootLogin: 'usesRootLogin',
+    slugClearedOnce: 'slugClearedOnce',
+    primaryColor: 'primaryColor',
+    secondaryColor: 'secondaryColor',
+    customDomain: 'customDomain',
+    isActive: 'isActive'
+  };
+
+  export type BranchScalarFieldEnum = (typeof BranchScalarFieldEnum)[keyof typeof BranchScalarFieldEnum]
+
+
+  export const DepartmentScalarFieldEnum: {
+    id: 'id',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    name: 'name',
+    description: 'description',
+    isActive: 'isActive',
+    branchId: 'branchId'
+  };
+
+  export type DepartmentScalarFieldEnum = (typeof DepartmentScalarFieldEnum)[keyof typeof DepartmentScalarFieldEnum]
 
 
   export const ClientSubServiceScalarFieldEnum: {
@@ -27058,7 +34786,8 @@ export namespace Prisma {
     description: 'description',
     serviceId: 'serviceId',
     subServiceId: 'subServiceId',
-    clientId: 'clientId'
+    clientId: 'clientId',
+    serviceStatus: 'serviceStatus'
   };
 
   export type IncomeServiceAgreementScalarFieldEnum = (typeof IncomeServiceAgreementScalarFieldEnum)[keyof typeof IncomeServiceAgreementScalarFieldEnum]
@@ -27126,6 +34855,77 @@ export namespace Prisma {
   export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
 
 
+  export const NavMenuScalarFieldEnum: {
+    id: 'id',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    title: 'title',
+    url: 'url',
+    icon: 'icon',
+    order: 'order',
+    isActive: 'isActive'
+  };
+
+  export type NavMenuScalarFieldEnum = (typeof NavMenuScalarFieldEnum)[keyof typeof NavMenuScalarFieldEnum]
+
+
+  export const NavSubMenuScalarFieldEnum: {
+    id: 'id',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    menuId: 'menuId',
+    title: 'title',
+    url: 'url',
+    order: 'order',
+    isActive: 'isActive'
+  };
+
+  export type NavSubMenuScalarFieldEnum = (typeof NavSubMenuScalarFieldEnum)[keyof typeof NavSubMenuScalarFieldEnum]
+
+
+  export const RoleMenuAccessScalarFieldEnum: {
+    id: 'id',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    roleId: 'roleId',
+    menuId: 'menuId',
+    canView: 'canView',
+    canAdd: 'canAdd',
+    canEdit: 'canEdit',
+    canDelete: 'canDelete'
+  };
+
+  export type RoleMenuAccessScalarFieldEnum = (typeof RoleMenuAccessScalarFieldEnum)[keyof typeof RoleMenuAccessScalarFieldEnum]
+
+
+  export const RoleSubMenuAccessScalarFieldEnum: {
+    id: 'id',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    roleMenuAccessId: 'roleMenuAccessId',
+    subMenuId: 'subMenuId',
+    canView: 'canView',
+    canAdd: 'canAdd',
+    canEdit: 'canEdit',
+    canDelete: 'canDelete'
+  };
+
+  export type RoleSubMenuAccessScalarFieldEnum = (typeof RoleSubMenuAccessScalarFieldEnum)[keyof typeof RoleSubMenuAccessScalarFieldEnum]
+
+
+  export const AuditLogScalarFieldEnum: {
+    id: 'id',
+    createdAt: 'createdAt',
+    userId: 'userId',
+    action: 'action',
+    entity: 'entity',
+    entityId: 'entityId',
+    description: 'description'
+  };
+
+  export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -27155,16 +34955,16 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'DateTime'
+   * Reference to a field of type 'Boolean'
    */
-  export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
   /**
-   * Reference to a field of type 'Boolean'
+   * Reference to a field of type 'DateTime'
    */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+  export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
     
 
 
@@ -27201,6 +35001,13 @@ export namespace Prisma {
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
     
+
+
+  /**
+   * Reference to a field of type 'ClientServiceStatus'
+   */
+  export type EnumClientServiceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ClientServiceStatus'>
+    
   /**
    * Deep Input Types
    */
@@ -27212,13 +35019,23 @@ export namespace Prisma {
     NOT?: RoleWhereInput | RoleWhereInput[]
     id?: StringFilter<"Role"> | string
     name?: StringFilter<"Role"> | string
+    description?: StringNullableFilter<"Role"> | string | null
+    isActive?: BoolFilter<"Role"> | boolean
+    createdAt?: DateTimeFilter<"Role"> | Date | string
+    updatedAt?: DateTimeFilter<"Role"> | Date | string
     users?: UserListRelationFilter
+    menuAccess?: RoleMenuAccessListRelationFilter
   }
 
   export type RoleOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     users?: UserOrderByRelationAggregateInput
+    menuAccess?: RoleMenuAccessOrderByRelationAggregateInput
   }
 
   export type RoleWhereUniqueInput = Prisma.AtLeast<{
@@ -27227,12 +35044,21 @@ export namespace Prisma {
     AND?: RoleWhereInput | RoleWhereInput[]
     OR?: RoleWhereInput[]
     NOT?: RoleWhereInput | RoleWhereInput[]
+    description?: StringNullableFilter<"Role"> | string | null
+    isActive?: BoolFilter<"Role"> | boolean
+    createdAt?: DateTimeFilter<"Role"> | Date | string
+    updatedAt?: DateTimeFilter<"Role"> | Date | string
     users?: UserListRelationFilter
+    menuAccess?: RoleMenuAccessListRelationFilter
   }, "id" | "name">
 
   export type RoleOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: RoleCountOrderByAggregateInput
     _max?: RoleMaxOrderByAggregateInput
     _min?: RoleMinOrderByAggregateInput
@@ -27244,6 +35070,10 @@ export namespace Prisma {
     NOT?: RoleScalarWhereWithAggregatesInput | RoleScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Role"> | string
     name?: StringWithAggregatesFilter<"Role"> | string
+    description?: StringNullableWithAggregatesFilter<"Role"> | string | null
+    isActive?: BoolWithAggregatesFilter<"Role"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"Role"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Role"> | Date | string
   }
 
   export type UserWhereInput = {
@@ -27260,11 +35090,13 @@ export namespace Prisma {
     gender?: StringNullableFilter<"User"> | string | null
     salary?: StringNullableFilter<"User"> | string | null
     department?: StringNullableFilter<"User"> | string | null
+    branchId?: StringNullableFilter<"User"> | string | null
     roleId?: StringNullableFilter<"User"> | string | null
     role?: StringNullableFilter<"User"> | string | null
     banned?: BoolNullableFilter<"User"> | boolean | null
     banReason?: StringNullableFilter<"User"> | string | null
     banExpires?: DateTimeNullableFilter<"User"> | Date | string | null
+    branch?: XOR<BranchNullableRelationFilter, BranchWhereInput> | null
     sessions?: SessionListRelationFilter
     accounts?: AccountListRelationFilter
     assignedTasks?: TaskListRelationFilter
@@ -27274,6 +35106,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionListRelationFilter
     reciever?: UserSalaryListRelationFilter
     registerer?: UserSalaryListRelationFilter
+    auditLogs?: AuditLogListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -27287,11 +35120,13 @@ export namespace Prisma {
     gender?: SortOrderInput | SortOrder
     salary?: SortOrderInput | SortOrder
     department?: SortOrderInput | SortOrder
+    branchId?: SortOrderInput | SortOrder
     roleId?: SortOrderInput | SortOrder
     role?: SortOrderInput | SortOrder
     banned?: SortOrderInput | SortOrder
     banReason?: SortOrderInput | SortOrder
     banExpires?: SortOrderInput | SortOrder
+    branch?: BranchOrderByWithRelationInput
     sessions?: SessionOrderByRelationAggregateInput
     accounts?: AccountOrderByRelationAggregateInput
     assignedTasks?: TaskOrderByRelationAggregateInput
@@ -27301,6 +35136,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionOrderByRelationAggregateInput
     reciever?: UserSalaryOrderByRelationAggregateInput
     registerer?: UserSalaryOrderByRelationAggregateInput
+    auditLogs?: AuditLogOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -27317,11 +35153,13 @@ export namespace Prisma {
     gender?: StringNullableFilter<"User"> | string | null
     salary?: StringNullableFilter<"User"> | string | null
     department?: StringNullableFilter<"User"> | string | null
+    branchId?: StringNullableFilter<"User"> | string | null
     roleId?: StringNullableFilter<"User"> | string | null
     role?: StringNullableFilter<"User"> | string | null
     banned?: BoolNullableFilter<"User"> | boolean | null
     banReason?: StringNullableFilter<"User"> | string | null
     banExpires?: DateTimeNullableFilter<"User"> | Date | string | null
+    branch?: XOR<BranchNullableRelationFilter, BranchWhereInput> | null
     sessions?: SessionListRelationFilter
     accounts?: AccountListRelationFilter
     assignedTasks?: TaskListRelationFilter
@@ -27331,6 +35169,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionListRelationFilter
     reciever?: UserSalaryListRelationFilter
     registerer?: UserSalaryListRelationFilter
+    auditLogs?: AuditLogListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -27344,6 +35183,7 @@ export namespace Prisma {
     gender?: SortOrderInput | SortOrder
     salary?: SortOrderInput | SortOrder
     department?: SortOrderInput | SortOrder
+    branchId?: SortOrderInput | SortOrder
     roleId?: SortOrderInput | SortOrder
     role?: SortOrderInput | SortOrder
     banned?: SortOrderInput | SortOrder
@@ -27368,6 +35208,7 @@ export namespace Prisma {
     gender?: StringNullableWithAggregatesFilter<"User"> | string | null
     salary?: StringNullableWithAggregatesFilter<"User"> | string | null
     department?: StringNullableWithAggregatesFilter<"User"> | string | null
+    branchId?: StringNullableWithAggregatesFilter<"User"> | string | null
     roleId?: StringNullableWithAggregatesFilter<"User"> | string | null
     role?: StringNullableWithAggregatesFilter<"User"> | string | null
     banned?: BoolNullableWithAggregatesFilter<"User"> | boolean | null
@@ -27682,6 +35523,9 @@ export namespace Prisma {
     NOT?: ServiceWhereInput | ServiceWhereInput[]
     id?: StringFilter<"Service"> | string
     serviceName?: StringFilter<"Service"> | string
+    description?: StringNullableFilter<"Service"> | string | null
+    branchId?: StringNullableFilter<"Service"> | string | null
+    branch?: XOR<BranchNullableRelationFilter, BranchWhereInput> | null
     clientService?: ClientServiceListRelationFilter
     subService?: SubServiceListRelationFilter
     serviceAgreements?: IncomeServiceAgreementListRelationFilter
@@ -27690,6 +35534,9 @@ export namespace Prisma {
   export type ServiceOrderByWithRelationInput = {
     id?: SortOrder
     serviceName?: SortOrder
+    description?: SortOrderInput | SortOrder
+    branchId?: SortOrderInput | SortOrder
+    branch?: BranchOrderByWithRelationInput
     clientService?: ClientServiceOrderByRelationAggregateInput
     subService?: SubServiceOrderByRelationAggregateInput
     serviceAgreements?: IncomeServiceAgreementOrderByRelationAggregateInput
@@ -27697,18 +35544,24 @@ export namespace Prisma {
 
   export type ServiceWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    serviceName?: string
+    serviceName_branchId?: ServiceServiceNameBranchIdCompoundUniqueInput
     AND?: ServiceWhereInput | ServiceWhereInput[]
     OR?: ServiceWhereInput[]
     NOT?: ServiceWhereInput | ServiceWhereInput[]
+    serviceName?: StringFilter<"Service"> | string
+    description?: StringNullableFilter<"Service"> | string | null
+    branchId?: StringNullableFilter<"Service"> | string | null
+    branch?: XOR<BranchNullableRelationFilter, BranchWhereInput> | null
     clientService?: ClientServiceListRelationFilter
     subService?: SubServiceListRelationFilter
     serviceAgreements?: IncomeServiceAgreementListRelationFilter
-  }, "id" | "serviceName">
+  }, "id" | "serviceName_branchId">
 
   export type ServiceOrderByWithAggregationInput = {
     id?: SortOrder
     serviceName?: SortOrder
+    description?: SortOrderInput | SortOrder
+    branchId?: SortOrderInput | SortOrder
     _count?: ServiceCountOrderByAggregateInput
     _max?: ServiceMaxOrderByAggregateInput
     _min?: ServiceMinOrderByAggregateInput
@@ -27720,6 +35573,8 @@ export namespace Prisma {
     NOT?: ServiceScalarWhereWithAggregatesInput | ServiceScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Service"> | string
     serviceName?: StringWithAggregatesFilter<"Service"> | string
+    description?: StringNullableWithAggregatesFilter<"Service"> | string | null
+    branchId?: StringNullableWithAggregatesFilter<"Service"> | string | null
   }
 
   export type SubServiceWhereInput = {
@@ -27728,6 +35583,7 @@ export namespace Prisma {
     NOT?: SubServiceWhereInput | SubServiceWhereInput[]
     id?: StringFilter<"SubService"> | string
     name?: StringFilter<"SubService"> | string
+    description?: StringNullableFilter<"SubService"> | string | null
     categoryId?: StringFilter<"SubService"> | string
     service?: XOR<ServiceRelationFilter, ServiceWhereInput>
     clientSubService?: ClientSubServiceListRelationFilter
@@ -27737,6 +35593,7 @@ export namespace Prisma {
   export type SubServiceOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    description?: SortOrderInput | SortOrder
     categoryId?: SortOrder
     service?: ServiceOrderByWithRelationInput
     clientSubService?: ClientSubServiceOrderByRelationAggregateInput
@@ -27745,19 +35602,22 @@ export namespace Prisma {
 
   export type SubServiceWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    name_categoryId?: SubServiceNameCategoryIdCompoundUniqueInput
     AND?: SubServiceWhereInput | SubServiceWhereInput[]
     OR?: SubServiceWhereInput[]
     NOT?: SubServiceWhereInput | SubServiceWhereInput[]
     name?: StringFilter<"SubService"> | string
+    description?: StringNullableFilter<"SubService"> | string | null
     categoryId?: StringFilter<"SubService"> | string
     service?: XOR<ServiceRelationFilter, ServiceWhereInput>
     clientSubService?: ClientSubServiceListRelationFilter
     serviceAgreements?: IncomeServiceAgreementListRelationFilter
-  }, "id">
+  }, "id" | "name_categoryId">
 
   export type SubServiceOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    description?: SortOrderInput | SortOrder
     categoryId?: SortOrder
     _count?: SubServiceCountOrderByAggregateInput
     _max?: SubServiceMaxOrderByAggregateInput
@@ -27770,7 +35630,195 @@ export namespace Prisma {
     NOT?: SubServiceScalarWhereWithAggregatesInput | SubServiceScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"SubService"> | string
     name?: StringWithAggregatesFilter<"SubService"> | string
+    description?: StringNullableWithAggregatesFilter<"SubService"> | string | null
     categoryId?: StringWithAggregatesFilter<"SubService"> | string
+  }
+
+  export type BranchWhereInput = {
+    AND?: BranchWhereInput | BranchWhereInput[]
+    OR?: BranchWhereInput[]
+    NOT?: BranchWhereInput | BranchWhereInput[]
+    id?: StringFilter<"Branch"> | string
+    createdAt?: DateTimeFilter<"Branch"> | Date | string
+    updatedAt?: DateTimeFilter<"Branch"> | Date | string
+    name?: StringFilter<"Branch"> | string
+    slug?: StringNullableFilter<"Branch"> | string | null
+    description?: StringNullableFilter<"Branch"> | string | null
+    location?: StringNullableFilter<"Branch"> | string | null
+    phone?: StringNullableFilter<"Branch"> | string | null
+    logoUrl?: StringNullableFilter<"Branch"> | string | null
+    iconLogoUrl?: StringNullableFilter<"Branch"> | string | null
+    isMain?: BoolFilter<"Branch"> | boolean
+    usesRootLogin?: BoolFilter<"Branch"> | boolean
+    slugClearedOnce?: BoolFilter<"Branch"> | boolean
+    primaryColor?: StringFilter<"Branch"> | string
+    secondaryColor?: StringFilter<"Branch"> | string
+    customDomain?: StringNullableFilter<"Branch"> | string | null
+    isActive?: BoolFilter<"Branch"> | boolean
+    users?: UserListRelationFilter
+    services?: ServiceListRelationFilter
+    departments?: DepartmentListRelationFilter
+  }
+
+  export type BranchOrderByWithRelationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    name?: SortOrder
+    slug?: SortOrderInput | SortOrder
+    description?: SortOrderInput | SortOrder
+    location?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    logoUrl?: SortOrderInput | SortOrder
+    iconLogoUrl?: SortOrderInput | SortOrder
+    isMain?: SortOrder
+    usesRootLogin?: SortOrder
+    slugClearedOnce?: SortOrder
+    primaryColor?: SortOrder
+    secondaryColor?: SortOrder
+    customDomain?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    users?: UserOrderByRelationAggregateInput
+    services?: ServiceOrderByRelationAggregateInput
+    departments?: DepartmentOrderByRelationAggregateInput
+  }
+
+  export type BranchWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    name?: string
+    slug?: string
+    customDomain?: string
+    AND?: BranchWhereInput | BranchWhereInput[]
+    OR?: BranchWhereInput[]
+    NOT?: BranchWhereInput | BranchWhereInput[]
+    createdAt?: DateTimeFilter<"Branch"> | Date | string
+    updatedAt?: DateTimeFilter<"Branch"> | Date | string
+    description?: StringNullableFilter<"Branch"> | string | null
+    location?: StringNullableFilter<"Branch"> | string | null
+    phone?: StringNullableFilter<"Branch"> | string | null
+    logoUrl?: StringNullableFilter<"Branch"> | string | null
+    iconLogoUrl?: StringNullableFilter<"Branch"> | string | null
+    isMain?: BoolFilter<"Branch"> | boolean
+    usesRootLogin?: BoolFilter<"Branch"> | boolean
+    slugClearedOnce?: BoolFilter<"Branch"> | boolean
+    primaryColor?: StringFilter<"Branch"> | string
+    secondaryColor?: StringFilter<"Branch"> | string
+    isActive?: BoolFilter<"Branch"> | boolean
+    users?: UserListRelationFilter
+    services?: ServiceListRelationFilter
+    departments?: DepartmentListRelationFilter
+  }, "id" | "name" | "slug" | "customDomain">
+
+  export type BranchOrderByWithAggregationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    name?: SortOrder
+    slug?: SortOrderInput | SortOrder
+    description?: SortOrderInput | SortOrder
+    location?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    logoUrl?: SortOrderInput | SortOrder
+    iconLogoUrl?: SortOrderInput | SortOrder
+    isMain?: SortOrder
+    usesRootLogin?: SortOrder
+    slugClearedOnce?: SortOrder
+    primaryColor?: SortOrder
+    secondaryColor?: SortOrder
+    customDomain?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    _count?: BranchCountOrderByAggregateInput
+    _max?: BranchMaxOrderByAggregateInput
+    _min?: BranchMinOrderByAggregateInput
+  }
+
+  export type BranchScalarWhereWithAggregatesInput = {
+    AND?: BranchScalarWhereWithAggregatesInput | BranchScalarWhereWithAggregatesInput[]
+    OR?: BranchScalarWhereWithAggregatesInput[]
+    NOT?: BranchScalarWhereWithAggregatesInput | BranchScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Branch"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Branch"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Branch"> | Date | string
+    name?: StringWithAggregatesFilter<"Branch"> | string
+    slug?: StringNullableWithAggregatesFilter<"Branch"> | string | null
+    description?: StringNullableWithAggregatesFilter<"Branch"> | string | null
+    location?: StringNullableWithAggregatesFilter<"Branch"> | string | null
+    phone?: StringNullableWithAggregatesFilter<"Branch"> | string | null
+    logoUrl?: StringNullableWithAggregatesFilter<"Branch"> | string | null
+    iconLogoUrl?: StringNullableWithAggregatesFilter<"Branch"> | string | null
+    isMain?: BoolWithAggregatesFilter<"Branch"> | boolean
+    usesRootLogin?: BoolWithAggregatesFilter<"Branch"> | boolean
+    slugClearedOnce?: BoolWithAggregatesFilter<"Branch"> | boolean
+    primaryColor?: StringWithAggregatesFilter<"Branch"> | string
+    secondaryColor?: StringWithAggregatesFilter<"Branch"> | string
+    customDomain?: StringNullableWithAggregatesFilter<"Branch"> | string | null
+    isActive?: BoolWithAggregatesFilter<"Branch"> | boolean
+  }
+
+  export type DepartmentWhereInput = {
+    AND?: DepartmentWhereInput | DepartmentWhereInput[]
+    OR?: DepartmentWhereInput[]
+    NOT?: DepartmentWhereInput | DepartmentWhereInput[]
+    id?: StringFilter<"Department"> | string
+    createdAt?: DateTimeFilter<"Department"> | Date | string
+    updatedAt?: DateTimeFilter<"Department"> | Date | string
+    name?: StringFilter<"Department"> | string
+    description?: StringNullableFilter<"Department"> | string | null
+    isActive?: BoolFilter<"Department"> | boolean
+    branchId?: StringFilter<"Department"> | string
+    branch?: XOR<BranchRelationFilter, BranchWhereInput>
+  }
+
+  export type DepartmentOrderByWithRelationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    branchId?: SortOrder
+    branch?: BranchOrderByWithRelationInput
+  }
+
+  export type DepartmentWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    name_branchId?: DepartmentNameBranchIdCompoundUniqueInput
+    AND?: DepartmentWhereInput | DepartmentWhereInput[]
+    OR?: DepartmentWhereInput[]
+    NOT?: DepartmentWhereInput | DepartmentWhereInput[]
+    createdAt?: DateTimeFilter<"Department"> | Date | string
+    updatedAt?: DateTimeFilter<"Department"> | Date | string
+    name?: StringFilter<"Department"> | string
+    description?: StringNullableFilter<"Department"> | string | null
+    isActive?: BoolFilter<"Department"> | boolean
+    branchId?: StringFilter<"Department"> | string
+    branch?: XOR<BranchRelationFilter, BranchWhereInput>
+  }, "id" | "name_branchId">
+
+  export type DepartmentOrderByWithAggregationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    branchId?: SortOrder
+    _count?: DepartmentCountOrderByAggregateInput
+    _max?: DepartmentMaxOrderByAggregateInput
+    _min?: DepartmentMinOrderByAggregateInput
+  }
+
+  export type DepartmentScalarWhereWithAggregatesInput = {
+    AND?: DepartmentScalarWhereWithAggregatesInput | DepartmentScalarWhereWithAggregatesInput[]
+    OR?: DepartmentScalarWhereWithAggregatesInput[]
+    NOT?: DepartmentScalarWhereWithAggregatesInput | DepartmentScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Department"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Department"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Department"> | Date | string
+    name?: StringWithAggregatesFilter<"Department"> | string
+    description?: StringNullableWithAggregatesFilter<"Department"> | string | null
+    isActive?: BoolWithAggregatesFilter<"Department"> | boolean
+    branchId?: StringWithAggregatesFilter<"Department"> | string
   }
 
   export type ClientSubServiceWhereInput = {
@@ -28505,6 +36553,7 @@ export namespace Prisma {
     serviceId?: StringFilter<"IncomeServiceAgreement"> | string
     subServiceId?: StringFilter<"IncomeServiceAgreement"> | string
     clientId?: StringFilter<"IncomeServiceAgreement"> | string
+    serviceStatus?: EnumClientServiceStatusFilter<"IncomeServiceAgreement"> | $Enums.ClientServiceStatus
     service?: XOR<ServiceRelationFilter, ServiceWhereInput>
     subService?: XOR<SubServiceRelationFilter, SubServiceWhereInput>
     client?: XOR<ClientRelationFilter, ClientWhereInput>
@@ -28520,6 +36569,7 @@ export namespace Prisma {
     serviceId?: SortOrder
     subServiceId?: SortOrder
     clientId?: SortOrder
+    serviceStatus?: SortOrder
     service?: ServiceOrderByWithRelationInput
     subService?: SubServiceOrderByWithRelationInput
     client?: ClientOrderByWithRelationInput
@@ -28538,6 +36588,7 @@ export namespace Prisma {
     serviceId?: StringFilter<"IncomeServiceAgreement"> | string
     subServiceId?: StringFilter<"IncomeServiceAgreement"> | string
     clientId?: StringFilter<"IncomeServiceAgreement"> | string
+    serviceStatus?: EnumClientServiceStatusFilter<"IncomeServiceAgreement"> | $Enums.ClientServiceStatus
     service?: XOR<ServiceRelationFilter, ServiceWhereInput>
     subService?: XOR<SubServiceRelationFilter, SubServiceWhereInput>
     client?: XOR<ClientRelationFilter, ClientWhereInput>
@@ -28553,6 +36604,7 @@ export namespace Prisma {
     serviceId?: SortOrder
     subServiceId?: SortOrder
     clientId?: SortOrder
+    serviceStatus?: SortOrder
     _count?: IncomeServiceAgreementCountOrderByAggregateInput
     _avg?: IncomeServiceAgreementAvgOrderByAggregateInput
     _max?: IncomeServiceAgreementMaxOrderByAggregateInput
@@ -28572,6 +36624,7 @@ export namespace Prisma {
     serviceId?: StringWithAggregatesFilter<"IncomeServiceAgreement"> | string
     subServiceId?: StringWithAggregatesFilter<"IncomeServiceAgreement"> | string
     clientId?: StringWithAggregatesFilter<"IncomeServiceAgreement"> | string
+    serviceStatus?: EnumClientServiceStatusWithAggregatesFilter<"IncomeServiceAgreement"> | $Enums.ClientServiceStatus
   }
 
   export type ExpenseServiceAgreementWhereInput = {
@@ -28895,43 +36948,451 @@ export namespace Prisma {
     isSeen?: BoolWithAggregatesFilter<"Notification"> | boolean
   }
 
+  export type NavMenuWhereInput = {
+    AND?: NavMenuWhereInput | NavMenuWhereInput[]
+    OR?: NavMenuWhereInput[]
+    NOT?: NavMenuWhereInput | NavMenuWhereInput[]
+    id?: StringFilter<"NavMenu"> | string
+    createdAt?: DateTimeFilter<"NavMenu"> | Date | string
+    updatedAt?: DateTimeFilter<"NavMenu"> | Date | string
+    title?: StringFilter<"NavMenu"> | string
+    url?: StringFilter<"NavMenu"> | string
+    icon?: StringNullableFilter<"NavMenu"> | string | null
+    order?: IntFilter<"NavMenu"> | number
+    isActive?: BoolFilter<"NavMenu"> | boolean
+    subMenus?: NavSubMenuListRelationFilter
+    roleAccess?: RoleMenuAccessListRelationFilter
+  }
+
+  export type NavMenuOrderByWithRelationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    icon?: SortOrderInput | SortOrder
+    order?: SortOrder
+    isActive?: SortOrder
+    subMenus?: NavSubMenuOrderByRelationAggregateInput
+    roleAccess?: RoleMenuAccessOrderByRelationAggregateInput
+  }
+
+  export type NavMenuWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: NavMenuWhereInput | NavMenuWhereInput[]
+    OR?: NavMenuWhereInput[]
+    NOT?: NavMenuWhereInput | NavMenuWhereInput[]
+    createdAt?: DateTimeFilter<"NavMenu"> | Date | string
+    updatedAt?: DateTimeFilter<"NavMenu"> | Date | string
+    title?: StringFilter<"NavMenu"> | string
+    url?: StringFilter<"NavMenu"> | string
+    icon?: StringNullableFilter<"NavMenu"> | string | null
+    order?: IntFilter<"NavMenu"> | number
+    isActive?: BoolFilter<"NavMenu"> | boolean
+    subMenus?: NavSubMenuListRelationFilter
+    roleAccess?: RoleMenuAccessListRelationFilter
+  }, "id">
+
+  export type NavMenuOrderByWithAggregationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    icon?: SortOrderInput | SortOrder
+    order?: SortOrder
+    isActive?: SortOrder
+    _count?: NavMenuCountOrderByAggregateInput
+    _avg?: NavMenuAvgOrderByAggregateInput
+    _max?: NavMenuMaxOrderByAggregateInput
+    _min?: NavMenuMinOrderByAggregateInput
+    _sum?: NavMenuSumOrderByAggregateInput
+  }
+
+  export type NavMenuScalarWhereWithAggregatesInput = {
+    AND?: NavMenuScalarWhereWithAggregatesInput | NavMenuScalarWhereWithAggregatesInput[]
+    OR?: NavMenuScalarWhereWithAggregatesInput[]
+    NOT?: NavMenuScalarWhereWithAggregatesInput | NavMenuScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"NavMenu"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"NavMenu"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"NavMenu"> | Date | string
+    title?: StringWithAggregatesFilter<"NavMenu"> | string
+    url?: StringWithAggregatesFilter<"NavMenu"> | string
+    icon?: StringNullableWithAggregatesFilter<"NavMenu"> | string | null
+    order?: IntWithAggregatesFilter<"NavMenu"> | number
+    isActive?: BoolWithAggregatesFilter<"NavMenu"> | boolean
+  }
+
+  export type NavSubMenuWhereInput = {
+    AND?: NavSubMenuWhereInput | NavSubMenuWhereInput[]
+    OR?: NavSubMenuWhereInput[]
+    NOT?: NavSubMenuWhereInput | NavSubMenuWhereInput[]
+    id?: StringFilter<"NavSubMenu"> | string
+    createdAt?: DateTimeFilter<"NavSubMenu"> | Date | string
+    updatedAt?: DateTimeFilter<"NavSubMenu"> | Date | string
+    menuId?: StringFilter<"NavSubMenu"> | string
+    title?: StringFilter<"NavSubMenu"> | string
+    url?: StringFilter<"NavSubMenu"> | string
+    order?: IntFilter<"NavSubMenu"> | number
+    isActive?: BoolFilter<"NavSubMenu"> | boolean
+    menu?: XOR<NavMenuRelationFilter, NavMenuWhereInput>
+    roleAccess?: RoleSubMenuAccessListRelationFilter
+  }
+
+  export type NavSubMenuOrderByWithRelationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    menuId?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    order?: SortOrder
+    isActive?: SortOrder
+    menu?: NavMenuOrderByWithRelationInput
+    roleAccess?: RoleSubMenuAccessOrderByRelationAggregateInput
+  }
+
+  export type NavSubMenuWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: NavSubMenuWhereInput | NavSubMenuWhereInput[]
+    OR?: NavSubMenuWhereInput[]
+    NOT?: NavSubMenuWhereInput | NavSubMenuWhereInput[]
+    createdAt?: DateTimeFilter<"NavSubMenu"> | Date | string
+    updatedAt?: DateTimeFilter<"NavSubMenu"> | Date | string
+    menuId?: StringFilter<"NavSubMenu"> | string
+    title?: StringFilter<"NavSubMenu"> | string
+    url?: StringFilter<"NavSubMenu"> | string
+    order?: IntFilter<"NavSubMenu"> | number
+    isActive?: BoolFilter<"NavSubMenu"> | boolean
+    menu?: XOR<NavMenuRelationFilter, NavMenuWhereInput>
+    roleAccess?: RoleSubMenuAccessListRelationFilter
+  }, "id">
+
+  export type NavSubMenuOrderByWithAggregationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    menuId?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    order?: SortOrder
+    isActive?: SortOrder
+    _count?: NavSubMenuCountOrderByAggregateInput
+    _avg?: NavSubMenuAvgOrderByAggregateInput
+    _max?: NavSubMenuMaxOrderByAggregateInput
+    _min?: NavSubMenuMinOrderByAggregateInput
+    _sum?: NavSubMenuSumOrderByAggregateInput
+  }
+
+  export type NavSubMenuScalarWhereWithAggregatesInput = {
+    AND?: NavSubMenuScalarWhereWithAggregatesInput | NavSubMenuScalarWhereWithAggregatesInput[]
+    OR?: NavSubMenuScalarWhereWithAggregatesInput[]
+    NOT?: NavSubMenuScalarWhereWithAggregatesInput | NavSubMenuScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"NavSubMenu"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"NavSubMenu"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"NavSubMenu"> | Date | string
+    menuId?: StringWithAggregatesFilter<"NavSubMenu"> | string
+    title?: StringWithAggregatesFilter<"NavSubMenu"> | string
+    url?: StringWithAggregatesFilter<"NavSubMenu"> | string
+    order?: IntWithAggregatesFilter<"NavSubMenu"> | number
+    isActive?: BoolWithAggregatesFilter<"NavSubMenu"> | boolean
+  }
+
+  export type RoleMenuAccessWhereInput = {
+    AND?: RoleMenuAccessWhereInput | RoleMenuAccessWhereInput[]
+    OR?: RoleMenuAccessWhereInput[]
+    NOT?: RoleMenuAccessWhereInput | RoleMenuAccessWhereInput[]
+    id?: StringFilter<"RoleMenuAccess"> | string
+    createdAt?: DateTimeFilter<"RoleMenuAccess"> | Date | string
+    updatedAt?: DateTimeFilter<"RoleMenuAccess"> | Date | string
+    roleId?: StringFilter<"RoleMenuAccess"> | string
+    menuId?: StringFilter<"RoleMenuAccess"> | string
+    canView?: BoolFilter<"RoleMenuAccess"> | boolean
+    canAdd?: BoolFilter<"RoleMenuAccess"> | boolean
+    canEdit?: BoolFilter<"RoleMenuAccess"> | boolean
+    canDelete?: BoolFilter<"RoleMenuAccess"> | boolean
+    role?: XOR<RoleRelationFilter, RoleWhereInput>
+    menu?: XOR<NavMenuRelationFilter, NavMenuWhereInput>
+    subAccess?: RoleSubMenuAccessListRelationFilter
+  }
+
+  export type RoleMenuAccessOrderByWithRelationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    roleId?: SortOrder
+    menuId?: SortOrder
+    canView?: SortOrder
+    canAdd?: SortOrder
+    canEdit?: SortOrder
+    canDelete?: SortOrder
+    role?: RoleOrderByWithRelationInput
+    menu?: NavMenuOrderByWithRelationInput
+    subAccess?: RoleSubMenuAccessOrderByRelationAggregateInput
+  }
+
+  export type RoleMenuAccessWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    roleId_menuId?: RoleMenuAccessRoleIdMenuIdCompoundUniqueInput
+    AND?: RoleMenuAccessWhereInput | RoleMenuAccessWhereInput[]
+    OR?: RoleMenuAccessWhereInput[]
+    NOT?: RoleMenuAccessWhereInput | RoleMenuAccessWhereInput[]
+    createdAt?: DateTimeFilter<"RoleMenuAccess"> | Date | string
+    updatedAt?: DateTimeFilter<"RoleMenuAccess"> | Date | string
+    roleId?: StringFilter<"RoleMenuAccess"> | string
+    menuId?: StringFilter<"RoleMenuAccess"> | string
+    canView?: BoolFilter<"RoleMenuAccess"> | boolean
+    canAdd?: BoolFilter<"RoleMenuAccess"> | boolean
+    canEdit?: BoolFilter<"RoleMenuAccess"> | boolean
+    canDelete?: BoolFilter<"RoleMenuAccess"> | boolean
+    role?: XOR<RoleRelationFilter, RoleWhereInput>
+    menu?: XOR<NavMenuRelationFilter, NavMenuWhereInput>
+    subAccess?: RoleSubMenuAccessListRelationFilter
+  }, "id" | "roleId_menuId">
+
+  export type RoleMenuAccessOrderByWithAggregationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    roleId?: SortOrder
+    menuId?: SortOrder
+    canView?: SortOrder
+    canAdd?: SortOrder
+    canEdit?: SortOrder
+    canDelete?: SortOrder
+    _count?: RoleMenuAccessCountOrderByAggregateInput
+    _max?: RoleMenuAccessMaxOrderByAggregateInput
+    _min?: RoleMenuAccessMinOrderByAggregateInput
+  }
+
+  export type RoleMenuAccessScalarWhereWithAggregatesInput = {
+    AND?: RoleMenuAccessScalarWhereWithAggregatesInput | RoleMenuAccessScalarWhereWithAggregatesInput[]
+    OR?: RoleMenuAccessScalarWhereWithAggregatesInput[]
+    NOT?: RoleMenuAccessScalarWhereWithAggregatesInput | RoleMenuAccessScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"RoleMenuAccess"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"RoleMenuAccess"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"RoleMenuAccess"> | Date | string
+    roleId?: StringWithAggregatesFilter<"RoleMenuAccess"> | string
+    menuId?: StringWithAggregatesFilter<"RoleMenuAccess"> | string
+    canView?: BoolWithAggregatesFilter<"RoleMenuAccess"> | boolean
+    canAdd?: BoolWithAggregatesFilter<"RoleMenuAccess"> | boolean
+    canEdit?: BoolWithAggregatesFilter<"RoleMenuAccess"> | boolean
+    canDelete?: BoolWithAggregatesFilter<"RoleMenuAccess"> | boolean
+  }
+
+  export type RoleSubMenuAccessWhereInput = {
+    AND?: RoleSubMenuAccessWhereInput | RoleSubMenuAccessWhereInput[]
+    OR?: RoleSubMenuAccessWhereInput[]
+    NOT?: RoleSubMenuAccessWhereInput | RoleSubMenuAccessWhereInput[]
+    id?: StringFilter<"RoleSubMenuAccess"> | string
+    createdAt?: DateTimeFilter<"RoleSubMenuAccess"> | Date | string
+    updatedAt?: DateTimeFilter<"RoleSubMenuAccess"> | Date | string
+    roleMenuAccessId?: StringFilter<"RoleSubMenuAccess"> | string
+    subMenuId?: StringFilter<"RoleSubMenuAccess"> | string
+    canView?: BoolFilter<"RoleSubMenuAccess"> | boolean
+    canAdd?: BoolFilter<"RoleSubMenuAccess"> | boolean
+    canEdit?: BoolFilter<"RoleSubMenuAccess"> | boolean
+    canDelete?: BoolFilter<"RoleSubMenuAccess"> | boolean
+    roleMenuAccess?: XOR<RoleMenuAccessRelationFilter, RoleMenuAccessWhereInput>
+    subMenu?: XOR<NavSubMenuRelationFilter, NavSubMenuWhereInput>
+  }
+
+  export type RoleSubMenuAccessOrderByWithRelationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    roleMenuAccessId?: SortOrder
+    subMenuId?: SortOrder
+    canView?: SortOrder
+    canAdd?: SortOrder
+    canEdit?: SortOrder
+    canDelete?: SortOrder
+    roleMenuAccess?: RoleMenuAccessOrderByWithRelationInput
+    subMenu?: NavSubMenuOrderByWithRelationInput
+  }
+
+  export type RoleSubMenuAccessWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    roleMenuAccessId_subMenuId?: RoleSubMenuAccessRoleMenuAccessIdSubMenuIdCompoundUniqueInput
+    AND?: RoleSubMenuAccessWhereInput | RoleSubMenuAccessWhereInput[]
+    OR?: RoleSubMenuAccessWhereInput[]
+    NOT?: RoleSubMenuAccessWhereInput | RoleSubMenuAccessWhereInput[]
+    createdAt?: DateTimeFilter<"RoleSubMenuAccess"> | Date | string
+    updatedAt?: DateTimeFilter<"RoleSubMenuAccess"> | Date | string
+    roleMenuAccessId?: StringFilter<"RoleSubMenuAccess"> | string
+    subMenuId?: StringFilter<"RoleSubMenuAccess"> | string
+    canView?: BoolFilter<"RoleSubMenuAccess"> | boolean
+    canAdd?: BoolFilter<"RoleSubMenuAccess"> | boolean
+    canEdit?: BoolFilter<"RoleSubMenuAccess"> | boolean
+    canDelete?: BoolFilter<"RoleSubMenuAccess"> | boolean
+    roleMenuAccess?: XOR<RoleMenuAccessRelationFilter, RoleMenuAccessWhereInput>
+    subMenu?: XOR<NavSubMenuRelationFilter, NavSubMenuWhereInput>
+  }, "id" | "roleMenuAccessId_subMenuId">
+
+  export type RoleSubMenuAccessOrderByWithAggregationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    roleMenuAccessId?: SortOrder
+    subMenuId?: SortOrder
+    canView?: SortOrder
+    canAdd?: SortOrder
+    canEdit?: SortOrder
+    canDelete?: SortOrder
+    _count?: RoleSubMenuAccessCountOrderByAggregateInput
+    _max?: RoleSubMenuAccessMaxOrderByAggregateInput
+    _min?: RoleSubMenuAccessMinOrderByAggregateInput
+  }
+
+  export type RoleSubMenuAccessScalarWhereWithAggregatesInput = {
+    AND?: RoleSubMenuAccessScalarWhereWithAggregatesInput | RoleSubMenuAccessScalarWhereWithAggregatesInput[]
+    OR?: RoleSubMenuAccessScalarWhereWithAggregatesInput[]
+    NOT?: RoleSubMenuAccessScalarWhereWithAggregatesInput | RoleSubMenuAccessScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"RoleSubMenuAccess"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"RoleSubMenuAccess"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"RoleSubMenuAccess"> | Date | string
+    roleMenuAccessId?: StringWithAggregatesFilter<"RoleSubMenuAccess"> | string
+    subMenuId?: StringWithAggregatesFilter<"RoleSubMenuAccess"> | string
+    canView?: BoolWithAggregatesFilter<"RoleSubMenuAccess"> | boolean
+    canAdd?: BoolWithAggregatesFilter<"RoleSubMenuAccess"> | boolean
+    canEdit?: BoolWithAggregatesFilter<"RoleSubMenuAccess"> | boolean
+    canDelete?: BoolWithAggregatesFilter<"RoleSubMenuAccess"> | boolean
+  }
+
+  export type AuditLogWhereInput = {
+    AND?: AuditLogWhereInput | AuditLogWhereInput[]
+    OR?: AuditLogWhereInput[]
+    NOT?: AuditLogWhereInput | AuditLogWhereInput[]
+    id?: StringFilter<"AuditLog"> | string
+    createdAt?: DateTimeFilter<"AuditLog"> | Date | string
+    userId?: StringNullableFilter<"AuditLog"> | string | null
+    action?: StringFilter<"AuditLog"> | string
+    entity?: StringFilter<"AuditLog"> | string
+    entityId?: StringNullableFilter<"AuditLog"> | string | null
+    description?: StringNullableFilter<"AuditLog"> | string | null
+    user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+  }
+
+  export type AuditLogOrderByWithRelationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    action?: SortOrder
+    entity?: SortOrder
+    entityId?: SortOrderInput | SortOrder
+    description?: SortOrderInput | SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type AuditLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AuditLogWhereInput | AuditLogWhereInput[]
+    OR?: AuditLogWhereInput[]
+    NOT?: AuditLogWhereInput | AuditLogWhereInput[]
+    createdAt?: DateTimeFilter<"AuditLog"> | Date | string
+    userId?: StringNullableFilter<"AuditLog"> | string | null
+    action?: StringFilter<"AuditLog"> | string
+    entity?: StringFilter<"AuditLog"> | string
+    entityId?: StringNullableFilter<"AuditLog"> | string | null
+    description?: StringNullableFilter<"AuditLog"> | string | null
+    user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+  }, "id">
+
+  export type AuditLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    action?: SortOrder
+    entity?: SortOrder
+    entityId?: SortOrderInput | SortOrder
+    description?: SortOrderInput | SortOrder
+    _count?: AuditLogCountOrderByAggregateInput
+    _max?: AuditLogMaxOrderByAggregateInput
+    _min?: AuditLogMinOrderByAggregateInput
+  }
+
+  export type AuditLogScalarWhereWithAggregatesInput = {
+    AND?: AuditLogScalarWhereWithAggregatesInput | AuditLogScalarWhereWithAggregatesInput[]
+    OR?: AuditLogScalarWhereWithAggregatesInput[]
+    NOT?: AuditLogScalarWhereWithAggregatesInput | AuditLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AuditLog"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"AuditLog"> | Date | string
+    userId?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
+    action?: StringWithAggregatesFilter<"AuditLog"> | string
+    entity?: StringWithAggregatesFilter<"AuditLog"> | string
+    entityId?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
+    description?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
+  }
+
   export type RoleCreateInput = {
     id?: string
     name: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
     users?: UserCreateNestedManyWithoutDynamicRoleInput
+    menuAccess?: RoleMenuAccessCreateNestedManyWithoutRoleInput
   }
 
   export type RoleUncheckedCreateInput = {
     id?: string
     name: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutDynamicRoleInput
+    menuAccess?: RoleMenuAccessUncheckedCreateNestedManyWithoutRoleInput
   }
 
   export type RoleUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutDynamicRoleNestedInput
+    menuAccess?: RoleMenuAccessUpdateManyWithoutRoleNestedInput
   }
 
   export type RoleUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutDynamicRoleNestedInput
+    menuAccess?: RoleMenuAccessUncheckedUpdateManyWithoutRoleNestedInput
   }
 
   export type RoleCreateManyInput = {
     id?: string
     name: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type RoleUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type RoleUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserCreateInput = {
@@ -28949,6 +37410,7 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    branch?: BranchCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -28958,6 +37420,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
     registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -28971,6 +37434,7 @@ export namespace Prisma {
     gender?: string | null
     salary?: string | null
     department?: string | null
+    branchId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -28984,6 +37448,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
     registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -29001,6 +37466,7 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    branch?: BranchUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -29010,6 +37476,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
     registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -29023,6 +37490,7 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -29036,6 +37504,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
     registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -29049,6 +37518,7 @@ export namespace Prisma {
     gender?: string | null
     salary?: string | null
     department?: string | null
+    branchId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -29084,6 +37554,7 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -29437,6 +37908,8 @@ export namespace Prisma {
   export type ServiceCreateInput = {
     id: string
     serviceName: string
+    description?: string | null
+    branch?: BranchCreateNestedOneWithoutServicesInput
     clientService?: ClientServiceCreateNestedManyWithoutServiceInput
     subService?: SubServiceCreateNestedManyWithoutServiceInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutServiceInput
@@ -29445,6 +37918,8 @@ export namespace Prisma {
   export type ServiceUncheckedCreateInput = {
     id: string
     serviceName: string
+    description?: string | null
+    branchId?: string | null
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
     subService?: SubServiceUncheckedCreateNestedManyWithoutServiceInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutServiceInput
@@ -29453,6 +37928,8 @@ export namespace Prisma {
   export type ServiceUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    branch?: BranchUpdateOneWithoutServicesNestedInput
     clientService?: ClientServiceUpdateManyWithoutServiceNestedInput
     subService?: SubServiceUpdateManyWithoutServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutServiceNestedInput
@@ -29461,6 +37938,8 @@ export namespace Prisma {
   export type ServiceUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
     clientService?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
     subService?: SubServiceUncheckedUpdateManyWithoutServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutServiceNestedInput
@@ -29469,21 +37948,27 @@ export namespace Prisma {
   export type ServiceCreateManyInput = {
     id: string
     serviceName: string
+    description?: string | null
+    branchId?: string | null
   }
 
   export type ServiceUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ServiceUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SubServiceCreateInput = {
     id: string
     name: string
+    description?: string | null
     service: ServiceCreateNestedOneWithoutSubServiceInput
     clientSubService?: ClientSubServiceCreateNestedManyWithoutSubServiceInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutSubServiceInput
@@ -29492,6 +37977,7 @@ export namespace Prisma {
   export type SubServiceUncheckedCreateInput = {
     id: string
     name: string
+    description?: string | null
     categoryId: string
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutSubServiceInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutSubServiceInput
@@ -29500,6 +37986,7 @@ export namespace Prisma {
   export type SubServiceUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     service?: ServiceUpdateOneRequiredWithoutSubServiceNestedInput
     clientSubService?: ClientSubServiceUpdateManyWithoutSubServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutSubServiceNestedInput
@@ -29508,6 +37995,7 @@ export namespace Prisma {
   export type SubServiceUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: StringFieldUpdateOperationsInput | string
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutSubServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutSubServiceNestedInput
@@ -29516,18 +38004,242 @@ export namespace Prisma {
   export type SubServiceCreateManyInput = {
     id: string
     name: string
+    description?: string | null
     categoryId: string
   }
 
   export type SubServiceUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SubServiceUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type BranchCreateInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    slug?: string | null
+    description?: string | null
+    location?: string | null
+    phone?: string | null
+    logoUrl?: string | null
+    iconLogoUrl?: string | null
+    isMain?: boolean
+    usesRootLogin?: boolean
+    slugClearedOnce?: boolean
+    primaryColor?: string
+    secondaryColor?: string
+    customDomain?: string | null
+    isActive?: boolean
+    users?: UserCreateNestedManyWithoutBranchInput
+    services?: ServiceCreateNestedManyWithoutBranchInput
+    departments?: DepartmentCreateNestedManyWithoutBranchInput
+  }
+
+  export type BranchUncheckedCreateInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    slug?: string | null
+    description?: string | null
+    location?: string | null
+    phone?: string | null
+    logoUrl?: string | null
+    iconLogoUrl?: string | null
+    isMain?: boolean
+    usesRootLogin?: boolean
+    slugClearedOnce?: boolean
+    primaryColor?: string
+    secondaryColor?: string
+    customDomain?: string | null
+    isActive?: boolean
+    users?: UserUncheckedCreateNestedManyWithoutBranchInput
+    services?: ServiceUncheckedCreateNestedManyWithoutBranchInput
+    departments?: DepartmentUncheckedCreateNestedManyWithoutBranchInput
+  }
+
+  export type BranchUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isMain?: BoolFieldUpdateOperationsInput | boolean
+    usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
+    primaryColor?: StringFieldUpdateOperationsInput | string
+    secondaryColor?: StringFieldUpdateOperationsInput | string
+    customDomain?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    users?: UserUpdateManyWithoutBranchNestedInput
+    services?: ServiceUpdateManyWithoutBranchNestedInput
+    departments?: DepartmentUpdateManyWithoutBranchNestedInput
+  }
+
+  export type BranchUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isMain?: BoolFieldUpdateOperationsInput | boolean
+    usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
+    primaryColor?: StringFieldUpdateOperationsInput | string
+    secondaryColor?: StringFieldUpdateOperationsInput | string
+    customDomain?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    users?: UserUncheckedUpdateManyWithoutBranchNestedInput
+    services?: ServiceUncheckedUpdateManyWithoutBranchNestedInput
+    departments?: DepartmentUncheckedUpdateManyWithoutBranchNestedInput
+  }
+
+  export type BranchCreateManyInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    slug?: string | null
+    description?: string | null
+    location?: string | null
+    phone?: string | null
+    logoUrl?: string | null
+    iconLogoUrl?: string | null
+    isMain?: boolean
+    usesRootLogin?: boolean
+    slugClearedOnce?: boolean
+    primaryColor?: string
+    secondaryColor?: string
+    customDomain?: string | null
+    isActive?: boolean
+  }
+
+  export type BranchUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isMain?: BoolFieldUpdateOperationsInput | boolean
+    usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
+    primaryColor?: StringFieldUpdateOperationsInput | string
+    secondaryColor?: StringFieldUpdateOperationsInput | string
+    customDomain?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type BranchUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isMain?: BoolFieldUpdateOperationsInput | boolean
+    usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
+    primaryColor?: StringFieldUpdateOperationsInput | string
+    secondaryColor?: StringFieldUpdateOperationsInput | string
+    customDomain?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type DepartmentCreateInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    description?: string | null
+    isActive?: boolean
+    branch: BranchCreateNestedOneWithoutDepartmentsInput
+  }
+
+  export type DepartmentUncheckedCreateInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    description?: string | null
+    isActive?: boolean
+    branchId: string
+  }
+
+  export type DepartmentUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    branch?: BranchUpdateOneRequiredWithoutDepartmentsNestedInput
+  }
+
+  export type DepartmentUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    branchId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type DepartmentCreateManyInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    description?: string | null
+    isActive?: boolean
+    branchId: string
+  }
+
+  export type DepartmentUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type DepartmentUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    branchId?: StringFieldUpdateOperationsInput | string
   }
 
   export type ClientSubServiceCreateInput = {
@@ -30252,6 +38964,7 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    serviceStatus?: $Enums.ClientServiceStatus
     service: ServiceCreateNestedOneWithoutServiceAgreementsInput
     subService: SubServiceCreateNestedOneWithoutServiceAgreementsInput
     client: ClientCreateNestedOneWithoutServiceAgreementsInput
@@ -30267,6 +38980,7 @@ export namespace Prisma {
     serviceId: string
     subServiceId: string
     clientId: string
+    serviceStatus?: $Enums.ClientServiceStatus
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutServiceAgreementInput
   }
 
@@ -30276,6 +38990,7 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
     service?: ServiceUpdateOneRequiredWithoutServiceAgreementsNestedInput
     subService?: SubServiceUpdateOneRequiredWithoutServiceAgreementsNestedInput
     client?: ClientUpdateOneRequiredWithoutServiceAgreementsNestedInput
@@ -30291,6 +39006,7 @@ export namespace Prisma {
     serviceId?: StringFieldUpdateOperationsInput | string
     subServiceId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
+    serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutServiceAgreementNestedInput
   }
 
@@ -30303,6 +39019,7 @@ export namespace Prisma {
     serviceId: string
     subServiceId: string
     clientId: string
+    serviceStatus?: $Enums.ClientServiceStatus
   }
 
   export type IncomeServiceAgreementUpdateManyMutationInput = {
@@ -30311,6 +39028,7 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
   }
 
   export type IncomeServiceAgreementUncheckedUpdateManyInput = {
@@ -30322,6 +39040,7 @@ export namespace Prisma {
     serviceId?: StringFieldUpdateOperationsInput | string
     subServiceId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
+    serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
   }
 
   export type ExpenseServiceAgreementCreateInput = {
@@ -30657,6 +39376,408 @@ export namespace Prisma {
     isSeen?: BoolFieldUpdateOperationsInput | boolean
   }
 
+  export type NavMenuCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    title: string
+    url: string
+    icon?: string | null
+    order?: number
+    isActive?: boolean
+    subMenus?: NavSubMenuCreateNestedManyWithoutMenuInput
+    roleAccess?: RoleMenuAccessCreateNestedManyWithoutMenuInput
+  }
+
+  export type NavMenuUncheckedCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    title: string
+    url: string
+    icon?: string | null
+    order?: number
+    isActive?: boolean
+    subMenus?: NavSubMenuUncheckedCreateNestedManyWithoutMenuInput
+    roleAccess?: RoleMenuAccessUncheckedCreateNestedManyWithoutMenuInput
+  }
+
+  export type NavMenuUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    subMenus?: NavSubMenuUpdateManyWithoutMenuNestedInput
+    roleAccess?: RoleMenuAccessUpdateManyWithoutMenuNestedInput
+  }
+
+  export type NavMenuUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    subMenus?: NavSubMenuUncheckedUpdateManyWithoutMenuNestedInput
+    roleAccess?: RoleMenuAccessUncheckedUpdateManyWithoutMenuNestedInput
+  }
+
+  export type NavMenuCreateManyInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    title: string
+    url: string
+    icon?: string | null
+    order?: number
+    isActive?: boolean
+  }
+
+  export type NavMenuUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type NavMenuUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type NavSubMenuCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    title: string
+    url: string
+    order?: number
+    isActive?: boolean
+    menu: NavMenuCreateNestedOneWithoutSubMenusInput
+    roleAccess?: RoleSubMenuAccessCreateNestedManyWithoutSubMenuInput
+  }
+
+  export type NavSubMenuUncheckedCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    menuId: string
+    title: string
+    url: string
+    order?: number
+    isActive?: boolean
+    roleAccess?: RoleSubMenuAccessUncheckedCreateNestedManyWithoutSubMenuInput
+  }
+
+  export type NavSubMenuUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    menu?: NavMenuUpdateOneRequiredWithoutSubMenusNestedInput
+    roleAccess?: RoleSubMenuAccessUpdateManyWithoutSubMenuNestedInput
+  }
+
+  export type NavSubMenuUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    menuId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    roleAccess?: RoleSubMenuAccessUncheckedUpdateManyWithoutSubMenuNestedInput
+  }
+
+  export type NavSubMenuCreateManyInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    menuId: string
+    title: string
+    url: string
+    order?: number
+    isActive?: boolean
+  }
+
+  export type NavSubMenuUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type NavSubMenuUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    menuId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type RoleMenuAccessCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+    role: RoleCreateNestedOneWithoutMenuAccessInput
+    menu: NavMenuCreateNestedOneWithoutRoleAccessInput
+    subAccess?: RoleSubMenuAccessCreateNestedManyWithoutRoleMenuAccessInput
+  }
+
+  export type RoleMenuAccessUncheckedCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    roleId: string
+    menuId: string
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+    subAccess?: RoleSubMenuAccessUncheckedCreateNestedManyWithoutRoleMenuAccessInput
+  }
+
+  export type RoleMenuAccessUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
+    role?: RoleUpdateOneRequiredWithoutMenuAccessNestedInput
+    menu?: NavMenuUpdateOneRequiredWithoutRoleAccessNestedInput
+    subAccess?: RoleSubMenuAccessUpdateManyWithoutRoleMenuAccessNestedInput
+  }
+
+  export type RoleMenuAccessUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    roleId?: StringFieldUpdateOperationsInput | string
+    menuId?: StringFieldUpdateOperationsInput | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
+    subAccess?: RoleSubMenuAccessUncheckedUpdateManyWithoutRoleMenuAccessNestedInput
+  }
+
+  export type RoleMenuAccessCreateManyInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    roleId: string
+    menuId: string
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+  }
+
+  export type RoleMenuAccessUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type RoleMenuAccessUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    roleId?: StringFieldUpdateOperationsInput | string
+    menuId?: StringFieldUpdateOperationsInput | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type RoleSubMenuAccessCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+    roleMenuAccess: RoleMenuAccessCreateNestedOneWithoutSubAccessInput
+    subMenu: NavSubMenuCreateNestedOneWithoutRoleAccessInput
+  }
+
+  export type RoleSubMenuAccessUncheckedCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    roleMenuAccessId: string
+    subMenuId: string
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+  }
+
+  export type RoleSubMenuAccessUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
+    roleMenuAccess?: RoleMenuAccessUpdateOneRequiredWithoutSubAccessNestedInput
+    subMenu?: NavSubMenuUpdateOneRequiredWithoutRoleAccessNestedInput
+  }
+
+  export type RoleSubMenuAccessUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    roleMenuAccessId?: StringFieldUpdateOperationsInput | string
+    subMenuId?: StringFieldUpdateOperationsInput | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type RoleSubMenuAccessCreateManyInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    roleMenuAccessId: string
+    subMenuId: string
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+  }
+
+  export type RoleSubMenuAccessUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type RoleSubMenuAccessUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    roleMenuAccessId?: StringFieldUpdateOperationsInput | string
+    subMenuId?: StringFieldUpdateOperationsInput | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type AuditLogCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    action: string
+    entity: string
+    entityId?: string | null
+    description?: string | null
+    user?: UserCreateNestedOneWithoutAuditLogsInput
+  }
+
+  export type AuditLogUncheckedCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    userId?: string | null
+    action: string
+    entity: string
+    entityId?: string | null
+    description?: string | null
+  }
+
+  export type AuditLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    action?: StringFieldUpdateOperationsInput | string
+    entity?: StringFieldUpdateOperationsInput | string
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    user?: UserUpdateOneWithoutAuditLogsNestedInput
+  }
+
+  export type AuditLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    action?: StringFieldUpdateOperationsInput | string
+    entity?: StringFieldUpdateOperationsInput | string
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type AuditLogCreateManyInput = {
+    id?: string
+    createdAt?: Date | string
+    userId?: string | null
+    action: string
+    entity: string
+    entityId?: string | null
+    description?: string | null
+  }
+
+  export type AuditLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    action?: StringFieldUpdateOperationsInput | string
+    entity?: StringFieldUpdateOperationsInput | string
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type AuditLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    action?: StringFieldUpdateOperationsInput | string
+    entity?: StringFieldUpdateOperationsInput | string
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[]
@@ -30671,29 +39792,86 @@ export namespace Prisma {
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type DateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
   export type UserListRelationFilter = {
     every?: UserWhereInput
     some?: UserWhereInput
     none?: UserWhereInput
   }
 
+  export type RoleMenuAccessListRelationFilter = {
+    every?: RoleMenuAccessWhereInput
+    some?: RoleMenuAccessWhereInput
+    none?: RoleMenuAccessWhereInput
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
+  }
+
   export type UserOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type RoleMenuAccessOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type RoleCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    description?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type RoleMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    description?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type RoleMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    description?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -30713,23 +39891,7 @@ export namespace Prisma {
     _max?: NestedStringFilter<$PrismaModel>
   }
 
-  export type DateTimeFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
-  }
-
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
-  export type StringNullableFilter<$PrismaModel = never> = {
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | null
     notIn?: string[] | null
@@ -30740,7 +39902,32 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
   export type BoolNullableFilter<$PrismaModel = never> = {
@@ -30757,6 +39944,11 @@ export namespace Prisma {
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type BranchNullableRelationFilter = {
+    is?: BranchWhereInput | null
+    isNot?: BranchWhereInput | null
   }
 
   export type SessionListRelationFilter = {
@@ -30806,9 +39998,10 @@ export namespace Prisma {
     none?: UserSalaryWhereInput
   }
 
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
+  export type AuditLogListRelationFilter = {
+    every?: AuditLogWhereInput
+    some?: AuditLogWhereInput
+    none?: AuditLogWhereInput
   }
 
   export type SessionOrderByRelationAggregateInput = {
@@ -30839,6 +40032,10 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type AuditLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
     createdAt?: SortOrder
@@ -30850,6 +40047,7 @@ export namespace Prisma {
     gender?: SortOrder
     salary?: SortOrder
     department?: SortOrder
+    branchId?: SortOrder
     roleId?: SortOrder
     role?: SortOrder
     banned?: SortOrder
@@ -30868,6 +40066,7 @@ export namespace Prisma {
     gender?: SortOrder
     salary?: SortOrder
     department?: SortOrder
+    branchId?: SortOrder
     roleId?: SortOrder
     role?: SortOrder
     banned?: SortOrder
@@ -30886,50 +40085,12 @@ export namespace Prisma {
     gender?: SortOrder
     salary?: SortOrder
     department?: SortOrder
+    branchId?: SortOrder
     roleId?: SortOrder
     role?: SortOrder
     banned?: SortOrder
     banReason?: SortOrder
     banExpires?: SortOrder
-  }
-
-  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | null
-    notIn?: string[] | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -31150,19 +40311,30 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type ServiceServiceNameBranchIdCompoundUniqueInput = {
+    serviceName: string
+    branchId: string
+  }
+
   export type ServiceCountOrderByAggregateInput = {
     id?: SortOrder
     serviceName?: SortOrder
+    description?: SortOrder
+    branchId?: SortOrder
   }
 
   export type ServiceMaxOrderByAggregateInput = {
     id?: SortOrder
     serviceName?: SortOrder
+    description?: SortOrder
+    branchId?: SortOrder
   }
 
   export type ServiceMinOrderByAggregateInput = {
     id?: SortOrder
     serviceName?: SortOrder
+    description?: SortOrder
+    branchId?: SortOrder
   }
 
   export type ServiceRelationFilter = {
@@ -31170,22 +40342,150 @@ export namespace Prisma {
     isNot?: ServiceWhereInput
   }
 
+  export type SubServiceNameCategoryIdCompoundUniqueInput = {
+    name: string
+    categoryId: string
+  }
+
   export type SubServiceCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    description?: SortOrder
     categoryId?: SortOrder
   }
 
   export type SubServiceMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    description?: SortOrder
     categoryId?: SortOrder
   }
 
   export type SubServiceMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    description?: SortOrder
     categoryId?: SortOrder
+  }
+
+  export type ServiceListRelationFilter = {
+    every?: ServiceWhereInput
+    some?: ServiceWhereInput
+    none?: ServiceWhereInput
+  }
+
+  export type DepartmentListRelationFilter = {
+    every?: DepartmentWhereInput
+    some?: DepartmentWhereInput
+    none?: DepartmentWhereInput
+  }
+
+  export type ServiceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DepartmentOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type BranchCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    description?: SortOrder
+    location?: SortOrder
+    phone?: SortOrder
+    logoUrl?: SortOrder
+    iconLogoUrl?: SortOrder
+    isMain?: SortOrder
+    usesRootLogin?: SortOrder
+    slugClearedOnce?: SortOrder
+    primaryColor?: SortOrder
+    secondaryColor?: SortOrder
+    customDomain?: SortOrder
+    isActive?: SortOrder
+  }
+
+  export type BranchMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    description?: SortOrder
+    location?: SortOrder
+    phone?: SortOrder
+    logoUrl?: SortOrder
+    iconLogoUrl?: SortOrder
+    isMain?: SortOrder
+    usesRootLogin?: SortOrder
+    slugClearedOnce?: SortOrder
+    primaryColor?: SortOrder
+    secondaryColor?: SortOrder
+    customDomain?: SortOrder
+    isActive?: SortOrder
+  }
+
+  export type BranchMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    description?: SortOrder
+    location?: SortOrder
+    phone?: SortOrder
+    logoUrl?: SortOrder
+    iconLogoUrl?: SortOrder
+    isMain?: SortOrder
+    usesRootLogin?: SortOrder
+    slugClearedOnce?: SortOrder
+    primaryColor?: SortOrder
+    secondaryColor?: SortOrder
+    customDomain?: SortOrder
+    isActive?: SortOrder
+  }
+
+  export type BranchRelationFilter = {
+    is?: BranchWhereInput
+    isNot?: BranchWhereInput
+  }
+
+  export type DepartmentNameBranchIdCompoundUniqueInput = {
+    name: string
+    branchId: string
+  }
+
+  export type DepartmentCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    isActive?: SortOrder
+    branchId?: SortOrder
+  }
+
+  export type DepartmentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    isActive?: SortOrder
+    branchId?: SortOrder
+  }
+
+  export type DepartmentMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    isActive?: SortOrder
+    branchId?: SortOrder
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -31777,6 +41077,13 @@ export namespace Prisma {
     fileSize?: SortOrder
   }
 
+  export type EnumClientServiceStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ClientServiceStatus | EnumClientServiceStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ClientServiceStatus[]
+    notIn?: $Enums.ClientServiceStatus[]
+    not?: NestedEnumClientServiceStatusFilter<$PrismaModel> | $Enums.ClientServiceStatus
+  }
+
   export type IncomeServiceAgreementCountOrderByAggregateInput = {
     id?: SortOrder
     createdAt?: SortOrder
@@ -31786,6 +41093,7 @@ export namespace Prisma {
     serviceId?: SortOrder
     subServiceId?: SortOrder
     clientId?: SortOrder
+    serviceStatus?: SortOrder
   }
 
   export type IncomeServiceAgreementAvgOrderByAggregateInput = {
@@ -31802,6 +41110,7 @@ export namespace Prisma {
     serviceId?: SortOrder
     subServiceId?: SortOrder
     clientId?: SortOrder
+    serviceStatus?: SortOrder
   }
 
   export type IncomeServiceAgreementMinOrderByAggregateInput = {
@@ -31813,11 +41122,22 @@ export namespace Prisma {
     serviceId?: SortOrder
     subServiceId?: SortOrder
     clientId?: SortOrder
+    serviceStatus?: SortOrder
   }
 
   export type IncomeServiceAgreementSumOrderByAggregateInput = {
     base?: SortOrder
     discount?: SortOrder
+  }
+
+  export type EnumClientServiceStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ClientServiceStatus | EnumClientServiceStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ClientServiceStatus[]
+    notIn?: $Enums.ClientServiceStatus[]
+    not?: NestedEnumClientServiceStatusWithAggregatesFilter<$PrismaModel> | $Enums.ClientServiceStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumClientServiceStatusFilter<$PrismaModel>
+    _max?: NestedEnumClientServiceStatusFilter<$PrismaModel>
   }
 
   export type ExpenseServiceAgreementCountOrderByAggregateInput = {
@@ -32013,11 +41333,257 @@ export namespace Prisma {
     isSeen?: SortOrder
   }
 
+  export type NavSubMenuListRelationFilter = {
+    every?: NavSubMenuWhereInput
+    some?: NavSubMenuWhereInput
+    none?: NavSubMenuWhereInput
+  }
+
+  export type NavSubMenuOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type NavMenuCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    icon?: SortOrder
+    order?: SortOrder
+    isActive?: SortOrder
+  }
+
+  export type NavMenuAvgOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
+  export type NavMenuMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    icon?: SortOrder
+    order?: SortOrder
+    isActive?: SortOrder
+  }
+
+  export type NavMenuMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    icon?: SortOrder
+    order?: SortOrder
+    isActive?: SortOrder
+  }
+
+  export type NavMenuSumOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
+  export type NavMenuRelationFilter = {
+    is?: NavMenuWhereInput
+    isNot?: NavMenuWhereInput
+  }
+
+  export type RoleSubMenuAccessListRelationFilter = {
+    every?: RoleSubMenuAccessWhereInput
+    some?: RoleSubMenuAccessWhereInput
+    none?: RoleSubMenuAccessWhereInput
+  }
+
+  export type RoleSubMenuAccessOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type NavSubMenuCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    menuId?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    order?: SortOrder
+    isActive?: SortOrder
+  }
+
+  export type NavSubMenuAvgOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
+  export type NavSubMenuMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    menuId?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    order?: SortOrder
+    isActive?: SortOrder
+  }
+
+  export type NavSubMenuMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    menuId?: SortOrder
+    title?: SortOrder
+    url?: SortOrder
+    order?: SortOrder
+    isActive?: SortOrder
+  }
+
+  export type NavSubMenuSumOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
+  export type RoleRelationFilter = {
+    is?: RoleWhereInput
+    isNot?: RoleWhereInput
+  }
+
+  export type RoleMenuAccessRoleIdMenuIdCompoundUniqueInput = {
+    roleId: string
+    menuId: string
+  }
+
+  export type RoleMenuAccessCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    roleId?: SortOrder
+    menuId?: SortOrder
+    canView?: SortOrder
+    canAdd?: SortOrder
+    canEdit?: SortOrder
+    canDelete?: SortOrder
+  }
+
+  export type RoleMenuAccessMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    roleId?: SortOrder
+    menuId?: SortOrder
+    canView?: SortOrder
+    canAdd?: SortOrder
+    canEdit?: SortOrder
+    canDelete?: SortOrder
+  }
+
+  export type RoleMenuAccessMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    roleId?: SortOrder
+    menuId?: SortOrder
+    canView?: SortOrder
+    canAdd?: SortOrder
+    canEdit?: SortOrder
+    canDelete?: SortOrder
+  }
+
+  export type RoleMenuAccessRelationFilter = {
+    is?: RoleMenuAccessWhereInput
+    isNot?: RoleMenuAccessWhereInput
+  }
+
+  export type NavSubMenuRelationFilter = {
+    is?: NavSubMenuWhereInput
+    isNot?: NavSubMenuWhereInput
+  }
+
+  export type RoleSubMenuAccessRoleMenuAccessIdSubMenuIdCompoundUniqueInput = {
+    roleMenuAccessId: string
+    subMenuId: string
+  }
+
+  export type RoleSubMenuAccessCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    roleMenuAccessId?: SortOrder
+    subMenuId?: SortOrder
+    canView?: SortOrder
+    canAdd?: SortOrder
+    canEdit?: SortOrder
+    canDelete?: SortOrder
+  }
+
+  export type RoleSubMenuAccessMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    roleMenuAccessId?: SortOrder
+    subMenuId?: SortOrder
+    canView?: SortOrder
+    canAdd?: SortOrder
+    canEdit?: SortOrder
+    canDelete?: SortOrder
+  }
+
+  export type RoleSubMenuAccessMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    roleMenuAccessId?: SortOrder
+    subMenuId?: SortOrder
+    canView?: SortOrder
+    canAdd?: SortOrder
+    canEdit?: SortOrder
+    canDelete?: SortOrder
+  }
+
+  export type UserNullableRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
+  export type AuditLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    userId?: SortOrder
+    action?: SortOrder
+    entity?: SortOrder
+    entityId?: SortOrder
+    description?: SortOrder
+  }
+
+  export type AuditLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    userId?: SortOrder
+    action?: SortOrder
+    entity?: SortOrder
+    entityId?: SortOrder
+    description?: SortOrder
+  }
+
+  export type AuditLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    userId?: SortOrder
+    action?: SortOrder
+    entity?: SortOrder
+    entityId?: SortOrder
+    description?: SortOrder
+  }
+
   export type UserCreateNestedManyWithoutDynamicRoleInput = {
     create?: XOR<UserCreateWithoutDynamicRoleInput, UserUncheckedCreateWithoutDynamicRoleInput> | UserCreateWithoutDynamicRoleInput[] | UserUncheckedCreateWithoutDynamicRoleInput[]
     connectOrCreate?: UserCreateOrConnectWithoutDynamicRoleInput | UserCreateOrConnectWithoutDynamicRoleInput[]
     createMany?: UserCreateManyDynamicRoleInputEnvelope
     connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
+  export type RoleMenuAccessCreateNestedManyWithoutRoleInput = {
+    create?: XOR<RoleMenuAccessCreateWithoutRoleInput, RoleMenuAccessUncheckedCreateWithoutRoleInput> | RoleMenuAccessCreateWithoutRoleInput[] | RoleMenuAccessUncheckedCreateWithoutRoleInput[]
+    connectOrCreate?: RoleMenuAccessCreateOrConnectWithoutRoleInput | RoleMenuAccessCreateOrConnectWithoutRoleInput[]
+    createMany?: RoleMenuAccessCreateManyRoleInputEnvelope
+    connect?: RoleMenuAccessWhereUniqueInput | RoleMenuAccessWhereUniqueInput[]
   }
 
   export type UserUncheckedCreateNestedManyWithoutDynamicRoleInput = {
@@ -32027,8 +41593,27 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
   }
 
+  export type RoleMenuAccessUncheckedCreateNestedManyWithoutRoleInput = {
+    create?: XOR<RoleMenuAccessCreateWithoutRoleInput, RoleMenuAccessUncheckedCreateWithoutRoleInput> | RoleMenuAccessCreateWithoutRoleInput[] | RoleMenuAccessUncheckedCreateWithoutRoleInput[]
+    connectOrCreate?: RoleMenuAccessCreateOrConnectWithoutRoleInput | RoleMenuAccessCreateOrConnectWithoutRoleInput[]
+    createMany?: RoleMenuAccessCreateManyRoleInputEnvelope
+    connect?: RoleMenuAccessWhereUniqueInput | RoleMenuAccessWhereUniqueInput[]
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
+  export type DateTimeFieldUpdateOperationsInput = {
+    set?: Date | string
   }
 
   export type UserUpdateManyWithoutDynamicRoleNestedInput = {
@@ -32045,6 +41630,20 @@ export namespace Prisma {
     deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
   }
 
+  export type RoleMenuAccessUpdateManyWithoutRoleNestedInput = {
+    create?: XOR<RoleMenuAccessCreateWithoutRoleInput, RoleMenuAccessUncheckedCreateWithoutRoleInput> | RoleMenuAccessCreateWithoutRoleInput[] | RoleMenuAccessUncheckedCreateWithoutRoleInput[]
+    connectOrCreate?: RoleMenuAccessCreateOrConnectWithoutRoleInput | RoleMenuAccessCreateOrConnectWithoutRoleInput[]
+    upsert?: RoleMenuAccessUpsertWithWhereUniqueWithoutRoleInput | RoleMenuAccessUpsertWithWhereUniqueWithoutRoleInput[]
+    createMany?: RoleMenuAccessCreateManyRoleInputEnvelope
+    set?: RoleMenuAccessWhereUniqueInput | RoleMenuAccessWhereUniqueInput[]
+    disconnect?: RoleMenuAccessWhereUniqueInput | RoleMenuAccessWhereUniqueInput[]
+    delete?: RoleMenuAccessWhereUniqueInput | RoleMenuAccessWhereUniqueInput[]
+    connect?: RoleMenuAccessWhereUniqueInput | RoleMenuAccessWhereUniqueInput[]
+    update?: RoleMenuAccessUpdateWithWhereUniqueWithoutRoleInput | RoleMenuAccessUpdateWithWhereUniqueWithoutRoleInput[]
+    updateMany?: RoleMenuAccessUpdateManyWithWhereWithoutRoleInput | RoleMenuAccessUpdateManyWithWhereWithoutRoleInput[]
+    deleteMany?: RoleMenuAccessScalarWhereInput | RoleMenuAccessScalarWhereInput[]
+  }
+
   export type UserUncheckedUpdateManyWithoutDynamicRoleNestedInput = {
     create?: XOR<UserCreateWithoutDynamicRoleInput, UserUncheckedCreateWithoutDynamicRoleInput> | UserCreateWithoutDynamicRoleInput[] | UserUncheckedCreateWithoutDynamicRoleInput[]
     connectOrCreate?: UserCreateOrConnectWithoutDynamicRoleInput | UserCreateOrConnectWithoutDynamicRoleInput[]
@@ -32057,6 +41656,26 @@ export namespace Prisma {
     update?: UserUpdateWithWhereUniqueWithoutDynamicRoleInput | UserUpdateWithWhereUniqueWithoutDynamicRoleInput[]
     updateMany?: UserUpdateManyWithWhereWithoutDynamicRoleInput | UserUpdateManyWithWhereWithoutDynamicRoleInput[]
     deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  }
+
+  export type RoleMenuAccessUncheckedUpdateManyWithoutRoleNestedInput = {
+    create?: XOR<RoleMenuAccessCreateWithoutRoleInput, RoleMenuAccessUncheckedCreateWithoutRoleInput> | RoleMenuAccessCreateWithoutRoleInput[] | RoleMenuAccessUncheckedCreateWithoutRoleInput[]
+    connectOrCreate?: RoleMenuAccessCreateOrConnectWithoutRoleInput | RoleMenuAccessCreateOrConnectWithoutRoleInput[]
+    upsert?: RoleMenuAccessUpsertWithWhereUniqueWithoutRoleInput | RoleMenuAccessUpsertWithWhereUniqueWithoutRoleInput[]
+    createMany?: RoleMenuAccessCreateManyRoleInputEnvelope
+    set?: RoleMenuAccessWhereUniqueInput | RoleMenuAccessWhereUniqueInput[]
+    disconnect?: RoleMenuAccessWhereUniqueInput | RoleMenuAccessWhereUniqueInput[]
+    delete?: RoleMenuAccessWhereUniqueInput | RoleMenuAccessWhereUniqueInput[]
+    connect?: RoleMenuAccessWhereUniqueInput | RoleMenuAccessWhereUniqueInput[]
+    update?: RoleMenuAccessUpdateWithWhereUniqueWithoutRoleInput | RoleMenuAccessUpdateWithWhereUniqueWithoutRoleInput[]
+    updateMany?: RoleMenuAccessUpdateManyWithWhereWithoutRoleInput | RoleMenuAccessUpdateManyWithWhereWithoutRoleInput[]
+    deleteMany?: RoleMenuAccessScalarWhereInput | RoleMenuAccessScalarWhereInput[]
+  }
+
+  export type BranchCreateNestedOneWithoutUsersInput = {
+    create?: XOR<BranchCreateWithoutUsersInput, BranchUncheckedCreateWithoutUsersInput>
+    connectOrCreate?: BranchCreateOrConnectWithoutUsersInput
+    connect?: BranchWhereUniqueInput
   }
 
   export type SessionCreateNestedManyWithoutUserInput = {
@@ -32121,6 +41740,13 @@ export namespace Prisma {
     connect?: UserSalaryWhereUniqueInput | UserSalaryWhereUniqueInput[]
   }
 
+  export type AuditLogCreateNestedManyWithoutUserInput = {
+    create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
+    createMany?: AuditLogCreateManyUserInputEnvelope
+    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+  }
+
   export type SessionUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -32177,16 +41803,11 @@ export namespace Prisma {
     connect?: UserSalaryWhereUniqueInput | UserSalaryWhereUniqueInput[]
   }
 
-  export type DateTimeFieldUpdateOperationsInput = {
-    set?: Date | string
-  }
-
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
+  export type AuditLogUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
+    createMany?: AuditLogCreateManyUserInputEnvelope
+    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
   }
 
   export type NullableBoolFieldUpdateOperationsInput = {
@@ -32195,6 +41816,16 @@ export namespace Prisma {
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
+  }
+
+  export type BranchUpdateOneWithoutUsersNestedInput = {
+    create?: XOR<BranchCreateWithoutUsersInput, BranchUncheckedCreateWithoutUsersInput>
+    connectOrCreate?: BranchCreateOrConnectWithoutUsersInput
+    upsert?: BranchUpsertWithoutUsersInput
+    disconnect?: BranchWhereInput | boolean
+    delete?: BranchWhereInput | boolean
+    connect?: BranchWhereUniqueInput
+    update?: XOR<XOR<BranchUpdateToOneWithWhereWithoutUsersInput, BranchUpdateWithoutUsersInput>, BranchUncheckedUpdateWithoutUsersInput>
   }
 
   export type SessionUpdateManyWithoutUserNestedInput = {
@@ -32319,6 +41950,20 @@ export namespace Prisma {
     deleteMany?: UserSalaryScalarWhereInput | UserSalaryScalarWhereInput[]
   }
 
+  export type AuditLogUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
+    upsert?: AuditLogUpsertWithWhereUniqueWithoutUserInput | AuditLogUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AuditLogCreateManyUserInputEnvelope
+    set?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    disconnect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    delete?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    update?: AuditLogUpdateWithWhereUniqueWithoutUserInput | AuditLogUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AuditLogUpdateManyWithWhereWithoutUserInput | AuditLogUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+  }
+
   export type SessionUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -32429,6 +42074,20 @@ export namespace Prisma {
     update?: UserSalaryUpdateWithWhereUniqueWithoutRegisteredUserInput | UserSalaryUpdateWithWhereUniqueWithoutRegisteredUserInput[]
     updateMany?: UserSalaryUpdateManyWithWhereWithoutRegisteredUserInput | UserSalaryUpdateManyWithWhereWithoutRegisteredUserInput[]
     deleteMany?: UserSalaryScalarWhereInput | UserSalaryScalarWhereInput[]
+  }
+
+  export type AuditLogUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput> | AuditLogCreateWithoutUserInput[] | AuditLogUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
+    upsert?: AuditLogUpsertWithWhereUniqueWithoutUserInput | AuditLogUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AuditLogCreateManyUserInputEnvelope
+    set?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    disconnect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    delete?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    update?: AuditLogUpdateWithWhereUniqueWithoutUserInput | AuditLogUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AuditLogUpdateManyWithWhereWithoutUserInput | AuditLogUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutSessionsInput = {
@@ -32627,6 +42286,12 @@ export namespace Prisma {
     deleteMany?: IncomeServiceAgreementScalarWhereInput | IncomeServiceAgreementScalarWhereInput[]
   }
 
+  export type BranchCreateNestedOneWithoutServicesInput = {
+    create?: XOR<BranchCreateWithoutServicesInput, BranchUncheckedCreateWithoutServicesInput>
+    connectOrCreate?: BranchCreateOrConnectWithoutServicesInput
+    connect?: BranchWhereUniqueInput
+  }
+
   export type ClientServiceCreateNestedManyWithoutServiceInput = {
     create?: XOR<ClientServiceCreateWithoutServiceInput, ClientServiceUncheckedCreateWithoutServiceInput> | ClientServiceCreateWithoutServiceInput[] | ClientServiceUncheckedCreateWithoutServiceInput[]
     connectOrCreate?: ClientServiceCreateOrConnectWithoutServiceInput | ClientServiceCreateOrConnectWithoutServiceInput[]
@@ -32667,6 +42332,16 @@ export namespace Prisma {
     connectOrCreate?: IncomeServiceAgreementCreateOrConnectWithoutServiceInput | IncomeServiceAgreementCreateOrConnectWithoutServiceInput[]
     createMany?: IncomeServiceAgreementCreateManyServiceInputEnvelope
     connect?: IncomeServiceAgreementWhereUniqueInput | IncomeServiceAgreementWhereUniqueInput[]
+  }
+
+  export type BranchUpdateOneWithoutServicesNestedInput = {
+    create?: XOR<BranchCreateWithoutServicesInput, BranchUncheckedCreateWithoutServicesInput>
+    connectOrCreate?: BranchCreateOrConnectWithoutServicesInput
+    upsert?: BranchUpsertWithoutServicesInput
+    disconnect?: BranchWhereInput | boolean
+    delete?: BranchWhereInput | boolean
+    connect?: BranchWhereUniqueInput
+    update?: XOR<XOR<BranchUpdateToOneWithWhereWithoutServicesInput, BranchUpdateWithoutServicesInput>, BranchUncheckedUpdateWithoutServicesInput>
   }
 
   export type ClientServiceUpdateManyWithoutServiceNestedInput = {
@@ -32849,6 +42524,146 @@ export namespace Prisma {
     update?: IncomeServiceAgreementUpdateWithWhereUniqueWithoutSubServiceInput | IncomeServiceAgreementUpdateWithWhereUniqueWithoutSubServiceInput[]
     updateMany?: IncomeServiceAgreementUpdateManyWithWhereWithoutSubServiceInput | IncomeServiceAgreementUpdateManyWithWhereWithoutSubServiceInput[]
     deleteMany?: IncomeServiceAgreementScalarWhereInput | IncomeServiceAgreementScalarWhereInput[]
+  }
+
+  export type UserCreateNestedManyWithoutBranchInput = {
+    create?: XOR<UserCreateWithoutBranchInput, UserUncheckedCreateWithoutBranchInput> | UserCreateWithoutBranchInput[] | UserUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutBranchInput | UserCreateOrConnectWithoutBranchInput[]
+    createMany?: UserCreateManyBranchInputEnvelope
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
+  export type ServiceCreateNestedManyWithoutBranchInput = {
+    create?: XOR<ServiceCreateWithoutBranchInput, ServiceUncheckedCreateWithoutBranchInput> | ServiceCreateWithoutBranchInput[] | ServiceUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: ServiceCreateOrConnectWithoutBranchInput | ServiceCreateOrConnectWithoutBranchInput[]
+    createMany?: ServiceCreateManyBranchInputEnvelope
+    connect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+  }
+
+  export type DepartmentCreateNestedManyWithoutBranchInput = {
+    create?: XOR<DepartmentCreateWithoutBranchInput, DepartmentUncheckedCreateWithoutBranchInput> | DepartmentCreateWithoutBranchInput[] | DepartmentUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: DepartmentCreateOrConnectWithoutBranchInput | DepartmentCreateOrConnectWithoutBranchInput[]
+    createMany?: DepartmentCreateManyBranchInputEnvelope
+    connect?: DepartmentWhereUniqueInput | DepartmentWhereUniqueInput[]
+  }
+
+  export type UserUncheckedCreateNestedManyWithoutBranchInput = {
+    create?: XOR<UserCreateWithoutBranchInput, UserUncheckedCreateWithoutBranchInput> | UserCreateWithoutBranchInput[] | UserUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutBranchInput | UserCreateOrConnectWithoutBranchInput[]
+    createMany?: UserCreateManyBranchInputEnvelope
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
+  export type ServiceUncheckedCreateNestedManyWithoutBranchInput = {
+    create?: XOR<ServiceCreateWithoutBranchInput, ServiceUncheckedCreateWithoutBranchInput> | ServiceCreateWithoutBranchInput[] | ServiceUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: ServiceCreateOrConnectWithoutBranchInput | ServiceCreateOrConnectWithoutBranchInput[]
+    createMany?: ServiceCreateManyBranchInputEnvelope
+    connect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+  }
+
+  export type DepartmentUncheckedCreateNestedManyWithoutBranchInput = {
+    create?: XOR<DepartmentCreateWithoutBranchInput, DepartmentUncheckedCreateWithoutBranchInput> | DepartmentCreateWithoutBranchInput[] | DepartmentUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: DepartmentCreateOrConnectWithoutBranchInput | DepartmentCreateOrConnectWithoutBranchInput[]
+    createMany?: DepartmentCreateManyBranchInputEnvelope
+    connect?: DepartmentWhereUniqueInput | DepartmentWhereUniqueInput[]
+  }
+
+  export type UserUpdateManyWithoutBranchNestedInput = {
+    create?: XOR<UserCreateWithoutBranchInput, UserUncheckedCreateWithoutBranchInput> | UserCreateWithoutBranchInput[] | UserUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutBranchInput | UserCreateOrConnectWithoutBranchInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutBranchInput | UserUpsertWithWhereUniqueWithoutBranchInput[]
+    createMany?: UserCreateManyBranchInputEnvelope
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutBranchInput | UserUpdateWithWhereUniqueWithoutBranchInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutBranchInput | UserUpdateManyWithWhereWithoutBranchInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  }
+
+  export type ServiceUpdateManyWithoutBranchNestedInput = {
+    create?: XOR<ServiceCreateWithoutBranchInput, ServiceUncheckedCreateWithoutBranchInput> | ServiceCreateWithoutBranchInput[] | ServiceUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: ServiceCreateOrConnectWithoutBranchInput | ServiceCreateOrConnectWithoutBranchInput[]
+    upsert?: ServiceUpsertWithWhereUniqueWithoutBranchInput | ServiceUpsertWithWhereUniqueWithoutBranchInput[]
+    createMany?: ServiceCreateManyBranchInputEnvelope
+    set?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    disconnect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    delete?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    connect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    update?: ServiceUpdateWithWhereUniqueWithoutBranchInput | ServiceUpdateWithWhereUniqueWithoutBranchInput[]
+    updateMany?: ServiceUpdateManyWithWhereWithoutBranchInput | ServiceUpdateManyWithWhereWithoutBranchInput[]
+    deleteMany?: ServiceScalarWhereInput | ServiceScalarWhereInput[]
+  }
+
+  export type DepartmentUpdateManyWithoutBranchNestedInput = {
+    create?: XOR<DepartmentCreateWithoutBranchInput, DepartmentUncheckedCreateWithoutBranchInput> | DepartmentCreateWithoutBranchInput[] | DepartmentUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: DepartmentCreateOrConnectWithoutBranchInput | DepartmentCreateOrConnectWithoutBranchInput[]
+    upsert?: DepartmentUpsertWithWhereUniqueWithoutBranchInput | DepartmentUpsertWithWhereUniqueWithoutBranchInput[]
+    createMany?: DepartmentCreateManyBranchInputEnvelope
+    set?: DepartmentWhereUniqueInput | DepartmentWhereUniqueInput[]
+    disconnect?: DepartmentWhereUniqueInput | DepartmentWhereUniqueInput[]
+    delete?: DepartmentWhereUniqueInput | DepartmentWhereUniqueInput[]
+    connect?: DepartmentWhereUniqueInput | DepartmentWhereUniqueInput[]
+    update?: DepartmentUpdateWithWhereUniqueWithoutBranchInput | DepartmentUpdateWithWhereUniqueWithoutBranchInput[]
+    updateMany?: DepartmentUpdateManyWithWhereWithoutBranchInput | DepartmentUpdateManyWithWhereWithoutBranchInput[]
+    deleteMany?: DepartmentScalarWhereInput | DepartmentScalarWhereInput[]
+  }
+
+  export type UserUncheckedUpdateManyWithoutBranchNestedInput = {
+    create?: XOR<UserCreateWithoutBranchInput, UserUncheckedCreateWithoutBranchInput> | UserCreateWithoutBranchInput[] | UserUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutBranchInput | UserCreateOrConnectWithoutBranchInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutBranchInput | UserUpsertWithWhereUniqueWithoutBranchInput[]
+    createMany?: UserCreateManyBranchInputEnvelope
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutBranchInput | UserUpdateWithWhereUniqueWithoutBranchInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutBranchInput | UserUpdateManyWithWhereWithoutBranchInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  }
+
+  export type ServiceUncheckedUpdateManyWithoutBranchNestedInput = {
+    create?: XOR<ServiceCreateWithoutBranchInput, ServiceUncheckedCreateWithoutBranchInput> | ServiceCreateWithoutBranchInput[] | ServiceUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: ServiceCreateOrConnectWithoutBranchInput | ServiceCreateOrConnectWithoutBranchInput[]
+    upsert?: ServiceUpsertWithWhereUniqueWithoutBranchInput | ServiceUpsertWithWhereUniqueWithoutBranchInput[]
+    createMany?: ServiceCreateManyBranchInputEnvelope
+    set?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    disconnect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    delete?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    connect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    update?: ServiceUpdateWithWhereUniqueWithoutBranchInput | ServiceUpdateWithWhereUniqueWithoutBranchInput[]
+    updateMany?: ServiceUpdateManyWithWhereWithoutBranchInput | ServiceUpdateManyWithWhereWithoutBranchInput[]
+    deleteMany?: ServiceScalarWhereInput | ServiceScalarWhereInput[]
+  }
+
+  export type DepartmentUncheckedUpdateManyWithoutBranchNestedInput = {
+    create?: XOR<DepartmentCreateWithoutBranchInput, DepartmentUncheckedCreateWithoutBranchInput> | DepartmentCreateWithoutBranchInput[] | DepartmentUncheckedCreateWithoutBranchInput[]
+    connectOrCreate?: DepartmentCreateOrConnectWithoutBranchInput | DepartmentCreateOrConnectWithoutBranchInput[]
+    upsert?: DepartmentUpsertWithWhereUniqueWithoutBranchInput | DepartmentUpsertWithWhereUniqueWithoutBranchInput[]
+    createMany?: DepartmentCreateManyBranchInputEnvelope
+    set?: DepartmentWhereUniqueInput | DepartmentWhereUniqueInput[]
+    disconnect?: DepartmentWhereUniqueInput | DepartmentWhereUniqueInput[]
+    delete?: DepartmentWhereUniqueInput | DepartmentWhereUniqueInput[]
+    connect?: DepartmentWhereUniqueInput | DepartmentWhereUniqueInput[]
+    update?: DepartmentUpdateWithWhereUniqueWithoutBranchInput | DepartmentUpdateWithWhereUniqueWithoutBranchInput[]
+    updateMany?: DepartmentUpdateManyWithWhereWithoutBranchInput | DepartmentUpdateManyWithWhereWithoutBranchInput[]
+    deleteMany?: DepartmentScalarWhereInput | DepartmentScalarWhereInput[]
+  }
+
+  export type BranchCreateNestedOneWithoutDepartmentsInput = {
+    create?: XOR<BranchCreateWithoutDepartmentsInput, BranchUncheckedCreateWithoutDepartmentsInput>
+    connectOrCreate?: BranchCreateOrConnectWithoutDepartmentsInput
+    connect?: BranchWhereUniqueInput
+  }
+
+  export type BranchUpdateOneRequiredWithoutDepartmentsNestedInput = {
+    create?: XOR<BranchCreateWithoutDepartmentsInput, BranchUncheckedCreateWithoutDepartmentsInput>
+    connectOrCreate?: BranchCreateOrConnectWithoutDepartmentsInput
+    upsert?: BranchUpsertWithoutDepartmentsInput
+    connect?: BranchWhereUniqueInput
+    update?: XOR<XOR<BranchUpdateToOneWithWhereWithoutDepartmentsInput, BranchUpdateWithoutDepartmentsInput>, BranchUncheckedUpdateWithoutDepartmentsInput>
   }
 
   export type SubServiceCreateNestedOneWithoutClientSubServiceInput = {
@@ -33341,6 +43156,10 @@ export namespace Prisma {
     connect?: IncomeTransactionWhereUniqueInput | IncomeTransactionWhereUniqueInput[]
   }
 
+  export type EnumClientServiceStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ClientServiceStatus
+  }
+
   export type ServiceUpdateOneRequiredWithoutServiceAgreementsNestedInput = {
     create?: XOR<ServiceCreateWithoutServiceAgreementsInput, ServiceUncheckedCreateWithoutServiceAgreementsInput>
     connectOrCreate?: ServiceCreateOrConnectWithoutServiceAgreementsInput
@@ -33533,6 +43352,260 @@ export namespace Prisma {
     update?: XOR<XOR<UserSalaryUpdateToOneWithWhereWithoutUserSalaryDetailsInput, UserSalaryUpdateWithoutUserSalaryDetailsInput>, UserSalaryUncheckedUpdateWithoutUserSalaryDetailsInput>
   }
 
+  export type NavSubMenuCreateNestedManyWithoutMenuInput = {
+    create?: XOR<NavSubMenuCreateWithoutMenuInput, NavSubMenuUncheckedCreateWithoutMenuInput> | NavSubMenuCreateWithoutMenuInput[] | NavSubMenuUncheckedCreateWithoutMenuInput[]
+    connectOrCreate?: NavSubMenuCreateOrConnectWithoutMenuInput | NavSubMenuCreateOrConnectWithoutMenuInput[]
+    createMany?: NavSubMenuCreateManyMenuInputEnvelope
+    connect?: NavSubMenuWhereUniqueInput | NavSubMenuWhereUniqueInput[]
+  }
+
+  export type RoleMenuAccessCreateNestedManyWithoutMenuInput = {
+    create?: XOR<RoleMenuAccessCreateWithoutMenuInput, RoleMenuAccessUncheckedCreateWithoutMenuInput> | RoleMenuAccessCreateWithoutMenuInput[] | RoleMenuAccessUncheckedCreateWithoutMenuInput[]
+    connectOrCreate?: RoleMenuAccessCreateOrConnectWithoutMenuInput | RoleMenuAccessCreateOrConnectWithoutMenuInput[]
+    createMany?: RoleMenuAccessCreateManyMenuInputEnvelope
+    connect?: RoleMenuAccessWhereUniqueInput | RoleMenuAccessWhereUniqueInput[]
+  }
+
+  export type NavSubMenuUncheckedCreateNestedManyWithoutMenuInput = {
+    create?: XOR<NavSubMenuCreateWithoutMenuInput, NavSubMenuUncheckedCreateWithoutMenuInput> | NavSubMenuCreateWithoutMenuInput[] | NavSubMenuUncheckedCreateWithoutMenuInput[]
+    connectOrCreate?: NavSubMenuCreateOrConnectWithoutMenuInput | NavSubMenuCreateOrConnectWithoutMenuInput[]
+    createMany?: NavSubMenuCreateManyMenuInputEnvelope
+    connect?: NavSubMenuWhereUniqueInput | NavSubMenuWhereUniqueInput[]
+  }
+
+  export type RoleMenuAccessUncheckedCreateNestedManyWithoutMenuInput = {
+    create?: XOR<RoleMenuAccessCreateWithoutMenuInput, RoleMenuAccessUncheckedCreateWithoutMenuInput> | RoleMenuAccessCreateWithoutMenuInput[] | RoleMenuAccessUncheckedCreateWithoutMenuInput[]
+    connectOrCreate?: RoleMenuAccessCreateOrConnectWithoutMenuInput | RoleMenuAccessCreateOrConnectWithoutMenuInput[]
+    createMany?: RoleMenuAccessCreateManyMenuInputEnvelope
+    connect?: RoleMenuAccessWhereUniqueInput | RoleMenuAccessWhereUniqueInput[]
+  }
+
+  export type NavSubMenuUpdateManyWithoutMenuNestedInput = {
+    create?: XOR<NavSubMenuCreateWithoutMenuInput, NavSubMenuUncheckedCreateWithoutMenuInput> | NavSubMenuCreateWithoutMenuInput[] | NavSubMenuUncheckedCreateWithoutMenuInput[]
+    connectOrCreate?: NavSubMenuCreateOrConnectWithoutMenuInput | NavSubMenuCreateOrConnectWithoutMenuInput[]
+    upsert?: NavSubMenuUpsertWithWhereUniqueWithoutMenuInput | NavSubMenuUpsertWithWhereUniqueWithoutMenuInput[]
+    createMany?: NavSubMenuCreateManyMenuInputEnvelope
+    set?: NavSubMenuWhereUniqueInput | NavSubMenuWhereUniqueInput[]
+    disconnect?: NavSubMenuWhereUniqueInput | NavSubMenuWhereUniqueInput[]
+    delete?: NavSubMenuWhereUniqueInput | NavSubMenuWhereUniqueInput[]
+    connect?: NavSubMenuWhereUniqueInput | NavSubMenuWhereUniqueInput[]
+    update?: NavSubMenuUpdateWithWhereUniqueWithoutMenuInput | NavSubMenuUpdateWithWhereUniqueWithoutMenuInput[]
+    updateMany?: NavSubMenuUpdateManyWithWhereWithoutMenuInput | NavSubMenuUpdateManyWithWhereWithoutMenuInput[]
+    deleteMany?: NavSubMenuScalarWhereInput | NavSubMenuScalarWhereInput[]
+  }
+
+  export type RoleMenuAccessUpdateManyWithoutMenuNestedInput = {
+    create?: XOR<RoleMenuAccessCreateWithoutMenuInput, RoleMenuAccessUncheckedCreateWithoutMenuInput> | RoleMenuAccessCreateWithoutMenuInput[] | RoleMenuAccessUncheckedCreateWithoutMenuInput[]
+    connectOrCreate?: RoleMenuAccessCreateOrConnectWithoutMenuInput | RoleMenuAccessCreateOrConnectWithoutMenuInput[]
+    upsert?: RoleMenuAccessUpsertWithWhereUniqueWithoutMenuInput | RoleMenuAccessUpsertWithWhereUniqueWithoutMenuInput[]
+    createMany?: RoleMenuAccessCreateManyMenuInputEnvelope
+    set?: RoleMenuAccessWhereUniqueInput | RoleMenuAccessWhereUniqueInput[]
+    disconnect?: RoleMenuAccessWhereUniqueInput | RoleMenuAccessWhereUniqueInput[]
+    delete?: RoleMenuAccessWhereUniqueInput | RoleMenuAccessWhereUniqueInput[]
+    connect?: RoleMenuAccessWhereUniqueInput | RoleMenuAccessWhereUniqueInput[]
+    update?: RoleMenuAccessUpdateWithWhereUniqueWithoutMenuInput | RoleMenuAccessUpdateWithWhereUniqueWithoutMenuInput[]
+    updateMany?: RoleMenuAccessUpdateManyWithWhereWithoutMenuInput | RoleMenuAccessUpdateManyWithWhereWithoutMenuInput[]
+    deleteMany?: RoleMenuAccessScalarWhereInput | RoleMenuAccessScalarWhereInput[]
+  }
+
+  export type NavSubMenuUncheckedUpdateManyWithoutMenuNestedInput = {
+    create?: XOR<NavSubMenuCreateWithoutMenuInput, NavSubMenuUncheckedCreateWithoutMenuInput> | NavSubMenuCreateWithoutMenuInput[] | NavSubMenuUncheckedCreateWithoutMenuInput[]
+    connectOrCreate?: NavSubMenuCreateOrConnectWithoutMenuInput | NavSubMenuCreateOrConnectWithoutMenuInput[]
+    upsert?: NavSubMenuUpsertWithWhereUniqueWithoutMenuInput | NavSubMenuUpsertWithWhereUniqueWithoutMenuInput[]
+    createMany?: NavSubMenuCreateManyMenuInputEnvelope
+    set?: NavSubMenuWhereUniqueInput | NavSubMenuWhereUniqueInput[]
+    disconnect?: NavSubMenuWhereUniqueInput | NavSubMenuWhereUniqueInput[]
+    delete?: NavSubMenuWhereUniqueInput | NavSubMenuWhereUniqueInput[]
+    connect?: NavSubMenuWhereUniqueInput | NavSubMenuWhereUniqueInput[]
+    update?: NavSubMenuUpdateWithWhereUniqueWithoutMenuInput | NavSubMenuUpdateWithWhereUniqueWithoutMenuInput[]
+    updateMany?: NavSubMenuUpdateManyWithWhereWithoutMenuInput | NavSubMenuUpdateManyWithWhereWithoutMenuInput[]
+    deleteMany?: NavSubMenuScalarWhereInput | NavSubMenuScalarWhereInput[]
+  }
+
+  export type RoleMenuAccessUncheckedUpdateManyWithoutMenuNestedInput = {
+    create?: XOR<RoleMenuAccessCreateWithoutMenuInput, RoleMenuAccessUncheckedCreateWithoutMenuInput> | RoleMenuAccessCreateWithoutMenuInput[] | RoleMenuAccessUncheckedCreateWithoutMenuInput[]
+    connectOrCreate?: RoleMenuAccessCreateOrConnectWithoutMenuInput | RoleMenuAccessCreateOrConnectWithoutMenuInput[]
+    upsert?: RoleMenuAccessUpsertWithWhereUniqueWithoutMenuInput | RoleMenuAccessUpsertWithWhereUniqueWithoutMenuInput[]
+    createMany?: RoleMenuAccessCreateManyMenuInputEnvelope
+    set?: RoleMenuAccessWhereUniqueInput | RoleMenuAccessWhereUniqueInput[]
+    disconnect?: RoleMenuAccessWhereUniqueInput | RoleMenuAccessWhereUniqueInput[]
+    delete?: RoleMenuAccessWhereUniqueInput | RoleMenuAccessWhereUniqueInput[]
+    connect?: RoleMenuAccessWhereUniqueInput | RoleMenuAccessWhereUniqueInput[]
+    update?: RoleMenuAccessUpdateWithWhereUniqueWithoutMenuInput | RoleMenuAccessUpdateWithWhereUniqueWithoutMenuInput[]
+    updateMany?: RoleMenuAccessUpdateManyWithWhereWithoutMenuInput | RoleMenuAccessUpdateManyWithWhereWithoutMenuInput[]
+    deleteMany?: RoleMenuAccessScalarWhereInput | RoleMenuAccessScalarWhereInput[]
+  }
+
+  export type NavMenuCreateNestedOneWithoutSubMenusInput = {
+    create?: XOR<NavMenuCreateWithoutSubMenusInput, NavMenuUncheckedCreateWithoutSubMenusInput>
+    connectOrCreate?: NavMenuCreateOrConnectWithoutSubMenusInput
+    connect?: NavMenuWhereUniqueInput
+  }
+
+  export type RoleSubMenuAccessCreateNestedManyWithoutSubMenuInput = {
+    create?: XOR<RoleSubMenuAccessCreateWithoutSubMenuInput, RoleSubMenuAccessUncheckedCreateWithoutSubMenuInput> | RoleSubMenuAccessCreateWithoutSubMenuInput[] | RoleSubMenuAccessUncheckedCreateWithoutSubMenuInput[]
+    connectOrCreate?: RoleSubMenuAccessCreateOrConnectWithoutSubMenuInput | RoleSubMenuAccessCreateOrConnectWithoutSubMenuInput[]
+    createMany?: RoleSubMenuAccessCreateManySubMenuInputEnvelope
+    connect?: RoleSubMenuAccessWhereUniqueInput | RoleSubMenuAccessWhereUniqueInput[]
+  }
+
+  export type RoleSubMenuAccessUncheckedCreateNestedManyWithoutSubMenuInput = {
+    create?: XOR<RoleSubMenuAccessCreateWithoutSubMenuInput, RoleSubMenuAccessUncheckedCreateWithoutSubMenuInput> | RoleSubMenuAccessCreateWithoutSubMenuInput[] | RoleSubMenuAccessUncheckedCreateWithoutSubMenuInput[]
+    connectOrCreate?: RoleSubMenuAccessCreateOrConnectWithoutSubMenuInput | RoleSubMenuAccessCreateOrConnectWithoutSubMenuInput[]
+    createMany?: RoleSubMenuAccessCreateManySubMenuInputEnvelope
+    connect?: RoleSubMenuAccessWhereUniqueInput | RoleSubMenuAccessWhereUniqueInput[]
+  }
+
+  export type NavMenuUpdateOneRequiredWithoutSubMenusNestedInput = {
+    create?: XOR<NavMenuCreateWithoutSubMenusInput, NavMenuUncheckedCreateWithoutSubMenusInput>
+    connectOrCreate?: NavMenuCreateOrConnectWithoutSubMenusInput
+    upsert?: NavMenuUpsertWithoutSubMenusInput
+    connect?: NavMenuWhereUniqueInput
+    update?: XOR<XOR<NavMenuUpdateToOneWithWhereWithoutSubMenusInput, NavMenuUpdateWithoutSubMenusInput>, NavMenuUncheckedUpdateWithoutSubMenusInput>
+  }
+
+  export type RoleSubMenuAccessUpdateManyWithoutSubMenuNestedInput = {
+    create?: XOR<RoleSubMenuAccessCreateWithoutSubMenuInput, RoleSubMenuAccessUncheckedCreateWithoutSubMenuInput> | RoleSubMenuAccessCreateWithoutSubMenuInput[] | RoleSubMenuAccessUncheckedCreateWithoutSubMenuInput[]
+    connectOrCreate?: RoleSubMenuAccessCreateOrConnectWithoutSubMenuInput | RoleSubMenuAccessCreateOrConnectWithoutSubMenuInput[]
+    upsert?: RoleSubMenuAccessUpsertWithWhereUniqueWithoutSubMenuInput | RoleSubMenuAccessUpsertWithWhereUniqueWithoutSubMenuInput[]
+    createMany?: RoleSubMenuAccessCreateManySubMenuInputEnvelope
+    set?: RoleSubMenuAccessWhereUniqueInput | RoleSubMenuAccessWhereUniqueInput[]
+    disconnect?: RoleSubMenuAccessWhereUniqueInput | RoleSubMenuAccessWhereUniqueInput[]
+    delete?: RoleSubMenuAccessWhereUniqueInput | RoleSubMenuAccessWhereUniqueInput[]
+    connect?: RoleSubMenuAccessWhereUniqueInput | RoleSubMenuAccessWhereUniqueInput[]
+    update?: RoleSubMenuAccessUpdateWithWhereUniqueWithoutSubMenuInput | RoleSubMenuAccessUpdateWithWhereUniqueWithoutSubMenuInput[]
+    updateMany?: RoleSubMenuAccessUpdateManyWithWhereWithoutSubMenuInput | RoleSubMenuAccessUpdateManyWithWhereWithoutSubMenuInput[]
+    deleteMany?: RoleSubMenuAccessScalarWhereInput | RoleSubMenuAccessScalarWhereInput[]
+  }
+
+  export type RoleSubMenuAccessUncheckedUpdateManyWithoutSubMenuNestedInput = {
+    create?: XOR<RoleSubMenuAccessCreateWithoutSubMenuInput, RoleSubMenuAccessUncheckedCreateWithoutSubMenuInput> | RoleSubMenuAccessCreateWithoutSubMenuInput[] | RoleSubMenuAccessUncheckedCreateWithoutSubMenuInput[]
+    connectOrCreate?: RoleSubMenuAccessCreateOrConnectWithoutSubMenuInput | RoleSubMenuAccessCreateOrConnectWithoutSubMenuInput[]
+    upsert?: RoleSubMenuAccessUpsertWithWhereUniqueWithoutSubMenuInput | RoleSubMenuAccessUpsertWithWhereUniqueWithoutSubMenuInput[]
+    createMany?: RoleSubMenuAccessCreateManySubMenuInputEnvelope
+    set?: RoleSubMenuAccessWhereUniqueInput | RoleSubMenuAccessWhereUniqueInput[]
+    disconnect?: RoleSubMenuAccessWhereUniqueInput | RoleSubMenuAccessWhereUniqueInput[]
+    delete?: RoleSubMenuAccessWhereUniqueInput | RoleSubMenuAccessWhereUniqueInput[]
+    connect?: RoleSubMenuAccessWhereUniqueInput | RoleSubMenuAccessWhereUniqueInput[]
+    update?: RoleSubMenuAccessUpdateWithWhereUniqueWithoutSubMenuInput | RoleSubMenuAccessUpdateWithWhereUniqueWithoutSubMenuInput[]
+    updateMany?: RoleSubMenuAccessUpdateManyWithWhereWithoutSubMenuInput | RoleSubMenuAccessUpdateManyWithWhereWithoutSubMenuInput[]
+    deleteMany?: RoleSubMenuAccessScalarWhereInput | RoleSubMenuAccessScalarWhereInput[]
+  }
+
+  export type RoleCreateNestedOneWithoutMenuAccessInput = {
+    create?: XOR<RoleCreateWithoutMenuAccessInput, RoleUncheckedCreateWithoutMenuAccessInput>
+    connectOrCreate?: RoleCreateOrConnectWithoutMenuAccessInput
+    connect?: RoleWhereUniqueInput
+  }
+
+  export type NavMenuCreateNestedOneWithoutRoleAccessInput = {
+    create?: XOR<NavMenuCreateWithoutRoleAccessInput, NavMenuUncheckedCreateWithoutRoleAccessInput>
+    connectOrCreate?: NavMenuCreateOrConnectWithoutRoleAccessInput
+    connect?: NavMenuWhereUniqueInput
+  }
+
+  export type RoleSubMenuAccessCreateNestedManyWithoutRoleMenuAccessInput = {
+    create?: XOR<RoleSubMenuAccessCreateWithoutRoleMenuAccessInput, RoleSubMenuAccessUncheckedCreateWithoutRoleMenuAccessInput> | RoleSubMenuAccessCreateWithoutRoleMenuAccessInput[] | RoleSubMenuAccessUncheckedCreateWithoutRoleMenuAccessInput[]
+    connectOrCreate?: RoleSubMenuAccessCreateOrConnectWithoutRoleMenuAccessInput | RoleSubMenuAccessCreateOrConnectWithoutRoleMenuAccessInput[]
+    createMany?: RoleSubMenuAccessCreateManyRoleMenuAccessInputEnvelope
+    connect?: RoleSubMenuAccessWhereUniqueInput | RoleSubMenuAccessWhereUniqueInput[]
+  }
+
+  export type RoleSubMenuAccessUncheckedCreateNestedManyWithoutRoleMenuAccessInput = {
+    create?: XOR<RoleSubMenuAccessCreateWithoutRoleMenuAccessInput, RoleSubMenuAccessUncheckedCreateWithoutRoleMenuAccessInput> | RoleSubMenuAccessCreateWithoutRoleMenuAccessInput[] | RoleSubMenuAccessUncheckedCreateWithoutRoleMenuAccessInput[]
+    connectOrCreate?: RoleSubMenuAccessCreateOrConnectWithoutRoleMenuAccessInput | RoleSubMenuAccessCreateOrConnectWithoutRoleMenuAccessInput[]
+    createMany?: RoleSubMenuAccessCreateManyRoleMenuAccessInputEnvelope
+    connect?: RoleSubMenuAccessWhereUniqueInput | RoleSubMenuAccessWhereUniqueInput[]
+  }
+
+  export type RoleUpdateOneRequiredWithoutMenuAccessNestedInput = {
+    create?: XOR<RoleCreateWithoutMenuAccessInput, RoleUncheckedCreateWithoutMenuAccessInput>
+    connectOrCreate?: RoleCreateOrConnectWithoutMenuAccessInput
+    upsert?: RoleUpsertWithoutMenuAccessInput
+    connect?: RoleWhereUniqueInput
+    update?: XOR<XOR<RoleUpdateToOneWithWhereWithoutMenuAccessInput, RoleUpdateWithoutMenuAccessInput>, RoleUncheckedUpdateWithoutMenuAccessInput>
+  }
+
+  export type NavMenuUpdateOneRequiredWithoutRoleAccessNestedInput = {
+    create?: XOR<NavMenuCreateWithoutRoleAccessInput, NavMenuUncheckedCreateWithoutRoleAccessInput>
+    connectOrCreate?: NavMenuCreateOrConnectWithoutRoleAccessInput
+    upsert?: NavMenuUpsertWithoutRoleAccessInput
+    connect?: NavMenuWhereUniqueInput
+    update?: XOR<XOR<NavMenuUpdateToOneWithWhereWithoutRoleAccessInput, NavMenuUpdateWithoutRoleAccessInput>, NavMenuUncheckedUpdateWithoutRoleAccessInput>
+  }
+
+  export type RoleSubMenuAccessUpdateManyWithoutRoleMenuAccessNestedInput = {
+    create?: XOR<RoleSubMenuAccessCreateWithoutRoleMenuAccessInput, RoleSubMenuAccessUncheckedCreateWithoutRoleMenuAccessInput> | RoleSubMenuAccessCreateWithoutRoleMenuAccessInput[] | RoleSubMenuAccessUncheckedCreateWithoutRoleMenuAccessInput[]
+    connectOrCreate?: RoleSubMenuAccessCreateOrConnectWithoutRoleMenuAccessInput | RoleSubMenuAccessCreateOrConnectWithoutRoleMenuAccessInput[]
+    upsert?: RoleSubMenuAccessUpsertWithWhereUniqueWithoutRoleMenuAccessInput | RoleSubMenuAccessUpsertWithWhereUniqueWithoutRoleMenuAccessInput[]
+    createMany?: RoleSubMenuAccessCreateManyRoleMenuAccessInputEnvelope
+    set?: RoleSubMenuAccessWhereUniqueInput | RoleSubMenuAccessWhereUniqueInput[]
+    disconnect?: RoleSubMenuAccessWhereUniqueInput | RoleSubMenuAccessWhereUniqueInput[]
+    delete?: RoleSubMenuAccessWhereUniqueInput | RoleSubMenuAccessWhereUniqueInput[]
+    connect?: RoleSubMenuAccessWhereUniqueInput | RoleSubMenuAccessWhereUniqueInput[]
+    update?: RoleSubMenuAccessUpdateWithWhereUniqueWithoutRoleMenuAccessInput | RoleSubMenuAccessUpdateWithWhereUniqueWithoutRoleMenuAccessInput[]
+    updateMany?: RoleSubMenuAccessUpdateManyWithWhereWithoutRoleMenuAccessInput | RoleSubMenuAccessUpdateManyWithWhereWithoutRoleMenuAccessInput[]
+    deleteMany?: RoleSubMenuAccessScalarWhereInput | RoleSubMenuAccessScalarWhereInput[]
+  }
+
+  export type RoleSubMenuAccessUncheckedUpdateManyWithoutRoleMenuAccessNestedInput = {
+    create?: XOR<RoleSubMenuAccessCreateWithoutRoleMenuAccessInput, RoleSubMenuAccessUncheckedCreateWithoutRoleMenuAccessInput> | RoleSubMenuAccessCreateWithoutRoleMenuAccessInput[] | RoleSubMenuAccessUncheckedCreateWithoutRoleMenuAccessInput[]
+    connectOrCreate?: RoleSubMenuAccessCreateOrConnectWithoutRoleMenuAccessInput | RoleSubMenuAccessCreateOrConnectWithoutRoleMenuAccessInput[]
+    upsert?: RoleSubMenuAccessUpsertWithWhereUniqueWithoutRoleMenuAccessInput | RoleSubMenuAccessUpsertWithWhereUniqueWithoutRoleMenuAccessInput[]
+    createMany?: RoleSubMenuAccessCreateManyRoleMenuAccessInputEnvelope
+    set?: RoleSubMenuAccessWhereUniqueInput | RoleSubMenuAccessWhereUniqueInput[]
+    disconnect?: RoleSubMenuAccessWhereUniqueInput | RoleSubMenuAccessWhereUniqueInput[]
+    delete?: RoleSubMenuAccessWhereUniqueInput | RoleSubMenuAccessWhereUniqueInput[]
+    connect?: RoleSubMenuAccessWhereUniqueInput | RoleSubMenuAccessWhereUniqueInput[]
+    update?: RoleSubMenuAccessUpdateWithWhereUniqueWithoutRoleMenuAccessInput | RoleSubMenuAccessUpdateWithWhereUniqueWithoutRoleMenuAccessInput[]
+    updateMany?: RoleSubMenuAccessUpdateManyWithWhereWithoutRoleMenuAccessInput | RoleSubMenuAccessUpdateManyWithWhereWithoutRoleMenuAccessInput[]
+    deleteMany?: RoleSubMenuAccessScalarWhereInput | RoleSubMenuAccessScalarWhereInput[]
+  }
+
+  export type RoleMenuAccessCreateNestedOneWithoutSubAccessInput = {
+    create?: XOR<RoleMenuAccessCreateWithoutSubAccessInput, RoleMenuAccessUncheckedCreateWithoutSubAccessInput>
+    connectOrCreate?: RoleMenuAccessCreateOrConnectWithoutSubAccessInput
+    connect?: RoleMenuAccessWhereUniqueInput
+  }
+
+  export type NavSubMenuCreateNestedOneWithoutRoleAccessInput = {
+    create?: XOR<NavSubMenuCreateWithoutRoleAccessInput, NavSubMenuUncheckedCreateWithoutRoleAccessInput>
+    connectOrCreate?: NavSubMenuCreateOrConnectWithoutRoleAccessInput
+    connect?: NavSubMenuWhereUniqueInput
+  }
+
+  export type RoleMenuAccessUpdateOneRequiredWithoutSubAccessNestedInput = {
+    create?: XOR<RoleMenuAccessCreateWithoutSubAccessInput, RoleMenuAccessUncheckedCreateWithoutSubAccessInput>
+    connectOrCreate?: RoleMenuAccessCreateOrConnectWithoutSubAccessInput
+    upsert?: RoleMenuAccessUpsertWithoutSubAccessInput
+    connect?: RoleMenuAccessWhereUniqueInput
+    update?: XOR<XOR<RoleMenuAccessUpdateToOneWithWhereWithoutSubAccessInput, RoleMenuAccessUpdateWithoutSubAccessInput>, RoleMenuAccessUncheckedUpdateWithoutSubAccessInput>
+  }
+
+  export type NavSubMenuUpdateOneRequiredWithoutRoleAccessNestedInput = {
+    create?: XOR<NavSubMenuCreateWithoutRoleAccessInput, NavSubMenuUncheckedCreateWithoutRoleAccessInput>
+    connectOrCreate?: NavSubMenuCreateOrConnectWithoutRoleAccessInput
+    upsert?: NavSubMenuUpsertWithoutRoleAccessInput
+    connect?: NavSubMenuWhereUniqueInput
+    update?: XOR<XOR<NavSubMenuUpdateToOneWithWhereWithoutRoleAccessInput, NavSubMenuUpdateWithoutRoleAccessInput>, NavSubMenuUncheckedUpdateWithoutRoleAccessInput>
+  }
+
+  export type UserCreateNestedOneWithoutAuditLogsInput = {
+    create?: XOR<UserCreateWithoutAuditLogsInput, UserUncheckedCreateWithoutAuditLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAuditLogsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneWithoutAuditLogsNestedInput = {
+    create?: XOR<UserCreateWithoutAuditLogsInput, UserUncheckedCreateWithoutAuditLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAuditLogsInput
+    upsert?: UserUpsertWithoutAuditLogsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAuditLogsInput, UserUpdateWithoutAuditLogsInput>, UserUncheckedUpdateWithoutAuditLogsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[]
@@ -33545,6 +43618,36 @@ export namespace Prisma {
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     not?: NestedStringFilter<$PrismaModel> | string
+  }
+
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedBoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type NestedDateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
@@ -33575,74 +43678,6 @@ export namespace Prisma {
     not?: NestedIntFilter<$PrismaModel> | number
   }
 
-  export type NestedDateTimeFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
-  }
-
-  export type NestedBoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
-  }
-
-  export type NestedStringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | null
-    notIn?: string[] | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
-  }
-
-  export type NestedBoolNullableFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
-    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
-  }
-
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | null
-    notIn?: Date[] | string[] | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
-  }
-
-  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[]
-    notIn?: Date[] | string[]
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
-  }
-
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
-  }
-
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | null
@@ -33669,6 +43704,44 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type NestedBoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
   export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -33814,6 +43887,23 @@ export namespace Prisma {
     _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
+  export type NestedEnumClientServiceStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ClientServiceStatus | EnumClientServiceStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ClientServiceStatus[]
+    notIn?: $Enums.ClientServiceStatus[]
+    not?: NestedEnumClientServiceStatusFilter<$PrismaModel> | $Enums.ClientServiceStatus
+  }
+
+  export type NestedEnumClientServiceStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ClientServiceStatus | EnumClientServiceStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ClientServiceStatus[]
+    notIn?: $Enums.ClientServiceStatus[]
+    not?: NestedEnumClientServiceStatusWithAggregatesFilter<$PrismaModel> | $Enums.ClientServiceStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumClientServiceStatusFilter<$PrismaModel>
+    _max?: NestedEnumClientServiceStatusFilter<$PrismaModel>
+  }
+
   export type UserCreateWithoutDynamicRoleInput = {
     id: string
     createdAt?: Date | string
@@ -33829,6 +43919,7 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    branch?: BranchCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -33837,6 +43928,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
     registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDynamicRoleInput = {
@@ -33850,6 +43942,7 @@ export namespace Prisma {
     gender?: string | null
     salary?: string | null
     department?: string | null
+    branchId?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -33862,6 +43955,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
     registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDynamicRoleInput = {
@@ -33871,6 +43965,40 @@ export namespace Prisma {
 
   export type UserCreateManyDynamicRoleInputEnvelope = {
     data: UserCreateManyDynamicRoleInput | UserCreateManyDynamicRoleInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type RoleMenuAccessCreateWithoutRoleInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+    menu: NavMenuCreateNestedOneWithoutRoleAccessInput
+    subAccess?: RoleSubMenuAccessCreateNestedManyWithoutRoleMenuAccessInput
+  }
+
+  export type RoleMenuAccessUncheckedCreateWithoutRoleInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    menuId: string
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+    subAccess?: RoleSubMenuAccessUncheckedCreateNestedManyWithoutRoleMenuAccessInput
+  }
+
+  export type RoleMenuAccessCreateOrConnectWithoutRoleInput = {
+    where: RoleMenuAccessWhereUniqueInput
+    create: XOR<RoleMenuAccessCreateWithoutRoleInput, RoleMenuAccessUncheckedCreateWithoutRoleInput>
+  }
+
+  export type RoleMenuAccessCreateManyRoleInputEnvelope = {
+    data: RoleMenuAccessCreateManyRoleInput | RoleMenuAccessCreateManyRoleInput[]
     skipDuplicates?: boolean
   }
 
@@ -33904,11 +44032,92 @@ export namespace Prisma {
     gender?: StringNullableFilter<"User"> | string | null
     salary?: StringNullableFilter<"User"> | string | null
     department?: StringNullableFilter<"User"> | string | null
+    branchId?: StringNullableFilter<"User"> | string | null
     roleId?: StringNullableFilter<"User"> | string | null
     role?: StringNullableFilter<"User"> | string | null
     banned?: BoolNullableFilter<"User"> | boolean | null
     banReason?: StringNullableFilter<"User"> | string | null
     banExpires?: DateTimeNullableFilter<"User"> | Date | string | null
+  }
+
+  export type RoleMenuAccessUpsertWithWhereUniqueWithoutRoleInput = {
+    where: RoleMenuAccessWhereUniqueInput
+    update: XOR<RoleMenuAccessUpdateWithoutRoleInput, RoleMenuAccessUncheckedUpdateWithoutRoleInput>
+    create: XOR<RoleMenuAccessCreateWithoutRoleInput, RoleMenuAccessUncheckedCreateWithoutRoleInput>
+  }
+
+  export type RoleMenuAccessUpdateWithWhereUniqueWithoutRoleInput = {
+    where: RoleMenuAccessWhereUniqueInput
+    data: XOR<RoleMenuAccessUpdateWithoutRoleInput, RoleMenuAccessUncheckedUpdateWithoutRoleInput>
+  }
+
+  export type RoleMenuAccessUpdateManyWithWhereWithoutRoleInput = {
+    where: RoleMenuAccessScalarWhereInput
+    data: XOR<RoleMenuAccessUpdateManyMutationInput, RoleMenuAccessUncheckedUpdateManyWithoutRoleInput>
+  }
+
+  export type RoleMenuAccessScalarWhereInput = {
+    AND?: RoleMenuAccessScalarWhereInput | RoleMenuAccessScalarWhereInput[]
+    OR?: RoleMenuAccessScalarWhereInput[]
+    NOT?: RoleMenuAccessScalarWhereInput | RoleMenuAccessScalarWhereInput[]
+    id?: StringFilter<"RoleMenuAccess"> | string
+    createdAt?: DateTimeFilter<"RoleMenuAccess"> | Date | string
+    updatedAt?: DateTimeFilter<"RoleMenuAccess"> | Date | string
+    roleId?: StringFilter<"RoleMenuAccess"> | string
+    menuId?: StringFilter<"RoleMenuAccess"> | string
+    canView?: BoolFilter<"RoleMenuAccess"> | boolean
+    canAdd?: BoolFilter<"RoleMenuAccess"> | boolean
+    canEdit?: BoolFilter<"RoleMenuAccess"> | boolean
+    canDelete?: BoolFilter<"RoleMenuAccess"> | boolean
+  }
+
+  export type BranchCreateWithoutUsersInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    slug?: string | null
+    description?: string | null
+    location?: string | null
+    phone?: string | null
+    logoUrl?: string | null
+    iconLogoUrl?: string | null
+    isMain?: boolean
+    usesRootLogin?: boolean
+    slugClearedOnce?: boolean
+    primaryColor?: string
+    secondaryColor?: string
+    customDomain?: string | null
+    isActive?: boolean
+    services?: ServiceCreateNestedManyWithoutBranchInput
+    departments?: DepartmentCreateNestedManyWithoutBranchInput
+  }
+
+  export type BranchUncheckedCreateWithoutUsersInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    slug?: string | null
+    description?: string | null
+    location?: string | null
+    phone?: string | null
+    logoUrl?: string | null
+    iconLogoUrl?: string | null
+    isMain?: boolean
+    usesRootLogin?: boolean
+    slugClearedOnce?: boolean
+    primaryColor?: string
+    secondaryColor?: string
+    customDomain?: string | null
+    isActive?: boolean
+    services?: ServiceUncheckedCreateNestedManyWithoutBranchInput
+    departments?: DepartmentUncheckedCreateNestedManyWithoutBranchInput
+  }
+
+  export type BranchCreateOrConnectWithoutUsersInput = {
+    where: BranchWhereUniqueInput
+    create: XOR<BranchCreateWithoutUsersInput, BranchUncheckedCreateWithoutUsersInput>
   }
 
   export type SessionCreateWithoutUserInput = {
@@ -34050,11 +44259,21 @@ export namespace Prisma {
   export type RoleCreateWithoutUsersInput = {
     id?: string
     name: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    menuAccess?: RoleMenuAccessCreateNestedManyWithoutRoleInput
   }
 
   export type RoleUncheckedCreateWithoutUsersInput = {
     id?: string
     name: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    menuAccess?: RoleMenuAccessUncheckedCreateNestedManyWithoutRoleInput
   }
 
   export type RoleCreateOrConnectWithoutUsersInput = {
@@ -34222,6 +44441,89 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type AuditLogCreateWithoutUserInput = {
+    id?: string
+    createdAt?: Date | string
+    action: string
+    entity: string
+    entityId?: string | null
+    description?: string | null
+  }
+
+  export type AuditLogUncheckedCreateWithoutUserInput = {
+    id?: string
+    createdAt?: Date | string
+    action: string
+    entity: string
+    entityId?: string | null
+    description?: string | null
+  }
+
+  export type AuditLogCreateOrConnectWithoutUserInput = {
+    where: AuditLogWhereUniqueInput
+    create: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput>
+  }
+
+  export type AuditLogCreateManyUserInputEnvelope = {
+    data: AuditLogCreateManyUserInput | AuditLogCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BranchUpsertWithoutUsersInput = {
+    update: XOR<BranchUpdateWithoutUsersInput, BranchUncheckedUpdateWithoutUsersInput>
+    create: XOR<BranchCreateWithoutUsersInput, BranchUncheckedCreateWithoutUsersInput>
+    where?: BranchWhereInput
+  }
+
+  export type BranchUpdateToOneWithWhereWithoutUsersInput = {
+    where?: BranchWhereInput
+    data: XOR<BranchUpdateWithoutUsersInput, BranchUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type BranchUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isMain?: BoolFieldUpdateOperationsInput | boolean
+    usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
+    primaryColor?: StringFieldUpdateOperationsInput | string
+    secondaryColor?: StringFieldUpdateOperationsInput | string
+    customDomain?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    services?: ServiceUpdateManyWithoutBranchNestedInput
+    departments?: DepartmentUpdateManyWithoutBranchNestedInput
+  }
+
+  export type BranchUncheckedUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isMain?: BoolFieldUpdateOperationsInput | boolean
+    usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
+    primaryColor?: StringFieldUpdateOperationsInput | string
+    secondaryColor?: StringFieldUpdateOperationsInput | string
+    customDomain?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    services?: ServiceUncheckedUpdateManyWithoutBranchNestedInput
+    departments?: DepartmentUncheckedUpdateManyWithoutBranchNestedInput
+  }
+
   export type SessionUpsertWithWhereUniqueWithoutUserInput = {
     where: SessionWhereUniqueInput
     update: XOR<SessionUpdateWithoutUserInput, SessionUncheckedUpdateWithoutUserInput>
@@ -34363,11 +44665,21 @@ export namespace Prisma {
   export type RoleUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    menuAccess?: RoleMenuAccessUpdateManyWithoutRoleNestedInput
   }
 
   export type RoleUncheckedUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    menuAccess?: RoleMenuAccessUncheckedUpdateManyWithoutRoleNestedInput
   }
 
   export type IncomeTransactionUpsertWithWhereUniqueWithoutUserInput = {
@@ -34489,6 +44801,35 @@ export namespace Prisma {
     data: XOR<UserSalaryUpdateManyMutationInput, UserSalaryUncheckedUpdateManyWithoutRegisteredUserInput>
   }
 
+  export type AuditLogUpsertWithWhereUniqueWithoutUserInput = {
+    where: AuditLogWhereUniqueInput
+    update: XOR<AuditLogUpdateWithoutUserInput, AuditLogUncheckedUpdateWithoutUserInput>
+    create: XOR<AuditLogCreateWithoutUserInput, AuditLogUncheckedCreateWithoutUserInput>
+  }
+
+  export type AuditLogUpdateWithWhereUniqueWithoutUserInput = {
+    where: AuditLogWhereUniqueInput
+    data: XOR<AuditLogUpdateWithoutUserInput, AuditLogUncheckedUpdateWithoutUserInput>
+  }
+
+  export type AuditLogUpdateManyWithWhereWithoutUserInput = {
+    where: AuditLogScalarWhereInput
+    data: XOR<AuditLogUpdateManyMutationInput, AuditLogUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type AuditLogScalarWhereInput = {
+    AND?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+    OR?: AuditLogScalarWhereInput[]
+    NOT?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+    id?: StringFilter<"AuditLog"> | string
+    createdAt?: DateTimeFilter<"AuditLog"> | Date | string
+    userId?: StringNullableFilter<"AuditLog"> | string | null
+    action?: StringFilter<"AuditLog"> | string
+    entity?: StringFilter<"AuditLog"> | string
+    entityId?: StringNullableFilter<"AuditLog"> | string | null
+    description?: StringNullableFilter<"AuditLog"> | string | null
+  }
+
   export type UserCreateWithoutSessionsInput = {
     id: string
     createdAt?: Date | string
@@ -34504,6 +44845,7 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    branch?: BranchCreateNestedOneWithoutUsersInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -34512,6 +44854,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
     registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -34525,6 +44868,7 @@ export namespace Prisma {
     gender?: string | null
     salary?: string | null
     department?: string | null
+    branchId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -34537,6 +44881,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
     registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -34570,6 +44915,7 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    branch?: BranchUpdateOneWithoutUsersNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -34578,6 +44924,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
     registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -34591,6 +44938,7 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -34603,6 +44951,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
     registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAccountsInput = {
@@ -34620,6 +44969,7 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    branch?: BranchCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -34628,6 +44978,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
     registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -34641,6 +44992,7 @@ export namespace Prisma {
     gender?: string | null
     salary?: string | null
     department?: string | null
+    branchId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -34653,6 +45005,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
     registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -34686,6 +45039,7 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    branch?: BranchUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -34694,6 +45048,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
     registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -34707,6 +45062,7 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -34719,6 +45075,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
     registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ClientServiceCreateWithoutClientInput = {
@@ -34789,6 +45146,7 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    serviceStatus?: $Enums.ClientServiceStatus
     service: ServiceCreateNestedOneWithoutServiceAgreementsInput
     subService: SubServiceCreateNestedOneWithoutServiceAgreementsInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutServiceAgreementInput
@@ -34802,6 +45160,7 @@ export namespace Prisma {
     description: string
     serviceId: string
     subServiceId: string
+    serviceStatus?: $Enums.ClientServiceStatus
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutServiceAgreementInput
   }
 
@@ -34919,6 +45278,56 @@ export namespace Prisma {
     serviceId?: StringFilter<"IncomeServiceAgreement"> | string
     subServiceId?: StringFilter<"IncomeServiceAgreement"> | string
     clientId?: StringFilter<"IncomeServiceAgreement"> | string
+    serviceStatus?: EnumClientServiceStatusFilter<"IncomeServiceAgreement"> | $Enums.ClientServiceStatus
+  }
+
+  export type BranchCreateWithoutServicesInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    slug?: string | null
+    description?: string | null
+    location?: string | null
+    phone?: string | null
+    logoUrl?: string | null
+    iconLogoUrl?: string | null
+    isMain?: boolean
+    usesRootLogin?: boolean
+    slugClearedOnce?: boolean
+    primaryColor?: string
+    secondaryColor?: string
+    customDomain?: string | null
+    isActive?: boolean
+    users?: UserCreateNestedManyWithoutBranchInput
+    departments?: DepartmentCreateNestedManyWithoutBranchInput
+  }
+
+  export type BranchUncheckedCreateWithoutServicesInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    slug?: string | null
+    description?: string | null
+    location?: string | null
+    phone?: string | null
+    logoUrl?: string | null
+    iconLogoUrl?: string | null
+    isMain?: boolean
+    usesRootLogin?: boolean
+    slugClearedOnce?: boolean
+    primaryColor?: string
+    secondaryColor?: string
+    customDomain?: string | null
+    isActive?: boolean
+    users?: UserUncheckedCreateNestedManyWithoutBranchInput
+    departments?: DepartmentUncheckedCreateNestedManyWithoutBranchInput
+  }
+
+  export type BranchCreateOrConnectWithoutServicesInput = {
+    where: BranchWhereUniqueInput
+    create: XOR<BranchCreateWithoutServicesInput, BranchUncheckedCreateWithoutServicesInput>
   }
 
   export type ClientServiceCreateWithoutServiceInput = {
@@ -34946,6 +45355,7 @@ export namespace Prisma {
   export type SubServiceCreateWithoutServiceInput = {
     id: string
     name: string
+    description?: string | null
     clientSubService?: ClientSubServiceCreateNestedManyWithoutSubServiceInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutSubServiceInput
   }
@@ -34953,6 +45363,7 @@ export namespace Prisma {
   export type SubServiceUncheckedCreateWithoutServiceInput = {
     id: string
     name: string
+    description?: string | null
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutSubServiceInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutSubServiceInput
   }
@@ -34973,6 +45384,7 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    serviceStatus?: $Enums.ClientServiceStatus
     subService: SubServiceCreateNestedOneWithoutServiceAgreementsInput
     client: ClientCreateNestedOneWithoutServiceAgreementsInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutServiceAgreementInput
@@ -34986,6 +45398,7 @@ export namespace Prisma {
     description: string
     subServiceId: string
     clientId: string
+    serviceStatus?: $Enums.ClientServiceStatus
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutServiceAgreementInput
   }
 
@@ -34997,6 +45410,61 @@ export namespace Prisma {
   export type IncomeServiceAgreementCreateManyServiceInputEnvelope = {
     data: IncomeServiceAgreementCreateManyServiceInput | IncomeServiceAgreementCreateManyServiceInput[]
     skipDuplicates?: boolean
+  }
+
+  export type BranchUpsertWithoutServicesInput = {
+    update: XOR<BranchUpdateWithoutServicesInput, BranchUncheckedUpdateWithoutServicesInput>
+    create: XOR<BranchCreateWithoutServicesInput, BranchUncheckedCreateWithoutServicesInput>
+    where?: BranchWhereInput
+  }
+
+  export type BranchUpdateToOneWithWhereWithoutServicesInput = {
+    where?: BranchWhereInput
+    data: XOR<BranchUpdateWithoutServicesInput, BranchUncheckedUpdateWithoutServicesInput>
+  }
+
+  export type BranchUpdateWithoutServicesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isMain?: BoolFieldUpdateOperationsInput | boolean
+    usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
+    primaryColor?: StringFieldUpdateOperationsInput | string
+    secondaryColor?: StringFieldUpdateOperationsInput | string
+    customDomain?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    users?: UserUpdateManyWithoutBranchNestedInput
+    departments?: DepartmentUpdateManyWithoutBranchNestedInput
+  }
+
+  export type BranchUncheckedUpdateWithoutServicesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isMain?: BoolFieldUpdateOperationsInput | boolean
+    usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
+    primaryColor?: StringFieldUpdateOperationsInput | string
+    secondaryColor?: StringFieldUpdateOperationsInput | string
+    customDomain?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    users?: UserUncheckedUpdateManyWithoutBranchNestedInput
+    departments?: DepartmentUncheckedUpdateManyWithoutBranchNestedInput
   }
 
   export type ClientServiceUpsertWithWhereUniqueWithoutServiceInput = {
@@ -35037,6 +45505,7 @@ export namespace Prisma {
     NOT?: SubServiceScalarWhereInput | SubServiceScalarWhereInput[]
     id?: StringFilter<"SubService"> | string
     name?: StringFilter<"SubService"> | string
+    description?: StringNullableFilter<"SubService"> | string | null
     categoryId?: StringFilter<"SubService"> | string
   }
 
@@ -35059,6 +45528,8 @@ export namespace Prisma {
   export type ServiceCreateWithoutSubServiceInput = {
     id: string
     serviceName: string
+    description?: string | null
+    branch?: BranchCreateNestedOneWithoutServicesInput
     clientService?: ClientServiceCreateNestedManyWithoutServiceInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutServiceInput
   }
@@ -35066,6 +45537,8 @@ export namespace Prisma {
   export type ServiceUncheckedCreateWithoutSubServiceInput = {
     id: string
     serviceName: string
+    description?: string | null
+    branchId?: string | null
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutServiceInput
   }
@@ -35101,6 +45574,7 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    serviceStatus?: $Enums.ClientServiceStatus
     service: ServiceCreateNestedOneWithoutServiceAgreementsInput
     client: ClientCreateNestedOneWithoutServiceAgreementsInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutServiceAgreementInput
@@ -35114,6 +45588,7 @@ export namespace Prisma {
     description: string
     serviceId: string
     clientId: string
+    serviceStatus?: $Enums.ClientServiceStatus
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutServiceAgreementInput
   }
 
@@ -35141,6 +45616,8 @@ export namespace Prisma {
   export type ServiceUpdateWithoutSubServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    branch?: BranchUpdateOneWithoutServicesNestedInput
     clientService?: ClientServiceUpdateManyWithoutServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutServiceNestedInput
   }
@@ -35148,6 +45625,8 @@ export namespace Prisma {
   export type ServiceUncheckedUpdateWithoutSubServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
     clientService?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutServiceNestedInput
   }
@@ -35184,9 +45663,305 @@ export namespace Prisma {
     data: XOR<IncomeServiceAgreementUpdateManyMutationInput, IncomeServiceAgreementUncheckedUpdateManyWithoutSubServiceInput>
   }
 
+  export type UserCreateWithoutBranchInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    gender?: string | null
+    salary?: string | null
+    department?: string | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    userFiles?: UserFilesCreateNestedManyWithoutUserInput
+    dynamicRole?: RoleCreateNestedOneWithoutUsersInput
+    incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
+    expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
+    reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
+    registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutBranchInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    gender?: string | null
+    salary?: string | null
+    department?: string | null
+    roleId?: string | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
+    incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
+    expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
+    reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
+    registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutBranchInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutBranchInput, UserUncheckedCreateWithoutBranchInput>
+  }
+
+  export type UserCreateManyBranchInputEnvelope = {
+    data: UserCreateManyBranchInput | UserCreateManyBranchInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ServiceCreateWithoutBranchInput = {
+    id: string
+    serviceName: string
+    description?: string | null
+    clientService?: ClientServiceCreateNestedManyWithoutServiceInput
+    subService?: SubServiceCreateNestedManyWithoutServiceInput
+    serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutServiceInput
+  }
+
+  export type ServiceUncheckedCreateWithoutBranchInput = {
+    id: string
+    serviceName: string
+    description?: string | null
+    clientService?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
+    subService?: SubServiceUncheckedCreateNestedManyWithoutServiceInput
+    serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutServiceInput
+  }
+
+  export type ServiceCreateOrConnectWithoutBranchInput = {
+    where: ServiceWhereUniqueInput
+    create: XOR<ServiceCreateWithoutBranchInput, ServiceUncheckedCreateWithoutBranchInput>
+  }
+
+  export type ServiceCreateManyBranchInputEnvelope = {
+    data: ServiceCreateManyBranchInput | ServiceCreateManyBranchInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DepartmentCreateWithoutBranchInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    description?: string | null
+    isActive?: boolean
+  }
+
+  export type DepartmentUncheckedCreateWithoutBranchInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    description?: string | null
+    isActive?: boolean
+  }
+
+  export type DepartmentCreateOrConnectWithoutBranchInput = {
+    where: DepartmentWhereUniqueInput
+    create: XOR<DepartmentCreateWithoutBranchInput, DepartmentUncheckedCreateWithoutBranchInput>
+  }
+
+  export type DepartmentCreateManyBranchInputEnvelope = {
+    data: DepartmentCreateManyBranchInput | DepartmentCreateManyBranchInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithWhereUniqueWithoutBranchInput = {
+    where: UserWhereUniqueInput
+    update: XOR<UserUpdateWithoutBranchInput, UserUncheckedUpdateWithoutBranchInput>
+    create: XOR<UserCreateWithoutBranchInput, UserUncheckedCreateWithoutBranchInput>
+  }
+
+  export type UserUpdateWithWhereUniqueWithoutBranchInput = {
+    where: UserWhereUniqueInput
+    data: XOR<UserUpdateWithoutBranchInput, UserUncheckedUpdateWithoutBranchInput>
+  }
+
+  export type UserUpdateManyWithWhereWithoutBranchInput = {
+    where: UserScalarWhereInput
+    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutBranchInput>
+  }
+
+  export type ServiceUpsertWithWhereUniqueWithoutBranchInput = {
+    where: ServiceWhereUniqueInput
+    update: XOR<ServiceUpdateWithoutBranchInput, ServiceUncheckedUpdateWithoutBranchInput>
+    create: XOR<ServiceCreateWithoutBranchInput, ServiceUncheckedCreateWithoutBranchInput>
+  }
+
+  export type ServiceUpdateWithWhereUniqueWithoutBranchInput = {
+    where: ServiceWhereUniqueInput
+    data: XOR<ServiceUpdateWithoutBranchInput, ServiceUncheckedUpdateWithoutBranchInput>
+  }
+
+  export type ServiceUpdateManyWithWhereWithoutBranchInput = {
+    where: ServiceScalarWhereInput
+    data: XOR<ServiceUpdateManyMutationInput, ServiceUncheckedUpdateManyWithoutBranchInput>
+  }
+
+  export type ServiceScalarWhereInput = {
+    AND?: ServiceScalarWhereInput | ServiceScalarWhereInput[]
+    OR?: ServiceScalarWhereInput[]
+    NOT?: ServiceScalarWhereInput | ServiceScalarWhereInput[]
+    id?: StringFilter<"Service"> | string
+    serviceName?: StringFilter<"Service"> | string
+    description?: StringNullableFilter<"Service"> | string | null
+    branchId?: StringNullableFilter<"Service"> | string | null
+  }
+
+  export type DepartmentUpsertWithWhereUniqueWithoutBranchInput = {
+    where: DepartmentWhereUniqueInput
+    update: XOR<DepartmentUpdateWithoutBranchInput, DepartmentUncheckedUpdateWithoutBranchInput>
+    create: XOR<DepartmentCreateWithoutBranchInput, DepartmentUncheckedCreateWithoutBranchInput>
+  }
+
+  export type DepartmentUpdateWithWhereUniqueWithoutBranchInput = {
+    where: DepartmentWhereUniqueInput
+    data: XOR<DepartmentUpdateWithoutBranchInput, DepartmentUncheckedUpdateWithoutBranchInput>
+  }
+
+  export type DepartmentUpdateManyWithWhereWithoutBranchInput = {
+    where: DepartmentScalarWhereInput
+    data: XOR<DepartmentUpdateManyMutationInput, DepartmentUncheckedUpdateManyWithoutBranchInput>
+  }
+
+  export type DepartmentScalarWhereInput = {
+    AND?: DepartmentScalarWhereInput | DepartmentScalarWhereInput[]
+    OR?: DepartmentScalarWhereInput[]
+    NOT?: DepartmentScalarWhereInput | DepartmentScalarWhereInput[]
+    id?: StringFilter<"Department"> | string
+    createdAt?: DateTimeFilter<"Department"> | Date | string
+    updatedAt?: DateTimeFilter<"Department"> | Date | string
+    name?: StringFilter<"Department"> | string
+    description?: StringNullableFilter<"Department"> | string | null
+    isActive?: BoolFilter<"Department"> | boolean
+    branchId?: StringFilter<"Department"> | string
+  }
+
+  export type BranchCreateWithoutDepartmentsInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    slug?: string | null
+    description?: string | null
+    location?: string | null
+    phone?: string | null
+    logoUrl?: string | null
+    iconLogoUrl?: string | null
+    isMain?: boolean
+    usesRootLogin?: boolean
+    slugClearedOnce?: boolean
+    primaryColor?: string
+    secondaryColor?: string
+    customDomain?: string | null
+    isActive?: boolean
+    users?: UserCreateNestedManyWithoutBranchInput
+    services?: ServiceCreateNestedManyWithoutBranchInput
+  }
+
+  export type BranchUncheckedCreateWithoutDepartmentsInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    slug?: string | null
+    description?: string | null
+    location?: string | null
+    phone?: string | null
+    logoUrl?: string | null
+    iconLogoUrl?: string | null
+    isMain?: boolean
+    usesRootLogin?: boolean
+    slugClearedOnce?: boolean
+    primaryColor?: string
+    secondaryColor?: string
+    customDomain?: string | null
+    isActive?: boolean
+    users?: UserUncheckedCreateNestedManyWithoutBranchInput
+    services?: ServiceUncheckedCreateNestedManyWithoutBranchInput
+  }
+
+  export type BranchCreateOrConnectWithoutDepartmentsInput = {
+    where: BranchWhereUniqueInput
+    create: XOR<BranchCreateWithoutDepartmentsInput, BranchUncheckedCreateWithoutDepartmentsInput>
+  }
+
+  export type BranchUpsertWithoutDepartmentsInput = {
+    update: XOR<BranchUpdateWithoutDepartmentsInput, BranchUncheckedUpdateWithoutDepartmentsInput>
+    create: XOR<BranchCreateWithoutDepartmentsInput, BranchUncheckedCreateWithoutDepartmentsInput>
+    where?: BranchWhereInput
+  }
+
+  export type BranchUpdateToOneWithWhereWithoutDepartmentsInput = {
+    where?: BranchWhereInput
+    data: XOR<BranchUpdateWithoutDepartmentsInput, BranchUncheckedUpdateWithoutDepartmentsInput>
+  }
+
+  export type BranchUpdateWithoutDepartmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isMain?: BoolFieldUpdateOperationsInput | boolean
+    usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
+    primaryColor?: StringFieldUpdateOperationsInput | string
+    secondaryColor?: StringFieldUpdateOperationsInput | string
+    customDomain?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    users?: UserUpdateManyWithoutBranchNestedInput
+    services?: ServiceUpdateManyWithoutBranchNestedInput
+  }
+
+  export type BranchUncheckedUpdateWithoutDepartmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    isMain?: BoolFieldUpdateOperationsInput | boolean
+    usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
+    primaryColor?: StringFieldUpdateOperationsInput | string
+    secondaryColor?: StringFieldUpdateOperationsInput | string
+    customDomain?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    users?: UserUncheckedUpdateManyWithoutBranchNestedInput
+    services?: ServiceUncheckedUpdateManyWithoutBranchNestedInput
+  }
+
   export type SubServiceCreateWithoutClientSubServiceInput = {
     id: string
     name: string
+    description?: string | null
     service: ServiceCreateNestedOneWithoutSubServiceInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutSubServiceInput
   }
@@ -35194,6 +45969,7 @@ export namespace Prisma {
   export type SubServiceUncheckedCreateWithoutClientSubServiceInput = {
     id: string
     name: string
+    description?: string | null
     categoryId: string
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutSubServiceInput
   }
@@ -35248,6 +46024,7 @@ export namespace Prisma {
   export type SubServiceUpdateWithoutClientSubServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     service?: ServiceUpdateOneRequiredWithoutSubServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutSubServiceNestedInput
   }
@@ -35255,6 +46032,7 @@ export namespace Prisma {
   export type SubServiceUncheckedUpdateWithoutClientSubServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: StringFieldUpdateOperationsInput | string
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutSubServiceNestedInput
   }
@@ -35299,6 +46077,8 @@ export namespace Prisma {
   export type ServiceCreateWithoutClientServiceInput = {
     id: string
     serviceName: string
+    description?: string | null
+    branch?: BranchCreateNestedOneWithoutServicesInput
     subService?: SubServiceCreateNestedManyWithoutServiceInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutServiceInput
   }
@@ -35306,6 +46086,8 @@ export namespace Prisma {
   export type ServiceUncheckedCreateWithoutClientServiceInput = {
     id: string
     serviceName: string
+    description?: string | null
+    branchId?: string | null
     subService?: SubServiceUncheckedCreateNestedManyWithoutServiceInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutServiceInput
   }
@@ -35360,6 +46142,8 @@ export namespace Prisma {
   export type ServiceUpdateWithoutClientServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    branch?: BranchUpdateOneWithoutServicesNestedInput
     subService?: SubServiceUpdateManyWithoutServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutServiceNestedInput
   }
@@ -35367,6 +46151,8 @@ export namespace Prisma {
   export type ServiceUncheckedUpdateWithoutClientServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
     subService?: SubServiceUncheckedUpdateManyWithoutServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutServiceNestedInput
   }
@@ -35423,6 +46209,7 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    branch?: BranchCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -35431,6 +46218,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
     registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAssignedTasksInput = {
@@ -35444,6 +46232,7 @@ export namespace Prisma {
     gender?: string | null
     salary?: string | null
     department?: string | null
+    branchId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -35456,6 +46245,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
     registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAssignedTasksInput = {
@@ -35509,6 +46299,7 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    branch?: BranchUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -35517,6 +46308,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
     registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAssignedTasksInput = {
@@ -35530,6 +46322,7 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -35542,6 +46335,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
     registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ClientTaskUpsertWithWhereUniqueWithoutTaskInput = {
@@ -35831,6 +46625,7 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    branch?: BranchCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -35839,6 +46634,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
     registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutIncomeTransactionInput = {
@@ -35852,6 +46648,7 @@ export namespace Prisma {
     gender?: string | null
     salary?: string | null
     department?: string | null
+    branchId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -35864,6 +46661,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
     registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutIncomeTransactionInput = {
@@ -35894,6 +46692,7 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    serviceStatus?: $Enums.ClientServiceStatus
     service: ServiceCreateNestedOneWithoutServiceAgreementsInput
     subService: SubServiceCreateNestedOneWithoutServiceAgreementsInput
     client: ClientCreateNestedOneWithoutServiceAgreementsInput
@@ -35908,6 +46707,7 @@ export namespace Prisma {
     serviceId: string
     subServiceId: string
     clientId: string
+    serviceStatus?: $Enums.ClientServiceStatus
   }
 
   export type IncomeServiceAgreementCreateOrConnectWithoutIncomeTransactionInput = {
@@ -35963,6 +46763,7 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    branch?: BranchUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -35971,6 +46772,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
     registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutIncomeTransactionInput = {
@@ -35984,6 +46786,7 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -35996,6 +46799,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
     registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type IncomeUpsertWithoutIncomeTransactionInput = {
@@ -36038,6 +46842,7 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
     service?: ServiceUpdateOneRequiredWithoutServiceAgreementsNestedInput
     subService?: SubServiceUpdateOneRequiredWithoutServiceAgreementsNestedInput
     client?: ClientUpdateOneRequiredWithoutServiceAgreementsNestedInput
@@ -36052,6 +46857,7 @@ export namespace Prisma {
     serviceId?: StringFieldUpdateOperationsInput | string
     subServiceId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
+    serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
   }
 
   export type IncomeTransactionDetailsUpsertWithWhereUniqueWithoutTransctionInput = {
@@ -36095,6 +46901,7 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    branch?: BranchCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -36103,6 +46910,7 @@ export namespace Prisma {
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
     registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutExpenseTransactionInput = {
@@ -36116,6 +46924,7 @@ export namespace Prisma {
     gender?: string | null
     salary?: string | null
     department?: string | null
+    branchId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -36128,6 +46937,7 @@ export namespace Prisma {
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
     registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutExpenseTransactionInput = {
@@ -36219,6 +47029,7 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    branch?: BranchUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -36227,6 +47038,7 @@ export namespace Prisma {
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
     registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutExpenseTransactionInput = {
@@ -36240,6 +47052,7 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -36252,6 +47065,7 @@ export namespace Prisma {
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
     registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ExpenseUpsertWithoutExpenseTransactionInput = {
@@ -36431,6 +47245,7 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    branch?: BranchCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -36439,6 +47254,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
     registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUserFilesInput = {
@@ -36452,6 +47268,7 @@ export namespace Prisma {
     gender?: string | null
     salary?: string | null
     department?: string | null
+    branchId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -36464,6 +47281,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
     registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUserFilesInput = {
@@ -36497,6 +47315,7 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    branch?: BranchUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -36505,6 +47324,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
     registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUserFilesInput = {
@@ -36518,6 +47338,7 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -36530,11 +47351,14 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
     registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ServiceCreateWithoutServiceAgreementsInput = {
     id: string
     serviceName: string
+    description?: string | null
+    branch?: BranchCreateNestedOneWithoutServicesInput
     clientService?: ClientServiceCreateNestedManyWithoutServiceInput
     subService?: SubServiceCreateNestedManyWithoutServiceInput
   }
@@ -36542,6 +47366,8 @@ export namespace Prisma {
   export type ServiceUncheckedCreateWithoutServiceAgreementsInput = {
     id: string
     serviceName: string
+    description?: string | null
+    branchId?: string | null
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
     subService?: SubServiceUncheckedCreateNestedManyWithoutServiceInput
   }
@@ -36554,6 +47380,7 @@ export namespace Prisma {
   export type SubServiceCreateWithoutServiceAgreementsInput = {
     id: string
     name: string
+    description?: string | null
     service: ServiceCreateNestedOneWithoutSubServiceInput
     clientSubService?: ClientSubServiceCreateNestedManyWithoutSubServiceInput
   }
@@ -36561,6 +47388,7 @@ export namespace Prisma {
   export type SubServiceUncheckedCreateWithoutServiceAgreementsInput = {
     id: string
     name: string
+    description?: string | null
     categoryId: string
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutSubServiceInput
   }
@@ -36661,6 +47489,8 @@ export namespace Prisma {
   export type ServiceUpdateWithoutServiceAgreementsInput = {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    branch?: BranchUpdateOneWithoutServicesNestedInput
     clientService?: ClientServiceUpdateManyWithoutServiceNestedInput
     subService?: SubServiceUpdateManyWithoutServiceNestedInput
   }
@@ -36668,6 +47498,8 @@ export namespace Prisma {
   export type ServiceUncheckedUpdateWithoutServiceAgreementsInput = {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
     clientService?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
     subService?: SubServiceUncheckedUpdateManyWithoutServiceNestedInput
   }
@@ -36686,6 +47518,7 @@ export namespace Prisma {
   export type SubServiceUpdateWithoutServiceAgreementsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     service?: ServiceUpdateOneRequiredWithoutSubServiceNestedInput
     clientSubService?: ClientSubServiceUpdateManyWithoutSubServiceNestedInput
   }
@@ -36693,6 +47526,7 @@ export namespace Prisma {
   export type SubServiceUncheckedUpdateWithoutServiceAgreementsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: StringFieldUpdateOperationsInput | string
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutSubServiceNestedInput
   }
@@ -36891,6 +47725,7 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    branch?: BranchCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -36899,6 +47734,7 @@ export namespace Prisma {
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRegistererInput = {
@@ -36912,6 +47748,7 @@ export namespace Prisma {
     gender?: string | null
     salary?: string | null
     department?: string | null
+    branchId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -36924,6 +47761,7 @@ export namespace Prisma {
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRegistererInput = {
@@ -36946,6 +47784,7 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    branch?: BranchCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -36954,6 +47793,7 @@ export namespace Prisma {
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRecieverInput = {
@@ -36967,6 +47807,7 @@ export namespace Prisma {
     gender?: string | null
     salary?: string | null
     department?: string | null
+    branchId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -36979,6 +47820,7 @@ export namespace Prisma {
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRecieverInput = {
@@ -37034,6 +47876,7 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    branch?: BranchUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -37042,6 +47885,7 @@ export namespace Prisma {
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRegistererInput = {
@@ -37055,6 +47899,7 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -37067,6 +47912,7 @@ export namespace Prisma {
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutRecieverInput = {
@@ -37095,6 +47941,7 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    branch?: BranchUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -37103,6 +47950,7 @@ export namespace Prisma {
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRecieverInput = {
@@ -37116,6 +47964,7 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -37128,6 +47977,7 @@ export namespace Prisma {
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserSalaryDetailsUpsertWithWhereUniqueWithoutUserSalaryInput = {
@@ -37228,7 +48078,538 @@ export namespace Prisma {
     registeredBy?: StringFieldUpdateOperationsInput | string
   }
 
-  export type UserCreateManyDynamicRoleInput = {
+  export type NavSubMenuCreateWithoutMenuInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    title: string
+    url: string
+    order?: number
+    isActive?: boolean
+    roleAccess?: RoleSubMenuAccessCreateNestedManyWithoutSubMenuInput
+  }
+
+  export type NavSubMenuUncheckedCreateWithoutMenuInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    title: string
+    url: string
+    order?: number
+    isActive?: boolean
+    roleAccess?: RoleSubMenuAccessUncheckedCreateNestedManyWithoutSubMenuInput
+  }
+
+  export type NavSubMenuCreateOrConnectWithoutMenuInput = {
+    where: NavSubMenuWhereUniqueInput
+    create: XOR<NavSubMenuCreateWithoutMenuInput, NavSubMenuUncheckedCreateWithoutMenuInput>
+  }
+
+  export type NavSubMenuCreateManyMenuInputEnvelope = {
+    data: NavSubMenuCreateManyMenuInput | NavSubMenuCreateManyMenuInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type RoleMenuAccessCreateWithoutMenuInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+    role: RoleCreateNestedOneWithoutMenuAccessInput
+    subAccess?: RoleSubMenuAccessCreateNestedManyWithoutRoleMenuAccessInput
+  }
+
+  export type RoleMenuAccessUncheckedCreateWithoutMenuInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    roleId: string
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+    subAccess?: RoleSubMenuAccessUncheckedCreateNestedManyWithoutRoleMenuAccessInput
+  }
+
+  export type RoleMenuAccessCreateOrConnectWithoutMenuInput = {
+    where: RoleMenuAccessWhereUniqueInput
+    create: XOR<RoleMenuAccessCreateWithoutMenuInput, RoleMenuAccessUncheckedCreateWithoutMenuInput>
+  }
+
+  export type RoleMenuAccessCreateManyMenuInputEnvelope = {
+    data: RoleMenuAccessCreateManyMenuInput | RoleMenuAccessCreateManyMenuInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type NavSubMenuUpsertWithWhereUniqueWithoutMenuInput = {
+    where: NavSubMenuWhereUniqueInput
+    update: XOR<NavSubMenuUpdateWithoutMenuInput, NavSubMenuUncheckedUpdateWithoutMenuInput>
+    create: XOR<NavSubMenuCreateWithoutMenuInput, NavSubMenuUncheckedCreateWithoutMenuInput>
+  }
+
+  export type NavSubMenuUpdateWithWhereUniqueWithoutMenuInput = {
+    where: NavSubMenuWhereUniqueInput
+    data: XOR<NavSubMenuUpdateWithoutMenuInput, NavSubMenuUncheckedUpdateWithoutMenuInput>
+  }
+
+  export type NavSubMenuUpdateManyWithWhereWithoutMenuInput = {
+    where: NavSubMenuScalarWhereInput
+    data: XOR<NavSubMenuUpdateManyMutationInput, NavSubMenuUncheckedUpdateManyWithoutMenuInput>
+  }
+
+  export type NavSubMenuScalarWhereInput = {
+    AND?: NavSubMenuScalarWhereInput | NavSubMenuScalarWhereInput[]
+    OR?: NavSubMenuScalarWhereInput[]
+    NOT?: NavSubMenuScalarWhereInput | NavSubMenuScalarWhereInput[]
+    id?: StringFilter<"NavSubMenu"> | string
+    createdAt?: DateTimeFilter<"NavSubMenu"> | Date | string
+    updatedAt?: DateTimeFilter<"NavSubMenu"> | Date | string
+    menuId?: StringFilter<"NavSubMenu"> | string
+    title?: StringFilter<"NavSubMenu"> | string
+    url?: StringFilter<"NavSubMenu"> | string
+    order?: IntFilter<"NavSubMenu"> | number
+    isActive?: BoolFilter<"NavSubMenu"> | boolean
+  }
+
+  export type RoleMenuAccessUpsertWithWhereUniqueWithoutMenuInput = {
+    where: RoleMenuAccessWhereUniqueInput
+    update: XOR<RoleMenuAccessUpdateWithoutMenuInput, RoleMenuAccessUncheckedUpdateWithoutMenuInput>
+    create: XOR<RoleMenuAccessCreateWithoutMenuInput, RoleMenuAccessUncheckedCreateWithoutMenuInput>
+  }
+
+  export type RoleMenuAccessUpdateWithWhereUniqueWithoutMenuInput = {
+    where: RoleMenuAccessWhereUniqueInput
+    data: XOR<RoleMenuAccessUpdateWithoutMenuInput, RoleMenuAccessUncheckedUpdateWithoutMenuInput>
+  }
+
+  export type RoleMenuAccessUpdateManyWithWhereWithoutMenuInput = {
+    where: RoleMenuAccessScalarWhereInput
+    data: XOR<RoleMenuAccessUpdateManyMutationInput, RoleMenuAccessUncheckedUpdateManyWithoutMenuInput>
+  }
+
+  export type NavMenuCreateWithoutSubMenusInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    title: string
+    url: string
+    icon?: string | null
+    order?: number
+    isActive?: boolean
+    roleAccess?: RoleMenuAccessCreateNestedManyWithoutMenuInput
+  }
+
+  export type NavMenuUncheckedCreateWithoutSubMenusInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    title: string
+    url: string
+    icon?: string | null
+    order?: number
+    isActive?: boolean
+    roleAccess?: RoleMenuAccessUncheckedCreateNestedManyWithoutMenuInput
+  }
+
+  export type NavMenuCreateOrConnectWithoutSubMenusInput = {
+    where: NavMenuWhereUniqueInput
+    create: XOR<NavMenuCreateWithoutSubMenusInput, NavMenuUncheckedCreateWithoutSubMenusInput>
+  }
+
+  export type RoleSubMenuAccessCreateWithoutSubMenuInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+    roleMenuAccess: RoleMenuAccessCreateNestedOneWithoutSubAccessInput
+  }
+
+  export type RoleSubMenuAccessUncheckedCreateWithoutSubMenuInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    roleMenuAccessId: string
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+  }
+
+  export type RoleSubMenuAccessCreateOrConnectWithoutSubMenuInput = {
+    where: RoleSubMenuAccessWhereUniqueInput
+    create: XOR<RoleSubMenuAccessCreateWithoutSubMenuInput, RoleSubMenuAccessUncheckedCreateWithoutSubMenuInput>
+  }
+
+  export type RoleSubMenuAccessCreateManySubMenuInputEnvelope = {
+    data: RoleSubMenuAccessCreateManySubMenuInput | RoleSubMenuAccessCreateManySubMenuInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type NavMenuUpsertWithoutSubMenusInput = {
+    update: XOR<NavMenuUpdateWithoutSubMenusInput, NavMenuUncheckedUpdateWithoutSubMenusInput>
+    create: XOR<NavMenuCreateWithoutSubMenusInput, NavMenuUncheckedCreateWithoutSubMenusInput>
+    where?: NavMenuWhereInput
+  }
+
+  export type NavMenuUpdateToOneWithWhereWithoutSubMenusInput = {
+    where?: NavMenuWhereInput
+    data: XOR<NavMenuUpdateWithoutSubMenusInput, NavMenuUncheckedUpdateWithoutSubMenusInput>
+  }
+
+  export type NavMenuUpdateWithoutSubMenusInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    roleAccess?: RoleMenuAccessUpdateManyWithoutMenuNestedInput
+  }
+
+  export type NavMenuUncheckedUpdateWithoutSubMenusInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    roleAccess?: RoleMenuAccessUncheckedUpdateManyWithoutMenuNestedInput
+  }
+
+  export type RoleSubMenuAccessUpsertWithWhereUniqueWithoutSubMenuInput = {
+    where: RoleSubMenuAccessWhereUniqueInput
+    update: XOR<RoleSubMenuAccessUpdateWithoutSubMenuInput, RoleSubMenuAccessUncheckedUpdateWithoutSubMenuInput>
+    create: XOR<RoleSubMenuAccessCreateWithoutSubMenuInput, RoleSubMenuAccessUncheckedCreateWithoutSubMenuInput>
+  }
+
+  export type RoleSubMenuAccessUpdateWithWhereUniqueWithoutSubMenuInput = {
+    where: RoleSubMenuAccessWhereUniqueInput
+    data: XOR<RoleSubMenuAccessUpdateWithoutSubMenuInput, RoleSubMenuAccessUncheckedUpdateWithoutSubMenuInput>
+  }
+
+  export type RoleSubMenuAccessUpdateManyWithWhereWithoutSubMenuInput = {
+    where: RoleSubMenuAccessScalarWhereInput
+    data: XOR<RoleSubMenuAccessUpdateManyMutationInput, RoleSubMenuAccessUncheckedUpdateManyWithoutSubMenuInput>
+  }
+
+  export type RoleSubMenuAccessScalarWhereInput = {
+    AND?: RoleSubMenuAccessScalarWhereInput | RoleSubMenuAccessScalarWhereInput[]
+    OR?: RoleSubMenuAccessScalarWhereInput[]
+    NOT?: RoleSubMenuAccessScalarWhereInput | RoleSubMenuAccessScalarWhereInput[]
+    id?: StringFilter<"RoleSubMenuAccess"> | string
+    createdAt?: DateTimeFilter<"RoleSubMenuAccess"> | Date | string
+    updatedAt?: DateTimeFilter<"RoleSubMenuAccess"> | Date | string
+    roleMenuAccessId?: StringFilter<"RoleSubMenuAccess"> | string
+    subMenuId?: StringFilter<"RoleSubMenuAccess"> | string
+    canView?: BoolFilter<"RoleSubMenuAccess"> | boolean
+    canAdd?: BoolFilter<"RoleSubMenuAccess"> | boolean
+    canEdit?: BoolFilter<"RoleSubMenuAccess"> | boolean
+    canDelete?: BoolFilter<"RoleSubMenuAccess"> | boolean
+  }
+
+  export type RoleCreateWithoutMenuAccessInput = {
+    id?: string
+    name: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserCreateNestedManyWithoutDynamicRoleInput
+  }
+
+  export type RoleUncheckedCreateWithoutMenuAccessInput = {
+    id?: string
+    name: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutDynamicRoleInput
+  }
+
+  export type RoleCreateOrConnectWithoutMenuAccessInput = {
+    where: RoleWhereUniqueInput
+    create: XOR<RoleCreateWithoutMenuAccessInput, RoleUncheckedCreateWithoutMenuAccessInput>
+  }
+
+  export type NavMenuCreateWithoutRoleAccessInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    title: string
+    url: string
+    icon?: string | null
+    order?: number
+    isActive?: boolean
+    subMenus?: NavSubMenuCreateNestedManyWithoutMenuInput
+  }
+
+  export type NavMenuUncheckedCreateWithoutRoleAccessInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    title: string
+    url: string
+    icon?: string | null
+    order?: number
+    isActive?: boolean
+    subMenus?: NavSubMenuUncheckedCreateNestedManyWithoutMenuInput
+  }
+
+  export type NavMenuCreateOrConnectWithoutRoleAccessInput = {
+    where: NavMenuWhereUniqueInput
+    create: XOR<NavMenuCreateWithoutRoleAccessInput, NavMenuUncheckedCreateWithoutRoleAccessInput>
+  }
+
+  export type RoleSubMenuAccessCreateWithoutRoleMenuAccessInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+    subMenu: NavSubMenuCreateNestedOneWithoutRoleAccessInput
+  }
+
+  export type RoleSubMenuAccessUncheckedCreateWithoutRoleMenuAccessInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    subMenuId: string
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+  }
+
+  export type RoleSubMenuAccessCreateOrConnectWithoutRoleMenuAccessInput = {
+    where: RoleSubMenuAccessWhereUniqueInput
+    create: XOR<RoleSubMenuAccessCreateWithoutRoleMenuAccessInput, RoleSubMenuAccessUncheckedCreateWithoutRoleMenuAccessInput>
+  }
+
+  export type RoleSubMenuAccessCreateManyRoleMenuAccessInputEnvelope = {
+    data: RoleSubMenuAccessCreateManyRoleMenuAccessInput | RoleSubMenuAccessCreateManyRoleMenuAccessInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type RoleUpsertWithoutMenuAccessInput = {
+    update: XOR<RoleUpdateWithoutMenuAccessInput, RoleUncheckedUpdateWithoutMenuAccessInput>
+    create: XOR<RoleCreateWithoutMenuAccessInput, RoleUncheckedCreateWithoutMenuAccessInput>
+    where?: RoleWhereInput
+  }
+
+  export type RoleUpdateToOneWithWhereWithoutMenuAccessInput = {
+    where?: RoleWhereInput
+    data: XOR<RoleUpdateWithoutMenuAccessInput, RoleUncheckedUpdateWithoutMenuAccessInput>
+  }
+
+  export type RoleUpdateWithoutMenuAccessInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutDynamicRoleNestedInput
+  }
+
+  export type RoleUncheckedUpdateWithoutMenuAccessInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutDynamicRoleNestedInput
+  }
+
+  export type NavMenuUpsertWithoutRoleAccessInput = {
+    update: XOR<NavMenuUpdateWithoutRoleAccessInput, NavMenuUncheckedUpdateWithoutRoleAccessInput>
+    create: XOR<NavMenuCreateWithoutRoleAccessInput, NavMenuUncheckedCreateWithoutRoleAccessInput>
+    where?: NavMenuWhereInput
+  }
+
+  export type NavMenuUpdateToOneWithWhereWithoutRoleAccessInput = {
+    where?: NavMenuWhereInput
+    data: XOR<NavMenuUpdateWithoutRoleAccessInput, NavMenuUncheckedUpdateWithoutRoleAccessInput>
+  }
+
+  export type NavMenuUpdateWithoutRoleAccessInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    subMenus?: NavSubMenuUpdateManyWithoutMenuNestedInput
+  }
+
+  export type NavMenuUncheckedUpdateWithoutRoleAccessInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    order?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    subMenus?: NavSubMenuUncheckedUpdateManyWithoutMenuNestedInput
+  }
+
+  export type RoleSubMenuAccessUpsertWithWhereUniqueWithoutRoleMenuAccessInput = {
+    where: RoleSubMenuAccessWhereUniqueInput
+    update: XOR<RoleSubMenuAccessUpdateWithoutRoleMenuAccessInput, RoleSubMenuAccessUncheckedUpdateWithoutRoleMenuAccessInput>
+    create: XOR<RoleSubMenuAccessCreateWithoutRoleMenuAccessInput, RoleSubMenuAccessUncheckedCreateWithoutRoleMenuAccessInput>
+  }
+
+  export type RoleSubMenuAccessUpdateWithWhereUniqueWithoutRoleMenuAccessInput = {
+    where: RoleSubMenuAccessWhereUniqueInput
+    data: XOR<RoleSubMenuAccessUpdateWithoutRoleMenuAccessInput, RoleSubMenuAccessUncheckedUpdateWithoutRoleMenuAccessInput>
+  }
+
+  export type RoleSubMenuAccessUpdateManyWithWhereWithoutRoleMenuAccessInput = {
+    where: RoleSubMenuAccessScalarWhereInput
+    data: XOR<RoleSubMenuAccessUpdateManyMutationInput, RoleSubMenuAccessUncheckedUpdateManyWithoutRoleMenuAccessInput>
+  }
+
+  export type RoleMenuAccessCreateWithoutSubAccessInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+    role: RoleCreateNestedOneWithoutMenuAccessInput
+    menu: NavMenuCreateNestedOneWithoutRoleAccessInput
+  }
+
+  export type RoleMenuAccessUncheckedCreateWithoutSubAccessInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    roleId: string
+    menuId: string
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+  }
+
+  export type RoleMenuAccessCreateOrConnectWithoutSubAccessInput = {
+    where: RoleMenuAccessWhereUniqueInput
+    create: XOR<RoleMenuAccessCreateWithoutSubAccessInput, RoleMenuAccessUncheckedCreateWithoutSubAccessInput>
+  }
+
+  export type NavSubMenuCreateWithoutRoleAccessInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    title: string
+    url: string
+    order?: number
+    isActive?: boolean
+    menu: NavMenuCreateNestedOneWithoutSubMenusInput
+  }
+
+  export type NavSubMenuUncheckedCreateWithoutRoleAccessInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    menuId: string
+    title: string
+    url: string
+    order?: number
+    isActive?: boolean
+  }
+
+  export type NavSubMenuCreateOrConnectWithoutRoleAccessInput = {
+    where: NavSubMenuWhereUniqueInput
+    create: XOR<NavSubMenuCreateWithoutRoleAccessInput, NavSubMenuUncheckedCreateWithoutRoleAccessInput>
+  }
+
+  export type RoleMenuAccessUpsertWithoutSubAccessInput = {
+    update: XOR<RoleMenuAccessUpdateWithoutSubAccessInput, RoleMenuAccessUncheckedUpdateWithoutSubAccessInput>
+    create: XOR<RoleMenuAccessCreateWithoutSubAccessInput, RoleMenuAccessUncheckedCreateWithoutSubAccessInput>
+    where?: RoleMenuAccessWhereInput
+  }
+
+  export type RoleMenuAccessUpdateToOneWithWhereWithoutSubAccessInput = {
+    where?: RoleMenuAccessWhereInput
+    data: XOR<RoleMenuAccessUpdateWithoutSubAccessInput, RoleMenuAccessUncheckedUpdateWithoutSubAccessInput>
+  }
+
+  export type RoleMenuAccessUpdateWithoutSubAccessInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
+    role?: RoleUpdateOneRequiredWithoutMenuAccessNestedInput
+    menu?: NavMenuUpdateOneRequiredWithoutRoleAccessNestedInput
+  }
+
+  export type RoleMenuAccessUncheckedUpdateWithoutSubAccessInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    roleId?: StringFieldUpdateOperationsInput | string
+    menuId?: StringFieldUpdateOperationsInput | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type NavSubMenuUpsertWithoutRoleAccessInput = {
+    update: XOR<NavSubMenuUpdateWithoutRoleAccessInput, NavSubMenuUncheckedUpdateWithoutRoleAccessInput>
+    create: XOR<NavSubMenuCreateWithoutRoleAccessInput, NavSubMenuUncheckedCreateWithoutRoleAccessInput>
+    where?: NavSubMenuWhereInput
+  }
+
+  export type NavSubMenuUpdateToOneWithWhereWithoutRoleAccessInput = {
+    where?: NavSubMenuWhereInput
+    data: XOR<NavSubMenuUpdateWithoutRoleAccessInput, NavSubMenuUncheckedUpdateWithoutRoleAccessInput>
+  }
+
+  export type NavSubMenuUpdateWithoutRoleAccessInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    menu?: NavMenuUpdateOneRequiredWithoutSubMenusNestedInput
+  }
+
+  export type NavSubMenuUncheckedUpdateWithoutRoleAccessInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    menuId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type UserCreateWithoutAuditLogsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -37243,6 +48624,142 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    branch?: BranchCreateNestedOneWithoutUsersInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    userFiles?: UserFilesCreateNestedManyWithoutUserInput
+    dynamicRole?: RoleCreateNestedOneWithoutUsersInput
+    incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
+    expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
+    reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
+    registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
+  }
+
+  export type UserUncheckedCreateWithoutAuditLogsInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    gender?: string | null
+    salary?: string | null
+    department?: string | null
+    branchId?: string | null
+    roleId?: string | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
+    incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
+    expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
+    reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
+    registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
+  }
+
+  export type UserCreateOrConnectWithoutAuditLogsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAuditLogsInput, UserUncheckedCreateWithoutAuditLogsInput>
+  }
+
+  export type UserUpsertWithoutAuditLogsInput = {
+    update: XOR<UserUpdateWithoutAuditLogsInput, UserUncheckedUpdateWithoutAuditLogsInput>
+    create: XOR<UserCreateWithoutAuditLogsInput, UserUncheckedCreateWithoutAuditLogsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAuditLogsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAuditLogsInput, UserUncheckedUpdateWithoutAuditLogsInput>
+  }
+
+  export type UserUpdateWithoutAuditLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    salary?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    branch?: BranchUpdateOneWithoutUsersNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    userFiles?: UserFilesUpdateManyWithoutUserNestedInput
+    dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
+    incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
+    expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
+    reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
+    registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAuditLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    salary?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
+    incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
+    expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
+    reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
+    registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
+  }
+
+  export type UserCreateManyDynamicRoleInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    gender?: string | null
+    salary?: string | null
+    department?: string | null
+    branchId?: string | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+  }
+
+  export type RoleMenuAccessCreateManyRoleInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    menuId: string
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
   }
 
   export type UserUpdateWithoutDynamicRoleInput = {
@@ -37260,6 +48777,7 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    branch?: BranchUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -37268,6 +48786,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
     registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDynamicRoleInput = {
@@ -37281,6 +48800,7 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -37293,6 +48813,7 @@ export namespace Prisma {
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
     registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutDynamicRoleInput = {
@@ -37306,10 +48827,46 @@ export namespace Prisma {
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type RoleMenuAccessUpdateWithoutRoleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
+    menu?: NavMenuUpdateOneRequiredWithoutRoleAccessNestedInput
+    subAccess?: RoleSubMenuAccessUpdateManyWithoutRoleMenuAccessNestedInput
+  }
+
+  export type RoleMenuAccessUncheckedUpdateWithoutRoleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    menuId?: StringFieldUpdateOperationsInput | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
+    subAccess?: RoleSubMenuAccessUncheckedUpdateManyWithoutRoleMenuAccessNestedInput
+  }
+
+  export type RoleMenuAccessUncheckedUpdateManyWithoutRoleInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    menuId?: StringFieldUpdateOperationsInput | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type SessionCreateManyUserInput = {
@@ -37413,6 +48970,15 @@ export namespace Prisma {
     notes?: string | null
     taxType: string
     recieverId: string
+  }
+
+  export type AuditLogCreateManyUserInput = {
+    id?: string
+    createdAt?: Date | string
+    action: string
+    entity: string
+    entityId?: string | null
+    description?: string | null
   }
 
   export type SessionUpdateWithoutUserInput = {
@@ -37734,6 +49300,33 @@ export namespace Prisma {
     recieverId?: StringFieldUpdateOperationsInput | string
   }
 
+  export type AuditLogUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    action?: StringFieldUpdateOperationsInput | string
+    entity?: StringFieldUpdateOperationsInput | string
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type AuditLogUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    action?: StringFieldUpdateOperationsInput | string
+    entity?: StringFieldUpdateOperationsInput | string
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type AuditLogUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    action?: StringFieldUpdateOperationsInput | string
+    entity?: StringFieldUpdateOperationsInput | string
+    entityId?: NullableStringFieldUpdateOperationsInput | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type ClientServiceCreateManyClientInput = {
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
@@ -37758,6 +49351,7 @@ export namespace Prisma {
     description: string
     serviceId: string
     subServiceId: string
+    serviceStatus?: $Enums.ClientServiceStatus
   }
 
   export type ClientServiceUpdateWithoutClientInput = {
@@ -37814,6 +49408,7 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
     service?: ServiceUpdateOneRequiredWithoutServiceAgreementsNestedInput
     subService?: SubServiceUpdateOneRequiredWithoutServiceAgreementsNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutServiceAgreementNestedInput
@@ -37827,6 +49422,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     serviceId?: StringFieldUpdateOperationsInput | string
     subServiceId?: StringFieldUpdateOperationsInput | string
+    serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutServiceAgreementNestedInput
   }
 
@@ -37838,6 +49434,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     serviceId?: StringFieldUpdateOperationsInput | string
     subServiceId?: StringFieldUpdateOperationsInput | string
+    serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
   }
 
   export type ClientServiceCreateManyServiceInput = {
@@ -37849,6 +49446,7 @@ export namespace Prisma {
   export type SubServiceCreateManyServiceInput = {
     id: string
     name: string
+    description?: string | null
   }
 
   export type IncomeServiceAgreementCreateManyServiceInput = {
@@ -37859,6 +49457,7 @@ export namespace Prisma {
     description: string
     subServiceId: string
     clientId: string
+    serviceStatus?: $Enums.ClientServiceStatus
   }
 
   export type ClientServiceUpdateWithoutServiceInput = {
@@ -37882,6 +49481,7 @@ export namespace Prisma {
   export type SubServiceUpdateWithoutServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     clientSubService?: ClientSubServiceUpdateManyWithoutSubServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutSubServiceNestedInput
   }
@@ -37889,6 +49489,7 @@ export namespace Prisma {
   export type SubServiceUncheckedUpdateWithoutServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutSubServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutSubServiceNestedInput
   }
@@ -37896,6 +49497,7 @@ export namespace Prisma {
   export type SubServiceUncheckedUpdateManyWithoutServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type IncomeServiceAgreementUpdateWithoutServiceInput = {
@@ -37904,6 +49506,7 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
     subService?: SubServiceUpdateOneRequiredWithoutServiceAgreementsNestedInput
     client?: ClientUpdateOneRequiredWithoutServiceAgreementsNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutServiceAgreementNestedInput
@@ -37917,6 +49520,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     subServiceId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
+    serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutServiceAgreementNestedInput
   }
 
@@ -37928,6 +49532,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     subServiceId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
+    serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
   }
 
   export type ClientSubServiceCreateManySubServiceInput = {
@@ -37943,6 +49548,7 @@ export namespace Prisma {
     description: string
     serviceId: string
     clientId: string
+    serviceStatus?: $Enums.ClientServiceStatus
   }
 
   export type ClientSubServiceUpdateWithoutSubServiceInput = {
@@ -37966,6 +49572,7 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
     service?: ServiceUpdateOneRequiredWithoutServiceAgreementsNestedInput
     client?: ClientUpdateOneRequiredWithoutServiceAgreementsNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutServiceAgreementNestedInput
@@ -37979,6 +49586,7 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     serviceId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
+    serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutServiceAgreementNestedInput
   }
 
@@ -37990,6 +49598,163 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     serviceId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
+    serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
+  }
+
+  export type UserCreateManyBranchInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    gender?: string | null
+    salary?: string | null
+    department?: string | null
+    roleId?: string | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+  }
+
+  export type ServiceCreateManyBranchInput = {
+    id: string
+    serviceName: string
+    description?: string | null
+  }
+
+  export type DepartmentCreateManyBranchInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    description?: string | null
+    isActive?: boolean
+  }
+
+  export type UserUpdateWithoutBranchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    salary?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    userFiles?: UserFilesUpdateManyWithoutUserNestedInput
+    dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
+    incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
+    expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
+    reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
+    registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutBranchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    salary?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
+    incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
+    expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
+    reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
+    registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateManyWithoutBranchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    salary?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ServiceUpdateWithoutBranchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    clientService?: ClientServiceUpdateManyWithoutServiceNestedInput
+    subService?: SubServiceUpdateManyWithoutServiceNestedInput
+    serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutServiceNestedInput
+  }
+
+  export type ServiceUncheckedUpdateWithoutBranchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    clientService?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
+    subService?: SubServiceUncheckedUpdateManyWithoutServiceNestedInput
+    serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutServiceNestedInput
+  }
+
+  export type ServiceUncheckedUpdateManyWithoutBranchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type DepartmentUpdateWithoutBranchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type DepartmentUncheckedUpdateWithoutBranchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type DepartmentUncheckedUpdateManyWithoutBranchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type ClientTaskCreateManyTaskInput = {
@@ -38332,6 +50097,182 @@ export namespace Prisma {
     paidAmount?: FloatFieldUpdateOperationsInput | number
   }
 
+  export type NavSubMenuCreateManyMenuInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    title: string
+    url: string
+    order?: number
+    isActive?: boolean
+  }
+
+  export type RoleMenuAccessCreateManyMenuInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    roleId: string
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+  }
+
+  export type NavSubMenuUpdateWithoutMenuInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    roleAccess?: RoleSubMenuAccessUpdateManyWithoutSubMenuNestedInput
+  }
+
+  export type NavSubMenuUncheckedUpdateWithoutMenuInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    roleAccess?: RoleSubMenuAccessUncheckedUpdateManyWithoutSubMenuNestedInput
+  }
+
+  export type NavSubMenuUncheckedUpdateManyWithoutMenuInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    title?: StringFieldUpdateOperationsInput | string
+    url?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type RoleMenuAccessUpdateWithoutMenuInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
+    role?: RoleUpdateOneRequiredWithoutMenuAccessNestedInput
+    subAccess?: RoleSubMenuAccessUpdateManyWithoutRoleMenuAccessNestedInput
+  }
+
+  export type RoleMenuAccessUncheckedUpdateWithoutMenuInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    roleId?: StringFieldUpdateOperationsInput | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
+    subAccess?: RoleSubMenuAccessUncheckedUpdateManyWithoutRoleMenuAccessNestedInput
+  }
+
+  export type RoleMenuAccessUncheckedUpdateManyWithoutMenuInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    roleId?: StringFieldUpdateOperationsInput | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type RoleSubMenuAccessCreateManySubMenuInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    roleMenuAccessId: string
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+  }
+
+  export type RoleSubMenuAccessUpdateWithoutSubMenuInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
+    roleMenuAccess?: RoleMenuAccessUpdateOneRequiredWithoutSubAccessNestedInput
+  }
+
+  export type RoleSubMenuAccessUncheckedUpdateWithoutSubMenuInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    roleMenuAccessId?: StringFieldUpdateOperationsInput | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type RoleSubMenuAccessUncheckedUpdateManyWithoutSubMenuInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    roleMenuAccessId?: StringFieldUpdateOperationsInput | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type RoleSubMenuAccessCreateManyRoleMenuAccessInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    subMenuId: string
+    canView?: boolean
+    canAdd?: boolean
+    canEdit?: boolean
+    canDelete?: boolean
+  }
+
+  export type RoleSubMenuAccessUpdateWithoutRoleMenuAccessInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
+    subMenu?: NavSubMenuUpdateOneRequiredWithoutRoleAccessNestedInput
+  }
+
+  export type RoleSubMenuAccessUncheckedUpdateWithoutRoleMenuAccessInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subMenuId?: StringFieldUpdateOperationsInput | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type RoleSubMenuAccessUncheckedUpdateManyWithoutRoleMenuAccessInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subMenuId?: StringFieldUpdateOperationsInput | string
+    canView?: BoolFieldUpdateOperationsInput | boolean
+    canAdd?: BoolFieldUpdateOperationsInput | boolean
+    canEdit?: BoolFieldUpdateOperationsInput | boolean
+    canDelete?: BoolFieldUpdateOperationsInput | boolean
+  }
+
 
 
   /**
@@ -38357,6 +50298,10 @@ export namespace Prisma {
      * @deprecated Use SubServiceCountOutputTypeDefaultArgs instead
      */
     export type SubServiceCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SubServiceCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use BranchCountOutputTypeDefaultArgs instead
+     */
+    export type BranchCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BranchCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use TaskCountOutputTypeDefaultArgs instead
      */
@@ -38390,6 +50335,18 @@ export namespace Prisma {
      */
     export type UserSalaryCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = UserSalaryCountOutputTypeDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use NavMenuCountOutputTypeDefaultArgs instead
+     */
+    export type NavMenuCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = NavMenuCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use NavSubMenuCountOutputTypeDefaultArgs instead
+     */
+    export type NavSubMenuCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = NavSubMenuCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use RoleMenuAccessCountOutputTypeDefaultArgs instead
+     */
+    export type RoleMenuAccessCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = RoleMenuAccessCountOutputTypeDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use RoleDefaultArgs instead
      */
     export type RoleArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = RoleDefaultArgs<ExtArgs>
@@ -38421,6 +50378,14 @@ export namespace Prisma {
      * @deprecated Use SubServiceDefaultArgs instead
      */
     export type SubServiceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SubServiceDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use BranchDefaultArgs instead
+     */
+    export type BranchArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BranchDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use DepartmentDefaultArgs instead
+     */
+    export type DepartmentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DepartmentDefaultArgs<ExtArgs>
     /**
      * @deprecated Use ClientSubServiceDefaultArgs instead
      */
@@ -38489,6 +50454,26 @@ export namespace Prisma {
      * @deprecated Use NotificationDefaultArgs instead
      */
     export type NotificationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = NotificationDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use NavMenuDefaultArgs instead
+     */
+    export type NavMenuArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = NavMenuDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use NavSubMenuDefaultArgs instead
+     */
+    export type NavSubMenuArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = NavSubMenuDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use RoleMenuAccessDefaultArgs instead
+     */
+    export type RoleMenuAccessArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = RoleMenuAccessDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use RoleSubMenuAccessDefaultArgs instead
+     */
+    export type RoleSubMenuAccessArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = RoleSubMenuAccessDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use AuditLogDefaultArgs instead
+     */
+    export type AuditLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = AuditLogDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

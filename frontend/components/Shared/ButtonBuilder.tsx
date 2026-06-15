@@ -31,7 +31,7 @@ export default function ButtonBuilder({
       type={htmlType}
       disabled={disabled}
       onClick={onClick ?? undefined}
-      className={`via-secondary-100 to-secondary-100 hover:from-seondary-200 hover:via-secondary-100 to min-w-[150px] cursor-pointer rounded-[8px] border border-none border-black/25 bg-linear-to-l from-orange-200 px-[22px] py-[10px] text-white duration-300 will-change-[colors] hover:bg-linear-to-r hover:to-orange-100 hover:duration-500`}
+      className={`btn-brand min-w-[150px] cursor-pointer rounded-[8px] border border-none px-[22px] py-[10px] text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50`}
     >
       {children}
     </button>

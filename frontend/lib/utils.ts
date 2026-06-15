@@ -93,6 +93,21 @@ export function formatDate(date: Date | string, longform?: boolean) {
   });
 }
 
+export function isTaskPastDeadline(deadline: Date | string) {
+  return new Date(deadline).getTime() < Date.now();
+}
+
+export function resolveTaskDisplayStatus(task: {
+  status?: string;
+  deadline?: Date | string;
+  progress?: number;
+}) {
+  const progress = Number(task.progress ?? 0);
+  if (task.status === "completed" || progress >= 100) return "completed";
+  if (task.deadline && isTaskPastDeadline(task.deadline)) return "overdue";
+  return task.status || "pending";
+}
+
 export function formatTaskDeadline(deadline: Date | string) {
   const parsedDeadline = new Date(deadline);
   if (Number.isNaN(parsedDeadline.getTime())) return String(deadline);
@@ -247,6 +262,14 @@ export function formatPhoneNumber(
   }
 }
 
+export function normalizeClientPhone(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.startsWith("252") && digits.length > 9) {
+    return digits.slice(3);
+  }
+  return digits;
+}
+
 export function getTaskStatus(
   taskFormType: "edit" | "create" | "add" | "own:edit",
 ) {
@@ -258,9 +281,7 @@ export function getTaskStatus(
     case "edit":
       return Object.values(TaskStatus);
     case "own:edit":
-      return Object.values(TaskStatus).filter(
-        (each: TaskStatus) => each === "completed" || each === "pending",
-      );
+      return Object.values(TaskStatus);
     case "add":
       return Object.values(TaskStatus).filter(
         (each: TaskStatus) => each === "pending",

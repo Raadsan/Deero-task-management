@@ -18,6 +18,10 @@ export function getPrefix(data) {
       return "DINV-";
     case "tax":
       return "DTX";
+    case "branches":
+      return "DBR";
+    case "departments":
+      return "DDP";
   }
 }
 

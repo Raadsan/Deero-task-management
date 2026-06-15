@@ -1,6 +1,8 @@
 export const ICONS = {
   logoIcon: "/logo.svg",
-  logoPng1: "/logo1.png",
+  logoPng: "/logo.png",
+  logoPng1: "/Logo-02.png",
+  logoIconCollapsed: "/logo1.png",
 };
 
 export const DEERO_SERVICES = [
@@ -44,23 +46,34 @@ export const DEERO_SOURCES = [
   "Office Location",
 ];
 
+export const BRANCH_SLUG_COOKIE = "branch-slug";
+export const LOGIN_BRANCH_ID_COOKIE = "login-branch-id";
+
 export const ROUTES = {
   createTask: "/tasks/create",
   editTask: (id: string) => `/tasks/edit/${id}`,
   tasks: "/tasks",
   users: "/users",
+  services: "/services",
+  branches: "/branches",
+  departments: "/departments",
+  configRoles: "/config/roles",
+  configPermissions: "/config/permissions",
+  configMenus: "/config/menus",
+  configTracking: "/config/tracking",
   uploadUserFile: (id: string) => `/users/upload/${id}`,
   "my-tasks": "/my-tasks",
   "my-tasks-edit": (id: string) => `/my-tasks/edit/${id}`,
   createUser: "/users/create",
   assignAnotherTask: (id: string) => `/tasks/create/${id}`,
   editUser: (id: string) => `/users/edit/${id}`,
-  logout: "/auth/login",
+  logout: "/",
   clients: "/clients",
   createClient: "/clients/create",
   viewClient: (id: string) => `/clients/${id}`,
   addSeriveForClient: (id: string) => `/clients/create/${id}`,
-  login: "/auth/login",
+  login: "/",
+  forgotPassword: "/auth/forgot-password",
   verify: "/auth/verify",
   register: "/auth/register",
   dashboard: "/",
@@ -177,6 +190,24 @@ export const SWR_CACH_KEYS = {
   },
   clients: {
     key: "/clients/data",
+  },
+  services: {
+    key: "/services/data",
+  },
+  branches: {
+    key: "/branches/data",
+  },
+  departments: {
+    key: "/departments/data",
+  },
+  configRoles: {
+    key: "/config/roles/data",
+  },
+  navMenus: {
+    key: "/config/menus/data",
+  },
+  tracking: {
+    key: "/config/tracking/data",
   },
   tasks: {
     key: "/tasks/data",

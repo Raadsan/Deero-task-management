@@ -17,10 +17,16 @@ interface Props {
   userId: string;
 }
 
+function resolveUserFileUrl(url: string) {
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:7003";
+  return `${apiUrl}${url.startsWith("/") ? url : `/${url}`}`;
+}
+
 export default function ManageUserFiles({ userId }: Props) {
   const [transition, startTransition] = useTransition();
 
-  const { data: userFiles } = useSWR("userFiles", () =>
+  const { data: userFiles } = useSWR(["userFiles", userId], () =>
     getUserUploadedFiles(userId),
   );
 
@@ -32,12 +38,12 @@ export default function ManageUserFiles({ userId }: Props) {
         filePath,
       });
       if (result?.success) {
-        toast.success("Sucessfully Deleted the File.");
-        mutate("userFiles");
+        toast.success("Successfully deleted the file.");
+        mutate(["userFiles", userId]);
         return;
       }
-      toast.success(
-        result?.errors?.message || "Failed to Delete the file. try again.",
+      toast.error(
+        result?.errors?.message || "Failed to delete the file. Try again.",
       );
     });
   }
@@ -50,12 +56,17 @@ export default function ManageUserFiles({ userId }: Props) {
               key={file.id ?? idx}
               className="flex flex-col justify-between border-b border-black/10 pb-[10px] sm:flex-row sm:items-center"
             >
-              <div className="text-blue-600 underline transition hover:text-blue-800">
+              <a
+                href={resolveUserFileUrl(file.url)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 underline transition hover:text-blue-800"
+              >
                 {file.name}
                 <span className="ml-2 text-sm text-gray-500">
                   ({(file.fileSize / (1024 * 1024)).toFixed(2)} MB)
                 </span>
-              </div>
+              </a>
               <div className="flex items-center gap-3">
                 <Button
                   onClick={() => handleDeleteFile(file.id, file.url)}

@@ -25,6 +25,12 @@ interface Props<T> {
   inputStyle?: string;
   type?: string;
   showEyeIcon?: boolean;
+  compact?: boolean;
+}
+
+interface SelectOption {
+  value: string;
+  label: string;
 }
 
 interface SelectProps<T>
@@ -32,21 +38,43 @@ interface SelectProps<T>
   onChange: (value: string) => void;
   elementRenderer?: () => ReactNode;
   elements?: Array<string>;
+  options?: SelectOption[];
   elementChecker?: (value: string) => boolean;
   disbaleSelect?: boolean;
   defaultValue?: string;
   value?: string;
   otherProps?: Record<any, any>;
+  compact?: boolean;
+}
+
+function formatSelectLabel(value: string) {
+  return value
+    .split(/[\s_-]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(" ");
 }
 
 interface DatePickerProps<T>
-  extends Pick<Props<T>, "disbaled" | "errorMessage"> {
+  extends Pick<Props<T>, "disbaled" | "errorMessage" | "compact"> {
   date?: Date;
   setDate: (date: Date) => void;
   labelText: string;
   wrapperClasses?: string;
   showTimePicker?: boolean;
 }
+
+const compactInputFieldClass =
+  "h-10 w-full rounded-md border border-zinc-200 px-3 text-sm font-normal text-zinc-800 placeholder:font-normal placeholder:text-zinc-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 disabled:cursor-not-allowed disabled:bg-zinc-100";
+
+const compactSelectTriggerClass =
+  "h-10 min-h-0 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm font-normal text-zinc-800 shadow-none hover:bg-zinc-50 focus:border-primary focus:ring-2 focus:ring-primary/10 [&_[data-slot=select-value]]:font-normal [&_[data-slot=select-value]]:text-zinc-800 data-[placeholder]:text-zinc-400 data-[placeholder]:[&_[data-slot=select-value]]:font-normal";
+
+const compactTextareaClass =
+  "min-h-[96px] w-full resize-none rounded-md border border-zinc-200 px-3 py-2.5 text-sm font-normal text-zinc-800 placeholder:font-normal placeholder:text-zinc-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 disabled:cursor-not-allowed disabled:bg-zinc-100";
+
+const compactDateTriggerClass =
+  "h-10 min-h-0 w-full justify-start rounded-md border border-zinc-200 px-3 py-0 text-sm font-normal text-zinc-800 shadow-none hover:bg-zinc-50 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/10 disabled:bg-zinc-100";
 export function PhoneInput<T>({
   labelText,
   defaultValue,
@@ -57,19 +85,31 @@ export function PhoneInput<T>({
   errorMessage,
   inputStyle,
   type,
+  compact,
 }: Props<T>) {
   return (
-    <div className="h-fit w-full max-w-[min(800px,100%)] space-y-2">
+    <div className={cn("h-fit w-full max-w-[min(800px,100%)] space-y-2", compact && "max-w-none space-y-1.5")}>
       <label
         htmlFor={labelId}
-        style={{
-          fontSize: computeFontSize(17),
-        }}
-        className="appLyInterFont text-dark-gray max flex min-w-[min(800px,100%)] flex-col gap-3 font-normal"
+        style={compact ? undefined : { fontSize: computeFontSize(17) }}
+        className={cn(
+          "appLyInterFont text-dark-gray flex w-full flex-col font-normal",
+          compact ? "gap-1.5 text-sm font-medium text-zinc-700" : "gap-3",
+        )}
       >
         {labelText}
-        <div className="relative flex h-[50px] w-full rounded-md py-5 outline outline-black/10">
-          <span className="absolute top-1/2 left-0 z-20 -translate-y-[50%] transform px-2.5 font-bold text-black/50">
+        <div
+          className={cn(
+            "relative flex h-[50px] w-full rounded-md outline outline-black/10",
+            compact && "h-10 outline-none",
+          )}
+        >
+          <span
+            className={cn(
+              "absolute top-1/2 left-0 z-20 -translate-y-[50%] transform px-2.5 font-normal text-black/50",
+              compact && "text-sm text-zinc-500",
+            )}
+          >
             +252
           </span>
           <input
@@ -80,7 +120,9 @@ export function PhoneInput<T>({
             placeholder={placeholder}
             defaultValue={defaultValue}
             className={cn(
-              "focus:outline-dark-red absolute inset-0 h-full w-full rounded-[inherit] pl-[70px] text-[1.3rem] outline-black/50 placeholder:text-gray-400 focus:outline-2 disabled:cursor-not-allowed disabled:bg-gray-200",
+              compact
+                ? cn(compactInputFieldClass, "pl-[70px]")
+                : "focus:outline-dark-red absolute inset-0 h-full w-full rounded-[inherit] pl-[70px] text-[1.3rem] outline-black/50 placeholder:text-gray-400 focus:outline-2 disabled:cursor-not-allowed disabled:bg-gray-200",
               inputStyle,
             )}
           />
@@ -105,32 +147,35 @@ export function TextInput<T>({
   showEyeIcon,
   type,
   wrapperStyle,
+  compact,
 }: Props<T> & {
   prefixValue?: string;
   paddingLeft?: string;
 }) {
   return (
-    <div className={cn("h-fit w-full max-w-[min(800px,100%)] space-y-2", wrapperStyle)}>
+    <div className={cn("h-fit w-full max-w-[min(800px,100%)] space-y-2", wrapperStyle, compact && "max-w-none space-y-1.5")}>
       <label
         htmlFor={labelId}
-        style={{
-          fontSize: computeFontSize(17),
-        }}
-        className="text-dark-gray w-full font-normal"
+        style={compact ? undefined : { fontSize: computeFontSize(17) }}
+        className={cn(
+          "text-dark-gray w-full font-normal",
+          compact && "text-sm font-medium text-zinc-700",
+        )}
       >
         {labelText}
       </label>
-      <div className="relative min-h-[50px] w-full rounded-md">
+      <div className={cn("relative min-h-[50px] w-full rounded-md", compact && "min-h-0")}>
         {prefixValue && (
-          <span className="absolute top-1/2 left-2.5 -translate-y-[50%] transform text-[1.3rem] text-gray-400">
+          <span className={cn(
+            "absolute top-1/2 left-2.5 -translate-y-[50%] transform text-[1.3rem] text-gray-400",
+            compact && "text-sm",
+          )}>
             {prefixValue}
           </span>
         )}
         <input
           type={type}
-          style={{
-            paddingLeft: paddingLeft ?? "20px",
-          }}
+          style={compact ? { paddingLeft: paddingLeft ?? "12px" } : { paddingLeft: paddingLeft ?? "20px" }}
           autoComplete={"on"}
           id={labelId}
           defaultValue={defaultValue}
@@ -138,7 +183,9 @@ export function TextInput<T>({
           placeholder={placeholder}
           {...otherProps}
           className={cn(
-            "focus:outline-dark-red absolute inset-0 overflow-hidden rounded-[inherit] text-[1.3rem] text-wrap border border-black/10 placeholder:text-gray-400 focus:outline-2 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-700",
+            compact
+              ? compactInputFieldClass
+              : "focus:outline-dark-red absolute inset-0 overflow-hidden rounded-[inherit] text-[1.3rem] text-wrap border border-black/10 placeholder:text-gray-400 focus:outline-2 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-700",
             inputStyle,
           )}
         />
@@ -158,41 +205,59 @@ export function SelectElement<T>({
   disbaled,
   wrapperStyle,
   elements,
+  options,
   otherProps,
   placeholder,
   disbaleSelect,
   value,
+  compact,
 }: SelectProps<T>) {
+  const selectOptions =
+    options?.length
+      ? options
+      : (elements?.map((item) => ({
+          value: item,
+          label: formatSelectLabel(item),
+        })) ?? []);
+
+  const selectedValue = value ?? defaultValue;
+
   return (
     <div
-      className={cn("h-fit w-full max-w-[min(800px,100%)] space-y-2 p-0", wrapperStyle)}
+      className={cn("h-fit w-full max-w-[min(800px,100%)] space-y-2 p-0", wrapperStyle, compact && "max-w-none space-y-1.5")}
     >
-      {labelText && <p className="text-dark-gray font-medium">{labelText}</p>}
+      {labelText && (
+        <p className={cn("text-dark-gray font-medium", compact && "text-sm font-medium text-zinc-700")}>
+          {labelText}
+        </p>
+      )}
       <Select
         {...otherProps}
-        value={value || defaultValue}
+        value={selectedValue || undefined}
         disabled={disbaleSelect}
-        onValueChange={(e) => onChange(e)}
+        onValueChange={(nextValue) => onChange(nextValue)}
       >
-        <SelectTrigger className="min-h-[50px] w-full rounded-md border border-black/10 transition-colors hover:bg-red-50">
+        <SelectTrigger
+          className={cn(
+            "min-h-[50px] w-full rounded-md border border-black/10 bg-white transition-colors hover:bg-zinc-50",
+            compact && compactSelectTriggerClass,
+          )}
+        >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
-        <SelectContent className="w-full space-y-3.5 rounded-[10px] bg-white shadow-sm">
+        <SelectContent className="w-[var(--radix-select-trigger-width)] rounded-md border border-zinc-200 bg-white p-1 shadow-md">
           {elementRenderer && elementRenderer()}
-          {elements?.length
-            ? elements?.map((value, index) => {
-                return (
-                  <GetSelectItem
-                    otherProps={{
-                      disbaled,
-                    }}
-                    key={index}
-                    value={value}
-                    label={value}
-                  />
-                );
-              })
-            : null}
+          {selectOptions.map((option) => (
+            <GetSelectItem
+              key={option.value}
+              otherProps={{
+                disbaled,
+                disabled: elementChecker ? !elementChecker(option.value) : false,
+              }}
+              value={option.value}
+              label={option.label}
+            />
+          ))}
         </SelectContent>
       </Select>
       {errorMessage && <FormatErrorText message={errorMessage} />}
@@ -209,31 +274,36 @@ export function TextInputWithTaxtArea<T>({
   errorMessage,
   wrapperStyle,
   inputStyle,
+  compact,
 }: Props<T>) {
   return (
     <div
       className={cn(
         "h-fit w-full max-w-[min(800px,100%)] space-y-2",
         wrapperStyle,
+        compact && "max-w-none space-y-1.5",
       )}
     >
       <label
         htmlFor={labelId}
-        style={{
-          fontSize: computeFontSize(17),
-        }}
-        className="appLyInterFont text-dark-gray flex w-full flex-col gap-3 font-normal"
+        style={compact ? undefined : { fontSize: computeFontSize(17) }}
+        className={cn(
+          "appLyInterFont text-dark-gray flex w-full flex-col font-normal",
+          compact ? "gap-1.5 text-sm font-medium text-zinc-700" : "gap-3",
+        )}
       >
         {labelText}
         <textarea
           {...otherProps}
           id={labelId}
           cols={10}
-          rows={5}
+          rows={compact ? 4 : 5}
           disabled={disbaled}
           placeholder={placeholder}
           className={cn(
-            "focus:outline-dark-red min-h-[100px] w-full resize-none rounded-md pt-5 pl-[21px] border border-black/10 placeholder:text-gray-400 focus:outline-2 disabled:cursor-not-allowed disabled:bg-gray-200",
+            compact
+              ? compactTextareaClass
+              : "focus:outline-dark-red min-h-[100px] w-full resize-none rounded-md border border-black/10 pt-5 pl-[21px] placeholder:text-gray-400 focus:outline-2 disabled:cursor-not-allowed disabled:bg-gray-200",
             inputStyle,
           )}
         />
@@ -251,20 +321,25 @@ export function DatePicker<T>({
   wrapperClasses,
   setDate,
   showTimePicker,
+  compact,
 }: DatePickerProps<T>) {
   return (
     <div
       className={cn(
         "h-fit w-full max-w-[min(800px,100%)] space-y-2",
         wrapperClasses,
+        compact && "max-w-none space-y-1.5",
       )}
     >
-      <p className="text-dark-gray font-medium">{labelText}</p>
+      <p className={cn("text-dark-gray font-medium", compact && "text-sm font-medium text-zinc-700")}>
+        {labelText}
+      </p>
       <PickTheDate
         disbale={disbaled}
         date={date}
         setDate={setDate}
         showTimePicker={showTimePicker}
+        classNames={compact ? compactDateTriggerClass : undefined}
       />
       {errorMessage && <FormatErrorText message={errorMessage} />}
     </div>

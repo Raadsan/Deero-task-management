@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
-import { Toaster } from "react-hot-toast";
+import AppToaster from "@/components/Shared/AppToaster";
 import "./globals.css";
 const popins = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -31,10 +31,10 @@ export default function RootLayout({
     <html lang="en" className="h-full w-full" suppressHydrationWarning>
       <body
         suppressHydrationWarning
-        className={` ${popins.className} ${interfont.className} h-full antialiased`}
+        className={` ${popins.className} ${interfont.className} h-full bg-[#F8F9FA] text-foreground antialiased`}
       >
         {children}
-        <Toaster />
+        <AppToaster />
       </body>
     </html>
   );

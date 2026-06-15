@@ -1,6 +1,5 @@
 import PayDept from "@/components/payments/PayDept";
-import ColumnBuilder from "@/components/Shared/ColumnBuilder";
-import HeaderBuilder from "@/components/Shared/HeaderBuilder";
+import ManagementPageShell from "@/components/Shared/ManagementPageShell";
 import { ClientFormSkeleton } from "@/components/Shared/Loader";
 import PageBreadcrumb from "@/components/Shared/PageBreadcrumb";
 import { getExpenseTransactionDetials } from "@/lib/actions/payment.action";
@@ -12,27 +11,19 @@ import { Suspense } from "react";
 
 export default function ExpenseTransactionDetailsPage({ params }: PageParams) {
   return (
-    <ColumnBuilder headerClassNames="bannerGradinetBg ">
-      <HeaderBuilder
-        classNames="text-white"
-        headerText={"Register Expense"}
-        showBlurLine={false}
+    <ManagementPageShell title="Expense Details">
+      <PageBreadcrumb
+        links={[
+          {
+            title: "Payment",
+            link: ROUTES.payments,
+          },
+        ]}
       />
-      <div className="size-full">
-        <PageBreadcrumb
-          links={[
-            {
-              title: "Payment",
-              link: ROUTES.payments,
-            },
-          ]}
-        />
-
-        <Suspense fallback={<ClientFormSkeleton />}>
-          <ExpenseDetails params={params} />
-        </Suspense>
-      </div>
-    </ColumnBuilder>
+      <Suspense fallback={<ClientFormSkeleton />}>
+        <ExpenseDetails params={params} />
+      </Suspense>
+    </ManagementPageShell>
   );
 }
 

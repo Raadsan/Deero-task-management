@@ -2,7 +2,7 @@
 
 import { ROUTES } from "@/lib/constants";
 import { TableType } from "@/lib/types";
-import { cn, computeFontSize, formatTaskDeadline } from "@/lib/utils";
+import { cn, formatTaskDeadline } from "@/lib/utils";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -15,12 +15,21 @@ import {
   VisibilityState,
   useReactTable,
 } from "@tanstack/react-table";
-import { ReactNode, useState } from "react";
-import PaginatedButton from "../Shared/PaginatedButtons";
+import { ReactNode, useEffect, useState } from "react";
 import ShowActions from "../Shared/ShowActions";
 import TableSearchInput from "../Shared/TableSearchInput";
 import TaskViewModal from "../tasks/TaskViewModal";
 import { Task } from "@/lib/types";
+import {
+  dashboardCardClass,
+  dashboardPaginationClass,
+  dashboardTableBodyRowClass,
+  dashboardTableHeadClass,
+  dashboardTableHeaderClass,
+  dashboardTableHeadRowClass,
+  dashboardTableWrapClass,
+  dashboardLabelClass,
+} from "@/lib/dashboard-ui";
 
 // Custom filter function for exact matching
 const exactMatchFilter = (row: any, columnId: string, filterValue: any) => {
@@ -51,16 +60,20 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   tableType: TableType;
+  toolbar?: React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   tableType,
+  toolbar,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [viewingTask, setViewingTask] = useState<Task | null>(null);
+  const [viewOpen, setViewOpen] = useState(false);
+  const [pageSize, setPageSize] = useState(10);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     id: false,
   });
@@ -91,12 +104,13 @@ export function DataTable<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
   });
 
+  useEffect(() => {
+    table.setPageSize(pageSize);
+  }, [pageSize, table]);
+
   const pageCounts = table?.getPageCount();
-  const lastThreePages =
-    pageCounts >= 4
-      ? table?.getPageOptions().slice(-3)
-      : table?.getPageOptions();
   const currentPage = table?.getState().pagination.pageIndex;
+  const filteredCount = table.getFilteredRowModel().rows.length;
   const colCount = columns.length;
 
   const gridTemplate = columns
@@ -108,15 +122,39 @@ export function DataTable<TData, TValue>({
     .join(" ");
 
   return (
-    <section className="flex h-full w-full flex-col gap-3">
-      <TableSearchInput table={table} tableType={tableType} />
+    <section className="flex w-full flex-col">
+      <div className={dashboardCardClass}>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-50 px-6 py-3">
+          <div className={cn("flex items-center gap-2", dashboardLabelClass)}>
+            <span>Show</span>
+            <select
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+              className="h-9 w-16 cursor-pointer rounded-md border border-zinc-200 bg-white px-2 text-sm text-zinc-600 outline-none focus:border-primary"
+            >
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+          </div>
 
-      <div className="w-full overflow-x-auto rounded-md border border-black/10">
-        <div className="max-w-[1000px] min-w-full">
+          <div className="min-w-4 flex-1" />
+
+          <TableSearchInput table={table} tableType={tableType} compact />
+
+          {toolbar ? (
+            <div className="flex flex-wrap items-center gap-2">{toolbar}</div>
+          ) : null}
+        </div>
+
+        <div className={dashboardTableWrapClass}>
+          <div className="w-full overflow-x-auto">
+            <div className="min-w-full">
           {table.getHeaderGroups().map((headerGroup) => (
             <div
               key={headerGroup.id}
-              className="bg-secondary-100 grid px-3 py-2"
+              className={cn(dashboardTableHeaderClass, "grid px-3 py-0")}
               style={{
                 gridTemplateColumns: gridTemplate,
                 minWidth: `${colCount * 300}px`,
@@ -126,7 +164,7 @@ export function DataTable<TData, TValue>({
               {headerGroup.headers.map((header) => (
                 <div
                   key={header.id}
-                  className="font-semibold text-white"
+                  className={cn(dashboardTableHeadClass, "py-3.5 text-left")}
                   style={{ whiteSpace: "normal" }}
                 >
                   {header.isPlaceholder
@@ -147,7 +185,8 @@ export function DataTable<TData, TValue>({
                 key={row.id}
                 className={cn(
                   "grid w-fit px-3 py-2",
-                  index % 2 === 0 ? "bg-gray-100" : "bg-gray-200",
+                  dashboardTableBodyRowClass,
+                  "bg-white",
                 )}
                 style={{
                   gridTemplateColumns: gridTemplate,
@@ -222,7 +261,10 @@ export function DataTable<TData, TValue>({
                       return (
                         <div key={cell.id} className="flex items-start gap-2.5">
                           <button
-                            onClick={() => setViewingTask(cell.row.original as Task)}
+                            onClick={() => {
+                              setViewingTask(cell.row.original as Task);
+                              setViewOpen(true);
+                            }}
                             className="to-secondary-200 cursor-pointer rounded-[3px] bg-linear-to-br from-orange-200 px-3 py-[4px] font-normal text-white"
                           >
                             View
@@ -403,76 +445,49 @@ export function DataTable<TData, TValue>({
               </div>
             ))
           ) : (
-            <div className="flex h-[200px] items-center justify-center">
-              <span className="h-24 text-center text-2xl text-gray-400">
-                No results.
-              </span>
+            <div className="flex h-[200px] items-center justify-center bg-white">
+              <span className="text-sm text-muted-foreground">No results found</span>
             </div>
           )}
+            </div>
+          </div>
+        </div>
+
+        <div className={dashboardPaginationClass}>
+          <div>
+            {filteredCount === 0
+              ? "0 of 0"
+              : `${Math.min(filteredCount, currentPage * pageSize + 1)}-${Math.min(filteredCount, (currentPage + 1) * pageSize)} of ${filteredCount}`}
+          </div>
+
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+              className="rounded-md border border-zinc-200 px-2 py-1 transition-all hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              &lt;
+            </button>
+            <div className="rounded-md border border-zinc-200 px-3 py-1 text-zinc-400">
+              {currentPage + 1} of {pageCounts || 1}
+            </div>
+            <button
+              type="button"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+              className="rounded-md border border-zinc-200 px-2 py-1 transition-all hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              &gt;
+            </button>
+          </div>
         </div>
       </div>
-      <div className="flex w-full items-center justify-center gap-[30px]">
-        {pageCounts >= 2 && (
-          <p className="text-dark-gray font-medium">
-            Page {currentPage + 1} of {pageCounts} |
-          </p>
-        )}
-        {pageCounts >= 2 && (
-          <div className="flex items-center justify-center space-x-2">
-            <PaginatedButton
-              disable={!table.getCanPreviousPage()}
-              text="Previous"
-              onClick={table.previousPage}
-            />
-            {pageCounts >= 4 && (
-              <div className="text-2xl text-gray-400">.....</div>
-            )}
-            {lastThreePages.map((each, index) => {
-              return (
-                <button
-                  style={{
-                    fontSize: computeFontSize(14),
-                    backgroundColor:
-                      currentPage === each ? "var(--color-bright-blue)" : "",
-                    color: currentPage === each ? "white" : "black",
-                    border: currentPage === each ? "none" : "",
-                  }}
-                  key={index}
-                  className="h-[33px] w-[34px] rounded-sm border border-black/25 py-[7px] text-center font-normal text-black"
-                >
-                  {each + 1}
-                </button>
-              );
-            })}
-
-            <PaginatedButton
-              disable={!table.getCanNextPage()}
-              text="Next"
-              onClick={table.nextPage}
-            />
-          </div>
-        )}
-        {pageCounts >= 2 && (
-          <div className="flex items-center gap-3">
-            <label id="pagenumber" className="text-dark-gray font-medium">
-              Page
-            </label>
-            <input
-              placeholder={`${currentPage + 1}`}
-              value={currentPage + 1}
-              onChange={(e) =>
-                table.setPageIndex(() => {
-                  return Number(e.target.value) - 1;
-                })
-              }
-              className="w-[100px] rounded-[10px] border border-black/20 px-2 py-1"
-            />
-          </div>
-        )}
-      </div>
-      {viewingTask && (
-        <TaskViewModal task={viewingTask} onClose={() => setViewingTask(null)} />
-      )}
+      <TaskViewModal
+        open={viewOpen}
+        onOpenChange={setViewOpen}
+        task={viewingTask}
+      />
     </section>
   );
 }

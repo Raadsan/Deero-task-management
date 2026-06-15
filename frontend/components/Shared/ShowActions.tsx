@@ -1,8 +1,11 @@
 import { authClient } from "@/lib/auth-client";
 import { TableType } from "@/lib/types";
 import { formatTexts } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import DeleteAction from "./DeleteAction";
+import { actionBtnEdit } from "@/lib/dashboard-ui";
+import { Button } from "../ui/button";
 
 interface Props {
   tableType: TableType;
@@ -29,16 +32,21 @@ export default function ShowActions({
   });
 
   return (
-    <div className="flex items-start gap-2.5">
-      {buttonInfo.map(({ btnText, href }, index) => {
-        return (
-          <Link key={index} href={href}>
-            <button className="to-secondary-200 cursor-pointer rounded-[3px] bg-linear-to-br from-orange-200 px-3 py-[4px] font-normal text-white">
-              {btnText}
-            </button>
-          </Link>
-        );
-      })}
+    <div className="flex flex-wrap items-center justify-end gap-1.5">
+      {buttonInfo.map(({ btnText, href }, index) => (
+        <Button
+          key={index}
+          asChild
+          variant="ghost"
+          size="sm"
+          className={cn(
+            actionBtnEdit,
+            "h-8 px-2.5 text-[11px] font-semibold uppercase tracking-wide",
+          )}
+        >
+          <Link href={href}>{btnText}</Link>
+        </Button>
+      ))}
       {session.data?.user.role !== "user" && (
         <DeleteAction
           key={deleteActionKeyId + new Date().getTime()}

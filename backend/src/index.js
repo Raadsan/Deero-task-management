@@ -64,6 +64,8 @@ const frontendUrl = isProduction
 
 import express from "express";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 import { auth } from "./lib/auth.js";
 import { toNodeHandler } from "better-auth/node";
 
@@ -77,6 +79,10 @@ import salaryRoutes from "./routes/salaryrouter.js";
 import roleRoutes from "./routes/rolerouter.js";
 import utilRoutes from "./routes/utilrouter.js";
 import notificationRoutes from "./routes/notificationrouter.js";
+import branchRoutes from "./routes/branchrouter.js";
+import departmentRoutes from "./routes/departmentrouter.js";
+import navMenuRoutes from "./routes/navmenurouter.js";
+import trackingRoutes from "./routes/trackingrouter.js";
 
 const app = express();
 const port = process.env.PORT || 7003;
@@ -90,7 +96,10 @@ app.use(cors({
   credentials: true
 }));
 
-app.use(express.json());
+app.use(express.json({ limit: "5mb" }));
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.all("/api/auth/*", toNodeHandler(auth));
 
@@ -99,6 +108,10 @@ app.use("/api/auth-custom", authRoutes);
 app.use("/api/clients", clientRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/services", serviceRoutes);
+app.use("/api/branches", branchRoutes);
+app.use("/api/departments", departmentRoutes);
+app.use("/api/nav-menus", navMenuRoutes);
+app.use("/api/tracking", trackingRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/salaries", salaryRoutes);
 app.use("/api/roles", roleRoutes);
@@ -110,6 +123,14 @@ app.get("/", (req, res) => {
 });
 
 // 👇 muhiim
-app.listen(port, "0.0.0.0", () => {
+app.listen(port, "0.0.0.0", async () => {
   console.log(`Server is running on port ${port}`);
+  try {
+    const { ensureDefaultMenusOnStartup } = await import(
+      "./controllers/navmenucontroller.js"
+    );
+    await ensureDefaultMenusOnStartup();
+  } catch (error) {
+    console.error("Failed to seed default nav menus on startup:", error);
+  }
 });

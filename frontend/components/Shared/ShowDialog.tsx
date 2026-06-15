@@ -14,6 +14,7 @@ interface Props {
   children: ReactNode;
   triggerClassess: string;
   triggerText?: string;
+  trigger?: ReactNode;
   openDialog?: boolean;
   setIsOpenDialog?: (value: boolean) => void;
 }
@@ -24,12 +25,13 @@ export default function ShowDialog({
   triggerClassess,
   openDialog,
   triggerText,
+  trigger,
   setIsOpenDialog,
 }: Props) {
   return (
     <Dialog open={openDialog} onOpenChange={setIsOpenDialog}>
       <DialogTrigger className={`${triggerClassess}`}>
-        {triggerText ?? "Delete"}
+        {trigger ?? triggerText ?? "Delete"}
       </DialogTrigger>
       <DialogContent className="shadow-large diaglogFadeIn data-[state=closed]:diaglogFadeOut data-[state=open]:diaglogFadeIn min-h-[200px] border-0 bg-white px-[40px] py-[20px]">
         <DialogHeader>

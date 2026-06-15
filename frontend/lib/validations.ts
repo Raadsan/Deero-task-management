@@ -77,13 +77,9 @@ export const EditCreateUserSchema = z.object({
       "Name must contain only letters, numbers, and spaces.",
     ),
   gender: z.string().min(1, "Gender is Required"),
-  department: z.string().min(1, "Department is Required"),
-  salary: z
-    .string()
-    .regex(/^\d+(\.\d{1,2})?$/, {
-      message: "Salary  should be a valid number, e.g. 200 ",
-    })
-    .default("0"),
+  department: z.string().optional(),
+  branchId: z.string().min(1, "Branch is required"),
+  status: z.enum(["active", "inactive"]).optional(),
   email: z
     .email("Invalid email address.")
     .min(5, "Email is required.")
@@ -133,21 +129,23 @@ export const AdvancedEditUserSchema = EditCreateUserSchema.pick({
 export const ClientSchema = z.object({
   institution: z
     .string()
-    .min(3, "Client Name is required.")
-    .max(30, "Client Name must not exceed 30 characters.")
-    .regex(
-      /^[a-zA-Z0-9\s]+$/,
-      "Client Name can contain letters, numbers, and spaces.",
+    .max(100, "Client name must not exceed 100 characters.")
+    .optional()
+    .refine(
+      (value) => !value || /^[a-zA-Z0-9\s]+$/.test(value),
+      {
+        message: "Client name can contain letters, numbers, and spaces.",
+      },
     ),
 
   email: z
-    .email("Invalid email address.")
-    .min(5, "Email is required.")
-    .max(30, "Email must not exceed 50 characters.")
-    .refine((value) => {
-      if (value.endsWith("@gmail.com") || value.endsWith("@deero.so"))
-        return true;
-    }),
+    .string()
+    .max(100, "Email must not exceed 100 characters.")
+    .optional()
+    .refine(
+      (value) => !value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+      { message: "Invalid email address." },
+    ),
   phone: z
     .string()
     .min(9, "Phone number is required.")
@@ -185,20 +183,9 @@ export const ClientSchema = z.object({
     .max(50, "Sub-service must not exceed 50 characters.")
     .optional(),
 
-  createdAt: z
-    .date({
-      error: "Date is required.",
-    })
-    .refine(
-      (date) => {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        return date.getTime() >= today.getTime();
-      },
-      {
-        message: "Date must be today or in the future",
-      },
-    ),
+  createdAt: z.date({
+    error: "Date is required.",
+  }),
   source: z
     .string()
     .min(3, "Source information is required.")
@@ -218,6 +205,58 @@ export const ClientSchema = z.object({
     message:
       "Discount must be a decimal between 0 and 1 (e.g. 0, 0.1, 1)",
   }),
+  serviceStatus: z.enum(["pending", "completed"]).optional(),
+});
+
+export const ClientEditSchema = z.object({
+  institution: z
+    .string()
+    .max(100, "Client name must not exceed 100 characters.")
+    .optional()
+    .refine(
+      (value) => !value || /^[a-zA-Z0-9\s]+$/.test(value),
+      {
+        message: "Client name can contain letters, numbers, and spaces.",
+      },
+    ),
+  email: z
+    .string()
+    .max(100, "Email must not exceed 100 characters.")
+    .optional()
+    .refine(
+      (value) => !value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+      { message: "Invalid email address." },
+    ),
+  phone: z
+    .string()
+    .min(9, "Phone number is required.")
+    .refine(
+      (phone) => {
+        const num = Number(phone);
+        return !isNaN(num);
+      },
+      {
+        message: "Phone number must contain only numeric characters",
+      },
+    ),
+  source: z
+    .string()
+    .max(50, "Source information must not exceed 50 characters.")
+    .optional(),
+  discount: z.string().regex(/^(0(\.\d{1,2})?|1(\.0{1,2})?)$/, {
+    message:
+      "Discount must be a decimal between 0 and 1 (e.g. 0, 0.1, 1)",
+  }),
+  createdAt: z.date({
+    error: "Date is required.",
+  }),
+  service: z.string().optional(),
+  subService: z.string().optional(),
+  customSubServiceInput: z.string().optional(),
+  customSubServiceSelect: z.string().optional(),
+  description: z.string().optional(),
+  base: z.string().optional(),
+  serviceStatus: z.enum(["pending", "completed"]).optional(),
 });
 
 export const IncomeSchema = z.object({
@@ -315,5 +354,5 @@ export const EditUserDataSchema = z.object({
       /^[a-zA-Z][a-zA-Z0-9\s]*$/,
       "Name must start with a letter and can only contain letters, numbers, and spaces",
     ),
-  department: z.string().min(1, "Department is Required"),
+  department: z.string().optional(),
 });

@@ -9,9 +9,14 @@ datasource db {
 }
 
 model Role {
-  id    String @id @default(uuid())
-  name  String @unique
-  users User[]
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  users       User[]
+  menuAccess  RoleMenuAccess[]
 
   @@map("roles")
 }
@@ -33,6 +38,11 @@ enum TaskPriority {
   urgent
 }
 
+enum ClientServiceStatus {
+  pending
+  completed
+}
+
 enum EntityType {
   users
   tasks
@@ -42,6 +52,8 @@ enum EntityType {
   payments
   invoice
   tax
+  branches
+  departments
 }
 
 model User {
@@ -57,6 +69,8 @@ model User {
   salary        String?
 
   department String?
+  branchId   String?
+  branch     Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
 
   sessions  Session[]
   accounts  Account[]
@@ -74,7 +88,7 @@ model User {
 
   reciever UserSalary[] @relation(name: "Reciever") 
   registerer UserSalary[] @relation(name: "Registerer")
-
+  auditLogs AuditLog[]
 
   @@map("Users")
 }
@@ -152,18 +166,23 @@ model Client {
 model Service {
   id String @id
 
-  serviceName       String             @unique
+  serviceName       String
+  description       String?            @db.Text
+  branchId          String?
+  branch            Branch?            @relation(fields: [branchId], references: [id], onDelete: SetNull)
   clientService     ClientService[]
   subService        SubService[]
 
   serviceAgreements IncomeServiceAgreement[]
 
+  @@unique([serviceName, branchId])
   @@map("services")
 }
 
 model SubService {
   id   String @id
   name String
+  description String? @db.Text
 
   categoryId String
   service    Service @relation(fields: [categoryId], references: [id], onDelete: Cascade)
@@ -172,7 +191,50 @@ model SubService {
 
   serviceAgreements IncomeServiceAgreement[]
 
+  @@unique([name, categoryId])
   @@map("subservices")
+}
+
+model Branch {
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name           String  @unique
+  slug           String? @unique
+  description    String?
+  location       String?
+  phone          String?
+  logoUrl        String?
+  iconLogoUrl    String?
+  isMain         Boolean @default(false)
+  usesRootLogin  Boolean @default(false)
+  slugClearedOnce Boolean @default(false)
+  primaryColor   String  @default("#651210")
+  secondaryColor String  @default("#ec4724")
+  customDomain   String? @unique
+  isActive       Boolean @default(true)
+
+  users    User[]
+  services Service[]
+  departments Department[]
+
+  @@map("branches")
+}
+
+model Department {
+  id          String   @id
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  name        String
+  description String?  @db.Text
+  isActive    Boolean  @default(true)
+  branchId    String
+  branch      Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([name, branchId])
+  @@map("departments")
 }
 
 model ClientSubService {
@@ -357,7 +419,8 @@ model IncomeServiceAgreement {
   clientId String
   client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
-  
+  serviceStatus ClientServiceStatus @default(pending)
+
   incomeTransaction IncomeTransaction[]
 }
 
@@ -419,4 +482,89 @@ model Notification {
   isSeen       Boolean  @default(false)
 
   @@map("notifications")
+}
+
+model NavMenu {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title    String
+  url      String
+  icon     String?
+  order    Int      @default(0)
+  isActive Boolean  @default(true)
+
+  subMenus   NavSubMenu[]
+  roleAccess RoleMenuAccess[]
+
+  @@map("nav_menus")
+}
+
+model NavSubMenu {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  menuId   String
+  menu     NavMenu @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  title    String
+  url      String
+  order    Int      @default(0)
+  isActive Boolean  @default(true)
+
+  roleAccess RoleSubMenuAccess[]
+
+  @@map("nav_submenus")
+}
+
+model RoleMenuAccess {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  roleId    String
+  menuId    String
+  role      Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  menu      NavMenu @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  canView   Boolean @default(true)
+  canAdd    Boolean @default(false)
+  canEdit   Boolean @default(false)
+  canDelete Boolean @default(false)
+
+  subAccess RoleSubMenuAccess[]
+
+  @@unique([roleId, menuId])
+  @@map("role_menu_access")
+}
+
+model RoleSubMenuAccess {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  roleMenuAccessId String
+  subMenuId        String
+  roleMenuAccess   RoleMenuAccess @relation(fields: [roleMenuAccessId], references: [id], onDelete: Cascade)
+  subMenu          NavSubMenu     @relation(fields: [subMenuId], references: [id], onDelete: Cascade)
+  canView          Boolean        @default(true)
+  canAdd           Boolean        @default(false)
+  canEdit          Boolean        @default(false)
+  canDelete        Boolean        @default(false)
+
+  @@unique([roleMenuAccessId, subMenuId])
+  @@map("role_submenu_access")
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action      String
+  entity      String
+  entityId    String?
+  description String?  @db.Text
+
+  @@map("audit_logs")
 }

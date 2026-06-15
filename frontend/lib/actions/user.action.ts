@@ -18,7 +18,6 @@ export async function getAllUsers(): Promise<ActionResponse<any[]>> {
         data: result.data.map((each) => ({
           ...each,
           createdAt: formatDate(each.createdAt),
-          salary: `$ ${each.salary || 0}`,
         })),
       };
     }
@@ -96,16 +95,28 @@ export async function getUserUploadedFiles(userId: string): Promise<ActionRespon
 export async function deleteUserFileById({ fileId, userId, filePath }: { fileId: string; userId: string; filePath?: string }): Promise<ActionResponse> {
   try {
     const response = await api.delete(`/api/users/${userId}/files/${fileId}`);
-    return { success: true };
+    if (response.data.success) {
+      return { success: true };
+    }
+    return { success: false, errors: { message: response.data.error } };
   } catch (error) {
     return handleError({ errors: error, type: "server" }) as ErrorResponse;
   }
 }
 
-export async function saveUserFiles({ userId, files }: { userId: string; files: any[] }): Promise<ActionResponse> {
+export async function saveUserFiles({
+  userId,
+  files,
+}: {
+  userId: string;
+  files: Array<{ name: string; fileSize: number; data: string }>;
+}): Promise<ActionResponse> {
   try {
     const response = await api.post(`/api/users/${userId}/files`, { files });
-    return { success: true };
+    if (response.data.success) {
+      return { success: true, data: response.data.data };
+    }
+    return { success: false, errors: { message: response.data.error } };
   } catch (error) {
     return handleError({ errors: error, type: "server" }) as ErrorResponse;
   }

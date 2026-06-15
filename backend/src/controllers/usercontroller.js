@@ -1,11 +1,17 @@
 import { prisma } from "../lib/prisma.js";
 import { auth } from "../lib/auth.js";
+import { deleteUserFileFromDisk, saveUserFile } from "../lib/user-files.js";
 
 export const getAllUsers = async (req, res) => {
   try {
     const users = await prisma.user.findMany({
       orderBy: {
         createdAt: "desc",
+      },
+      include: {
+        branch: {
+          select: { id: true, name: true },
+        },
       },
     });
     res.json({ success: true, data: users });
@@ -19,6 +25,14 @@ export const getUserById = async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id },
+      include: {
+        branch: {
+          select: { id: true, name: true, location: true },
+        },
+        userFiles: {
+          orderBy: { createdAt: "desc" },
+        },
+      },
     });
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
@@ -30,7 +44,7 @@ export const getUserById = async (req, res) => {
 };
 
 export const createUser = async (req, res) => {
-  const { name, email, password, role, gender, department, salary } = req.body;
+  const { name, email, password, role, gender, department, salary, branchId, banned } = req.body;
   try {
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
@@ -54,6 +68,8 @@ export const createUser = async (req, res) => {
         gender,
         department,
         salary: salary ? String(salary) : null,
+        branchId: branchId || null,
+        banned: banned === true,
         dynamicRole: req.body.roleId ? { connect: { id: req.body.roleId } } : undefined,
         role: role || "user"
       },
@@ -67,7 +83,7 @@ export const createUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { name, email, role, gender, department, salary } = req.body;
+  const { name, email, role, gender, department, salary, branchId, banned } = req.body;
   try {
     const user = await prisma.user.update({
       where: { id },
@@ -77,7 +93,14 @@ export const updateUser = async (req, res) => {
         role,
         gender,
         department,
-        salary: salary ? String(salary) : undefined,
+        salary: salary === undefined ? undefined : salary ? String(salary) : null,
+        branchId: branchId === undefined ? undefined : branchId || null,
+        ...(banned !== undefined ? { banned: !!banned } : {}),
+      },
+      include: {
+        branch: {
+          select: { id: true, name: true },
+        },
       },
     });
     res.json({ success: true, data: user });
@@ -92,6 +115,78 @@ export const deleteUser = async (req, res) => {
       where: { id },
     });
     res.json({ success: true, message: "User deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const getUserFiles = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const files = await prisma.userFiles.findMany({
+      where: { userId: id },
+      orderBy: { createdAt: "desc" },
+    });
+    res.json({ success: true, data: files });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const uploadUserFiles = async (req, res) => {
+  const { id } = req.params;
+  const { files } = req.body;
+
+  try {
+    const user = await prisma.user.findUnique({ where: { id }, select: { id: true } });
+    if (!user) {
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
+
+    if (!Array.isArray(files) || files.length === 0) {
+      return res.status(400).json({ success: false, error: "No files provided" });
+    }
+
+    if (files.length > 5) {
+      return res.status(400).json({ success: false, error: "You can upload up to 5 files at a time" });
+    }
+
+    const saved = [];
+    for (const file of files) {
+      const stored = await saveUserFile(id, file);
+      const record = await prisma.userFiles.create({
+        data: {
+          userId: id,
+          url: stored.url,
+          name: stored.name,
+          fileSize: stored.fileSize,
+        },
+      });
+      saved.push(record);
+    }
+
+    res.status(201).json({ success: true, data: saved });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const deleteUserFile = async (req, res) => {
+  const { id, fileId } = req.params;
+
+  try {
+    const file = await prisma.userFiles.findFirst({
+      where: { id: fileId, userId: id },
+    });
+
+    if (!file) {
+      return res.status(404).json({ success: false, error: "File not found" });
+    }
+
+    await deleteUserFileFromDisk(file.url);
+    await prisma.userFiles.delete({ where: { id: fileId } });
+
+    res.json({ success: true, message: "File deleted successfully" });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
