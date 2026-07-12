@@ -122,6 +122,8 @@ export async function updateContract(
     endDate: string | null;
     renewalDate: string | null;
     totalAmount: number | null;
+    monthlyAmount: number | null;
+    billingDay: number | null;
     paymentTerms: string;
     status: string;
     notes: string;
