@@ -154,7 +154,7 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
 
   useEffect(() => {
     if (!draftClientId || !draftClientRes?.data) return;
-    const c = draftClientRes.data as Record<string, unknown>;
+    const c = draftClientRes.data as unknown as Record<string, unknown>;
     setClientType((c.clientType as ClientType) ?? "ONE_TIME");
     setInstitution(String(c.institution ?? ""));
     const rawPhone = String(c.phone ?? "");
