@@ -8,7 +8,7 @@ export function emptyLaneOrder(): Record<TaskLane, string[]> {
 }
 
 export function groupTasksByLane(tasks: Task[]): Record<TaskLane, Task[]> {
-  const grouped = emptyLaneOrder();
+  const grouped: Record<TaskLane, Task[]> = { todo: [], processing: [], review: [], completed: [] };
   for (const task of tasks) {
     grouped[getTaskLane(task)].push(task);
   }
