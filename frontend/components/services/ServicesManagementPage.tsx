@@ -150,7 +150,7 @@ export default function ServicesManagementPage() {
     setBranchId(
       branchFilter !== "all"
         ? branchFilter
-        : activeBranches.find((b) => b.usesRootLogin)?.id ?? activeBranches[0]?.id ?? "",
+        : branchScopeRes?.data?.defaultBranchId ?? activeBranches[0]?.id ?? "",
     );
     setSubFields([emptySubField()]);
     setFormOpen(true);
