@@ -83,6 +83,14 @@ import branchRoutes from "./routes/branchrouter.js";
 import departmentRoutes from "./routes/departmentrouter.js";
 import navMenuRoutes from "./routes/navmenurouter.js";
 import trackingRoutes from "./routes/trackingrouter.js";
+import projectRoutes from "./routes/projectrouter.js";
+import contentRequestRoutes from "./routes/contentrequestrouter.js";
+import recurringRoutes from "./routes/recurringrouter.js";
+import workflowTemplateRoutes from "./routes/workflowtemplaterouter.js";
+import contractRoutes from "./routes/contractrouter.js";
+import billingRoutes from "./routes/billingrouter.js";
+import jobRoutes from "./routes/jobrouter.js";
+import { attachSessionScope } from "./middleware/session-scope.js";
 
 const app = express();
 const port = process.env.PORT || 7003;
@@ -103,17 +111,24 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.all("/api/auth/*", toNodeHandler(auth));
 
-app.use("/api/users", userRoutes);
+app.use("/api/users", attachSessionScope, userRoutes);
 app.use("/api/auth-custom", authRoutes);
-app.use("/api/clients", clientRoutes);
-app.use("/api/tasks", taskRoutes);
-app.use("/api/services", serviceRoutes);
-app.use("/api/branches", branchRoutes);
-app.use("/api/departments", departmentRoutes);
-app.use("/api/nav-menus", navMenuRoutes);
-app.use("/api/tracking", trackingRoutes);
-app.use("/api/transactions", transactionRoutes);
-app.use("/api/salaries", salaryRoutes);
+app.use("/api/clients", attachSessionScope, clientRoutes);
+app.use("/api/projects", attachSessionScope, projectRoutes);
+app.use("/api/content-requests", attachSessionScope, contentRequestRoutes);
+app.use("/api/recurring-schedules", attachSessionScope, recurringRoutes);
+app.use("/api/contracts", attachSessionScope, contractRoutes);
+app.use("/api/billing", attachSessionScope, billingRoutes);
+app.use("/api/workflow-templates", attachSessionScope, workflowTemplateRoutes);
+app.use("/api/jobs", attachSessionScope, jobRoutes);
+app.use("/api/tasks", attachSessionScope, taskRoutes);
+app.use("/api/services", attachSessionScope, serviceRoutes);
+app.use("/api/branches", attachSessionScope, branchRoutes);
+app.use("/api/departments", attachSessionScope, departmentRoutes);
+app.use("/api/nav-menus", attachSessionScope, navMenuRoutes);
+app.use("/api/tracking", attachSessionScope, trackingRoutes);
+app.use("/api/transactions", attachSessionScope, transactionRoutes);
+app.use("/api/salaries", attachSessionScope, salaryRoutes);
 app.use("/api/roles", roleRoutes);
 app.use("/api/utils", utilRoutes);
 app.use("/api/notifications", notificationRoutes);
@@ -131,6 +146,57 @@ app.listen(port, "0.0.0.0", async () => {
     );
     await ensureDefaultMenusOnStartup();
   } catch (error) {
-    console.error("Failed to seed default nav menus on startup:", error);
+    const message = error?.message ?? String(error);
+    if (message.includes("Too many connections")) {
+      console.warn(
+        "Skipped nav menu startup sync: database connection limit reached. Restart backend once other instances are stopped.",
+      );
+    } else {
+      console.error("Failed to seed default nav menus on startup:", error);
+    }
+  }
+
+  try {
+    const { generateDailyRecurringTasks } = await import(
+      "./lib/recurring-task-generator.js"
+    );
+    const runRecurringJob = async () => {
+      try {
+        const result = await generateDailyRecurringTasks();
+        if (result.created > 0) {
+          console.log(
+            `[recurring-job] Created ${result.created} task(s) for ${result.runDate}`,
+          );
+        }
+      } catch (err) {
+        console.error("[recurring-job] Failed:", err.message);
+      }
+    };
+    await runRecurringJob();
+    setInterval(runRecurringJob, 60 * 60 * 1000);
+  } catch (error) {
+    console.error("Failed to start recurring task scheduler:", error);
+  }
+
+  try {
+    const { generateMonthlyInstallments } = await import(
+      "./lib/monthly-billing-generator.js"
+    );
+    const runBillingJob = async () => {
+      try {
+        const result = await generateMonthlyInstallments();
+        if (result.created > 0 || result.updated > 0) {
+          console.log(
+            `[billing-job] Created ${result.created}, updated ${result.updated} installment(s) for ${result.periodYear}-${String(result.periodMonth).padStart(2, "0")}`,
+          );
+        }
+      } catch (err) {
+        console.error("[billing-job] Failed:", err.message);
+      }
+    };
+    await runBillingJob();
+    setInterval(runBillingJob, 60 * 60 * 1000);
+  } catch (error) {
+    console.error("Failed to start monthly billing scheduler:", error);
   }
 });

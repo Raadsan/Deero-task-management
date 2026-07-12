@@ -1,5 +1,12 @@
 import { prisma } from "../lib/prisma.js";
 import { generateCustomId } from "../lib/id-generator.js";
+import {
+  denyIfOutOfScope,
+  directBranchWhere,
+  getScope,
+  mergeWhere,
+  resolveWritableBranchId,
+} from "../lib/branch-scope.js";
 
 const departmentInclude = {
   branch: {
@@ -8,14 +15,15 @@ const departmentInclude = {
 };
 
 export const getAllDepartments = async (req, res) => {
-  const { branchId, activeOnly } = req.query;
+  const { activeOnly } = req.query;
 
   try {
+    const scope = getScope(req);
     const departments = await prisma.department.findMany({
-      where: {
-        ...(branchId ? { branchId: String(branchId) } : {}),
-        ...(activeOnly === "true" ? { isActive: true } : {}),
-      },
+      where: mergeWhere(
+        directBranchWhere(scope),
+        activeOnly === "true" ? { isActive: true } : {},
+      ),
       include: departmentInclude,
       orderBy: [{ branch: { name: "asc" } }, { name: "asc" }],
     });
@@ -30,8 +38,9 @@ export const getDepartmentById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const department = await prisma.department.findUnique({
-      where: { id },
+    const scope = getScope(req);
+    const department = await prisma.department.findFirst({
+      where: mergeWhere({ id }, directBranchWhere(scope)),
       include: departmentInclude,
     });
 
@@ -49,8 +58,9 @@ export const createDepartment = async (req, res) => {
   const { name, description, isActive, branchId } = req.body;
 
   try {
+    const scope = getScope(req);
     const trimmedName = String(name ?? "").trim();
-    const trimmedBranchId = String(branchId ?? "").trim();
+    const trimmedBranchId = resolveWritableBranchId(scope, branchId);
 
     if (!trimmedBranchId) {
       return res.status(400).json({ success: false, error: "Branch is required" });
@@ -100,13 +110,20 @@ export const updateDepartment = async (req, res) => {
   const { name, description, isActive, branchId } = req.body;
 
   try {
-    const existing = await prisma.department.findUnique({ where: { id } });
+    const scope = getScope(req);
+    const existing = await prisma.department.findFirst({
+      where: mergeWhere({ id }, directBranchWhere(scope)),
+    });
     if (!existing) {
       return res.status(404).json({ success: false, error: "Department not found" });
     }
+    if (denyIfOutOfScope(res, scope, existing.branchId)) return;
 
     const trimmedName = String(name ?? existing.name).trim();
-    const trimmedBranchId = String(branchId ?? existing.branchId).trim();
+    const trimmedBranchId = resolveWritableBranchId(
+      scope,
+      branchId ?? existing.branchId,
+    );
 
     if (!trimmedBranchId) {
       return res.status(400).json({ success: false, error: "Branch is required" });
@@ -150,10 +167,14 @@ export const deleteDepartment = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const existing = await prisma.department.findUnique({ where: { id } });
+    const scope = getScope(req);
+    const existing = await prisma.department.findFirst({
+      where: mergeWhere({ id }, directBranchWhere(scope)),
+    });
     if (!existing) {
       return res.status(404).json({ success: false, error: "Department not found" });
     }
+    if (denyIfOutOfScope(res, scope, existing.branchId)) return;
 
     const usersCount = await prisma.user.count({
       where: {

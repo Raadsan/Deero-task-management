@@ -177,6 +177,7 @@ export default function ClientsManagementPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [formMode, setFormMode] = useState<"create" | "edit">("create");
   const [editingClientId, setEditingClientId] = useState<string | undefined>();
+  const [draftClientId, setDraftClientId] = useState<string | undefined>();
   const [viewClientId, setViewClientId] = useState<string | undefined>();
   const [viewOpen, setViewOpen] = useState(false);
 
@@ -187,6 +188,7 @@ export default function ClientsManagementPage() {
       const email = client.email?.toLowerCase() ?? "";
       const phone = client.phone?.toLowerCase() ?? "";
       const clientId = String(client.id ?? "").toLowerCase();
+      const isDraft = Boolean((client as AllClients).isDraft);
       const agreements = (client as AllClients).serviceAgreements ?? [];
       const visibleAgreements = filterAgreements(
         agreements,
@@ -200,6 +202,14 @@ export default function ClientsManagementPage() {
         email.includes(query) ||
         phone.includes(query) ||
         clientId.includes(query);
+
+      if (isDraft) {
+        return (
+          matchesSearch &&
+          (statusFilter === "all" || statusFilter === "draft") &&
+          (branchFilter === "all" || (client as AllClients & { branchId?: string }).branchId === branchFilter)
+        );
+      }
 
       const matchesFilters =
         (statusFilter === "all" && branchFilter === "all") ||
@@ -237,12 +247,21 @@ export default function ClientsManagementPage() {
   function openCreateModal() {
     setFormMode("create");
     setEditingClientId(undefined);
+    setDraftClientId(undefined);
+    setFormOpen(true);
+  }
+
+  function openContinueDraft(clientId: string) {
+    setFormMode("create");
+    setEditingClientId(undefined);
+    setDraftClientId(clientId);
     setFormOpen(true);
   }
 
   function openEditModal(clientId: string) {
     setFormMode("edit");
     setEditingClientId(clientId);
+    setDraftClientId(undefined);
     setFormOpen(true);
   }
 
@@ -325,6 +344,7 @@ export default function ClientsManagementPage() {
               className={cn("min-w-[7rem]", compactSelectClass)}
             >
               <option value="all">All statuses</option>
+              <option value="draft">Draft</option>
               <option value="pending">Pending</option>
               <option value="completed">Complete</option>
             </select>
@@ -434,6 +454,12 @@ export default function ClientsManagementPage() {
                       branchFilter,
                     );
 
+                    const isDraft = Boolean((client as AllClients).isDraft);
+                    const displayEmail =
+                      client.email?.includes("@deero.internal") ? "—" : client.email;
+                    const displayPhone =
+                      client.phone?.startsWith("DRAFT") ? "—" : client.phone;
+
                     return (
                       <TableRow key={client.id} className={dashboardTableBodyRowClass}>
                         <TableCell className={dashboardTableCellClass}>
@@ -442,9 +468,16 @@ export default function ClientsManagementPage() {
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextPrimary}>
-                            {client.institution}
-                          </span>
+                          <div>
+                            <span className={dashboardTextPrimary}>
+                              {client.institution}
+                            </span>
+                            {(client as AllClients).clientType ? (
+                              <span className="mt-0.5 block text-[11px] font-medium uppercase tracking-wide text-zinc-400">
+                                {String((client as AllClients).clientType).replace(/_/g, " ")}
+                              </span>
+                            ) : null}
+                          </div>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
                           <AgreementStack
@@ -467,10 +500,10 @@ export default function ClientsManagementPage() {
                           />
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextSecondary}>{client.email}</span>
+                          <span className={dashboardTextSecondary}>{displayEmail}</span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextSecondary}>{client.phone}</span>
+                          <span className={dashboardTextSecondary}>{displayPhone}</span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
                           <span className={dashboardTextSecondary}>
@@ -478,15 +511,26 @@ export default function ClientsManagementPage() {
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <ClientServiceStatusCell
-                            agreements={serviceAgreements}
-                            updatingId={
-                              isUpdatingStatus ? updatingAgreementId : undefined
-                            }
-                            onMarkComplete={(agreement) =>
-                              openCompleteModal(client.institution, agreement)
-                            }
-                          />
+                          {isDraft ? (
+                            <span
+                              className={cn(
+                                dashboardStatusBadgeClass,
+                                "bg-zinc-100 text-zinc-600",
+                              )}
+                            >
+                              Draft
+                            </span>
+                          ) : (
+                            <ClientServiceStatusCell
+                              agreements={serviceAgreements}
+                              updatingId={
+                                isUpdatingStatus ? updatingAgreementId : undefined
+                              }
+                              onMarkComplete={(agreement) =>
+                                openCompleteModal(client.institution, agreement)
+                              }
+                            />
+                          )}
                         </TableCell>
                         <TableCell
                           className={cn(dashboardTableCellClass, "text-right")}
@@ -501,15 +545,27 @@ export default function ClientsManagementPage() {
                             >
                               <Eye className="size-4" />
                             </Button>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => openEditModal(String(client.id))}
-                              className={actionBtnEdit}
-                            >
-                              <Edit className="size-4" />
-                            </Button>
+                            {isDraft ? (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => openContinueDraft(String(client.id))}
+                                className={actionBtnEdit}
+                              >
+                                Continue
+                              </Button>
+                            ) : (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => openEditModal(String(client.id))}
+                                className={actionBtnEdit}
+                              >
+                                <Edit className="size-4" />
+                              </Button>
+                            )}
                             {client.id && (
                               <Button
                                 type="button"
@@ -570,6 +626,7 @@ export default function ClientsManagementPage() {
         onOpenChange={setFormOpen}
         mode={formMode}
         clientId={editingClientId}
+        draftClientId={draftClientId}
       />
 
       <ClientViewModal

@@ -1,7 +1,7 @@
 export const ICONS = {
   logoIcon: "/logo.svg",
   logoPng: "/logo.png",
-  logoPng1: "/Logo-02.png",
+  logoPng1: "/Logo2.png",
   logoIconCollapsed: "/logo1.png",
 };
 
@@ -46,8 +46,8 @@ export const DEERO_SOURCES = [
   "Office Location",
 ];
 
-export const BRANCH_SLUG_COOKIE = "branch-slug";
-export const LOGIN_BRANCH_ID_COOKIE = "login-branch-id";
+export const APP_SYSTEM_NAME = "Deero Task Management System";
+export const APP_VERSION = "0.1.0";
 
 export const ROUTES = {
   createTask: "/tasks/create",
@@ -63,21 +63,29 @@ export const ROUTES = {
   configTracking: "/config/tracking",
   uploadUserFile: (id: string) => `/users/upload/${id}`,
   "my-tasks": "/my-tasks",
+  "my-tasks-board": "/my-tasks/board",
+  "my-tasks-today": "/my-tasks/today",
   "my-tasks-edit": (id: string) => `/my-tasks/edit/${id}`,
+  notifications: "/notifications",
   createUser: "/users/create",
   assignAnotherTask: (id: string) => `/tasks/create/${id}`,
   editUser: (id: string) => `/users/edit/${id}`,
-  logout: "/",
+  logout: "/auth/login",
   clients: "/clients",
+  contracts: "/contracts",
+  recurringSchedules: "/recurring-schedules",
   createClient: "/clients/create",
   viewClient: (id: string) => `/clients/${id}`,
   addSeriveForClient: (id: string) => `/clients/create/${id}`,
-  login: "/",
+  login: "/auth/login",
   forgotPassword: "/auth/forgot-password",
   verify: "/auth/verify",
-  register: "/auth/register",
   dashboard: "/",
-  payments: `/payments?tab=overview`,
+  payments: "/payments/revenue",
+  paymentsRevenue: "/payments/revenue",
+  paymentsPaid: "/payments/paid",
+  paymentsUnpaid: "/payments/paid",
+  paymentsOverview: "/payments",
   income: "/payments/income",
   expense: "/payments/expense",
   createInvoice: (
@@ -112,7 +120,14 @@ export const ROUTES = {
     }
   },
   taskReport: (id: string) => `/tasks/report/${id}`,
-  paymentReport: "/payments/report",
+  paymentReport: "/reports/payments",
+  reports: "/reports",
+  reportsPayments: "/reports/payments",
+  reportsUsers: "/reports/users",
+  reportsUnpaid: "/reports/unpaid",
+  reportsTasks: "/reports/tasks",
+  reportsClients: "/reports/clients",
+  reportsSalary: "/users/report",
   userSalaryReport: `/users/report`,
   clientReport: `/clients/report`,
   paySalary: (userId: string) => `/users/pay/${userId}`,
@@ -191,6 +206,15 @@ export const SWR_CACH_KEYS = {
   clients: {
     key: "/clients/data",
   },
+  contracts: {
+    key: "/contracts/data",
+  },
+  recurringSchedules: {
+    key: "/recurring-schedules/data",
+  },
+  reports: {
+    key: "/reports/data",
+  },
   services: {
     key: "/services/data",
   },
@@ -213,7 +237,13 @@ export const SWR_CACH_KEYS = {
     key: "/tasks/data",
   },
   myTasks: {
-    key: "/mytasks/data",
+    key: "/mytasks/personal/data",
+  },
+  myTasksCompany: {
+    key: "/mytasks/company/data",
+  },
+  myTasksBoard: {
+    key: "/mytasks/board/data",
   },
   taskNotifications: {
     key: "/task-notifications/data",
@@ -365,3 +395,10 @@ export const DEPARTMENTS = [
 ];
 
 export const TASK_PRIORITIES = ["Normal", "Medium", "Urgent"] as const;
+
+export const USER_DOCUMENT_TYPES = [
+  { id: "certificate", label: "Certificate" },
+  { id: "transcription", label: "Transcription" },
+  { id: "cv", label: "CV" },
+  { id: "cid", label: "CID" },
+] as const;

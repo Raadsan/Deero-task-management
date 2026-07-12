@@ -1,7 +1,8 @@
 "use client";
 
 import { cn, computeFontSize } from "@/lib/utils";
-import { ReactNode } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { ReactNode, useState } from "react";
 
 import {
   Select,
@@ -21,6 +22,7 @@ interface Props<T> {
   placeholder: string;
   labelId: string;
   errorMessage?: string;
+  invalid?: boolean;
   wrapperStyle?: string;
   inputStyle?: string;
   type?: string;
@@ -43,6 +45,7 @@ interface SelectProps<T>
   disbaleSelect?: boolean;
   defaultValue?: string;
   value?: string;
+  invalid?: boolean;
   otherProps?: Record<any, any>;
   compact?: boolean;
 }
@@ -56,13 +59,16 @@ function formatSelectLabel(value: string) {
 }
 
 interface DatePickerProps<T>
-  extends Pick<Props<T>, "disbaled" | "errorMessage" | "compact"> {
+  extends Pick<Props<T>, "disbaled" | "errorMessage" | "compact" | "invalid"> {
   date?: Date;
   setDate: (date: Date) => void;
   labelText: string;
   wrapperClasses?: string;
   showTimePicker?: boolean;
 }
+
+const compactInvalidFieldClass =
+  "border-red-500 focus:border-red-500 focus:ring-red-500/20";
 
 const compactInputFieldClass =
   "h-10 w-full rounded-md border border-zinc-200 px-3 text-sm font-normal text-zinc-800 placeholder:font-normal placeholder:text-zinc-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 disabled:cursor-not-allowed disabled:bg-zinc-100";
@@ -148,10 +154,18 @@ export function TextInput<T>({
   type,
   wrapperStyle,
   compact,
+  invalid,
 }: Props<T> & {
   prefixValue?: string;
   paddingLeft?: string;
 }) {
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const resolvedType = showEyeIcon
+    ? passwordVisible
+      ? "text"
+      : "password"
+    : type;
+
   return (
     <div className={cn("h-fit w-full max-w-[min(800px,100%)] space-y-2", wrapperStyle, compact && "max-w-none space-y-1.5")}>
       <label
@@ -174,8 +188,18 @@ export function TextInput<T>({
           </span>
         )}
         <input
-          type={type}
-          style={compact ? { paddingLeft: paddingLeft ?? "12px" } : { paddingLeft: paddingLeft ?? "20px" }}
+          type={resolvedType}
+          style={
+            compact
+              ? {
+                  paddingLeft: paddingLeft ?? "12px",
+                  paddingRight: showEyeIcon ? "2.75rem" : undefined,
+                }
+              : {
+                  paddingLeft: paddingLeft ?? "20px",
+                  paddingRight: showEyeIcon ? "3rem" : undefined,
+                }
+          }
           autoComplete={"on"}
           id={labelId}
           defaultValue={defaultValue}
@@ -184,11 +208,32 @@ export function TextInput<T>({
           {...otherProps}
           className={cn(
             compact
-              ? compactInputFieldClass
-              : "focus:outline-dark-red absolute inset-0 overflow-hidden rounded-[inherit] text-[1.3rem] text-wrap border border-black/10 placeholder:text-gray-400 focus:outline-2 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-700",
+              ? cn(compactInputFieldClass, invalid && compactInvalidFieldClass)
+              : cn(
+                  "focus:outline-dark-red absolute inset-0 overflow-hidden rounded-[inherit] text-[1.3rem] text-wrap border border-black/10 placeholder:text-gray-400 focus:outline-2 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-700",
+                  invalid && "border-red-500 focus:outline-red-500",
+                ),
             inputStyle,
           )}
         />
+        {showEyeIcon && (
+          <button
+            type="button"
+            disabled={disbaled}
+            onClick={() => setPasswordVisible((value) => !value)}
+            className={cn(
+              "absolute top-1/2 right-3 z-10 -translate-y-1/2 text-zinc-400 transition-colors hover:text-zinc-600 focus:outline-none disabled:cursor-not-allowed",
+              compact && "right-2.5",
+            )}
+            aria-label={passwordVisible ? "Hide password" : "Show password"}
+          >
+            {passwordVisible ? (
+              <EyeOff className={cn("size-5", compact && "size-4")} />
+            ) : (
+              <Eye className={cn("size-5", compact && "size-4")} />
+            )}
+          </button>
+        )}
       </div>
       {errorMessage && <FormatErrorText message={errorMessage} />}
     </div>
@@ -211,6 +256,7 @@ export function SelectElement<T>({
   disbaleSelect,
   value,
   compact,
+  invalid,
 }: SelectProps<T>) {
   const selectOptions =
     options?.length
@@ -241,6 +287,7 @@ export function SelectElement<T>({
           className={cn(
             "min-h-[50px] w-full rounded-md border border-black/10 bg-white transition-colors hover:bg-zinc-50",
             compact && compactSelectTriggerClass,
+            invalid && (compact ? compactInvalidFieldClass : "border-red-500"),
           )}
         >
           <SelectValue placeholder={placeholder} />
@@ -275,6 +322,7 @@ export function TextInputWithTaxtArea<T>({
   wrapperStyle,
   inputStyle,
   compact,
+  invalid,
 }: Props<T>) {
   return (
     <div
@@ -302,8 +350,11 @@ export function TextInputWithTaxtArea<T>({
           placeholder={placeholder}
           className={cn(
             compact
-              ? compactTextareaClass
-              : "focus:outline-dark-red min-h-[100px] w-full resize-none rounded-md border border-black/10 pt-5 pl-[21px] placeholder:text-gray-400 focus:outline-2 disabled:cursor-not-allowed disabled:bg-gray-200",
+              ? cn(compactTextareaClass, invalid && compactInvalidFieldClass)
+              : cn(
+                  "focus:outline-dark-red min-h-[100px] w-full resize-none rounded-md border border-black/10 pt-5 pl-[21px] placeholder:text-gray-400 focus:outline-2 disabled:cursor-not-allowed disabled:bg-gray-200",
+                  invalid && "border-red-500 focus:outline-red-500",
+                ),
             inputStyle,
           )}
         />
@@ -322,6 +373,7 @@ export function DatePicker<T>({
   setDate,
   showTimePicker,
   compact,
+  invalid,
 }: DatePickerProps<T>) {
   return (
     <div
@@ -339,7 +391,10 @@ export function DatePicker<T>({
         date={date}
         setDate={setDate}
         showTimePicker={showTimePicker}
-        classNames={compact ? compactDateTriggerClass : undefined}
+        classNames={cn(
+          compact ? compactDateTriggerClass : undefined,
+          invalid && (compact ? compactInvalidFieldClass : "border-red-500"),
+        )}
       />
       {errorMessage && <FormatErrorText message={errorMessage} />}
     </div>

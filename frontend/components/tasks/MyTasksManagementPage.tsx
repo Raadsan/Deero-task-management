@@ -1,8 +1,7 @@
 "use client";
 
 import ManagementPageShell from "@/components/Shared/ManagementPageShell";
-import TaskFormModal from "@/components/tasks/TaskFormModal";
-import TaskViewModal from "@/components/tasks/TaskViewModal";
+import ProcessTaskConfirmModal from "@/components/tasks/ProcessTaskConfirmModal";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -12,11 +11,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAssginedTasks } from "@/lib/actions/task.action";
+import { editTask } from "@/lib/actions/task.action";
+import { fetchMyPersonalTasks, fetchMyTasks } from "@/lib/my-tasks-client";
 import { SWR_CACH_KEYS } from "@/lib/constants";
+import { normalizeMyTasksList } from "@/lib/my-task-filters";
 import {
-  actionBtnEdit,
-  actionBtnView,
   dashboardCardClass,
   dashboardLabelClass,
   dashboardPaginationClass,
@@ -35,9 +34,11 @@ import {
 } from "@/lib/dashboard-ui";
 import { Task } from "@/lib/types";
 import { cn, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
-import { Edit, Eye, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import useSWR from "swr";
+import { useSWRConfig } from "swr";
 
 const compactSelectClass =
   "h-9 cursor-pointer rounded-md border border-zinc-200 bg-white px-2 text-sm text-zinc-600 outline-none focus:border-primary";
@@ -46,21 +47,20 @@ const compactInputClass =
   "h-9 w-full rounded-md border border-zinc-200 bg-zinc-50 pl-9 pr-3 text-sm text-zinc-600 outline-none focus:border-primary focus:ring-1 focus:ring-primary/10";
 
 export default function MyTasksManagementPage() {
-  const { data: tasksRes, isLoading } = useSWR(
+  const { data: tasksRaw, isLoading } = useSWR(
     SWR_CACH_KEYS.myTasks.key,
-    getAssginedTasks,
+    fetchMyPersonalTasks,
+    { fallbackData: [], revalidateOnFocus: false, dedupingInterval: 30_000 },
   );
+  const { mutate } = useSWRConfig();
 
-  const tasks = (tasksRes?.data as Task[]) ?? [];
-
+  const tasks = normalizeMyTasksList(tasksRaw);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [viewingTask, setViewingTask] = useState<Task | null>(null);
-  const [viewOpen, setViewOpen] = useState(false);
-  const [formOpen, setFormOpen] = useState(false);
-  const [editingTaskId, setEditingTaskId] = useState<string | undefined>();
+  const [processTarget, setProcessTarget] = useState<Task | null>(null);
+  const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null);
 
   const filteredTasks = useMemo(() => {
     return tasks.filter((task) => {
@@ -80,7 +80,6 @@ export default function MyTasksManagementPage() {
         taskId.includes(query);
 
       const displayStatus = resolveTaskDisplayStatus(task);
-
       const matchesStatus =
         statusFilter === "all" ||
         displayStatus.toLowerCase() === statusFilter.toLowerCase();
@@ -99,14 +98,30 @@ export default function MyTasksManagementPage() {
     setCurrentPage(1);
   }, [search, pageSize, statusFilter]);
 
-  function openViewModal(task: Task) {
-    setViewingTask(task);
-    setViewOpen(true);
+  function openProcessDialog(task: Task) {
+    setProcessTarget(task);
   }
 
-  function openEditModal(taskId: string) {
-    setEditingTaskId(taskId);
-    setFormOpen(true);
+  async function confirmProcessTask() {
+    if (!processTarget) return;
+    setUpdatingTaskId(String(processTarget.id));
+    try {
+      const result = await editTask({
+        taskId: processTarget.id,
+        status: "pending",
+        progress: Math.max(20, Number(processTarget.progress ?? 0)),
+      });
+      if (result.success) {
+        toast.success("Task moved to processing");
+        await mutate(SWR_CACH_KEYS.myTasks.key);
+        await mutate(SWR_CACH_KEYS.tasks.key);
+        setProcessTarget(null);
+      } else {
+        toast.error(result.errors?.message ?? "Failed to process task");
+      }
+    } finally {
+      setUpdatingTaskId(null);
+    }
   }
 
   return (
@@ -164,7 +179,7 @@ export default function MyTasksManagementPage() {
                     No
                   </TableHead>
                   <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Service Info
+                    Task
                   </TableHead>
                   <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
                     Progress
@@ -176,7 +191,7 @@ export default function MyTasksManagementPage() {
                     Status
                   </TableHead>
                   <TableHead className={cn(dashboardTableHeadClass, "text-right")}>
-                    Actions
+                    Action
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -202,11 +217,9 @@ export default function MyTasksManagementPage() {
                   </TableRow>
                 ) : (
                   paginatedTasks.map((task) => {
-                    const serviceInfo =
-                      task.serviceInformation ||
-                      task.institutions?.[0]?.institution ||
-                      "—";
                     const displayStatus = resolveTaskDisplayStatus(task);
+                    const isPending = displayStatus === "pending";
+                    const busy = updatingTaskId === String(task.id);
 
                     return (
                       <TableRow key={task.id} className={dashboardTableBodyRowClass}>
@@ -216,7 +229,9 @@ export default function MyTasksManagementPage() {
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextSecondary}>{serviceInfo}</span>
+                          <span className={dashboardTextSecondary}>
+                            {task.description || task.serviceInformation || "—"}
+                          </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
                           <span className={dashboardTextPrimary}>
@@ -225,7 +240,10 @@ export default function MyTasksManagementPage() {
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
                           <span className={dashboardTextSecondary}>
-                            {formatTaskDeadline(task.deadline)}
+                            {formatTaskDeadline(task.deadline, {
+                              status: task.status,
+                              progress: task.progress,
+                            })}
                           </span>
                         </TableCell>
                         <TableCell
@@ -243,26 +261,18 @@ export default function MyTasksManagementPage() {
                         <TableCell
                           className={cn(dashboardTableCellClass, "text-right")}
                         >
-                          <div className="flex justify-end gap-2">
+                          {isPending ? (
                             <Button
                               type="button"
-                              variant="ghost"
                               size="sm"
-                              onClick={() => openViewModal(task)}
-                              className={actionBtnView}
+                              disabled={busy}
+                              onClick={() => openProcessDialog(task)}
                             >
-                              <Eye className="size-4" />
+                              Process
                             </Button>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => openEditModal(String(task.id))}
-                              className={actionBtnEdit}
-                            >
-                              <Edit className="size-4" />
-                            </Button>
-                          </div>
+                          ) : (
+                            <span className="text-xs text-zinc-400">—</span>
+                          )}
                         </TableCell>
                       </TableRow>
                     );
@@ -304,18 +314,16 @@ export default function MyTasksManagementPage() {
         </div>
       </div>
 
-      <TaskViewModal
-        open={viewOpen}
-        onOpenChange={setViewOpen}
-        task={viewingTask}
-      />
-
-      <TaskFormModal
-        open={formOpen}
-        onOpenChange={setFormOpen}
-        mode="edit"
-        taskId={editingTaskId}
-        variant="own"
+      <ProcessTaskConfirmModal
+        open={Boolean(processTarget)}
+        onOpenChange={(open) => {
+          if (!open) setProcessTarget(null);
+        }}
+        task={processTarget}
+        loading={Boolean(
+          processTarget && updatingTaskId === String(processTarget.id),
+        )}
+        onConfirm={confirmProcessTask}
       />
     </ManagementPageShell>
   );

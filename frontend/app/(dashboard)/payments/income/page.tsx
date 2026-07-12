@@ -11,8 +11,8 @@ export default function IncomePage({ searchParams }: PageParams) {
       <PageBreadcrumb
         links={[
           {
-            title: "Payment",
-            link: ROUTES.payments,
+            title: "Payment Revenue",
+            link: ROUTES.paymentsRevenue,
           },
         ]}
       />

@@ -1,4 +1,3 @@
-import { GetAssigneesAndInstitutions } from "@/lib/actions/shared.action";
 import { getTaskById } from "@/lib/actions/task.action";
 import TaskForm from "./TaskForm";
 
@@ -8,7 +7,6 @@ interface Props {
 }
 export default async function TaskformWrapper({ formType, params }: Props) {
   let taskResult = undefined;
-  let institutions = undefined;
 
   if (formType !== "create" && params) {
     const { id: taskId } = await params;
@@ -16,17 +14,16 @@ export default async function TaskformWrapper({ formType, params }: Props) {
   }
 
   if (formType === "create") {
-    const result = await GetAssigneesAndInstitutions({});
-    institutions = result?.data?.institutions;
+    return (
+      <section className="h-full w-full">
+        <TaskForm formType={formType} />
+      </section>
+    );
   }
 
   return (
     <section className="h-full w-full">
-      <TaskForm
-        formType={formType}
-        institutions={institutions}
-        currentTask={taskResult?.data}
-      />
+      <TaskForm formType={formType} currentTask={taskResult?.data} />
     </section>
   );
 }

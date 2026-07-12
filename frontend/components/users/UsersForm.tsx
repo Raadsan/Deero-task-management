@@ -1,17 +1,24 @@
 "use client";
 
 import { createUser, updateUserData } from "@/lib/actions/user.action";
-import { getAllBranches } from "@/lib/actions/branch.action";
 import { getAllDepartments } from "@/lib/actions/department.action";
+import { getConfigRoles } from "@/lib/actions/config.action";
+import { getTaskFormBranchOptions } from "@/lib/actions/shared.action";
 import { authClient } from "@/lib/auth-client";
 import { ROUTES, SWR_CACH_KEYS } from "@/lib/constants";
-import { User, UserRole } from "@/lib/schema";
+import { User } from "@/lib/schema";
+import { canChangeUserPassword } from "@/lib/user-permissions";
+import {
+  buildUserRoleOptions,
+  resolveConfigRoleId,
+} from "@/lib/role-options";
+import { isSuperadminRole } from "@/lib/branch-access";
 import { btnFormCancel, btnFormSubmit } from "@/lib/dashboard-ui";
 import { cn } from "@/lib/utils";
 import { EditCreateUserSchema } from "@/lib/validations";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useSWRConfig } from "swr";
@@ -50,7 +57,7 @@ export default function UserForm({
     defaultValues: {
       name: data?.name ?? "",
       email: data?.email ?? "",
-      role: data?.role ?? UserRole.user,
+      role: data?.role ?? "",
       password: "",
       gender: data?.gender ?? "",
       department: data?.department ?? "",
@@ -69,15 +76,36 @@ export default function UserForm({
 
   const [selectedBranchId, setSelectedBranchId] = useState(defaultBranchId);
 
-  const { data: branchesRes } = useSWR(SWR_CACH_KEYS.branches.key, getAllBranches);
-  const branchOptions =
-    branchesRes?.data?.filter((branch) => branch.isActive !== false).map((branch) => branch.name) ?? [];
+  const { data: rolesRes, isLoading: rolesLoading } = useSWR(
+    SWR_CACH_KEYS.configRoles.key,
+    getConfigRoles,
+  );
+  const configRoles = rolesRes?.data ?? [];
+
+  const { data: branchOptionsRes } = useSWR(
+    "task-form-branches-users",
+    getTaskFormBranchOptions,
+  );
+  const scopedBranches = branchOptionsRes?.data?.branches ?? [];
+  const singleBranch = branchOptionsRes?.data?.singleBranch ?? false;
+  const branchOptions = scopedBranches.map((branch) => branch.name);
+
+  const branchIdValue = watch("branchId");
+  const roleValue = watch("role");
+  const isSuperadmin = isSuperadminRole(roleValue);
+  const effectiveBranchForDepartments =
+    selectedBranchId ||
+    (isSuperadmin ? branchOptionsRes?.data?.defaultBranchId ?? "" : "");
 
   const { data: departmentsRes } = useSWR(
-    selectedBranchId
-      ? [SWR_CACH_KEYS.departments.key, selectedBranchId]
+    effectiveBranchForDepartments
+      ? [SWR_CACH_KEYS.departments.key, effectiveBranchForDepartments]
       : null,
-    () => getAllDepartments({ branchId: selectedBranchId, activeOnly: true }),
+    () =>
+      getAllDepartments({
+        branchId: effectiveBranchForDepartments,
+        activeOnly: true,
+      }),
   );
   const departmentOptions =
     departmentsRes?.data?.map((department) => department.name) ?? [];
@@ -86,19 +114,32 @@ export default function UserForm({
     setSelectedBranchId(defaultBranchId);
   }, [defaultBranchId]);
 
-  const activeUserRole = authClient.useSession().data?.user.role;
-  const roles =
-    activeUserRole === "admin"
-      ? ["admin", "user"]
-      : ["admin", "user", "superadmin"];
+  const session = authClient.useSession();
+  const activeUserRole = session.data?.user.role;
+  const [canSetPassword, setCanSetPassword] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    canChangeUserPassword(activeUserRole).then((allowed) => {
+      if (active) setCanSetPassword(allowed);
+    });
+    return () => {
+      active = false;
+    };
+  }, [activeUserRole]);
+
+  const roleOptions = useMemo(
+    () => buildUserRoleOptions(configRoles, data?.role),
+    [configRoles, data?.role],
+  );
 
   const genderValue = watch("gender");
   const departmentValue = watch("department");
-  const branchIdValue = watch("branchId");
   const statusValue = watch("status");
-  const roleValue = watch("role");
   const selectedBranchName =
-    branchesRes?.data?.find((branch) => branch.id === branchIdValue)?.name ?? "";
+    isSuperadmin && !branchIdValue
+      ? "— None (main branch) —"
+      : scopedBranches.find((branch) => branch.id === branchIdValue)?.name ?? "";
 
   const genderOptions = [
     { value: "female", label: "Female" },
@@ -108,14 +149,34 @@ export default function UserForm({
     { value: "active", label: "Active" },
     { value: "inactive", label: "Inactive" },
   ];
-  const assignableRoles = [...roles];
-  if (data?.role && !assignableRoles.includes(data.role)) {
-    assignableRoles.push(data.role);
-  }
-  const roleOptions = assignableRoles.map((role) => ({
-    value: role,
-    label: role.charAt(0).toUpperCase() + role.slice(1),
-  }));
+
+  useEffect(() => {
+    if (formType !== "create" || roleValue || !roleOptions.length) return;
+    const defaultRole =
+      roleOptions.find((option) => option.value === "user")?.value ??
+      roleOptions[0]?.value;
+    if (defaultRole) {
+      setValue("role", defaultRole, { shouldValidate: false });
+    }
+  }, [formType, roleOptions, roleValue, setValue]);
+
+  useEffect(() => {
+    if (formType !== "create" || branchIdValue || !scopedBranches.length) return;
+    if (isSuperadminRole(roleValue)) return;
+    const nextBranchId =
+      branchOptionsRes?.data?.defaultBranchId ?? scopedBranches[0]?.id;
+    if (nextBranchId) {
+      setSelectedBranchId(nextBranchId);
+      setValue("branchId", nextBranchId, { shouldValidate: false });
+    }
+  }, [
+    formType,
+    branchIdValue,
+    scopedBranches,
+    branchOptionsRes?.data?.defaultBranchId,
+    roleValue,
+    setValue,
+  ]);
 
   const [pending, startTransition] = useTransition();
   const router = useRouter();
@@ -139,14 +200,16 @@ export default function UserForm({
       }
 
       startTransition(async () => {
+        const roleId = resolveConfigRoleId(configRoles, formData.role);
         const result = await createUser({
           name: formData.name,
           email: formData.email,
           password: formData.password,
-          role: formData.role as UserRole,
+          role: formData.role,
+          roleId,
           gender: formData.gender,
           department: formData.department?.trim() || undefined,
-          branchId: formData.branchId || undefined,
+          branchId: formData.branchId?.trim() || undefined,
           banned: formData.status === "inactive",
         });
         if (result.success) {
@@ -165,34 +228,69 @@ export default function UserForm({
         }
       });
     } else if (formType === "edit") {
+      if (canSetPassword && formData.password?.trim()) {
+        if (formData.password.length < 6) {
+          setError(
+            "password",
+            { message: "Password should be at least 6 characters." },
+            { shouldFocus: true },
+          );
+          return;
+        }
+      }
+
       startTransition(async function () {
+        const roleId = resolveConfigRoleId(configRoles, formData.role);
         const updateResult = await updateUserData({
           id: data?.id as string,
           name: formData.name,
           email: formData.email,
-          role: formData.role as UserRole,
+          role: formData.role,
+          roleId,
           gender: formData.gender,
           department: formData.department?.trim() || undefined,
-          branchId: formData.branchId || undefined,
+          branchId: isSuperadmin
+            ? formData.branchId?.trim() || null
+            : formData.branchId?.trim() || undefined,
           banned: formData.status === "inactive",
         });
 
-        if (updateResult.success) {
-          reset();
-          toast.success("Updated User Data successfully!");
-          await mutate(SWR_CACH_KEYS.users.key);
-          if (onSuccess) {
-            onSuccess();
-            return;
-          }
-          router.push(ROUTES.users);
-          router.refresh();
-        } else {
+        if (!updateResult.success) {
           toast.error(
             updateResult.errors?.message ||
               "Failed to update user data. try again.!",
           );
+          return;
         }
+
+        if (canSetPassword && formData.password?.trim()) {
+          const passwordResult = await authClient.admin.setUserPassword({
+            userId: data?.id as string,
+            newPassword: formData.password.trim(),
+          });
+
+          if (passwordResult.error) {
+            toast.error(
+              passwordResult.error.message ||
+                "User updated but password change failed.",
+            );
+            return;
+          }
+        }
+
+        reset();
+        toast.success(
+          canSetPassword && formData.password?.trim()
+            ? "User and password updated successfully!"
+            : "Updated User Data successfully!",
+        );
+        await mutate(SWR_CACH_KEYS.users.key);
+        if (onSuccess) {
+          onSuccess();
+          return;
+        }
+        router.push(ROUTES.users);
+        router.refresh();
       });
     }
   }
@@ -252,16 +350,30 @@ export default function UserForm({
           }}
         />
         <SelectElement
-          disbaleSelect={pending}
-          labelText="Branch"
-          placeholder="Select branch"
+          disbaleSelect={pending || (singleBranch && !isSuperadmin)}
+          labelText={isSuperadmin ? "Branch (optional)" : "Branch"}
+          placeholder={
+            isSuperadmin
+              ? "Default: main branch (Deero Advert)"
+              : "Select branch"
+          }
           wrapperStyle="max-w-full"
           errorMessage={errors.branchId?.message}
           value={selectedBranchName}
-          elements={branchOptions}
+          elements={
+            isSuperadmin
+              ? ["— None (main branch) —", ...branchOptions]
+              : branchOptions
+          }
           compact={fieldCompact}
           onChange={(value) => {
-            const branch = branchesRes?.data?.find((item) => item.name === value);
+            if (isSuperadmin && value === "— None (main branch) —") {
+              setSelectedBranchId("");
+              setValue("branchId", "", { shouldValidate: true });
+              setValue("department", "", { shouldValidate: true });
+              return;
+            }
+            const branch = scopedBranches.find((item) => item.name === value);
             const nextBranchId = branch?.id ?? "";
             setSelectedBranchId(nextBranchId);
             setValue("branchId", nextBranchId, {
@@ -274,10 +386,12 @@ export default function UserForm({
         />
 
         <SelectElement
-          disbaleSelect={pending || !selectedBranchId}
+          disbaleSelect={pending || !effectiveBranchForDepartments}
           labelText="Department (optional)"
           placeholder={
-            selectedBranchId ? "Select department (optional)" : "Select branch first"
+            effectiveBranchForDepartments
+              ? "Select department (optional)"
+              : "Select branch first"
           }
           wrapperStyle="max-w-full"
           errorMessage={errors.department?.message}
@@ -291,7 +405,31 @@ export default function UserForm({
           }}
         />
 
+        
+
         <SelectElement
+          disbaleSelect={pending || rolesLoading || !roleOptions.length}
+          labelText="Role"
+          placeholder={
+            rolesLoading
+              ? "Loading roles..."
+              : roleOptions.length
+                ? "Select role"
+                : "No roles configured"
+          }
+          wrapperStyle="max-w-full"
+          value={roleValue}
+          options={roleOptions}
+          errorMessage={errors.role?.message}
+          compact={fieldCompact}
+          onChange={(role) => {
+            setValue("role", role, {
+              shouldValidate: true,
+            });
+          }}
+        />
+
+<SelectElement
           disbaleSelect={pending}
           labelText="Status"
           placeholder="Select status"
@@ -307,28 +445,21 @@ export default function UserForm({
           }}
         />
 
-        <SelectElement
-          disbaleSelect={pending}
-          labelText="Role"
-          placeholder="Select role"
-          wrapperStyle="max-w-full"
-          value={roleValue}
-          options={roleOptions}
-          errorMessage={errors.role?.message}
-          compact={fieldCompact}
-          onChange={(role) => {
-            setValue("role", role as UserRole, {
-              shouldValidate: true,
-            });
-          }}
-        />
-
-        {formType === "create" && (
+        {(formType === "create" || (formType === "edit" && canSetPassword)) && (
           <TextInput
             labelId="password"
-            labelText="Password"
-            type="text"
-            placeholder="Enter the Password"
+            labelText={
+              formType === "edit"
+                ? "New Password (optional)"
+                : "Password"
+            }
+            type="password"
+            showEyeIcon
+            placeholder={
+              formType === "edit"
+                ? "Leave blank to keep current password"
+                : "Enter the Password"
+            }
             disbaled={pending}
             otherProps={{ ...register("password") }}
             errorMessage={errors.password?.message}

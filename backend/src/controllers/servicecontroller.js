@@ -1,5 +1,12 @@
 import { prisma } from "../lib/prisma.js";
 import { generateCustomId } from "../lib/id-generator.js";
+import {
+  denyIfOutOfScope,
+  directBranchWhere,
+  getScope,
+  mergeWhere,
+  resolveWritableBranchId,
+} from "../lib/branch-scope.js";
 
 const serviceInclude = {
   subService: { orderBy: { name: "asc" } },
@@ -82,9 +89,9 @@ async function loadServiceById(id) {
 
 export const getAllServices = async (req, res) => {
   try {
-    const { branchId } = req.query;
+    const scope = getScope(req);
     const services = await prisma.service.findMany({
-      where: branchId ? { branchId: String(branchId) } : undefined,
+      where: directBranchWhere(scope),
       include: serviceInclude,
       orderBy: [{ branch: { name: "asc" } }, { serviceName: "asc" }],
     });
@@ -97,8 +104,9 @@ export const getAllServices = async (req, res) => {
 export const getServiceById = async (req, res) => {
   const { id } = req.params;
   try {
-    const service = await prisma.service.findUnique({
-      where: { id },
+    const scope = getScope(req);
+    const service = await prisma.service.findFirst({
+      where: mergeWhere({ id }, directBranchWhere(scope)),
       include: serviceInclude,
     });
     if (!service) {
@@ -113,22 +121,24 @@ export const getServiceById = async (req, res) => {
 export const createService = async (req, res) => {
   const { serviceName, description, branchId, subServices = [] } = req.body;
   try {
+    const scope = getScope(req);
+    const resolvedBranchId = resolveWritableBranchId(scope, branchId);
     const trimmedName = String(serviceName ?? "").trim();
     if (!trimmedName) {
       return res.status(400).json({ success: false, error: "Service name is required" });
     }
 
-    if (!branchId) {
+    if (!resolvedBranchId) {
       return res.status(400).json({ success: false, error: "Branch is required" });
     }
 
-    const branch = await prisma.branch.findUnique({ where: { id: branchId } });
+    const branch = await prisma.branch.findUnique({ where: { id: resolvedBranchId } });
     if (!branch) {
       return res.status(400).json({ success: false, error: "Branch not found" });
     }
 
     const existing = await prisma.service.findFirst({
-      where: { serviceName: trimmedName, branchId },
+      where: { serviceName: trimmedName, branchId: resolvedBranchId },
     });
     if (existing) {
       return res.status(400).json({
@@ -146,7 +156,7 @@ export const createService = async (req, res) => {
           id,
           serviceName: trimmedName,
           description: description?.trim() || null,
-          branchId,
+          branchId: resolvedBranchId,
         },
       });
 
@@ -184,21 +194,26 @@ export const updateService = async (req, res) => {
   const { id } = req.params;
   const { serviceName, description, branchId, subServices = [] } = req.body;
   try {
+    const scope = getScope(req);
+    const resolvedBranchId = resolveWritableBranchId(scope, branchId);
     const trimmedName = String(serviceName ?? "").trim();
     if (!trimmedName) {
       return res.status(400).json({ success: false, error: "Service name is required" });
     }
 
-    if (!branchId) {
+    if (!resolvedBranchId) {
       return res.status(400).json({ success: false, error: "Branch is required" });
     }
 
-    const existingService = await prisma.service.findUnique({ where: { id } });
+    const existingService = await prisma.service.findFirst({
+      where: mergeWhere({ id }, directBranchWhere(scope)),
+    });
     if (!existingService) {
       return res.status(404).json({ success: false, error: "Service not found" });
     }
+    if (denyIfOutOfScope(res, scope, existingService.branchId)) return;
 
-    const branch = await prisma.branch.findUnique({ where: { id: branchId } });
+    const branch = await prisma.branch.findUnique({ where: { id: resolvedBranchId } });
     if (!branch) {
       return res.status(400).json({ success: false, error: "Branch not found" });
     }
@@ -206,7 +221,7 @@ export const updateService = async (req, res) => {
     const duplicate = await prisma.service.findFirst({
       where: {
         serviceName: trimmedName,
-        branchId,
+        branchId: resolvedBranchId,
         NOT: { id },
       },
     });
@@ -225,7 +240,7 @@ export const updateService = async (req, res) => {
         data: {
           serviceName: trimmedName,
           description: description?.trim() ?? null,
-          branchId,
+          branchId: resolvedBranchId,
         },
       });
 
@@ -277,10 +292,14 @@ export const updateService = async (req, res) => {
 export const deleteService = async (req, res) => {
   const { id } = req.params;
   try {
-    const existing = await prisma.service.findUnique({ where: { id } });
+    const scope = getScope(req);
+    const existing = await prisma.service.findFirst({
+      where: mergeWhere({ id }, directBranchWhere(scope)),
+    });
     if (!existing) {
       return res.status(404).json({ success: false, error: "Service not found" });
     }
+    if (denyIfOutOfScope(res, scope, existing.branchId)) return;
 
     await prisma.service.delete({ where: { id } });
     res.json({ success: true, message: "Service deleted successfully" });

@@ -18,6 +18,20 @@ import {
   seedNavMenus,
   updateRolePermissions,
 } from "@/lib/actions/config.action";
+import { authClient } from "@/lib/auth-client";
+import {
+  BRANCH_ADMIN_MANAGEABLE_ROLE_NAMES,
+  canManageRolePermissions,
+} from "@/lib/branch-access";
+import {
+  buildPermissionCeilingFromMenus,
+  canGrantPermission,
+  clampPermissionState,
+  filterMenusForActorCeiling,
+  filterPermissionStateToGrantableMenus,
+  PermissionFlags,
+  shouldShowParentMenuRow,
+} from "@/lib/permission-ceiling";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {
   dashboardCardClass,
@@ -83,6 +97,13 @@ function matrixToPermissions(menus: NavMenuItem[]) {
 }
 
 export default function PermissionsConfigPage() {
+  const session = authClient.useSession();
+  const currentRole = String(session.data?.user.role ?? "").toLowerCase();
+  const isSuperadmin = currentRole === "superadmin";
+  const isBranchAdmin = currentRole === "branch admin";
+  const isBranchManager = currentRole === "branch manager";
+  const usesPermissionCeiling = isBranchAdmin || isBranchManager;
+  const canManagePermissions = isSuperadmin || isBranchAdmin;
   const { data: rolesRes } = useSWR(SWR_CACH_KEYS.configRoles.key, getConfigRoles);
   const { mutate: globalMutate } = useSWRConfig();
 
@@ -91,6 +112,47 @@ export default function PermissionsConfigPage() {
     () => roles.filter((role) => role.isActive !== false),
     [roles],
   );
+  const manageableRoles = useMemo(() => {
+    if (isSuperadmin) return activeRoles;
+    if (isBranchAdmin) {
+      return activeRoles.filter((role) =>
+        BRANCH_ADMIN_MANAGEABLE_ROLE_NAMES.includes(
+          role.name.toLowerCase() as (typeof BRANCH_ADMIN_MANAGEABLE_ROLE_NAMES)[number],
+        ),
+      );
+    }
+    return activeRoles.filter((role) => role.name.toLowerCase() === currentRole);
+  }, [activeRoles, currentRole, isSuperadmin, isBranchAdmin]);
+
+  const sessionUser = session.data?.user as
+    | { role?: string; roleId?: string | null }
+    | undefined;
+
+  const actorRoleId = useMemo(() => {
+    if (sessionUser?.roleId) return sessionUser.roleId;
+    if (!sessionUser?.role) return "";
+    const match = activeRoles.find(
+      (role) => role.name.toLowerCase() === sessionUser.role!.toLowerCase(),
+    );
+    return match?.id ?? "";
+  }, [activeRoles, sessionUser?.role, sessionUser?.roleId]);
+
+  const {
+    data: actorMatrixRes,
+    isLoading: loadingActorPerms,
+  } = useSWR(
+    usesPermissionCeiling && actorRoleId
+      ? ["permissions-matrix", "actor", actorRoleId]
+      : null,
+    () => getRolePermissionMatrix(actorRoleId),
+    { revalidateOnFocus: false },
+  );
+
+  const actorCeiling = useMemo(() => {
+    if (!usesPermissionCeiling) return null;
+    const menus = (actorMatrixRes?.data as NavMenuItem[]) ?? [];
+    return buildPermissionCeilingFromMenus(menus);
+  }, [actorMatrixRes?.data, usesPermissionCeiling]);
 
   const [selectedRoleId, setSelectedRoleId] = useState("");
   const [permissions, setPermissions] = useState<Record<string, MenuPermState>>({});
@@ -112,27 +174,69 @@ export default function PermissionsConfigPage() {
     [matrixRes?.data],
   );
 
-  const selectedRole = activeRoles.find((role) => role.id === selectedRoleId);
+  const visibleMenus = useMemo(() => {
+    if (!actorCeiling) return allMenus;
+    return filterMenusForActorCeiling(allMenus, actorCeiling);
+  }, [allMenus, actorCeiling]);
+
+  const selectedRole = manageableRoles.find((role) => role.id === selectedRoleId);
+  const canEditSelectedRole = Boolean(
+    selectedRole && canManageRolePermissions(currentRole, selectedRole.name),
+  );
 
   useEffect(() => {
-    if (!activeRoles.length) return;
-    const isCurrentValid = activeRoles.some((role) => role.id === selectedRoleId);
+    if (!manageableRoles.length) return;
+    const isCurrentValid = manageableRoles.some((role) => role.id === selectedRoleId);
     if (!selectedRoleId || !isCurrentValid) {
-      const preferred =
-        activeRoles.find((role) => role.name === "superadmin") ??
-        activeRoles.find((role) => role.name === "admin") ??
-        activeRoles[0];
+      const preferred = isSuperadmin
+        ? manageableRoles.find((role) => role.name.toLowerCase() === "superadmin") ??
+          manageableRoles[0]
+        : manageableRoles[0];
       setSelectedRoleId(preferred.id);
     }
-  }, [activeRoles, selectedRoleId]);
+  }, [manageableRoles, selectedRoleId, isSuperadmin]);
 
   useEffect(() => {
     if (!allMenus.length) {
       setPermissions({});
       return;
     }
-    setPermissions(matrixToPermissions(allMenus));
-  }, [allMenus]);
+    const next = matrixToPermissions(allMenus);
+    if (actorCeiling) {
+      setPermissions(clampPermissionState(next, actorCeiling));
+      return;
+    }
+    setPermissions(next);
+  }, [allMenus, actorCeiling]);
+
+  function getGrantablePerm(
+    menuId: string,
+    field: keyof PermState,
+    subMenuId?: string,
+  ): PermissionFlags | undefined {
+    if (isSuperadmin) {
+      return {
+        canView: true,
+        canAdd: true,
+        canEdit: true,
+        canDelete: true,
+      };
+    }
+    if (!actorCeiling) return undefined;
+    if (subMenuId) {
+      return actorCeiling[menuId]?.submenus[subMenuId];
+    }
+    return actorCeiling[menuId]?.menu;
+  }
+
+  function canToggle(
+    menuId: string,
+    field: keyof PermState,
+    subMenuId?: string,
+  ) {
+    if (!canEditSelectedRole) return false;
+    return canGrantPermission(getGrantablePerm(menuId, field, subMenuId), field);
+  }
 
   async function handleRefresh(options?: { silent?: boolean }) {
     setRefreshing(true);
@@ -154,6 +258,8 @@ export default function PermissionsConfigPage() {
   }
 
   function toggle(menuId: string, field: keyof PermState, subMenuId?: string) {
+    if (!canToggle(menuId, field, subMenuId)) return;
+
     setPermissions((prev) => {
       const copy = { ...prev };
       if (!copy[menuId]) return prev;
@@ -184,7 +290,14 @@ export default function PermissionsConfigPage() {
     if (!selectedRoleId) return;
     setSaving(true);
     try {
-      const payload = Object.entries(permissions).map(([menuId, perm]) => ({
+      const payloadSource = actorCeiling
+        ? filterPermissionStateToGrantableMenus(
+            clampPermissionState(permissions, actorCeiling),
+            actorCeiling,
+          )
+        : permissions;
+
+      const payload = Object.entries(payloadSource).map(([menuId, perm]) => ({
         menuId,
         ...perm.menu,
         submenus: Object.entries(perm.submenus).map(([subMenuId, sub]) => ({
@@ -211,7 +324,8 @@ export default function PermissionsConfigPage() {
     }
   }
 
-  const isLoading = loadingPerms || refreshing;
+  const isLoading =
+    loadingPerms || refreshing || (usesPermissionCeiling && loadingActorPerms);
 
   return (
     <ManagementPageShell title="Permissions">
@@ -231,7 +345,7 @@ export default function PermissionsConfigPage() {
             type="button"
             variant="outline"
             onClick={() => void handleRefresh()}
-            disabled={isLoading}
+            disabled={isLoading || !isSuperadmin}
             className="h-9"
             title="Refresh menus from database"
           >
@@ -250,9 +364,9 @@ export default function PermissionsConfigPage() {
                 className={cn(configCompactSelectClass, "w-44")}
                 value={selectedRoleId}
                 onChange={(e) => setSelectedRoleId(e.target.value)}
-                disabled={isLoading}
+                disabled={isLoading || !canManagePermissions}
               >
-                {activeRoles.map((role) => (
+                {manageableRoles.map((role) => (
                   <option key={role.id} value={role.id}>
                     {role.name}
                   </option>
@@ -261,7 +375,7 @@ export default function PermissionsConfigPage() {
             </div>
             <Button
               onClick={handleSave}
-              disabled={saving || isLoading || !selectedRoleId}
+              disabled={saving || isLoading || !selectedRoleId || !canEditSelectedRole}
               className="h-9"
             >
               {saving ? (
@@ -276,6 +390,18 @@ export default function PermissionsConfigPage() {
             </Button>
           </div>
         </div>
+        {!canManagePermissions && (
+          <div className="border-b border-zinc-100 bg-amber-50 px-6 py-2 text-xs text-amber-700">
+            You do not have permission to update role permissions.
+          </div>
+        )}
+        {(isBranchAdmin || isBranchManager) && (
+          <div className="border-b border-zinc-100 bg-sky-50 px-6 py-2 text-xs text-sky-700">
+            {isBranchAdmin
+              ? "Branch admin can manage admin, employee, and manager roles only, and only sees menus you have permission for."
+              : "You only see menus you have permission for."}
+          </div>
+        )}
 
         <div className={dashboardTableWrapClass}>
           {isLoading ? (
@@ -296,7 +422,7 @@ export default function PermissionsConfigPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {allMenus.length === 0 ? (
+                {visibleMenus.length === 0 ? (
                   <TableRow>
                     <TableCell
                       colSpan={5}
@@ -304,15 +430,19 @@ export default function PermissionsConfigPage() {
                     >
                       {matrixRes?.success === false
                         ? "Could not load menus — check backend connection and click Refresh"
-                        : "No menus in database — click Refresh to sync sidebar menus"}
+                        : actorCeiling
+                          ? "No menus available for your permission level"
+                          : "No menus in database — click Refresh to sync sidebar menus"}
                     </TableCell>
                   </TableRow>
                 ) : (
-                  allMenus.map((menu) => {
+                  visibleMenus.map((menu) => {
                     const perm = permissions[menu.id];
                     const items = menu.items || menu.subMenus || [];
+                    const showParent = shouldShowParentMenuRow(menu.id, actorCeiling);
                     return (
                       <Fragment key={menu.id}>
+                        {showParent ? (
                         <TableRow className={dashboardTableBodyRowClass}>
                           <TableCell className={dashboardTableCellClass}>
                             <span className={dashboardTextPrimary}>{menu.title}</span>
@@ -326,11 +456,13 @@ export default function PermissionsConfigPage() {
                                 type="checkbox"
                                 className="size-4 rounded border-zinc-300 accent-primary"
                                 checked={perm?.menu[col.key] ?? false}
+                                disabled={!canToggle(menu.id, col.key)}
                                 onChange={() => toggle(menu.id, col.key)}
                               />
                             </TableCell>
                           ))}
                         </TableRow>
+                        ) : null}
                         {items.map((sub) => (
                           <TableRow key={sub.id} className={dashboardTableBodyRowClass}>
                             <TableCell className={dashboardTableCellClass}>
@@ -344,6 +476,7 @@ export default function PermissionsConfigPage() {
                                   type="checkbox"
                                   className="size-4 rounded border-zinc-300 accent-primary"
                                   checked={perm?.submenus[sub.id]?.[col.key] ?? false}
+                                  disabled={!canToggle(menu.id, col.key, sub.id)}
                                   onChange={() => toggle(menu.id, col.key, sub.id)}
                                 />
                               </TableCell>

@@ -1,5 +1,5 @@
 {
-  "watch": ["src", "prisma/schema.prisma"],
-  "ext": "js,prisma",
-  "exec": "npx prisma generate && node src/index.js"
+  "watch": ["src", "lib/generated/prisma/index.js"],
+  "ext": "js",
+  "exec": "node src/index.js"
 }

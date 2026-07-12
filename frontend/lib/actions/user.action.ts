@@ -109,7 +109,12 @@ export async function saveUserFiles({
   files,
 }: {
   userId: string;
-  files: Array<{ name: string; fileSize: number; data: string }>;
+  files: Array<{
+    name: string;
+    fileSize: number;
+    data: string;
+    documentType?: string;
+  }>;
 }): Promise<ActionResponse> {
   try {
     const response = await api.post(`/api/users/${userId}/files`, { files });

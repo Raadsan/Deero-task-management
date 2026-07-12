@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import {
   SidebarMenuButton,
   SidebarMenuItem,
@@ -13,12 +12,14 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "../ui/sidebar";
+import { useSidebarAccordion } from "./SidebarAccordionContext";
 
 type SubItem = { id: string; name: string; href: string };
 
-function isNavActive(pathname: string, href: string) {
-  if (href === "/") return pathname === "/";
-  return pathname === href || pathname.startsWith(`${href}/`);
+function isSubNavActive(pathname: string, href: string) {
+  if (pathname === href) return true;
+  if (href === "/") return false;
+  return pathname.startsWith(`${href}/`);
 }
 
 type Props = {
@@ -39,12 +40,8 @@ export default function SidebarCollapsibleNavItem({
   currentRole,
 }: Props) {
   const pathname = usePathname();
-  const childActive = items.some((sub) => isNavActive(pathname, sub.href));
-  const [open, setOpen] = useState(childActive);
-
-  useEffect(() => {
-    if (childActive) setOpen(true);
-  }, [childActive, pathname]);
+  const { isOpen, toggle } = useSidebarAccordion();
+  const open = isOpen(id);
 
   const canManageSee = role?.includes(UserRole.superadmin);
   const canAdminSee = role?.includes(UserRole.admin);
@@ -63,11 +60,11 @@ export default function SidebarCollapsibleNavItem({
       <div className="flex w-full flex-col">
         <SidebarMenuButton
           type="button"
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => toggle(id)}
           tooltip={name}
           className={cn(
             "h-11 w-full rounded-xl px-4 text-[15px] font-medium transition-all",
-            childActive || open
+            open
               ? "!bg-white/15 !text-white"
               : "!text-white/90 hover:!bg-white/10 hover:!text-white",
             "group-data-[collapsible=icon]:!mx-auto group-data-[collapsible=icon]:!flex group-data-[collapsible=icon]:!h-10 group-data-[collapsible=icon]:!w-10 group-data-[collapsible=icon]:!items-center group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-0",
@@ -87,7 +84,7 @@ export default function SidebarCollapsibleNavItem({
         {open && (
           <SidebarMenuSub className="mt-1 ml-6 gap-1 border-white/20 pl-2">
             {items.map((sub) => {
-              const subActive = isNavActive(pathname, sub.href);
+              const subActive = isSubNavActive(pathname, sub.href);
               return (
                 <SidebarMenuSubItem key={sub.id}>
                   <SidebarMenuSubButton

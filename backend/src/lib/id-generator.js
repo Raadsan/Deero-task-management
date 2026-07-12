@@ -22,6 +22,18 @@ export function getPrefix(data) {
       return "DBR";
     case "departments":
       return "DDP";
+    case "projects":
+      return "DPR";
+    case "content_requests":
+      return "DCR";
+    case "recurring_schedules":
+      return "DRS";
+    case "content_cycles":
+      return "DCY";
+    case "workflow_templates":
+      return "DWF";
+    case "contracts":
+      return "DCT";
   }
 }
 

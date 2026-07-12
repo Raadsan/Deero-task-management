@@ -7,14 +7,32 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 
+/** Sibling routes under the same prefix — only exact path is active */
+const SIDEBAR_EXACT_PATHS = new Set([
+  "/my-tasks",
+  "/my-tasks/board",
+  "/my-tasks/today",
+]);
+
+function normalizePath(path: string) {
+  if (!path || path === "/") return "/";
+  return path.replace(/\/$/, "") || "/";
+}
+
 function isNavActive(pathname: string, href: string) {
-  if (href === "/") {
-    return pathname === "/";
+  const path = normalizePath(pathname);
+  const link = normalizePath(href);
+
+  if (link === "/") {
+    return path === "/";
   }
-  if (pathname === href) {
+  if (SIDEBAR_EXACT_PATHS.has(link)) {
+    return path === link;
+  }
+  if (path === link) {
     return true;
   }
-  return pathname.startsWith(`${href}/`);
+  return path.startsWith(`${link}/`);
 }
 
 export default function SideBarItem({
@@ -61,6 +79,10 @@ export default function SideBarItem({
       </SidebarMenuButton>
     </SidebarMenuItem>
   );
+
+  if (!role?.length) {
+    return item;
+  }
 
   if (canManageSee && currentRole === "superadmin") {
     return item;

@@ -47,6 +47,8 @@ interface Task {
   deadline: string | Date;
   supervisor: string;
   isAssignedToCurrentUser?: boolean;
+  isPersonal?: boolean;
+  createdAt?: string | Date;
   progress: number;
   serviceInformation?: string;
 }
@@ -104,6 +106,11 @@ interface Client {
   updatedAt: string | null;
   createdAt: string | null;
   source?: string;
+  clientType?: string;
+  companyName?: string | null;
+  contactPerson?: string | null;
+  isActive?: boolean;
+  isDraft?: boolean;
 }
 interface AllClients extends Omit<Client, "subServices" | "service"> {
   serviceAgreements?: Array<{
@@ -178,6 +185,7 @@ type TableType =
   | "users"
   | "tasks"
   | "clients"
+  | "contracts"
   | "my-tasks"
   | "incomes"
   | "expenses";
@@ -404,6 +412,8 @@ interface TaskNotification {
   assigneeName: string;
   deadline: string;
   type: TaskNotificationType;
+  createdAt?: string;
+  isSeen?: number | boolean;
 }
 
 interface EmailVerification {

@@ -6,7 +6,6 @@ import { btnCreatePage } from "@/lib/dashboard-ui";
 import { AllClients } from "@/lib/types";
 import Link from "next/link";
 import useSWR from "swr";
-import { GeneralTableSkeletonLoader } from "../Shared/Loader";
 import TableRenderer from "../Shared/TableRenderer";
 import { Button } from "../ui/button";
 import { clientsColumns } from "../ui/columns";
@@ -16,8 +15,6 @@ export default function ClientsTable() {
     SWR_CACH_KEYS.clients.key,
     getAllClients,
   );
-
-  if (isLoading) return <GeneralTableSkeletonLoader />;
 
   return (
     <TableRenderer
@@ -29,7 +26,7 @@ export default function ClientsTable() {
       }
       tableType="clients"
       columns={clientsColumns}
-      data={(clients?.data as AllClients[]) ?? []}
+      data={isLoading ? [] : ((clients?.data as AllClients[]) ?? [])}
     />
   );
 }

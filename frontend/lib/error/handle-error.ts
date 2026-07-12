@@ -63,6 +63,9 @@ function sanitizeApiMessage(message?: string) {
   }
 
   if (message.includes("Invalid `prisma.") || message.includes("prisma.")) {
+    if (message.includes("isPersonal")) {
+      return "Server needs a restart after the latest update. Please restart the backend and try again.";
+    }
     return "Something went wrong while saving. Please try again.";
   }
 

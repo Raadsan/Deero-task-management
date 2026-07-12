@@ -7,11 +7,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { GetAssigneesAndInstitutions } from "@/lib/actions/shared.action";
 import { getTaskById } from "@/lib/actions/task.action";
-import { Task, Client } from "@/lib/types";
-import useSWR from "swr";
 import TaskForm from "./TaskForm";
+import useSWR from "swr";
 
 interface Props {
   open: boolean;
@@ -24,20 +22,14 @@ interface Props {
 async function loadTaskFormData(
   mode: "create" | "edit",
   taskId?: string,
-  ownAssigned = false,
 ) {
-  const shared = await GetAssigneesAndInstitutions({ ownAssigned });
-  let currentTask: Task | undefined;
-
-  if (mode === "edit" && taskId) {
-    const taskResult = await getTaskById(taskId);
-    currentTask = taskResult.data;
+  if (mode === "create") {
+    return { currentTask: undefined };
   }
 
+  const taskResult = await getTaskById(taskId!);
   return {
-    institutions: shared.data?.institutions,
-    assignees: shared.data?.assignees,
-    currentTask,
+    currentTask: taskResult.data,
   };
 }
 
@@ -50,7 +42,7 @@ export default function TaskFormModal({
 }: Props) {
   const { data, isLoading } = useSWR(
     open ? ["task-form-modal", mode, taskId ?? "new", variant] : null,
-    () => loadTaskFormData(mode, taskId, variant === "own"),
+    () => loadTaskFormData(mode, taskId),
   );
 
   const formType =
@@ -86,9 +78,6 @@ export default function TaskFormModal({
           ) : (
             <TaskForm
               formType={formType}
-              institutions={
-                data?.institutions as Pick<Client, "id" | "institution">[] | undefined
-              }
               currentTask={data?.currentTask}
               onSuccess={() => onOpenChange(false)}
               onCancel={() => onOpenChange(false)}

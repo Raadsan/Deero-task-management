@@ -17,7 +17,6 @@ import { UserRole } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 import { ChevronDown, LogOut, Settings, User as UserIcon } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import toast from "react-hot-toast";
 
@@ -27,24 +26,19 @@ interface Props {
 
 export default function HeaderUserMenu({ className }: Props) {
   const [transition, startTransition] = useTransition();
-  const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
-  function handleSignOut() {
+  async function handleSignOut() {
+    if (transition) return;
     startTransition(async () => {
-      await clearLoginBranchCookie();
-      await authClient.signOut({
-        fetchOptions: {
-          onError(context) {
-            toast.error(context.error.message);
-          },
-          onSuccess() {
-            toast.success("Successfully logged out");
-            router.push(ROUTES.login);
-          },
-        },
-      });
+      try {
+        await Promise.all([authClient.signOut(), clearLoginBranchCookie()]);
+      } catch {
+        toast.error("Logout failed. Please try again.");
+        return;
+      }
+      window.location.assign(ROUTES.login);
     });
   }
 

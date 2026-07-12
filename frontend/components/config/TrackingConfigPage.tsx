@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AuditLogRecord, getAuditLogs } from "@/lib/actions/config.action";
+import { authClient } from "@/lib/auth-client";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {
   actionBtnView,
@@ -46,7 +47,12 @@ import {
 } from "./config-dialog-styles";
 
 export default function TrackingConfigPage() {
-  const { data, isLoading } = useSWR(SWR_CACH_KEYS.tracking.key, getAuditLogs);
+  const session = authClient.useSession();
+  const scopeKey = `${session.data?.user.role ?? ""}:${session.data?.user.branchId ?? "all"}`;
+  const { data, isLoading } = useSWR(
+    [SWR_CACH_KEYS.tracking.key, scopeKey],
+    getAuditLogs,
+  );
   const logs = (data?.data as AuditLogRecord[]) ?? [];
 
   const [search, setSearch] = useState("");

@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { getTaskFormBranchOptions } from "@/lib/actions/shared.action";
 import { formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
 import { btnFormSubmit } from "@/lib/dashboard-ui";
 import { Task } from "@/lib/types";
@@ -15,10 +16,12 @@ import {
   AlertCircle,
   Building2,
   Calendar,
+  GitBranch,
   Tag,
   User,
   Users,
 } from "lucide-react";
+import useSWR from "swr";
 
 interface Props {
   open: boolean;
@@ -39,7 +42,17 @@ const PRIORITY_COLORS: Record<string, { bg: string; text: string }> = {
 };
 
 export default function TaskViewModal({ open, onOpenChange, task }: Props) {
+  const { data: branchOptionsRes } = useSWR(
+    open && task ? "task-view-branches" : null,
+    getTaskFormBranchOptions,
+  );
+
   if (!task) return null;
+  const assignedBranchName =
+    branchOptionsRes?.data?.branches?.find(
+      (branch: { id: string; name: string }) =>
+        String(branch.id) === String(task.assignedTo?.branchId ?? ""),
+    )?.name ?? "";
 
   const displayStatus = resolveTaskDisplayStatus(task);
   const statusColor =
@@ -60,7 +73,18 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
         </DialogHeader>
 
         <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-5">
-          <div className="text-xs font-mono text-zinc-400">ID: {task.id}</div>
+          <div className="flex items-center justify-between">
+            <div className="text-xs font-mono text-zinc-400">ID: {task.id}</div>
+            <div className="text-xs font-medium text-zinc-500">
+              Assigned Branch:{" "}
+              <span className="font-semibold text-zinc-700">
+                {assignedBranchName ||
+                  (task.assignedTo?.branchId
+                    ? `Branch ${task.assignedTo.branchId}`
+                    : "—")}
+              </span>
+            </div>
+          </div>
 
           <div className="rounded-lg border border-zinc-100 bg-zinc-50 p-4">
             <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-zinc-400">
@@ -105,9 +129,22 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
               value={task.department}
             />
             <InfoItem
+              icon={GitBranch}
+              label="Assignee Branch"
+              value={
+                assignedBranchName ||
+                (task.assignedTo?.branchId
+                  ? `Branch ${task.assignedTo.branchId}`
+                  : "—")
+              }
+            />
+            <InfoItem
               icon={Calendar}
               label="Deadline"
-              value={formatTaskDeadline(task.deadline)}
+              value={formatTaskDeadline(task.deadline, {
+                status: task.status,
+                progress: task.progress,
+              })}
             />
           </div>
 

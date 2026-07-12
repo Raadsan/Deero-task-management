@@ -4,7 +4,6 @@ import { authClient } from "@/lib/auth-client";
 import { clearLoginBranchCookie } from "@/lib/actions/branch.action";
 import { ROUTES } from "@/lib/constants";
 import { LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import toast from "react-hot-toast";
 import {
@@ -15,22 +14,17 @@ import {
 
 export default function SettingAndLogoutMenu() {
   const [transition, startTransition] = useTransition();
-  const router = useRouter();
 
-  function handleSignOut() {
+  async function handleSignOut() {
+    if (transition) return;
     startTransition(async () => {
-      await clearLoginBranchCookie();
-      await authClient.signOut({
-        fetchOptions: {
-          onError(context) {
-            toast.error(context.error.message);
-          },
-          onSuccess() {
-            toast.success("Successfully logged out");
-            router.push(ROUTES.login);
-          },
-        },
-      });
+      try {
+        await Promise.all([authClient.signOut(), clearLoginBranchCookie()]);
+      } catch {
+        toast.error("Logout failed. Please try again.");
+        return;
+      }
+      window.location.assign(ROUTES.login);
     });
   }
 

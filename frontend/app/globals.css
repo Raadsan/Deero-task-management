@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --branch-primary: #651210;
-  --branch-secondary: #ec4724;
+  --branch-primary: #5f3a16;
+  --branch-secondary: #c3986b;
 }
 
 @theme {
@@ -153,11 +153,12 @@ body {
 
 @utility auth-input {
   width: 100%;
-  border-radius: 0.75rem;
+  min-height: 3.5rem;
+  border-radius: 0.375rem;
   border: 1px solid hsl(0deg 0% 0% / 0.08);
   background-color: hsl(0deg 0% 98%);
   padding: 0.875rem 1rem 0.875rem 2.75rem;
-  font-size: 0.875rem;
+  font-size: 0.9375rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
   &:focus {

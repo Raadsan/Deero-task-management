@@ -4,7 +4,7 @@ export const getNotifications = async (req, res) => {
   const { userId } = req.query; 
   try {
     const notifications = await prisma.$queryRawUnsafe(
-      `SELECT * FROM notifications WHERE userId = ? AND isSeen = 0 ORDER BY createdAt DESC`,
+      `SELECT * FROM notifications WHERE userId = ? ORDER BY createdAt DESC`,
       userId
     );
     res.json({ success: true, data: notifications });

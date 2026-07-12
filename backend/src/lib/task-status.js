@@ -1,11 +1,13 @@
 const ACTIVE_STATUSES = ["pending", "overdue"];
 
 export function isTaskPastDeadline(deadline) {
+  if (!deadline) return false;
   return new Date(deadline).getTime() < Date.now();
 }
 
 export function resolveTaskStatus(task) {
   if (task.status === "completed") return "completed";
+  if (!task.deadline) return task.status || "pending";
   if (isTaskPastDeadline(task.deadline)) return "overdue";
   if (task.status === "overdue") return "pending";
   return task.status || "pending";
@@ -17,7 +19,7 @@ export async function syncOverdueTasks(prisma) {
   await prisma.task.updateMany({
     where: {
       status: { in: ACTIVE_STATUSES },
-      deadline: { lt: now },
+      deadline: { not: null, lt: now },
     },
     data: { status: "overdue" },
   });
@@ -25,7 +27,7 @@ export async function syncOverdueTasks(prisma) {
   await prisma.task.updateMany({
     where: {
       status: "overdue",
-      deadline: { gte: now },
+      deadline: { not: null, gte: now },
     },
     data: { status: "pending" },
   });

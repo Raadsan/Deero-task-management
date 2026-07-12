@@ -1,5 +1,6 @@
 import AppSidebarWrapper from "@/components/Shared/AppSidebarWrapper";
 import BranchThemeWrapper from "@/components/branding/BranchThemeWrapper";
+import DashboardAccessGuard from "@/components/dashboard/DashboardAccessGuard";
 import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
 import { SidebarSkeletonLoader } from "@/components/Shared/Loader";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -17,7 +18,8 @@ export default async function DashboardShell({
   return (
     <BranchThemeWrapper branding={branding}>
       <PermissionProvider initialRoleId={roleId} initialRole={role}>
-        <SidebarProvider
+        <DashboardAccessGuard session={session}>
+          <SidebarProvider
           style={
             {
               "--sidebar-width": "16rem",
@@ -38,6 +40,7 @@ export default async function DashboardShell({
             </SidebarInset>
           </div>
         </SidebarProvider>
+        </DashboardAccessGuard>
       </PermissionProvider>
     </BranchThemeWrapper>
   );

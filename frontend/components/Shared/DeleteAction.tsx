@@ -1,5 +1,6 @@
 "use client";
 import { deleteClientById } from "@/lib/actions/client.action";
+import { deleteContractById } from "@/lib/actions/contract.action";
 import { deleteTransaction } from "@/lib/actions/payment.action";
 import { deleteTask } from "@/lib/actions/task.action";
 import { deleteUserById } from "@/lib/actions/user.action";
@@ -89,6 +90,25 @@ export default function DeleteAction({
       toggleDialog(false);
     }
 
+    else if (typeOfDataToDelete === "contracts" && idToDelete) {
+      setIsDeleting({ state: "inprogres" });
+      toggleDialog(true);
+
+      const result = await deleteContractById(idToDelete);
+      setIsDeleting({ state: "done" });
+      setIsDeleting({ state: "yet" });
+
+      if (result.success) {
+        toast.success("Successfully deleted the contract");
+        mutate(SWR_CACH_KEYS.contracts.key);
+      } else {
+        toast.error(
+          String(result.error ?? result.errors?.message ?? "Failed to delete contract"),
+        );
+      }
+      toggleDialog(false);
+    }
+
     // delete task
     else if (typeOfDataToDelete === "tasks" && idToDelete) {
       if (user?.role === "user") {
@@ -105,6 +125,7 @@ export default function DeleteAction({
         toast.success("Successfully Deleted The Task");
         mutate(SWR_CACH_KEYS.tasks.key);
         mutate(SWR_CACH_KEYS.myTasks.key);
+        mutate(SWR_CACH_KEYS.myTasksBoard.key);
       } else {
         toast.error(
           result.errors?.message ||

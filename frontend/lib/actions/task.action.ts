@@ -26,8 +26,15 @@ export async function createTask(task: any): Promise<ActionResponse> {
   try {
     const response = await api.post("/api/tasks", task);
     if (response.data.success) {
-      revalidatePath(ROUTES.tasks);
-      return { success: true };
+      if (task?.isPersonal) {
+        revalidatePath(ROUTES["my-tasks-board"]);
+      } else {
+        revalidatePath(ROUTES.tasks);
+        revalidatePath(ROUTES["my-tasks"]);
+        revalidatePath(ROUTES["my-tasks-board"]);
+        revalidatePath(ROUTES["my-tasks-today"]);
+      }
+      return { success: true, data: response.data.data };
     }
     return { success: false, errors: { message: response.data.error } };
   } catch (error) {
@@ -64,6 +71,9 @@ export async function editTask(params: any): Promise<ActionResponse> {
     const response = await api.put(`/api/tasks/${taskId}`, data);
     if (response.data.success) {
       revalidatePath(ROUTES.tasks);
+      revalidatePath(ROUTES["my-tasks"]);
+      revalidatePath(ROUTES["my-tasks-board"]);
+      revalidatePath(ROUTES["my-tasks-today"]);
       return { success: true };
     }
     return { success: false, errors: { message: response.data.error } };
@@ -79,6 +89,7 @@ export async function getAllTasks(): Promise<ActionResponse<Task[]>> {
       const tasks = response.data.data.map((task: any) => ({
         ...task,
         assignedTo: mapAssignedTo(task.user),
+        isPersonal: Boolean(task.isPersonal),
         institutions: task.clientTask.map((ct: any) => ({
           ...ct.Client,
           services: ct.Client?.clientSubService?.map((css: any) => css.subService?.name).filter(Boolean) || [],
@@ -107,23 +118,18 @@ export async function deleteTask(taskId: string): Promise<ActionResponse> {
 
 export async function getAssginedTasks(): Promise<ActionResponse<Task[]>> {
   try {
-    const session = await getUserSession();
-    if (!session.data) return { success: false, errors: { message: "Unauthorized" } };
-    
-    const response = await api.get("/api/tasks");
+    const response = await api.get("/api/tasks/assigned/me?scope=personal");
     if (response.data.success) {
-      const currentUserId = session.data.user.id;
-      const tasks = response.data.data
-        .filter((t: any) => t.assgineeId === currentUserId || t.supervisorId === currentUserId)
-        .map((task: any) => ({
-          ...task,
-          assignedTo: mapAssignedTo(task.user),
-          isAssignedToCurrentUser: task.assgineeId === currentUserId,
-          institutions: task.clientTask.map((ct: any) => ({
-            ...ct.Client,
-            services: ct.Client?.clientSubService?.map((css: any) => css.subService?.name).filter(Boolean) || [],
-          })),
-        }));
+      const tasks = response.data.data.map((task: any) => ({
+        ...task,
+        assignedTo: mapAssignedTo(task.user),
+        isAssignedToCurrentUser: true,
+        isPersonal: Boolean(task.isPersonal),
+        institutions: task.clientTask.map((ct: any) => ({
+          ...ct.Client,
+          services: [],
+        })),
+      }));
       return { success: true, data: tasks as unknown as Task[] };
     }
     return { success: false, errors: { message: "Failed to fetch assigned tasks" } };

@@ -5,6 +5,7 @@ import {
   normalizeBranchSlug,
   saveBranchLogo,
 } from "../lib/branch-logo.js";
+import { branchListWhere, canManageBranches, clearMainBranchCache, denyIfOutOfScope, getScope } from "../lib/branch-scope.js";
 
 const publicBranchSelect = {
   id: true,
@@ -14,7 +15,6 @@ const publicBranchSelect = {
   iconLogoUrl: true,
   primaryColor: true,
   secondaryColor: true,
-  isMain: true,
   usesRootLogin: true,
 };
 
@@ -48,16 +48,6 @@ async function resolveBranchSlug({ name, slug, excludeId }) {
     throw new Error(`"${base}" is a reserved URL path`);
   }
   return ensureUniqueSlug(base, excludeId);
-}
-
-async function clearOtherMainBranches(excludeId) {
-  await prisma.branch.updateMany({
-    where: {
-      isMain: true,
-      ...(excludeId ? { NOT: { id: excludeId } } : {}),
-    },
-    data: { isMain: false },
-  });
 }
 
 function isRootLoginPath(value) {
@@ -101,8 +91,10 @@ async function assignRootLogin(updateData, excludeId) {
 
 export const getAllBranches = async (req, res) => {
   try {
+    const scope = getScope(req);
     const branches = await prisma.branch.findMany({
-      orderBy: [{ isMain: "desc" }, { createdAt: "desc" }],
+      where: branchListWhere(scope),
+      orderBy: [{ usesRootLogin: "desc" }, { createdAt: "desc" }],
       include: {
         _count: { select: { users: true } },
       },
@@ -117,8 +109,9 @@ export const getAllBranches = async (req, res) => {
 export const getBranchById = async (req, res) => {
   const { id } = req.params;
   try {
-    const branch = await prisma.branch.findUnique({
-      where: { id },
+    const scope = getScope(req);
+    const branch = await prisma.branch.findFirst({
+      where: { id, ...branchListWhere(scope) },
       include: {
         users: {
           select: {
@@ -143,7 +136,7 @@ export const getBranchById = async (req, res) => {
 
 function branchLoginPath(branch) {
   if (!branch) return null;
-  if (branch.usesRootLogin || branch.isMain) return "/";
+  if (branch.usesRootLogin) return "/";
   return branch.slug ? `/${branch.slug}` : null;
 }
 
@@ -167,7 +160,6 @@ export const validateBranchLogin = async (req, res) => {
       id: true,
       slug: true,
       usesRootLogin: true,
-      isMain: true,
       isActive: true,
     },
   });
@@ -199,7 +191,6 @@ export const getBranchLoginPath = async (req, res) => {
         id: true,
         slug: true,
         usesRootLogin: true,
-        isMain: true,
         isActive: true,
       },
     });
@@ -219,7 +210,7 @@ export const getPublicBranchBySlug = async (req, res) => {
   const { slug } = req.params;
   try {
     const branch = await prisma.branch.findFirst({
-      where: { slug, isActive: true, isMain: false },
+      where: { slug, isActive: true, usesRootLogin: false },
       select: publicBranchSelect,
     });
     if (!branch) {
@@ -231,14 +222,13 @@ export const getPublicBranchBySlug = async (req, res) => {
   }
 };
 
-export const getMainBranchBranding = async (req, res) => {
+export const getRootLoginBranchBranding = async (req, res) => {
   try {
     const branch = await prisma.branch.findFirst({
       where: {
         isActive: true,
-        OR: [{ usesRootLogin: true }, { isMain: true }],
+        usesRootLogin: true,
       },
-      orderBy: [{ usesRootLogin: "desc" }, { isMain: "desc" }],
       select: publicBranchSelect,
     });
     if (!branch) {
@@ -249,6 +239,9 @@ export const getMainBranchBranding = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+/** @deprecated Use getRootLoginBranchBranding */
+export const getMainBranchBranding = getRootLoginBranchBranding;
 
 export const getBranchBrandingById = async (req, res) => {
   const { id } = req.params;
@@ -267,6 +260,14 @@ export const getBranchBrandingById = async (req, res) => {
 };
 
 export const createBranch = async (req, res) => {
+  const scope = getScope(req);
+  if (!canManageBranches(scope)) {
+    return res.status(403).json({
+      success: false,
+      error: "Forbidden: branch management is restricted",
+    });
+  }
+
   const {
     name,
     slug,
@@ -278,7 +279,6 @@ export const createBranch = async (req, res) => {
     primaryColor,
     secondaryColor,
     isActive,
-    isMain,
     useRootLogin,
   } = req.body;
 
@@ -289,8 +289,7 @@ export const createBranch = async (req, res) => {
     }
 
     const id = await generateCustomId({ entityTybe: "branches" });
-    const mainBranch = !!isMain;
-    const wantsRootLogin = mainBranch || !!useRootLogin || isRootLoginPath(slug);
+    const wantsRootLogin = !!useRootLogin || isRootLoginPath(slug);
 
     let branchSlug = null;
     let usesRootLogin = false;
@@ -308,10 +307,6 @@ export const createBranch = async (req, res) => {
     if (logoData) logoUrl = await saveBranchLogo(id, logoData, "logo");
     if (iconLogoData) iconLogoUrl = await saveBranchLogo(id, iconLogoData, "icon");
 
-    if (mainBranch) {
-      await clearOtherMainBranches();
-    }
-
     const branch = await prisma.branch.create({
       data: {
         id,
@@ -322,7 +317,6 @@ export const createBranch = async (req, res) => {
         phone: phone || null,
         logoUrl,
         iconLogoUrl,
-        isMain: mainBranch,
         usesRootLogin,
         primaryColor: primaryColor || "#651210",
         secondaryColor: secondaryColor || "#ec4724",
@@ -330,6 +324,7 @@ export const createBranch = async (req, res) => {
       },
     });
 
+    clearMainBranchCache();
     res.status(201).json({ success: true, data: branch });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -338,6 +333,14 @@ export const createBranch = async (req, res) => {
 
 export const updateBranch = async (req, res) => {
   const { id } = req.params;
+  const scope = getScope(req);
+  if (!canManageBranches(scope)) {
+    return res.status(403).json({
+      success: false,
+      error: "Forbidden: branch management is restricted",
+    });
+  }
+
   const {
     name,
     slug,
@@ -349,7 +352,6 @@ export const updateBranch = async (req, res) => {
     primaryColor,
     secondaryColor,
     isActive,
-    isMain,
     clearSlug,
     useRootLogin,
   } = req.body;
@@ -365,8 +367,6 @@ export const updateBranch = async (req, res) => {
       return res.status(400).json({ success: false, error: "Branch name is required" });
     }
 
-    const mainBranch =
-      isMain !== undefined ? !!isMain : existing.isMain;
     const updateData = {
       name: trimmedName,
       description: description ?? null,
@@ -377,18 +377,12 @@ export const updateBranch = async (req, res) => {
       isActive,
     };
 
-    if (isMain !== undefined) {
-      updateData.isMain = mainBranch;
-    }
+    const wantsRootLogin = !!useRootLogin || isRootLoginPath(slug);
 
-    const wantsRootLogin =
-      mainBranch || !!useRootLogin || isRootLoginPath(slug);
-
-    if (mainBranch) {
-      await clearOtherMainBranches(id);
+    if (wantsRootLogin) {
       await assignRootLogin(updateData, id);
-    } else if (wantsRootLogin) {
-      await assignRootLogin(updateData, id);
+    } else if (useRootLogin === false && existing.usesRootLogin) {
+      updateData.usesRootLogin = false;
     } else if (clearSlug || slug === "" || slug === null) {
       if (existing.slug && !existing.slugClearedOnce) {
         updateData.slug = null;
@@ -430,6 +424,7 @@ export const updateBranch = async (req, res) => {
       data: updateData,
     });
 
+    clearMainBranchCache();
     res.json({ success: true, data: branch });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -439,11 +434,19 @@ export const updateBranch = async (req, res) => {
 export const deleteBranch = async (req, res) => {
   const { id } = req.params;
   try {
+    const scope = getScope(req);
+    if (!canManageBranches(scope)) {
+      return res.status(403).json({
+        success: false,
+        error: "Forbidden: branch management is restricted",
+      });
+    }
+
     const branch = await prisma.branch.findUnique({ where: { id } });
-    if (branch?.isMain) {
+    if (branch?.usesRootLogin) {
       return res.status(400).json({
         success: false,
-        error: "Cannot delete the main branch",
+        error: "Cannot delete the root login branch",
       });
     }
     await prisma.branch.delete({ where: { id } });

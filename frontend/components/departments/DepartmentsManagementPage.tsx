@@ -29,7 +29,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAllBranches } from "@/lib/actions/branch.action";
+import { getTaskFormBranchOptions } from "@/lib/actions/shared.action";
 import {
   createDepartment,
   deleteDepartment,
@@ -91,11 +91,15 @@ export default function DepartmentsManagementPage() {
     SWR_CACH_KEYS.departments.key,
     getAllDepartments,
   );
-  const { data: branchesRes } = useSWR(SWR_CACH_KEYS.branches.key, getAllBranches);
+  const { data: branchScopeRes } = useSWR(
+    "departments-branch-scope",
+    getTaskFormBranchOptions,
+  );
   const { mutate } = useSWRConfig();
 
   const departments = (departmentsRes?.data as DepartmentRecord[]) ?? [];
-  const branches = branchesRes?.data ?? [];
+  const branches = branchScopeRes?.data?.branches ?? [];
+  const singleBranch = branchScopeRes?.data?.singleBranch ?? false;
 
   const [search, setSearch] = useState("");
   const [branchFilter, setBranchFilter] = useState("all");
@@ -147,8 +151,19 @@ export default function DepartmentsManagementPage() {
     setCurrentPage(1);
   }, [search, branchFilter, statusFilter, pageSize]);
 
+  useEffect(() => {
+    if (!singleBranch) return;
+    const onlyBranchId =
+      branchScopeRes?.data?.defaultBranchId ?? branches[0]?.id ?? "all";
+    if (onlyBranchId && branchFilter !== onlyBranchId) {
+      setBranchFilter(onlyBranchId);
+    }
+  }, [singleBranch, branchScopeRes?.data?.defaultBranchId, branches, branchFilter]);
+
   function resetForm() {
-    setBranchId("");
+    const defaultBranchId =
+      branchScopeRes?.data?.defaultBranchId ?? branches[0]?.id ?? "";
+    setBranchId(singleBranch ? defaultBranchId : "");
     setName("");
     setDescription("");
     setStatus("active");
@@ -258,8 +273,9 @@ export default function DepartmentsManagementPage() {
             value={branchFilter}
             onChange={(e) => setBranchFilter(e.target.value)}
             className={cn("min-w-[140px]", compactSelectClass)}
+            disabled={singleBranch}
           >
-            <option value="all">All branches</option>
+            {!singleBranch && <option value="all">All branches</option>}
             {branches.map((branch) => (
               <option key={branch.id} value={branch.id}>
                 {branch.name}
@@ -465,6 +481,7 @@ export default function DepartmentsManagementPage() {
                 value={branchId}
                 onChange={(e) => setBranchId(e.target.value)}
                 className={configCompactSelectClass}
+                disabled={singleBranch}
               >
                 <option value="">Select branch</option>
                 {branches.map((branch) => (

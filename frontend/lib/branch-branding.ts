@@ -8,7 +8,6 @@ export type BranchBranding = {
   iconLogoUrl?: string | null;
   primaryColor: string;
   secondaryColor: string;
-  isMain?: boolean;
 };
 
 export const DEFAULT_BRANCH_BRANDING: BranchBranding = {
@@ -23,6 +22,10 @@ export const RESERVED_BRANCH_SLUGS = new Set([
   "auth",
   "users",
   "clients",
+  "contracts",
+  "payments",
+  "reports",
+  "recurring-schedules",
   "tasks",
   "services",
   "branches",
@@ -34,9 +37,9 @@ export const RESERVED_BRANCH_SLUGS = new Set([
   "api",
   "settings",
   "config",
+  "notifications",
   "b",
   "enterprise",
-  "main-login",
 ]);
 
 export function isReservedBranchSlug(slug: string) {
@@ -64,11 +67,10 @@ export function isRootLoginPath(value?: string | null) {
 }
 
 export function formatBranchLoginPath(branch: {
-  isMain?: boolean;
   usesRootLogin?: boolean;
   slug?: string | null;
 }) {
-  if (branch.usesRootLogin || branch.isMain) return "/";
+  if (branch.usesRootLogin) return "/";
   return branch.slug ? `/${branch.slug}` : "—";
 }
 

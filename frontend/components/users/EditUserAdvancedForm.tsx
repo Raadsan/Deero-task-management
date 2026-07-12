@@ -1,17 +1,22 @@
-import { listCurrentUserSessions } from "@/lib/actions/user.action";
+import { listCurrentUserSessions, updateUserData } from "@/lib/actions/user.action";
+import { getConfigRoles } from "@/lib/actions/config.action";
 import { authClient } from "@/lib/auth-client";
-import { User, UserRole } from "@/lib/schema";
+import { SWR_CACH_KEYS } from "@/lib/constants";
+import { User } from "@/lib/schema";
+import {
+  buildUserRoleOptions,
+  resolveConfigRoleId,
+} from "@/lib/role-options";
 import {
   computeFontSize,
   dateDifferenceInMilliSeconds,
   formatDate,
-  getRandomUUID,
 } from "@/lib/utils";
 import { AdvancedEditUserSchema } from "@/lib/validations";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import useSWR from "swr";
@@ -29,6 +34,16 @@ interface Props {
   data: User | undefined;
 }
 export default function EditUserAdvancedForm({ data }: Props) {
+  const { data: rolesRes, isLoading: rolesLoading } = useSWR(
+    SWR_CACH_KEYS.configRoles.key,
+    getConfigRoles,
+  );
+  const configRoles = rolesRes?.data ?? [];
+  const roleOptions = useMemo(
+    () => buildUserRoleOptions(configRoles, data?.role),
+    [configRoles, data?.role],
+  );
+
   const { data: userSessionsResult } = useSWR("userSessions", () =>
     listCurrentUserSessions({ userId: data?.id! }),
   );
@@ -44,13 +59,7 @@ export default function EditUserAdvancedForm({ data }: Props) {
     formState: { errors },
   } = useForm<z.infer<typeof AdvancedEditUserSchema>>({
     defaultValues: {
-      role: data?.role
-        ? data?.role == "admin"
-          ? "admin"
-          : data?.role === "superadmin"
-            ? "superadmin"
-            : "user"
-        : undefined,
+      role: data?.role ?? "",
       banExpires: dateDifferenceInMilliSeconds(data?.banExpires),
       banned: data?.banned ?? false,
       banReason: data?.banReason ?? "",
@@ -61,11 +70,7 @@ export default function EditUserAdvancedForm({ data }: Props) {
 
   const [isProcessing, setIsProcessing] = useState(false);
   const router = useRouter();
-  const activeUserRole = authClient.useSession().data?.user.role;
-  const roles =
-    activeUserRole === "admin"
-      ? ["admin", "user"]
-      : ["admin", "user", "manager"];
+  const roleValue = watch("role");
 
   async function handleFormSubmit(
     formData: z.infer<typeof AdvancedEditUserSchema>,
@@ -110,27 +115,21 @@ export default function EditUserAdvancedForm({ data }: Props) {
 
     // changing user's Role
     if (formData.role.toLowerCase() !== data?.role.toLowerCase()) {
-      await authClient.admin.setRole({
-        userId: data?.id!,
-        role: formData.role.toLowerCase() as UserRole,
-        fetchOptions: {
-          onRequest() {
-            setIsProcessing(true);
-          },
-          onResponse() {
-            setIsProcessing(false);
-          },
-          onSuccess() {
-            toast.success("Succesfully Changed User's Role ");
-            router.refresh();
-          },
-          onError(context) {
-            toast.error(
-              context.error.message || "failed Changing User's Password",
-            );
-          },
-        },
+      const roleId = resolveConfigRoleId(configRoles, formData.role);
+      const updateResult = await updateUserData({
+        id: data?.id!,
+        role: formData.role,
+        roleId,
       });
+
+      if (!updateResult.success) {
+        toast.error(
+          updateResult.errors?.message || "Failed to change user's role",
+        );
+      } else {
+        toast.success("Successfully changed user's role");
+        router.refresh();
+      }
     }
 
     // banning user.
@@ -214,7 +213,8 @@ export default function EditUserAdvancedForm({ data }: Props) {
         className="grid h-full max-h-fit w-full grid-cols-1 gap-[40px] md:grid-cols-2"
       >
         <TextInput
-          type="text"
+          type="password"
+          showEyeIcon
           disbaled={isProcessing}
           labelId="password"
           labelText=""
@@ -224,15 +224,21 @@ export default function EditUserAdvancedForm({ data }: Props) {
         />
 
         <SelectElement
-          key={getRandomUUID()}
-          defaultValue={getValues("role")}
+          disbaleSelect={isProcessing || rolesLoading || !roleOptions.length}
+          value={roleValue}
           errorMessage={errors.role?.message}
           onChange={(value) =>
-            setValue("role", value as UserRole, { shouldValidate: true })
+            setValue("role", value, { shouldValidate: true })
           }
-          elements={roles}
+          options={roleOptions}
           labelText={""}
-          placeholder={"Select Role"}
+          placeholder={
+            rolesLoading
+              ? "Loading roles..."
+              : roleOptions.length
+                ? "Select Role"
+                : "No roles configured"
+          }
         />
 
         <div className="col-span-2 h-fit w-full">

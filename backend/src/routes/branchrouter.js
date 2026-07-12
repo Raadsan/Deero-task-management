@@ -6,7 +6,7 @@ import {
   getBranchBrandingById,
   getBranchById,
   getBranchLoginPath,
-  getMainBranchBranding,
+  getRootLoginBranchBranding,
   getPublicBranchBySlug,
   updateBranch,
   validateBranchLogin,
@@ -15,7 +15,7 @@ import {
 const router = Router();
 
 router.get("/public/slug/:slug", getPublicBranchBySlug);
-router.get("/public/main", getMainBranchBranding);
+router.get("/public/root-login", getRootLoginBranchBranding);
 router.post("/validate-login", validateBranchLogin);
 router.get("/login-path/:branchId", getBranchLoginPath);
 router.get("/branding/:id", getBranchBrandingById);

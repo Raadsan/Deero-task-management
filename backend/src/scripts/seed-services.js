@@ -49,7 +49,7 @@ async function main() {
 
   const branches = await prisma.branch.findMany({
     where: { isActive: true },
-    orderBy: [{ isMain: "desc" }, { name: "asc" }],
+    orderBy: [{ usesRootLogin: "desc" }, { name: "asc" }],
   });
 
   if (branches.length === 0) {

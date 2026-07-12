@@ -1,9 +1,9 @@
 "use client";
 
-import DeleteAction from "@/components/Shared/DeleteAction";
 import ManagementPageShell from "@/components/Shared/ManagementPageShell";
-import UserFormModal from "@/components/users/UserFormModal";
-import UserViewModal from "@/components/users/UserViewModal";
+import UserSimpleViewModal, {
+  UserSimpleEditModal,
+} from "@/components/users/UserSimpleModals";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -14,16 +14,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getAllUsers } from "@/lib/actions/user.action";
-import { ROUTES, SWR_CACH_KEYS } from "@/lib/constants";
+import { SWR_CACH_KEYS } from "@/lib/constants";
 import {
-  actionBtnDelete,
   actionBtnEdit,
   actionBtnView,
-  btnCreatePage,
   dashboardCardClass,
   dashboardLabelClass,
   dashboardPaginationClass,
-  dashboardStatusBadgeClass,
   dashboardTableBodyRowClass,
   dashboardTableCellClass,
   dashboardTableHeadClass,
@@ -33,12 +30,10 @@ import {
   dashboardTableWrapClass,
   dashboardTextPrimary,
   dashboardTextSecondary,
-  getTaskStatusBadgeClass,
 } from "@/lib/dashboard-ui";
 import { User } from "@/lib/types";
-import { cn, formatTexts } from "@/lib/utils";
-import { Edit, Eye, Plus, Search, Trash2, Upload } from "lucide-react";
-import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { Edit, Eye, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 
@@ -48,11 +43,7 @@ const compactSelectClass =
 const compactInputClass =
   "h-9 w-full rounded-md border border-zinc-200 bg-zinc-50 pl-9 pr-3 text-sm text-zinc-600 outline-none focus:border-primary focus:ring-1 focus:ring-primary/10";
 
-type UserRow = User & {
-  banned?: boolean | string;
-  branch?: { id: string; name: string };
-  branchId?: string;
-};
+type UserRow = User & { id: string };
 
 export default function UsersManagementPage() {
   const { data: usersRes, isLoading } = useSWR(
@@ -65,27 +56,21 @@ export default function UsersManagementPage() {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [formOpen, setFormOpen] = useState(false);
-  const [formMode, setFormMode] = useState<"create" | "edit">("create");
-  const [editingUserId, setEditingUserId] = useState<string | undefined>();
   const [viewUserId, setViewUserId] = useState<string | undefined>();
   const [viewOpen, setViewOpen] = useState(false);
+  const [editUserId, setEditUserId] = useState<string | undefined>();
+  const [editOpen, setEditOpen] = useState(false);
 
   const filteredUsers = useMemo(() => {
     const query = search.toLowerCase();
     return users.filter((user) => {
       const name = user.name?.toLowerCase() ?? "";
       const email = user.email?.toLowerCase() ?? "";
-      const role = user.role?.toLowerCase() ?? "";
-      const department = user.department?.toLowerCase() ?? "";
       const userId = String(user.id ?? "").toLowerCase();
-
       return (
         !query ||
         name.includes(query) ||
         email.includes(query) ||
-        role.includes(query) ||
-        department.includes(query) ||
         userId.includes(query)
       );
     });
@@ -101,34 +86,8 @@ export default function UsersManagementPage() {
     setCurrentPage(1);
   }, [search, pageSize]);
 
-  const deleteDescription = formatTexts({
-    type: "users",
-    formatType: "description",
-  });
-  const deleteDialogTitle = formatTexts({
-    type: "users",
-    formatType: "diaglog",
-  });
-
-  function openCreateModal() {
-    setFormMode("create");
-    setEditingUserId(undefined);
-    setFormOpen(true);
-  }
-
-  function openEditModal(userId: string) {
-    setFormMode("edit");
-    setEditingUserId(userId);
-    setFormOpen(true);
-  }
-
-  function openViewModal(userId: string) {
-    setViewUserId(userId);
-    setViewOpen(true);
-  }
-
   return (
-    <ManagementPageShell title="Users management">
+    <ManagementPageShell title="Users">
       <div className={dashboardCardClass}>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-50 px-6 py-3">
           <div className={cn("flex items-center gap-2", dashboardLabelClass)}>
@@ -157,15 +116,6 @@ export default function UsersManagementPage() {
               className={compactInputClass}
             />
           </div>
-
-          <Button
-            type="button"
-            onClick={openCreateModal}
-            className={cn(btnCreatePage, "h-9 px-4 text-sm")}
-          >
-            <Plus className="size-4" />
-            Create User
-          </Button>
         </div>
 
         <div className={dashboardTableWrapClass}>
@@ -173,36 +123,10 @@ export default function UsersManagementPage() {
             <Table className="w-full">
               <TableHeader className={dashboardTableHeaderClass}>
                 <TableRow className={dashboardTableHeadRowClass}>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    ID
-                  </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Name
-                  </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Email
-                  </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Role
-                  </TableHead>
-                  {/* <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Gender
-                  </TableHead> */}
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Department
-                  </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Branch
-                  </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Status
-                  </TableHead>
-                  {/* <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Salary
-                  </TableHead> */}
-                  {/* <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Joined At
-                  </TableHead> */}
+                  <TableHead className={dashboardTableHeadClass}>User ID</TableHead>
+                  <TableHead className={dashboardTableHeadClass}>Name</TableHead>
+                  <TableHead className={dashboardTableHeadClass}>Email</TableHead>
+                  <TableHead className={dashboardTableHeadClass}>Password</TableHead>
                   <TableHead className={cn(dashboardTableHeadClass, "text-right")}>
                     Actions
                   </TableHead>
@@ -212,7 +136,7 @@ export default function UsersManagementPage() {
                 {isLoading ? (
                   [...Array(5)].map((_, i) => (
                     <TableRow key={i} className="h-14 animate-pulse">
-                      {[...Array(10)].map((_, j) => (
+                      {[...Array(5)].map((_, j) => (
                         <TableCell key={j} className="px-6 py-4">
                           <div className="h-4 w-full rounded bg-zinc-100" />
                         </TableCell>
@@ -222,116 +146,59 @@ export default function UsersManagementPage() {
                 ) : paginatedUsers.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={11}
+                      colSpan={5}
                       className="px-6 py-10 text-center text-muted-foreground"
                     >
                       No users found
                     </TableCell>
                   </TableRow>
                 ) : (
-                  paginatedUsers.map((user) => {
-                    const isInactive =
-                      user.banned === true ||
-                      user.banned === "true";
-
-                    return (
-                      <TableRow key={user.id} className={dashboardTableBodyRowClass}>
-                        <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTableIdClass}>
-                            {String(user.id).slice(0, 8)}
-                          </span>
-                        </TableCell>
-                        <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextPrimary}>{user.name}</span>
-                        </TableCell>
-                        <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextSecondary}>{user.email}</span>
-                        </TableCell>
-                        <TableCell className={dashboardTableCellClass}>
-                          <span className="capitalize">{user.role}</span>
-                        </TableCell>
-                        {/* <TableCell className={dashboardTableCellClass}>
-                          <span className="capitalize">{user.gender ?? "—"}</span>
-                        </TableCell> */}
-                        <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextSecondary}>
-                            {user.department ?? "—"}
-                          </span>
-                        </TableCell>
-                        <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextSecondary}>
-                            {user.branch?.name ?? "—"}
-                          </span>
-                        </TableCell>
-                        <TableCell className={dashboardTableCellClass}>
-                          <span
-                            className={cn(
-                              dashboardStatusBadgeClass,
-                              isInactive
-                                ? getTaskStatusBadgeClass("overdue")
-                                : getTaskStatusBadgeClass("completed"),
-                            )}
+                  paginatedUsers.map((user) => (
+                    <TableRow key={user.id} className={dashboardTableBodyRowClass}>
+                      <TableCell className={dashboardTableCellClass}>
+                        <span className={dashboardTableIdClass}>{user.id}</span>
+                      </TableCell>
+                      <TableCell className={dashboardTableCellClass}>
+                        <span className={dashboardTextPrimary}>{user.name}</span>
+                      </TableCell>
+                      <TableCell className={dashboardTableCellClass}>
+                        <span className={dashboardTextSecondary}>{user.email}</span>
+                      </TableCell>
+                      <TableCell className={dashboardTableCellClass}>
+                        <span className="font-mono text-zinc-500">••••••••</span>
+                      </TableCell>
+                      <TableCell className={cn(dashboardTableCellClass, "text-right")}>
+                        <div className="flex justify-end gap-1">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setViewUserId(String(user.id));
+                              setViewOpen(true);
+                            }}
+                            className={actionBtnView}
+                            title="View"
                           >
-                            {isInactive ? "Inactive" : "Active"}
-                          </span>
-                        </TableCell>
-                        {/* <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextSecondary}>{user.salary}</span>
-                        </TableCell> */}
-                        {/* <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextSecondary}>
-                            {String(user.createdAt ?? "—")}
-                          </span>
-                        </TableCell> */}
-                        <TableCell
-                          className={cn(dashboardTableCellClass, "text-right")}
-                        >
-                          <div className="flex justify-end gap-1">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => openViewModal(String(user.id))}
-                              className={actionBtnView}
-                              title="View"
-                            >
-                              <Eye className="size-4" />
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => openEditModal(String(user.id))}
-                              className={actionBtnEdit}
-                              title="Edit"
-                            >
-                              <Edit className="size-4" />
-                            </Button>
-                            <Link
-                              href={ROUTES.uploadUserFile(String(user.id))}
-                              title="Upload documents"
-                              className={cn(
-                                actionBtnEdit,
-                                "inline-flex items-center justify-center",
-                              )}
-                            >
-                              <Upload className="size-4" />
-                            </Link>
-                            {user.id && (
-                              <DeleteAction
-                                typeOfDataToDelete="users"
-                                idToDelete={String(user.id)}
-                                description={deleteDescription ?? ""}
-                                dialogTitle={deleteDialogTitle ?? "Delete User"}
-                                triggerClassNames={actionBtnDelete}
-                                trigger={<Trash2 className="size-4" />}
-                              />
-                            )}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
+                            <Eye className="size-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setEditUserId(String(user.id));
+                              setEditOpen(true);
+                            }}
+                            className={actionBtnEdit}
+                            title="Edit"
+                          >
+                            <Edit className="size-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
                 )}
               </TableBody>
             </Table>
@@ -344,7 +211,6 @@ export default function UsersManagementPage() {
               ? "0 of 0"
               : `${Math.min(filteredUsers.length, (currentPage - 1) * pageSize + 1)}-${Math.min(filteredUsers.length, currentPage * pageSize)} of ${filteredUsers.length}`}
           </div>
-
           <div className="flex items-center gap-1">
             <button
               type="button"
@@ -369,17 +235,15 @@ export default function UsersManagementPage() {
         </div>
       </div>
 
-      <UserViewModal
+      <UserSimpleViewModal
         open={viewOpen}
         onOpenChange={setViewOpen}
         userId={viewUserId}
       />
-
-      <UserFormModal
-        open={formOpen}
-        onOpenChange={setFormOpen}
-        mode={formMode}
-        userId={editingUserId}
+      <UserSimpleEditModal
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        userId={editUserId}
       />
     </ManagementPageShell>
   );

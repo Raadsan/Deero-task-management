@@ -10,8 +10,8 @@ export default function ExpensePage() {
       <PageBreadcrumb
         links={[
           {
-            title: "Payment",
-            link: ROUTES.payments,
+            title: "Payment Revenue",
+            link: ROUTES.paymentsRevenue,
           },
         ]}
       />

@@ -1,23 +1,17 @@
 "use server";
 
-import { cookies } from "next/headers";
 import api from "../api";
 import { ActionResponse, ErrorResponse } from "../types";
 import { handleError } from "../error/handle-error";
 import { BranchBranding } from "../branch-branding";
-import {
-  canSuperadminUseAnyLogin,
-  formatBranchLoginPathFromRecord,
-} from "../branch-login";
-import { BRANCH_SLUG_COOKIE, LOGIN_BRANCH_ID_COOKIE } from "../constants";
 import { getUserSession } from "./auth.action";
+import { cache } from "react";
 
 export type BranchRecord = BranchBranding & {
   description?: string | null;
   location?: string | null;
   phone?: string | null;
   isActive: boolean;
-  isMain?: boolean;
   usesRootLogin?: boolean;
   slugClearedOnce?: boolean;
   createdAt?: string;
@@ -83,80 +77,39 @@ export async function getPublicBranchBySlug(
   }
 }
 
-export async function getMainBranchBranding(): Promise<ActionResponse<BranchBranding>> {
+export async function getRootLoginBranchBranding(): Promise<ActionResponse<BranchBranding>> {
   try {
-    const response = await api.get("/api/branches/public/main");
+    const response = await api.get("/api/branches/public/root-login");
     if (response.data.success) {
       return { success: true, data: response.data.data };
     }
-    return { success: false, errors: { message: "Main branch not found" } };
+    return { success: false, errors: { message: "Root login branch not found" } };
   } catch (error) {
     return handleError({ errors: error, type: "server" }) as ErrorResponse;
   }
 }
 
-export async function validateUserLoginBranch(params: {
-  userBranchId?: string | null;
-  loginBranchId?: string | null;
-  isRootLogin?: boolean;
-  userRole?: string;
-}): Promise<ActionResponse<{ branchId?: string; loginPath?: string }>> {
-  const { userBranchId, loginBranchId, userRole } = params;
+export const resolveSessionBranding = cache(
+  async (
+    user?: { branchId?: string | null; role?: string } | null,
+  ): Promise<BranchBranding | null> => {
+    if (user?.branchId) {
+      const result = await getBranchBrandingById(user.branchId);
+      if (result.success && result.data) return result.data;
+    }
 
-  if (canSuperadminUseAnyLogin({ role: userRole, branchId: userBranchId })) {
-    return { success: true, data: { branchId: loginBranchId ?? undefined } };
-  }
+    const result = await getRootLoginBranchBranding();
+    if (result.success && result.data) return result.data;
 
-  if (!userBranchId) {
-    return {
-      success: false,
-      errors: { message: "This account has no branch assigned" },
-    };
-  }
-
-  if (!loginBranchId) {
-    return {
-      success: false,
-      errors: { message: "Invalid login page" },
-    };
-  }
-
-  if (loginBranchId === userBranchId) {
-    return { success: true, data: { branchId: userBranchId } };
-  }
-
-  const branchResult = await getBranchById(userBranchId);
-  const loginPath =
-    branchResult.success && branchResult.data
-      ? formatBranchLoginPathFromRecord(branchResult.data)
-      : undefined;
-
-  return {
-    success: false,
-    errors: {
-      message: loginPath
-        ? `Please sign in at ${loginPath}`
-        : "This account does not belong to this branch login URL",
-      loginPath,
-    },
-  };
-}
-
-export async function setLoginBranchCookie(branchId: string) {
-  const store = await cookies();
-  store.set(LOGIN_BRANCH_ID_COOKIE, branchId, {
-    path: "/",
-    maxAge: 60 * 60 * 24 * 30,
-    sameSite: "lax",
-  });
-}
+    return null;
+  },
+);
 
 export async function clearLoginBranchCookie() {
-  const store = await cookies();
-  store.delete(LOGIN_BRANCH_ID_COOKIE);
+  // Unified login at / — no per-branch login cookie.
 }
 
-export async function getDashboardSession() {
+export const getDashboardSession = cache(async () => {
   const session = await getUserSession();
   const branding = await resolveSessionBranding(session.data?.user);
   const user = session.data?.user;
@@ -166,34 +119,7 @@ export async function getDashboardSession() {
     roleId: user?.roleId ?? null,
     role: user?.role ?? null,
   };
-}
-
-export async function resolveSessionBranding(
-  user?: { branchId?: string | null; role?: string } | null,
-): Promise<BranchBranding | null> {
-  if (user?.branchId) {
-    const result = await getBranchBrandingById(user.branchId);
-    if (result.success && result.data) return result.data;
-  }
-
-  const slug = (await cookies()).get(BRANCH_SLUG_COOKIE)?.value;
-  if (slug) {
-    const result = await getPublicBranchBySlug(slug);
-    if (result.success && result.data) return result.data;
-  }
-
-  if (user?.role === "superadmin") {
-    const result = await getMainBranchBranding();
-    if (result.success && result.data) return result.data;
-  }
-
-  if (user) {
-    const result = await getMainBranchBranding();
-    if (result.success && result.data) return result.data;
-  }
-
-  return null;
-}
+});
 
 export async function createBranch(data: {
   name: string;
@@ -206,7 +132,6 @@ export async function createBranch(data: {
   primaryColor?: string;
   secondaryColor?: string;
   isActive?: boolean;
-  isMain?: boolean;
   useRootLogin?: boolean;
 }): Promise<ActionResponse> {
   try {
@@ -231,7 +156,6 @@ export async function updateBranch(
     primaryColor?: string;
     secondaryColor?: string;
     isActive?: boolean;
-    isMain?: boolean;
     clearSlug?: boolean;
     useRootLogin?: boolean;
   },

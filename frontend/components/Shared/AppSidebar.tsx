@@ -15,6 +15,7 @@ import { BranchBranding, getBranchThemeStyle, resolveBranchLogoUrl } from "@/lib
 import { UserRole } from "@/lib/schema";
 import { AuthSession, SidebarItem } from "@/lib/types";
 import {
+  BarChart3,
   BriefcaseBusiness,
   Building2,
   FolderTree,
@@ -32,6 +33,7 @@ import SettingAndLogoutMenu from "./SettingAndLogoutMenu";
 import SideBarItem from "./SidebarItem";
 import SidebarCollapsibleNavItem from "./SidebarCollapsibleNavItem";
 import DynamicSidebarNav from "./DynamicSidebarNav";
+import { SidebarAccordionProvider } from "./SidebarAccordionContext";
 
 const NAVIGATION_LINKS: SidebarItem[] = [
   {
@@ -53,10 +55,15 @@ const NAVIGATION_LINKS: SidebarItem[] = [
     role: [UserRole.user, UserRole.admin],
   },
   {
-    name: "Clients",
+    name: "Client Management",
     href: ROUTES.clients,
     icon: <Handshake className="size-[18px] shrink-0" strokeWidth={2} />,
     role: [UserRole.admin, UserRole.superadmin],
+    items: [
+      { name: "Clients", href: ROUTES.clients },
+      { name: "Contracts", href: ROUTES.contracts },
+      { name: "Schedules", href: ROUTES.recurringSchedules },
+    ],
   },
   {
     name: "Users",
@@ -84,9 +91,25 @@ const NAVIGATION_LINKS: SidebarItem[] = [
   },
   {
     name: "Payment",
-    href: ROUTES.payments,
+    href: ROUTES.paymentsRevenue,
     icon: <WalletCards className="size-[18px] shrink-0" strokeWidth={2} />,
     role: [UserRole.admin, UserRole.superadmin],
+    items: [
+      { name: "All Payments", href: ROUTES.paymentsRevenue },
+      { name: "Paid", href: ROUTES.paymentsPaid },
+    ],
+  },
+  {
+    name: "Reports",
+    href: ROUTES.reportsPayments,
+    icon: <BarChart3 className="size-[18px] shrink-0" strokeWidth={2} />,
+    role: [UserRole.admin, UserRole.superadmin],
+    items: [
+      { name: "Payment Report", href: ROUTES.reportsPayments },
+      { name: "Users Report", href: ROUTES.reportsUsers },
+      { name: "Client Report", href: ROUTES.reportsClients },
+      { name: "Tasks Report", href: ROUTES.reportsTasks },
+    ],
   },
   {
     name: "Configuration",
@@ -151,9 +174,15 @@ export function AppSidebar({ data, branding }: Props) {
         <SidebarGroup className="p-0">
           <SidebarGroupContent>
             <SidebarMenu className="gap-1 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:gap-2 group-data-[collapsible=icon]:px-0">
-              <DynamicSidebarNav
-                data={data}
-                fallback={NAVIGATION_LINKS.map((link, index) => {
+              <SidebarAccordionProvider>
+                <DynamicSidebarNav
+                  data={data}
+                  fallbackMenus={NAVIGATION_LINKS.map((link) => ({
+                    id: link.name,
+                    href: link.href,
+                    items: link.items?.map((item) => ({ href: item.href })),
+                  }))}
+                  fallback={NAVIGATION_LINKS.map((link, index) => {
                   const currentRole = data?.user.role;
                   if (link.items?.length) {
                     return (
@@ -183,7 +212,8 @@ export function AppSidebar({ data, branding }: Props) {
                     />
                   );
                 })}
-              />
+                />
+              </SidebarAccordionProvider>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

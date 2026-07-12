@@ -1,9 +1,18 @@
 import { prisma } from "../lib/prisma.js";
 import { generateCustomId } from "../lib/id-generator.js";
+import {
+  expenseTransactionBranchWhere,
+  getScope,
+  incomeTransactionBranchWhere,
+  mergeWhere,
+  salaryBranchWhere,
+} from "../lib/branch-scope.js";
 
 export const getAllIncomes = async (req, res) => {
   try {
+    const scope = getScope(req);
     const incomes = await prisma.incomeTransaction.findMany({
+      where: incomeTransactionBranchWhere(scope),
       include: { user: true, income: true, serviceAgreement: true },
       orderBy: { createdAt: "desc" },
     });
@@ -15,7 +24,9 @@ export const getAllIncomes = async (req, res) => {
 
 export const getAllExpenses = async (req, res) => {
   try {
+    const scope = getScope(req);
     const expenses = await prisma.expenseTransaction.findMany({
+      where: expenseTransactionBranchWhere(scope),
       include: { user: true, expense: true, expenseServiceAgreement: true },
       orderBy: { createdAt: "desc" },
     });
@@ -572,17 +583,29 @@ export const payDebt = async (req, res) => {
 export const getMonthlyPaymentData = async (req, res) => {
   const { startDate, endDate } = req.query;
   try {
+    const scope = getScope(req);
     const fromDate = startDate ? new Date(startDate) : undefined;
     const toDate = endDate ? new Date(endDate) : undefined;
-    const filterConditions = { createdAt: { gte: fromDate, lte: toDate } };
+    const incomeWhere = {
+      ...incomeTransactionBranchWhere(scope),
+      status: "Paid",
+    };
+    const expenseWhere = {
+      ...expenseTransactionBranchWhere(scope),
+      status: "Paid",
+    };
+    if (fromDate || toDate) {
+      incomeWhere.createdAt = { gte: fromDate, lte: toDate };
+      expenseWhere.createdAt = { gte: fromDate, lte: toDate };
+    }
 
     const [incomes, expenses] = await prisma.$transaction([
       prisma.incomeTransaction.findMany({
-        where: { AND: filterConditions, status: "Paid" },
+        where: incomeWhere,
         select: { createdAt: true, subTotal: true }
       }),
       prisma.expenseTransaction.findMany({
-        where: { AND: filterConditions, status: "Paid" },
+        where: expenseWhere,
         select: { createdAt: true, totalAmount: true }
       })
     ]);

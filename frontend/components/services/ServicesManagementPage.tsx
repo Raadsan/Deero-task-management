@@ -18,7 +18,7 @@ import {
   SubServiceInput,
   updateService,
 } from "@/lib/actions/service.action";
-import { BranchRecord, getAllBranches } from "@/lib/actions/branch.action";
+import { getTaskFormBranchOptions } from "@/lib/actions/shared.action";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {
   actionBtnDelete,
@@ -31,7 +31,7 @@ import {
 } from "@/lib/dashboard-ui";
 import { cn, getRandomUUID } from "@/lib/utils";
 import { Edit, Eye, Layers, Loader2, Plus, Search, Trash2, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import useSWR, { useSWRConfig } from "swr";
 
@@ -66,18 +66,27 @@ export default function ServicesManagementPage() {
     SWR_CACH_KEYS.services.key,
     getAllServices,
   );
-  const { data: branchesRes } = useSWR(
-    SWR_CACH_KEYS.branches.key,
-    getAllBranches,
+  const { data: branchScopeRes } = useSWR(
+    "services-branch-scope",
+    getTaskFormBranchOptions,
   );
   const { mutate } = useSWRConfig();
 
   const services = (servicesRes?.data as ServiceRecord[]) ?? [];
-  const branches = (branchesRes?.data as BranchRecord[]) ?? [];
-  const activeBranches = branches.filter((branch) => branch.isActive !== false);
+  const activeBranches = branchScopeRes?.data?.branches ?? [];
+  const singleBranch = branchScopeRes?.data?.singleBranch ?? false;
 
   const [search, setSearch] = useState("");
   const [branchFilter, setBranchFilter] = useState("all");
+
+  useEffect(() => {
+    if (!singleBranch) return;
+    const onlyBranchId =
+      branchScopeRes?.data?.defaultBranchId ?? activeBranches[0]?.id ?? "all";
+    if (onlyBranchId && branchFilter !== onlyBranchId) {
+      setBranchFilter(onlyBranchId);
+    }
+  }, [singleBranch, branchScopeRes?.data?.defaultBranchId, activeBranches, branchFilter]);
 
   const scopedServices = useMemo(() => {
     const list =
@@ -141,7 +150,7 @@ export default function ServicesManagementPage() {
     setBranchId(
       branchFilter !== "all"
         ? branchFilter
-        : activeBranches.find((b) => b.isMain)?.id ?? activeBranches[0]?.id ?? "",
+        : activeBranches.find((b) => b.usesRootLogin)?.id ?? activeBranches[0]?.id ?? "",
     );
     setSubFields([emptySubField()]);
     setFormOpen(true);
@@ -251,8 +260,9 @@ export default function ServicesManagementPage() {
               value={branchFilter}
               onChange={(e) => setBranchFilter(e.target.value)}
               className={cn("min-w-[9rem]", compactSelectClass)}
+              disabled={singleBranch}
             >
-              <option value="all">All branches</option>
+              {!singleBranch && <option value="all">All branches</option>}
               {activeBranches.map((branch) => (
                 <option key={branch.id} value={branch.id}>
                   {branch.name}
@@ -417,6 +427,7 @@ export default function ServicesManagementPage() {
                 value={branchId}
                 onChange={(e) => setBranchId(e.target.value)}
                 className={cn(compactSelectClass, "w-full px-3")}
+                disabled={singleBranch}
               >
                 <option value="">Select branch</option>
                 {activeBranches.map((branch) => (

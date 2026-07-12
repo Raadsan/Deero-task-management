@@ -1,10 +1,18 @@
 import { prisma } from "../lib/prisma.js";
 import { auth } from "../lib/auth.js";
 import { deleteUserFileFromDisk, saveUserFile } from "../lib/user-files.js";
+import {
+  denyIfOutOfScope,
+  getScope,
+  resolveWritableBranchId,
+  userBranchWhere,
+} from "../lib/branch-scope.js";
 
 export const getAllUsers = async (req, res) => {
   try {
+    const scope = getScope(req);
     const users = await prisma.user.findMany({
+      where: userBranchWhere(scope),
       orderBy: {
         createdAt: "desc",
       },
@@ -23,6 +31,7 @@ export const getAllUsers = async (req, res) => {
 export const getUserById = async (req, res) => {
   const { id } = req.params;
   try {
+    const scope = getScope(req);
     const user = await prisma.user.findUnique({
       where: { id },
       include: {
@@ -37,6 +46,7 @@ export const getUserById = async (req, res) => {
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
+    if (denyIfOutOfScope(res, scope, user.branchId)) return;
     res.json({ success: true, data: user });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -46,6 +56,11 @@ export const getUserById = async (req, res) => {
 export const createUser = async (req, res) => {
   const { name, email, password, role, gender, department, salary, branchId, banned } = req.body;
   try {
+    const scope = getScope(req);
+    const resolvedBranchId =
+      branchId === null || branchId === undefined || branchId === ""
+        ? null
+        : resolveWritableBranchId(scope, branchId);
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ success: false, message: "Email already exists" });
@@ -62,16 +77,24 @@ export const createUser = async (req, res) => {
     });
 
     // Update additional fields
+    let resolvedRoleId = req.body.roleId || null;
+    if (!resolvedRoleId && role) {
+      const dynamicRole = await prisma.role.findFirst({
+        where: { name: String(role).trim().toLowerCase() },
+      });
+      resolvedRoleId = dynamicRole?.id ?? null;
+    }
+
     const updatedUser = await prisma.user.update({
       where: { id: result.user.id },
       data: {
         gender,
         department,
         salary: salary ? String(salary) : null,
-        branchId: branchId || null,
+        branchId: resolvedBranchId,
         banned: banned === true,
-        dynamicRole: req.body.roleId ? { connect: { id: req.body.roleId } } : undefined,
-        role: role || "user"
+        roleId: resolvedRoleId,
+        role: role || "user",
       },
     });
 
@@ -83,8 +106,34 @@ export const createUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { name, email, role, gender, department, salary, branchId, banned } = req.body;
+  const { name, email, role, gender, department, salary, branchId, banned, roleId } =
+    req.body;
   try {
+    const scope = getScope(req);
+    const existing = await prisma.user.findUnique({
+      where: { id },
+      select: { branchId: true },
+    });
+    if (!existing) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    if (denyIfOutOfScope(res, scope, existing.branchId)) return;
+
+    const resolvedBranchId =
+      branchId === undefined
+        ? undefined
+        : branchId === null || branchId === ""
+          ? null
+          : resolveWritableBranchId(scope, branchId);
+
+    let resolvedRoleId = roleId || null;
+    if (!resolvedRoleId && role) {
+      const dynamicRole = await prisma.role.findFirst({
+        where: { name: String(role).trim().toLowerCase() },
+      });
+      resolvedRoleId = dynamicRole?.id ?? null;
+    }
+
     const user = await prisma.user.update({
       where: { id },
       data: {
@@ -94,8 +143,9 @@ export const updateUser = async (req, res) => {
         gender,
         department,
         salary: salary === undefined ? undefined : salary ? String(salary) : null,
-        branchId: branchId === undefined ? undefined : branchId || null,
+        branchId: resolvedBranchId,
         ...(banned !== undefined ? { banned: !!banned } : {}),
+        ...(role !== undefined ? { roleId: resolvedRoleId } : {}),
       },
       include: {
         branch: {
@@ -111,6 +161,16 @@ export const updateUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
   const { id } = req.params;
   try {
+    const scope = getScope(req);
+    const existing = await prisma.user.findUnique({
+      where: { id },
+      select: { branchId: true },
+    });
+    if (!existing) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    if (denyIfOutOfScope(res, scope, existing.branchId)) return;
+
     await prisma.user.delete({
       where: { id },
     });
@@ -123,6 +183,16 @@ export const deleteUser = async (req, res) => {
 export const getUserFiles = async (req, res) => {
   const { id } = req.params;
   try {
+    const scope = getScope(req);
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: { branchId: true },
+    });
+    if (!user) {
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
+    if (denyIfOutOfScope(res, scope, user.branchId)) return;
+
     const files = await prisma.userFiles.findMany({
       where: { userId: id },
       orderBy: { createdAt: "desc" },
@@ -138,10 +208,12 @@ export const uploadUserFiles = async (req, res) => {
   const { files } = req.body;
 
   try {
-    const user = await prisma.user.findUnique({ where: { id }, select: { id: true } });
+    const scope = getScope(req);
+    const user = await prisma.user.findUnique({ where: { id }, select: { id: true, branchId: true } });
     if (!user) {
       return res.status(404).json({ success: false, error: "User not found" });
     }
+    if (denyIfOutOfScope(res, scope, user.branchId)) return;
 
     if (!Array.isArray(files) || files.length === 0) {
       return res.status(400).json({ success: false, error: "No files provided" });
@@ -153,12 +225,26 @@ export const uploadUserFiles = async (req, res) => {
 
     const saved = [];
     for (const file of files) {
-      const stored = await saveUserFile(id, file);
+      const documentType = String(file.documentType ?? "").trim();
+      if (documentType) {
+        const existing = await prisma.userFiles.findMany({
+          where: { userId: id, name: documentType },
+        });
+        for (const old of existing) {
+          await deleteUserFileFromDisk(old.url);
+          await prisma.userFiles.delete({ where: { id: old.id } });
+        }
+      }
+
+      const stored = await saveUserFile(id, {
+        ...file,
+        name: documentType ? `${documentType}.pdf` : file.name,
+      });
       const record = await prisma.userFiles.create({
         data: {
           userId: id,
           url: stored.url,
-          name: stored.name,
+          name: documentType || stored.name,
           fileSize: stored.fileSize,
         },
       });
@@ -175,6 +261,16 @@ export const deleteUserFile = async (req, res) => {
   const { id, fileId } = req.params;
 
   try {
+    const scope = getScope(req);
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: { branchId: true },
+    });
+    if (!user) {
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
+    if (denyIfOutOfScope(res, scope, user.branchId)) return;
+
     const file = await prisma.userFiles.findFirst({
       where: { id: fileId, userId: id },
     });

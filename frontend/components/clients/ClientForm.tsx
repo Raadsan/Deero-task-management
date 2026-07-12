@@ -2,7 +2,7 @@
 
 import { ClientSchema } from "@/lib/validations";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import ButtonBuilder from "../Shared/ButtonBuilder";
@@ -42,6 +42,7 @@ import { Button } from "../ui/button";
 import { Search } from "lucide-react";
 
 const CUSTOM_SERVICE = "Custom Service";
+const EMPTY_ARRAY: never[] = [];
 
 type ClientMode = "existing" | "new";
 
@@ -148,26 +149,31 @@ export default function ClientForm({
   const [selectedExistingClientId, setSelectedExistingClientId] = useState("");
   const [selectedBranchId, setSelectedBranchId] = useState("");
   const [editingAgreementId, setEditingAgreementId] = useState("");
+  const hydratedAgreementRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    hydratedAgreementRef.current = null;
+  }, [currentClient?.id]);
 
   const { data: branchOptionsRes } = useSWR(
     showServiceFlow ? "client-form-branches" : null,
     getTaskFormBranchOptions,
   );
-  const branchOptions = branchOptionsRes?.data?.branches ?? [];
+  const branchOptions = branchOptionsRes?.data?.branches ?? EMPTY_ARRAY;
   const singleBranch = branchOptionsRes?.data?.singleBranch ?? false;
 
   const { data: clientsRes } = useSWR(
     isCreateFlow ? "client-form-clients" : null,
     getClientsForForm,
   );
-  const allClients = clientsRes?.data ?? [];
+  const allClients = clientsRes?.data ?? EMPTY_ARRAY;
 
   const { data: branchServicesRes, isLoading: isLoadingBranchServices } = useSWR(
     selectedBranchId ? ["client-branch-services", selectedBranchId] : null,
     () => getAllServices({ branchId: selectedBranchId }),
   );
 
-  const branchServices = branchServicesRes?.data ?? [];
+  const branchServices = branchServicesRes?.data ?? EMPTY_ARRAY;
 
   const watchService = watch("service");
   const watchDiscount = watch("discount");
@@ -266,7 +272,7 @@ export default function ClientForm({
   useEffect(() => {
     if (!isEditFlow || !currentClient?.id || !serviceAgreements.length) return;
     setEditingAgreementId((prev) => prev || serviceAgreements[0].agreementId);
-  }, [isEditFlow, currentClient?.id, serviceAgreements]);
+  }, [isEditFlow, currentClient?.id, serviceAgreements.length, serviceAgreements[0]?.agreementId]);
 
   useEffect(() => {
     if (!isEditFlow || !currentClient || !editingAgreementId) return;
@@ -275,6 +281,9 @@ export default function ClientForm({
       (item) => item.agreementId === editingAgreementId,
     );
     if (!agreement) return;
+
+    if (hydratedAgreementRef.current === editingAgreementId) return;
+    hydratedAgreementRef.current = editingAgreementId;
 
     const createdAtValue = agreement.rawCreatedAt
       ? new Date(agreement.rawCreatedAt)
@@ -326,32 +335,46 @@ export default function ClientForm({
     );
     if (!subServiceName) return;
 
-    if (getValues("service") === CUSTOM_SERVICE) {
+    if (watchService === CUSTOM_SERVICE) {
+      const current = getValues("customSubServiceInput");
+      if (current === subServiceName) return;
       setValue("customSubServiceInput", subServiceName, { shouldValidate: false });
       return;
     }
 
+    const current = getValues("subService");
+    if (current === subServiceName) return;
     setValue("subService", subServiceName, { shouldValidate: false });
   }, [
     isEditFlow,
     activeEditAgreement,
     isLoadingBranchServices,
     branchServices,
-    currentClient,
-    getValues,
+    currentClient?.id,
+    watchService,
     setValue,
+    getValues,
   ]);
 
   useEffect(() => {
     if (!selectedExistingClient) return;
-    setValue("institution", selectedExistingClient.institution, {
-      shouldValidate: true,
-    });
-    setValue("phone", selectedExistingClient.phone, { shouldValidate: true });
-    setValue("email", selectedExistingClient.email ?? "", {
-      shouldValidate: true,
-    });
-  }, [selectedExistingClient, setValue]);
+    const institution = getValues("institution");
+    const phone = getValues("phone");
+    const email = getValues("email");
+    if (institution !== selectedExistingClient.institution) {
+      setValue("institution", selectedExistingClient.institution, {
+        shouldValidate: true,
+      });
+    }
+    if (phone !== selectedExistingClient.phone) {
+      setValue("phone", selectedExistingClient.phone, { shouldValidate: true });
+    }
+    if (email !== (selectedExistingClient.email ?? "")) {
+      setValue("email", selectedExistingClient.email ?? "", {
+        shouldValidate: true,
+      });
+    }
+  }, [selectedExistingClientId, selectedExistingClient, setValue, getValues]);
 
   function handleClientModeChange(mode: ClientMode) {
     setClientMode(mode);

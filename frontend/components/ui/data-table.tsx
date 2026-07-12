@@ -428,7 +428,10 @@ export function DataTable<TData, TValue>({
                   ) {
                     return (
                       <RenderItem key={cell.id}>
-                        {formatTaskDeadline(cell.getValue() as string | Date)}
+                        {formatTaskDeadline(cell.getValue() as string | Date, {
+                          status: (cell.row.original as Task).status,
+                          progress: (cell.row.original as Task).progress,
+                        })}
                       </RenderItem>
                     );
                   }

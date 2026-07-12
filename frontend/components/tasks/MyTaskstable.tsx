@@ -4,7 +4,6 @@ import { getAssginedTasks } from "@/lib/actions/task.action";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import { Task } from "@/lib/types";
 import useSWR from "swr";
-import { GeneralTableSkeletonLoader } from "../Shared/Loader";
 import TableRenderer from "../Shared/TableRenderer";
 import { taskColumns } from "../ui/columns";
 
@@ -14,14 +13,12 @@ export default function MyTasksTable() {
     getAssginedTasks,
   );
 
-  if (isLoading) return <GeneralTableSkeletonLoader />;
-
   return (
     <TableRenderer
       title="My tasks"
       tableType="my-tasks"
       columns={taskColumns}
-      data={(myTasksData?.data as Task[]) ?? []}
+      data={isLoading ? [] : ((myTasksData?.data as Task[]) ?? [])}
     />
   );
 }

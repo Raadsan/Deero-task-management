@@ -1,9 +1,9 @@
-import UploadFile from "./UploadFile";
+import UploadUserDocumentsForm from "./UploadUserDocumentsForm";
 
 interface Props {
   params: Promise<Record<string, string>>;
 }
 export default async function UploadFileWrapper({ params }: Props) {
   const { id } = await params;
-  return <UploadFile userId={id} />;
+  return <UploadUserDocumentsForm userId={id} />;
 }

@@ -1,17 +1,6 @@
-import ManagementPageShell from "@/components/Shared/ManagementPageShell";
-import PaymentDashboard from "@/components/payments/PaymentDashboard";
-import { Suspense } from "react";
+import { redirect } from "next/navigation";
+import { ROUTES } from "@/lib/constants";
 
 export default function PaymentsPage() {
-  return (
-    <ManagementPageShell title="Payments">
-      <Suspense
-        fallback={
-          <div className="h-96 animate-pulse rounded-xl bg-muted/20" />
-        }
-      >
-        <PaymentDashboard />
-      </Suspense>
-    </ManagementPageShell>
-  );
+  redirect(ROUTES.paymentsRevenue);
 }

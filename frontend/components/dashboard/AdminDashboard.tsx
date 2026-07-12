@@ -9,13 +9,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getClientSourcesInfo } from "@/lib/actions/client.action";
-import { getMonthlyPaymentData } from "@/lib/actions/payment.action";
-import {
-  getAllTasks,
-  getDashboardMetricData,
-  getMonthlyDashbaordGraphData,
-} from "@/lib/actions/task.action";
+import { getAdminDashboardBundle } from "@/lib/actions/dashboard.action";
+import { getTaskFormBranchOptions } from "@/lib/actions/shared.action";
+import { authClient } from "@/lib/auth-client";
+import { isBranchScopedRole, normalizeRoleName } from "@/lib/branch-access";
+import { Task } from "@/lib/types";
 import { ROUTES } from "@/lib/constants";
 import {
   chartAxisTick,
@@ -40,6 +38,7 @@ import {
 } from "@/lib/dashboard-ui";
 import { cn, resolveTaskDisplayStatus } from "@/lib/utils";
 import {
+  AlertCircle,
   ArrowUpRight,
   Briefcase,
   CheckCircle,
@@ -50,6 +49,7 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import {
   Area,
@@ -76,41 +76,71 @@ const metricIcons: Record<string, typeof Briefcase> = {
   "Total Clients": Users,
 };
 
+function asDate(value?: string | Date) {
+  if (!value) return null;
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function sameDay(a: Date, b: Date) {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
+function dayLabel(date: Date) {
+  return date.toLocaleDateString("en-US", { weekday: "short" });
+}
+
 export default function AdminDashboard() {
-  const { data: metricsRes, isLoading: metricsLoading } = useSWR(
-    "dashboard-metrics",
-    () => getDashboardMetricData(),
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const session = authClient.useSession();
+  const user = session.data?.user as
+    | { id?: string; role?: string; branchId?: string | null }
+    | undefined;
+  const normalizedRole = normalizeRoleName(user?.role);
+  const isBranchDashboard = isBranchScopedRole(normalizedRole);
+  const dashboardKey = [
+    "dashboard-bundle",
+    normalizedRole || "guest",
+    user?.branchId ?? "all",
+  ].join(":");
+
+  const { data: bundleRes, isLoading } = useSWR(
+    mounted && !session.isPending ? dashboardKey : null,
+    getAdminDashboardBundle,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 30000,
+    },
   );
 
-  const { data: chartRes, isLoading: chartLoading } = useSWR(
-    "dashboard-monthly-chart",
-    () => getMonthlyDashbaordGraphData(),
+  const { data: branchOptionsRes } = useSWR(
+    mounted && isBranchDashboard && user?.branchId && !session.isPending
+      ? ["dashboard-branch", user.branchId]
+      : null,
+    getTaskFormBranchOptions,
   );
 
-  const { data: sourcesRes, isLoading: sourcesLoading } = useSWR(
-    "client-sources",
-    getClientSourcesInfo,
-  );
+  const branchName =
+    branchOptionsRes?.data?.branches?.find(
+      (branch: { id: string; name: string }) =>
+        String(branch.id) === String(user?.branchId ?? ""),
+    )?.name ?? "";
 
-  const { data: paymentRes, isLoading: paymentLoading } = useSWR(
-    "dashboard-payment-chart",
-    () => getMonthlyPaymentData({ startDate: "", endDate: "" }),
-  );
-
-  const { data: tasksRes, isLoading: tasksLoading } = useSWR(
-    "dashboard-recent-tasks",
-    getAllTasks,
-  );
- 
-  const isLoading =
-    metricsLoading ||
-    chartLoading ||
-    sourcesLoading ||
-    paymentLoading ||
-    tasksLoading;
-
-  const metrics = metricsRes?.data ?? [];
-  const chartData = (chartRes?.data ?? []).map(
+  const metrics = (bundleRes?.data?.metrics ?? []) as Array<{
+    title?: string;
+    totalTasks?: number;
+    totallPending?: number;
+    totalEarning?: number;
+  }>;
+  const chartData = (bundleRes?.data?.chart ?? []).map(
     (item: Record<string, string | number>) => ({
       name: String(item.month ?? "").slice(0, 3),
       registered: Number(item["Registered Tasks"] ?? 0),
@@ -118,14 +148,14 @@ export default function AdminDashboard() {
     }),
   );
 
-  const sourcesData = (sourcesRes?.data ?? []).map(
-    ({ source, numberOfClients }: { source: string; numberOfClients: number }) => ({
+  const sourcesData = (bundleRes?.data?.sources ?? []).map(
+    ({ source, count }: { source: string; count: number }) => ({
       name: source,
-      value: numberOfClients,
+      value: count,
     }),
   );
 
-  const paymentData = (paymentRes?.data ?? []).map(
+  const paymentData = (bundleRes?.data?.payment ?? []).map(
     (item: { month: string; income: number; expense: number }) => ({
       name: String(item.month ?? "").slice(0, 3),
       income: Number(item.income ?? 0),
@@ -133,9 +163,124 @@ export default function AdminDashboard() {
     }),
   );
 
-  const recentTasks = (tasksRes?.data ?? []).slice(0, 5);
+  const recentTasks = useMemo(() => {
+    const tasks = (bundleRes?.data?.tasks ?? []) as Task[];
+    const scoped =
+      isBranchDashboard && user?.branchId
+        ? tasks.filter((task) => task.assignedTo?.branchId === user.branchId)
+        : tasks;
+    return scoped.slice(0, 5);
+  }, [bundleRes?.data?.tasks, isBranchDashboard, user?.branchId]);
 
-  if (isLoading) {
+  const isPersonalDashboard = ["employee", "manager", "branch manager"].includes(
+    normalizedRole,
+  );
+  const personalTasks = useMemo(() => {
+    if (!user?.id) return [];
+    return ((bundleRes?.data?.tasks ?? []) as Task[]).filter(
+      (task) => String(task.assignedTo?.id ?? "") === String(user.id),
+    );
+  }, [bundleRes?.data?.tasks, user?.id]);
+
+  const personalMetrics = useMemo(() => {
+    const completed = personalTasks.filter(
+      (task) => resolveTaskDisplayStatus(task) === "completed",
+    ).length;
+    const pending = personalTasks.filter(
+      (task) => resolveTaskDisplayStatus(task) === "pending",
+    ).length;
+    const overdue = personalTasks.filter(
+      (task) => resolveTaskDisplayStatus(task) === "overdue",
+    ).length;
+    return {
+      assigned: personalTasks.length,
+      completed,
+      pending,
+      overdue,
+    };
+  }, [personalTasks]);
+
+  const dailyPerformance = useMemo(() => {
+    const today = new Date();
+    const last7 = Array.from({ length: 7 }, (_, index) => {
+      const d = new Date(today);
+      d.setDate(today.getDate() - (6 - index));
+      return {
+        name: dayLabel(d),
+        completed: 0,
+        pending: 0,
+        _date: d,
+      };
+    });
+
+    personalTasks.forEach((task) => {
+      const taskDate =
+        asDate(task.deadline) ??
+        asDate((task as Task & { createdAt?: string | Date }).createdAt);
+      if (!taskDate) return;
+      const bucket = last7.find((item) => sameDay(item._date, taskDate));
+      if (!bucket) return;
+      const status = resolveTaskDisplayStatus(task);
+      if (status === "completed") bucket.completed += 1;
+      else bucket.pending += 1;
+    });
+
+    return last7.map(({ _date, ...rest }) => rest);
+  }, [personalTasks]);
+
+  const weeklyPerformance = useMemo(() => {
+    const now = new Date();
+    const start = new Date(now);
+    start.setDate(now.getDate() - 27);
+    const weeks = [
+      { name: "Week 1", completed: 0 },
+      { name: "Week 2", completed: 0 },
+      { name: "Week 3", completed: 0 },
+      { name: "Week 4", completed: 0 },
+    ];
+
+    personalTasks.forEach((task) => {
+      if (resolveTaskDisplayStatus(task) !== "completed") return;
+      const d =
+        asDate(task.deadline) ??
+        asDate((task as Task & { createdAt?: string | Date }).createdAt);
+      if (!d || d < start) return;
+      const diffDays = Math.floor((d.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+      const weekIdx = Math.min(3, Math.max(0, Math.floor(diffDays / 7)));
+      weeks[weekIdx].completed += 1;
+    });
+
+    return weeks;
+  }, [personalTasks]);
+
+  const statusBreakdown = useMemo(
+    () => [
+      { name: "Completed", value: personalMetrics.completed },
+      { name: "Pending", value: personalMetrics.pending },
+      { name: "Overdue", value: personalMetrics.overdue },
+    ],
+    [personalMetrics],
+  );
+
+  const priorityBreakdown = useMemo(() => {
+    const map = new Map<string, number>([
+      ["normal", 0],
+      ["medium", 0],
+      ["urgent", 0],
+    ]);
+    personalTasks.forEach((task) => {
+      const key = String(task.priority ?? "normal").toLowerCase();
+      map.set(key, (map.get(key) ?? 0) + 1);
+    });
+    return Array.from(map.entries()).map(([name, value]) => ({
+      name: name[0].toUpperCase() + name.slice(1),
+      value,
+    }));
+  }, [personalTasks]);
+
+  const isDashboardLoading = !mounted || session.isPending || isLoading;
+
+  if (isDashboardLoading) {
     return (
       <div className="space-y-8 animate-pulse px-1">
         <div className="h-20 rounded-xl bg-muted/20" />
@@ -154,16 +299,184 @@ export default function AdminDashboard() {
     );
   }
 
+  if (isPersonalDashboard) {
+    return (
+      <div className={cn(dashboardPageClass, "space-y-8")} style={dashboardPageStyle}>
+        <div className={pageHeaderWrapperClass}>
+          <h1 className={pageHeaderTitleClass}>My Performance Dashboard</h1>
+          <p className="mt-1 text-sm text-zinc-500">
+            Personal task analytics for <span className="font-semibold text-zinc-700">{user?.role}</span>
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {[
+            { label: "Assigned Tasks", value: personalMetrics.assigned, Icon: Briefcase },
+            { label: "Completed", value: personalMetrics.completed, Icon: CheckCircle },
+            { label: "Pending", value: personalMetrics.pending, Icon: Clock },
+            { label: "Overdue", value: personalMetrics.overdue, Icon: AlertCircle },
+          ].map(({ label, value, Icon }, index) => (
+            <div key={label} className="trezo-card flex min-h-[92px] flex-col gap-3 p-5">
+              <div className="flex items-center justify-between">
+                <div className={cn(dashboardStatIconClass(index), "p-2 [&_svg]:size-4")}>
+                  <Icon className="size-4 text-white" />
+                </div>
+                <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500">Live</span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">
+                  {label}
+                </p>
+                <h3 className="shrink-0 text-2xl font-bold leading-none tracking-tight text-[#1e293b]">
+                  {value}
+                </h3>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="trezo-card p-6 lg:col-span-2">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-foreground">Daily Performance (7 days)</h3>
+            <div className="mt-4 h-[280px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={dailyPerformance}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" opacity={0.5} />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={chartAxisTick} />
+                  <YAxis axisLine={false} tickLine={false} tick={chartAxisTick} />
+                  <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: "#ffffff" }} />
+                  <Legend />
+                  <Line type="monotone" dataKey="completed" stroke={chartPrimary} strokeWidth={2.5} />
+                  <Line type="monotone" dataKey="pending" stroke={chartSecondary} strokeWidth={2.5} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          <div className="trezo-card p-6">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-foreground">Weekly Completed</h3>
+            <div className="mt-4 h-[280px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={weeklyPerformance}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" opacity={0.5} />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={chartAxisTick} />
+                  <YAxis axisLine={false} tickLine={false} tick={chartAxisTick} />
+                  <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: "#ffffff" }} />
+                  <Bar dataKey="completed" radius={[4, 4, 0, 0]}>
+                    {weeklyPerformance.map((_, index) => (
+                      <Cell key={`wk-${index}`} fill={chartPrimaryVariants[index % chartPrimaryVariants.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="trezo-card p-6">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-foreground">Status Breakdown</h3>
+            <div className="mt-4 h-[250px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={statusBreakdown} dataKey="value" nameKey="name" innerRadius={50} outerRadius={85}>
+                    {statusBreakdown.map((_, idx) => (
+                      <Cell key={`status-${idx}`} fill={chartPrimaryVariants[idx % chartPrimaryVariants.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: "#ffffff" }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          <div className="trezo-card p-6 lg:col-span-2">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-foreground">Task Priority</h3>
+            <div className="mt-4 h-[250px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={priorityBreakdown}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" opacity={0.5} />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={chartAxisTick} />
+                  <YAxis axisLine={false} tickLine={false} tick={chartAxisTick} />
+                  <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: "#ffffff" }} />
+                  <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                    {priorityBreakdown.map((_, idx) => (
+                      <Cell key={`prio-${idx}`} fill={chartPrimaryVariants[idx % chartPrimaryVariants.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
+        <div className="trezo-card overflow-hidden">
+          <div className="border-b border-border px-8 py-4">
+            <h3 className="text-sm font-bold uppercase tracking-tight text-foreground">My Tasks</h3>
+          </div>
+          <div className="overflow-x-auto">
+            <Table className="w-full">
+              <TableHeader className={dashboardTableHeaderClass}>
+                <TableRow className={dashboardTableHeadRowClass}>
+                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>No</TableHead>
+                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Task</TableHead>
+                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Status</TableHead>
+                  <TableHead className={cn(dashboardTableHeadClass, "text-right")}>Priority</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="bg-white">
+                {personalTasks.length > 0 ? (
+                  personalTasks.slice(0, 8).map((task) => {
+                    const displayStatus = resolveTaskDisplayStatus(task);
+                    return (
+                      <TableRow key={task.id} className={dashboardTableBodyRowClass}>
+                        <TableCell className={dashboardTableCellClass}>
+                          <span className={dashboardTableIdClass}>{String(task.id).slice(0, 8)}</span>
+                        </TableCell>
+                        <TableCell className={dashboardTableCellClass}>
+                          <span className="text-[13px] font-medium text-zinc-700">{task.description?.slice(0, 50) || "—"}</span>
+                        </TableCell>
+                        <TableCell className={dashboardTableCellClass}>
+                          <span className={cn(dashboardStatusBadgeClass, getTaskStatusBadgeClass(displayStatus))}>
+                            {formatStatusLabel(displayStatus)}
+                          </span>
+                        </TableCell>
+                        <TableCell className={cn(dashboardTableCellClass, "text-right")}>
+                          <span className="text-[13px] font-bold text-zinc-700">{formatStatusLabel(task.priority)}</span>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={4} className="px-6 py-10 text-center text-zinc-500">
+                      No assigned tasks found
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={cn(dashboardPageClass, "space-y-8")}
       style={dashboardPageStyle}
     >
       <div className={pageHeaderWrapperClass}>
-        <h1 className={pageHeaderTitleClass}>Admin Dashboard</h1>
+        <h1 className={pageHeaderTitleClass}>
+          {isBranchDashboard ? "Branch Dashboard" : "Admin Dashboard"}
+        </h1>
+        {isBranchDashboard && branchName ? (
+          <p className="mt-1 text-sm text-zinc-500">
+            Showing data for <span className="font-semibold text-zinc-700">{branchName}</span>
+          </p>
+        ) : null}
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-5">
         {metrics.map((metric, index) => {
           const title = String(metric.title ?? "Metric");
           const Icon = metricIcons[title] ?? Briefcase;

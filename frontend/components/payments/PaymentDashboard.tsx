@@ -9,7 +9,6 @@ import { SWR_CACH_KEYS } from "@/lib/constants";
 import { cn, updateUrlWithQueryParams } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
 import useSWR from "swr";
-import { GeneralTableSkeletonLoader } from "../Shared/Loader";
 import PageDatePicker from "../Shared/PageDatePicker";
 import TableRenderer from "../Shared/TableRenderer";
 
@@ -154,28 +153,22 @@ export default function PaymentDashboard() {
         </div>
       )}
 
-      {activeTab === "income" &&
-        (isLoading ? (
-          <GeneralTableSkeletonLoader />
-        ) : (
+      {activeTab === "income" && (
           <TableRenderer
             useShell={false}
             columns={incomeColumns}
-            data={incomeResult?.data ?? []}
+            data={isLoading ? [] : (incomeResult?.data ?? [])}
             tableType={"incomes"}
           />
-        ))}
-      {activeTab === "expense" &&
-        (isLoading ? (
-          <GeneralTableSkeletonLoader />
-        ) : (
+        )}
+      {activeTab === "expense" && (
           <TableRenderer
             useShell={false}
             columns={expenseColumns}
-            data={expenseResult?.data ?? []}
+            data={isLoading ? [] : (expenseResult?.data ?? [])}
             tableType={"expenses"}
           />
-        ))}
+        )}
     </section>
   );
 }

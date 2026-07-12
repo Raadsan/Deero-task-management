@@ -56,7 +56,7 @@ export const auth = betterAuth({
           try {
             const user = await prisma.user.findUnique({
               where: { id: session.userId },
-              select: { id: true, name: true, email: true, role: true },
+              select: { id: true, name: true, email: true, role: true, branchId: true },
             });
 
             if (!user) return;
@@ -68,6 +68,7 @@ export const auth = betterAuth({
               deadline: new Date(),
               type: "user-login",
               excludeUserId: user.id,
+              branchId: user.branchId,
             });
           } catch (err) {
             console.error("Failed to create login notification:", err);

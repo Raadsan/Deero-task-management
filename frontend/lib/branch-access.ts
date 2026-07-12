@@ -1,5 +1,70 @@
 export function isMainBranch(
-  branch?: { isMain?: boolean; usesRootLogin?: boolean } | null,
+  branch?: { usesRootLogin?: boolean } | null,
 ) {
-  return Boolean(branch?.isMain || branch?.usesRootLogin);
+  return Boolean(branch?.usesRootLogin);
+}
+
+const BRANCH_SCOPED_ROLES = new Set([
+  "branch admin",
+  "branch manager",
+  "employee",
+  "manager",
+]);
+
+export function normalizeRoleName(role?: string | null) {
+  return String(role ?? "")
+    .toLowerCase()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function isBranchScopedRole(role?: string | null) {
+  return BRANCH_SCOPED_ROLES.has(normalizeRoleName(role));
+}
+
+export const BRANCH_ADMIN_MANAGEABLE_ROLE_NAMES = [
+  "admin",
+  "employee",
+  "manager",
+] as const;
+
+export function canManageRolePermissions(
+  actorRole?: string | null,
+  targetRoleName?: string | null,
+) {
+  const actor = normalizeRoleName(actorRole);
+  const target = normalizeRoleName(targetRoleName);
+
+  if (actor === "superadmin") return true;
+  if (actor === "branch admin") {
+    return BRANCH_ADMIN_MANAGEABLE_ROLE_NAMES.includes(
+      target as (typeof BRANCH_ADMIN_MANAGEABLE_ROLE_NAMES)[number],
+    );
+  }
+  return false;
+}
+
+export function isGlobalScopeRole(role?: string | null, branchId?: string | null) {
+  if (isSuperadminRole(role)) return true;
+  const normalizedRole = normalizeRoleName(role);
+  if (!branchId) return true;
+  if (isBranchScopedRole(normalizedRole)) return false;
+  return false;
+}
+
+export function isSuperadminRole(role?: string | null) {
+  return normalizeRoleName(role) === "superadmin";
+}
+
+export function seesAllBranchesForUser(
+  role?: string | null,
+  branch?: { usesRootLogin?: boolean } | null,
+  branchId?: string | null,
+) {
+  const normalizedRole = normalizeRoleName(role);
+  if (isSuperadminRole(normalizedRole)) return true;
+  if (!branchId) return true;
+  if (isBranchScopedRole(normalizedRole)) return false;
+  return isMainBranch(branch);
 }

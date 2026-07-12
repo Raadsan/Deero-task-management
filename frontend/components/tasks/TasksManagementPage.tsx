@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/table";
 import { getAllTasks } from "@/lib/actions/task.action";
 import { getAllUsers } from "@/lib/actions/user.action";
+import { authClient } from "@/lib/auth-client";
+import { isBranchScopedRole, normalizeRoleName } from "@/lib/branch-access";
 import { ROUTES, SWR_CACH_KEYS } from "@/lib/constants";
 import {
   actionBtnDelete,
@@ -51,15 +53,7 @@ const compactInputClass =
   "h-9 w-full rounded-md border border-zinc-200 bg-zinc-50 pl-9 pr-3 text-sm text-zinc-600 outline-none focus:border-primary focus:ring-1 focus:ring-primary/10";
 
 export default function TasksManagementPage() {
-  const { data: tasksRes, isLoading } = useSWR(
-    SWR_CACH_KEYS.tasks.key,
-    getAllTasks,
-  );
-  const { data: usersRes } = useSWR("tasks-users-filter", getAllUsers);
-
-  const tasks = (tasksRes?.data as Task[]) ?? [];
-  const users = usersRes?.data ?? [];
-
+  const [mounted, setMounted] = useState(false);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [userFilter, setUserFilter] = useState("all");
@@ -70,6 +64,51 @@ export default function TasksManagementPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [formMode, setFormMode] = useState<"create" | "edit">("create");
   const [editingTaskId, setEditingTaskId] = useState<string | undefined>();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const session = authClient.useSession();
+  const user = session.data?.user as
+    | { role?: string; branchId?: string | null }
+    | undefined;
+  const normalizedRole = normalizeRoleName(user?.role);
+  const isScopedUser = isBranchScopedRole(normalizedRole);
+  const tasksKey = [
+    SWR_CACH_KEYS.tasks.key,
+    normalizedRole || "guest",
+    user?.branchId ?? "all",
+  ].join(":");
+  const usersKey = [
+    "tasks-users-filter",
+    normalizedRole || "guest",
+    user?.branchId ?? "all",
+  ].join(":");
+
+  const { data: tasksRes, isLoading } = useSWR(
+    session.isPending ? null : tasksKey,
+    getAllTasks,
+  );
+  const { data: usersRes } = useSWR(
+    session.isPending ? null : usersKey,
+    getAllUsers,
+  );
+
+  const tasksRaw = (tasksRes?.data as Task[]) ?? [];
+  const usersRaw = usersRes?.data ?? [];
+  const tasks = useMemo(() => {
+    if (!isScopedUser || !user?.branchId) return tasksRaw;
+    return tasksRaw.filter((task) => task.assignedTo?.branchId === user.branchId);
+  }, [tasksRaw, isScopedUser, user?.branchId]);
+  const users = useMemo(() => {
+    if (!isScopedUser || !user?.branchId) return usersRaw;
+    return usersRaw.filter(
+      (userItem: { branchId?: string | null }) => userItem.branchId === user.branchId,
+    );
+  }, [usersRaw, isScopedUser, user?.branchId]);
+
+  const isTasksLoading = !mounted || session.isPending || isLoading;
 
   const filteredTasks = useMemo(() => {
     return tasks.filter((task) => {
@@ -249,7 +288,7 @@ export default function TasksManagementPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {isLoading ? (
+                {isTasksLoading ? (
                   [...Array(5)].map((_, i) => (
                     <TableRow key={i} className="h-14 animate-pulse">
                       {[...Array(7)].map((_, j) => (
@@ -298,7 +337,10 @@ export default function TasksManagementPage() {
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
                           <span className={dashboardTextSecondary}>
-                            {formatTaskDeadline(task.deadline)}
+                            {formatTaskDeadline(task.deadline, {
+                              status: task.status,
+                              progress: task.progress,
+                            })}
                           </span>
                         </TableCell>
                         <TableCell

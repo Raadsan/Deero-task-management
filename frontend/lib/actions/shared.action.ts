@@ -7,7 +7,95 @@ import api from "../api";
 import { ActionResponse, ErrorResponse, Client, User } from "../types";
 import { getUserSession } from "./auth.action";
 import { getAllBranches, getBranchById, BranchRecord } from "./branch.action";
-import { isMainBranch } from "../branch-access";
+import { seesAllBranchesForUser } from "../branch-access";
+
+export type TaskFormClientOption = {
+  id: string;
+  institution: string;
+  pendingServices: Array<{
+    agreementId: string;
+    label: string;
+    serviceName: string;
+    subServiceName: string;
+  }>;
+};
+
+function resolveAgreementService(client: any, agreement: any) {
+  return (
+    agreement.service ??
+    client.clientService?.find(
+      (item: any) => item.serviceId === agreement.serviceId,
+    )?.service
+  );
+}
+
+function resolveAgreementSubService(client: any, agreement: any) {
+  return (
+    agreement.subService ??
+    client.clientSubService?.find(
+      (item: any) => item.subServiceId === agreement.subServiceId,
+    )?.subService
+  );
+}
+
+export async function getTaskFormClientsByBranch(
+  branchId: string,
+): Promise<ActionResponse<TaskFormClientOption[]>> {
+  try {
+    if (!branchId) {
+      return { success: true, data: [] };
+    }
+
+    const response = await api.get("/api/clients");
+    if (!response.data.success) {
+      return { success: false, errors: { message: "Failed to fetch clients" } };
+    }
+
+    const clients = (response.data.data as any[])
+      .map((client) => {
+        const pendingServices = (client.serviceAgreements ?? [])
+          .map((agreement: any) => {
+            const service = resolveAgreementService(client, agreement);
+            const subService = resolveAgreementSubService(client, agreement);
+            const agreementBranchId =
+              service?.branchId ?? service?.branch?.id ?? null;
+            const serviceStatus = agreement.serviceStatus ?? "pending";
+
+            if (serviceStatus === "completed") return null;
+            if (agreementBranchId !== branchId) return null;
+
+            const serviceName = service?.serviceName ?? "";
+            const subServiceName = subService?.name ?? "";
+            if (!serviceName) return null;
+
+            const label = subServiceName
+              ? `${serviceName} — ${subServiceName}`
+              : serviceName;
+
+            return {
+              agreementId: agreement.id,
+              label,
+              serviceName,
+              subServiceName,
+            };
+          })
+          .filter(Boolean) as TaskFormClientOption["pendingServices"];
+
+        if (!pendingServices.length) return null;
+
+        return {
+          id: String(client.id),
+          institution: client.institution,
+          pendingServices,
+        };
+      })
+      .filter(Boolean) as TaskFormClientOption[];
+
+    return { success: true, data: clients };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}
 
 export async function getTaskFormBranchOptions(): Promise<
   ActionResponse<{
@@ -22,7 +110,10 @@ export async function getTaskFormBranchOptions(): Promise<
       return { success: false, errors: { message: "Unauthorized" } };
     }
 
-    const user = session.data.user as { branchId?: string | null };
+    const user = session.data.user as {
+      branchId?: string | null;
+      role?: string | null;
+    };
     const branchesRes = await getAllBranches();
     const activeBranches = (branchesRes.data ?? []).filter(
       (branch) => branch.isActive !== false,
@@ -38,7 +129,11 @@ export async function getTaskFormBranchOptions(): Promise<
       }
     }
 
-    const seesAllBranches = isMainBranch(userBranch);
+    const seesAllBranches = seesAllBranchesForUser(
+      user.role,
+      userBranch,
+      user.branchId,
+    );
     const branches = seesAllBranches
       ? activeBranches
       : user.branchId
@@ -48,7 +143,7 @@ export async function getTaskFormBranchOptions(): Promise<
     const defaultBranchId =
       user.branchId && branches.some((branch) => branch.id === user.branchId)
         ? user.branchId
-        : (branches.find((branch) => branch.isMain)?.id ?? branches[0]?.id ?? "");
+        : (branches.find((branch) => branch.usesRootLogin)?.id ?? branches[0]?.id ?? "");
 
     return {
       success: true,
@@ -143,15 +238,10 @@ export async function getAllAssignees({
         users = users.filter((u: { branchId?: string | null }) => u.branchId === branchId);
       }
 
-      if (currentUserRole === "superadmin") {
-        users = users.filter((u: { id: string }) => u.id !== currentUserId);
-      } else if (currentUserRole === "admin") {
-        users = users.filter(
-          (u: { role?: string; id: string }) =>
-            u.role !== "superadmin" && u.id !== currentUserId,
-        );
-      } else {
-        users = [];
+      if (currentUserRole === "admin") {
+        users = users.filter((u: { role?: string }) => u.role !== "superadmin");
+      } else if (currentUserRole === "user") {
+        users = users.filter((u: { id: string }) => u.id === currentUserId);
       }
 
       const data = users.map((u: {

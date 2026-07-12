@@ -1,4 +1,8 @@
 import { prisma } from "./prisma.js";
+import {
+  filterUsersForBranchNotification,
+  getMainBranch,
+} from "./branch-scope.js";
 
 function createNotificationId() {
   return Math.random().toString(36).substring(2, 15);
@@ -33,16 +37,35 @@ export async function createNotificationForAdmins({
   deadline,
   type,
   excludeUserId,
+  branchId,
 }) {
   const admins = await prisma.user.findMany({
     where: {
       role: { in: ["admin", "superadmin"] },
       ...(excludeUserId ? { id: { not: excludeUserId } } : {}),
     },
-    select: { id: true },
+    select: { id: true, branchId: true, role: true },
   });
 
-  for (const admin of admins) {
+  let eventBranchId = branchId ?? null;
+  if (!eventBranchId && excludeUserId) {
+    const actor = await prisma.user.findUnique({
+      where: { id: excludeUserId },
+      select: { branchId: true },
+    });
+    eventBranchId = actor?.branchId ?? null;
+  }
+  if (!eventBranchId) {
+    const mainBranch = await getMainBranch();
+    eventBranchId = mainBranch?.id ?? null;
+  }
+
+  const recipients = await filterUsersForBranchNotification(
+    admins,
+    eventBranchId,
+  );
+
+  for (const admin of recipients) {
     try {
       await createNotification({
         taskId,

@@ -38,6 +38,87 @@ enum TaskPriority {
   urgent
 }
 
+enum ClientServiceStatus {
+  pending
+  completed
+}
+
+// ─── Media agency client & workflow enums ───────────────────────────────────
+
+enum ClientType {
+  ONE_TIME
+  MANAGED_ON_DEMAND
+  MANAGED_RECURRING
+}
+
+enum ProjectStatus {
+  LEAD
+  PENDING_PAYMENT
+  ACTIVE
+  REVIEW
+  COMPLETED
+  CANCELLED
+}
+
+enum ProjectPriority {
+  low
+  medium
+  high
+  urgent
+}
+
+enum ContentType {
+  VIDEO
+  GRAPHIC_DESIGN
+  PHOTOGRAPHY
+  SOCIAL_MEDIA_POST
+  MARKETING_CAMPAIGN
+  OTHER
+}
+
+enum ContentRequestStatus {
+  DRAFT
+  PLANNING
+  PRODUCTION
+  EDITING
+  REVIEW
+  APPROVED
+  SCHEDULED
+  PUBLISHED
+  COMPLETED
+}
+
+enum RecurrenceType {
+  DAILY
+  WEEKLY
+  MONTHLY
+  CUSTOM
+}
+
+enum ContractStatus {
+  DRAFT
+  ACTIVE
+  EXPIRED
+  TERMINATED
+  RENEWED
+}
+
+enum ContentCycleStatus {
+  PLANNED
+  IN_PROGRESS
+  REVIEW
+  COMPLETED
+  SKIPPED
+}
+
+enum WorkflowStage {
+  pending
+  in_progress
+  review
+  completed
+  blocked
+}
+
 enum EntityType {
   users
   tasks
@@ -48,6 +129,13 @@ enum EntityType {
   invoice
   tax
   branches
+  departments
+  projects
+  content_requests
+  recurring_schedules
+  content_cycles
+  workflow_templates
+  contracts
 }
 
 model User {
@@ -80,9 +168,16 @@ model User {
   incomeTransaction  IncomeTransaction[]
   expenseTransaction ExpenseTransaction[]
 
-  reciever   UserSalary[] @relation(name: "Reciever")
-  registerer UserSalary[] @relation(name: "Registerer")
-  auditLogs  AuditLog[]
+  reciever                  UserSalary[]             @relation(name: "Reciever")
+  registerer                UserSalary[]             @relation(name: "Registerer")
+  auditLogs                 AuditLog[]
+  managedClients            Client[]                 @relation("ClientAccountManager")
+  createdProjects           Project[]                @relation("ProjectCreatedBy")
+  contentRequestsCreated    ContentRequest[]         @relation("ContentRequestCreatedBy")
+  contentRequestAssignments ContentRequestAssignee[]
+  assignedRecurringSteps    RecurringScheduleStep[]  @relation("RecurringStepAssignee")
+  createdContracts          Contract[]               @relation("ContractCreatedBy")
+  uploadedContractDocuments ContractDocument[]       @relation("ContractDocumentUploadedBy")
 
   @@map("Users")
 }
@@ -143,17 +238,37 @@ model Client {
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
 
-  institution String
-  email       String @unique
-  phone       String @unique
-  source      String
+  institution       String
+  companyName       String?
+  contactPerson     String?
+  email             String     @unique
+  phone             String     @unique
+  address           String?    @db.Text
+  source            String
+  clientType        ClientType @default(ONE_TIME)
+  contractStartDate DateTime?
+  contractEndDate   DateTime?
+  monthlyBudget     Float?
+  notes             String?    @db.Text
+  isActive          Boolean    @default(true)
 
-  clientService    ClientService[]
-  clientTask       ClientTask[]
-  clientSubService ClientSubService[]
+  branchId         String?
+  branch           Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  accountManagerId String?
+  accountManager   User?   @relation("ClientAccountManager", fields: [accountManagerId], references: [id], onDelete: SetNull)
 
-  serviceAgreements IncomeServiceAgreement[]
+  clientService      ClientService[]
+  clientTask         ClientTask[]
+  clientSubService   ClientSubService[]
+  serviceAgreements  IncomeServiceAgreement[]
+  projects           Project[]
+  contentRequests    ContentRequest[]
+  recurringSchedules RecurringSchedule[]
+  contentCycles      ContentCycle[]
+  contracts          Contract[]
 
+  @@index([clientType])
+  @@index([branchId])
   @@map("clients")
 }
 
@@ -194,21 +309,45 @@ model Branch {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name           String  @unique
-  slug           String? @unique
-  description    String?
-  location       String?
-  phone          String?
-  logoUrl        String?
-  primaryColor   String  @default("#651210")
-  secondaryColor String  @default("#ec4724")
-  customDomain   String? @unique
-  isActive       Boolean @default(true)
+  name            String  @unique
+  slug            String? @unique
+  description     String?
+  location        String?
+  phone           String?
+  logoUrl         String?
+  iconLogoUrl     String?
+  usesRootLogin   Boolean @default(false)
+  slugClearedOnce Boolean @default(false)
+  primaryColor    String  @default("#651210")
+  secondaryColor  String  @default("#ec4724")
+  customDomain    String? @unique
+  isActive        Boolean @default(true)
 
-  users    User[]
-  services Service[]
+  users              User[]
+  services           Service[]
+  departments        Department[]
+  clients            Client[]
+  projects           Project[]
+  contentRequests    ContentRequest[]
+  recurringSchedules RecurringSchedule[]
+  contracts          Contract[]
 
   @@map("branches")
+}
+
+model Department {
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  description String? @db.Text
+  isActive    Boolean @default(true)
+  branchId    String
+  branch      Branch  @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@unique([name, branchId])
+  @@map("departments")
 }
 
 model ClientSubService {
@@ -240,21 +379,41 @@ model ClientService {
 model Task {
   id        String    @id
   createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 
-  description String
-  status      TaskStatus
-  priority    TaskPriority @default(normal)
-  department  String
-  deadline    DateTime
-  progress    Int          @default(0)
+  description   String
+  status        TaskStatus
+  priority      TaskPriority  @default(normal)
+  department    String
+  deadline      DateTime?
+  progress      Int           @default(0)
+  workflowStage WorkflowStage @default(pending)
+  sortOrder     Int           @default(0)
 
   assgineeId         String
   user               User    @relation("TaskAssignee", fields: [assgineeId], references: [id], onDelete: Cascade)
   supervisor         String  @default("")
   serviceInformation String?
+  isPersonal         Boolean @default(false)
 
-  clientTask ClientTask[]
+  projectId        String?
+  project          Project?                @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  contentRequestId String?
+  contentRequest   ContentRequest?         @relation(fields: [contentRequestId], references: [id], onDelete: SetNull)
+  contentCycleId   String?
+  contentCycle     ContentCycle?           @relation(fields: [contentCycleId], references: [id], onDelete: SetNull)
+  agreementId      String?
+  agreement        IncomeServiceAgreement? @relation(fields: [agreementId], references: [id], onDelete: SetNull)
+  workflowStepId   String?
+  workflowStep     WorkflowTemplateStep?   @relation(fields: [workflowStepId], references: [id], onDelete: SetNull)
 
+  clientTask          ClientTask[]
+  recurringOccurrence RecurringTaskOccurrence?
+
+  @@index([projectId])
+  @@index([contentRequestId])
+  @@index([contentCycleId])
+  @@index([agreementId])
   @@map("tasks")
 }
 
@@ -392,7 +551,15 @@ model IncomeServiceAgreement {
   clientId String
   client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  serviceStatus ClientServiceStatus @default(pending)
+
   incomeTransaction IncomeTransaction[]
+  tasks             Task[]
+
+  @@index([projectId])
 }
 
 model ExpenseServiceAgreement {
@@ -535,4 +702,260 @@ model AuditLog {
   description String?  @db.Text
 
   @@map("audit_logs")
+}
+
+// ─── Media agency: projects, content, recurring, workflows ───────────────────
+
+model Project {
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  description String?         @db.Text
+  projectType ContentType     @default(OTHER)
+  status      ProjectStatus   @default(LEAD)
+  priority    ProjectPriority @default(medium)
+  startDate   DateTime?
+  dueDate     DateTime?
+
+  clientId    String
+  client      Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  branchId    String?
+  branch      Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  createdById String?
+  createdBy   User?   @relation("ProjectCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  serviceAgreements IncomeServiceAgreement[]
+  contentRequests   ContentRequest[]
+  tasks             Task[]
+  contracts         Contract[]
+
+  @@index([clientId])
+  @@index([status])
+  @@index([branchId])
+  @@map("projects")
+}
+
+model Contract {
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  contractNumber String         @unique
+  startDate      DateTime?
+  endDate        DateTime?
+  renewalDate    DateTime?
+  totalAmount    Float?
+  paymentTerms   String?        @db.Text
+  status         ContractStatus @default(ACTIVE)
+  notes          String?        @db.Text
+
+  clientId    String
+  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  branchId    String?
+  branch      Branch?  @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  createdById String?
+  createdBy   User?    @relation("ContractCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  documents ContractDocument[]
+
+  @@index([clientId])
+  @@index([projectId])
+  @@index([status])
+  @@index([branchId])
+  @@map("contracts")
+}
+
+model ContractDocument {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  contractId   String
+  contract     Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  version      Int
+  fileName     String
+  fileUrl      String
+  fileSize     Int?
+  mimeType     String   @default("application/pdf")
+  uploadedById String?
+  uploadedBy   User?    @relation("ContractDocumentUploadedBy", fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  @@unique([contractId, version])
+  @@index([contractId])
+  @@map("contract_documents")
+}
+
+model ContentRequest {
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title       String
+  description String?              @db.Text
+  contentType ContentType
+  status      ContentRequestStatus @default(DRAFT)
+  deadline    DateTime?
+
+  clientId    String
+  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  projectId   String?
+  project     Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  branchId    String?
+  branch      Branch?  @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  createdById String?
+  createdBy   User?    @relation("ContentRequestCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  assignees ContentRequestAssignee[]
+  tasks     Task[]
+
+  @@index([clientId])
+  @@index([status])
+  @@index([contentType])
+  @@map("content_requests")
+}
+
+model ContentRequestAssignee {
+  id               String         @id @default(uuid())
+  createdAt        DateTime       @default(now())
+  contentRequestId String
+  contentRequest   ContentRequest @relation(fields: [contentRequestId], references: [id], onDelete: Cascade)
+  userId           String
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role             String?
+
+  @@unique([contentRequestId, userId])
+  @@map("content_request_assignees")
+}
+
+model RecurringSchedule {
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name              String
+  recurrenceType    RecurrenceType
+  customRule        String?        @db.Text
+  contentType       ContentType    @default(OTHER)
+  startDate         DateTime
+  endDate           DateTime?
+  isActive          Boolean        @default(true)
+  autoGenerateTasks Boolean        @default(true)
+
+  clientId String
+  client   Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  branchId String?
+  branch   Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
+
+  steps  RecurringScheduleStep[]
+  cycles ContentCycle[]
+
+  @@index([clientId])
+  @@index([isActive])
+  @@map("recurring_schedules")
+}
+
+/// Day-of-week steps inside a recurring schedule (e.g. Monday = shoot, Tuesday = edit)
+model RecurringScheduleStep {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  scheduleId   String
+  schedule     RecurringSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  dayOfWeek    Int?
+  dayOfMonth   Int?
+  intervalDays Int?
+  stepOrder    Int               @default(0)
+  label        String
+  contentType  ContentType?
+  department   String?
+  supervisor   String            @default("")
+  assigneeId   String?
+  assignee     User?             @relation("RecurringStepAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  templateId   String?
+  template     WorkflowTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+
+  occurrences RecurringTaskOccurrence[]
+
+  @@index([scheduleId])
+  @@index([assigneeId])
+  @@map("recurring_schedule_steps")
+}
+
+/// One generated task instance per schedule step per calendar day (prevents duplicates)
+model RecurringTaskOccurrence {
+  id             String                @id @default(uuid())
+  createdAt      DateTime              @default(now())
+  scheduleStepId String
+  scheduleStep   RecurringScheduleStep @relation(fields: [scheduleStepId], references: [id], onDelete: Cascade)
+  scheduledDate  DateTime              @db.Date
+  taskId         String                @unique
+  task           Task                  @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@unique([scheduleStepId, scheduledDate])
+  @@index([scheduledDate])
+  @@map("recurring_task_occurrences")
+}
+
+model ContentCycle {
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cycleNumber Int
+  periodStart DateTime
+  periodEnd   DateTime
+  status      ContentCycleStatus @default(PLANNED)
+
+  scheduleId String?
+  schedule   RecurringSchedule? @relation(fields: [scheduleId], references: [id], onDelete: SetNull)
+  clientId   String
+  client     Client             @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  tasks Task[]
+
+  @@index([clientId])
+  @@index([scheduleId])
+  @@map("content_cycles")
+}
+
+model WorkflowTemplate {
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name        String
+  description String?      @db.Text
+  clientType  ClientType?
+  contentType ContentType?
+  isDefault   Boolean      @default(false)
+  isActive    Boolean      @default(true)
+
+  steps          WorkflowTemplateStep[]
+  recurringSteps RecurringScheduleStep[]
+
+  @@index([clientType, contentType])
+  @@map("workflow_templates")
+}
+
+model WorkflowTemplateStep {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  templateId      String
+  template        WorkflowTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  stepOrder       Int
+  taskName        String
+  description     String?          @db.Text
+  department      String?
+  defaultPriority TaskPriority     @default(normal)
+  estimatedDays   Int?
+  workflowStage   WorkflowStage    @default(pending)
+
+  generatedTasks Task[]
+
+  @@unique([templateId, stepOrder])
+  @@map("workflow_template_steps")
 }

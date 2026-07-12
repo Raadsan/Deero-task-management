@@ -1,8 +1,11 @@
 import { prisma } from "../lib/prisma.js";
+import { getScope, salaryBranchWhere } from "../lib/branch-scope.js";
 
 export const getAllSalaries = async (req, res) => {
   try {
+    const scope = getScope(req);
     const salaries = await prisma.userSalary.findMany({
+      where: salaryBranchWhere(scope),
       include: { recieverUser: true, registeredUser: true, UserSalaryDetails: true },
       orderBy: { createdAt: "desc" },
     });

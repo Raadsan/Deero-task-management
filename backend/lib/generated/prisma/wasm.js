@@ -192,9 +192,21 @@ exports.Prisma.ClientScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   institution: 'institution',
+  companyName: 'companyName',
+  contactPerson: 'contactPerson',
   email: 'email',
   phone: 'phone',
-  source: 'source'
+  address: 'address',
+  source: 'source',
+  clientType: 'clientType',
+  contractStartDate: 'contractStartDate',
+  contractEndDate: 'contractEndDate',
+  monthlyBudget: 'monthlyBudget',
+  notes: 'notes',
+  isActive: 'isActive',
+  isDraft: 'isDraft',
+  branchId: 'branchId',
+  accountManagerId: 'accountManagerId'
 };
 
 exports.Prisma.ServiceScalarFieldEnum = {
@@ -222,7 +234,6 @@ exports.Prisma.BranchScalarFieldEnum = {
   phone: 'phone',
   logoUrl: 'logoUrl',
   iconLogoUrl: 'iconLogoUrl',
-  isMain: 'isMain',
   usesRootLogin: 'usesRootLogin',
   slugClearedOnce: 'slugClearedOnce',
   primaryColor: 'primaryColor',
@@ -257,15 +268,24 @@ exports.Prisma.ClientServiceScalarFieldEnum = {
 exports.Prisma.TaskScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
   description: 'description',
   status: 'status',
   priority: 'priority',
   department: 'department',
   deadline: 'deadline',
   progress: 'progress',
+  workflowStage: 'workflowStage',
+  sortOrder: 'sortOrder',
   assgineeId: 'assgineeId',
   supervisor: 'supervisor',
-  serviceInformation: 'serviceInformation'
+  serviceInformation: 'serviceInformation',
+  isPersonal: 'isPersonal',
+  projectId: 'projectId',
+  contentRequestId: 'contentRequestId',
+  contentCycleId: 'contentCycleId',
+  agreementId: 'agreementId',
+  workflowStepId: 'workflowStepId'
 };
 
 exports.Prisma.ClientTaskScalarFieldEnum = {
@@ -352,6 +372,7 @@ exports.Prisma.IncomeServiceAgreementScalarFieldEnum = {
   serviceId: 'serviceId',
   subServiceId: 'subServiceId',
   clientId: 'clientId',
+  projectId: 'projectId',
   serviceStatus: 'serviceStatus'
 };
 
@@ -458,6 +479,170 @@ exports.Prisma.AuditLogScalarFieldEnum = {
   description: 'description'
 };
 
+exports.Prisma.ProjectScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  name: 'name',
+  description: 'description',
+  projectType: 'projectType',
+  status: 'status',
+  priority: 'priority',
+  startDate: 'startDate',
+  dueDate: 'dueDate',
+  clientId: 'clientId',
+  branchId: 'branchId',
+  createdById: 'createdById'
+};
+
+exports.Prisma.ContractScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  contractNumber: 'contractNumber',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  renewalDate: 'renewalDate',
+  totalAmount: 'totalAmount',
+  monthlyAmount: 'monthlyAmount',
+  billingDay: 'billingDay',
+  paymentTerms: 'paymentTerms',
+  status: 'status',
+  notes: 'notes',
+  clientId: 'clientId',
+  projectId: 'projectId',
+  branchId: 'branchId',
+  createdById: 'createdById'
+};
+
+exports.Prisma.ClientInstallmentScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  sourceKey: 'sourceKey',
+  periodYear: 'periodYear',
+  periodMonth: 'periodMonth',
+  dueDate: 'dueDate',
+  dueAmount: 'dueAmount',
+  paidAmount: 'paidAmount',
+  status: 'status',
+  notes: 'notes',
+  clientId: 'clientId',
+  contractId: 'contractId'
+};
+
+exports.Prisma.ContractDocumentScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  contractId: 'contractId',
+  version: 'version',
+  fileName: 'fileName',
+  fileUrl: 'fileUrl',
+  fileSize: 'fileSize',
+  mimeType: 'mimeType',
+  uploadedById: 'uploadedById'
+};
+
+exports.Prisma.ContentRequestScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  title: 'title',
+  description: 'description',
+  contentType: 'contentType',
+  status: 'status',
+  deadline: 'deadline',
+  clientId: 'clientId',
+  projectId: 'projectId',
+  branchId: 'branchId',
+  createdById: 'createdById'
+};
+
+exports.Prisma.ContentRequestAssigneeScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  contentRequestId: 'contentRequestId',
+  userId: 'userId',
+  role: 'role'
+};
+
+exports.Prisma.RecurringScheduleScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  name: 'name',
+  recurrenceType: 'recurrenceType',
+  customRule: 'customRule',
+  contentType: 'contentType',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  isActive: 'isActive',
+  autoGenerateTasks: 'autoGenerateTasks',
+  clientId: 'clientId',
+  branchId: 'branchId'
+};
+
+exports.Prisma.RecurringScheduleStepScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  scheduleId: 'scheduleId',
+  dayOfWeek: 'dayOfWeek',
+  dayOfMonth: 'dayOfMonth',
+  intervalDays: 'intervalDays',
+  stepOrder: 'stepOrder',
+  label: 'label',
+  contentType: 'contentType',
+  department: 'department',
+  supervisor: 'supervisor',
+  assigneeId: 'assigneeId',
+  templateId: 'templateId'
+};
+
+exports.Prisma.RecurringTaskOccurrenceScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  scheduleStepId: 'scheduleStepId',
+  scheduledDate: 'scheduledDate',
+  taskId: 'taskId'
+};
+
+exports.Prisma.ContentCycleScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  cycleNumber: 'cycleNumber',
+  periodStart: 'periodStart',
+  periodEnd: 'periodEnd',
+  status: 'status',
+  scheduleId: 'scheduleId',
+  clientId: 'clientId'
+};
+
+exports.Prisma.WorkflowTemplateScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  name: 'name',
+  description: 'description',
+  clientType: 'clientType',
+  contentType: 'contentType',
+  isDefault: 'isDefault',
+  isActive: 'isActive'
+};
+
+exports.Prisma.WorkflowTemplateStepScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  templateId: 'templateId',
+  stepOrder: 'stepOrder',
+  taskName: 'taskName',
+  description: 'description',
+  department: 'department',
+  defaultPriority: 'defaultPriority',
+  estimatedDays: 'estimatedDays',
+  workflowStage: 'workflowStage'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -467,6 +652,12 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+exports.ClientType = exports.$Enums.ClientType = {
+  ONE_TIME: 'ONE_TIME',
+  MANAGED_ON_DEMAND: 'MANAGED_ON_DEMAND',
+  MANAGED_RECURRING: 'MANAGED_RECURRING'
+};
+
 exports.TaskStatus = exports.$Enums.TaskStatus = {
   pending: 'pending',
   overdue: 'overdue',
@@ -479,6 +670,14 @@ exports.TaskPriority = exports.$Enums.TaskPriority = {
   urgent: 'urgent'
 };
 
+exports.WorkflowStage = exports.$Enums.WorkflowStage = {
+  pending: 'pending',
+  in_progress: 'in_progress',
+  review: 'review',
+  completed: 'completed',
+  blocked: 'blocked'
+};
+
 exports.EntityType = exports.$Enums.EntityType = {
   users: 'users',
   tasks: 'tasks',
@@ -489,12 +688,85 @@ exports.EntityType = exports.$Enums.EntityType = {
   invoice: 'invoice',
   tax: 'tax',
   branches: 'branches',
-  departments: 'departments'
+  departments: 'departments',
+  projects: 'projects',
+  content_requests: 'content_requests',
+  recurring_schedules: 'recurring_schedules',
+  content_cycles: 'content_cycles',
+  workflow_templates: 'workflow_templates',
+  contracts: 'contracts'
 };
 
 exports.ClientServiceStatus = exports.$Enums.ClientServiceStatus = {
   pending: 'pending',
   completed: 'completed'
+};
+
+exports.ContentType = exports.$Enums.ContentType = {
+  VIDEO: 'VIDEO',
+  GRAPHIC_DESIGN: 'GRAPHIC_DESIGN',
+  PHOTOGRAPHY: 'PHOTOGRAPHY',
+  SOCIAL_MEDIA_POST: 'SOCIAL_MEDIA_POST',
+  MARKETING_CAMPAIGN: 'MARKETING_CAMPAIGN',
+  OTHER: 'OTHER'
+};
+
+exports.ProjectStatus = exports.$Enums.ProjectStatus = {
+  LEAD: 'LEAD',
+  PENDING_PAYMENT: 'PENDING_PAYMENT',
+  ACTIVE: 'ACTIVE',
+  REVIEW: 'REVIEW',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.ProjectPriority = exports.$Enums.ProjectPriority = {
+  low: 'low',
+  medium: 'medium',
+  high: 'high',
+  urgent: 'urgent'
+};
+
+exports.ContractStatus = exports.$Enums.ContractStatus = {
+  DRAFT: 'DRAFT',
+  ACTIVE: 'ACTIVE',
+  EXPIRED: 'EXPIRED',
+  TERMINATED: 'TERMINATED',
+  RENEWED: 'RENEWED'
+};
+
+exports.InstallmentStatus = exports.$Enums.InstallmentStatus = {
+  PENDING: 'PENDING',
+  PARTIAL: 'PARTIAL',
+  PAID: 'PAID',
+  OVERDUE: 'OVERDUE'
+};
+
+exports.ContentRequestStatus = exports.$Enums.ContentRequestStatus = {
+  DRAFT: 'DRAFT',
+  PLANNING: 'PLANNING',
+  PRODUCTION: 'PRODUCTION',
+  EDITING: 'EDITING',
+  REVIEW: 'REVIEW',
+  APPROVED: 'APPROVED',
+  SCHEDULED: 'SCHEDULED',
+  PUBLISHED: 'PUBLISHED',
+  COMPLETED: 'COMPLETED'
+};
+
+exports.RecurrenceType = exports.$Enums.RecurrenceType = {
+  DAILY: 'DAILY',
+  WEEKLY: 'WEEKLY',
+  MONTHLY: 'MONTHLY',
+  CUSTOM: 'CUSTOM'
+};
+
+exports.ContentCycleStatus = exports.$Enums.ContentCycleStatus = {
+  PLANNED: 'PLANNED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  REVIEW: 'REVIEW',
+  COMPLETED: 'COMPLETED',
+  SKIPPED: 'SKIPPED'
 };
 
 exports.Prisma.ModelName = {
@@ -529,7 +801,19 @@ exports.Prisma.ModelName = {
   NavSubMenu: 'NavSubMenu',
   RoleMenuAccess: 'RoleMenuAccess',
   RoleSubMenuAccess: 'RoleSubMenuAccess',
-  AuditLog: 'AuditLog'
+  AuditLog: 'AuditLog',
+  Project: 'Project',
+  Contract: 'Contract',
+  ClientInstallment: 'ClientInstallment',
+  ContractDocument: 'ContractDocument',
+  ContentRequest: 'ContentRequest',
+  ContentRequestAssignee: 'ContentRequestAssignee',
+  RecurringSchedule: 'RecurringSchedule',
+  RecurringScheduleStep: 'RecurringScheduleStep',
+  RecurringTaskOccurrence: 'RecurringTaskOccurrence',
+  ContentCycle: 'ContentCycle',
+  WorkflowTemplate: 'WorkflowTemplate',
+  WorkflowTemplateStep: 'WorkflowTemplateStep'
 };
 
 /**

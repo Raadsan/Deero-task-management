@@ -77,20 +77,55 @@ export async function createClient(data: {
   phone: string;
   email?: string;
   source: string;
-  serviceName: string;
-  subServiceName: string;
-  base: number;
+  companyName?: string;
+  contactPerson?: string;
+  address?: string;
+  clientType?: "ONE_TIME" | "MANAGED_ON_DEMAND" | "MANAGED_RECURRING";
+  contractStartDate?: string | Date;
+  contractEndDate?: string | Date;
+  monthlyBudget?: number;
+  notes?: string;
+  branchId?: string;
+  accountManagerId?: string;
+  autoGenerateTasks?: boolean;
+  serviceName?: string;
+  subServiceName?: string;
+  base?: number;
   description?: string;
   discount?: number;
-  branchId?: string;
   createdAt?: Date;
   serviceStatus?: "pending" | "completed";
+  project?: {
+    name: string;
+    description?: string;
+    projectType?: string;
+    priority?: string;
+    dueDate?: string | Date;
+    startDate?: string | Date;
+    status?: string;
+  };
+  schedule?: {
+    name?: string;
+    recurrenceType?: string;
+    contentType?: string;
+    startDate?: string | Date;
+    endDate?: string | Date;
+    steps?: Array<{
+      dayOfWeek?: number;
+      dayOfMonth?: number;
+      label: string;
+      contentType?: string;
+      stepOrder?: number;
+      department?: string;
+    }>;
+  };
+  isDraft?: boolean;
 }): Promise<ActionResponse> {
   try {
     const response = await api.post("/api/clients", data);
     if (response.data.success) {
       revalidatePath(ROUTES.clients);
-      return { success: true };
+      return { success: true, data: response.data.data };
     }
     return { success: false, errors: { message: response.data.error } };
   } catch (error) {
@@ -107,6 +142,8 @@ export async function getAllClients(): Promise<ActionResponse<AllClients[]>> {
     if (result.success) {
       const transformed = result.data.map((client: any) => ({
         ...client,
+        clientType: client.clientType ?? "ONE_TIME",
+        isDraft: client.isDraft === true,
         createdAt: formatDate(client.createdAt),
         phone: formatPhoneNumber(client.phone, "addCountryKey"),
         serviceAgreements: mapServiceAgreements(client),

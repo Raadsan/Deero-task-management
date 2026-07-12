@@ -1,23 +1,20 @@
 "use client";
 
-import { getTaskNotifications, markNotificationAsSeen } from "@/lib/actions/task.action";
-import { SWR_CACH_KEYS } from "@/lib/constants";
+import { getTaskNotifications } from "@/lib/actions/task.action";
+import { ROUTES, SWR_CACH_KEYS } from "@/lib/constants";
 import { TaskNotification } from "@/lib/types";
-import { formatTaskDeadline } from "@/lib/utils";
-import { cn } from "@/lib/utils";
+import { cn, formatTaskDeadline } from "@/lib/utils";
 import { Bell } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 const notificationLabels: Record<TaskNotification["type"], string> = {
-  "new-assignment":
-    "You are assigned to do this task and complete it by deadline.",
-  "deadline-soon":
-    "Reminder: you are assigned to do this task and complete it by deadline.",
-  "supervisor-assignment":
-    "You are supervisor for this task. See the details below.",
+  "new-assignment": "You are assigned to do this task and complete it by deadline.",
+  "deadline-soon": "Reminder: you are assigned to do this task and complete it by deadline.",
+  "supervisor-assignment": "You are supervisor for this task. See the details below.",
   "task-completed": "Your assigned user completed this task.",
   "task-updated": "A user updated the status or progress of this task.",
   "user-login": "A user logged into the system.",
@@ -57,9 +54,19 @@ function getNotificationDetails(notification: TaskNotification) {
   };
 }
 
+function readableType(type: TaskNotification["type"]) {
+  if (type === "new-assignment") return "New Assignment";
+  if (type === "deadline-soon") return "Deadline Reminder";
+  if (type === "supervisor-assignment") return "Supervisor Assignment";
+  if (type === "task-completed") return "Task Completed";
+  if (type === "task-updated") return "Task Updated";
+  return "User Login";
+}
+
 export default function TaskNotifications() {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
@@ -68,20 +75,12 @@ export default function TaskNotifications() {
   const { data: notificationsResponse, mutate } = useSWR(
     SWR_CACH_KEYS.taskNotifications.key,
     getTaskNotifications,
-    {
-      refreshInterval: 60_000,
-    },
+    { refreshInterval: 60_000 },
   );
 
-  const unreadNotifications = notificationsResponse?.data ?? [];
-  const hasNotifications = unreadNotifications.length > 0;
-
-  const markAsRead = async (idsToMark: string[]) => {
-    if (!idsToMark.length) return;
-
-    await Promise.all(idsToMark.map((id) => markNotificationAsSeen(id)));
-    await mutate();
-  };
+  const notifications = notificationsResponse?.data ?? [];
+  const unreadCount = notifications.filter((n) => !Boolean(Number(n.isSeen ?? 0))).length;
+  const hasNotifications = notifications.length > 0;
 
   const triggerButton = (
     <Button
@@ -92,9 +91,9 @@ export default function TaskNotifications() {
       className="relative size-8 rounded-full text-zinc-700 hover:bg-zinc-100"
     >
       <Bell className="size-4" strokeWidth={1.75} />
-      {hasNotifications ? (
+      {unreadCount > 0 ? (
         <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-0.5 text-[9px] font-bold leading-none text-white">
-          {unreadNotifications.length > 9 ? "9+" : unreadNotifications.length}
+          {unreadCount > 9 ? "9+" : unreadCount}
         </span>
       ) : null}
     </Button>
@@ -105,40 +104,26 @@ export default function TaskNotifications() {
   }
 
   return (
-    <Popover
-      open={open}
-      onOpenChange={(nextOpen) => {
-        if (!nextOpen && open) {
-          markAsRead(unreadNotifications.map((notification) => notification.id));
-        }
-        setOpen(nextOpen);
-      }}
-    >
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>{triggerButton}</PopoverTrigger>
-      <PopoverContent
-        align="end"
-        className="w-[360px] border-zinc-200 bg-white p-0"
-      >
+      <PopoverContent align="end" className="w-[360px] border-zinc-200 bg-white p-0">
         <div className="border-b border-zinc-200 px-4 py-3">
           <h4 className="text-sm font-semibold text-zinc-900">Notifications</h4>
         </div>
 
         {hasNotifications ? (
           <div className="max-h-[360px] space-y-3 overflow-y-auto px-4 py-3">
-            {unreadNotifications.map((notification) => {
+            {notifications.map((notification) => {
               const details = getNotificationDetails(notification);
-
               return (
-                <div
-                  key={notification.id}
-                  className="space-y-1 rounded-md border border-zinc-200 p-2.5"
-                >
+                <div key={notification.id} className="space-y-1 rounded-md border border-zinc-200 p-2.5">
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
+                    {readableType(notification.type)}
+                  </p>
                   <p className="text-xs font-medium text-zinc-600">
                     {notificationLabels[notification.type]}
                   </p>
-                  <p className="text-sm font-semibold text-zinc-900">
-                    {details.primary}
-                  </p>
+                  <p className="text-sm font-semibold text-zinc-900">User: {details.primary}</p>
                   <p
                     className={cn(
                       "text-xs text-zinc-700",
@@ -157,10 +142,21 @@ export default function TaskNotifications() {
             })}
           </div>
         ) : (
-          <div className="px-4 py-8 text-center text-sm text-zinc-500">
-            No new notifications.
-          </div>
+          <div className="px-4 py-8 text-center text-sm text-zinc-500">No new notifications.</div>
         )}
+
+        <div className="border-t border-zinc-200 px-4 py-2">
+          <button
+            type="button"
+            className="block w-full text-center text-xs font-semibold text-primary hover:underline"
+            onClick={() => {
+              setOpen(false);
+              router.push(ROUTES.notifications);
+            }}
+          >
+            Go to notifications page
+          </button>
+        </div>
       </PopoverContent>
     </Popover>
   );

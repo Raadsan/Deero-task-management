@@ -1,7 +1,8 @@
 "use client";
 
-import { getNavMenusByRole, NavMenuItem } from "@/lib/actions/config.action";
+import { getNavMenusByRole, getConfigRoles, NavMenuItem } from "@/lib/actions/config.action";
 import { getUserSession } from "@/lib/actions/auth.action";
+import { resolveConfigRoleId } from "@/lib/role-options";
 import { createContext, useContext, useEffect, useState } from "react";
 
 type PermissionContextType = {
@@ -62,7 +63,7 @@ export function PermissionProvider({
   const [menus, setMenus] = useState<NavMenuItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isPrivileged, setIsPrivileged] = useState(
-    initialRole === "admin" || initialRole === "superadmin",
+    initialRole === "superadmin",
   );
 
   const refresh = async () => {
@@ -72,10 +73,15 @@ export function PermissionProvider({
       const user = session.data?.user as
         | { role?: string; roleId?: string }
         | undefined;
-      const roleId = user?.roleId ?? null;
+      let roleId = user?.roleId ?? null;
       const role = user?.role ?? null;
 
-      const privileged = role === "admin" || role === "superadmin";
+      if (!roleId && role) {
+        const rolesRes = await getConfigRoles();
+        roleId = resolveConfigRoleId(rolesRes?.data, role) ?? null;
+      }
+
+      const privileged = role === "superadmin";
       setIsPrivileged(!!privileged);
 
       if (roleId) {
@@ -94,8 +100,7 @@ export function PermissionProvider({
       if (initialRoleId) {
         setLoading(true);
         try {
-          const privileged =
-            initialRole === "admin" || initialRole === "superadmin";
+          const privileged = initialRole === "superadmin";
           setIsPrivileged(!!privileged);
           const res = await getNavMenusByRole(initialRoleId);
           if (res.success) setMenus(res.data ?? []);

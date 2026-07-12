@@ -1,10 +1,22 @@
 import { Router } from "express";
-import { getAllClients, getClientById, createClient, addClientService, updateClient, deleteClient, getClientSourcesData, deleteClientAgreement, updateClientAgreement } from "../controllers/clientcontroller.js";
+import {
+  getAllClients,
+  getClientById,
+  createClient,
+  addClientService,
+  updateClient,
+  deleteClient,
+  getClientSourcesData,
+  getClientMetrics,
+  deleteClientAgreement,
+  updateClientAgreement,
+} from "../controllers/clientcontroller.js";
 
 const router = Router();
 
 router.get("/", getAllClients);
 router.get("/sources/info", getClientSourcesData);
+router.get("/metrics", getClientMetrics);
 router.get("/:id", getClientById);
 router.post("/", createClient);
 router.post("/:id/services", addClientService);

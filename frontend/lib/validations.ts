@@ -55,7 +55,7 @@ export const TaskSchema = z.object({
   department: z.string().min(1, "Department is required"),
   priority: z.nativeEnum(TaskPriority),
   assigneeId: z.string(),
-  supervisor: z.string().min(1, "Supervisor is required"),
+  supervisor: z.string().optional(),
   status: z.nativeEnum(TaskStatus),
   deadline: z
     .date({
@@ -67,7 +67,63 @@ export const TaskSchema = z.object({
   progress: z.number().min(0).max(100).optional().default(0),
 });
 
-export const EditCreateUserSchema = z.object({
+export const CreateTaskSchema = z
+  .object({
+    taskKind: z.enum(["client", "general"]).optional(),
+    taskName: z.string().optional(),
+    description: z
+      .string()
+      .min(1, "Description is required.")
+      .max(2000, "Description must not exceed 2000 characters."),
+    clientInstitutionId: z.string().optional(),
+    serviceInformation: z.string().optional(),
+    department: z.string().min(1, "Department is required"),
+    priority: z.nativeEnum(TaskPriority),
+    assigneeId: z.string().min(1, "Assignee is required."),
+    supervisor: z.string().optional(),
+    status: z.nativeEnum(TaskStatus).default(TaskStatus.pending),
+    deadline: z.date().optional(),
+    progress: z.number().min(0).max(100).optional().default(0),
+  })
+  .superRefine((data, ctx) => {
+    if (!data.taskKind) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["taskKind"],
+        message: "Please choose whether this task is for a client or general.",
+      });
+      return;
+    }
+
+    if (data.taskKind === "client") {
+      if (!data.clientInstitutionId?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["clientInstitutionId"],
+          message: "Client is required.",
+        });
+      }
+      if (!data.serviceInformation?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["serviceInformation"],
+          message: "Service is required.",
+        });
+      }
+    }
+
+    if (data.taskKind === "general") {
+      if (!data.taskName?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["taskName"],
+          message: "Task name is required.",
+        });
+      }
+    }
+  });
+
+const EditCreateUserFieldsSchema = z.object({
   name: z
     .string()
     .min(3, "Name is required.")
@@ -78,14 +134,14 @@ export const EditCreateUserSchema = z.object({
     ),
   gender: z.string().min(1, "Gender is Required"),
   department: z.string().optional(),
-  branchId: z.string().min(1, "Branch is required"),
+  branchId: z.string().optional(),
   status: z.enum(["active", "inactive"]).optional(),
   email: z
     .email("Invalid email address.")
     .min(5, "Email is required.")
     .max(50, "Email must not exceed 50 characters."),
 
-  role: z.nativeEnum(UserRole),
+  role: z.string().min(1, "Role is required."),
 
   password: z
     .string()
@@ -102,7 +158,25 @@ export const EditCreateUserSchema = z.object({
     ),
 });
 
-export const AdvancedEditUserSchema = EditCreateUserSchema.pick({
+function refineUserBranchRequired(
+  data: z.infer<typeof EditCreateUserFieldsSchema>,
+  ctx: z.RefinementCtx,
+) {
+  const role = String(data.role ?? "").trim().toLowerCase();
+  if (role !== "superadmin" && !data.branchId?.trim()) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["branchId"],
+      message: "Branch is required",
+    });
+  }
+}
+
+export const EditCreateUserSchema = EditCreateUserFieldsSchema.superRefine(
+  refineUserBranchRequired,
+);
+
+export const AdvancedEditUserSchema = EditCreateUserFieldsSchema.pick({
   role: true,
   password: true,
 }).extend({

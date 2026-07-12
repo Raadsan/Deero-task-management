@@ -1,14 +1,23 @@
 import { prisma } from "../lib/prisma.js";
 import { generateCustomId } from "../lib/id-generator.js";
 import {
+  clientBranchWhere,
+  denyIfOutOfScope,
+  getScope,
+  mergeWhere,
+  taskBranchWhere,
+} from "../lib/branch-scope.js";
+import {
   normalizeTaskWriteStatus,
   syncOverdueTasks,
 } from "../lib/task-status.js";
 
 export const getAllTasks = async (req, res) => {
   try {
+    const scope = getScope(req);
     await syncOverdueTasks(prisma);
     const tasks = await prisma.task.findMany({
+      where: mergeWhere({ isPersonal: false }, taskBranchWhere(scope)),
       include: {
         user: true,
         clientTask: { include: { Client: { include: { clientSubService: { include: { subService: true } } } } } },
@@ -21,17 +30,83 @@ export const getAllTasks = async (req, res) => {
   }
 };
 
+export const getMyTasks = async (req, res) => {
+  try {
+    const scope = getScope(req);
+    const userId = scope.user?.id;
+    if (!userId) {
+      return res.status(401).json({ success: false, error: "Unauthorized" });
+    }
+
+    void syncOverdueTasks(prisma).catch(() => {});
+
+    const taskScope = String(req.query.scope ?? "personal").toLowerCase();
+    const where = { assgineeId: userId };
+
+    if (taskScope === "personal") {
+      where.isPersonal = true;
+    } else if (taskScope === "company") {
+      where.isPersonal = false;
+    }
+    // scope=all → every task assigned to this user
+
+    const tasks = await prisma.task.findMany({
+      where,
+      include: {
+        user: { select: { id: true, name: true, branchId: true } },
+        clientTask: {
+          include: {
+            Client: { select: { id: true, institution: true } },
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    res.json({ success: true, data: tasks });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+async function findAccessibleTask(scope, taskId, include = { user: true }) {
+  const userId = scope.user?.id;
+
+  if (userId) {
+    const ownTask = await prisma.task.findFirst({
+      where: { id: taskId, assgineeId: userId },
+      include,
+    });
+    if (ownTask) return ownTask;
+  }
+
+  return prisma.task.findFirst({
+    where: mergeWhere({ id: taskId }, taskBranchWhere(scope)),
+    include,
+  });
+}
+
+const RESERVED_TASK_IDS = new Set(["mine", "assigned", "graph", "metrics", "report"]);
+
 export const getTaskById = async (req, res) => {
   const { id } = req.params;
+
+  if (id === "mine" || id === "assigned") {
+    return getMyTasks(req, res);
+  }
+  if (RESERVED_TASK_IDS.has(id)) {
+    return res.status(404).json({ success: false, message: "Task not found" });
+  }
+
   try {
-    await syncOverdueTasks(prisma);
-    const task = await prisma.task.findUnique({
-      where: { id },
-      include: {
-        user: true,
-        clientTask: { include: { Client: true } },
-      },
+    const scope = getScope(req);
+    void syncOverdueTasks(prisma).catch(() => {});
+
+    const task = await findAccessibleTask(scope, id, {
+      user: true,
+      clientTask: { include: { Client: true } },
     });
+
     if (!task) return res.status(404).json({ success: false, message: "Task not found" });
     res.json({ success: true, data: task });
   } catch (error) {
@@ -41,104 +116,124 @@ export const getTaskById = async (req, res) => {
 
 export const createTask = async (req, res) => {
   const data = req.body;
-  console.log("Creating Task with data:", data);
   try {
-    const result = await prisma.$transaction(async (tx) => {
-      console.log("Starting Task Transaction...");
-      // Generate ID if not provided
-      let taskId = data.id;
-      if (!taskId) {
-        console.log("No ID provided, generating one...");
-        const idRes = await generateCustomId({ entityTybe: "tasks", prisma: tx });
-        taskId = idRes.data || idRes;
-      }
-      console.log("Task ID:", taskId);
+    const scope = getScope(req);
+    const assignee = await prisma.user.findUnique({
+      where: { id: data.assgineeId },
+      select: { id: true, branchId: true },
+    });
+    if (!assignee) {
+      return res.status(400).json({ success: false, error: "Assignee not found" });
+    }
+    if (denyIfOutOfScope(res, scope, assignee.branchId)) return;
 
-      const normalized = normalizeTaskWriteStatus({
-        status: data.status,
-        progress: data.progress,
-        deadline: data.deadline,
-        currentStatus: "pending",
-        currentProgress: data.progress ?? 0,
+    if (data.clientId) {
+      const scopedClient = await prisma.client.findFirst({
+        where: mergeWhere({ id: data.clientId }, clientBranchWhere(scope)),
+        select: { id: true },
       });
-      if (normalized.error) {
-        throw new Error(normalized.error);
+      if (!scopedClient) {
+        return res.status(403).json({
+          success: false,
+          error: "Client is outside your branch scope",
+        });
       }
+    }
 
-      const task = await tx.task.create({
-        data: {
-          id: taskId,
-          description: data.description,
-          status: normalized.status,
-          priority: data.priority?.toLowerCase(),
-          department: data.department,
-          deadline: new Date(data.deadline),
-          assgineeId: data.assgineeId,
-          supervisor: data.supervisor || "",
-          progress: normalized.progress,
-          serviceInformation: data.serviceInformation || "",
-        },
-      });
-      console.log("Task created in DB:", task.id);
+    let taskId = data.id;
+    if (!taskId) {
+      taskId = await generateCustomId({ entityTybe: "tasks" });
+    }
 
-      if (data.clientId) {
-        console.log("Linking to client:", data.clientId);
+    const normalized = normalizeTaskWriteStatus({
+      status: data.status,
+      progress: data.progress,
+      deadline: data.deadline,
+      currentStatus: "pending",
+      currentProgress: data.progress ?? 0,
+    });
+    if (normalized.error) {
+      return res.status(400).json({ success: false, error: normalized.error });
+    }
+
+    const taskData = {
+      id: taskId,
+      description: data.description,
+      status: normalized.status,
+      priority: data.priority?.toLowerCase(),
+      department: data.department || "General",
+      deadline: data.deadline ? new Date(data.deadline) : null,
+      assgineeId: data.assgineeId,
+      supervisor: data.supervisor || "",
+      progress: normalized.progress,
+      serviceInformation: data.serviceInformation || "",
+      isPersonal: Boolean(data.isPersonal),
+    };
+
+    // Personal / simple tasks: single insert (no transaction — avoids remote DB timeouts)
+    if (!data.clientId) {
+      const result = await prisma.task.create({ data: taskData });
+      res.status(201).json({ success: true, data: result });
+      if (!data.isPersonal) {
+        void notifyTaskAssignee(result).catch((err) => {
+          console.error("Failed to create assignee notification:", err);
+        });
+      }
+      return;
+    }
+
+    const result = await prisma.$transaction(
+      async (tx) => {
+        const task = await tx.task.create({ data: taskData });
         await tx.clientTask.create({
           data: {
             clientId: data.clientId,
             taskId: task.id,
           },
         });
-      }
-
-      return task;
-    });
-
-    console.log("Task Creation Success!");
-    
-    // Notify Assignee
-    try {
-      const assigneeId = result.assgineeId;
-      const taskWithUser = await prisma.task.findUnique({
-        where: { id: result.id },
-        include: { user: true }
-      });
-      
-      const notifId = Math.random().toString(36).substring(2, 15);
-      await prisma.$executeRawUnsafe(
-        `INSERT INTO notifications (id, taskId, taskName, assigneeName, deadline, type, userId, isSeen) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        notifId,
-        result.id,
-        result.description.substring(0, 50) + "...",
-        taskWithUser.user?.name || "User",
-        result.deadline,
-        "new-assignment",
-        assigneeId,
-        0
-      );
-      console.log("Assignee notification created");
-    } catch (err) {
-      console.error("Failed to create assignee notification:", err);
-    }
+        return task;
+      },
+      { maxWait: 10000, timeout: 20000 },
+    );
 
     res.status(201).json({ success: true, data: result });
+    void notifyTaskAssignee(result).catch((err) => {
+      console.error("Failed to create assignee notification:", err);
+    });
   } catch (error) {
-    console.error("Create Task Error Full Details:", error);
+    console.error("Create Task Error:", error);
     const message = error.message || "Internal Server Error";
     const statusCode = message.includes("completed") ? 400 : 500;
     res.status(statusCode).json({ success: false, error: message });
   }
 };
 
+async function notifyTaskAssignee(result) {
+  const taskWithUser = await prisma.task.findUnique({
+    where: { id: result.id },
+    include: { user: true },
+  });
+
+  const notifId = Math.random().toString(36).substring(2, 15);
+  await prisma.$executeRawUnsafe(
+    `INSERT INTO notifications (id, taskId, taskName, assigneeName, deadline, type, userId, isSeen) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    notifId,
+    result.id,
+    `${result.description.substring(0, 50)}...`,
+    taskWithUser?.user?.name || "User",
+    result.deadline,
+    "new-assignment",
+    result.assgineeId,
+    0,
+  );
+}
+
 export const updateTask = async (req, res) => {
   const { id } = req.params;
   const { description, status, priority, department, deadline, assgineeId, supervisor, progress, serviceInformation } = req.body;
   try {
-    // Get original task for comparison
-    const originalTask = await prisma.task.findUnique({ 
-      where: { id },
-      include: { user: true }
-    });
+    const scope = getScope(req);
+    const originalTask = await findAccessibleTask(scope, id, { user: true });
 
     if (!originalTask) {
       return res.status(404).json({ success: false, error: "Task not found" });
@@ -156,18 +251,31 @@ export const updateTask = async (req, res) => {
       return res.status(400).json({ success: false, error: normalized.error });
     }
 
+    if (assgineeId) {
+      const assignee = await prisma.user.findUnique({
+        where: { id: assgineeId },
+        select: { id: true, branchId: true },
+      });
+      if (!assignee) {
+        return res.status(400).json({ success: false, error: "Assignee not found" });
+      }
+      if (denyIfOutOfScope(res, scope, assignee.branchId)) return;
+    }
+
     const task = await prisma.task.update({
       where: { id },
       data: {
-        description,
+        ...(description !== undefined ? { description } : {}),
         status: normalized.status,
-        priority: priority?.toLowerCase(),
-        department,
-        deadline: deadline ? new Date(deadline) : undefined,
-        assgineeId,
-        supervisor,
+        ...(priority !== undefined ? { priority: priority?.toLowerCase() } : {}),
+        ...(department !== undefined ? { department } : {}),
+        ...(deadline !== undefined
+          ? { deadline: deadline ? new Date(deadline) : null }
+          : {}),
+        ...(assgineeId !== undefined ? { assgineeId } : {}),
+        ...(supervisor !== undefined ? { supervisor } : {}),
         progress: normalized.progress,
-        serviceInformation,
+        ...(serviceInformation !== undefined ? { serviceInformation } : {}),
       },
       include: { user: true }
     });
@@ -232,6 +340,11 @@ export const updateTask = async (req, res) => {
 export const deleteTask = async (req, res) => {
   const { id } = req.params;
   try {
+    const scope = getScope(req);
+    const existing = await findAccessibleTask(scope, id, { user: true });
+    if (!existing) {
+      return res.status(404).json({ success: false, error: "Task not found" });
+    }
     await prisma.task.delete({ where: { id } });
     res.json({ success: true, message: "Task deleted" });
   } catch (error) {
@@ -242,14 +355,15 @@ export const deleteTask = async (req, res) => {
 export const getMonthlyGraphData = async (req, res) => {
   const { startDate, endDate } = req.query;
   try {
+    const scope = getScope(req);
     const fromDate = startDate ? new Date(startDate) : undefined;
     const toDate = endDate ? new Date(endDate) : undefined;
     if (toDate) toDate.setHours(23, 59, 59, 999);
 
-    const where = {};
-    if (fromDate || toDate) {
-      where.createdAt = { gte: fromDate, lte: toDate };
-    }
+    const where = mergeWhere(
+      taskBranchWhere(scope),
+      fromDate || toDate ? { createdAt: { gte: fromDate, lte: toDate } } : {},
+    );
 
     const tasks = await prisma.task.findMany({
       where,
@@ -287,14 +401,15 @@ export const getMonthlyGraphData = async (req, res) => {
 export const getYearlyGraphData = async (req, res) => {
   const { startDate, endDate } = req.query;
   try {
+    const scope = getScope(req);
     const fromDate = startDate ? new Date(startDate) : undefined;
     const toDate = endDate ? new Date(endDate) : undefined;
     if (toDate) toDate.setHours(23, 59, 59, 999);
 
-    const where = {};
-    if (fromDate || toDate) {
-      where.createdAt = { gte: fromDate, lte: toDate };
-    }
+    const where = mergeWhere(
+      taskBranchWhere(scope),
+      fromDate || toDate ? { createdAt: { gte: fromDate, lte: toDate } } : {},
+    );
 
     const tasks = await prisma.task.findMany({
       where,
@@ -329,23 +444,24 @@ export const getYearlyGraphData = async (req, res) => {
 export const getDashboardMetrics = async (req, res) => {
   const { startDate, endDate } = req.query;
   try {
+    const scope = getScope(req);
     await syncOverdueTasks(prisma);
 
     const fromDate = startDate ? new Date(startDate) : undefined;
     const toDate = endDate ? new Date(endDate) : undefined;
     if (toDate) toDate.setHours(23, 59, 59, 999);
 
-    const where = {};
-    if (fromDate || toDate) {
-      where.createdAt = { gte: fromDate, lte: toDate };
-    }
+    const dateWhere =
+      fromDate || toDate ? { createdAt: { gte: fromDate, lte: toDate } } : {};
+    const taskWhere = mergeWhere(taskBranchWhere(scope), dateWhere);
+    const clientWhere = mergeWhere(clientBranchWhere(scope), dateWhere);
 
     const [totalTasks, completedTasks, pendingTasks, overdueTasks, totalClients] = await Promise.all([
-      prisma.task.count({ where }),
-      prisma.task.count({ where: { ...where, status: "completed" } }),
-      prisma.task.count({ where: { ...where, status: "pending" } }),
-      prisma.task.count({ where: { ...where, status: "overdue" } }),
-      prisma.client.count({ where: fromDate || toDate ? { createdAt: { gte: fromDate, lte: toDate } } : {} }),
+      prisma.task.count({ where: taskWhere }),
+      prisma.task.count({ where: mergeWhere(taskWhere, { status: "completed" }) }),
+      prisma.task.count({ where: mergeWhere(taskWhere, { status: "pending" }) }),
+      prisma.task.count({ where: mergeWhere(taskWhere, { status: "overdue" }) }),
+      prisma.client.count({ where: clientWhere }),
     ]);
 
     res.json({
@@ -366,13 +482,14 @@ export const getDashboardMetrics = async (req, res) => {
 export const getTasksReport = async (req, res) => {
   const { userIdForTaskReport, startDate, endDate } = req.query;
   try {
+    const scope = getScope(req);
     await syncOverdueTasks(prisma);
 
     const from = startDate ? new Date(startDate) : undefined;
     const to = endDate ? new Date(endDate) : undefined;
-    const where = {
+    const where = mergeWhere(taskBranchWhere(scope), {
       assgineeId: userIdForTaskReport,
-    };
+    });
     if (from || to) {
       where.createdAt = { gte: from, lte: to };
     }

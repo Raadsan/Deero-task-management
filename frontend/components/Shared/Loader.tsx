@@ -134,11 +134,8 @@ export function GeneralTableSkeletonLoader({
           <thead>
             <tr>
               {[...Array(cols)].map((_, i) => (
-                <th
-                  key={i}
-                  className="bg-linear-to-r from-[#7b1616] to-[#e94e1b] px-4 py-3"
-                >
-                  <Skeleton className="h-5 w-20 bg-[#a53c3c]" />
+                <th key={i} className="bg-zinc-100 px-4 py-3">
+                  <Skeleton className="h-5 w-20 bg-zinc-200" />
                 </th>
               ))}
             </tr>

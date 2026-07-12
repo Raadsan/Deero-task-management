@@ -27,13 +27,10 @@ import {
   updateBranch,
 } from "@/lib/actions/branch.action";
 import {
-  formatBranchLoginPath,
-  isRootLoginPath,
-  normalizeBranchSlug,
   resolveBranchLogoUrl,
+  formatBranchLoginPath,
 } from "@/lib/branch-branding";
 import { SWR_CACH_KEYS } from "@/lib/constants";
-import { authClient } from "@/lib/auth-client";
 import {
   actionBtnDelete,
   actionBtnEdit,
@@ -78,8 +75,6 @@ function readImageAsDataUrl(file: File): Promise<string> {
 }
 
 export default function BranchesManagementPage() {
-  const { data: session } = authClient.useSession();
-  const isSuperAdmin = session?.user?.role === "superadmin";
   const { data: branchesRes, isLoading } = useSWR(
     SWR_CACH_KEYS.branches.key,
     getAllBranches,
@@ -106,15 +101,13 @@ export default function BranchesManagementPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const [name, setName] = useState("");
-  const [slug, setSlug] = useState("");
-  const [slugTouched, setSlugTouched] = useState(false);
   const [description, setDescription] = useState("");
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
   const [primaryColor, setPrimaryColor] = useState("#651210");
   const [secondaryColor, setSecondaryColor] = useState("#ec4724");
   const [status, setStatus] = useState<"active" | "inactive">("active");
-  const [isMain, setIsMain] = useState(false);
+  const [isMainBranch, setIsMainBranch] = useState(false);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [logoData, setLogoData] = useState<string | null>(null);
   const [iconLogoPreview, setIconLogoPreview] = useState<string | null>(null);
@@ -144,23 +137,15 @@ export default function BranchesManagementPage() {
     setCurrentPage(1);
   }, [search]);
 
-  useEffect(() => {
-    if (mode === "create" && !slugTouched && name && !isMain && !isRootLoginPath(slug)) {
-      setSlug(normalizeBranchSlug(name));
-    }
-  }, [name, mode, slugTouched, isMain, slug]);
-
   function resetForm() {
     setName("");
-    setSlug("");
-    setSlugTouched(false);
     setDescription("");
     setPhone("");
     setLocation("");
     setPrimaryColor("#651210");
     setSecondaryColor("#ec4724");
     setStatus("active");
-    setIsMain(false);
+    setIsMainBranch(false);
     setLogoPreview(null);
     setLogoData(null);
     setIconLogoPreview(null);
@@ -178,21 +163,13 @@ export default function BranchesManagementPage() {
     setMode("edit");
     setEditingBranch(branch);
     setName(branch.name);
-    setSlug(
-      branch.usesRootLogin || branch.isMain
-        ? "/"
-        : branch.slug
-          ? `/${branch.slug}`
-          : "",
-    );
-    setSlugTouched(true);
     setDescription(branch.description ?? "");
     setPhone(branch.phone ?? "");
     setLocation(branch.location ?? "");
     setPrimaryColor(branch.primaryColor || "#651210");
     setSecondaryColor(branch.secondaryColor || "#ec4724");
     setStatus(branch.isActive ? "active" : "inactive");
-    setIsMain(!!branch.isMain);
+    setIsMainBranch(Boolean(branch.usesRootLogin));
     setLogoPreview(resolveBranchLogoUrl(branch.logoUrl));
     setIconLogoPreview(resolveBranchLogoUrl(branch.iconLogoUrl));
     setLogoData(null);
@@ -245,14 +222,6 @@ export default function BranchesManagementPage() {
 
     setIsSaving(true);
     try {
-      const wantsRootLogin = isMain || isRootLoginPath(slug);
-      const slugInput = slug.trim();
-      const slugValue =
-        !wantsRootLogin && slugInput.startsWith("/")
-          ? normalizeBranchSlug(slugInput)
-          : normalizeBranchSlug(slug);
-      const hadUrl =
-        !!editingBranch?.slug || !!editingBranch?.usesRootLogin || !!editingBranch?.isMain;
       const payload = {
         name: name.trim(),
         description: description.trim() || undefined,
@@ -261,16 +230,9 @@ export default function BranchesManagementPage() {
         primaryColor,
         secondaryColor,
         isActive: status === "active",
-        ...(isSuperAdmin ? { isMain } : {}),
+        useRootLogin: isMainBranch,
         ...(logoData ? { logoData } : {}),
         ...(iconLogoData ? { iconLogoData } : {}),
-        ...(wantsRootLogin
-          ? { useRootLogin: true }
-          : slugValue
-            ? { slug: slugValue }
-            : mode === "edit" && hadUrl
-              ? { clearSlug: true }
-              : {}),
       };
 
       const result =
@@ -290,10 +252,28 @@ export default function BranchesManagementPage() {
     }
   }
 
+  async function handleSetAsMain(branch: BranchRecord) {
+    setIsSaving(true);
+    try {
+      const result = await updateBranch(branch.id, {
+        name: branch.name,
+        useRootLogin: true,
+      });
+      if (result.success) {
+        toast.success(`"${branch.name}" is now the main branch`);
+        await mutate(SWR_CACH_KEYS.branches.key);
+        return;
+      }
+      toast.error(result.errors?.message ?? "Failed to set main branch");
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
   async function handleDelete(id: string) {
     const branch = branches.find((b) => b.id === id);
-    if (branch?.isMain) {
-      toast.error("Cannot delete the main branch");
+    if (branch?.usesRootLogin) {
+      toast.error("Cannot delete the root login branch");
       setDeleteTarget(null);
       return;
     }
@@ -311,20 +291,12 @@ export default function BranchesManagementPage() {
   }
 
   function requestDeleteBranch(branch: BranchRecord) {
-    if (branch.isMain) {
-      toast.error("Cannot delete the main branch");
+    if (branch.usesRootLogin) {
+      toast.error("Cannot delete the root login branch");
       return;
     }
     setDeleteTarget({ id: branch.id, name: branch.name });
   }
-
-  const previewBranchUrl = isRootLoginPath(slug)
-    ? "/"
-    : slug.trim()
-      ? slug.trim().startsWith("/")
-        ? slug.trim()
-        : `/${normalizeBranchSlug(slug)}`
-      : "";
 
   return (
     <ManagementPageShell title="Branches management">
@@ -356,7 +328,6 @@ export default function BranchesManagementPage() {
               <TableHeader className={dashboardTableHeaderClass}>
                 <TableRow className={dashboardTableHeadRowClass}>
                   <TableHead className={dashboardTableHeadClass}>Branch Name</TableHead>
-                  <TableHead className={dashboardTableHeadClass}>Branch URL</TableHead>
                   <TableHead className={dashboardTableHeadClass}>Phone</TableHead>
                   <TableHead className={dashboardTableHeadClass}>Location</TableHead>
                   <TableHead className={dashboardTableHeadClass}>Employees</TableHead>
@@ -370,7 +341,7 @@ export default function BranchesManagementPage() {
                 {isLoading ? (
                   [...Array(4)].map((_, i) => (
                     <TableRow key={i} className="h-14 animate-pulse">
-                      <TableCell colSpan={7} className="px-6 py-4">
+                      <TableCell colSpan={6} className="px-6 py-4">
                         <div className="h-4 w-full rounded bg-zinc-100" />
                       </TableCell>
                     </TableRow>
@@ -378,7 +349,7 @@ export default function BranchesManagementPage() {
                 ) : paginated.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={7}
+                      colSpan={6}
                       className="px-6 py-10 text-center text-muted-foreground"
                     >
                       No branches found
@@ -397,17 +368,12 @@ export default function BranchesManagementPage() {
                             />
                           ) : null}
                           <span className={dashboardTextPrimary}>{branch.name}</span>
-                          {branch.isMain ? (
+                          {branch.usesRootLogin ? (
                             <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-primary">
-                              Main
+                              Main branch
                             </span>
                           ) : null}
                         </div>
-                      </TableCell>
-                      <TableCell className={dashboardTableCellClass}>
-                        <span className="text-sm text-zinc-600">
-                          {formatBranchLoginPath(branch)}
-                        </span>
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
                         <span className={dashboardTextSecondary}>
@@ -438,6 +404,18 @@ export default function BranchesManagementPage() {
                         className={cn(dashboardTableCellClass, "text-right")}
                       >
                         <div className="flex justify-end gap-1">
+                          {!branch.usesRootLogin ? (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="text-xs text-primary"
+                              onClick={() => handleSetAsMain(branch)}
+                              title="Set as main branch"
+                            >
+                              Set main
+                            </Button>
+                          ) : null}
                           <Button
                             type="button"
                             variant="ghost"
@@ -514,7 +492,7 @@ export default function BranchesManagementPage() {
               {mode === "create" ? "Create Branch" : "Edit Branch"}
             </DialogTitle>
             <DialogDescription>
-              Set branch details, branding, and login URL for employees.
+              Set branch details and branding. Employees sign in at the unified login page.
             </DialogDescription>
           </DialogHeader>
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-4">
@@ -528,66 +506,11 @@ export default function BranchesManagementPage() {
               />
             </div>
 
-            {isSuperAdmin ? (
-              <div className="flex items-center gap-2 rounded-lg border border-zinc-100 bg-zinc-50 px-3 py-2">
-                <input
-                  id="branch-is-main"
-                  type="checkbox"
-                  checked={isMain}
-                  onChange={(e) => {
-                    const checked = e.target.checked;
-                    setIsMain(checked);
-                    if (checked) {
-                      setSlug("/");
-                      setSlugTouched(true);
-                    }
-                  }}
-                  className="size-4 rounded border-zinc-300 accent-primary"
-                />
-                <label htmlFor="branch-is-main" className="text-sm text-zinc-700">
-                  Main branch (uses <strong>/</strong> login URL)
-                </label>
-              </div>
-            ) : null}
-
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-zinc-700">
-                Branch login URL
-              </label>
-              <input
-                value={slug}
-                disabled={!!editingBranch?.slugClearedOnce && !isRootLoginPath(slug)}
-                onChange={(e) => {
-                  setSlugTouched(true);
-                  setSlug(e.target.value);
-                }}
-                placeholder="/ or /Deero-Advert"
-                className={cn(
-                  compactInputClass,
-                  editingBranch?.slugClearedOnce &&
-                    !isRootLoginPath(slug) &&
-                    "opacity-60",
-                )}
-              />
-              {isRootLoginPath(slug) ? (
-                <p className="text-xs text-zinc-500">
-                  Employees login at <strong>/</strong> (domain root). Only one branch can use{" "}
-                  <strong>/</strong>.
-                </p>
-              ) : editingBranch?.slugClearedOnce ? (
-                <p className="text-xs text-amber-600">
-                  URL was removed and cannot be set again.
-                </p>
-              ) : slug ? (
-                <p className="text-xs text-zinc-500">
-                  Employees login at: {previewBranchUrl} (case-sensitive)
-                </p>
-              ) : editingBranch?.slug ? (
-                <p className="text-xs text-amber-600">
-                  Clear the URL and save once to remove it permanently.
-                </p>
-              ) : null}
+            <div className="rounded-lg border border-zinc-100 bg-zinc-50 px-3 py-2.5 text-sm text-zinc-600">
+              All employees sign in at <strong>/</strong>. After login, each user sees
+              their branch logo and colors automatically.
             </div>
+
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-zinc-700">
                 Branch description
@@ -725,6 +648,21 @@ export default function BranchesManagementPage() {
               </div>
             </div>
 
+            <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-zinc-100 bg-zinc-50 px-3 py-3">
+              <input
+                type="checkbox"
+                checked={isMainBranch}
+                onChange={(e) => setIsMainBranch(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-zinc-300 text-primary focus:ring-primary/30"
+              />
+              <span className="text-sm text-zinc-600">
+                <span className="font-medium text-zinc-800">Main branch</span>
+                <br />
+                Default branch for users without a branch (e.g. Deero Advert).
+                Only one branch can be main at a time.
+              </span>
+            </label>
+
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-zinc-700">Status</label>
               <select
@@ -812,16 +750,12 @@ export default function BranchesManagementPage() {
                     value={viewingBranch.isActive ? "Active" : "Inactive"}
                   />
                   <InfoField
-                    label="Main Branch"
-                    value={viewingBranch.isMain ? "Yes" : "No"}
-                  />
-                  <InfoField
                     label="Branch Name"
                     value={viewingBranch.name}
                     className="sm:col-span-2"
                   />
                   <InfoField
-                    label="Branch URL"
+                    label="Sign-in page"
                     value={formatBranchLoginPath(viewingBranch)}
                     className="sm:col-span-2"
                   />

@@ -1,0 +1,238 @@
+"use client";
+
+import DeleteAction from "@/components/Shared/DeleteAction";
+import MyTaskQuickEditModal from "@/components/tasks/MyTaskQuickEditModal";
+import TaskViewModal from "@/components/tasks/TaskViewModal";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { taskTitle } from "@/lib/my-task-filters";
+import {
+  actionBtnDelete,
+  actionBtnEdit,
+  actionBtnView,
+  dashboardPaginationClass,
+  dashboardStatusBadgeClass,
+  dashboardTableBodyRowClass,
+  dashboardTableCellClass,
+  dashboardTableHeadClass,
+  dashboardTableHeaderClass,
+  dashboardTableHeadRowClass,
+  dashboardTableIdClass,
+  dashboardTableWrapClass,
+  dashboardTextPrimary,
+  dashboardTextSecondary,
+  formatStatusLabel,
+  getTaskStatusBadgeClass,
+} from "@/lib/dashboard-ui";
+import { Task } from "@/lib/types";
+import { cn, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
+import { Edit, Eye, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+
+type Props = {
+  tasks: Task[];
+  isLoading?: boolean;
+};
+
+export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [viewOpen, setViewOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
+  const totalPages = Math.ceil(tasks.length / pageSize) || 1;
+  const paginatedTasks = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return tasks.slice(start, start + pageSize);
+  }, [tasks, currentPage, pageSize]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [tasks.length]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(Math.max(1, totalPages));
+    }
+  }, [currentPage, totalPages]);
+
+  return (
+    <>
+      <div className={dashboardTableWrapClass}>
+          <div className="overflow-x-auto">
+            <Table className="w-full">
+              <TableHeader className={dashboardTableHeaderClass}>
+                <TableRow className={dashboardTableHeadRowClass}>
+                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
+                    No
+                  </TableHead>
+                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
+                    Task
+                  </TableHead>
+                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
+                    Deadline
+                  </TableHead>
+                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
+                    Progress
+                  </TableHead>
+                  <TableHead className={cn(dashboardTableHeadClass, "text-right")}>
+                    Status
+                  </TableHead>
+                  <TableHead className={cn(dashboardTableHeadClass, "text-right")}>
+                    Action
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {isLoading ? (
+                  [...Array(5)].map((_, i) => (
+                    <TableRow key={i} className="h-14 animate-pulse">
+                      {[...Array(6)].map((__, j) => (
+                        <TableCell key={j} className="px-6 py-4">
+                          <div className="h-4 w-full rounded bg-zinc-100" />
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : paginatedTasks.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={6}
+                      className="px-6 py-10 text-center text-muted-foreground"
+                    >
+                      No own tasks found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  paginatedTasks.map((task) => {
+                    const displayStatus = resolveTaskDisplayStatus(task);
+
+                    return (
+                      <TableRow key={task.id} className={dashboardTableBodyRowClass}>
+                        <TableCell className={dashboardTableCellClass}>
+                          <span className={dashboardTableIdClass}>
+                            {String(task.id).slice(0, 8)}
+                          </span>
+                        </TableCell>
+                        <TableCell className={dashboardTableCellClass}>
+                          <span className={dashboardTextSecondary}>{taskTitle(task)}</span>
+                        </TableCell>
+                        <TableCell className={dashboardTableCellClass}>
+                          <span className={dashboardTextSecondary}>
+                            {formatTaskDeadline(task.deadline, {
+                              status: task.status,
+                              progress: task.progress,
+                            })}
+                          </span>
+                        </TableCell>
+                        <TableCell className={dashboardTableCellClass}>
+                          <span className={dashboardTextPrimary}>
+                            {task.progress ?? 0}%
+                          </span>
+                        </TableCell>
+                        <TableCell
+                          className={cn(dashboardTableCellClass, "text-right")}
+                        >
+                          <span
+                            className={cn(
+                              dashboardStatusBadgeClass,
+                              getTaskStatusBadgeClass(displayStatus),
+                            )}
+                          >
+                            {formatStatusLabel(displayStatus)}
+                          </span>
+                        </TableCell>
+                        <TableCell
+                          className={cn(dashboardTableCellClass, "text-right")}
+                        >
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className={actionBtnView}
+                              title="View"
+                              onClick={() => {
+                                setSelectedTask(task);
+                                setViewOpen(true);
+                              }}
+                            >
+                              <Eye className="size-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className={actionBtnEdit}
+                              title="Edit"
+                              onClick={() => {
+                                setSelectedTask(task);
+                                setEditOpen(true);
+                              }}
+                            >
+                              <Edit className="size-4" />
+                            </Button>
+                            {task.id ? (
+                              <DeleteAction
+                                typeOfDataToDelete="tasks"
+                                idToDelete={String(task.id)}
+                                description={`Delete "${taskTitle(task)}"?`}
+                                dialogTitle="Delete task"
+                                triggerClassNames={actionBtnDelete}
+                                trigger={<Trash2 className="size-4" />}
+                              />
+                            ) : null}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+
+      <div className={dashboardPaginationClass}>
+          <div>
+            {tasks.length === 0
+              ? "0 of 0"
+              : `${Math.min(tasks.length, (currentPage - 1) * pageSize + 1)}-${Math.min(tasks.length, currentPage * pageSize)} of ${tasks.length}`}
+          </div>
+
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="rounded-md border border-zinc-200 px-2 py-1 transition-all hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              &lt;
+            </button>
+            <div className="rounded-md border border-zinc-200 px-3 py-1 text-zinc-400">
+              {currentPage} of {totalPages}
+            </div>
+            <button
+              type="button"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages || totalPages === 0}
+              className="rounded-md border border-zinc-200 px-2 py-1 transition-all hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              &gt;
+            </button>
+          </div>
+        </div>
+
+      <TaskViewModal open={viewOpen} onOpenChange={setViewOpen} task={selectedTask} />
+      <MyTaskQuickEditModal open={editOpen} onOpenChange={setEditOpen} task={selectedTask} />
+    </>
+  );
+}

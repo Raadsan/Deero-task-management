@@ -108,43 +108,64 @@ export function resolveTaskDisplayStatus(task: {
   return task.status || "pending";
 }
 
-export function formatTaskDeadline(deadline: Date | string) {
+export function formatTaskDeadline(
+  deadline: Date | string | null | undefined,
+  context?: {
+    status?: string;
+    progress?: number;
+  },
+) {
+  if (!deadline) return "No due date";
+
   const parsedDeadline = new Date(deadline);
   if (Number.isNaN(parsedDeadline.getTime())) return String(deadline);
 
-  const now = new Date();
-  const diffMs = parsedDeadline.getTime() - now.getTime();
-  const isPast = diffMs < 0;
-  const absMs = Math.abs(diffMs);
-
-  const totalMinutes = Math.floor(absMs / (1000 * 60));
-  const totalHours = Math.floor(absMs / (1000 * 60 * 60));
-  const days = Math.floor(absMs / (1000 * 60 * 60 * 24));
-  
-  const remainingHours = totalHours % 24;
-  const remainingMinutes = totalMinutes % 60;
-
   const dateLabel = parsedDeadline.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
     year: "numeric",
-    month: "short",
-    day: "2-digit",
   });
 
-  const prefix = isPast ? "Overdue by" : "In";
+  const displayStatus = context
+    ? resolveTaskDisplayStatus({ ...context, deadline })
+    : isTaskPastDeadline(deadline)
+      ? "overdue"
+      : "pending";
+
+  if (displayStatus === "completed") {
+    return `Completed (${dateLabel})`;
+  }
+
+  if (displayStatus === "overdue") {
+    return `Overdue by (${dateLabel})`;
+  }
+
+  const now = new Date();
+  const diffMs = Math.max(0, parsedDeadline.getTime() - now.getTime());
+  const totalMinutes = Math.floor(diffMs / (1000 * 60));
+  const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const remainingHours = totalHours % 24;
 
   if (days >= 1) {
-    const dayPart = `${days}d`;
-    const hourPart = remainingHours > 0 ? ` ${remainingHours}h` : "";
-    return `${prefix} ${dayPart}${hourPart} (${dateLabel})`;
+    const dayLabel = days === 1 ? "1 day" : `${days} days`;
+    if (remainingHours > 0) {
+      const hourLabel =
+        remainingHours === 1 ? "1 hr" : `${remainingHours} hrs`;
+      return `${dayLabel} ${hourLabel}`;
+    }
+    return dayLabel;
   }
 
   if (totalHours >= 1) {
-    const hourPart = `${totalHours}h`;
-    const minutePart = remainingMinutes > 0 ? ` ${remainingMinutes}m` : "";
-    return `${prefix} ${hourPart}${minutePart} (${dateLabel})`;
+    return totalHours === 1 ? "1 hr" : `${totalHours} hrs`;
   }
 
-  return `${prefix} ${totalMinutes}m (${dateLabel})`;
+  if (totalMinutes >= 1) {
+    return totalMinutes === 1 ? "1 min" : `${totalMinutes} mins`;
+  }
+
+  return "Less than 1 min";
 }
 
 type Params = {
@@ -169,6 +190,15 @@ export function formatTexts({ type, formatType }: Params) {
         return "Delete The Client";
       case "delete":
         return "Delete Client";
+    }
+  } else if (type === "contracts") {
+    switch (formatType) {
+      case "description":
+        return "Are you sure you want to delete this contract and all uploaded documents?";
+      case "diaglog":
+        return "Delete Contract";
+      case "delete":
+        return "Delete Contract";
     }
   } else if (type == "expenses") {
     switch (formatType) {
@@ -368,4 +398,13 @@ export function getFromToDateDescription({
   }
 
   return dateDescription;
+}
+
+export function resolveApiUploadUrl(fileUrl: string) {
+  if (!fileUrl) return "";
+  if (fileUrl.startsWith("http://") || fileUrl.startsWith("https://")) {
+    return fileUrl;
+  }
+  const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:7003";
+  return `${base}${fileUrl}`;
 }
