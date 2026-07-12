@@ -53,7 +53,7 @@ export async function getAllContracts(): Promise<
     }
     return { success: false, errors: { message: response.data.error ?? "Failed to load contracts" } };
   } catch (error) {
-    return handleError(error);
+    return handleError({ errors: error, type: "server" }) as any;
   }
 }
 
@@ -67,7 +67,7 @@ export async function getContractById(
     }
     return { success: false, errors: { message: response.data.error ?? "Contract not found" } };
   } catch (error) {
-    return handleError(error);
+    return handleError({ errors: error, type: "server" }) as any;
   }
 }
 
@@ -85,7 +85,7 @@ export async function getProjectsForClient(
     }
     return { success: false, errors: { message: response.data.error ?? "Failed to load projects" } };
   } catch (error) {
-    return handleError(error);
+    return handleError({ errors: error, type: "server" }) as any;
   }
 }
 
@@ -112,7 +112,7 @@ export async function createContract(payload: {
     }
     return { success: false, errors: { message: response.data.error ?? "Failed to create contract" } };
   } catch (error) {
-    return handleError(error);
+    return handleError({ errors: error, type: "server" }) as any;
   }
 }
 
@@ -140,7 +140,7 @@ export async function updateContract(
     }
     return { success: false, errors: { message: response.data.error ?? "Failed to update contract" } };
   } catch (error) {
-    return handleError(error);
+    return handleError({ errors: error, type: "server" }) as any;
   }
 }
 
@@ -155,7 +155,7 @@ export async function deleteContractById(
     }
     return { success: false, errors: { message: response.data.error ?? "Failed to delete contract" } };
   } catch (error) {
-    return handleError(error);
+    return handleError({ errors: error, type: "server" }) as any;
   }
 }
 
@@ -173,6 +173,6 @@ export async function uploadContractDocument(
     }
     return { success: false, errors: { message: response.data.error ?? "Upload failed" } };
   } catch (error) {
-    return handleError(error);
+    return handleError({ errors: error, type: "server" }) as any;
   }
 }

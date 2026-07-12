@@ -60,10 +60,10 @@ export async function getAllRecurringSchedules(): Promise<
     }
     return {
       success: false,
-      error: response.data.error ?? "Failed to load schedules",
+      errors: { message: response.data.error ?? "Failed to load schedules" },
     };
   } catch (error) {
-    return handleError(error);
+    return handleError({ errors: error, type: "server" }) as any;
   }
 }
 
@@ -75,9 +75,9 @@ export async function getRecurringScheduleById(
     if (response.data.success) {
       return { success: true, data: response.data.data };
     }
-    return { success: false, error: response.data.error ?? "Schedule not found" };
+    return { success: false, errors: { message: response.data.error ?? "Schedule not found" } };
   } catch (error) {
-    return handleError(error);
+    return handleError({ errors: error, type: "server" }) as any;
   }
 }
 
@@ -90,9 +90,9 @@ export async function toggleRecurringSchedule(
       revalidatePath(ROUTES.recurringSchedules);
       return { success: true, data: response.data.data };
     }
-    return { success: false, error: response.data.error ?? "Toggle failed" };
+    return { success: false, errors: { message: response.data.error ?? "Toggle failed" } };
   } catch (error) {
-    return handleError(error);
+    return handleError({ errors: error, type: "server" }) as any;
   }
 }
 
@@ -107,9 +107,9 @@ export async function getRecurringOccurrences(
     if (response.data.success) {
       return { success: true, data: response.data.data };
     }
-    return { success: false, error: response.data.error ?? "Failed to load history" };
+    return { success: false, errors: { message: response.data.error ?? "Failed to load history" } };
   } catch (error) {
-    return handleError(error);
+    return handleError({ errors: error, type: "server" }) as any;
   }
 }
 
@@ -125,8 +125,8 @@ export async function runRecurringDailyGeneration(
       revalidatePath(ROUTES.recurringSchedules);
       return { success: true, data: response.data.data };
     }
-    return { success: false, error: response.data.error ?? "Generation failed" };
+    return { success: false, errors: { message: response.data.error ?? "Generation failed" } };
   } catch (error) {
-    return handleError(error);
+    return handleError({ errors: error, type: "server" }) as any;
   }
 }
