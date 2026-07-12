@@ -103,7 +103,7 @@ export default function DeleteAction({
         mutate(SWR_CACH_KEYS.contracts.key);
       } else {
         toast.error(
-          String(result.error ?? result.errors?.message ?? "Failed to delete contract"),
+          result.errors?.message ?? "Failed to delete contract",
         );
       }
       toggleDialog(false);
