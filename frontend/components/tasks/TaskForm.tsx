@@ -95,16 +95,16 @@ export default function TaskForm({
     reValidateMode: "onChange",
   });
 
-  function fieldInvalid(field: keyof FormValues) {
-    if (isCreate) return submitCount > 0 && Boolean(errors[field]);
-    if (!touchedFields[field] && submitCount === 0) return false;
-    return Boolean(errors[field]);
+  function fieldInvalid(field: any) {
+    if (isCreate) return submitCount > 0 && Boolean(errors[field as keyof typeof errors]);
+    if (!touchedFields[field as keyof typeof touchedFields] && submitCount === 0) return false;
+    return Boolean(errors[field as keyof typeof errors]);
   }
 
-  function fieldMessage(field: keyof FormValues) {
+  function fieldMessage(field: any) {
     if (isCreate) return undefined;
-    if (!touchedFields[field] && submitCount === 0) return undefined;
-    return errors[field]?.message;
+    if (!touchedFields[field as keyof typeof touchedFields] && submitCount === 0) return undefined;
+    return errors[field as keyof typeof errors]?.message;
   }
 
   const taskStatus = getTaskStatus(formType);
