@@ -85,7 +85,7 @@ export default function ContractViewModal({ open, onOpenChange, contractId }: Pr
     try {
       const filePayload = await readFileAsDataUrl(file);
       const result = await uploadContractDocument(contractId, filePayload);
-      if (!result.success) throw new Error(result.error);
+      if (!result.success) throw new Error(result.errors?.message ?? "Upload failed");
       toast.success(`Version ${result.data?.version} uploaded`);
       mutate(SWR_CACH_KEYS.contracts.key);
       mutateContract();

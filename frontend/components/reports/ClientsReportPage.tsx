@@ -39,7 +39,7 @@ export default function ClientsReportPage() {
     SWR_CACH_KEYS.clients.key,
     async () => {
       const result = await getAllClients();
-      if (!result.success) throw new Error(result.error);
+      if (!result.success) throw new Error(result.errors?.message ?? "Failed to load clients");
       return result.data ?? [];
     },
   );

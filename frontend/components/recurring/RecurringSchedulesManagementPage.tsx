@@ -77,7 +77,7 @@ export default function RecurringSchedulesManagementPage() {
     SWR_CACH_KEYS.recurringSchedules.key,
     async () => {
       const result = await getAllRecurringSchedules();
-      if (!result.success) throw new Error(result.error);
+      if (!result.success) throw new Error(result.errors?.message ?? "Failed to load schedules");
       return result.data ?? [];
     },
   );
@@ -86,7 +86,7 @@ export default function RecurringSchedulesManagementPage() {
     viewId ? `recurring/occurrences/${viewId}` : null,
     async () => {
       const result = await getRecurringOccurrences(viewId!);
-      if (!result.success) throw new Error(result.error);
+      if (!result.success) throw new Error(result.errors?.message ?? "Failed to load occurrences");
       return result.data ?? [];
     },
   );
@@ -121,7 +121,7 @@ export default function RecurringSchedulesManagementPage() {
     startTransition(async () => {
       const result = await toggleRecurringSchedule(id);
       if (!result.success) {
-        toast.error(result.error ?? "Failed to update schedule");
+        toast.error(result.errors?.message ?? "Failed to update schedule");
         return;
       }
       toast.success(result.data?.isActive ? "Schedule activated" : "Schedule paused");
@@ -133,7 +133,7 @@ export default function RecurringSchedulesManagementPage() {
     startTransition(async () => {
       const result = await runRecurringDailyGeneration(id);
       if (!result.success) {
-        toast.error(result.error ?? "Generation failed");
+        toast.error(result.errors?.message ?? "Generation failed");
         return;
       }
       toast.success(

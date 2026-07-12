@@ -80,7 +80,7 @@ export default function ContractsManagementPage() {
     SWR_CACH_KEYS.contracts.key,
     async () => {
       const result = await getAllContracts();
-      if (!result.success) throw new Error(String(result.error ?? "Failed to load"));
+      if (!result.success) throw new Error(result.errors?.message ?? "Failed to load");
       return result.data ?? [];
     },
   );
