@@ -144,7 +144,7 @@ export default function MyTasksBoardPage() {
   );
 
   const lanesDisplay = useMemo(() => {
-    const display = emptyLaneOrder();
+    const display: Record<TaskLane, Task[]> = { todo: [], processing: [], review: [], completed: [] };
     for (const lane of BOARD_LANES) {
       display[lane] = resolveLaneTasks(lane, normalizedOrder, taskMap);
     }
