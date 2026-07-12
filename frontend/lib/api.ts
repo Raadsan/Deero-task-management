@@ -17,8 +17,8 @@ api.interceptors.request.use(async (config) => {
     try {
       const cookieHeader = (await headers()).get("cookie");
       if (cookieHeader) {
-        config.headers = config.headers ?? {};
-        config.headers.Cookie = cookieHeader;
+        config.headers = config.headers ?? ({} as any);
+        (config.headers as any).Cookie = cookieHeader;
       }
     } catch {
       // headers() unavailable outside a request context
