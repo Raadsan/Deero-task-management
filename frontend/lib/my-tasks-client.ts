@@ -11,7 +11,7 @@ function mapMyTask(task: Record<string, unknown>): Task {
   const clientTask = (task.clientTask as Array<{ Client?: { id?: string; institution?: string } }>) ?? [];
 
   return {
-    ...(task as Task),
+    ...(task as unknown as Task),
     assignedTo: {
       id: user?.id ?? "",
       name: user?.name ?? "Unassigned",
