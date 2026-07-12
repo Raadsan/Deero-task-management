@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   getAllClients,
+  getBasicClients,
   getClientById,
   createClient,
   addClientService,
@@ -15,6 +16,7 @@ import {
 const router = Router();
 
 router.get("/", getAllClients);
+router.get("/basic", getBasicClients);
 router.get("/sources/info", getClientSourcesData);
 router.get("/metrics", getClientMetrics);
 router.get("/:id", getClientById);

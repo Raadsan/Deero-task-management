@@ -13,7 +13,11 @@ export const getAllIncomes = async (req, res) => {
     const scope = getScope(req);
     const incomes = await prisma.incomeTransaction.findMany({
       where: incomeTransactionBranchWhere(scope),
-      include: { user: true, income: true, serviceAgreement: true },
+      include: { 
+        user: { select: { id: true, name: true, email: true } }, 
+        income: true, 
+        serviceAgreement: { select: { id: true, client: { select: { institution: true, phone: true } } } }
+      },
       orderBy: { createdAt: "desc" },
     });
     res.json({ success: true, data: incomes });
@@ -27,7 +31,11 @@ export const getAllExpenses = async (req, res) => {
     const scope = getScope(req);
     const expenses = await prisma.expenseTransaction.findMany({
       where: expenseTransactionBranchWhere(scope),
-      include: { user: true, expense: true, expenseServiceAgreement: true },
+      include: { 
+        user: { select: { id: true, name: true, email: true } }, 
+        expense: true, 
+        expenseServiceAgreement: { select: { id: true, description: true } } 
+      },
       orderBy: { createdAt: "desc" },
     });
     res.json({ success: true, data: expenses });

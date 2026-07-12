@@ -163,6 +163,25 @@ export const getAllClients = async (req, res) => {
   }
 };
 
+export const getBasicClients = async (req, res) => {
+  try {
+    const scope = getScope(req);
+    const clients = await prisma.client.findMany({
+      where: clientBranchWhere(scope),
+      select: {
+        id: true,
+        institution: true,
+        phone: true,
+        email: true,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    res.json({ success: true, data: clients });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
 export const getClientById = async (req, res) => {
   const { id } = req.params;
   try {

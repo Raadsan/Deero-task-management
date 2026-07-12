@@ -499,6 +499,12 @@ model IncomeTransaction {
 
   transactionDetails IncomeTransactionDetails[]
 
+  @@index([status])
+  @@index([createdAt])
+  @@index([status, createdAt])
+  @@index([userId])
+  @@index([incomeCategoryId])
+  @@index([agreementId])
   @@map("IncomeTransactions")
 }
 
@@ -525,6 +531,12 @@ model ExpenseTransaction {
 
   expenseTransactionDetails ExpenseTransactionDetails[]
 
+  @@index([status])
+  @@index([createdAt])
+  @@index([status, createdAt])
+  @@index([userId])
+  @@index([expenseCategoryId])
+  @@index([expneseAgreementId])
   @@map("ExpenseTransactions")
 }
 

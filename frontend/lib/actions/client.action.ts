@@ -56,7 +56,7 @@ export async function getClientsForForm(): Promise<
   ActionResponse<Pick<Client, "id" | "institution" | "phone" | "email">[]>
 > {
   try {
-    const response = await api.get("/api/clients");
+    const response = await api.get("/api/clients/basic");
     if (response.data.success) {
       const clients = response.data.data.map((client: any) => ({
         id: client.id,
@@ -366,7 +366,7 @@ export async function getPaymentClients(params: {
   pageSize: number;
 }): Promise<ActionResponse<Pick<Client, "id" | "institution" | "phone">[]>> {
   try {
-    const response = await api.get("/api/clients");
+    const response = await api.get("/api/clients/basic");
     if (response.data.success) {
       // For now, return all since backend might not support pagination for this specific list yet
       const clients = response.data.data.map((c: any) => ({

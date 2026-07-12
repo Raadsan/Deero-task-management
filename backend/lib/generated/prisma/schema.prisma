@@ -103,6 +103,13 @@ enum ContractStatus {
   RENEWED
 }
 
+enum InstallmentStatus {
+  PENDING
+  PARTIAL
+  PAID
+  OVERDUE
+}
+
 enum ContentCycleStatus {
   PLANNED
   IN_PROGRESS
@@ -251,6 +258,7 @@ model Client {
   monthlyBudget     Float?
   notes             String?    @db.Text
   isActive          Boolean    @default(true)
+  isDraft           Boolean    @default(false)
 
   branchId         String?
   branch           Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
@@ -266,9 +274,11 @@ model Client {
   recurringSchedules RecurringSchedule[]
   contentCycles      ContentCycle[]
   contracts          Contract[]
+  installments       ClientInstallment[]
 
   @@index([clientType])
   @@index([branchId])
+  @@index([isDraft])
   @@map("clients")
 }
 
@@ -489,6 +499,12 @@ model IncomeTransaction {
 
   transactionDetails IncomeTransactionDetails[]
 
+  @@index([status])
+  @@index([createdAt])
+  @@index([status, createdAt])
+  @@index([userId])
+  @@index([incomeCategoryId])
+  @@index([agreementId])
   @@map("IncomeTransactions")
 }
 
@@ -515,6 +531,12 @@ model ExpenseTransaction {
 
   expenseTransactionDetails ExpenseTransactionDetails[]
 
+  @@index([status])
+  @@index([createdAt])
+  @@index([status, createdAt])
+  @@index([userId])
+  @@index([expenseCategoryId])
+  @@index([expneseAgreementId])
   @@map("ExpenseTransactions")
 }
 
@@ -747,6 +769,8 @@ model Contract {
   endDate        DateTime?
   renewalDate    DateTime?
   totalAmount    Float?
+  monthlyAmount  Float?
+  billingDay     Int?           @default(1)
   paymentTerms   String?        @db.Text
   status         ContractStatus @default(ACTIVE)
   notes          String?        @db.Text
@@ -760,13 +784,40 @@ model Contract {
   createdById String?
   createdBy   User?    @relation("ContractCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
-  documents ContractDocument[]
+  documents    ContractDocument[]
+  installments ClientInstallment[]
 
   @@index([clientId])
   @@index([projectId])
   @@index([status])
   @@index([branchId])
   @@map("contracts")
+}
+
+model ClientInstallment {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sourceKey   String
+  periodYear  Int
+  periodMonth Int
+  dueDate     DateTime
+  dueAmount   Float
+  paidAmount  Float             @default(0)
+  status      InstallmentStatus @default(PENDING)
+  notes       String?           @db.Text
+
+  clientId   String
+  client     Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  contractId String?
+  contract   Contract? @relation(fields: [contractId], references: [id], onDelete: SetNull)
+
+  @@unique([sourceKey, periodYear, periodMonth])
+  @@index([clientId])
+  @@index([status])
+  @@index([periodYear, periodMonth])
+  @@map("client_installments")
 }
 
 model ContractDocument {

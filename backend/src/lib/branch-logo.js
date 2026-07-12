@@ -1,7 +1,4 @@
-import fs from "fs/promises";
-import path from "path";
-
-const BRANCH_LOGO_DIR = path.join(process.cwd(), "uploads", "branches");
+import { uploadToS3 } from "./s3-client.js";
 
 export async function saveBranchLogo(branchId, logoData, variant = "logo") {
   if (!logoData || typeof logoData !== "string") return null;
@@ -16,13 +13,11 @@ export async function saveBranchLogo(branchId, logoData, variant = "logo") {
     throw new Error("Logo must be smaller than 2MB");
   }
 
-  await fs.mkdir(BRANCH_LOGO_DIR, { recursive: true });
-
   const safeVariant = variant === "icon" ? "icon" : "logo";
-  const filename = `${branchId}-${safeVariant}.${ext}`;
-  await fs.writeFile(path.join(BRANCH_LOGO_DIR, filename), buffer);
+  const filename = `branches/${branchId}-${safeVariant}.${ext}`;
+  const contentType = `image/${matches[1]}`;
 
-  return `/uploads/branches/${filename}`;
+  return await uploadToS3(filename, buffer, contentType);
 }
 
 /** Preserve case; only normalize spaces and invalid characters */

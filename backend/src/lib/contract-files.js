@@ -1,8 +1,7 @@
-import fs from "fs/promises";
+import { uploadToS3, deleteFromS3 } from "./s3-client.js";
 import path from "path";
 import { randomUUID } from "crypto";
 
-const CONTRACT_FILES_DIR = path.join(process.cwd(), "uploads", "contracts");
 const MAX_BYTES = 5 * 1024 * 1024;
 
 export async function saveContractFile(contractId, fileData) {
@@ -31,13 +30,12 @@ export async function saveContractFile(contractId, fileData) {
   }
 
   const ext = path.extname(name) || (mimeType === "application/pdf" ? ".pdf" : ".png");
-  const filename = `${randomUUID()}${ext}`;
-  const contractDir = path.join(CONTRACT_FILES_DIR, contractId);
-  await fs.mkdir(contractDir, { recursive: true });
-  await fs.writeFile(path.join(contractDir, filename), buffer);
+  const filename = `contracts/${contractId}/${randomUUID()}${ext}`;
+  
+  const url = await uploadToS3(filename, buffer, mimeType);
 
   return {
-    url: `/uploads/contracts/${contractId}/${filename}`,
+    url,
     name,
     fileSize: fileSize || buffer.length,
     mimeType: mimeType === "application/pdf" ? mimeType : mimeType,
@@ -45,12 +43,6 @@ export async function saveContractFile(contractId, fileData) {
 }
 
 export async function deleteContractFileFromDisk(fileUrl) {
-  if (!fileUrl || !fileUrl.startsWith("/uploads/contracts/")) return;
-  const relative = fileUrl.replace(/^\/uploads\//, "");
-  const filePath = path.join(process.cwd(), "uploads", relative);
-  try {
-    await fs.unlink(filePath);
-  } catch {
-    // file may already be removed
-  }
+  if (!fileUrl) return;
+  await deleteFromS3(fileUrl);
 }
