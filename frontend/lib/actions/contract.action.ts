@@ -97,6 +97,8 @@ export async function createContract(payload: {
   endDate?: string;
   renewalDate?: string;
   totalAmount?: number;
+  monthlyAmount?: number;
+  billingDay?: number;
   paymentTerms?: string;
   status?: string;
   notes?: string;
