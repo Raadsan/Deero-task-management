@@ -268,20 +268,21 @@ export default function TaskForm({
     }
 
     if (formType === "create") {
-      const isGeneral = data.taskKind === "general";
+      const createData = data as z.infer<typeof CreateTaskSchema>;
+      const isGeneral = createData.taskKind === "general";
       setStartTransition(async () => {
         const result = await createTask({
-          clientId: isGeneral ? undefined : data.clientInstitutionId,
+          clientId: isGeneral ? undefined : createData.clientInstitutionId,
           serviceInformation: isGeneral
-            ? data.taskName
-            : data.serviceInformation,
-          assgineeId: data.assigneeId,
-          description: data.description,
+            ? createData.taskName
+            : createData.serviceInformation,
+          assgineeId: createData.assigneeId,
+          description: createData.description,
           status: TaskStatus.pending,
-          department: data.department,
-          priority: data.priority,
-          supervisor: data.supervisor?.trim() || "",
-          deadline: data.deadline ?? null,
+          department: createData.department,
+          priority: createData.priority,
+          supervisor: createData.supervisor?.trim() || "",
+          deadline: createData.deadline ?? null,
           progress: 0,
           isPersonal: false,
         });
