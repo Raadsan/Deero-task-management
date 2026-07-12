@@ -88,7 +88,7 @@ export default function UploadUserDocumentsForm({
 
   function handleUpload() {
     const entries: DocumentSelection[] = USER_DOCUMENT_TYPES.map(({ label }) => ({
-      label,
+      label: label as string,
       file: selections[label],
     })).filter((item): item is DocumentSelection => Boolean(item.file));
 
