@@ -138,10 +138,10 @@ export default function ContractForm({
             notes,
             projectId: projectId || null,
           });
-          if (!result.success) throw new Error(result.error);
+          if (!result.success) throw new Error(result.errors?.message ?? "Failed to update contract");
           if (filePayload) {
             const upload = await uploadContractDocument(contract.id, filePayload);
-            if (!upload.success) throw new Error(upload.error);
+            if (!upload.success) throw new Error(upload.errors?.message ?? "Upload failed");
           }
           toast.success("Contract updated");
         } else {
@@ -160,7 +160,7 @@ export default function ContractForm({
             notes: notes || undefined,
             file: filePayload,
           });
-          if (!result.success) throw new Error(result.error);
+          if (!result.success) throw new Error(result.errors?.message ?? "Failed to create contract");
           toast.success("Contract created");
         }
 

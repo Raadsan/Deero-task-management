@@ -51,7 +51,7 @@ export async function getAllContracts(): Promise<
     if (response.data.success) {
       return { success: true, data: response.data.data };
     }
-    return { success: false, error: response.data.error ?? "Failed to load contracts" };
+    return { success: false, errors: { message: response.data.error ?? "Failed to load contracts" } };
   } catch (error) {
     return handleError(error);
   }
@@ -65,7 +65,7 @@ export async function getContractById(
     if (response.data.success) {
       return { success: true, data: response.data.data };
     }
-    return { success: false, error: response.data.error ?? "Contract not found" };
+    return { success: false, errors: { message: response.data.error ?? "Contract not found" } };
   } catch (error) {
     return handleError(error);
   }
@@ -83,7 +83,7 @@ export async function getProjectsForClient(
       }));
       return { success: true, data: projects };
     }
-    return { success: false, error: response.data.error ?? "Failed to load projects" };
+    return { success: false, errors: { message: response.data.error ?? "Failed to load projects" } };
   } catch (error) {
     return handleError(error);
   }
@@ -108,7 +108,7 @@ export async function createContract(payload: {
       revalidatePath(ROUTES.contracts);
       return { success: true, data: response.data.data };
     }
-    return { success: false, error: response.data.error ?? "Failed to create contract" };
+    return { success: false, errors: { message: response.data.error ?? "Failed to create contract" } };
   } catch (error) {
     return handleError(error);
   }
@@ -136,7 +136,7 @@ export async function updateContract(
       revalidatePath(ROUTES.contracts);
       return { success: true, data: response.data.data };
     }
-    return { success: false, error: response.data.error ?? "Failed to update contract" };
+    return { success: false, errors: { message: response.data.error ?? "Failed to update contract" } };
   } catch (error) {
     return handleError(error);
   }
@@ -151,7 +151,7 @@ export async function deleteContractById(
       revalidatePath(ROUTES.contracts);
       return { success: true, data: null };
     }
-    return { success: false, error: response.data.error ?? "Failed to delete contract" };
+    return { success: false, errors: { message: response.data.error ?? "Failed to delete contract" } };
   } catch (error) {
     return handleError(error);
   }
@@ -169,7 +169,7 @@ export async function uploadContractDocument(
       revalidatePath(ROUTES.contracts);
       return { success: true, data: response.data.data };
     }
-    return { success: false, error: response.data.error ?? "Upload failed" };
+    return { success: false, errors: { message: response.data.error ?? "Upload failed" } };
   } catch (error) {
     return handleError(error);
   }
