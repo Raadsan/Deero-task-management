@@ -26,7 +26,7 @@ async function main() {
 
   console.log(`Checking for admin user: ${email}...`);
 
-  const existingUser = await prisma.user.findUnique({
+  const existingUser = await prisma.staff.findUnique({
     where: { email },
   });
 
@@ -42,7 +42,7 @@ async function main() {
 
     if (res) {
       console.log("Linking user to dynamic Superadmin role...");
-      await prisma.user.update({
+      await prisma.staff.update({
         where: { id: res.user.id },
         data: {
           dynamicRole: { connect: { id: superadminRole.id } },
@@ -53,7 +53,7 @@ async function main() {
     }
   } else {
     console.log("Admin user already exists. Updating role link...");
-    await prisma.user.update({
+    await prisma.staff.update({
       where: { email },
       data: {
         dynamicRole: { connect: { id: superadminRole.id } },

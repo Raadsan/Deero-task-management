@@ -8,8 +8,8 @@ export type ServiceRecord = {
   id: string;
   serviceName: string;
   description?: string | null;
-  branchId?: string | null;
-  branch?: {
+  portfolioId?: string | null;
+  portfolio?: {
     id: string;
     name: string;
     slug?: string | null;
@@ -30,11 +30,11 @@ export type SubServiceRecord = {
 };
 
 export async function getAllServices(params?: {
-  branchId?: string;
+  portfolioId?: string;
 }): Promise<ActionResponse<ServiceRecord[]>> {
   try {
-    const query = params?.branchId
-      ? `?branchId=${encodeURIComponent(params.branchId)}`
+    const query = params?.portfolioId
+      ? `?portfolioId=${encodeURIComponent(params.portfolioId)}`
       : "";
     const response = await api.get(`/api/services${query}`);
     if (response.data.success) {
@@ -68,7 +68,7 @@ export async function getServiceById(
 export async function createService(data: {
   serviceName: string;
   description?: string;
-  branchId: string;
+  portfolioId: string;
   subServices?: SubServiceInput[] | string[];
 }): Promise<ActionResponse> {
   try {
@@ -85,7 +85,7 @@ export async function updateService(
   data: {
     serviceName: string;
     description?: string;
-    branchId: string;
+    portfolioId: string;
     subServices?: SubServiceInput[];
   },
 ): Promise<ActionResponse> {

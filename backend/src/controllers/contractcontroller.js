@@ -7,13 +7,13 @@ import {
   getScope,
   mergeWhere,
   resolveWritableBranchId,
-} from "../lib/branch-scope.js";
+} from "../lib/portfolio-scope.js";
 import { saveContractFile, deleteContractFileFromDisk } from "../lib/contract-files.js";
 
 const contractInclude = {
   client: { select: { id: true, institution: true, companyName: true, phone: true } },
   project: { select: { id: true, name: true } },
-  branch: { select: { id: true, name: true } },
+  portfolio: { select: { id: true, name: true } },
   createdBy: { select: { id: true, name: true } },
   documents: {
     orderBy: { version: "desc" },
@@ -73,7 +73,7 @@ export const createContract = async (req, res) => {
   const data = req.body;
   try {
     const scope = getScope(req);
-    const branchId = resolveWritableBranchId(scope, data.branchId);
+    const portfolioId = resolveWritableBranchId(scope, data.portfolioId);
 
     const client = await prisma.client.findFirst({
       where: mergeWhere({ id: data.clientId }, clientBranchWhere(scope)),
@@ -81,7 +81,7 @@ export const createContract = async (req, res) => {
     if (!client) {
       return res.status(404).json({ success: false, error: "Client not found" });
     }
-    if (branchId && denyIfOutOfScope(res, scope, branchId)) return;
+    if (portfolioId && denyIfOutOfScope(res, scope, portfolioId)) return;
 
     if (data.projectId) {
       const project = await prisma.project.findFirst({
@@ -122,7 +122,7 @@ export const createContract = async (req, res) => {
           notes: data.notes ?? null,
           clientId: client.id,
           projectId: data.projectId ?? null,
-          branchId: branchId ?? client.branchId ?? null,
+          portfolioId: portfolioId ?? client.portfolioId ?? null,
           createdById: scope.user?.id ?? null,
         },
       });

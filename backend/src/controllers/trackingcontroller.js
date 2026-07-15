@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prisma.js";
 import { logAudit } from "../lib/auditHelper.js";
-import { auditLogBranchWhere, getScope } from "../lib/branch-scope.js";
+import { auditLogBranchWhere, getScope } from "../lib/portfolio-scope.js";
 
 export const getAllLogs = async (req, res) => {
   try {
@@ -9,7 +9,7 @@ export const getAllLogs = async (req, res) => {
       where: auditLogBranchWhere(scope),
       include: {
         user: {
-          select: { id: true, name: true, email: true, branchId: true },
+          select: { id: true, name: true, email: true, portfolioId: true },
         },
       },
       orderBy: { createdAt: "desc" },

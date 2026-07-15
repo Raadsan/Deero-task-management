@@ -67,13 +67,13 @@ export default function ServicesManagementPage() {
     getAllServices,
   );
   const { data: branchScopeRes } = useSWR(
-    "services-branch-scope",
+    "services-portfolio-scope",
     getTaskFormBranchOptions,
   );
   const { mutate } = useSWRConfig();
 
   const services = (servicesRes?.data as ServiceRecord[]) ?? [];
-  const activeBranches = branchScopeRes?.data?.branches ?? [];
+  const activeBranches = branchScopeRes?.data?.portfolios ?? [];
   const singleBranch = branchScopeRes?.data?.singleBranch ?? false;
 
   const [search, setSearch] = useState("");
@@ -93,12 +93,12 @@ export default function ServicesManagementPage() {
       branchFilter === "all"
         ? services
         : services.filter(
-            (service) => (service.branchId ?? service.branch?.id) === branchFilter,
+            (service) => (service.portfolioId ?? service.portfolio?.id) === branchFilter,
           );
 
     return [...list].sort((a, b) => {
-      const branchA = a.branch?.name ?? "";
-      const branchB = b.branch?.name ?? "";
+      const branchA = a.portfolio?.name ?? "";
+      const branchB = b.portfolio?.name ?? "";
       if (branchA !== branchB) return branchA.localeCompare(branchB);
       return a.serviceName.localeCompare(b.serviceName);
     });
@@ -109,7 +109,7 @@ export default function ServicesManagementPage() {
   const [editingService, setEditingService] = useState<ServiceRecord | null>(null);
   const [serviceName, setServiceName] = useState("");
   const [serviceDescription, setServiceDescription] = useState("");
-  const [branchId, setBranchId] = useState("");
+  const [portfolioId, setBranchId] = useState("");
   const [subFields, setSubFields] = useState<SubField[]>([emptySubField()]);
 
   const [viewOpen, setViewOpen] = useState(false);
@@ -127,7 +127,7 @@ export default function ServicesManagementPage() {
       const id = service.id.toLowerCase();
       const name = service.serviceName?.toLowerCase() ?? "";
       const description = service.description?.toLowerCase() ?? "";
-      const branchName = service.branch?.name?.toLowerCase() ?? "";
+      const branchName = service.portfolio?.name?.toLowerCase() ?? "";
       const subs = service.subService?.some((sub) =>
         sub.name.toLowerCase().includes(query),
       );
@@ -161,7 +161,7 @@ export default function ServicesManagementPage() {
     setEditingService(service);
     setServiceName(service.serviceName);
     setServiceDescription(service.description ?? "");
-    setBranchId(service.branchId ?? service.branch?.id ?? "");
+    setBranchId(service.portfolioId ?? service.portfolio?.id ?? "");
     setSubFields(toSubFields(service.subService));
     setFormOpen(true);
   }
@@ -194,8 +194,8 @@ export default function ServicesManagementPage() {
       return;
     }
 
-    if (!branchId) {
-      toast.error("Please select a branch");
+    if (!portfolioId) {
+      toast.error("Please select a portfolio");
       return;
     }
 
@@ -212,7 +212,7 @@ export default function ServicesManagementPage() {
     const payload = {
       serviceName: trimmedName,
       description: serviceDescription.trim() || undefined,
-      branchId,
+      portfolioId,
       subServices,
     };
 
@@ -255,17 +255,17 @@ export default function ServicesManagementPage() {
       <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <div className={cn("flex items-center gap-2", dashboardLabelClass)}>
-            <span>Branch</span>
+            <span>Portfolio</span>
             <select
               value={branchFilter}
               onChange={(e) => setBranchFilter(e.target.value)}
               className={cn("min-w-[9rem]", compactSelectClass)}
               disabled={singleBranch}
             >
-              {!singleBranch && <option value="all">All branches</option>}
-              {activeBranches.map((branch) => (
-                <option key={branch.id} value={branch.id}>
-                  {branch.name}
+              {!singleBranch && <option value="all">All portfolios</option>}
+              {activeBranches.map((portfolio) => (
+                <option key={portfolio.id} value={portfolio.id}>
+                  {portfolio.name}
                 </option>
               ))}
             </select>
@@ -333,7 +333,7 @@ export default function ServicesManagementPage() {
                           {service.serviceName}
                         </h3>
                         <p className="mt-0.5 truncate text-xs font-medium text-primary">
-                          {service.branch?.name || "No branch"}
+                          {service.portfolio?.name || "No portfolio"}
                         </p>
                       </div>
                     </div>
@@ -422,17 +422,17 @@ export default function ServicesManagementPage() {
           </DialogHeader>
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-4">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-zinc-700">Branch</label>
+              <label className="text-sm font-medium text-zinc-700">Portfolio</label>
               <select
-                value={branchId}
+                value={portfolioId}
                 onChange={(e) => setBranchId(e.target.value)}
                 className={cn(compactSelectClass, "w-full px-3")}
                 disabled={singleBranch}
               >
-                <option value="">Select branch</option>
-                {activeBranches.map((branch) => (
-                  <option key={branch.id} value={branch.id}>
-                    {branch.name}
+                <option value="">Select portfolio</option>
+                {activeBranches.map((portfolio) => (
+                  <option key={portfolio.id} value={portfolio.id}>
+                    {portfolio.name}
                   </option>
                 ))}
               </select>
@@ -548,10 +548,10 @@ export default function ServicesManagementPage() {
                 </div>
                 <div className="rounded-lg border border-zinc-100 bg-zinc-50 p-3">
                   <p className="text-xs font-semibold uppercase tracking-wide text-zinc-400">
-                    Branch
+                    Portfolio
                   </p>
                   <p className="mt-1 text-sm font-medium text-zinc-800">
-                    {viewingService.branch?.name || "—"}
+                    {viewingService.portfolio?.name || "—"}
                   </p>
                 </div>
                 <div className="rounded-lg border border-zinc-100 bg-zinc-50 p-3">

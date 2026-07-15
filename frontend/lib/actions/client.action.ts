@@ -40,8 +40,8 @@ function mapServiceAgreements(client: any) {
         serviceName: service?.serviceName ?? "",
         subServiceName: subService?.name ?? "",
         serviceStatus: agreement.serviceStatus ?? "pending",
-        branchId: service?.branchId ?? service?.branch?.id ?? null,
-        branchName: service?.branch?.name ?? "",
+        portfolioId: service?.portfolioId ?? service?.portfolio?.id ?? null,
+        branchName: service?.portfolio?.name ?? "",
         base: agreement.base,
         description: agreement.description,
         discount: agreement.discount,
@@ -85,7 +85,7 @@ export async function createClient(data: {
   contractEndDate?: string | Date;
   monthlyBudget?: number;
   notes?: string;
-  branchId?: string;
+  portfolioId?: string;
   accountManagerId?: string;
   autoGenerateTasks?: boolean;
   serviceName?: string;
@@ -178,7 +178,7 @@ export async function getClientById(id: string): Promise<ActionResponse<Client>>
         service:
           client.clientService?.map((each: any) => ({
             ...each.service,
-            branch: each.service?.branch,
+            portfolio: each.service?.portfolio,
           })) || [],
         serviceAgreements: mapServiceAgreements(client),
         subServices:
@@ -195,8 +195,8 @@ export async function getClientById(id: string): Promise<ActionResponse<Client>>
               description: eachAgrement.description,
               createdAt: formatDate(eachAgrement.createdAt ?? ""),
               serviceStatus: eachAgrement.serviceStatus ?? "pending",
-              branchId: service?.branchId ?? service?.branch?.id ?? null,
-              branchName: service?.branch?.name ?? "",
+              portfolioId: service?.portfolioId ?? service?.portfolio?.id ?? null,
+              branchName: service?.portfolio?.name ?? "",
             };
           }) || [],
       };
@@ -273,7 +273,7 @@ export async function addAnotherService(params: {
   base: number;
   description?: string;
   discount?: number;
-  branchId?: string;
+  portfolioId?: string;
   createdAt?: Date;
   serviceStatus?: "pending" | "completed";
 }): Promise<ActionResponse> {
@@ -285,7 +285,7 @@ export async function addAnotherService(params: {
       base: rest.base,
       description: rest.description,
       discount: rest.discount,
-      branchId: rest.branchId,
+      portfolioId: rest.portfolioId,
       createdAt: rest.createdAt,
       serviceStatus: rest.serviceStatus,
     });
@@ -321,7 +321,7 @@ export async function editClientService(params: {
   clientId: string;
   serviceName?: string;
   subServiceName: string;
-  branchId?: string;
+  portfolioId?: string;
   base: number;
   description?: string;
   discount?: number;

@@ -19,10 +19,10 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type Role = $Result.DefaultSelection<Prisma.$RolePayload>
 /**
- * Model User
+ * Model Staff
  * 
  */
-export type User = $Result.DefaultSelection<Prisma.$UserPayload>
+export type Staff = $Result.DefaultSelection<Prisma.$StaffPayload>
 /**
  * Model Session
  * 
@@ -54,15 +54,10 @@ export type Service = $Result.DefaultSelection<Prisma.$ServicePayload>
  */
 export type SubService = $Result.DefaultSelection<Prisma.$SubServicePayload>
 /**
- * Model Branch
+ * Model Portfolio
  * 
  */
-export type Branch = $Result.DefaultSelection<Prisma.$BranchPayload>
-/**
- * Model Department
- * 
- */
-export type Department = $Result.DefaultSelection<Prisma.$DepartmentPayload>
+export type Portfolio = $Result.DefaultSelection<Prisma.$PortfolioPayload>
 /**
  * Model ClientSubService
  * 
@@ -285,7 +280,7 @@ export const EntityType: {
   payments: 'payments',
   invoice: 'invoice',
   tax: 'tax',
-  branches: 'branches',
+  portfolios: 'portfolios',
   departments: 'departments',
   projects: 'projects',
   content_requests: 'content_requests',
@@ -588,14 +583,14 @@ export class PrismaClient<
   get role(): Prisma.RoleDelegate<ExtArgs>;
 
   /**
-   * `prisma.user`: Exposes CRUD operations for the **User** model.
+   * `prisma.staff`: Exposes CRUD operations for the **Staff** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more Users
-    * const users = await prisma.user.findMany()
+    * // Fetch zero or more Staff
+    * const staff = await prisma.staff.findMany()
     * ```
     */
-  get user(): Prisma.UserDelegate<ExtArgs>;
+  get staff(): Prisma.StaffDelegate<ExtArgs>;
 
   /**
    * `prisma.session`: Exposes CRUD operations for the **Session** model.
@@ -658,24 +653,14 @@ export class PrismaClient<
   get subService(): Prisma.SubServiceDelegate<ExtArgs>;
 
   /**
-   * `prisma.branch`: Exposes CRUD operations for the **Branch** model.
+   * `prisma.portfolio`: Exposes CRUD operations for the **Portfolio** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more Branches
-    * const branches = await prisma.branch.findMany()
+    * // Fetch zero or more Portfolios
+    * const portfolios = await prisma.portfolio.findMany()
     * ```
     */
-  get branch(): Prisma.BranchDelegate<ExtArgs>;
-
-  /**
-   * `prisma.department`: Exposes CRUD operations for the **Department** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Departments
-    * const departments = await prisma.department.findMany()
-    * ```
-    */
-  get department(): Prisma.DepartmentDelegate<ExtArgs>;
+  get portfolio(): Prisma.PortfolioDelegate<ExtArgs>;
 
   /**
    * `prisma.clientSubService`: Exposes CRUD operations for the **ClientSubService** model.
@@ -1458,15 +1443,14 @@ export namespace Prisma {
 
   export const ModelName: {
     Role: 'Role',
-    User: 'User',
+    Staff: 'Staff',
     Session: 'Session',
     Account: 'Account',
     Verification: 'Verification',
     Client: 'Client',
     Service: 'Service',
     SubService: 'SubService',
-    Branch: 'Branch',
-    Department: 'Department',
+    Portfolio: 'Portfolio',
     ClientSubService: 'ClientSubService',
     ClientService: 'ClientService',
     Task: 'Task',
@@ -1516,7 +1500,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "role" | "user" | "session" | "account" | "verification" | "client" | "service" | "subService" | "branch" | "department" | "clientSubService" | "clientService" | "task" | "clientTask" | "counter" | "income" | "expense" | "incomeTransaction" | "expenseTransaction" | "incomeTransactionDetails" | "userFiles" | "incomeServiceAgreement" | "expenseServiceAgreement" | "expenseTransactionDetails" | "userSalary" | "userSalaryDetails" | "notification" | "navMenu" | "navSubMenu" | "roleMenuAccess" | "roleSubMenuAccess" | "auditLog" | "project" | "contract" | "clientInstallment" | "contractDocument" | "contentRequest" | "contentRequestAssignee" | "recurringSchedule" | "recurringScheduleStep" | "recurringTaskOccurrence" | "contentCycle" | "workflowTemplate" | "workflowTemplateStep"
+      modelProps: "role" | "staff" | "session" | "account" | "verification" | "client" | "service" | "subService" | "portfolio" | "clientSubService" | "clientService" | "task" | "clientTask" | "counter" | "income" | "expense" | "incomeTransaction" | "expenseTransaction" | "incomeTransactionDetails" | "userFiles" | "incomeServiceAgreement" | "expenseServiceAgreement" | "expenseTransactionDetails" | "userSalary" | "userSalaryDetails" | "notification" | "navMenu" | "navSubMenu" | "roleMenuAccess" | "roleSubMenuAccess" | "auditLog" | "project" | "contract" | "clientInstallment" | "contractDocument" | "contentRequest" | "contentRequestAssignee" | "recurringSchedule" | "recurringScheduleStep" | "recurringTaskOccurrence" | "contentCycle" | "workflowTemplate" | "workflowTemplateStep"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1586,69 +1570,69 @@ export namespace Prisma {
           }
         }
       }
-      User: {
-        payload: Prisma.$UserPayload<ExtArgs>
-        fields: Prisma.UserFieldRefs
+      Staff: {
+        payload: Prisma.$StaffPayload<ExtArgs>
+        fields: Prisma.StaffFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.UserFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UserPayload> | null
+            args: Prisma.StaffFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StaffPayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.UserFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UserPayload>
+            args: Prisma.StaffFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StaffPayload>
           }
           findFirst: {
-            args: Prisma.UserFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UserPayload> | null
+            args: Prisma.StaffFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StaffPayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.UserFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UserPayload>
+            args: Prisma.StaffFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StaffPayload>
           }
           findMany: {
-            args: Prisma.UserFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UserPayload>[]
+            args: Prisma.StaffFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StaffPayload>[]
           }
           create: {
-            args: Prisma.UserCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UserPayload>
+            args: Prisma.StaffCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StaffPayload>
           }
           createMany: {
-            args: Prisma.UserCreateManyArgs<ExtArgs>
+            args: Prisma.StaffCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
           delete: {
-            args: Prisma.UserDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UserPayload>
+            args: Prisma.StaffDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StaffPayload>
           }
           update: {
-            args: Prisma.UserUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UserPayload>
+            args: Prisma.StaffUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StaffPayload>
           }
           deleteMany: {
-            args: Prisma.UserDeleteManyArgs<ExtArgs>
+            args: Prisma.StaffDeleteManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateMany: {
-            args: Prisma.UserUpdateManyArgs<ExtArgs>
+            args: Prisma.StaffUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
           upsert: {
-            args: Prisma.UserUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UserPayload>
+            args: Prisma.StaffUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StaffPayload>
           }
           aggregate: {
-            args: Prisma.UserAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateUser>
+            args: Prisma.StaffAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateStaff>
           }
           groupBy: {
-            args: Prisma.UserGroupByArgs<ExtArgs>
-            result: $Utils.Optional<UserGroupByOutputType>[]
+            args: Prisma.StaffGroupByArgs<ExtArgs>
+            result: $Utils.Optional<StaffGroupByOutputType>[]
           }
           count: {
-            args: Prisma.UserCountArgs<ExtArgs>
-            result: $Utils.Optional<UserCountAggregateOutputType> | number
+            args: Prisma.StaffCountArgs<ExtArgs>
+            result: $Utils.Optional<StaffCountAggregateOutputType> | number
           }
         }
       }
@@ -2048,135 +2032,69 @@ export namespace Prisma {
           }
         }
       }
-      Branch: {
-        payload: Prisma.$BranchPayload<ExtArgs>
-        fields: Prisma.BranchFieldRefs
+      Portfolio: {
+        payload: Prisma.$PortfolioPayload<ExtArgs>
+        fields: Prisma.PortfolioFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.BranchFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BranchPayload> | null
+            args: Prisma.PortfolioFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PortfolioPayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.BranchFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BranchPayload>
+            args: Prisma.PortfolioFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PortfolioPayload>
           }
           findFirst: {
-            args: Prisma.BranchFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BranchPayload> | null
+            args: Prisma.PortfolioFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PortfolioPayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.BranchFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BranchPayload>
+            args: Prisma.PortfolioFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PortfolioPayload>
           }
           findMany: {
-            args: Prisma.BranchFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BranchPayload>[]
+            args: Prisma.PortfolioFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PortfolioPayload>[]
           }
           create: {
-            args: Prisma.BranchCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BranchPayload>
+            args: Prisma.PortfolioCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PortfolioPayload>
           }
           createMany: {
-            args: Prisma.BranchCreateManyArgs<ExtArgs>
+            args: Prisma.PortfolioCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
           delete: {
-            args: Prisma.BranchDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BranchPayload>
+            args: Prisma.PortfolioDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PortfolioPayload>
           }
           update: {
-            args: Prisma.BranchUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BranchPayload>
+            args: Prisma.PortfolioUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PortfolioPayload>
           }
           deleteMany: {
-            args: Prisma.BranchDeleteManyArgs<ExtArgs>
+            args: Prisma.PortfolioDeleteManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateMany: {
-            args: Prisma.BranchUpdateManyArgs<ExtArgs>
+            args: Prisma.PortfolioUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
           upsert: {
-            args: Prisma.BranchUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BranchPayload>
+            args: Prisma.PortfolioUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PortfolioPayload>
           }
           aggregate: {
-            args: Prisma.BranchAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateBranch>
+            args: Prisma.PortfolioAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePortfolio>
           }
           groupBy: {
-            args: Prisma.BranchGroupByArgs<ExtArgs>
-            result: $Utils.Optional<BranchGroupByOutputType>[]
+            args: Prisma.PortfolioGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PortfolioGroupByOutputType>[]
           }
           count: {
-            args: Prisma.BranchCountArgs<ExtArgs>
-            result: $Utils.Optional<BranchCountAggregateOutputType> | number
-          }
-        }
-      }
-      Department: {
-        payload: Prisma.$DepartmentPayload<ExtArgs>
-        fields: Prisma.DepartmentFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.DepartmentFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.DepartmentFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>
-          }
-          findFirst: {
-            args: Prisma.DepartmentFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.DepartmentFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>
-          }
-          findMany: {
-            args: Prisma.DepartmentFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>[]
-          }
-          create: {
-            args: Prisma.DepartmentCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>
-          }
-          createMany: {
-            args: Prisma.DepartmentCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          delete: {
-            args: Prisma.DepartmentDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>
-          }
-          update: {
-            args: Prisma.DepartmentUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>
-          }
-          deleteMany: {
-            args: Prisma.DepartmentDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.DepartmentUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          upsert: {
-            args: Prisma.DepartmentUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$DepartmentPayload>
-          }
-          aggregate: {
-            args: Prisma.DepartmentAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateDepartment>
-          }
-          groupBy: {
-            args: Prisma.DepartmentGroupByArgs<ExtArgs>
-            result: $Utils.Optional<DepartmentGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.DepartmentCountArgs<ExtArgs>
-            result: $Utils.Optional<DepartmentCountAggregateOutputType> | number
+            args: Prisma.PortfolioCountArgs<ExtArgs>
+            result: $Utils.Optional<PortfolioCountAggregateOutputType> | number
           }
         }
       }
@@ -4609,7 +4527,7 @@ export namespace Prisma {
    * RoleCountOutputType without action
    */
   export type RoleCountOutputTypeCountUsersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: UserWhereInput
+    where?: StaffWhereInput
   }
 
   /**
@@ -4621,10 +4539,10 @@ export namespace Prisma {
 
 
   /**
-   * Count Type UserCountOutputType
+   * Count Type StaffCountOutputType
    */
 
-  export type UserCountOutputType = {
+  export type StaffCountOutputType = {
     sessions: number
     accounts: number
     assignedTasks: number
@@ -4643,145 +4561,145 @@ export namespace Prisma {
     uploadedContractDocuments: number
   }
 
-  export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    sessions?: boolean | UserCountOutputTypeCountSessionsArgs
-    accounts?: boolean | UserCountOutputTypeCountAccountsArgs
-    assignedTasks?: boolean | UserCountOutputTypeCountAssignedTasksArgs
-    userFiles?: boolean | UserCountOutputTypeCountUserFilesArgs
-    incomeTransaction?: boolean | UserCountOutputTypeCountIncomeTransactionArgs
-    expenseTransaction?: boolean | UserCountOutputTypeCountExpenseTransactionArgs
-    reciever?: boolean | UserCountOutputTypeCountRecieverArgs
-    registerer?: boolean | UserCountOutputTypeCountRegistererArgs
-    auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
-    managedClients?: boolean | UserCountOutputTypeCountManagedClientsArgs
-    createdProjects?: boolean | UserCountOutputTypeCountCreatedProjectsArgs
-    contentRequestsCreated?: boolean | UserCountOutputTypeCountContentRequestsCreatedArgs
-    contentRequestAssignments?: boolean | UserCountOutputTypeCountContentRequestAssignmentsArgs
-    assignedRecurringSteps?: boolean | UserCountOutputTypeCountAssignedRecurringStepsArgs
-    createdContracts?: boolean | UserCountOutputTypeCountCreatedContractsArgs
-    uploadedContractDocuments?: boolean | UserCountOutputTypeCountUploadedContractDocumentsArgs
+  export type StaffCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    sessions?: boolean | StaffCountOutputTypeCountSessionsArgs
+    accounts?: boolean | StaffCountOutputTypeCountAccountsArgs
+    assignedTasks?: boolean | StaffCountOutputTypeCountAssignedTasksArgs
+    userFiles?: boolean | StaffCountOutputTypeCountUserFilesArgs
+    incomeTransaction?: boolean | StaffCountOutputTypeCountIncomeTransactionArgs
+    expenseTransaction?: boolean | StaffCountOutputTypeCountExpenseTransactionArgs
+    reciever?: boolean | StaffCountOutputTypeCountRecieverArgs
+    registerer?: boolean | StaffCountOutputTypeCountRegistererArgs
+    auditLogs?: boolean | StaffCountOutputTypeCountAuditLogsArgs
+    managedClients?: boolean | StaffCountOutputTypeCountManagedClientsArgs
+    createdProjects?: boolean | StaffCountOutputTypeCountCreatedProjectsArgs
+    contentRequestsCreated?: boolean | StaffCountOutputTypeCountContentRequestsCreatedArgs
+    contentRequestAssignments?: boolean | StaffCountOutputTypeCountContentRequestAssignmentsArgs
+    assignedRecurringSteps?: boolean | StaffCountOutputTypeCountAssignedRecurringStepsArgs
+    createdContracts?: boolean | StaffCountOutputTypeCountCreatedContractsArgs
+    uploadedContractDocuments?: boolean | StaffCountOutputTypeCountUploadedContractDocumentsArgs
   }
 
   // Custom InputTypes
   /**
-   * UserCountOutputType without action
+   * StaffCountOutputType without action
    */
-  export type UserCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the UserCountOutputType
+     * Select specific fields to fetch from the StaffCountOutputType
      */
-    select?: UserCountOutputTypeSelect<ExtArgs> | null
+    select?: StaffCountOutputTypeSelect<ExtArgs> | null
   }
 
   /**
-   * UserCountOutputType without action
+   * StaffCountOutputType without action
    */
-  export type UserCountOutputTypeCountSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffCountOutputTypeCountSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SessionWhereInput
   }
 
   /**
-   * UserCountOutputType without action
+   * StaffCountOutputType without action
    */
-  export type UserCountOutputTypeCountAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffCountOutputTypeCountAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AccountWhereInput
   }
 
   /**
-   * UserCountOutputType without action
+   * StaffCountOutputType without action
    */
-  export type UserCountOutputTypeCountAssignedTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffCountOutputTypeCountAssignedTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TaskWhereInput
   }
 
   /**
-   * UserCountOutputType without action
+   * StaffCountOutputType without action
    */
-  export type UserCountOutputTypeCountUserFilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffCountOutputTypeCountUserFilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserFilesWhereInput
   }
 
   /**
-   * UserCountOutputType without action
+   * StaffCountOutputType without action
    */
-  export type UserCountOutputTypeCountIncomeTransactionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffCountOutputTypeCountIncomeTransactionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: IncomeTransactionWhereInput
   }
 
   /**
-   * UserCountOutputType without action
+   * StaffCountOutputType without action
    */
-  export type UserCountOutputTypeCountExpenseTransactionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffCountOutputTypeCountExpenseTransactionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ExpenseTransactionWhereInput
   }
 
   /**
-   * UserCountOutputType without action
+   * StaffCountOutputType without action
    */
-  export type UserCountOutputTypeCountRecieverArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffCountOutputTypeCountRecieverArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserSalaryWhereInput
   }
 
   /**
-   * UserCountOutputType without action
+   * StaffCountOutputType without action
    */
-  export type UserCountOutputTypeCountRegistererArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffCountOutputTypeCountRegistererArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserSalaryWhereInput
   }
 
   /**
-   * UserCountOutputType without action
+   * StaffCountOutputType without action
    */
-  export type UserCountOutputTypeCountAuditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffCountOutputTypeCountAuditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AuditLogWhereInput
   }
 
   /**
-   * UserCountOutputType without action
+   * StaffCountOutputType without action
    */
-  export type UserCountOutputTypeCountManagedClientsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffCountOutputTypeCountManagedClientsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ClientWhereInput
   }
 
   /**
-   * UserCountOutputType without action
+   * StaffCountOutputType without action
    */
-  export type UserCountOutputTypeCountCreatedProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffCountOutputTypeCountCreatedProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProjectWhereInput
   }
 
   /**
-   * UserCountOutputType without action
+   * StaffCountOutputType without action
    */
-  export type UserCountOutputTypeCountContentRequestsCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffCountOutputTypeCountContentRequestsCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ContentRequestWhereInput
   }
 
   /**
-   * UserCountOutputType without action
+   * StaffCountOutputType without action
    */
-  export type UserCountOutputTypeCountContentRequestAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffCountOutputTypeCountContentRequestAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ContentRequestAssigneeWhereInput
   }
 
   /**
-   * UserCountOutputType without action
+   * StaffCountOutputType without action
    */
-  export type UserCountOutputTypeCountAssignedRecurringStepsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffCountOutputTypeCountAssignedRecurringStepsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: RecurringScheduleStepWhereInput
   }
 
   /**
-   * UserCountOutputType without action
+   * StaffCountOutputType without action
    */
-  export type UserCountOutputTypeCountCreatedContractsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffCountOutputTypeCountCreatedContractsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ContractWhereInput
   }
 
   /**
-   * UserCountOutputType without action
+   * StaffCountOutputType without action
    */
-  export type UserCountOutputTypeCountUploadedContractDocumentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffCountOutputTypeCountUploadedContractDocumentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ContractDocumentWhereInput
   }
 
@@ -4988,13 +4906,12 @@ export namespace Prisma {
 
 
   /**
-   * Count Type BranchCountOutputType
+   * Count Type PortfolioCountOutputType
    */
 
-  export type BranchCountOutputType = {
+  export type PortfolioCountOutputType = {
     users: number
     services: number
-    departments: number
     clients: number
     projects: number
     contentRequests: number
@@ -5002,81 +4919,73 @@ export namespace Prisma {
     contracts: number
   }
 
-  export type BranchCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    users?: boolean | BranchCountOutputTypeCountUsersArgs
-    services?: boolean | BranchCountOutputTypeCountServicesArgs
-    departments?: boolean | BranchCountOutputTypeCountDepartmentsArgs
-    clients?: boolean | BranchCountOutputTypeCountClientsArgs
-    projects?: boolean | BranchCountOutputTypeCountProjectsArgs
-    contentRequests?: boolean | BranchCountOutputTypeCountContentRequestsArgs
-    recurringSchedules?: boolean | BranchCountOutputTypeCountRecurringSchedulesArgs
-    contracts?: boolean | BranchCountOutputTypeCountContractsArgs
+  export type PortfolioCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    users?: boolean | PortfolioCountOutputTypeCountUsersArgs
+    services?: boolean | PortfolioCountOutputTypeCountServicesArgs
+    clients?: boolean | PortfolioCountOutputTypeCountClientsArgs
+    projects?: boolean | PortfolioCountOutputTypeCountProjectsArgs
+    contentRequests?: boolean | PortfolioCountOutputTypeCountContentRequestsArgs
+    recurringSchedules?: boolean | PortfolioCountOutputTypeCountRecurringSchedulesArgs
+    contracts?: boolean | PortfolioCountOutputTypeCountContractsArgs
   }
 
   // Custom InputTypes
   /**
-   * BranchCountOutputType without action
+   * PortfolioCountOutputType without action
    */
-  export type BranchCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PortfolioCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the BranchCountOutputType
+     * Select specific fields to fetch from the PortfolioCountOutputType
      */
-    select?: BranchCountOutputTypeSelect<ExtArgs> | null
+    select?: PortfolioCountOutputTypeSelect<ExtArgs> | null
   }
 
   /**
-   * BranchCountOutputType without action
+   * PortfolioCountOutputType without action
    */
-  export type BranchCountOutputTypeCountUsersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: UserWhereInput
+  export type PortfolioCountOutputTypeCountUsersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StaffWhereInput
   }
 
   /**
-   * BranchCountOutputType without action
+   * PortfolioCountOutputType without action
    */
-  export type BranchCountOutputTypeCountServicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PortfolioCountOutputTypeCountServicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ServiceWhereInput
   }
 
   /**
-   * BranchCountOutputType without action
+   * PortfolioCountOutputType without action
    */
-  export type BranchCountOutputTypeCountDepartmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: DepartmentWhereInput
-  }
-
-  /**
-   * BranchCountOutputType without action
-   */
-  export type BranchCountOutputTypeCountClientsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PortfolioCountOutputTypeCountClientsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ClientWhereInput
   }
 
   /**
-   * BranchCountOutputType without action
+   * PortfolioCountOutputType without action
    */
-  export type BranchCountOutputTypeCountProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PortfolioCountOutputTypeCountProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProjectWhereInput
   }
 
   /**
-   * BranchCountOutputType without action
+   * PortfolioCountOutputType without action
    */
-  export type BranchCountOutputTypeCountContentRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PortfolioCountOutputTypeCountContentRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ContentRequestWhereInput
   }
 
   /**
-   * BranchCountOutputType without action
+   * PortfolioCountOutputType without action
    */
-  export type BranchCountOutputTypeCountRecurringSchedulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PortfolioCountOutputTypeCountRecurringSchedulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: RecurringScheduleWhereInput
   }
 
   /**
-   * BranchCountOutputType without action
+   * PortfolioCountOutputType without action
    */
-  export type BranchCountOutputTypeCountContractsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PortfolioCountOutputTypeCountContractsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ContractWhereInput
   }
 
@@ -5951,7 +5860,7 @@ export namespace Prisma {
   export type $RolePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Role"
     objects: {
-      users: Prisma.$UserPayload<ExtArgs>[]
+      users: Prisma.$StaffPayload<ExtArgs>[]
       menuAccess: Prisma.$RoleMenuAccessPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -6301,7 +6210,7 @@ export namespace Prisma {
    */
   export interface Prisma__RoleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    users<T extends Role$usersArgs<ExtArgs> = {}>(args?: Subset<T, Role$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany"> | Null>
+    users<T extends Role$usersArgs<ExtArgs> = {}>(args?: Subset<T, Role$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findMany"> | Null>
     menuAccess<T extends Role$menuAccessArgs<ExtArgs> = {}>(args?: Subset<T, Role$menuAccessArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RoleMenuAccessPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -6641,19 +6550,19 @@ export namespace Prisma {
    */
   export type Role$usersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the Staff
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: StaffSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
-    where?: UserWhereInput
-    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
-    cursor?: UserWhereUniqueInput
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
+    orderBy?: StaffOrderByWithRelationInput | StaffOrderByWithRelationInput[]
+    cursor?: StaffWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+    distinct?: StaffScalarFieldEnum | StaffScalarFieldEnum[]
   }
 
   /**
@@ -6692,16 +6601,16 @@ export namespace Prisma {
 
 
   /**
-   * Model User
+   * Model Staff
    */
 
-  export type AggregateUser = {
-    _count: UserCountAggregateOutputType | null
-    _min: UserMinAggregateOutputType | null
-    _max: UserMaxAggregateOutputType | null
+  export type AggregateStaff = {
+    _count: StaffCountAggregateOutputType | null
+    _min: StaffMinAggregateOutputType | null
+    _max: StaffMaxAggregateOutputType | null
   }
 
-  export type UserMinAggregateOutputType = {
+  export type StaffMinAggregateOutputType = {
     id: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -6711,8 +6620,7 @@ export namespace Prisma {
     image: string | null
     gender: string | null
     salary: string | null
-    department: string | null
-    branchId: string | null
+    portfolioId: string | null
     roleId: string | null
     role: string | null
     banned: boolean | null
@@ -6720,7 +6628,7 @@ export namespace Prisma {
     banExpires: Date | null
   }
 
-  export type UserMaxAggregateOutputType = {
+  export type StaffMaxAggregateOutputType = {
     id: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -6730,8 +6638,7 @@ export namespace Prisma {
     image: string | null
     gender: string | null
     salary: string | null
-    department: string | null
-    branchId: string | null
+    portfolioId: string | null
     roleId: string | null
     role: string | null
     banned: boolean | null
@@ -6739,7 +6646,7 @@ export namespace Prisma {
     banExpires: Date | null
   }
 
-  export type UserCountAggregateOutputType = {
+  export type StaffCountAggregateOutputType = {
     id: number
     createdAt: number
     updatedAt: number
@@ -6749,8 +6656,7 @@ export namespace Prisma {
     image: number
     gender: number
     salary: number
-    department: number
-    branchId: number
+    portfolioId: number
     roleId: number
     role: number
     banned: number
@@ -6760,7 +6666,7 @@ export namespace Prisma {
   }
 
 
-  export type UserMinAggregateInputType = {
+  export type StaffMinAggregateInputType = {
     id?: true
     createdAt?: true
     updatedAt?: true
@@ -6770,8 +6676,7 @@ export namespace Prisma {
     image?: true
     gender?: true
     salary?: true
-    department?: true
-    branchId?: true
+    portfolioId?: true
     roleId?: true
     role?: true
     banned?: true
@@ -6779,7 +6684,7 @@ export namespace Prisma {
     banExpires?: true
   }
 
-  export type UserMaxAggregateInputType = {
+  export type StaffMaxAggregateInputType = {
     id?: true
     createdAt?: true
     updatedAt?: true
@@ -6789,8 +6694,7 @@ export namespace Prisma {
     image?: true
     gender?: true
     salary?: true
-    department?: true
-    branchId?: true
+    portfolioId?: true
     roleId?: true
     role?: true
     banned?: true
@@ -6798,7 +6702,7 @@ export namespace Prisma {
     banExpires?: true
   }
 
-  export type UserCountAggregateInputType = {
+  export type StaffCountAggregateInputType = {
     id?: true
     createdAt?: true
     updatedAt?: true
@@ -6808,8 +6712,7 @@ export namespace Prisma {
     image?: true
     gender?: true
     salary?: true
-    department?: true
-    branchId?: true
+    portfolioId?: true
     roleId?: true
     role?: true
     banned?: true
@@ -6818,79 +6721,79 @@ export namespace Prisma {
     _all?: true
   }
 
-  export type UserAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which User to aggregate.
+     * Filter which Staff to aggregate.
      */
-    where?: UserWhereInput
+    where?: StaffWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Users to fetch.
+     * Determine the order of Staff to fetch.
      */
-    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    orderBy?: StaffOrderByWithRelationInput | StaffOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: UserWhereUniqueInput
+    cursor?: StaffWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Users from the position of the cursor.
+     * Take `±n` Staff from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Users.
+     * Skip the first `n` Staff.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned Users
+     * Count returned Staff
     **/
-    _count?: true | UserCountAggregateInputType
+    _count?: true | StaffCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: UserMinAggregateInputType
+    _min?: StaffMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: UserMaxAggregateInputType
+    _max?: StaffMaxAggregateInputType
   }
 
-  export type GetUserAggregateType<T extends UserAggregateArgs> = {
-        [P in keyof T & keyof AggregateUser]: P extends '_count' | 'count'
+  export type GetStaffAggregateType<T extends StaffAggregateArgs> = {
+        [P in keyof T & keyof AggregateStaff]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateUser[P]>
-      : GetScalarType<T[P], AggregateUser[P]>
+        : GetScalarType<T[P], AggregateStaff[P]>
+      : GetScalarType<T[P], AggregateStaff[P]>
   }
 
 
 
 
-  export type UserGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: UserWhereInput
-    orderBy?: UserOrderByWithAggregationInput | UserOrderByWithAggregationInput[]
-    by: UserScalarFieldEnum[] | UserScalarFieldEnum
-    having?: UserScalarWhereWithAggregatesInput
+  export type StaffGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StaffWhereInput
+    orderBy?: StaffOrderByWithAggregationInput | StaffOrderByWithAggregationInput[]
+    by: StaffScalarFieldEnum[] | StaffScalarFieldEnum
+    having?: StaffScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: UserCountAggregateInputType | true
-    _min?: UserMinAggregateInputType
-    _max?: UserMaxAggregateInputType
+    _count?: StaffCountAggregateInputType | true
+    _min?: StaffMinAggregateInputType
+    _max?: StaffMaxAggregateInputType
   }
 
-  export type UserGroupByOutputType = {
+  export type StaffGroupByOutputType = {
     id: string
     createdAt: Date
     updatedAt: Date
@@ -6900,33 +6803,32 @@ export namespace Prisma {
     image: string | null
     gender: string | null
     salary: string | null
-    department: string | null
-    branchId: string | null
+    portfolioId: string | null
     roleId: string | null
     role: string | null
     banned: boolean | null
     banReason: string | null
     banExpires: Date | null
-    _count: UserCountAggregateOutputType | null
-    _min: UserMinAggregateOutputType | null
-    _max: UserMaxAggregateOutputType | null
+    _count: StaffCountAggregateOutputType | null
+    _min: StaffMinAggregateOutputType | null
+    _max: StaffMaxAggregateOutputType | null
   }
 
-  type GetUserGroupByPayload<T extends UserGroupByArgs> = Prisma.PrismaPromise<
+  type GetStaffGroupByPayload<T extends StaffGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickEnumerable<UserGroupByOutputType, T['by']> &
+      PickEnumerable<StaffGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof UserGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof StaffGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], UserGroupByOutputType[P]>
-            : GetScalarType<T[P], UserGroupByOutputType[P]>
+              : GetScalarType<T[P], StaffGroupByOutputType[P]>
+            : GetScalarType<T[P], StaffGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type UserSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type StaffSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -6936,36 +6838,35 @@ export namespace Prisma {
     image?: boolean
     gender?: boolean
     salary?: boolean
-    department?: boolean
-    branchId?: boolean
+    portfolioId?: boolean
     roleId?: boolean
     role?: boolean
     banned?: boolean
     banReason?: boolean
     banExpires?: boolean
-    branch?: boolean | User$branchArgs<ExtArgs>
-    sessions?: boolean | User$sessionsArgs<ExtArgs>
-    accounts?: boolean | User$accountsArgs<ExtArgs>
-    assignedTasks?: boolean | User$assignedTasksArgs<ExtArgs>
-    userFiles?: boolean | User$userFilesArgs<ExtArgs>
-    dynamicRole?: boolean | User$dynamicRoleArgs<ExtArgs>
-    incomeTransaction?: boolean | User$incomeTransactionArgs<ExtArgs>
-    expenseTransaction?: boolean | User$expenseTransactionArgs<ExtArgs>
-    reciever?: boolean | User$recieverArgs<ExtArgs>
-    registerer?: boolean | User$registererArgs<ExtArgs>
-    auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
-    managedClients?: boolean | User$managedClientsArgs<ExtArgs>
-    createdProjects?: boolean | User$createdProjectsArgs<ExtArgs>
-    contentRequestsCreated?: boolean | User$contentRequestsCreatedArgs<ExtArgs>
-    contentRequestAssignments?: boolean | User$contentRequestAssignmentsArgs<ExtArgs>
-    assignedRecurringSteps?: boolean | User$assignedRecurringStepsArgs<ExtArgs>
-    createdContracts?: boolean | User$createdContractsArgs<ExtArgs>
-    uploadedContractDocuments?: boolean | User$uploadedContractDocumentsArgs<ExtArgs>
-    _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["user"]>
+    portfolio?: boolean | Staff$portfolioArgs<ExtArgs>
+    sessions?: boolean | Staff$sessionsArgs<ExtArgs>
+    accounts?: boolean | Staff$accountsArgs<ExtArgs>
+    assignedTasks?: boolean | Staff$assignedTasksArgs<ExtArgs>
+    userFiles?: boolean | Staff$userFilesArgs<ExtArgs>
+    dynamicRole?: boolean | Staff$dynamicRoleArgs<ExtArgs>
+    incomeTransaction?: boolean | Staff$incomeTransactionArgs<ExtArgs>
+    expenseTransaction?: boolean | Staff$expenseTransactionArgs<ExtArgs>
+    reciever?: boolean | Staff$recieverArgs<ExtArgs>
+    registerer?: boolean | Staff$registererArgs<ExtArgs>
+    auditLogs?: boolean | Staff$auditLogsArgs<ExtArgs>
+    managedClients?: boolean | Staff$managedClientsArgs<ExtArgs>
+    createdProjects?: boolean | Staff$createdProjectsArgs<ExtArgs>
+    contentRequestsCreated?: boolean | Staff$contentRequestsCreatedArgs<ExtArgs>
+    contentRequestAssignments?: boolean | Staff$contentRequestAssignmentsArgs<ExtArgs>
+    assignedRecurringSteps?: boolean | Staff$assignedRecurringStepsArgs<ExtArgs>
+    createdContracts?: boolean | Staff$createdContractsArgs<ExtArgs>
+    uploadedContractDocuments?: boolean | Staff$uploadedContractDocumentsArgs<ExtArgs>
+    _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["staff"]>
 
 
-  export type UserSelectScalar = {
+  export type StaffSelectScalar = {
     id?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -6975,8 +6876,7 @@ export namespace Prisma {
     image?: boolean
     gender?: boolean
     salary?: boolean
-    department?: boolean
-    branchId?: boolean
+    portfolioId?: boolean
     roleId?: boolean
     role?: boolean
     banned?: boolean
@@ -6984,32 +6884,32 @@ export namespace Prisma {
     banExpires?: boolean
   }
 
-  export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    branch?: boolean | User$branchArgs<ExtArgs>
-    sessions?: boolean | User$sessionsArgs<ExtArgs>
-    accounts?: boolean | User$accountsArgs<ExtArgs>
-    assignedTasks?: boolean | User$assignedTasksArgs<ExtArgs>
-    userFiles?: boolean | User$userFilesArgs<ExtArgs>
-    dynamicRole?: boolean | User$dynamicRoleArgs<ExtArgs>
-    incomeTransaction?: boolean | User$incomeTransactionArgs<ExtArgs>
-    expenseTransaction?: boolean | User$expenseTransactionArgs<ExtArgs>
-    reciever?: boolean | User$recieverArgs<ExtArgs>
-    registerer?: boolean | User$registererArgs<ExtArgs>
-    auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
-    managedClients?: boolean | User$managedClientsArgs<ExtArgs>
-    createdProjects?: boolean | User$createdProjectsArgs<ExtArgs>
-    contentRequestsCreated?: boolean | User$contentRequestsCreatedArgs<ExtArgs>
-    contentRequestAssignments?: boolean | User$contentRequestAssignmentsArgs<ExtArgs>
-    assignedRecurringSteps?: boolean | User$assignedRecurringStepsArgs<ExtArgs>
-    createdContracts?: boolean | User$createdContractsArgs<ExtArgs>
-    uploadedContractDocuments?: boolean | User$uploadedContractDocumentsArgs<ExtArgs>
-    _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
+  export type StaffInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    portfolio?: boolean | Staff$portfolioArgs<ExtArgs>
+    sessions?: boolean | Staff$sessionsArgs<ExtArgs>
+    accounts?: boolean | Staff$accountsArgs<ExtArgs>
+    assignedTasks?: boolean | Staff$assignedTasksArgs<ExtArgs>
+    userFiles?: boolean | Staff$userFilesArgs<ExtArgs>
+    dynamicRole?: boolean | Staff$dynamicRoleArgs<ExtArgs>
+    incomeTransaction?: boolean | Staff$incomeTransactionArgs<ExtArgs>
+    expenseTransaction?: boolean | Staff$expenseTransactionArgs<ExtArgs>
+    reciever?: boolean | Staff$recieverArgs<ExtArgs>
+    registerer?: boolean | Staff$registererArgs<ExtArgs>
+    auditLogs?: boolean | Staff$auditLogsArgs<ExtArgs>
+    managedClients?: boolean | Staff$managedClientsArgs<ExtArgs>
+    createdProjects?: boolean | Staff$createdProjectsArgs<ExtArgs>
+    contentRequestsCreated?: boolean | Staff$contentRequestsCreatedArgs<ExtArgs>
+    contentRequestAssignments?: boolean | Staff$contentRequestAssignmentsArgs<ExtArgs>
+    assignedRecurringSteps?: boolean | Staff$assignedRecurringStepsArgs<ExtArgs>
+    createdContracts?: boolean | Staff$createdContractsArgs<ExtArgs>
+    uploadedContractDocuments?: boolean | Staff$uploadedContractDocumentsArgs<ExtArgs>
+    _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
   }
 
-  export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "User"
+  export type $StaffPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Staff"
     objects: {
-      branch: Prisma.$BranchPayload<ExtArgs> | null
+      portfolio: Prisma.$PortfolioPayload<ExtArgs> | null
       sessions: Prisma.$SessionPayload<ExtArgs>[]
       accounts: Prisma.$AccountPayload<ExtArgs>[]
       assignedTasks: Prisma.$TaskPayload<ExtArgs>[]
@@ -7038,150 +6938,149 @@ export namespace Prisma {
       image: string | null
       gender: string | null
       salary: string | null
-      department: string | null
-      branchId: string | null
+      portfolioId: string | null
       roleId: string | null
       role: string | null
       banned: boolean | null
       banReason: string | null
       banExpires: Date | null
-    }, ExtArgs["result"]["user"]>
+    }, ExtArgs["result"]["staff"]>
     composites: {}
   }
 
-  type UserGetPayload<S extends boolean | null | undefined | UserDefaultArgs> = $Result.GetResult<Prisma.$UserPayload, S>
+  type StaffGetPayload<S extends boolean | null | undefined | StaffDefaultArgs> = $Result.GetResult<Prisma.$StaffPayload, S>
 
-  type UserCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
-    Omit<UserFindManyArgs, 'select' | 'include' | 'distinct'> & {
-      select?: UserCountAggregateInputType | true
+  type StaffCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<StaffFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: StaffCountAggregateInputType | true
     }
 
-  export interface UserDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['User'], meta: { name: 'User' } }
+  export interface StaffDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Staff'], meta: { name: 'Staff' } }
     /**
-     * Find zero or one User that matches the filter.
-     * @param {UserFindUniqueArgs} args - Arguments to find a User
+     * Find zero or one Staff that matches the filter.
+     * @param {StaffFindUniqueArgs} args - Arguments to find a Staff
      * @example
-     * // Get one User
-     * const user = await prisma.user.findUnique({
+     * // Get one Staff
+     * const staff = await prisma.staff.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUnique<T extends UserFindUniqueArgs>(args: SelectSubset<T, UserFindUniqueArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+    findUnique<T extends StaffFindUniqueArgs>(args: SelectSubset<T, StaffFindUniqueArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
 
     /**
-     * Find one User that matches the filter or throw an error with `error.code='P2025'` 
+     * Find one Staff that matches the filter or throw an error with `error.code='P2025'` 
      * if no matches were found.
-     * @param {UserFindUniqueOrThrowArgs} args - Arguments to find a User
+     * @param {StaffFindUniqueOrThrowArgs} args - Arguments to find a Staff
      * @example
-     * // Get one User
-     * const user = await prisma.user.findUniqueOrThrow({
+     * // Get one Staff
+     * const staff = await prisma.staff.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUniqueOrThrow<T extends UserFindUniqueOrThrowArgs>(args: SelectSubset<T, UserFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+    findUniqueOrThrow<T extends StaffFindUniqueOrThrowArgs>(args: SelectSubset<T, StaffFindUniqueOrThrowArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
 
     /**
-     * Find the first User that matches the filter.
+     * Find the first Staff that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {UserFindFirstArgs} args - Arguments to find a User
+     * @param {StaffFindFirstArgs} args - Arguments to find a Staff
      * @example
-     * // Get one User
-     * const user = await prisma.user.findFirst({
+     * // Get one Staff
+     * const staff = await prisma.staff.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirst<T extends UserFindFirstArgs>(args?: SelectSubset<T, UserFindFirstArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+    findFirst<T extends StaffFindFirstArgs>(args?: SelectSubset<T, StaffFindFirstArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
 
     /**
-     * Find the first User that matches the filter or
+     * Find the first Staff that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {UserFindFirstOrThrowArgs} args - Arguments to find a User
+     * @param {StaffFindFirstOrThrowArgs} args - Arguments to find a Staff
      * @example
-     * // Get one User
-     * const user = await prisma.user.findFirstOrThrow({
+     * // Get one Staff
+     * const staff = await prisma.staff.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirstOrThrow<T extends UserFindFirstOrThrowArgs>(args?: SelectSubset<T, UserFindFirstOrThrowArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+    findFirstOrThrow<T extends StaffFindFirstOrThrowArgs>(args?: SelectSubset<T, StaffFindFirstOrThrowArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
 
     /**
-     * Find zero or more Users that matches the filter.
+     * Find zero or more Staff that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {UserFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @param {StaffFindManyArgs} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all Users
-     * const users = await prisma.user.findMany()
+     * // Get all Staff
+     * const staff = await prisma.staff.findMany()
      * 
-     * // Get first 10 Users
-     * const users = await prisma.user.findMany({ take: 10 })
+     * // Get first 10 Staff
+     * const staff = await prisma.staff.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const userWithIdOnly = await prisma.user.findMany({ select: { id: true } })
+     * const staffWithIdOnly = await prisma.staff.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends UserFindManyArgs>(args?: SelectSubset<T, UserFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany">>
+    findMany<T extends StaffFindManyArgs>(args?: SelectSubset<T, StaffFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findMany">>
 
     /**
-     * Create a User.
-     * @param {UserCreateArgs} args - Arguments to create a User.
+     * Create a Staff.
+     * @param {StaffCreateArgs} args - Arguments to create a Staff.
      * @example
-     * // Create one User
-     * const User = await prisma.user.create({
+     * // Create one Staff
+     * const Staff = await prisma.staff.create({
      *   data: {
-     *     // ... data to create a User
+     *     // ... data to create a Staff
      *   }
      * })
      * 
      */
-    create<T extends UserCreateArgs>(args: SelectSubset<T, UserCreateArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "create">, never, ExtArgs>
+    create<T extends StaffCreateArgs>(args: SelectSubset<T, StaffCreateArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "create">, never, ExtArgs>
 
     /**
-     * Create many Users.
-     * @param {UserCreateManyArgs} args - Arguments to create many Users.
+     * Create many Staff.
+     * @param {StaffCreateManyArgs} args - Arguments to create many Staff.
      * @example
-     * // Create many Users
-     * const user = await prisma.user.createMany({
+     * // Create many Staff
+     * const staff = await prisma.staff.createMany({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      *     
      */
-    createMany<T extends UserCreateManyArgs>(args?: SelectSubset<T, UserCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends StaffCreateManyArgs>(args?: SelectSubset<T, StaffCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Delete a User.
-     * @param {UserDeleteArgs} args - Arguments to delete one User.
+     * Delete a Staff.
+     * @param {StaffDeleteArgs} args - Arguments to delete one Staff.
      * @example
-     * // Delete one User
-     * const User = await prisma.user.delete({
+     * // Delete one Staff
+     * const Staff = await prisma.staff.delete({
      *   where: {
-     *     // ... filter to delete one User
+     *     // ... filter to delete one Staff
      *   }
      * })
      * 
      */
-    delete<T extends UserDeleteArgs>(args: SelectSubset<T, UserDeleteArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+    delete<T extends StaffDeleteArgs>(args: SelectSubset<T, StaffDeleteArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "delete">, never, ExtArgs>
 
     /**
-     * Update one User.
-     * @param {UserUpdateArgs} args - Arguments to update one User.
+     * Update one Staff.
+     * @param {StaffUpdateArgs} args - Arguments to update one Staff.
      * @example
-     * // Update one User
-     * const user = await prisma.user.update({
+     * // Update one Staff
+     * const staff = await prisma.staff.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -7191,30 +7090,30 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends UserUpdateArgs>(args: SelectSubset<T, UserUpdateArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "update">, never, ExtArgs>
+    update<T extends StaffUpdateArgs>(args: SelectSubset<T, StaffUpdateArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "update">, never, ExtArgs>
 
     /**
-     * Delete zero or more Users.
-     * @param {UserDeleteManyArgs} args - Arguments to filter Users to delete.
+     * Delete zero or more Staff.
+     * @param {StaffDeleteManyArgs} args - Arguments to filter Staff to delete.
      * @example
-     * // Delete a few Users
-     * const { count } = await prisma.user.deleteMany({
+     * // Delete a few Staff
+     * const { count } = await prisma.staff.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
      */
-    deleteMany<T extends UserDeleteManyArgs>(args?: SelectSubset<T, UserDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends StaffDeleteManyArgs>(args?: SelectSubset<T, StaffDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more Users.
+     * Update zero or more Staff.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {UserUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {StaffUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many Users
-     * const user = await prisma.user.updateMany({
+     * // Update many Staff
+     * const staff = await prisma.staff.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -7224,56 +7123,56 @@ export namespace Prisma {
      * })
      * 
      */
-    updateMany<T extends UserUpdateManyArgs>(args: SelectSubset<T, UserUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends StaffUpdateManyArgs>(args: SelectSubset<T, StaffUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create or update one User.
-     * @param {UserUpsertArgs} args - Arguments to update or create a User.
+     * Create or update one Staff.
+     * @param {StaffUpsertArgs} args - Arguments to update or create a Staff.
      * @example
-     * // Update or create a User
-     * const user = await prisma.user.upsert({
+     * // Update or create a Staff
+     * const staff = await prisma.staff.upsert({
      *   create: {
-     *     // ... data to create a User
+     *     // ... data to create a Staff
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the User we want to update
+     *     // ... the filter for the Staff we want to update
      *   }
      * })
      */
-    upsert<T extends UserUpsertArgs>(args: SelectSubset<T, UserUpsertArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+    upsert<T extends StaffUpsertArgs>(args: SelectSubset<T, StaffUpsertArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
 
 
     /**
-     * Count the number of Users.
+     * Count the number of Staff.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {UserCountArgs} args - Arguments to filter Users to count.
+     * @param {StaffCountArgs} args - Arguments to filter Staff to count.
      * @example
-     * // Count the number of Users
-     * const count = await prisma.user.count({
+     * // Count the number of Staff
+     * const count = await prisma.staff.count({
      *   where: {
-     *     // ... the filter for the Users we want to count
+     *     // ... the filter for the Staff we want to count
      *   }
      * })
     **/
-    count<T extends UserCountArgs>(
-      args?: Subset<T, UserCountArgs>,
+    count<T extends StaffCountArgs>(
+      args?: Subset<T, StaffCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], UserCountAggregateOutputType>
+          : GetScalarType<T['select'], StaffCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a User.
+     * Allows you to perform aggregations operations on a Staff.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {UserAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {StaffAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -7293,13 +7192,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends UserAggregateArgs>(args: Subset<T, UserAggregateArgs>): Prisma.PrismaPromise<GetUserAggregateType<T>>
+    aggregate<T extends StaffAggregateArgs>(args: Subset<T, StaffAggregateArgs>): Prisma.PrismaPromise<GetStaffAggregateType<T>>
 
     /**
-     * Group by User.
+     * Group by Staff.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {UserGroupByArgs} args - Group by arguments.
+     * @param {StaffGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -7314,14 +7213,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends UserGroupByArgs,
+      T extends StaffGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: UserGroupByArgs['orderBy'] }
-        : { orderBy?: UserGroupByArgs['orderBy'] },
+        ? { orderBy: StaffGroupByArgs['orderBy'] }
+        : { orderBy?: StaffGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -7370,39 +7269,39 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, UserGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUserGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, StaffGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetStaffGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
   /**
-   * Fields of the User model
+   * Fields of the Staff model
    */
-  readonly fields: UserFieldRefs;
+  readonly fields: StaffFieldRefs;
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for User.
+   * The delegate class that acts as a "Promise-like" for Staff.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__StaffClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    branch<T extends User$branchArgs<ExtArgs> = {}>(args?: Subset<T, User$branchArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
-    sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany"> | Null>
-    accounts<T extends User$accountsArgs<ExtArgs> = {}>(args?: Subset<T, User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany"> | Null>
-    assignedTasks<T extends User$assignedTasksArgs<ExtArgs> = {}>(args?: Subset<T, User$assignedTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany"> | Null>
-    userFiles<T extends User$userFilesArgs<ExtArgs> = {}>(args?: Subset<T, User$userFilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserFilesPayload<ExtArgs>, T, "findMany"> | Null>
-    dynamicRole<T extends User$dynamicRoleArgs<ExtArgs> = {}>(args?: Subset<T, User$dynamicRoleArgs<ExtArgs>>): Prisma__RoleClient<$Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
-    incomeTransaction<T extends User$incomeTransactionArgs<ExtArgs> = {}>(args?: Subset<T, User$incomeTransactionArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IncomeTransactionPayload<ExtArgs>, T, "findMany"> | Null>
-    expenseTransaction<T extends User$expenseTransactionArgs<ExtArgs> = {}>(args?: Subset<T, User$expenseTransactionArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExpenseTransactionPayload<ExtArgs>, T, "findMany"> | Null>
-    reciever<T extends User$recieverArgs<ExtArgs> = {}>(args?: Subset<T, User$recieverArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserSalaryPayload<ExtArgs>, T, "findMany"> | Null>
-    registerer<T extends User$registererArgs<ExtArgs> = {}>(args?: Subset<T, User$registererArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserSalaryPayload<ExtArgs>, T, "findMany"> | Null>
-    auditLogs<T extends User$auditLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany"> | Null>
-    managedClients<T extends User$managedClientsArgs<ExtArgs> = {}>(args?: Subset<T, User$managedClientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findMany"> | Null>
-    createdProjects<T extends User$createdProjectsArgs<ExtArgs> = {}>(args?: Subset<T, User$createdProjectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany"> | Null>
-    contentRequestsCreated<T extends User$contentRequestsCreatedArgs<ExtArgs> = {}>(args?: Subset<T, User$contentRequestsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentRequestPayload<ExtArgs>, T, "findMany"> | Null>
-    contentRequestAssignments<T extends User$contentRequestAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$contentRequestAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentRequestAssigneePayload<ExtArgs>, T, "findMany"> | Null>
-    assignedRecurringSteps<T extends User$assignedRecurringStepsArgs<ExtArgs> = {}>(args?: Subset<T, User$assignedRecurringStepsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecurringScheduleStepPayload<ExtArgs>, T, "findMany"> | Null>
-    createdContracts<T extends User$createdContractsArgs<ExtArgs> = {}>(args?: Subset<T, User$createdContractsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContractPayload<ExtArgs>, T, "findMany"> | Null>
-    uploadedContractDocuments<T extends User$uploadedContractDocumentsArgs<ExtArgs> = {}>(args?: Subset<T, User$uploadedContractDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContractDocumentPayload<ExtArgs>, T, "findMany"> | Null>
+    portfolio<T extends Staff$portfolioArgs<ExtArgs> = {}>(args?: Subset<T, Staff$portfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    sessions<T extends Staff$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany"> | Null>
+    accounts<T extends Staff$accountsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany"> | Null>
+    assignedTasks<T extends Staff$assignedTasksArgs<ExtArgs> = {}>(args?: Subset<T, Staff$assignedTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany"> | Null>
+    userFiles<T extends Staff$userFilesArgs<ExtArgs> = {}>(args?: Subset<T, Staff$userFilesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserFilesPayload<ExtArgs>, T, "findMany"> | Null>
+    dynamicRole<T extends Staff$dynamicRoleArgs<ExtArgs> = {}>(args?: Subset<T, Staff$dynamicRoleArgs<ExtArgs>>): Prisma__RoleClient<$Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    incomeTransaction<T extends Staff$incomeTransactionArgs<ExtArgs> = {}>(args?: Subset<T, Staff$incomeTransactionArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IncomeTransactionPayload<ExtArgs>, T, "findMany"> | Null>
+    expenseTransaction<T extends Staff$expenseTransactionArgs<ExtArgs> = {}>(args?: Subset<T, Staff$expenseTransactionArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExpenseTransactionPayload<ExtArgs>, T, "findMany"> | Null>
+    reciever<T extends Staff$recieverArgs<ExtArgs> = {}>(args?: Subset<T, Staff$recieverArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserSalaryPayload<ExtArgs>, T, "findMany"> | Null>
+    registerer<T extends Staff$registererArgs<ExtArgs> = {}>(args?: Subset<T, Staff$registererArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserSalaryPayload<ExtArgs>, T, "findMany"> | Null>
+    auditLogs<T extends Staff$auditLogsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany"> | Null>
+    managedClients<T extends Staff$managedClientsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$managedClientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findMany"> | Null>
+    createdProjects<T extends Staff$createdProjectsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdProjectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany"> | Null>
+    contentRequestsCreated<T extends Staff$contentRequestsCreatedArgs<ExtArgs> = {}>(args?: Subset<T, Staff$contentRequestsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentRequestPayload<ExtArgs>, T, "findMany"> | Null>
+    contentRequestAssignments<T extends Staff$contentRequestAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$contentRequestAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentRequestAssigneePayload<ExtArgs>, T, "findMany"> | Null>
+    assignedRecurringSteps<T extends Staff$assignedRecurringStepsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$assignedRecurringStepsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecurringScheduleStepPayload<ExtArgs>, T, "findMany"> | Null>
+    createdContracts<T extends Staff$createdContractsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdContractsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContractPayload<ExtArgs>, T, "findMany"> | Null>
+    uploadedContractDocuments<T extends Staff$uploadedContractDocumentsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$uploadedContractDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContractDocumentPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7429,342 +7328,341 @@ export namespace Prisma {
 
 
   /**
-   * Fields of the User model
+   * Fields of the Staff model
    */ 
-  interface UserFieldRefs {
-    readonly id: FieldRef<"User", 'String'>
-    readonly createdAt: FieldRef<"User", 'DateTime'>
-    readonly updatedAt: FieldRef<"User", 'DateTime'>
-    readonly name: FieldRef<"User", 'String'>
-    readonly email: FieldRef<"User", 'String'>
-    readonly emailVerified: FieldRef<"User", 'Boolean'>
-    readonly image: FieldRef<"User", 'String'>
-    readonly gender: FieldRef<"User", 'String'>
-    readonly salary: FieldRef<"User", 'String'>
-    readonly department: FieldRef<"User", 'String'>
-    readonly branchId: FieldRef<"User", 'String'>
-    readonly roleId: FieldRef<"User", 'String'>
-    readonly role: FieldRef<"User", 'String'>
-    readonly banned: FieldRef<"User", 'Boolean'>
-    readonly banReason: FieldRef<"User", 'String'>
-    readonly banExpires: FieldRef<"User", 'DateTime'>
+  interface StaffFieldRefs {
+    readonly id: FieldRef<"Staff", 'String'>
+    readonly createdAt: FieldRef<"Staff", 'DateTime'>
+    readonly updatedAt: FieldRef<"Staff", 'DateTime'>
+    readonly name: FieldRef<"Staff", 'String'>
+    readonly email: FieldRef<"Staff", 'String'>
+    readonly emailVerified: FieldRef<"Staff", 'Boolean'>
+    readonly image: FieldRef<"Staff", 'String'>
+    readonly gender: FieldRef<"Staff", 'String'>
+    readonly salary: FieldRef<"Staff", 'String'>
+    readonly portfolioId: FieldRef<"Staff", 'String'>
+    readonly roleId: FieldRef<"Staff", 'String'>
+    readonly role: FieldRef<"Staff", 'String'>
+    readonly banned: FieldRef<"Staff", 'Boolean'>
+    readonly banReason: FieldRef<"Staff", 'String'>
+    readonly banExpires: FieldRef<"Staff", 'DateTime'>
   }
     
 
   // Custom InputTypes
   /**
-   * User findUnique
+   * Staff findUnique
    */
-  export type UserFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the Staff
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: StaffSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
+    include?: StaffInclude<ExtArgs> | null
     /**
-     * Filter, which User to fetch.
+     * Filter, which Staff to fetch.
      */
-    where: UserWhereUniqueInput
+    where: StaffWhereUniqueInput
   }
 
   /**
-   * User findUniqueOrThrow
+   * Staff findUniqueOrThrow
    */
-  export type UserFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the Staff
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: StaffSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
+    include?: StaffInclude<ExtArgs> | null
     /**
-     * Filter, which User to fetch.
+     * Filter, which Staff to fetch.
      */
-    where: UserWhereUniqueInput
+    where: StaffWhereUniqueInput
   }
 
   /**
-   * User findFirst
+   * Staff findFirst
    */
-  export type UserFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the Staff
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: StaffSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
+    include?: StaffInclude<ExtArgs> | null
     /**
-     * Filter, which User to fetch.
+     * Filter, which Staff to fetch.
      */
-    where?: UserWhereInput
+    where?: StaffWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Users to fetch.
+     * Determine the order of Staff to fetch.
      */
-    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    orderBy?: StaffOrderByWithRelationInput | StaffOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for Users.
+     * Sets the position for searching for Staff.
      */
-    cursor?: UserWhereUniqueInput
+    cursor?: StaffWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Users from the position of the cursor.
+     * Take `±n` Staff from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Users.
+     * Skip the first `n` Staff.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of Users.
+     * Filter by unique combinations of Staff.
      */
-    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+    distinct?: StaffScalarFieldEnum | StaffScalarFieldEnum[]
   }
 
   /**
-   * User findFirstOrThrow
+   * Staff findFirstOrThrow
    */
-  export type UserFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the Staff
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: StaffSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
+    include?: StaffInclude<ExtArgs> | null
     /**
-     * Filter, which User to fetch.
+     * Filter, which Staff to fetch.
      */
-    where?: UserWhereInput
+    where?: StaffWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Users to fetch.
+     * Determine the order of Staff to fetch.
      */
-    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    orderBy?: StaffOrderByWithRelationInput | StaffOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for Users.
+     * Sets the position for searching for Staff.
      */
-    cursor?: UserWhereUniqueInput
+    cursor?: StaffWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Users from the position of the cursor.
+     * Take `±n` Staff from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Users.
+     * Skip the first `n` Staff.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of Users.
+     * Filter by unique combinations of Staff.
      */
-    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+    distinct?: StaffScalarFieldEnum | StaffScalarFieldEnum[]
   }
 
   /**
-   * User findMany
+   * Staff findMany
    */
-  export type UserFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the Staff
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: StaffSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
+    include?: StaffInclude<ExtArgs> | null
     /**
-     * Filter, which Users to fetch.
+     * Filter, which Staff to fetch.
      */
-    where?: UserWhereInput
+    where?: StaffWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Users to fetch.
+     * Determine the order of Staff to fetch.
      */
-    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    orderBy?: StaffOrderByWithRelationInput | StaffOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing Users.
+     * Sets the position for listing Staff.
      */
-    cursor?: UserWhereUniqueInput
+    cursor?: StaffWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Users from the position of the cursor.
+     * Take `±n` Staff from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Users.
+     * Skip the first `n` Staff.
      */
     skip?: number
-    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+    distinct?: StaffScalarFieldEnum | StaffScalarFieldEnum[]
   }
 
   /**
-   * User create
+   * Staff create
    */
-  export type UserCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the Staff
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: StaffSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
+    include?: StaffInclude<ExtArgs> | null
     /**
-     * The data needed to create a User.
+     * The data needed to create a Staff.
      */
-    data: XOR<UserCreateInput, UserUncheckedCreateInput>
+    data: XOR<StaffCreateInput, StaffUncheckedCreateInput>
   }
 
   /**
-   * User createMany
+   * Staff createMany
    */
-  export type UserCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to create many Users.
+     * The data used to create many Staff.
      */
-    data: UserCreateManyInput | UserCreateManyInput[]
+    data: StaffCreateManyInput | StaffCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * User update
+   * Staff update
    */
-  export type UserUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the Staff
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: StaffSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
+    include?: StaffInclude<ExtArgs> | null
     /**
-     * The data needed to update a User.
+     * The data needed to update a Staff.
      */
-    data: XOR<UserUpdateInput, UserUncheckedUpdateInput>
+    data: XOR<StaffUpdateInput, StaffUncheckedUpdateInput>
     /**
-     * Choose, which User to update.
+     * Choose, which Staff to update.
      */
-    where: UserWhereUniqueInput
+    where: StaffWhereUniqueInput
   }
 
   /**
-   * User updateMany
+   * Staff updateMany
    */
-  export type UserUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to update Users.
+     * The data used to update Staff.
      */
-    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyInput>
+    data: XOR<StaffUpdateManyMutationInput, StaffUncheckedUpdateManyInput>
     /**
-     * Filter which Users to update
+     * Filter which Staff to update
      */
-    where?: UserWhereInput
+    where?: StaffWhereInput
   }
 
   /**
-   * User upsert
+   * Staff upsert
    */
-  export type UserUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the Staff
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: StaffSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
+    include?: StaffInclude<ExtArgs> | null
     /**
-     * The filter to search for the User to update in case it exists.
+     * The filter to search for the Staff to update in case it exists.
      */
-    where: UserWhereUniqueInput
+    where: StaffWhereUniqueInput
     /**
-     * In case the User found by the `where` argument doesn't exist, create a new User with this data.
+     * In case the Staff found by the `where` argument doesn't exist, create a new Staff with this data.
      */
-    create: XOR<UserCreateInput, UserUncheckedCreateInput>
+    create: XOR<StaffCreateInput, StaffUncheckedCreateInput>
     /**
-     * In case the User was found with the provided `where` argument, update it with this data.
+     * In case the Staff was found with the provided `where` argument, update it with this data.
      */
-    update: XOR<UserUpdateInput, UserUncheckedUpdateInput>
+    update: XOR<StaffUpdateInput, StaffUncheckedUpdateInput>
   }
 
   /**
-   * User delete
+   * Staff delete
    */
-  export type UserDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the Staff
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: StaffSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
+    include?: StaffInclude<ExtArgs> | null
     /**
-     * Filter which User to delete.
+     * Filter which Staff to delete.
      */
-    where: UserWhereUniqueInput
+    where: StaffWhereUniqueInput
   }
 
   /**
-   * User deleteMany
+   * Staff deleteMany
    */
-  export type UserDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which Users to delete
+     * Filter which Staff to delete
      */
-    where?: UserWhereInput
+    where?: StaffWhereInput
   }
 
   /**
-   * User.branch
+   * Staff.portfolio
    */
-  export type User$branchArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Staff$portfolioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Branch
+     * Select specific fields to fetch from the Portfolio
      */
-    select?: BranchSelect<ExtArgs> | null
+    select?: PortfolioSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BranchInclude<ExtArgs> | null
-    where?: BranchWhereInput
+    include?: PortfolioInclude<ExtArgs> | null
+    where?: PortfolioWhereInput
   }
 
   /**
-   * User.sessions
+   * Staff.sessions
    */
-  export type User$sessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Staff$sessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Session
      */
@@ -7782,9 +7680,9 @@ export namespace Prisma {
   }
 
   /**
-   * User.accounts
+   * Staff.accounts
    */
-  export type User$accountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Staff$accountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Account
      */
@@ -7802,9 +7700,9 @@ export namespace Prisma {
   }
 
   /**
-   * User.assignedTasks
+   * Staff.assignedTasks
    */
-  export type User$assignedTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Staff$assignedTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Task
      */
@@ -7822,9 +7720,9 @@ export namespace Prisma {
   }
 
   /**
-   * User.userFiles
+   * Staff.userFiles
    */
-  export type User$userFilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Staff$userFilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the UserFiles
      */
@@ -7842,9 +7740,9 @@ export namespace Prisma {
   }
 
   /**
-   * User.dynamicRole
+   * Staff.dynamicRole
    */
-  export type User$dynamicRoleArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Staff$dynamicRoleArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Role
      */
@@ -7857,9 +7755,9 @@ export namespace Prisma {
   }
 
   /**
-   * User.incomeTransaction
+   * Staff.incomeTransaction
    */
-  export type User$incomeTransactionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Staff$incomeTransactionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the IncomeTransaction
      */
@@ -7877,9 +7775,9 @@ export namespace Prisma {
   }
 
   /**
-   * User.expenseTransaction
+   * Staff.expenseTransaction
    */
-  export type User$expenseTransactionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Staff$expenseTransactionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ExpenseTransaction
      */
@@ -7897,9 +7795,9 @@ export namespace Prisma {
   }
 
   /**
-   * User.reciever
+   * Staff.reciever
    */
-  export type User$recieverArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Staff$recieverArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the UserSalary
      */
@@ -7917,9 +7815,9 @@ export namespace Prisma {
   }
 
   /**
-   * User.registerer
+   * Staff.registerer
    */
-  export type User$registererArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Staff$registererArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the UserSalary
      */
@@ -7937,9 +7835,9 @@ export namespace Prisma {
   }
 
   /**
-   * User.auditLogs
+   * Staff.auditLogs
    */
-  export type User$auditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Staff$auditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the AuditLog
      */
@@ -7957,9 +7855,9 @@ export namespace Prisma {
   }
 
   /**
-   * User.managedClients
+   * Staff.managedClients
    */
-  export type User$managedClientsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Staff$managedClientsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Client
      */
@@ -7977,9 +7875,9 @@ export namespace Prisma {
   }
 
   /**
-   * User.createdProjects
+   * Staff.createdProjects
    */
-  export type User$createdProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Staff$createdProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Project
      */
@@ -7997,9 +7895,9 @@ export namespace Prisma {
   }
 
   /**
-   * User.contentRequestsCreated
+   * Staff.contentRequestsCreated
    */
-  export type User$contentRequestsCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Staff$contentRequestsCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ContentRequest
      */
@@ -8017,9 +7915,9 @@ export namespace Prisma {
   }
 
   /**
-   * User.contentRequestAssignments
+   * Staff.contentRequestAssignments
    */
-  export type User$contentRequestAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Staff$contentRequestAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ContentRequestAssignee
      */
@@ -8037,9 +7935,9 @@ export namespace Prisma {
   }
 
   /**
-   * User.assignedRecurringSteps
+   * Staff.assignedRecurringSteps
    */
-  export type User$assignedRecurringStepsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Staff$assignedRecurringStepsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the RecurringScheduleStep
      */
@@ -8057,9 +7955,9 @@ export namespace Prisma {
   }
 
   /**
-   * User.createdContracts
+   * Staff.createdContracts
    */
-  export type User$createdContractsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Staff$createdContractsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Contract
      */
@@ -8077,9 +7975,9 @@ export namespace Prisma {
   }
 
   /**
-   * User.uploadedContractDocuments
+   * Staff.uploadedContractDocuments
    */
-  export type User$uploadedContractDocumentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Staff$uploadedContractDocumentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ContractDocument
      */
@@ -8097,17 +7995,17 @@ export namespace Prisma {
   }
 
   /**
-   * User without action
+   * Staff without action
    */
-  export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type StaffDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the Staff
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: StaffSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
+    include?: StaffInclude<ExtArgs> | null
   }
 
 
@@ -8307,7 +8205,7 @@ export namespace Prisma {
     userAgent?: boolean
     userId?: boolean
     impersonatedBy?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | StaffDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["session"]>
 
 
@@ -8324,13 +8222,13 @@ export namespace Prisma {
   }
 
   export type SessionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | StaffDefaultArgs<ExtArgs>
   }
 
   export type $SessionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Session"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
+      user: Prisma.$StaffPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -8682,7 +8580,7 @@ export namespace Prisma {
    */
   export interface Prisma__SessionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    user<T extends StaffDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StaffDefaultArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9262,7 +9160,7 @@ export namespace Prisma {
     refreshTokenExpiresAt?: boolean
     scope?: boolean
     password?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | StaffDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["account"]>
 
 
@@ -9283,13 +9181,13 @@ export namespace Prisma {
   }
 
   export type AccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | StaffDefaultArgs<ExtArgs>
   }
 
   export type $AccountPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Account"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
+      user: Prisma.$StaffPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -9645,7 +9543,7 @@ export namespace Prisma {
    */
   export interface Prisma__AccountClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    user<T extends StaffDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StaffDefaultArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10882,7 +10780,7 @@ export namespace Prisma {
     notes: string | null
     isActive: boolean | null
     isDraft: boolean | null
-    branchId: string | null
+    portfolioId: string | null
     accountManagerId: string | null
   }
 
@@ -10904,7 +10802,7 @@ export namespace Prisma {
     notes: string | null
     isActive: boolean | null
     isDraft: boolean | null
-    branchId: string | null
+    portfolioId: string | null
     accountManagerId: string | null
   }
 
@@ -10926,7 +10824,7 @@ export namespace Prisma {
     notes: number
     isActive: number
     isDraft: number
-    branchId: number
+    portfolioId: number
     accountManagerId: number
     _all: number
   }
@@ -10958,7 +10856,7 @@ export namespace Prisma {
     notes?: true
     isActive?: true
     isDraft?: true
-    branchId?: true
+    portfolioId?: true
     accountManagerId?: true
   }
 
@@ -10980,7 +10878,7 @@ export namespace Prisma {
     notes?: true
     isActive?: true
     isDraft?: true
-    branchId?: true
+    portfolioId?: true
     accountManagerId?: true
   }
 
@@ -11002,7 +10900,7 @@ export namespace Prisma {
     notes?: true
     isActive?: true
     isDraft?: true
-    branchId?: true
+    portfolioId?: true
     accountManagerId?: true
     _all?: true
   }
@@ -11111,7 +11009,7 @@ export namespace Prisma {
     notes: string | null
     isActive: boolean
     isDraft: boolean
-    branchId: string | null
+    portfolioId: string | null
     accountManagerId: string | null
     _count: ClientCountAggregateOutputType | null
     _avg: ClientAvgAggregateOutputType | null
@@ -11152,9 +11050,9 @@ export namespace Prisma {
     notes?: boolean
     isActive?: boolean
     isDraft?: boolean
-    branchId?: boolean
+    portfolioId?: boolean
     accountManagerId?: boolean
-    branch?: boolean | Client$branchArgs<ExtArgs>
+    portfolio?: boolean | Client$portfolioArgs<ExtArgs>
     accountManager?: boolean | Client$accountManagerArgs<ExtArgs>
     clientService?: boolean | Client$clientServiceArgs<ExtArgs>
     clientTask?: boolean | Client$clientTaskArgs<ExtArgs>
@@ -11188,12 +11086,12 @@ export namespace Prisma {
     notes?: boolean
     isActive?: boolean
     isDraft?: boolean
-    branchId?: boolean
+    portfolioId?: boolean
     accountManagerId?: boolean
   }
 
   export type ClientInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    branch?: boolean | Client$branchArgs<ExtArgs>
+    portfolio?: boolean | Client$portfolioArgs<ExtArgs>
     accountManager?: boolean | Client$accountManagerArgs<ExtArgs>
     clientService?: boolean | Client$clientServiceArgs<ExtArgs>
     clientTask?: boolean | Client$clientTaskArgs<ExtArgs>
@@ -11211,8 +11109,8 @@ export namespace Prisma {
   export type $ClientPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Client"
     objects: {
-      branch: Prisma.$BranchPayload<ExtArgs> | null
-      accountManager: Prisma.$UserPayload<ExtArgs> | null
+      portfolio: Prisma.$PortfolioPayload<ExtArgs> | null
+      accountManager: Prisma.$StaffPayload<ExtArgs> | null
       clientService: Prisma.$ClientServicePayload<ExtArgs>[]
       clientTask: Prisma.$ClientTaskPayload<ExtArgs>[]
       clientSubService: Prisma.$ClientSubServicePayload<ExtArgs>[]
@@ -11242,7 +11140,7 @@ export namespace Prisma {
       notes: string | null
       isActive: boolean
       isDraft: boolean
-      branchId: string | null
+      portfolioId: string | null
       accountManagerId: string | null
     }, ExtArgs["result"]["client"]>
     composites: {}
@@ -11584,8 +11482,8 @@ export namespace Prisma {
    */
   export interface Prisma__ClientClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    branch<T extends Client$branchArgs<ExtArgs> = {}>(args?: Subset<T, Client$branchArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
-    accountManager<T extends Client$accountManagerArgs<ExtArgs> = {}>(args?: Subset<T, Client$accountManagerArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    portfolio<T extends Client$portfolioArgs<ExtArgs> = {}>(args?: Subset<T, Client$portfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    accountManager<T extends Client$accountManagerArgs<ExtArgs> = {}>(args?: Subset<T, Client$accountManagerArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     clientService<T extends Client$clientServiceArgs<ExtArgs> = {}>(args?: Subset<T, Client$clientServiceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientServicePayload<ExtArgs>, T, "findMany"> | Null>
     clientTask<T extends Client$clientTaskArgs<ExtArgs> = {}>(args?: Subset<T, Client$clientTaskArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientTaskPayload<ExtArgs>, T, "findMany"> | Null>
     clientSubService<T extends Client$clientSubServiceArgs<ExtArgs> = {}>(args?: Subset<T, Client$clientSubServiceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientSubServicePayload<ExtArgs>, T, "findMany"> | Null>
@@ -11642,7 +11540,7 @@ export namespace Prisma {
     readonly notes: FieldRef<"Client", 'String'>
     readonly isActive: FieldRef<"Client", 'Boolean'>
     readonly isDraft: FieldRef<"Client", 'Boolean'>
-    readonly branchId: FieldRef<"Client", 'String'>
+    readonly portfolioId: FieldRef<"Client", 'String'>
     readonly accountManagerId: FieldRef<"Client", 'String'>
   }
     
@@ -11943,18 +11841,18 @@ export namespace Prisma {
   }
 
   /**
-   * Client.branch
+   * Client.portfolio
    */
-  export type Client$branchArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Client$portfolioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Branch
+     * Select specific fields to fetch from the Portfolio
      */
-    select?: BranchSelect<ExtArgs> | null
+    select?: PortfolioSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BranchInclude<ExtArgs> | null
-    where?: BranchWhereInput
+    include?: PortfolioInclude<ExtArgs> | null
+    where?: PortfolioWhereInput
   }
 
   /**
@@ -11962,14 +11860,14 @@ export namespace Prisma {
    */
   export type Client$accountManagerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the Staff
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: StaffSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
-    where?: UserWhereInput
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
   }
 
   /**
@@ -12201,21 +12099,21 @@ export namespace Prisma {
     id: string | null
     serviceName: string | null
     description: string | null
-    branchId: string | null
+    portfolioId: string | null
   }
 
   export type ServiceMaxAggregateOutputType = {
     id: string | null
     serviceName: string | null
     description: string | null
-    branchId: string | null
+    portfolioId: string | null
   }
 
   export type ServiceCountAggregateOutputType = {
     id: number
     serviceName: number
     description: number
-    branchId: number
+    portfolioId: number
     _all: number
   }
 
@@ -12224,21 +12122,21 @@ export namespace Prisma {
     id?: true
     serviceName?: true
     description?: true
-    branchId?: true
+    portfolioId?: true
   }
 
   export type ServiceMaxAggregateInputType = {
     id?: true
     serviceName?: true
     description?: true
-    branchId?: true
+    portfolioId?: true
   }
 
   export type ServiceCountAggregateInputType = {
     id?: true
     serviceName?: true
     description?: true
-    branchId?: true
+    portfolioId?: true
     _all?: true
   }
 
@@ -12318,7 +12216,7 @@ export namespace Prisma {
     id: string
     serviceName: string
     description: string | null
-    branchId: string | null
+    portfolioId: string | null
     _count: ServiceCountAggregateOutputType | null
     _min: ServiceMinAggregateOutputType | null
     _max: ServiceMaxAggregateOutputType | null
@@ -12342,8 +12240,8 @@ export namespace Prisma {
     id?: boolean
     serviceName?: boolean
     description?: boolean
-    branchId?: boolean
-    branch?: boolean | Service$branchArgs<ExtArgs>
+    portfolioId?: boolean
+    portfolio?: boolean | Service$portfolioArgs<ExtArgs>
     clientService?: boolean | Service$clientServiceArgs<ExtArgs>
     subService?: boolean | Service$subServiceArgs<ExtArgs>
     serviceAgreements?: boolean | Service$serviceAgreementsArgs<ExtArgs>
@@ -12355,11 +12253,11 @@ export namespace Prisma {
     id?: boolean
     serviceName?: boolean
     description?: boolean
-    branchId?: boolean
+    portfolioId?: boolean
   }
 
   export type ServiceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    branch?: boolean | Service$branchArgs<ExtArgs>
+    portfolio?: boolean | Service$portfolioArgs<ExtArgs>
     clientService?: boolean | Service$clientServiceArgs<ExtArgs>
     subService?: boolean | Service$subServiceArgs<ExtArgs>
     serviceAgreements?: boolean | Service$serviceAgreementsArgs<ExtArgs>
@@ -12369,7 +12267,7 @@ export namespace Prisma {
   export type $ServicePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Service"
     objects: {
-      branch: Prisma.$BranchPayload<ExtArgs> | null
+      portfolio: Prisma.$PortfolioPayload<ExtArgs> | null
       clientService: Prisma.$ClientServicePayload<ExtArgs>[]
       subService: Prisma.$SubServicePayload<ExtArgs>[]
       serviceAgreements: Prisma.$IncomeServiceAgreementPayload<ExtArgs>[]
@@ -12378,7 +12276,7 @@ export namespace Prisma {
       id: string
       serviceName: string
       description: string | null
-      branchId: string | null
+      portfolioId: string | null
     }, ExtArgs["result"]["service"]>
     composites: {}
   }
@@ -12719,7 +12617,7 @@ export namespace Prisma {
    */
   export interface Prisma__ServiceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    branch<T extends Service$branchArgs<ExtArgs> = {}>(args?: Subset<T, Service$branchArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    portfolio<T extends Service$portfolioArgs<ExtArgs> = {}>(args?: Subset<T, Service$portfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     clientService<T extends Service$clientServiceArgs<ExtArgs> = {}>(args?: Subset<T, Service$clientServiceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientServicePayload<ExtArgs>, T, "findMany"> | Null>
     subService<T extends Service$subServiceArgs<ExtArgs> = {}>(args?: Subset<T, Service$subServiceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SubServicePayload<ExtArgs>, T, "findMany"> | Null>
     serviceAgreements<T extends Service$serviceAgreementsArgs<ExtArgs> = {}>(args?: Subset<T, Service$serviceAgreementsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IncomeServiceAgreementPayload<ExtArgs>, T, "findMany"> | Null>
@@ -12755,7 +12653,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Service", 'String'>
     readonly serviceName: FieldRef<"Service", 'String'>
     readonly description: FieldRef<"Service", 'String'>
-    readonly branchId: FieldRef<"Service", 'String'>
+    readonly portfolioId: FieldRef<"Service", 'String'>
   }
     
 
@@ -13055,18 +12953,18 @@ export namespace Prisma {
   }
 
   /**
-   * Service.branch
+   * Service.portfolio
    */
-  export type Service$branchArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Service$portfolioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Branch
+     * Select specific fields to fetch from the Portfolio
      */
-    select?: BranchSelect<ExtArgs> | null
+    select?: PortfolioSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BranchInclude<ExtArgs> | null
-    where?: BranchWhereInput
+    include?: PortfolioInclude<ExtArgs> | null
+    where?: PortfolioWhereInput
   }
 
   /**
@@ -14063,16 +13961,16 @@ export namespace Prisma {
 
 
   /**
-   * Model Branch
+   * Model Portfolio
    */
 
-  export type AggregateBranch = {
-    _count: BranchCountAggregateOutputType | null
-    _min: BranchMinAggregateOutputType | null
-    _max: BranchMaxAggregateOutputType | null
+  export type AggregatePortfolio = {
+    _count: PortfolioCountAggregateOutputType | null
+    _min: PortfolioMinAggregateOutputType | null
+    _max: PortfolioMaxAggregateOutputType | null
   }
 
-  export type BranchMinAggregateOutputType = {
+  export type PortfolioMinAggregateOutputType = {
     id: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -14091,7 +13989,7 @@ export namespace Prisma {
     isActive: boolean | null
   }
 
-  export type BranchMaxAggregateOutputType = {
+  export type PortfolioMaxAggregateOutputType = {
     id: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -14110,7 +14008,7 @@ export namespace Prisma {
     isActive: boolean | null
   }
 
-  export type BranchCountAggregateOutputType = {
+  export type PortfolioCountAggregateOutputType = {
     id: number
     createdAt: number
     updatedAt: number
@@ -14131,7 +14029,7 @@ export namespace Prisma {
   }
 
 
-  export type BranchMinAggregateInputType = {
+  export type PortfolioMinAggregateInputType = {
     id?: true
     createdAt?: true
     updatedAt?: true
@@ -14150,7 +14048,7 @@ export namespace Prisma {
     isActive?: true
   }
 
-  export type BranchMaxAggregateInputType = {
+  export type PortfolioMaxAggregateInputType = {
     id?: true
     createdAt?: true
     updatedAt?: true
@@ -14169,7 +14067,7 @@ export namespace Prisma {
     isActive?: true
   }
 
-  export type BranchCountAggregateInputType = {
+  export type PortfolioCountAggregateInputType = {
     id?: true
     createdAt?: true
     updatedAt?: true
@@ -14189,79 +14087,79 @@ export namespace Prisma {
     _all?: true
   }
 
-  export type BranchAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PortfolioAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which Branch to aggregate.
+     * Filter which Portfolio to aggregate.
      */
-    where?: BranchWhereInput
+    where?: PortfolioWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Branches to fetch.
+     * Determine the order of Portfolios to fetch.
      */
-    orderBy?: BranchOrderByWithRelationInput | BranchOrderByWithRelationInput[]
+    orderBy?: PortfolioOrderByWithRelationInput | PortfolioOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: BranchWhereUniqueInput
+    cursor?: PortfolioWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Branches from the position of the cursor.
+     * Take `±n` Portfolios from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Branches.
+     * Skip the first `n` Portfolios.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned Branches
+     * Count returned Portfolios
     **/
-    _count?: true | BranchCountAggregateInputType
+    _count?: true | PortfolioCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: BranchMinAggregateInputType
+    _min?: PortfolioMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: BranchMaxAggregateInputType
+    _max?: PortfolioMaxAggregateInputType
   }
 
-  export type GetBranchAggregateType<T extends BranchAggregateArgs> = {
-        [P in keyof T & keyof AggregateBranch]: P extends '_count' | 'count'
+  export type GetPortfolioAggregateType<T extends PortfolioAggregateArgs> = {
+        [P in keyof T & keyof AggregatePortfolio]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateBranch[P]>
-      : GetScalarType<T[P], AggregateBranch[P]>
+        : GetScalarType<T[P], AggregatePortfolio[P]>
+      : GetScalarType<T[P], AggregatePortfolio[P]>
   }
 
 
 
 
-  export type BranchGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: BranchWhereInput
-    orderBy?: BranchOrderByWithAggregationInput | BranchOrderByWithAggregationInput[]
-    by: BranchScalarFieldEnum[] | BranchScalarFieldEnum
-    having?: BranchScalarWhereWithAggregatesInput
+  export type PortfolioGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PortfolioWhereInput
+    orderBy?: PortfolioOrderByWithAggregationInput | PortfolioOrderByWithAggregationInput[]
+    by: PortfolioScalarFieldEnum[] | PortfolioScalarFieldEnum
+    having?: PortfolioScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: BranchCountAggregateInputType | true
-    _min?: BranchMinAggregateInputType
-    _max?: BranchMaxAggregateInputType
+    _count?: PortfolioCountAggregateInputType | true
+    _min?: PortfolioMinAggregateInputType
+    _max?: PortfolioMaxAggregateInputType
   }
 
-  export type BranchGroupByOutputType = {
+  export type PortfolioGroupByOutputType = {
     id: string
     createdAt: Date
     updatedAt: Date
@@ -14278,26 +14176,26 @@ export namespace Prisma {
     secondaryColor: string
     customDomain: string | null
     isActive: boolean
-    _count: BranchCountAggregateOutputType | null
-    _min: BranchMinAggregateOutputType | null
-    _max: BranchMaxAggregateOutputType | null
+    _count: PortfolioCountAggregateOutputType | null
+    _min: PortfolioMinAggregateOutputType | null
+    _max: PortfolioMaxAggregateOutputType | null
   }
 
-  type GetBranchGroupByPayload<T extends BranchGroupByArgs> = Prisma.PrismaPromise<
+  type GetPortfolioGroupByPayload<T extends PortfolioGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickEnumerable<BranchGroupByOutputType, T['by']> &
+      PickEnumerable<PortfolioGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof BranchGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof PortfolioGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], BranchGroupByOutputType[P]>
-            : GetScalarType<T[P], BranchGroupByOutputType[P]>
+              : GetScalarType<T[P], PortfolioGroupByOutputType[P]>
+            : GetScalarType<T[P], PortfolioGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type BranchSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type PortfolioSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -14314,19 +14212,18 @@ export namespace Prisma {
     secondaryColor?: boolean
     customDomain?: boolean
     isActive?: boolean
-    users?: boolean | Branch$usersArgs<ExtArgs>
-    services?: boolean | Branch$servicesArgs<ExtArgs>
-    departments?: boolean | Branch$departmentsArgs<ExtArgs>
-    clients?: boolean | Branch$clientsArgs<ExtArgs>
-    projects?: boolean | Branch$projectsArgs<ExtArgs>
-    contentRequests?: boolean | Branch$contentRequestsArgs<ExtArgs>
-    recurringSchedules?: boolean | Branch$recurringSchedulesArgs<ExtArgs>
-    contracts?: boolean | Branch$contractsArgs<ExtArgs>
-    _count?: boolean | BranchCountOutputTypeDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["branch"]>
+    users?: boolean | Portfolio$usersArgs<ExtArgs>
+    services?: boolean | Portfolio$servicesArgs<ExtArgs>
+    clients?: boolean | Portfolio$clientsArgs<ExtArgs>
+    projects?: boolean | Portfolio$projectsArgs<ExtArgs>
+    contentRequests?: boolean | Portfolio$contentRequestsArgs<ExtArgs>
+    recurringSchedules?: boolean | Portfolio$recurringSchedulesArgs<ExtArgs>
+    contracts?: boolean | Portfolio$contractsArgs<ExtArgs>
+    _count?: boolean | PortfolioCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["portfolio"]>
 
 
-  export type BranchSelectScalar = {
+  export type PortfolioSelectScalar = {
     id?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -14345,24 +14242,22 @@ export namespace Prisma {
     isActive?: boolean
   }
 
-  export type BranchInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    users?: boolean | Branch$usersArgs<ExtArgs>
-    services?: boolean | Branch$servicesArgs<ExtArgs>
-    departments?: boolean | Branch$departmentsArgs<ExtArgs>
-    clients?: boolean | Branch$clientsArgs<ExtArgs>
-    projects?: boolean | Branch$projectsArgs<ExtArgs>
-    contentRequests?: boolean | Branch$contentRequestsArgs<ExtArgs>
-    recurringSchedules?: boolean | Branch$recurringSchedulesArgs<ExtArgs>
-    contracts?: boolean | Branch$contractsArgs<ExtArgs>
-    _count?: boolean | BranchCountOutputTypeDefaultArgs<ExtArgs>
+  export type PortfolioInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    users?: boolean | Portfolio$usersArgs<ExtArgs>
+    services?: boolean | Portfolio$servicesArgs<ExtArgs>
+    clients?: boolean | Portfolio$clientsArgs<ExtArgs>
+    projects?: boolean | Portfolio$projectsArgs<ExtArgs>
+    contentRequests?: boolean | Portfolio$contentRequestsArgs<ExtArgs>
+    recurringSchedules?: boolean | Portfolio$recurringSchedulesArgs<ExtArgs>
+    contracts?: boolean | Portfolio$contractsArgs<ExtArgs>
+    _count?: boolean | PortfolioCountOutputTypeDefaultArgs<ExtArgs>
   }
 
-  export type $BranchPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "Branch"
+  export type $PortfolioPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Portfolio"
     objects: {
-      users: Prisma.$UserPayload<ExtArgs>[]
+      users: Prisma.$StaffPayload<ExtArgs>[]
       services: Prisma.$ServicePayload<ExtArgs>[]
-      departments: Prisma.$DepartmentPayload<ExtArgs>[]
       clients: Prisma.$ClientPayload<ExtArgs>[]
       projects: Prisma.$ProjectPayload<ExtArgs>[]
       contentRequests: Prisma.$ContentRequestPayload<ExtArgs>[]
@@ -14386,143 +14281,143 @@ export namespace Prisma {
       secondaryColor: string
       customDomain: string | null
       isActive: boolean
-    }, ExtArgs["result"]["branch"]>
+    }, ExtArgs["result"]["portfolio"]>
     composites: {}
   }
 
-  type BranchGetPayload<S extends boolean | null | undefined | BranchDefaultArgs> = $Result.GetResult<Prisma.$BranchPayload, S>
+  type PortfolioGetPayload<S extends boolean | null | undefined | PortfolioDefaultArgs> = $Result.GetResult<Prisma.$PortfolioPayload, S>
 
-  type BranchCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
-    Omit<BranchFindManyArgs, 'select' | 'include' | 'distinct'> & {
-      select?: BranchCountAggregateInputType | true
+  type PortfolioCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<PortfolioFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: PortfolioCountAggregateInputType | true
     }
 
-  export interface BranchDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Branch'], meta: { name: 'Branch' } }
+  export interface PortfolioDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Portfolio'], meta: { name: 'Portfolio' } }
     /**
-     * Find zero or one Branch that matches the filter.
-     * @param {BranchFindUniqueArgs} args - Arguments to find a Branch
+     * Find zero or one Portfolio that matches the filter.
+     * @param {PortfolioFindUniqueArgs} args - Arguments to find a Portfolio
      * @example
-     * // Get one Branch
-     * const branch = await prisma.branch.findUnique({
+     * // Get one Portfolio
+     * const portfolio = await prisma.portfolio.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUnique<T extends BranchFindUniqueArgs>(args: SelectSubset<T, BranchFindUniqueArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+    findUnique<T extends PortfolioFindUniqueArgs>(args: SelectSubset<T, PortfolioFindUniqueArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
 
     /**
-     * Find one Branch that matches the filter or throw an error with `error.code='P2025'` 
+     * Find one Portfolio that matches the filter or throw an error with `error.code='P2025'` 
      * if no matches were found.
-     * @param {BranchFindUniqueOrThrowArgs} args - Arguments to find a Branch
+     * @param {PortfolioFindUniqueOrThrowArgs} args - Arguments to find a Portfolio
      * @example
-     * // Get one Branch
-     * const branch = await prisma.branch.findUniqueOrThrow({
+     * // Get one Portfolio
+     * const portfolio = await prisma.portfolio.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUniqueOrThrow<T extends BranchFindUniqueOrThrowArgs>(args: SelectSubset<T, BranchFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+    findUniqueOrThrow<T extends PortfolioFindUniqueOrThrowArgs>(args: SelectSubset<T, PortfolioFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
 
     /**
-     * Find the first Branch that matches the filter.
+     * Find the first Portfolio that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {BranchFindFirstArgs} args - Arguments to find a Branch
+     * @param {PortfolioFindFirstArgs} args - Arguments to find a Portfolio
      * @example
-     * // Get one Branch
-     * const branch = await prisma.branch.findFirst({
+     * // Get one Portfolio
+     * const portfolio = await prisma.portfolio.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirst<T extends BranchFindFirstArgs>(args?: SelectSubset<T, BranchFindFirstArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+    findFirst<T extends PortfolioFindFirstArgs>(args?: SelectSubset<T, PortfolioFindFirstArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
 
     /**
-     * Find the first Branch that matches the filter or
+     * Find the first Portfolio that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {BranchFindFirstOrThrowArgs} args - Arguments to find a Branch
+     * @param {PortfolioFindFirstOrThrowArgs} args - Arguments to find a Portfolio
      * @example
-     * // Get one Branch
-     * const branch = await prisma.branch.findFirstOrThrow({
+     * // Get one Portfolio
+     * const portfolio = await prisma.portfolio.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirstOrThrow<T extends BranchFindFirstOrThrowArgs>(args?: SelectSubset<T, BranchFindFirstOrThrowArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+    findFirstOrThrow<T extends PortfolioFindFirstOrThrowArgs>(args?: SelectSubset<T, PortfolioFindFirstOrThrowArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
 
     /**
-     * Find zero or more Branches that matches the filter.
+     * Find zero or more Portfolios that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {BranchFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @param {PortfolioFindManyArgs} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all Branches
-     * const branches = await prisma.branch.findMany()
+     * // Get all Portfolios
+     * const portfolios = await prisma.portfolio.findMany()
      * 
-     * // Get first 10 Branches
-     * const branches = await prisma.branch.findMany({ take: 10 })
+     * // Get first 10 Portfolios
+     * const portfolios = await prisma.portfolio.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const branchWithIdOnly = await prisma.branch.findMany({ select: { id: true } })
+     * const portfolioWithIdOnly = await prisma.portfolio.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends BranchFindManyArgs>(args?: SelectSubset<T, BranchFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findMany">>
+    findMany<T extends PortfolioFindManyArgs>(args?: SelectSubset<T, PortfolioFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findMany">>
 
     /**
-     * Create a Branch.
-     * @param {BranchCreateArgs} args - Arguments to create a Branch.
+     * Create a Portfolio.
+     * @param {PortfolioCreateArgs} args - Arguments to create a Portfolio.
      * @example
-     * // Create one Branch
-     * const Branch = await prisma.branch.create({
+     * // Create one Portfolio
+     * const Portfolio = await prisma.portfolio.create({
      *   data: {
-     *     // ... data to create a Branch
+     *     // ... data to create a Portfolio
      *   }
      * })
      * 
      */
-    create<T extends BranchCreateArgs>(args: SelectSubset<T, BranchCreateArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "create">, never, ExtArgs>
+    create<T extends PortfolioCreateArgs>(args: SelectSubset<T, PortfolioCreateArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "create">, never, ExtArgs>
 
     /**
-     * Create many Branches.
-     * @param {BranchCreateManyArgs} args - Arguments to create many Branches.
+     * Create many Portfolios.
+     * @param {PortfolioCreateManyArgs} args - Arguments to create many Portfolios.
      * @example
-     * // Create many Branches
-     * const branch = await prisma.branch.createMany({
+     * // Create many Portfolios
+     * const portfolio = await prisma.portfolio.createMany({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      *     
      */
-    createMany<T extends BranchCreateManyArgs>(args?: SelectSubset<T, BranchCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends PortfolioCreateManyArgs>(args?: SelectSubset<T, PortfolioCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Delete a Branch.
-     * @param {BranchDeleteArgs} args - Arguments to delete one Branch.
+     * Delete a Portfolio.
+     * @param {PortfolioDeleteArgs} args - Arguments to delete one Portfolio.
      * @example
-     * // Delete one Branch
-     * const Branch = await prisma.branch.delete({
+     * // Delete one Portfolio
+     * const Portfolio = await prisma.portfolio.delete({
      *   where: {
-     *     // ... filter to delete one Branch
+     *     // ... filter to delete one Portfolio
      *   }
      * })
      * 
      */
-    delete<T extends BranchDeleteArgs>(args: SelectSubset<T, BranchDeleteArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+    delete<T extends PortfolioDeleteArgs>(args: SelectSubset<T, PortfolioDeleteArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "delete">, never, ExtArgs>
 
     /**
-     * Update one Branch.
-     * @param {BranchUpdateArgs} args - Arguments to update one Branch.
+     * Update one Portfolio.
+     * @param {PortfolioUpdateArgs} args - Arguments to update one Portfolio.
      * @example
-     * // Update one Branch
-     * const branch = await prisma.branch.update({
+     * // Update one Portfolio
+     * const portfolio = await prisma.portfolio.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -14532,30 +14427,30 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends BranchUpdateArgs>(args: SelectSubset<T, BranchUpdateArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "update">, never, ExtArgs>
+    update<T extends PortfolioUpdateArgs>(args: SelectSubset<T, PortfolioUpdateArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "update">, never, ExtArgs>
 
     /**
-     * Delete zero or more Branches.
-     * @param {BranchDeleteManyArgs} args - Arguments to filter Branches to delete.
+     * Delete zero or more Portfolios.
+     * @param {PortfolioDeleteManyArgs} args - Arguments to filter Portfolios to delete.
      * @example
-     * // Delete a few Branches
-     * const { count } = await prisma.branch.deleteMany({
+     * // Delete a few Portfolios
+     * const { count } = await prisma.portfolio.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
      */
-    deleteMany<T extends BranchDeleteManyArgs>(args?: SelectSubset<T, BranchDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends PortfolioDeleteManyArgs>(args?: SelectSubset<T, PortfolioDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more Branches.
+     * Update zero or more Portfolios.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {BranchUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {PortfolioUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many Branches
-     * const branch = await prisma.branch.updateMany({
+     * // Update many Portfolios
+     * const portfolio = await prisma.portfolio.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -14565,56 +14460,56 @@ export namespace Prisma {
      * })
      * 
      */
-    updateMany<T extends BranchUpdateManyArgs>(args: SelectSubset<T, BranchUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends PortfolioUpdateManyArgs>(args: SelectSubset<T, PortfolioUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create or update one Branch.
-     * @param {BranchUpsertArgs} args - Arguments to update or create a Branch.
+     * Create or update one Portfolio.
+     * @param {PortfolioUpsertArgs} args - Arguments to update or create a Portfolio.
      * @example
-     * // Update or create a Branch
-     * const branch = await prisma.branch.upsert({
+     * // Update or create a Portfolio
+     * const portfolio = await prisma.portfolio.upsert({
      *   create: {
-     *     // ... data to create a Branch
+     *     // ... data to create a Portfolio
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the Branch we want to update
+     *     // ... the filter for the Portfolio we want to update
      *   }
      * })
      */
-    upsert<T extends BranchUpsertArgs>(args: SelectSubset<T, BranchUpsertArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+    upsert<T extends PortfolioUpsertArgs>(args: SelectSubset<T, PortfolioUpsertArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
 
 
     /**
-     * Count the number of Branches.
+     * Count the number of Portfolios.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {BranchCountArgs} args - Arguments to filter Branches to count.
+     * @param {PortfolioCountArgs} args - Arguments to filter Portfolios to count.
      * @example
-     * // Count the number of Branches
-     * const count = await prisma.branch.count({
+     * // Count the number of Portfolios
+     * const count = await prisma.portfolio.count({
      *   where: {
-     *     // ... the filter for the Branches we want to count
+     *     // ... the filter for the Portfolios we want to count
      *   }
      * })
     **/
-    count<T extends BranchCountArgs>(
-      args?: Subset<T, BranchCountArgs>,
+    count<T extends PortfolioCountArgs>(
+      args?: Subset<T, PortfolioCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], BranchCountAggregateOutputType>
+          : GetScalarType<T['select'], PortfolioCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a Branch.
+     * Allows you to perform aggregations operations on a Portfolio.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {BranchAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {PortfolioAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -14634,13 +14529,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends BranchAggregateArgs>(args: Subset<T, BranchAggregateArgs>): Prisma.PrismaPromise<GetBranchAggregateType<T>>
+    aggregate<T extends PortfolioAggregateArgs>(args: Subset<T, PortfolioAggregateArgs>): Prisma.PrismaPromise<GetPortfolioAggregateType<T>>
 
     /**
-     * Group by Branch.
+     * Group by Portfolio.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {BranchGroupByArgs} args - Group by arguments.
+     * @param {PortfolioGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -14655,14 +14550,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends BranchGroupByArgs,
+      T extends PortfolioGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: BranchGroupByArgs['orderBy'] }
-        : { orderBy?: BranchGroupByArgs['orderBy'] },
+        ? { orderBy: PortfolioGroupByArgs['orderBy'] }
+        : { orderBy?: PortfolioGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -14711,29 +14606,28 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, BranchGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBranchGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, PortfolioGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPortfolioGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
   /**
-   * Fields of the Branch model
+   * Fields of the Portfolio model
    */
-  readonly fields: BranchFieldRefs;
+  readonly fields: PortfolioFieldRefs;
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for Branch.
+   * The delegate class that acts as a "Promise-like" for Portfolio.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__BranchClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__PortfolioClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    users<T extends Branch$usersArgs<ExtArgs> = {}>(args?: Subset<T, Branch$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany"> | Null>
-    services<T extends Branch$servicesArgs<ExtArgs> = {}>(args?: Subset<T, Branch$servicesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findMany"> | Null>
-    departments<T extends Branch$departmentsArgs<ExtArgs> = {}>(args?: Subset<T, Branch$departmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findMany"> | Null>
-    clients<T extends Branch$clientsArgs<ExtArgs> = {}>(args?: Subset<T, Branch$clientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findMany"> | Null>
-    projects<T extends Branch$projectsArgs<ExtArgs> = {}>(args?: Subset<T, Branch$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany"> | Null>
-    contentRequests<T extends Branch$contentRequestsArgs<ExtArgs> = {}>(args?: Subset<T, Branch$contentRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentRequestPayload<ExtArgs>, T, "findMany"> | Null>
-    recurringSchedules<T extends Branch$recurringSchedulesArgs<ExtArgs> = {}>(args?: Subset<T, Branch$recurringSchedulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecurringSchedulePayload<ExtArgs>, T, "findMany"> | Null>
-    contracts<T extends Branch$contractsArgs<ExtArgs> = {}>(args?: Subset<T, Branch$contractsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContractPayload<ExtArgs>, T, "findMany"> | Null>
+    users<T extends Portfolio$usersArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findMany"> | Null>
+    services<T extends Portfolio$servicesArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$servicesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findMany"> | Null>
+    clients<T extends Portfolio$clientsArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$clientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findMany"> | Null>
+    projects<T extends Portfolio$projectsArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany"> | Null>
+    contentRequests<T extends Portfolio$contentRequestsArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$contentRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentRequestPayload<ExtArgs>, T, "findMany"> | Null>
+    recurringSchedules<T extends Portfolio$recurringSchedulesArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$recurringSchedulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecurringSchedulePayload<ExtArgs>, T, "findMany"> | Null>
+    contracts<T extends Portfolio$contractsArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$contractsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContractPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -14760,347 +14654,347 @@ export namespace Prisma {
 
 
   /**
-   * Fields of the Branch model
+   * Fields of the Portfolio model
    */ 
-  interface BranchFieldRefs {
-    readonly id: FieldRef<"Branch", 'String'>
-    readonly createdAt: FieldRef<"Branch", 'DateTime'>
-    readonly updatedAt: FieldRef<"Branch", 'DateTime'>
-    readonly name: FieldRef<"Branch", 'String'>
-    readonly slug: FieldRef<"Branch", 'String'>
-    readonly description: FieldRef<"Branch", 'String'>
-    readonly location: FieldRef<"Branch", 'String'>
-    readonly phone: FieldRef<"Branch", 'String'>
-    readonly logoUrl: FieldRef<"Branch", 'String'>
-    readonly iconLogoUrl: FieldRef<"Branch", 'String'>
-    readonly usesRootLogin: FieldRef<"Branch", 'Boolean'>
-    readonly slugClearedOnce: FieldRef<"Branch", 'Boolean'>
-    readonly primaryColor: FieldRef<"Branch", 'String'>
-    readonly secondaryColor: FieldRef<"Branch", 'String'>
-    readonly customDomain: FieldRef<"Branch", 'String'>
-    readonly isActive: FieldRef<"Branch", 'Boolean'>
+  interface PortfolioFieldRefs {
+    readonly id: FieldRef<"Portfolio", 'String'>
+    readonly createdAt: FieldRef<"Portfolio", 'DateTime'>
+    readonly updatedAt: FieldRef<"Portfolio", 'DateTime'>
+    readonly name: FieldRef<"Portfolio", 'String'>
+    readonly slug: FieldRef<"Portfolio", 'String'>
+    readonly description: FieldRef<"Portfolio", 'String'>
+    readonly location: FieldRef<"Portfolio", 'String'>
+    readonly phone: FieldRef<"Portfolio", 'String'>
+    readonly logoUrl: FieldRef<"Portfolio", 'String'>
+    readonly iconLogoUrl: FieldRef<"Portfolio", 'String'>
+    readonly usesRootLogin: FieldRef<"Portfolio", 'Boolean'>
+    readonly slugClearedOnce: FieldRef<"Portfolio", 'Boolean'>
+    readonly primaryColor: FieldRef<"Portfolio", 'String'>
+    readonly secondaryColor: FieldRef<"Portfolio", 'String'>
+    readonly customDomain: FieldRef<"Portfolio", 'String'>
+    readonly isActive: FieldRef<"Portfolio", 'Boolean'>
   }
     
 
   // Custom InputTypes
   /**
-   * Branch findUnique
+   * Portfolio findUnique
    */
-  export type BranchFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PortfolioFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Branch
+     * Select specific fields to fetch from the Portfolio
      */
-    select?: BranchSelect<ExtArgs> | null
+    select?: PortfolioSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BranchInclude<ExtArgs> | null
+    include?: PortfolioInclude<ExtArgs> | null
     /**
-     * Filter, which Branch to fetch.
+     * Filter, which Portfolio to fetch.
      */
-    where: BranchWhereUniqueInput
+    where: PortfolioWhereUniqueInput
   }
 
   /**
-   * Branch findUniqueOrThrow
+   * Portfolio findUniqueOrThrow
    */
-  export type BranchFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PortfolioFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Branch
+     * Select specific fields to fetch from the Portfolio
      */
-    select?: BranchSelect<ExtArgs> | null
+    select?: PortfolioSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BranchInclude<ExtArgs> | null
+    include?: PortfolioInclude<ExtArgs> | null
     /**
-     * Filter, which Branch to fetch.
+     * Filter, which Portfolio to fetch.
      */
-    where: BranchWhereUniqueInput
+    where: PortfolioWhereUniqueInput
   }
 
   /**
-   * Branch findFirst
+   * Portfolio findFirst
    */
-  export type BranchFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PortfolioFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Branch
+     * Select specific fields to fetch from the Portfolio
      */
-    select?: BranchSelect<ExtArgs> | null
+    select?: PortfolioSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BranchInclude<ExtArgs> | null
+    include?: PortfolioInclude<ExtArgs> | null
     /**
-     * Filter, which Branch to fetch.
+     * Filter, which Portfolio to fetch.
      */
-    where?: BranchWhereInput
+    where?: PortfolioWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Branches to fetch.
+     * Determine the order of Portfolios to fetch.
      */
-    orderBy?: BranchOrderByWithRelationInput | BranchOrderByWithRelationInput[]
+    orderBy?: PortfolioOrderByWithRelationInput | PortfolioOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for Branches.
+     * Sets the position for searching for Portfolios.
      */
-    cursor?: BranchWhereUniqueInput
+    cursor?: PortfolioWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Branches from the position of the cursor.
+     * Take `±n` Portfolios from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Branches.
+     * Skip the first `n` Portfolios.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of Branches.
+     * Filter by unique combinations of Portfolios.
      */
-    distinct?: BranchScalarFieldEnum | BranchScalarFieldEnum[]
+    distinct?: PortfolioScalarFieldEnum | PortfolioScalarFieldEnum[]
   }
 
   /**
-   * Branch findFirstOrThrow
+   * Portfolio findFirstOrThrow
    */
-  export type BranchFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PortfolioFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Branch
+     * Select specific fields to fetch from the Portfolio
      */
-    select?: BranchSelect<ExtArgs> | null
+    select?: PortfolioSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BranchInclude<ExtArgs> | null
+    include?: PortfolioInclude<ExtArgs> | null
     /**
-     * Filter, which Branch to fetch.
+     * Filter, which Portfolio to fetch.
      */
-    where?: BranchWhereInput
+    where?: PortfolioWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Branches to fetch.
+     * Determine the order of Portfolios to fetch.
      */
-    orderBy?: BranchOrderByWithRelationInput | BranchOrderByWithRelationInput[]
+    orderBy?: PortfolioOrderByWithRelationInput | PortfolioOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for Branches.
+     * Sets the position for searching for Portfolios.
      */
-    cursor?: BranchWhereUniqueInput
+    cursor?: PortfolioWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Branches from the position of the cursor.
+     * Take `±n` Portfolios from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Branches.
+     * Skip the first `n` Portfolios.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of Branches.
+     * Filter by unique combinations of Portfolios.
      */
-    distinct?: BranchScalarFieldEnum | BranchScalarFieldEnum[]
+    distinct?: PortfolioScalarFieldEnum | PortfolioScalarFieldEnum[]
   }
 
   /**
-   * Branch findMany
+   * Portfolio findMany
    */
-  export type BranchFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PortfolioFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Branch
+     * Select specific fields to fetch from the Portfolio
      */
-    select?: BranchSelect<ExtArgs> | null
+    select?: PortfolioSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BranchInclude<ExtArgs> | null
+    include?: PortfolioInclude<ExtArgs> | null
     /**
-     * Filter, which Branches to fetch.
+     * Filter, which Portfolios to fetch.
      */
-    where?: BranchWhereInput
+    where?: PortfolioWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Branches to fetch.
+     * Determine the order of Portfolios to fetch.
      */
-    orderBy?: BranchOrderByWithRelationInput | BranchOrderByWithRelationInput[]
+    orderBy?: PortfolioOrderByWithRelationInput | PortfolioOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing Branches.
+     * Sets the position for listing Portfolios.
      */
-    cursor?: BranchWhereUniqueInput
+    cursor?: PortfolioWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Branches from the position of the cursor.
+     * Take `±n` Portfolios from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Branches.
+     * Skip the first `n` Portfolios.
      */
     skip?: number
-    distinct?: BranchScalarFieldEnum | BranchScalarFieldEnum[]
+    distinct?: PortfolioScalarFieldEnum | PortfolioScalarFieldEnum[]
   }
 
   /**
-   * Branch create
+   * Portfolio create
    */
-  export type BranchCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PortfolioCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Branch
+     * Select specific fields to fetch from the Portfolio
      */
-    select?: BranchSelect<ExtArgs> | null
+    select?: PortfolioSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BranchInclude<ExtArgs> | null
+    include?: PortfolioInclude<ExtArgs> | null
     /**
-     * The data needed to create a Branch.
+     * The data needed to create a Portfolio.
      */
-    data: XOR<BranchCreateInput, BranchUncheckedCreateInput>
+    data: XOR<PortfolioCreateInput, PortfolioUncheckedCreateInput>
   }
 
   /**
-   * Branch createMany
+   * Portfolio createMany
    */
-  export type BranchCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PortfolioCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to create many Branches.
+     * The data used to create many Portfolios.
      */
-    data: BranchCreateManyInput | BranchCreateManyInput[]
+    data: PortfolioCreateManyInput | PortfolioCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * Branch update
+   * Portfolio update
    */
-  export type BranchUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PortfolioUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Branch
+     * Select specific fields to fetch from the Portfolio
      */
-    select?: BranchSelect<ExtArgs> | null
+    select?: PortfolioSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BranchInclude<ExtArgs> | null
+    include?: PortfolioInclude<ExtArgs> | null
     /**
-     * The data needed to update a Branch.
+     * The data needed to update a Portfolio.
      */
-    data: XOR<BranchUpdateInput, BranchUncheckedUpdateInput>
+    data: XOR<PortfolioUpdateInput, PortfolioUncheckedUpdateInput>
     /**
-     * Choose, which Branch to update.
+     * Choose, which Portfolio to update.
      */
-    where: BranchWhereUniqueInput
+    where: PortfolioWhereUniqueInput
   }
 
   /**
-   * Branch updateMany
+   * Portfolio updateMany
    */
-  export type BranchUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PortfolioUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to update Branches.
+     * The data used to update Portfolios.
      */
-    data: XOR<BranchUpdateManyMutationInput, BranchUncheckedUpdateManyInput>
+    data: XOR<PortfolioUpdateManyMutationInput, PortfolioUncheckedUpdateManyInput>
     /**
-     * Filter which Branches to update
+     * Filter which Portfolios to update
      */
-    where?: BranchWhereInput
+    where?: PortfolioWhereInput
   }
 
   /**
-   * Branch upsert
+   * Portfolio upsert
    */
-  export type BranchUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PortfolioUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Branch
+     * Select specific fields to fetch from the Portfolio
      */
-    select?: BranchSelect<ExtArgs> | null
+    select?: PortfolioSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BranchInclude<ExtArgs> | null
+    include?: PortfolioInclude<ExtArgs> | null
     /**
-     * The filter to search for the Branch to update in case it exists.
+     * The filter to search for the Portfolio to update in case it exists.
      */
-    where: BranchWhereUniqueInput
+    where: PortfolioWhereUniqueInput
     /**
-     * In case the Branch found by the `where` argument doesn't exist, create a new Branch with this data.
+     * In case the Portfolio found by the `where` argument doesn't exist, create a new Portfolio with this data.
      */
-    create: XOR<BranchCreateInput, BranchUncheckedCreateInput>
+    create: XOR<PortfolioCreateInput, PortfolioUncheckedCreateInput>
     /**
-     * In case the Branch was found with the provided `where` argument, update it with this data.
+     * In case the Portfolio was found with the provided `where` argument, update it with this data.
      */
-    update: XOR<BranchUpdateInput, BranchUncheckedUpdateInput>
+    update: XOR<PortfolioUpdateInput, PortfolioUncheckedUpdateInput>
   }
 
   /**
-   * Branch delete
+   * Portfolio delete
    */
-  export type BranchDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PortfolioDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Branch
+     * Select specific fields to fetch from the Portfolio
      */
-    select?: BranchSelect<ExtArgs> | null
+    select?: PortfolioSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BranchInclude<ExtArgs> | null
+    include?: PortfolioInclude<ExtArgs> | null
     /**
-     * Filter which Branch to delete.
+     * Filter which Portfolio to delete.
      */
-    where: BranchWhereUniqueInput
+    where: PortfolioWhereUniqueInput
   }
 
   /**
-   * Branch deleteMany
+   * Portfolio deleteMany
    */
-  export type BranchDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PortfolioDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which Branches to delete
+     * Filter which Portfolios to delete
      */
-    where?: BranchWhereInput
+    where?: PortfolioWhereInput
   }
 
   /**
-   * Branch.users
+   * Portfolio.users
    */
-  export type Branch$usersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Portfolio$usersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the Staff
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: StaffSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
-    where?: UserWhereInput
-    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
-    cursor?: UserWhereUniqueInput
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
+    orderBy?: StaffOrderByWithRelationInput | StaffOrderByWithRelationInput[]
+    cursor?: StaffWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+    distinct?: StaffScalarFieldEnum | StaffScalarFieldEnum[]
   }
 
   /**
-   * Branch.services
+   * Portfolio.services
    */
-  export type Branch$servicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Portfolio$servicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Service
      */
@@ -15118,29 +15012,9 @@ export namespace Prisma {
   }
 
   /**
-   * Branch.departments
+   * Portfolio.clients
    */
-  export type Branch$departmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Department
-     */
-    select?: DepartmentSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: DepartmentInclude<ExtArgs> | null
-    where?: DepartmentWhereInput
-    orderBy?: DepartmentOrderByWithRelationInput | DepartmentOrderByWithRelationInput[]
-    cursor?: DepartmentWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: DepartmentScalarFieldEnum | DepartmentScalarFieldEnum[]
-  }
-
-  /**
-   * Branch.clients
-   */
-  export type Branch$clientsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Portfolio$clientsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Client
      */
@@ -15158,9 +15032,9 @@ export namespace Prisma {
   }
 
   /**
-   * Branch.projects
+   * Portfolio.projects
    */
-  export type Branch$projectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Portfolio$projectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Project
      */
@@ -15178,9 +15052,9 @@ export namespace Prisma {
   }
 
   /**
-   * Branch.contentRequests
+   * Portfolio.contentRequests
    */
-  export type Branch$contentRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Portfolio$contentRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the ContentRequest
      */
@@ -15198,9 +15072,9 @@ export namespace Prisma {
   }
 
   /**
-   * Branch.recurringSchedules
+   * Portfolio.recurringSchedules
    */
-  export type Branch$recurringSchedulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Portfolio$recurringSchedulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the RecurringSchedule
      */
@@ -15218,9 +15092,9 @@ export namespace Prisma {
   }
 
   /**
-   * Branch.contracts
+   * Portfolio.contracts
    */
-  export type Branch$contractsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Portfolio$contractsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Contract
      */
@@ -15238,918 +15112,17 @@ export namespace Prisma {
   }
 
   /**
-   * Branch without action
+   * Portfolio without action
    */
-  export type BranchDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type PortfolioDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Branch
+     * Select specific fields to fetch from the Portfolio
      */
-    select?: BranchSelect<ExtArgs> | null
+    select?: PortfolioSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BranchInclude<ExtArgs> | null
-  }
-
-
-  /**
-   * Model Department
-   */
-
-  export type AggregateDepartment = {
-    _count: DepartmentCountAggregateOutputType | null
-    _min: DepartmentMinAggregateOutputType | null
-    _max: DepartmentMaxAggregateOutputType | null
-  }
-
-  export type DepartmentMinAggregateOutputType = {
-    id: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
-    name: string | null
-    description: string | null
-    isActive: boolean | null
-    branchId: string | null
-  }
-
-  export type DepartmentMaxAggregateOutputType = {
-    id: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
-    name: string | null
-    description: string | null
-    isActive: boolean | null
-    branchId: string | null
-  }
-
-  export type DepartmentCountAggregateOutputType = {
-    id: number
-    createdAt: number
-    updatedAt: number
-    name: number
-    description: number
-    isActive: number
-    branchId: number
-    _all: number
-  }
-
-
-  export type DepartmentMinAggregateInputType = {
-    id?: true
-    createdAt?: true
-    updatedAt?: true
-    name?: true
-    description?: true
-    isActive?: true
-    branchId?: true
-  }
-
-  export type DepartmentMaxAggregateInputType = {
-    id?: true
-    createdAt?: true
-    updatedAt?: true
-    name?: true
-    description?: true
-    isActive?: true
-    branchId?: true
-  }
-
-  export type DepartmentCountAggregateInputType = {
-    id?: true
-    createdAt?: true
-    updatedAt?: true
-    name?: true
-    description?: true
-    isActive?: true
-    branchId?: true
-    _all?: true
-  }
-
-  export type DepartmentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Department to aggregate.
-     */
-    where?: DepartmentWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Departments to fetch.
-     */
-    orderBy?: DepartmentOrderByWithRelationInput | DepartmentOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: DepartmentWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Departments from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Departments.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned Departments
-    **/
-    _count?: true | DepartmentCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: DepartmentMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: DepartmentMaxAggregateInputType
-  }
-
-  export type GetDepartmentAggregateType<T extends DepartmentAggregateArgs> = {
-        [P in keyof T & keyof AggregateDepartment]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateDepartment[P]>
-      : GetScalarType<T[P], AggregateDepartment[P]>
-  }
-
-
-
-
-  export type DepartmentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: DepartmentWhereInput
-    orderBy?: DepartmentOrderByWithAggregationInput | DepartmentOrderByWithAggregationInput[]
-    by: DepartmentScalarFieldEnum[] | DepartmentScalarFieldEnum
-    having?: DepartmentScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: DepartmentCountAggregateInputType | true
-    _min?: DepartmentMinAggregateInputType
-    _max?: DepartmentMaxAggregateInputType
-  }
-
-  export type DepartmentGroupByOutputType = {
-    id: string
-    createdAt: Date
-    updatedAt: Date
-    name: string
-    description: string | null
-    isActive: boolean
-    branchId: string
-    _count: DepartmentCountAggregateOutputType | null
-    _min: DepartmentMinAggregateOutputType | null
-    _max: DepartmentMaxAggregateOutputType | null
-  }
-
-  type GetDepartmentGroupByPayload<T extends DepartmentGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<DepartmentGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof DepartmentGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], DepartmentGroupByOutputType[P]>
-            : GetScalarType<T[P], DepartmentGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type DepartmentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    name?: boolean
-    description?: boolean
-    isActive?: boolean
-    branchId?: boolean
-    branch?: boolean | BranchDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["department"]>
-
-
-  export type DepartmentSelectScalar = {
-    id?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    name?: boolean
-    description?: boolean
-    isActive?: boolean
-    branchId?: boolean
-  }
-
-  export type DepartmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    branch?: boolean | BranchDefaultArgs<ExtArgs>
-  }
-
-  export type $DepartmentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "Department"
-    objects: {
-      branch: Prisma.$BranchPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      createdAt: Date
-      updatedAt: Date
-      name: string
-      description: string | null
-      isActive: boolean
-      branchId: string
-    }, ExtArgs["result"]["department"]>
-    composites: {}
-  }
-
-  type DepartmentGetPayload<S extends boolean | null | undefined | DepartmentDefaultArgs> = $Result.GetResult<Prisma.$DepartmentPayload, S>
-
-  type DepartmentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
-    Omit<DepartmentFindManyArgs, 'select' | 'include' | 'distinct'> & {
-      select?: DepartmentCountAggregateInputType | true
-    }
-
-  export interface DepartmentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Department'], meta: { name: 'Department' } }
-    /**
-     * Find zero or one Department that matches the filter.
-     * @param {DepartmentFindUniqueArgs} args - Arguments to find a Department
-     * @example
-     * // Get one Department
-     * const department = await prisma.department.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends DepartmentFindUniqueArgs>(args: SelectSubset<T, DepartmentFindUniqueArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
-
-    /**
-     * Find one Department that matches the filter or throw an error with `error.code='P2025'` 
-     * if no matches were found.
-     * @param {DepartmentFindUniqueOrThrowArgs} args - Arguments to find a Department
-     * @example
-     * // Get one Department
-     * const department = await prisma.department.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends DepartmentFindUniqueOrThrowArgs>(args: SelectSubset<T, DepartmentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
-
-    /**
-     * Find the first Department that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DepartmentFindFirstArgs} args - Arguments to find a Department
-     * @example
-     * // Get one Department
-     * const department = await prisma.department.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends DepartmentFindFirstArgs>(args?: SelectSubset<T, DepartmentFindFirstArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
-
-    /**
-     * Find the first Department that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DepartmentFindFirstOrThrowArgs} args - Arguments to find a Department
-     * @example
-     * // Get one Department
-     * const department = await prisma.department.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends DepartmentFindFirstOrThrowArgs>(args?: SelectSubset<T, DepartmentFindFirstOrThrowArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
-
-    /**
-     * Find zero or more Departments that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DepartmentFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all Departments
-     * const departments = await prisma.department.findMany()
-     * 
-     * // Get first 10 Departments
-     * const departments = await prisma.department.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const departmentWithIdOnly = await prisma.department.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends DepartmentFindManyArgs>(args?: SelectSubset<T, DepartmentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "findMany">>
-
-    /**
-     * Create a Department.
-     * @param {DepartmentCreateArgs} args - Arguments to create a Department.
-     * @example
-     * // Create one Department
-     * const Department = await prisma.department.create({
-     *   data: {
-     *     // ... data to create a Department
-     *   }
-     * })
-     * 
-     */
-    create<T extends DepartmentCreateArgs>(args: SelectSubset<T, DepartmentCreateArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "create">, never, ExtArgs>
-
-    /**
-     * Create many Departments.
-     * @param {DepartmentCreateManyArgs} args - Arguments to create many Departments.
-     * @example
-     * // Create many Departments
-     * const department = await prisma.department.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends DepartmentCreateManyArgs>(args?: SelectSubset<T, DepartmentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a Department.
-     * @param {DepartmentDeleteArgs} args - Arguments to delete one Department.
-     * @example
-     * // Delete one Department
-     * const Department = await prisma.department.delete({
-     *   where: {
-     *     // ... filter to delete one Department
-     *   }
-     * })
-     * 
-     */
-    delete<T extends DepartmentDeleteArgs>(args: SelectSubset<T, DepartmentDeleteArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "delete">, never, ExtArgs>
-
-    /**
-     * Update one Department.
-     * @param {DepartmentUpdateArgs} args - Arguments to update one Department.
-     * @example
-     * // Update one Department
-     * const department = await prisma.department.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends DepartmentUpdateArgs>(args: SelectSubset<T, DepartmentUpdateArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "update">, never, ExtArgs>
-
-    /**
-     * Delete zero or more Departments.
-     * @param {DepartmentDeleteManyArgs} args - Arguments to filter Departments to delete.
-     * @example
-     * // Delete a few Departments
-     * const { count } = await prisma.department.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends DepartmentDeleteManyArgs>(args?: SelectSubset<T, DepartmentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Departments.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DepartmentUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many Departments
-     * const department = await prisma.department.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends DepartmentUpdateManyArgs>(args: SelectSubset<T, DepartmentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one Department.
-     * @param {DepartmentUpsertArgs} args - Arguments to update or create a Department.
-     * @example
-     * // Update or create a Department
-     * const department = await prisma.department.upsert({
-     *   create: {
-     *     // ... data to create a Department
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the Department we want to update
-     *   }
-     * })
-     */
-    upsert<T extends DepartmentUpsertArgs>(args: SelectSubset<T, DepartmentUpsertArgs<ExtArgs>>): Prisma__DepartmentClient<$Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
-
-
-    /**
-     * Count the number of Departments.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DepartmentCountArgs} args - Arguments to filter Departments to count.
-     * @example
-     * // Count the number of Departments
-     * const count = await prisma.department.count({
-     *   where: {
-     *     // ... the filter for the Departments we want to count
-     *   }
-     * })
-    **/
-    count<T extends DepartmentCountArgs>(
-      args?: Subset<T, DepartmentCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], DepartmentCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a Department.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DepartmentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends DepartmentAggregateArgs>(args: Subset<T, DepartmentAggregateArgs>): Prisma.PrismaPromise<GetDepartmentAggregateType<T>>
-
-    /**
-     * Group by Department.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {DepartmentGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends DepartmentGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: DepartmentGroupByArgs['orderBy'] }
-        : { orderBy?: DepartmentGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, DepartmentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDepartmentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the Department model
-   */
-  readonly fields: DepartmentFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for Department.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__DepartmentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    branch<T extends BranchDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BranchDefaultArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the Department model
-   */ 
-  interface DepartmentFieldRefs {
-    readonly id: FieldRef<"Department", 'String'>
-    readonly createdAt: FieldRef<"Department", 'DateTime'>
-    readonly updatedAt: FieldRef<"Department", 'DateTime'>
-    readonly name: FieldRef<"Department", 'String'>
-    readonly description: FieldRef<"Department", 'String'>
-    readonly isActive: FieldRef<"Department", 'Boolean'>
-    readonly branchId: FieldRef<"Department", 'String'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * Department findUnique
-   */
-  export type DepartmentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Department
-     */
-    select?: DepartmentSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: DepartmentInclude<ExtArgs> | null
-    /**
-     * Filter, which Department to fetch.
-     */
-    where: DepartmentWhereUniqueInput
-  }
-
-  /**
-   * Department findUniqueOrThrow
-   */
-  export type DepartmentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Department
-     */
-    select?: DepartmentSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: DepartmentInclude<ExtArgs> | null
-    /**
-     * Filter, which Department to fetch.
-     */
-    where: DepartmentWhereUniqueInput
-  }
-
-  /**
-   * Department findFirst
-   */
-  export type DepartmentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Department
-     */
-    select?: DepartmentSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: DepartmentInclude<ExtArgs> | null
-    /**
-     * Filter, which Department to fetch.
-     */
-    where?: DepartmentWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Departments to fetch.
-     */
-    orderBy?: DepartmentOrderByWithRelationInput | DepartmentOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Departments.
-     */
-    cursor?: DepartmentWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Departments from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Departments.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Departments.
-     */
-    distinct?: DepartmentScalarFieldEnum | DepartmentScalarFieldEnum[]
-  }
-
-  /**
-   * Department findFirstOrThrow
-   */
-  export type DepartmentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Department
-     */
-    select?: DepartmentSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: DepartmentInclude<ExtArgs> | null
-    /**
-     * Filter, which Department to fetch.
-     */
-    where?: DepartmentWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Departments to fetch.
-     */
-    orderBy?: DepartmentOrderByWithRelationInput | DepartmentOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Departments.
-     */
-    cursor?: DepartmentWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Departments from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Departments.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Departments.
-     */
-    distinct?: DepartmentScalarFieldEnum | DepartmentScalarFieldEnum[]
-  }
-
-  /**
-   * Department findMany
-   */
-  export type DepartmentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Department
-     */
-    select?: DepartmentSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: DepartmentInclude<ExtArgs> | null
-    /**
-     * Filter, which Departments to fetch.
-     */
-    where?: DepartmentWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Departments to fetch.
-     */
-    orderBy?: DepartmentOrderByWithRelationInput | DepartmentOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing Departments.
-     */
-    cursor?: DepartmentWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Departments from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Departments.
-     */
-    skip?: number
-    distinct?: DepartmentScalarFieldEnum | DepartmentScalarFieldEnum[]
-  }
-
-  /**
-   * Department create
-   */
-  export type DepartmentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Department
-     */
-    select?: DepartmentSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: DepartmentInclude<ExtArgs> | null
-    /**
-     * The data needed to create a Department.
-     */
-    data: XOR<DepartmentCreateInput, DepartmentUncheckedCreateInput>
-  }
-
-  /**
-   * Department createMany
-   */
-  export type DepartmentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many Departments.
-     */
-    data: DepartmentCreateManyInput | DepartmentCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * Department update
-   */
-  export type DepartmentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Department
-     */
-    select?: DepartmentSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: DepartmentInclude<ExtArgs> | null
-    /**
-     * The data needed to update a Department.
-     */
-    data: XOR<DepartmentUpdateInput, DepartmentUncheckedUpdateInput>
-    /**
-     * Choose, which Department to update.
-     */
-    where: DepartmentWhereUniqueInput
-  }
-
-  /**
-   * Department updateMany
-   */
-  export type DepartmentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update Departments.
-     */
-    data: XOR<DepartmentUpdateManyMutationInput, DepartmentUncheckedUpdateManyInput>
-    /**
-     * Filter which Departments to update
-     */
-    where?: DepartmentWhereInput
-  }
-
-  /**
-   * Department upsert
-   */
-  export type DepartmentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Department
-     */
-    select?: DepartmentSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: DepartmentInclude<ExtArgs> | null
-    /**
-     * The filter to search for the Department to update in case it exists.
-     */
-    where: DepartmentWhereUniqueInput
-    /**
-     * In case the Department found by the `where` argument doesn't exist, create a new Department with this data.
-     */
-    create: XOR<DepartmentCreateInput, DepartmentUncheckedCreateInput>
-    /**
-     * In case the Department was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<DepartmentUpdateInput, DepartmentUncheckedUpdateInput>
-  }
-
-  /**
-   * Department delete
-   */
-  export type DepartmentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Department
-     */
-    select?: DepartmentSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: DepartmentInclude<ExtArgs> | null
-    /**
-     * Filter which Department to delete.
-     */
-    where: DepartmentWhereUniqueInput
-  }
-
-  /**
-   * Department deleteMany
-   */
-  export type DepartmentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Departments to delete
-     */
-    where?: DepartmentWhereInput
-  }
-
-  /**
-   * Department without action
-   */
-  export type DepartmentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Department
-     */
-    select?: DepartmentSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: DepartmentInclude<ExtArgs> | null
+    include?: PortfolioInclude<ExtArgs> | null
   }
 
 
@@ -17949,7 +16922,6 @@ export namespace Prisma {
     description: string | null
     status: $Enums.TaskStatus | null
     priority: $Enums.TaskPriority | null
-    department: string | null
     deadline: Date | null
     progress: number | null
     workflowStage: $Enums.WorkflowStage | null
@@ -17972,7 +16944,6 @@ export namespace Prisma {
     description: string | null
     status: $Enums.TaskStatus | null
     priority: $Enums.TaskPriority | null
-    department: string | null
     deadline: Date | null
     progress: number | null
     workflowStage: $Enums.WorkflowStage | null
@@ -17995,7 +16966,6 @@ export namespace Prisma {
     description: number
     status: number
     priority: number
-    department: number
     deadline: number
     progress: number
     workflowStage: number
@@ -18030,7 +17000,6 @@ export namespace Prisma {
     description?: true
     status?: true
     priority?: true
-    department?: true
     deadline?: true
     progress?: true
     workflowStage?: true
@@ -18053,7 +17022,6 @@ export namespace Prisma {
     description?: true
     status?: true
     priority?: true
-    department?: true
     deadline?: true
     progress?: true
     workflowStage?: true
@@ -18076,7 +17044,6 @@ export namespace Prisma {
     description?: true
     status?: true
     priority?: true
-    department?: true
     deadline?: true
     progress?: true
     workflowStage?: true
@@ -18186,7 +17153,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority: $Enums.TaskPriority
-    department: string
     deadline: Date | null
     progress: number
     workflowStage: $Enums.WorkflowStage
@@ -18228,7 +17194,6 @@ export namespace Prisma {
     description?: boolean
     status?: boolean
     priority?: boolean
-    department?: boolean
     deadline?: boolean
     progress?: boolean
     workflowStage?: boolean
@@ -18242,7 +17207,7 @@ export namespace Prisma {
     contentCycleId?: boolean
     agreementId?: boolean
     workflowStepId?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | StaffDefaultArgs<ExtArgs>
     project?: boolean | Task$projectArgs<ExtArgs>
     contentRequest?: boolean | Task$contentRequestArgs<ExtArgs>
     contentCycle?: boolean | Task$contentCycleArgs<ExtArgs>
@@ -18261,7 +17226,6 @@ export namespace Prisma {
     description?: boolean
     status?: boolean
     priority?: boolean
-    department?: boolean
     deadline?: boolean
     progress?: boolean
     workflowStage?: boolean
@@ -18278,7 +17242,7 @@ export namespace Prisma {
   }
 
   export type TaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | StaffDefaultArgs<ExtArgs>
     project?: boolean | Task$projectArgs<ExtArgs>
     contentRequest?: boolean | Task$contentRequestArgs<ExtArgs>
     contentCycle?: boolean | Task$contentCycleArgs<ExtArgs>
@@ -18292,7 +17256,7 @@ export namespace Prisma {
   export type $TaskPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Task"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
+      user: Prisma.$StaffPayload<ExtArgs>
       project: Prisma.$ProjectPayload<ExtArgs> | null
       contentRequest: Prisma.$ContentRequestPayload<ExtArgs> | null
       contentCycle: Prisma.$ContentCyclePayload<ExtArgs> | null
@@ -18308,7 +17272,6 @@ export namespace Prisma {
       description: string
       status: $Enums.TaskStatus
       priority: $Enums.TaskPriority
-      department: string
       deadline: Date | null
       progress: number
       workflowStage: $Enums.WorkflowStage
@@ -18662,7 +17625,7 @@ export namespace Prisma {
    */
   export interface Prisma__TaskClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    user<T extends StaffDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StaffDefaultArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     project<T extends Task$projectArgs<ExtArgs> = {}>(args?: Subset<T, Task$projectArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     contentRequest<T extends Task$contentRequestArgs<ExtArgs> = {}>(args?: Subset<T, Task$contentRequestArgs<ExtArgs>>): Prisma__ContentRequestClient<$Result.GetResult<Prisma.$ContentRequestPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     contentCycle<T extends Task$contentCycleArgs<ExtArgs> = {}>(args?: Subset<T, Task$contentCycleArgs<ExtArgs>>): Prisma__ContentCycleClient<$Result.GetResult<Prisma.$ContentCyclePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
@@ -18705,7 +17668,6 @@ export namespace Prisma {
     readonly description: FieldRef<"Task", 'String'>
     readonly status: FieldRef<"Task", 'TaskStatus'>
     readonly priority: FieldRef<"Task", 'TaskPriority'>
-    readonly department: FieldRef<"Task", 'String'>
     readonly deadline: FieldRef<"Task", 'DateTime'>
     readonly progress: FieldRef<"Task", 'Int'>
     readonly workflowStage: FieldRef<"Task", 'WorkflowStage'>
@@ -22940,7 +21902,7 @@ export namespace Prisma {
     amountPaid?: boolean
     subTotal?: boolean
     agreementId?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | StaffDefaultArgs<ExtArgs>
     income?: boolean | IncomeTransaction$incomeArgs<ExtArgs>
     serviceAgreement?: boolean | IncomeServiceAgreementDefaultArgs<ExtArgs>
     transactionDetails?: boolean | IncomeTransaction$transactionDetailsArgs<ExtArgs>
@@ -22967,7 +21929,7 @@ export namespace Prisma {
   }
 
   export type IncomeTransactionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | StaffDefaultArgs<ExtArgs>
     income?: boolean | IncomeTransaction$incomeArgs<ExtArgs>
     serviceAgreement?: boolean | IncomeServiceAgreementDefaultArgs<ExtArgs>
     transactionDetails?: boolean | IncomeTransaction$transactionDetailsArgs<ExtArgs>
@@ -22977,7 +21939,7 @@ export namespace Prisma {
   export type $IncomeTransactionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "IncomeTransaction"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
+      user: Prisma.$StaffPayload<ExtArgs>
       income: Prisma.$IncomePayload<ExtArgs> | null
       serviceAgreement: Prisma.$IncomeServiceAgreementPayload<ExtArgs>
       transactionDetails: Prisma.$IncomeTransactionDetailsPayload<ExtArgs>[]
@@ -23338,7 +22300,7 @@ export namespace Prisma {
    */
   export interface Prisma__IncomeTransactionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    user<T extends StaffDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StaffDefaultArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     income<T extends IncomeTransaction$incomeArgs<ExtArgs> = {}>(args?: Subset<T, IncomeTransaction$incomeArgs<ExtArgs>>): Prisma__IncomeClient<$Result.GetResult<Prisma.$IncomePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     serviceAgreement<T extends IncomeServiceAgreementDefaultArgs<ExtArgs> = {}>(args?: Subset<T, IncomeServiceAgreementDefaultArgs<ExtArgs>>): Prisma__IncomeServiceAgreementClient<$Result.GetResult<Prisma.$IncomeServiceAgreementPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     transactionDetails<T extends IncomeTransaction$transactionDetailsArgs<ExtArgs> = {}>(args?: Subset<T, IncomeTransaction$transactionDetailsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IncomeTransactionDetailsPayload<ExtArgs>, T, "findMany"> | Null>
@@ -23984,7 +22946,7 @@ export namespace Prisma {
     amountPaid?: boolean
     expenseCategoryId?: boolean
     expneseAgreementId?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | StaffDefaultArgs<ExtArgs>
     expense?: boolean | ExpenseDefaultArgs<ExtArgs>
     expenseServiceAgreement?: boolean | ExpenseServiceAgreementDefaultArgs<ExtArgs>
     expenseTransactionDetails?: boolean | ExpenseTransaction$expenseTransactionDetailsArgs<ExtArgs>
@@ -24007,7 +22969,7 @@ export namespace Prisma {
   }
 
   export type ExpenseTransactionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | StaffDefaultArgs<ExtArgs>
     expense?: boolean | ExpenseDefaultArgs<ExtArgs>
     expenseServiceAgreement?: boolean | ExpenseServiceAgreementDefaultArgs<ExtArgs>
     expenseTransactionDetails?: boolean | ExpenseTransaction$expenseTransactionDetailsArgs<ExtArgs>
@@ -24017,7 +22979,7 @@ export namespace Prisma {
   export type $ExpenseTransactionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "ExpenseTransaction"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
+      user: Prisma.$StaffPayload<ExtArgs>
       expense: Prisma.$ExpensePayload<ExtArgs>
       expenseServiceAgreement: Prisma.$ExpenseServiceAgreementPayload<ExtArgs>
       expenseTransactionDetails: Prisma.$ExpenseTransactionDetailsPayload<ExtArgs>[]
@@ -24374,7 +23336,7 @@ export namespace Prisma {
    */
   export interface Prisma__ExpenseTransactionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    user<T extends StaffDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StaffDefaultArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     expense<T extends ExpenseDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ExpenseDefaultArgs<ExtArgs>>): Prisma__ExpenseClient<$Result.GetResult<Prisma.$ExpensePayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     expenseServiceAgreement<T extends ExpenseServiceAgreementDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ExpenseServiceAgreementDefaultArgs<ExtArgs>>): Prisma__ExpenseServiceAgreementClient<$Result.GetResult<Prisma.$ExpenseServiceAgreementPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     expenseTransactionDetails<T extends ExpenseTransaction$expenseTransactionDetailsArgs<ExtArgs> = {}>(args?: Subset<T, ExpenseTransaction$expenseTransactionDetailsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExpenseTransactionDetailsPayload<ExtArgs>, T, "findMany"> | Null>
@@ -25859,7 +24821,7 @@ export namespace Prisma {
     name?: boolean
     fileSize?: boolean
     userId?: boolean
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | StaffDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userFiles"]>
 
 
@@ -25873,13 +24835,13 @@ export namespace Prisma {
   }
 
   export type UserFilesInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | StaffDefaultArgs<ExtArgs>
   }
 
   export type $UserFilesPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "UserFiles"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs>
+      user: Prisma.$StaffPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -26228,7 +25190,7 @@ export namespace Prisma {
    */
   export interface Prisma__UserFilesClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    user<T extends StaffDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StaffDefaultArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -29698,8 +28660,8 @@ export namespace Prisma {
     taxType?: boolean
     recieverId?: boolean
     registeredBy?: boolean
-    registeredUser?: boolean | UserDefaultArgs<ExtArgs>
-    recieverUser?: boolean | UserDefaultArgs<ExtArgs>
+    registeredUser?: boolean | StaffDefaultArgs<ExtArgs>
+    recieverUser?: boolean | StaffDefaultArgs<ExtArgs>
     UserSalaryDetails?: boolean | UserSalary$UserSalaryDetailsArgs<ExtArgs>
     _count?: boolean | UserSalaryCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["userSalary"]>
@@ -29720,8 +28682,8 @@ export namespace Prisma {
   }
 
   export type UserSalaryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    registeredUser?: boolean | UserDefaultArgs<ExtArgs>
-    recieverUser?: boolean | UserDefaultArgs<ExtArgs>
+    registeredUser?: boolean | StaffDefaultArgs<ExtArgs>
+    recieverUser?: boolean | StaffDefaultArgs<ExtArgs>
     UserSalaryDetails?: boolean | UserSalary$UserSalaryDetailsArgs<ExtArgs>
     _count?: boolean | UserSalaryCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -29729,8 +28691,8 @@ export namespace Prisma {
   export type $UserSalaryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "UserSalary"
     objects: {
-      registeredUser: Prisma.$UserPayload<ExtArgs>
-      recieverUser: Prisma.$UserPayload<ExtArgs>
+      registeredUser: Prisma.$StaffPayload<ExtArgs>
+      recieverUser: Prisma.$StaffPayload<ExtArgs>
       UserSalaryDetails: Prisma.$UserSalaryDetailsPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -30085,8 +29047,8 @@ export namespace Prisma {
    */
   export interface Prisma__UserSalaryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    registeredUser<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
-    recieverUser<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    registeredUser<T extends StaffDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StaffDefaultArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    recieverUser<T extends StaffDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StaffDefaultArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     UserSalaryDetails<T extends UserSalary$UserSalaryDetailsArgs<ExtArgs> = {}>(args?: Subset<T, UserSalary$UserSalaryDetailsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserSalaryDetailsPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -36284,7 +35246,7 @@ export namespace Prisma {
   export type $AuditLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "AuditLog"
     objects: {
-      user: Prisma.$UserPayload<ExtArgs> | null
+      user: Prisma.$StaffPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -36634,7 +35596,7 @@ export namespace Prisma {
    */
   export interface Prisma__AuditLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    user<T extends AuditLog$userArgs<ExtArgs> = {}>(args?: Subset<T, AuditLog$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    user<T extends AuditLog$userArgs<ExtArgs> = {}>(args?: Subset<T, AuditLog$userArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -36974,14 +35936,14 @@ export namespace Prisma {
    */
   export type AuditLog$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the Staff
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: StaffSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
-    where?: UserWhereInput
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
   }
 
   /**
@@ -37021,7 +35983,7 @@ export namespace Prisma {
     startDate: Date | null
     dueDate: Date | null
     clientId: string | null
-    branchId: string | null
+    portfolioId: string | null
     createdById: string | null
   }
 
@@ -37037,7 +35999,7 @@ export namespace Prisma {
     startDate: Date | null
     dueDate: Date | null
     clientId: string | null
-    branchId: string | null
+    portfolioId: string | null
     createdById: string | null
   }
 
@@ -37053,7 +36015,7 @@ export namespace Prisma {
     startDate: number
     dueDate: number
     clientId: number
-    branchId: number
+    portfolioId: number
     createdById: number
     _all: number
   }
@@ -37071,7 +36033,7 @@ export namespace Prisma {
     startDate?: true
     dueDate?: true
     clientId?: true
-    branchId?: true
+    portfolioId?: true
     createdById?: true
   }
 
@@ -37087,7 +36049,7 @@ export namespace Prisma {
     startDate?: true
     dueDate?: true
     clientId?: true
-    branchId?: true
+    portfolioId?: true
     createdById?: true
   }
 
@@ -37103,7 +36065,7 @@ export namespace Prisma {
     startDate?: true
     dueDate?: true
     clientId?: true
-    branchId?: true
+    portfolioId?: true
     createdById?: true
     _all?: true
   }
@@ -37192,7 +36154,7 @@ export namespace Prisma {
     startDate: Date | null
     dueDate: Date | null
     clientId: string
-    branchId: string | null
+    portfolioId: string | null
     createdById: string | null
     _count: ProjectCountAggregateOutputType | null
     _min: ProjectMinAggregateOutputType | null
@@ -37225,10 +36187,10 @@ export namespace Prisma {
     startDate?: boolean
     dueDate?: boolean
     clientId?: boolean
-    branchId?: boolean
+    portfolioId?: boolean
     createdById?: boolean
     client?: boolean | ClientDefaultArgs<ExtArgs>
-    branch?: boolean | Project$branchArgs<ExtArgs>
+    portfolio?: boolean | Project$portfolioArgs<ExtArgs>
     createdBy?: boolean | Project$createdByArgs<ExtArgs>
     serviceAgreements?: boolean | Project$serviceAgreementsArgs<ExtArgs>
     contentRequests?: boolean | Project$contentRequestsArgs<ExtArgs>
@@ -37250,13 +36212,13 @@ export namespace Prisma {
     startDate?: boolean
     dueDate?: boolean
     clientId?: boolean
-    branchId?: boolean
+    portfolioId?: boolean
     createdById?: boolean
   }
 
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | ClientDefaultArgs<ExtArgs>
-    branch?: boolean | Project$branchArgs<ExtArgs>
+    portfolio?: boolean | Project$portfolioArgs<ExtArgs>
     createdBy?: boolean | Project$createdByArgs<ExtArgs>
     serviceAgreements?: boolean | Project$serviceAgreementsArgs<ExtArgs>
     contentRequests?: boolean | Project$contentRequestsArgs<ExtArgs>
@@ -37269,8 +36231,8 @@ export namespace Prisma {
     name: "Project"
     objects: {
       client: Prisma.$ClientPayload<ExtArgs>
-      branch: Prisma.$BranchPayload<ExtArgs> | null
-      createdBy: Prisma.$UserPayload<ExtArgs> | null
+      portfolio: Prisma.$PortfolioPayload<ExtArgs> | null
+      createdBy: Prisma.$StaffPayload<ExtArgs> | null
       serviceAgreements: Prisma.$IncomeServiceAgreementPayload<ExtArgs>[]
       contentRequests: Prisma.$ContentRequestPayload<ExtArgs>[]
       tasks: Prisma.$TaskPayload<ExtArgs>[]
@@ -37288,7 +36250,7 @@ export namespace Prisma {
       startDate: Date | null
       dueDate: Date | null
       clientId: string
-      branchId: string | null
+      portfolioId: string | null
       createdById: string | null
     }, ExtArgs["result"]["project"]>
     composites: {}
@@ -37631,8 +36593,8 @@ export namespace Prisma {
   export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     client<T extends ClientDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ClientDefaultArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
-    branch<T extends Project$branchArgs<ExtArgs> = {}>(args?: Subset<T, Project$branchArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
-    createdBy<T extends Project$createdByArgs<ExtArgs> = {}>(args?: Subset<T, Project$createdByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    portfolio<T extends Project$portfolioArgs<ExtArgs> = {}>(args?: Subset<T, Project$portfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    createdBy<T extends Project$createdByArgs<ExtArgs> = {}>(args?: Subset<T, Project$createdByArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     serviceAgreements<T extends Project$serviceAgreementsArgs<ExtArgs> = {}>(args?: Subset<T, Project$serviceAgreementsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IncomeServiceAgreementPayload<ExtArgs>, T, "findMany"> | Null>
     contentRequests<T extends Project$contentRequestsArgs<ExtArgs> = {}>(args?: Subset<T, Project$contentRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentRequestPayload<ExtArgs>, T, "findMany"> | Null>
     tasks<T extends Project$tasksArgs<ExtArgs> = {}>(args?: Subset<T, Project$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany"> | Null>
@@ -37677,7 +36639,7 @@ export namespace Prisma {
     readonly startDate: FieldRef<"Project", 'DateTime'>
     readonly dueDate: FieldRef<"Project", 'DateTime'>
     readonly clientId: FieldRef<"Project", 'String'>
-    readonly branchId: FieldRef<"Project", 'String'>
+    readonly portfolioId: FieldRef<"Project", 'String'>
     readonly createdById: FieldRef<"Project", 'String'>
   }
     
@@ -37978,18 +36940,18 @@ export namespace Prisma {
   }
 
   /**
-   * Project.branch
+   * Project.portfolio
    */
-  export type Project$branchArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Project$portfolioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Branch
+     * Select specific fields to fetch from the Portfolio
      */
-    select?: BranchSelect<ExtArgs> | null
+    select?: PortfolioSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BranchInclude<ExtArgs> | null
-    where?: BranchWhereInput
+    include?: PortfolioInclude<ExtArgs> | null
+    where?: PortfolioWhereInput
   }
 
   /**
@@ -37997,14 +36959,14 @@ export namespace Prisma {
    */
   export type Project$createdByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the Staff
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: StaffSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
-    where?: UserWhereInput
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
   }
 
   /**
@@ -38142,7 +37104,7 @@ export namespace Prisma {
     notes: string | null
     clientId: string | null
     projectId: string | null
-    branchId: string | null
+    portfolioId: string | null
     createdById: string | null
   }
 
@@ -38162,7 +37124,7 @@ export namespace Prisma {
     notes: string | null
     clientId: string | null
     projectId: string | null
-    branchId: string | null
+    portfolioId: string | null
     createdById: string | null
   }
 
@@ -38182,7 +37144,7 @@ export namespace Prisma {
     notes: number
     clientId: number
     projectId: number
-    branchId: number
+    portfolioId: number
     createdById: number
     _all: number
   }
@@ -38216,7 +37178,7 @@ export namespace Prisma {
     notes?: true
     clientId?: true
     projectId?: true
-    branchId?: true
+    portfolioId?: true
     createdById?: true
   }
 
@@ -38236,7 +37198,7 @@ export namespace Prisma {
     notes?: true
     clientId?: true
     projectId?: true
-    branchId?: true
+    portfolioId?: true
     createdById?: true
   }
 
@@ -38256,7 +37218,7 @@ export namespace Prisma {
     notes?: true
     clientId?: true
     projectId?: true
-    branchId?: true
+    portfolioId?: true
     createdById?: true
     _all?: true
   }
@@ -38363,7 +37325,7 @@ export namespace Prisma {
     notes: string | null
     clientId: string
     projectId: string | null
-    branchId: string | null
+    portfolioId: string | null
     createdById: string | null
     _count: ContractCountAggregateOutputType | null
     _avg: ContractAvgAggregateOutputType | null
@@ -38402,11 +37364,11 @@ export namespace Prisma {
     notes?: boolean
     clientId?: boolean
     projectId?: boolean
-    branchId?: boolean
+    portfolioId?: boolean
     createdById?: boolean
     client?: boolean | ClientDefaultArgs<ExtArgs>
     project?: boolean | Contract$projectArgs<ExtArgs>
-    branch?: boolean | Contract$branchArgs<ExtArgs>
+    portfolio?: boolean | Contract$portfolioArgs<ExtArgs>
     createdBy?: boolean | Contract$createdByArgs<ExtArgs>
     documents?: boolean | Contract$documentsArgs<ExtArgs>
     installments?: boolean | Contract$installmentsArgs<ExtArgs>
@@ -38430,14 +37392,14 @@ export namespace Prisma {
     notes?: boolean
     clientId?: boolean
     projectId?: boolean
-    branchId?: boolean
+    portfolioId?: boolean
     createdById?: boolean
   }
 
   export type ContractInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | ClientDefaultArgs<ExtArgs>
     project?: boolean | Contract$projectArgs<ExtArgs>
-    branch?: boolean | Contract$branchArgs<ExtArgs>
+    portfolio?: boolean | Contract$portfolioArgs<ExtArgs>
     createdBy?: boolean | Contract$createdByArgs<ExtArgs>
     documents?: boolean | Contract$documentsArgs<ExtArgs>
     installments?: boolean | Contract$installmentsArgs<ExtArgs>
@@ -38449,8 +37411,8 @@ export namespace Prisma {
     objects: {
       client: Prisma.$ClientPayload<ExtArgs>
       project: Prisma.$ProjectPayload<ExtArgs> | null
-      branch: Prisma.$BranchPayload<ExtArgs> | null
-      createdBy: Prisma.$UserPayload<ExtArgs> | null
+      portfolio: Prisma.$PortfolioPayload<ExtArgs> | null
+      createdBy: Prisma.$StaffPayload<ExtArgs> | null
       documents: Prisma.$ContractDocumentPayload<ExtArgs>[]
       installments: Prisma.$ClientInstallmentPayload<ExtArgs>[]
     }
@@ -38470,7 +37432,7 @@ export namespace Prisma {
       notes: string | null
       clientId: string
       projectId: string | null
-      branchId: string | null
+      portfolioId: string | null
       createdById: string | null
     }, ExtArgs["result"]["contract"]>
     composites: {}
@@ -38814,8 +37776,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     client<T extends ClientDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ClientDefaultArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     project<T extends Contract$projectArgs<ExtArgs> = {}>(args?: Subset<T, Contract$projectArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
-    branch<T extends Contract$branchArgs<ExtArgs> = {}>(args?: Subset<T, Contract$branchArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
-    createdBy<T extends Contract$createdByArgs<ExtArgs> = {}>(args?: Subset<T, Contract$createdByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    portfolio<T extends Contract$portfolioArgs<ExtArgs> = {}>(args?: Subset<T, Contract$portfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    createdBy<T extends Contract$createdByArgs<ExtArgs> = {}>(args?: Subset<T, Contract$createdByArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     documents<T extends Contract$documentsArgs<ExtArgs> = {}>(args?: Subset<T, Contract$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContractDocumentPayload<ExtArgs>, T, "findMany"> | Null>
     installments<T extends Contract$installmentsArgs<ExtArgs> = {}>(args?: Subset<T, Contract$installmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientInstallmentPayload<ExtArgs>, T, "findMany"> | Null>
     /**
@@ -38862,7 +37824,7 @@ export namespace Prisma {
     readonly notes: FieldRef<"Contract", 'String'>
     readonly clientId: FieldRef<"Contract", 'String'>
     readonly projectId: FieldRef<"Contract", 'String'>
-    readonly branchId: FieldRef<"Contract", 'String'>
+    readonly portfolioId: FieldRef<"Contract", 'String'>
     readonly createdById: FieldRef<"Contract", 'String'>
   }
     
@@ -39178,18 +38140,18 @@ export namespace Prisma {
   }
 
   /**
-   * Contract.branch
+   * Contract.portfolio
    */
-  export type Contract$branchArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Contract$portfolioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Branch
+     * Select specific fields to fetch from the Portfolio
      */
-    select?: BranchSelect<ExtArgs> | null
+    select?: PortfolioSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BranchInclude<ExtArgs> | null
-    where?: BranchWhereInput
+    include?: PortfolioInclude<ExtArgs> | null
+    where?: PortfolioWhereInput
   }
 
   /**
@@ -39197,14 +38159,14 @@ export namespace Prisma {
    */
   export type Contract$createdByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the Staff
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: StaffSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
-    where?: UserWhereInput
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
   }
 
   /**
@@ -40554,7 +39516,7 @@ export namespace Prisma {
     name: "ContractDocument"
     objects: {
       contract: Prisma.$ContractPayload<ExtArgs>
-      uploadedBy: Prisma.$UserPayload<ExtArgs> | null
+      uploadedBy: Prisma.$StaffPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -40907,7 +39869,7 @@ export namespace Prisma {
   export interface Prisma__ContractDocumentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     contract<T extends ContractDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ContractDefaultArgs<ExtArgs>>): Prisma__ContractClient<$Result.GetResult<Prisma.$ContractPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
-    uploadedBy<T extends ContractDocument$uploadedByArgs<ExtArgs> = {}>(args?: Subset<T, ContractDocument$uploadedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    uploadedBy<T extends ContractDocument$uploadedByArgs<ExtArgs> = {}>(args?: Subset<T, ContractDocument$uploadedByArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -41249,14 +40211,14 @@ export namespace Prisma {
    */
   export type ContractDocument$uploadedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the Staff
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: StaffSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
-    where?: UserWhereInput
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
   }
 
   /**
@@ -41295,7 +40257,7 @@ export namespace Prisma {
     deadline: Date | null
     clientId: string | null
     projectId: string | null
-    branchId: string | null
+    portfolioId: string | null
     createdById: string | null
   }
 
@@ -41310,7 +40272,7 @@ export namespace Prisma {
     deadline: Date | null
     clientId: string | null
     projectId: string | null
-    branchId: string | null
+    portfolioId: string | null
     createdById: string | null
   }
 
@@ -41325,7 +40287,7 @@ export namespace Prisma {
     deadline: number
     clientId: number
     projectId: number
-    branchId: number
+    portfolioId: number
     createdById: number
     _all: number
   }
@@ -41342,7 +40304,7 @@ export namespace Prisma {
     deadline?: true
     clientId?: true
     projectId?: true
-    branchId?: true
+    portfolioId?: true
     createdById?: true
   }
 
@@ -41357,7 +40319,7 @@ export namespace Prisma {
     deadline?: true
     clientId?: true
     projectId?: true
-    branchId?: true
+    portfolioId?: true
     createdById?: true
   }
 
@@ -41372,7 +40334,7 @@ export namespace Prisma {
     deadline?: true
     clientId?: true
     projectId?: true
-    branchId?: true
+    portfolioId?: true
     createdById?: true
     _all?: true
   }
@@ -41460,7 +40422,7 @@ export namespace Prisma {
     deadline: Date | null
     clientId: string
     projectId: string | null
-    branchId: string | null
+    portfolioId: string | null
     createdById: string | null
     _count: ContentRequestCountAggregateOutputType | null
     _min: ContentRequestMinAggregateOutputType | null
@@ -41492,11 +40454,11 @@ export namespace Prisma {
     deadline?: boolean
     clientId?: boolean
     projectId?: boolean
-    branchId?: boolean
+    portfolioId?: boolean
     createdById?: boolean
     client?: boolean | ClientDefaultArgs<ExtArgs>
     project?: boolean | ContentRequest$projectArgs<ExtArgs>
-    branch?: boolean | ContentRequest$branchArgs<ExtArgs>
+    portfolio?: boolean | ContentRequest$portfolioArgs<ExtArgs>
     createdBy?: boolean | ContentRequest$createdByArgs<ExtArgs>
     assignees?: boolean | ContentRequest$assigneesArgs<ExtArgs>
     tasks?: boolean | ContentRequest$tasksArgs<ExtArgs>
@@ -41515,14 +40477,14 @@ export namespace Prisma {
     deadline?: boolean
     clientId?: boolean
     projectId?: boolean
-    branchId?: boolean
+    portfolioId?: boolean
     createdById?: boolean
   }
 
   export type ContentRequestInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | ClientDefaultArgs<ExtArgs>
     project?: boolean | ContentRequest$projectArgs<ExtArgs>
-    branch?: boolean | ContentRequest$branchArgs<ExtArgs>
+    portfolio?: boolean | ContentRequest$portfolioArgs<ExtArgs>
     createdBy?: boolean | ContentRequest$createdByArgs<ExtArgs>
     assignees?: boolean | ContentRequest$assigneesArgs<ExtArgs>
     tasks?: boolean | ContentRequest$tasksArgs<ExtArgs>
@@ -41534,8 +40496,8 @@ export namespace Prisma {
     objects: {
       client: Prisma.$ClientPayload<ExtArgs>
       project: Prisma.$ProjectPayload<ExtArgs> | null
-      branch: Prisma.$BranchPayload<ExtArgs> | null
-      createdBy: Prisma.$UserPayload<ExtArgs> | null
+      portfolio: Prisma.$PortfolioPayload<ExtArgs> | null
+      createdBy: Prisma.$StaffPayload<ExtArgs> | null
       assignees: Prisma.$ContentRequestAssigneePayload<ExtArgs>[]
       tasks: Prisma.$TaskPayload<ExtArgs>[]
     }
@@ -41550,7 +40512,7 @@ export namespace Prisma {
       deadline: Date | null
       clientId: string
       projectId: string | null
-      branchId: string | null
+      portfolioId: string | null
       createdById: string | null
     }, ExtArgs["result"]["contentRequest"]>
     composites: {}
@@ -41894,8 +40856,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     client<T extends ClientDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ClientDefaultArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     project<T extends ContentRequest$projectArgs<ExtArgs> = {}>(args?: Subset<T, ContentRequest$projectArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
-    branch<T extends ContentRequest$branchArgs<ExtArgs> = {}>(args?: Subset<T, ContentRequest$branchArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
-    createdBy<T extends ContentRequest$createdByArgs<ExtArgs> = {}>(args?: Subset<T, ContentRequest$createdByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    portfolio<T extends ContentRequest$portfolioArgs<ExtArgs> = {}>(args?: Subset<T, ContentRequest$portfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    createdBy<T extends ContentRequest$createdByArgs<ExtArgs> = {}>(args?: Subset<T, ContentRequest$createdByArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     assignees<T extends ContentRequest$assigneesArgs<ExtArgs> = {}>(args?: Subset<T, ContentRequest$assigneesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentRequestAssigneePayload<ExtArgs>, T, "findMany"> | Null>
     tasks<T extends ContentRequest$tasksArgs<ExtArgs> = {}>(args?: Subset<T, ContentRequest$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany"> | Null>
     /**
@@ -41937,7 +40899,7 @@ export namespace Prisma {
     readonly deadline: FieldRef<"ContentRequest", 'DateTime'>
     readonly clientId: FieldRef<"ContentRequest", 'String'>
     readonly projectId: FieldRef<"ContentRequest", 'String'>
-    readonly branchId: FieldRef<"ContentRequest", 'String'>
+    readonly portfolioId: FieldRef<"ContentRequest", 'String'>
     readonly createdById: FieldRef<"ContentRequest", 'String'>
   }
     
@@ -42253,18 +41215,18 @@ export namespace Prisma {
   }
 
   /**
-   * ContentRequest.branch
+   * ContentRequest.portfolio
    */
-  export type ContentRequest$branchArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ContentRequest$portfolioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Branch
+     * Select specific fields to fetch from the Portfolio
      */
-    select?: BranchSelect<ExtArgs> | null
+    select?: PortfolioSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BranchInclude<ExtArgs> | null
-    where?: BranchWhereInput
+    include?: PortfolioInclude<ExtArgs> | null
+    where?: PortfolioWhereInput
   }
 
   /**
@@ -42272,14 +41234,14 @@ export namespace Prisma {
    */
   export type ContentRequest$createdByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the Staff
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: StaffSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
-    where?: UserWhereInput
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
   }
 
   /**
@@ -42502,7 +41464,7 @@ export namespace Prisma {
     userId?: boolean
     role?: boolean
     contentRequest?: boolean | ContentRequestDefaultArgs<ExtArgs>
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | StaffDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["contentRequestAssignee"]>
 
 
@@ -42516,14 +41478,14 @@ export namespace Prisma {
 
   export type ContentRequestAssigneeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     contentRequest?: boolean | ContentRequestDefaultArgs<ExtArgs>
-    user?: boolean | UserDefaultArgs<ExtArgs>
+    user?: boolean | StaffDefaultArgs<ExtArgs>
   }
 
   export type $ContentRequestAssigneePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "ContentRequestAssignee"
     objects: {
       contentRequest: Prisma.$ContentRequestPayload<ExtArgs>
-      user: Prisma.$UserPayload<ExtArgs>
+      user: Prisma.$StaffPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -42872,7 +41834,7 @@ export namespace Prisma {
   export interface Prisma__ContentRequestAssigneeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     contentRequest<T extends ContentRequestDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ContentRequestDefaultArgs<ExtArgs>>): Prisma__ContentRequestClient<$Result.GetResult<Prisma.$ContentRequestPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
-    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    user<T extends StaffDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StaffDefaultArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -43243,7 +42205,7 @@ export namespace Prisma {
     isActive: boolean | null
     autoGenerateTasks: boolean | null
     clientId: string | null
-    branchId: string | null
+    portfolioId: string | null
   }
 
   export type RecurringScheduleMaxAggregateOutputType = {
@@ -43259,7 +42221,7 @@ export namespace Prisma {
     isActive: boolean | null
     autoGenerateTasks: boolean | null
     clientId: string | null
-    branchId: string | null
+    portfolioId: string | null
   }
 
   export type RecurringScheduleCountAggregateOutputType = {
@@ -43275,7 +42237,7 @@ export namespace Prisma {
     isActive: number
     autoGenerateTasks: number
     clientId: number
-    branchId: number
+    portfolioId: number
     _all: number
   }
 
@@ -43293,7 +42255,7 @@ export namespace Prisma {
     isActive?: true
     autoGenerateTasks?: true
     clientId?: true
-    branchId?: true
+    portfolioId?: true
   }
 
   export type RecurringScheduleMaxAggregateInputType = {
@@ -43309,7 +42271,7 @@ export namespace Prisma {
     isActive?: true
     autoGenerateTasks?: true
     clientId?: true
-    branchId?: true
+    portfolioId?: true
   }
 
   export type RecurringScheduleCountAggregateInputType = {
@@ -43325,7 +42287,7 @@ export namespace Prisma {
     isActive?: true
     autoGenerateTasks?: true
     clientId?: true
-    branchId?: true
+    portfolioId?: true
     _all?: true
   }
 
@@ -43414,7 +42376,7 @@ export namespace Prisma {
     isActive: boolean
     autoGenerateTasks: boolean
     clientId: string
-    branchId: string | null
+    portfolioId: string | null
     _count: RecurringScheduleCountAggregateOutputType | null
     _min: RecurringScheduleMinAggregateOutputType | null
     _max: RecurringScheduleMaxAggregateOutputType | null
@@ -43447,9 +42409,9 @@ export namespace Prisma {
     isActive?: boolean
     autoGenerateTasks?: boolean
     clientId?: boolean
-    branchId?: boolean
+    portfolioId?: boolean
     client?: boolean | ClientDefaultArgs<ExtArgs>
-    branch?: boolean | RecurringSchedule$branchArgs<ExtArgs>
+    portfolio?: boolean | RecurringSchedule$portfolioArgs<ExtArgs>
     steps?: boolean | RecurringSchedule$stepsArgs<ExtArgs>
     cycles?: boolean | RecurringSchedule$cyclesArgs<ExtArgs>
     _count?: boolean | RecurringScheduleCountOutputTypeDefaultArgs<ExtArgs>
@@ -43469,12 +42431,12 @@ export namespace Prisma {
     isActive?: boolean
     autoGenerateTasks?: boolean
     clientId?: boolean
-    branchId?: boolean
+    portfolioId?: boolean
   }
 
   export type RecurringScheduleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | ClientDefaultArgs<ExtArgs>
-    branch?: boolean | RecurringSchedule$branchArgs<ExtArgs>
+    portfolio?: boolean | RecurringSchedule$portfolioArgs<ExtArgs>
     steps?: boolean | RecurringSchedule$stepsArgs<ExtArgs>
     cycles?: boolean | RecurringSchedule$cyclesArgs<ExtArgs>
     _count?: boolean | RecurringScheduleCountOutputTypeDefaultArgs<ExtArgs>
@@ -43484,7 +42446,7 @@ export namespace Prisma {
     name: "RecurringSchedule"
     objects: {
       client: Prisma.$ClientPayload<ExtArgs>
-      branch: Prisma.$BranchPayload<ExtArgs> | null
+      portfolio: Prisma.$PortfolioPayload<ExtArgs> | null
       steps: Prisma.$RecurringScheduleStepPayload<ExtArgs>[]
       cycles: Prisma.$ContentCyclePayload<ExtArgs>[]
     }
@@ -43501,7 +42463,7 @@ export namespace Prisma {
       isActive: boolean
       autoGenerateTasks: boolean
       clientId: string
-      branchId: string | null
+      portfolioId: string | null
     }, ExtArgs["result"]["recurringSchedule"]>
     composites: {}
   }
@@ -43843,7 +42805,7 @@ export namespace Prisma {
   export interface Prisma__RecurringScheduleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     client<T extends ClientDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ClientDefaultArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
-    branch<T extends RecurringSchedule$branchArgs<ExtArgs> = {}>(args?: Subset<T, RecurringSchedule$branchArgs<ExtArgs>>): Prisma__BranchClient<$Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    portfolio<T extends RecurringSchedule$portfolioArgs<ExtArgs> = {}>(args?: Subset<T, RecurringSchedule$portfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     steps<T extends RecurringSchedule$stepsArgs<ExtArgs> = {}>(args?: Subset<T, RecurringSchedule$stepsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecurringScheduleStepPayload<ExtArgs>, T, "findMany"> | Null>
     cycles<T extends RecurringSchedule$cyclesArgs<ExtArgs> = {}>(args?: Subset<T, RecurringSchedule$cyclesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentCyclePayload<ExtArgs>, T, "findMany"> | Null>
     /**
@@ -43887,7 +42849,7 @@ export namespace Prisma {
     readonly isActive: FieldRef<"RecurringSchedule", 'Boolean'>
     readonly autoGenerateTasks: FieldRef<"RecurringSchedule", 'Boolean'>
     readonly clientId: FieldRef<"RecurringSchedule", 'String'>
-    readonly branchId: FieldRef<"RecurringSchedule", 'String'>
+    readonly portfolioId: FieldRef<"RecurringSchedule", 'String'>
   }
     
 
@@ -44187,18 +43149,18 @@ export namespace Prisma {
   }
 
   /**
-   * RecurringSchedule.branch
+   * RecurringSchedule.portfolio
    */
-  export type RecurringSchedule$branchArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type RecurringSchedule$portfolioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Branch
+     * Select specific fields to fetch from the Portfolio
      */
-    select?: BranchSelect<ExtArgs> | null
+    select?: PortfolioSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: BranchInclude<ExtArgs> | null
-    where?: BranchWhereInput
+    include?: PortfolioInclude<ExtArgs> | null
+    where?: PortfolioWhereInput
   }
 
   /**
@@ -44292,7 +43254,6 @@ export namespace Prisma {
     stepOrder: number | null
     label: string | null
     contentType: $Enums.ContentType | null
-    department: string | null
     supervisor: string | null
     assigneeId: string | null
     templateId: string | null
@@ -44308,7 +43269,6 @@ export namespace Prisma {
     stepOrder: number | null
     label: string | null
     contentType: $Enums.ContentType | null
-    department: string | null
     supervisor: string | null
     assigneeId: string | null
     templateId: string | null
@@ -44324,7 +43284,6 @@ export namespace Prisma {
     stepOrder: number
     label: number
     contentType: number
-    department: number
     supervisor: number
     assigneeId: number
     templateId: number
@@ -44356,7 +43315,6 @@ export namespace Prisma {
     stepOrder?: true
     label?: true
     contentType?: true
-    department?: true
     supervisor?: true
     assigneeId?: true
     templateId?: true
@@ -44372,7 +43330,6 @@ export namespace Prisma {
     stepOrder?: true
     label?: true
     contentType?: true
-    department?: true
     supervisor?: true
     assigneeId?: true
     templateId?: true
@@ -44388,7 +43345,6 @@ export namespace Prisma {
     stepOrder?: true
     label?: true
     contentType?: true
-    department?: true
     supervisor?: true
     assigneeId?: true
     templateId?: true
@@ -44491,7 +43447,6 @@ export namespace Prisma {
     stepOrder: number
     label: string
     contentType: $Enums.ContentType | null
-    department: string | null
     supervisor: string
     assigneeId: string | null
     templateId: string | null
@@ -44526,7 +43481,6 @@ export namespace Prisma {
     stepOrder?: boolean
     label?: boolean
     contentType?: boolean
-    department?: boolean
     supervisor?: boolean
     assigneeId?: boolean
     templateId?: boolean
@@ -44548,7 +43502,6 @@ export namespace Prisma {
     stepOrder?: boolean
     label?: boolean
     contentType?: boolean
-    department?: boolean
     supervisor?: boolean
     assigneeId?: boolean
     templateId?: boolean
@@ -44566,7 +43519,7 @@ export namespace Prisma {
     name: "RecurringScheduleStep"
     objects: {
       schedule: Prisma.$RecurringSchedulePayload<ExtArgs>
-      assignee: Prisma.$UserPayload<ExtArgs> | null
+      assignee: Prisma.$StaffPayload<ExtArgs> | null
       template: Prisma.$WorkflowTemplatePayload<ExtArgs> | null
       occurrences: Prisma.$RecurringTaskOccurrencePayload<ExtArgs>[]
     }
@@ -44580,7 +43533,6 @@ export namespace Prisma {
       stepOrder: number
       label: string
       contentType: $Enums.ContentType | null
-      department: string | null
       supervisor: string
       assigneeId: string | null
       templateId: string | null
@@ -44925,7 +43877,7 @@ export namespace Prisma {
   export interface Prisma__RecurringScheduleStepClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     schedule<T extends RecurringScheduleDefaultArgs<ExtArgs> = {}>(args?: Subset<T, RecurringScheduleDefaultArgs<ExtArgs>>): Prisma__RecurringScheduleClient<$Result.GetResult<Prisma.$RecurringSchedulePayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
-    assignee<T extends RecurringScheduleStep$assigneeArgs<ExtArgs> = {}>(args?: Subset<T, RecurringScheduleStep$assigneeArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    assignee<T extends RecurringScheduleStep$assigneeArgs<ExtArgs> = {}>(args?: Subset<T, RecurringScheduleStep$assigneeArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     template<T extends RecurringScheduleStep$templateArgs<ExtArgs> = {}>(args?: Subset<T, RecurringScheduleStep$templateArgs<ExtArgs>>): Prisma__WorkflowTemplateClient<$Result.GetResult<Prisma.$WorkflowTemplatePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     occurrences<T extends RecurringScheduleStep$occurrencesArgs<ExtArgs> = {}>(args?: Subset<T, RecurringScheduleStep$occurrencesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecurringTaskOccurrencePayload<ExtArgs>, T, "findMany"> | Null>
     /**
@@ -44966,7 +43918,6 @@ export namespace Prisma {
     readonly stepOrder: FieldRef<"RecurringScheduleStep", 'Int'>
     readonly label: FieldRef<"RecurringScheduleStep", 'String'>
     readonly contentType: FieldRef<"RecurringScheduleStep", 'ContentType'>
-    readonly department: FieldRef<"RecurringScheduleStep", 'String'>
     readonly supervisor: FieldRef<"RecurringScheduleStep", 'String'>
     readonly assigneeId: FieldRef<"RecurringScheduleStep", 'String'>
     readonly templateId: FieldRef<"RecurringScheduleStep", 'String'>
@@ -45273,14 +44224,14 @@ export namespace Prisma {
    */
   export type RecurringScheduleStep$assigneeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the User
+     * Select specific fields to fetch from the Staff
      */
-    select?: UserSelect<ExtArgs> | null
+    select?: StaffSelect<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UserInclude<ExtArgs> | null
-    where?: UserWhereInput
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
   }
 
   /**
@@ -48216,7 +47167,6 @@ export namespace Prisma {
     stepOrder: number | null
     taskName: string | null
     description: string | null
-    department: string | null
     defaultPriority: $Enums.TaskPriority | null
     estimatedDays: number | null
     workflowStage: $Enums.WorkflowStage | null
@@ -48229,7 +47179,6 @@ export namespace Prisma {
     stepOrder: number | null
     taskName: string | null
     description: string | null
-    department: string | null
     defaultPriority: $Enums.TaskPriority | null
     estimatedDays: number | null
     workflowStage: $Enums.WorkflowStage | null
@@ -48242,7 +47191,6 @@ export namespace Prisma {
     stepOrder: number
     taskName: number
     description: number
-    department: number
     defaultPriority: number
     estimatedDays: number
     workflowStage: number
@@ -48267,7 +47215,6 @@ export namespace Prisma {
     stepOrder?: true
     taskName?: true
     description?: true
-    department?: true
     defaultPriority?: true
     estimatedDays?: true
     workflowStage?: true
@@ -48280,7 +47227,6 @@ export namespace Prisma {
     stepOrder?: true
     taskName?: true
     description?: true
-    department?: true
     defaultPriority?: true
     estimatedDays?: true
     workflowStage?: true
@@ -48293,7 +47239,6 @@ export namespace Prisma {
     stepOrder?: true
     taskName?: true
     description?: true
-    department?: true
     defaultPriority?: true
     estimatedDays?: true
     workflowStage?: true
@@ -48393,7 +47338,6 @@ export namespace Prisma {
     stepOrder: number
     taskName: string
     description: string | null
-    department: string | null
     defaultPriority: $Enums.TaskPriority
     estimatedDays: number | null
     workflowStage: $Enums.WorkflowStage
@@ -48425,7 +47369,6 @@ export namespace Prisma {
     stepOrder?: boolean
     taskName?: boolean
     description?: boolean
-    department?: boolean
     defaultPriority?: boolean
     estimatedDays?: boolean
     workflowStage?: boolean
@@ -48442,7 +47385,6 @@ export namespace Prisma {
     stepOrder?: boolean
     taskName?: boolean
     description?: boolean
-    department?: boolean
     defaultPriority?: boolean
     estimatedDays?: boolean
     workflowStage?: boolean
@@ -48467,7 +47409,6 @@ export namespace Prisma {
       stepOrder: number
       taskName: string
       description: string | null
-      department: string | null
       defaultPriority: $Enums.TaskPriority
       estimatedDays: number | null
       workflowStage: $Enums.WorkflowStage
@@ -48848,7 +47789,6 @@ export namespace Prisma {
     readonly stepOrder: FieldRef<"WorkflowTemplateStep", 'Int'>
     readonly taskName: FieldRef<"WorkflowTemplateStep", 'String'>
     readonly description: FieldRef<"WorkflowTemplateStep", 'String'>
-    readonly department: FieldRef<"WorkflowTemplateStep", 'String'>
     readonly defaultPriority: FieldRef<"WorkflowTemplateStep", 'TaskPriority'>
     readonly estimatedDays: FieldRef<"WorkflowTemplateStep", 'Int'>
     readonly workflowStage: FieldRef<"WorkflowTemplateStep", 'WorkflowStage'>
@@ -49211,7 +48151,7 @@ export namespace Prisma {
   export type RoleScalarFieldEnum = (typeof RoleScalarFieldEnum)[keyof typeof RoleScalarFieldEnum]
 
 
-  export const UserScalarFieldEnum: {
+  export const StaffScalarFieldEnum: {
     id: 'id',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -49221,8 +48161,7 @@ export namespace Prisma {
     image: 'image',
     gender: 'gender',
     salary: 'salary',
-    department: 'department',
-    branchId: 'branchId',
+    portfolioId: 'portfolioId',
     roleId: 'roleId',
     role: 'role',
     banned: 'banned',
@@ -49230,7 +48169,7 @@ export namespace Prisma {
     banExpires: 'banExpires'
   };
 
-  export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+  export type StaffScalarFieldEnum = (typeof StaffScalarFieldEnum)[keyof typeof StaffScalarFieldEnum]
 
 
   export const SessionScalarFieldEnum: {
@@ -49297,7 +48236,7 @@ export namespace Prisma {
     notes: 'notes',
     isActive: 'isActive',
     isDraft: 'isDraft',
-    branchId: 'branchId',
+    portfolioId: 'portfolioId',
     accountManagerId: 'accountManagerId'
   };
 
@@ -49308,7 +48247,7 @@ export namespace Prisma {
     id: 'id',
     serviceName: 'serviceName',
     description: 'description',
-    branchId: 'branchId'
+    portfolioId: 'portfolioId'
   };
 
   export type ServiceScalarFieldEnum = (typeof ServiceScalarFieldEnum)[keyof typeof ServiceScalarFieldEnum]
@@ -49324,7 +48263,7 @@ export namespace Prisma {
   export type SubServiceScalarFieldEnum = (typeof SubServiceScalarFieldEnum)[keyof typeof SubServiceScalarFieldEnum]
 
 
-  export const BranchScalarFieldEnum: {
+  export const PortfolioScalarFieldEnum: {
     id: 'id',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -49343,20 +48282,7 @@ export namespace Prisma {
     isActive: 'isActive'
   };
 
-  export type BranchScalarFieldEnum = (typeof BranchScalarFieldEnum)[keyof typeof BranchScalarFieldEnum]
-
-
-  export const DepartmentScalarFieldEnum: {
-    id: 'id',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
-    name: 'name',
-    description: 'description',
-    isActive: 'isActive',
-    branchId: 'branchId'
-  };
-
-  export type DepartmentScalarFieldEnum = (typeof DepartmentScalarFieldEnum)[keyof typeof DepartmentScalarFieldEnum]
+  export type PortfolioScalarFieldEnum = (typeof PortfolioScalarFieldEnum)[keyof typeof PortfolioScalarFieldEnum]
 
 
   export const ClientSubServiceScalarFieldEnum: {
@@ -49385,7 +48311,6 @@ export namespace Prisma {
     description: 'description',
     status: 'status',
     priority: 'priority',
-    department: 'department',
     deadline: 'deadline',
     progress: 'progress',
     workflowStage: 'workflowStage',
@@ -49664,7 +48589,7 @@ export namespace Prisma {
     startDate: 'startDate',
     dueDate: 'dueDate',
     clientId: 'clientId',
-    branchId: 'branchId',
+    portfolioId: 'portfolioId',
     createdById: 'createdById'
   };
 
@@ -49687,7 +48612,7 @@ export namespace Prisma {
     notes: 'notes',
     clientId: 'clientId',
     projectId: 'projectId',
-    branchId: 'branchId',
+    portfolioId: 'portfolioId',
     createdById: 'createdById'
   };
 
@@ -49739,7 +48664,7 @@ export namespace Prisma {
     deadline: 'deadline',
     clientId: 'clientId',
     projectId: 'projectId',
-    branchId: 'branchId',
+    portfolioId: 'portfolioId',
     createdById: 'createdById'
   };
 
@@ -49770,7 +48695,7 @@ export namespace Prisma {
     isActive: 'isActive',
     autoGenerateTasks: 'autoGenerateTasks',
     clientId: 'clientId',
-    branchId: 'branchId'
+    portfolioId: 'portfolioId'
   };
 
   export type RecurringScheduleScalarFieldEnum = (typeof RecurringScheduleScalarFieldEnum)[keyof typeof RecurringScheduleScalarFieldEnum]
@@ -49786,7 +48711,6 @@ export namespace Prisma {
     stepOrder: 'stepOrder',
     label: 'label',
     contentType: 'contentType',
-    department: 'department',
     supervisor: 'supervisor',
     assigneeId: 'assigneeId',
     templateId: 'templateId'
@@ -49843,7 +48767,6 @@ export namespace Prisma {
     stepOrder: 'stepOrder',
     taskName: 'taskName',
     description: 'description',
-    department: 'department',
     defaultPriority: 'defaultPriority',
     estimatedDays: 'estimatedDays',
     workflowStage: 'workflowStage'
@@ -50019,7 +48942,7 @@ export namespace Prisma {
     isActive?: BoolFilter<"Role"> | boolean
     createdAt?: DateTimeFilter<"Role"> | Date | string
     updatedAt?: DateTimeFilter<"Role"> | Date | string
-    users?: UserListRelationFilter
+    users?: StaffListRelationFilter
     menuAccess?: RoleMenuAccessListRelationFilter
   }
 
@@ -50030,7 +48953,7 @@ export namespace Prisma {
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    users?: UserOrderByRelationAggregateInput
+    users?: StaffOrderByRelationAggregateInput
     menuAccess?: RoleMenuAccessOrderByRelationAggregateInput
   }
 
@@ -50044,7 +48967,7 @@ export namespace Prisma {
     isActive?: BoolFilter<"Role"> | boolean
     createdAt?: DateTimeFilter<"Role"> | Date | string
     updatedAt?: DateTimeFilter<"Role"> | Date | string
-    users?: UserListRelationFilter
+    users?: StaffListRelationFilter
     menuAccess?: RoleMenuAccessListRelationFilter
   }, "id" | "name">
 
@@ -50072,27 +48995,26 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Role"> | Date | string
   }
 
-  export type UserWhereInput = {
-    AND?: UserWhereInput | UserWhereInput[]
-    OR?: UserWhereInput[]
-    NOT?: UserWhereInput | UserWhereInput[]
-    id?: StringFilter<"User"> | string
-    createdAt?: DateTimeFilter<"User"> | Date | string
-    updatedAt?: DateTimeFilter<"User"> | Date | string
-    name?: StringFilter<"User"> | string
-    email?: StringFilter<"User"> | string
-    emailVerified?: BoolFilter<"User"> | boolean
-    image?: StringNullableFilter<"User"> | string | null
-    gender?: StringNullableFilter<"User"> | string | null
-    salary?: StringNullableFilter<"User"> | string | null
-    department?: StringNullableFilter<"User"> | string | null
-    branchId?: StringNullableFilter<"User"> | string | null
-    roleId?: StringNullableFilter<"User"> | string | null
-    role?: StringNullableFilter<"User"> | string | null
-    banned?: BoolNullableFilter<"User"> | boolean | null
-    banReason?: StringNullableFilter<"User"> | string | null
-    banExpires?: DateTimeNullableFilter<"User"> | Date | string | null
-    branch?: XOR<BranchNullableRelationFilter, BranchWhereInput> | null
+  export type StaffWhereInput = {
+    AND?: StaffWhereInput | StaffWhereInput[]
+    OR?: StaffWhereInput[]
+    NOT?: StaffWhereInput | StaffWhereInput[]
+    id?: StringFilter<"Staff"> | string
+    createdAt?: DateTimeFilter<"Staff"> | Date | string
+    updatedAt?: DateTimeFilter<"Staff"> | Date | string
+    name?: StringFilter<"Staff"> | string
+    email?: StringFilter<"Staff"> | string
+    emailVerified?: BoolFilter<"Staff"> | boolean
+    image?: StringNullableFilter<"Staff"> | string | null
+    gender?: StringNullableFilter<"Staff"> | string | null
+    salary?: StringNullableFilter<"Staff"> | string | null
+    portfolioId?: StringNullableFilter<"Staff"> | string | null
+    roleId?: StringNullableFilter<"Staff"> | string | null
+    role?: StringNullableFilter<"Staff"> | string | null
+    banned?: BoolNullableFilter<"Staff"> | boolean | null
+    banReason?: StringNullableFilter<"Staff"> | string | null
+    banExpires?: DateTimeNullableFilter<"Staff"> | Date | string | null
+    portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
     sessions?: SessionListRelationFilter
     accounts?: AccountListRelationFilter
     assignedTasks?: TaskListRelationFilter
@@ -50112,7 +49034,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentListRelationFilter
   }
 
-  export type UserOrderByWithRelationInput = {
+  export type StaffOrderByWithRelationInput = {
     id?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -50122,14 +49044,13 @@ export namespace Prisma {
     image?: SortOrderInput | SortOrder
     gender?: SortOrderInput | SortOrder
     salary?: SortOrderInput | SortOrder
-    department?: SortOrderInput | SortOrder
-    branchId?: SortOrderInput | SortOrder
+    portfolioId?: SortOrderInput | SortOrder
     roleId?: SortOrderInput | SortOrder
     role?: SortOrderInput | SortOrder
     banned?: SortOrderInput | SortOrder
     banReason?: SortOrderInput | SortOrder
     banExpires?: SortOrderInput | SortOrder
-    branch?: BranchOrderByWithRelationInput
+    portfolio?: PortfolioOrderByWithRelationInput
     sessions?: SessionOrderByRelationAggregateInput
     accounts?: AccountOrderByRelationAggregateInput
     assignedTasks?: TaskOrderByRelationAggregateInput
@@ -50149,27 +49070,26 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentOrderByRelationAggregateInput
   }
 
-  export type UserWhereUniqueInput = Prisma.AtLeast<{
+  export type StaffWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     email?: string
-    AND?: UserWhereInput | UserWhereInput[]
-    OR?: UserWhereInput[]
-    NOT?: UserWhereInput | UserWhereInput[]
-    createdAt?: DateTimeFilter<"User"> | Date | string
-    updatedAt?: DateTimeFilter<"User"> | Date | string
-    name?: StringFilter<"User"> | string
-    emailVerified?: BoolFilter<"User"> | boolean
-    image?: StringNullableFilter<"User"> | string | null
-    gender?: StringNullableFilter<"User"> | string | null
-    salary?: StringNullableFilter<"User"> | string | null
-    department?: StringNullableFilter<"User"> | string | null
-    branchId?: StringNullableFilter<"User"> | string | null
-    roleId?: StringNullableFilter<"User"> | string | null
-    role?: StringNullableFilter<"User"> | string | null
-    banned?: BoolNullableFilter<"User"> | boolean | null
-    banReason?: StringNullableFilter<"User"> | string | null
-    banExpires?: DateTimeNullableFilter<"User"> | Date | string | null
-    branch?: XOR<BranchNullableRelationFilter, BranchWhereInput> | null
+    AND?: StaffWhereInput | StaffWhereInput[]
+    OR?: StaffWhereInput[]
+    NOT?: StaffWhereInput | StaffWhereInput[]
+    createdAt?: DateTimeFilter<"Staff"> | Date | string
+    updatedAt?: DateTimeFilter<"Staff"> | Date | string
+    name?: StringFilter<"Staff"> | string
+    emailVerified?: BoolFilter<"Staff"> | boolean
+    image?: StringNullableFilter<"Staff"> | string | null
+    gender?: StringNullableFilter<"Staff"> | string | null
+    salary?: StringNullableFilter<"Staff"> | string | null
+    portfolioId?: StringNullableFilter<"Staff"> | string | null
+    roleId?: StringNullableFilter<"Staff"> | string | null
+    role?: StringNullableFilter<"Staff"> | string | null
+    banned?: BoolNullableFilter<"Staff"> | boolean | null
+    banReason?: StringNullableFilter<"Staff"> | string | null
+    banExpires?: DateTimeNullableFilter<"Staff"> | Date | string | null
+    portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
     sessions?: SessionListRelationFilter
     accounts?: AccountListRelationFilter
     assignedTasks?: TaskListRelationFilter
@@ -50189,7 +49109,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentListRelationFilter
   }, "id" | "email">
 
-  export type UserOrderByWithAggregationInput = {
+  export type StaffOrderByWithAggregationInput = {
     id?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -50199,38 +49119,36 @@ export namespace Prisma {
     image?: SortOrderInput | SortOrder
     gender?: SortOrderInput | SortOrder
     salary?: SortOrderInput | SortOrder
-    department?: SortOrderInput | SortOrder
-    branchId?: SortOrderInput | SortOrder
+    portfolioId?: SortOrderInput | SortOrder
     roleId?: SortOrderInput | SortOrder
     role?: SortOrderInput | SortOrder
     banned?: SortOrderInput | SortOrder
     banReason?: SortOrderInput | SortOrder
     banExpires?: SortOrderInput | SortOrder
-    _count?: UserCountOrderByAggregateInput
-    _max?: UserMaxOrderByAggregateInput
-    _min?: UserMinOrderByAggregateInput
+    _count?: StaffCountOrderByAggregateInput
+    _max?: StaffMaxOrderByAggregateInput
+    _min?: StaffMinOrderByAggregateInput
   }
 
-  export type UserScalarWhereWithAggregatesInput = {
-    AND?: UserScalarWhereWithAggregatesInput | UserScalarWhereWithAggregatesInput[]
-    OR?: UserScalarWhereWithAggregatesInput[]
-    NOT?: UserScalarWhereWithAggregatesInput | UserScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"User"> | string
-    createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
-    name?: StringWithAggregatesFilter<"User"> | string
-    email?: StringWithAggregatesFilter<"User"> | string
-    emailVerified?: BoolWithAggregatesFilter<"User"> | boolean
-    image?: StringNullableWithAggregatesFilter<"User"> | string | null
-    gender?: StringNullableWithAggregatesFilter<"User"> | string | null
-    salary?: StringNullableWithAggregatesFilter<"User"> | string | null
-    department?: StringNullableWithAggregatesFilter<"User"> | string | null
-    branchId?: StringNullableWithAggregatesFilter<"User"> | string | null
-    roleId?: StringNullableWithAggregatesFilter<"User"> | string | null
-    role?: StringNullableWithAggregatesFilter<"User"> | string | null
-    banned?: BoolNullableWithAggregatesFilter<"User"> | boolean | null
-    banReason?: StringNullableWithAggregatesFilter<"User"> | string | null
-    banExpires?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  export type StaffScalarWhereWithAggregatesInput = {
+    AND?: StaffScalarWhereWithAggregatesInput | StaffScalarWhereWithAggregatesInput[]
+    OR?: StaffScalarWhereWithAggregatesInput[]
+    NOT?: StaffScalarWhereWithAggregatesInput | StaffScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Staff"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Staff"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Staff"> | Date | string
+    name?: StringWithAggregatesFilter<"Staff"> | string
+    email?: StringWithAggregatesFilter<"Staff"> | string
+    emailVerified?: BoolWithAggregatesFilter<"Staff"> | boolean
+    image?: StringNullableWithAggregatesFilter<"Staff"> | string | null
+    gender?: StringNullableWithAggregatesFilter<"Staff"> | string | null
+    salary?: StringNullableWithAggregatesFilter<"Staff"> | string | null
+    portfolioId?: StringNullableWithAggregatesFilter<"Staff"> | string | null
+    roleId?: StringNullableWithAggregatesFilter<"Staff"> | string | null
+    role?: StringNullableWithAggregatesFilter<"Staff"> | string | null
+    banned?: BoolNullableWithAggregatesFilter<"Staff"> | boolean | null
+    banReason?: StringNullableWithAggregatesFilter<"Staff"> | string | null
+    banExpires?: DateTimeNullableWithAggregatesFilter<"Staff"> | Date | string | null
   }
 
   export type SessionWhereInput = {
@@ -50246,7 +49164,7 @@ export namespace Prisma {
     userAgent?: StringNullableFilter<"Session"> | string | null
     userId?: StringFilter<"Session"> | string
     impersonatedBy?: StringNullableFilter<"Session"> | string | null
-    user?: XOR<UserRelationFilter, UserWhereInput>
+    user?: XOR<StaffRelationFilter, StaffWhereInput>
   }
 
   export type SessionOrderByWithRelationInput = {
@@ -50259,7 +49177,7 @@ export namespace Prisma {
     userAgent?: SortOrderInput | SortOrder
     userId?: SortOrder
     impersonatedBy?: SortOrderInput | SortOrder
-    user?: UserOrderByWithRelationInput
+    user?: StaffOrderByWithRelationInput
   }
 
   export type SessionWhereUniqueInput = Prisma.AtLeast<{
@@ -50275,7 +49193,7 @@ export namespace Prisma {
     userAgent?: StringNullableFilter<"Session"> | string | null
     userId?: StringFilter<"Session"> | string
     impersonatedBy?: StringNullableFilter<"Session"> | string | null
-    user?: XOR<UserRelationFilter, UserWhereInput>
+    user?: XOR<StaffRelationFilter, StaffWhereInput>
   }, "id" | "token">
 
   export type SessionOrderByWithAggregationInput = {
@@ -50325,7 +49243,7 @@ export namespace Prisma {
     refreshTokenExpiresAt?: DateTimeNullableFilter<"Account"> | Date | string | null
     scope?: StringNullableFilter<"Account"> | string | null
     password?: StringNullableFilter<"Account"> | string | null
-    user?: XOR<UserRelationFilter, UserWhereInput>
+    user?: XOR<StaffRelationFilter, StaffWhereInput>
   }
 
   export type AccountOrderByWithRelationInput = {
@@ -50342,7 +49260,7 @@ export namespace Prisma {
     refreshTokenExpiresAt?: SortOrderInput | SortOrder
     scope?: SortOrderInput | SortOrder
     password?: SortOrderInput | SortOrder
-    user?: UserOrderByWithRelationInput
+    user?: StaffOrderByWithRelationInput
   }
 
   export type AccountWhereUniqueInput = Prisma.AtLeast<{
@@ -50362,7 +49280,7 @@ export namespace Prisma {
     refreshTokenExpiresAt?: DateTimeNullableFilter<"Account"> | Date | string | null
     scope?: StringNullableFilter<"Account"> | string | null
     password?: StringNullableFilter<"Account"> | string | null
-    user?: XOR<UserRelationFilter, UserWhereInput>
+    user?: XOR<StaffRelationFilter, StaffWhereInput>
   }, "id">
 
   export type AccountOrderByWithAggregationInput = {
@@ -50481,10 +49399,10 @@ export namespace Prisma {
     notes?: StringNullableFilter<"Client"> | string | null
     isActive?: BoolFilter<"Client"> | boolean
     isDraft?: BoolFilter<"Client"> | boolean
-    branchId?: StringNullableFilter<"Client"> | string | null
+    portfolioId?: StringNullableFilter<"Client"> | string | null
     accountManagerId?: StringNullableFilter<"Client"> | string | null
-    branch?: XOR<BranchNullableRelationFilter, BranchWhereInput> | null
-    accountManager?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
+    accountManager?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     clientService?: ClientServiceListRelationFilter
     clientTask?: ClientTaskListRelationFilter
     clientSubService?: ClientSubServiceListRelationFilter
@@ -50515,10 +49433,10 @@ export namespace Prisma {
     notes?: SortOrderInput | SortOrder
     isActive?: SortOrder
     isDraft?: SortOrder
-    branchId?: SortOrderInput | SortOrder
+    portfolioId?: SortOrderInput | SortOrder
     accountManagerId?: SortOrderInput | SortOrder
-    branch?: BranchOrderByWithRelationInput
-    accountManager?: UserOrderByWithRelationInput
+    portfolio?: PortfolioOrderByWithRelationInput
+    accountManager?: StaffOrderByWithRelationInput
     clientService?: ClientServiceOrderByRelationAggregateInput
     clientTask?: ClientTaskOrderByRelationAggregateInput
     clientSubService?: ClientSubServiceOrderByRelationAggregateInput
@@ -50552,10 +49470,10 @@ export namespace Prisma {
     notes?: StringNullableFilter<"Client"> | string | null
     isActive?: BoolFilter<"Client"> | boolean
     isDraft?: BoolFilter<"Client"> | boolean
-    branchId?: StringNullableFilter<"Client"> | string | null
+    portfolioId?: StringNullableFilter<"Client"> | string | null
     accountManagerId?: StringNullableFilter<"Client"> | string | null
-    branch?: XOR<BranchNullableRelationFilter, BranchWhereInput> | null
-    accountManager?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
+    accountManager?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     clientService?: ClientServiceListRelationFilter
     clientTask?: ClientTaskListRelationFilter
     clientSubService?: ClientSubServiceListRelationFilter
@@ -50586,7 +49504,7 @@ export namespace Prisma {
     notes?: SortOrderInput | SortOrder
     isActive?: SortOrder
     isDraft?: SortOrder
-    branchId?: SortOrderInput | SortOrder
+    portfolioId?: SortOrderInput | SortOrder
     accountManagerId?: SortOrderInput | SortOrder
     _count?: ClientCountOrderByAggregateInput
     _avg?: ClientAvgOrderByAggregateInput
@@ -50616,7 +49534,7 @@ export namespace Prisma {
     notes?: StringNullableWithAggregatesFilter<"Client"> | string | null
     isActive?: BoolWithAggregatesFilter<"Client"> | boolean
     isDraft?: BoolWithAggregatesFilter<"Client"> | boolean
-    branchId?: StringNullableWithAggregatesFilter<"Client"> | string | null
+    portfolioId?: StringNullableWithAggregatesFilter<"Client"> | string | null
     accountManagerId?: StringNullableWithAggregatesFilter<"Client"> | string | null
   }
 
@@ -50627,8 +49545,8 @@ export namespace Prisma {
     id?: StringFilter<"Service"> | string
     serviceName?: StringFilter<"Service"> | string
     description?: StringNullableFilter<"Service"> | string | null
-    branchId?: StringNullableFilter<"Service"> | string | null
-    branch?: XOR<BranchNullableRelationFilter, BranchWhereInput> | null
+    portfolioId?: StringNullableFilter<"Service"> | string | null
+    portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
     clientService?: ClientServiceListRelationFilter
     subService?: SubServiceListRelationFilter
     serviceAgreements?: IncomeServiceAgreementListRelationFilter
@@ -50638,8 +49556,8 @@ export namespace Prisma {
     id?: SortOrder
     serviceName?: SortOrder
     description?: SortOrderInput | SortOrder
-    branchId?: SortOrderInput | SortOrder
-    branch?: BranchOrderByWithRelationInput
+    portfolioId?: SortOrderInput | SortOrder
+    portfolio?: PortfolioOrderByWithRelationInput
     clientService?: ClientServiceOrderByRelationAggregateInput
     subService?: SubServiceOrderByRelationAggregateInput
     serviceAgreements?: IncomeServiceAgreementOrderByRelationAggregateInput
@@ -50647,24 +49565,24 @@ export namespace Prisma {
 
   export type ServiceWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    serviceName_branchId?: ServiceServiceNameBranchIdCompoundUniqueInput
+    serviceName_portfolioId?: ServiceServiceNamePortfolioIdCompoundUniqueInput
     AND?: ServiceWhereInput | ServiceWhereInput[]
     OR?: ServiceWhereInput[]
     NOT?: ServiceWhereInput | ServiceWhereInput[]
     serviceName?: StringFilter<"Service"> | string
     description?: StringNullableFilter<"Service"> | string | null
-    branchId?: StringNullableFilter<"Service"> | string | null
-    branch?: XOR<BranchNullableRelationFilter, BranchWhereInput> | null
+    portfolioId?: StringNullableFilter<"Service"> | string | null
+    portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
     clientService?: ClientServiceListRelationFilter
     subService?: SubServiceListRelationFilter
     serviceAgreements?: IncomeServiceAgreementListRelationFilter
-  }, "id" | "serviceName_branchId">
+  }, "id" | "serviceName_portfolioId">
 
   export type ServiceOrderByWithAggregationInput = {
     id?: SortOrder
     serviceName?: SortOrder
     description?: SortOrderInput | SortOrder
-    branchId?: SortOrderInput | SortOrder
+    portfolioId?: SortOrderInput | SortOrder
     _count?: ServiceCountOrderByAggregateInput
     _max?: ServiceMaxOrderByAggregateInput
     _min?: ServiceMinOrderByAggregateInput
@@ -50677,7 +49595,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Service"> | string
     serviceName?: StringWithAggregatesFilter<"Service"> | string
     description?: StringNullableWithAggregatesFilter<"Service"> | string | null
-    branchId?: StringNullableWithAggregatesFilter<"Service"> | string | null
+    portfolioId?: StringNullableWithAggregatesFilter<"Service"> | string | null
   }
 
   export type SubServiceWhereInput = {
@@ -50737,29 +49655,28 @@ export namespace Prisma {
     categoryId?: StringWithAggregatesFilter<"SubService"> | string
   }
 
-  export type BranchWhereInput = {
-    AND?: BranchWhereInput | BranchWhereInput[]
-    OR?: BranchWhereInput[]
-    NOT?: BranchWhereInput | BranchWhereInput[]
-    id?: StringFilter<"Branch"> | string
-    createdAt?: DateTimeFilter<"Branch"> | Date | string
-    updatedAt?: DateTimeFilter<"Branch"> | Date | string
-    name?: StringFilter<"Branch"> | string
-    slug?: StringNullableFilter<"Branch"> | string | null
-    description?: StringNullableFilter<"Branch"> | string | null
-    location?: StringNullableFilter<"Branch"> | string | null
-    phone?: StringNullableFilter<"Branch"> | string | null
-    logoUrl?: StringNullableFilter<"Branch"> | string | null
-    iconLogoUrl?: StringNullableFilter<"Branch"> | string | null
-    usesRootLogin?: BoolFilter<"Branch"> | boolean
-    slugClearedOnce?: BoolFilter<"Branch"> | boolean
-    primaryColor?: StringFilter<"Branch"> | string
-    secondaryColor?: StringFilter<"Branch"> | string
-    customDomain?: StringNullableFilter<"Branch"> | string | null
-    isActive?: BoolFilter<"Branch"> | boolean
-    users?: UserListRelationFilter
+  export type PortfolioWhereInput = {
+    AND?: PortfolioWhereInput | PortfolioWhereInput[]
+    OR?: PortfolioWhereInput[]
+    NOT?: PortfolioWhereInput | PortfolioWhereInput[]
+    id?: StringFilter<"Portfolio"> | string
+    createdAt?: DateTimeFilter<"Portfolio"> | Date | string
+    updatedAt?: DateTimeFilter<"Portfolio"> | Date | string
+    name?: StringFilter<"Portfolio"> | string
+    slug?: StringNullableFilter<"Portfolio"> | string | null
+    description?: StringNullableFilter<"Portfolio"> | string | null
+    location?: StringNullableFilter<"Portfolio"> | string | null
+    phone?: StringNullableFilter<"Portfolio"> | string | null
+    logoUrl?: StringNullableFilter<"Portfolio"> | string | null
+    iconLogoUrl?: StringNullableFilter<"Portfolio"> | string | null
+    usesRootLogin?: BoolFilter<"Portfolio"> | boolean
+    slugClearedOnce?: BoolFilter<"Portfolio"> | boolean
+    primaryColor?: StringFilter<"Portfolio"> | string
+    secondaryColor?: StringFilter<"Portfolio"> | string
+    customDomain?: StringNullableFilter<"Portfolio"> | string | null
+    isActive?: BoolFilter<"Portfolio"> | boolean
+    users?: StaffListRelationFilter
     services?: ServiceListRelationFilter
-    departments?: DepartmentListRelationFilter
     clients?: ClientListRelationFilter
     projects?: ProjectListRelationFilter
     contentRequests?: ContentRequestListRelationFilter
@@ -50767,7 +49684,7 @@ export namespace Prisma {
     contracts?: ContractListRelationFilter
   }
 
-  export type BranchOrderByWithRelationInput = {
+  export type PortfolioOrderByWithRelationInput = {
     id?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -50784,9 +49701,8 @@ export namespace Prisma {
     secondaryColor?: SortOrder
     customDomain?: SortOrderInput | SortOrder
     isActive?: SortOrder
-    users?: UserOrderByRelationAggregateInput
+    users?: StaffOrderByRelationAggregateInput
     services?: ServiceOrderByRelationAggregateInput
-    departments?: DepartmentOrderByRelationAggregateInput
     clients?: ClientOrderByRelationAggregateInput
     projects?: ProjectOrderByRelationAggregateInput
     contentRequests?: ContentRequestOrderByRelationAggregateInput
@@ -50794,29 +49710,28 @@ export namespace Prisma {
     contracts?: ContractOrderByRelationAggregateInput
   }
 
-  export type BranchWhereUniqueInput = Prisma.AtLeast<{
+  export type PortfolioWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     name?: string
     slug?: string
     customDomain?: string
-    AND?: BranchWhereInput | BranchWhereInput[]
-    OR?: BranchWhereInput[]
-    NOT?: BranchWhereInput | BranchWhereInput[]
-    createdAt?: DateTimeFilter<"Branch"> | Date | string
-    updatedAt?: DateTimeFilter<"Branch"> | Date | string
-    description?: StringNullableFilter<"Branch"> | string | null
-    location?: StringNullableFilter<"Branch"> | string | null
-    phone?: StringNullableFilter<"Branch"> | string | null
-    logoUrl?: StringNullableFilter<"Branch"> | string | null
-    iconLogoUrl?: StringNullableFilter<"Branch"> | string | null
-    usesRootLogin?: BoolFilter<"Branch"> | boolean
-    slugClearedOnce?: BoolFilter<"Branch"> | boolean
-    primaryColor?: StringFilter<"Branch"> | string
-    secondaryColor?: StringFilter<"Branch"> | string
-    isActive?: BoolFilter<"Branch"> | boolean
-    users?: UserListRelationFilter
+    AND?: PortfolioWhereInput | PortfolioWhereInput[]
+    OR?: PortfolioWhereInput[]
+    NOT?: PortfolioWhereInput | PortfolioWhereInput[]
+    createdAt?: DateTimeFilter<"Portfolio"> | Date | string
+    updatedAt?: DateTimeFilter<"Portfolio"> | Date | string
+    description?: StringNullableFilter<"Portfolio"> | string | null
+    location?: StringNullableFilter<"Portfolio"> | string | null
+    phone?: StringNullableFilter<"Portfolio"> | string | null
+    logoUrl?: StringNullableFilter<"Portfolio"> | string | null
+    iconLogoUrl?: StringNullableFilter<"Portfolio"> | string | null
+    usesRootLogin?: BoolFilter<"Portfolio"> | boolean
+    slugClearedOnce?: BoolFilter<"Portfolio"> | boolean
+    primaryColor?: StringFilter<"Portfolio"> | string
+    secondaryColor?: StringFilter<"Portfolio"> | string
+    isActive?: BoolFilter<"Portfolio"> | boolean
+    users?: StaffListRelationFilter
     services?: ServiceListRelationFilter
-    departments?: DepartmentListRelationFilter
     clients?: ClientListRelationFilter
     projects?: ProjectListRelationFilter
     contentRequests?: ContentRequestListRelationFilter
@@ -50824,7 +49739,7 @@ export namespace Prisma {
     contracts?: ContractListRelationFilter
   }, "id" | "name" | "slug" | "customDomain">
 
-  export type BranchOrderByWithAggregationInput = {
+  export type PortfolioOrderByWithAggregationInput = {
     id?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -50841,97 +49756,31 @@ export namespace Prisma {
     secondaryColor?: SortOrder
     customDomain?: SortOrderInput | SortOrder
     isActive?: SortOrder
-    _count?: BranchCountOrderByAggregateInput
-    _max?: BranchMaxOrderByAggregateInput
-    _min?: BranchMinOrderByAggregateInput
+    _count?: PortfolioCountOrderByAggregateInput
+    _max?: PortfolioMaxOrderByAggregateInput
+    _min?: PortfolioMinOrderByAggregateInput
   }
 
-  export type BranchScalarWhereWithAggregatesInput = {
-    AND?: BranchScalarWhereWithAggregatesInput | BranchScalarWhereWithAggregatesInput[]
-    OR?: BranchScalarWhereWithAggregatesInput[]
-    NOT?: BranchScalarWhereWithAggregatesInput | BranchScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"Branch"> | string
-    createdAt?: DateTimeWithAggregatesFilter<"Branch"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"Branch"> | Date | string
-    name?: StringWithAggregatesFilter<"Branch"> | string
-    slug?: StringNullableWithAggregatesFilter<"Branch"> | string | null
-    description?: StringNullableWithAggregatesFilter<"Branch"> | string | null
-    location?: StringNullableWithAggregatesFilter<"Branch"> | string | null
-    phone?: StringNullableWithAggregatesFilter<"Branch"> | string | null
-    logoUrl?: StringNullableWithAggregatesFilter<"Branch"> | string | null
-    iconLogoUrl?: StringNullableWithAggregatesFilter<"Branch"> | string | null
-    usesRootLogin?: BoolWithAggregatesFilter<"Branch"> | boolean
-    slugClearedOnce?: BoolWithAggregatesFilter<"Branch"> | boolean
-    primaryColor?: StringWithAggregatesFilter<"Branch"> | string
-    secondaryColor?: StringWithAggregatesFilter<"Branch"> | string
-    customDomain?: StringNullableWithAggregatesFilter<"Branch"> | string | null
-    isActive?: BoolWithAggregatesFilter<"Branch"> | boolean
-  }
-
-  export type DepartmentWhereInput = {
-    AND?: DepartmentWhereInput | DepartmentWhereInput[]
-    OR?: DepartmentWhereInput[]
-    NOT?: DepartmentWhereInput | DepartmentWhereInput[]
-    id?: StringFilter<"Department"> | string
-    createdAt?: DateTimeFilter<"Department"> | Date | string
-    updatedAt?: DateTimeFilter<"Department"> | Date | string
-    name?: StringFilter<"Department"> | string
-    description?: StringNullableFilter<"Department"> | string | null
-    isActive?: BoolFilter<"Department"> | boolean
-    branchId?: StringFilter<"Department"> | string
-    branch?: XOR<BranchRelationFilter, BranchWhereInput>
-  }
-
-  export type DepartmentOrderByWithRelationInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    name?: SortOrder
-    description?: SortOrderInput | SortOrder
-    isActive?: SortOrder
-    branchId?: SortOrder
-    branch?: BranchOrderByWithRelationInput
-  }
-
-  export type DepartmentWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    name_branchId?: DepartmentNameBranchIdCompoundUniqueInput
-    AND?: DepartmentWhereInput | DepartmentWhereInput[]
-    OR?: DepartmentWhereInput[]
-    NOT?: DepartmentWhereInput | DepartmentWhereInput[]
-    createdAt?: DateTimeFilter<"Department"> | Date | string
-    updatedAt?: DateTimeFilter<"Department"> | Date | string
-    name?: StringFilter<"Department"> | string
-    description?: StringNullableFilter<"Department"> | string | null
-    isActive?: BoolFilter<"Department"> | boolean
-    branchId?: StringFilter<"Department"> | string
-    branch?: XOR<BranchRelationFilter, BranchWhereInput>
-  }, "id" | "name_branchId">
-
-  export type DepartmentOrderByWithAggregationInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    name?: SortOrder
-    description?: SortOrderInput | SortOrder
-    isActive?: SortOrder
-    branchId?: SortOrder
-    _count?: DepartmentCountOrderByAggregateInput
-    _max?: DepartmentMaxOrderByAggregateInput
-    _min?: DepartmentMinOrderByAggregateInput
-  }
-
-  export type DepartmentScalarWhereWithAggregatesInput = {
-    AND?: DepartmentScalarWhereWithAggregatesInput | DepartmentScalarWhereWithAggregatesInput[]
-    OR?: DepartmentScalarWhereWithAggregatesInput[]
-    NOT?: DepartmentScalarWhereWithAggregatesInput | DepartmentScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"Department"> | string
-    createdAt?: DateTimeWithAggregatesFilter<"Department"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"Department"> | Date | string
-    name?: StringWithAggregatesFilter<"Department"> | string
-    description?: StringNullableWithAggregatesFilter<"Department"> | string | null
-    isActive?: BoolWithAggregatesFilter<"Department"> | boolean
-    branchId?: StringWithAggregatesFilter<"Department"> | string
+  export type PortfolioScalarWhereWithAggregatesInput = {
+    AND?: PortfolioScalarWhereWithAggregatesInput | PortfolioScalarWhereWithAggregatesInput[]
+    OR?: PortfolioScalarWhereWithAggregatesInput[]
+    NOT?: PortfolioScalarWhereWithAggregatesInput | PortfolioScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Portfolio"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Portfolio"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Portfolio"> | Date | string
+    name?: StringWithAggregatesFilter<"Portfolio"> | string
+    slug?: StringNullableWithAggregatesFilter<"Portfolio"> | string | null
+    description?: StringNullableWithAggregatesFilter<"Portfolio"> | string | null
+    location?: StringNullableWithAggregatesFilter<"Portfolio"> | string | null
+    phone?: StringNullableWithAggregatesFilter<"Portfolio"> | string | null
+    logoUrl?: StringNullableWithAggregatesFilter<"Portfolio"> | string | null
+    iconLogoUrl?: StringNullableWithAggregatesFilter<"Portfolio"> | string | null
+    usesRootLogin?: BoolWithAggregatesFilter<"Portfolio"> | boolean
+    slugClearedOnce?: BoolWithAggregatesFilter<"Portfolio"> | boolean
+    primaryColor?: StringWithAggregatesFilter<"Portfolio"> | string
+    secondaryColor?: StringWithAggregatesFilter<"Portfolio"> | string
+    customDomain?: StringNullableWithAggregatesFilter<"Portfolio"> | string | null
+    isActive?: BoolWithAggregatesFilter<"Portfolio"> | boolean
   }
 
   export type ClientSubServiceWhereInput = {
@@ -51049,7 +49898,6 @@ export namespace Prisma {
     description?: StringFilter<"Task"> | string
     status?: EnumTaskStatusFilter<"Task"> | $Enums.TaskStatus
     priority?: EnumTaskPriorityFilter<"Task"> | $Enums.TaskPriority
-    department?: StringFilter<"Task"> | string
     deadline?: DateTimeNullableFilter<"Task"> | Date | string | null
     progress?: IntFilter<"Task"> | number
     workflowStage?: EnumWorkflowStageFilter<"Task"> | $Enums.WorkflowStage
@@ -51063,7 +49911,7 @@ export namespace Prisma {
     contentCycleId?: StringNullableFilter<"Task"> | string | null
     agreementId?: StringNullableFilter<"Task"> | string | null
     workflowStepId?: StringNullableFilter<"Task"> | string | null
-    user?: XOR<UserRelationFilter, UserWhereInput>
+    user?: XOR<StaffRelationFilter, StaffWhereInput>
     project?: XOR<ProjectNullableRelationFilter, ProjectWhereInput> | null
     contentRequest?: XOR<ContentRequestNullableRelationFilter, ContentRequestWhereInput> | null
     contentCycle?: XOR<ContentCycleNullableRelationFilter, ContentCycleWhereInput> | null
@@ -51080,7 +49928,6 @@ export namespace Prisma {
     description?: SortOrder
     status?: SortOrder
     priority?: SortOrder
-    department?: SortOrder
     deadline?: SortOrderInput | SortOrder
     progress?: SortOrder
     workflowStage?: SortOrder
@@ -51094,7 +49941,7 @@ export namespace Prisma {
     contentCycleId?: SortOrderInput | SortOrder
     agreementId?: SortOrderInput | SortOrder
     workflowStepId?: SortOrderInput | SortOrder
-    user?: UserOrderByWithRelationInput
+    user?: StaffOrderByWithRelationInput
     project?: ProjectOrderByWithRelationInput
     contentRequest?: ContentRequestOrderByWithRelationInput
     contentCycle?: ContentCycleOrderByWithRelationInput
@@ -51114,7 +49961,6 @@ export namespace Prisma {
     description?: StringFilter<"Task"> | string
     status?: EnumTaskStatusFilter<"Task"> | $Enums.TaskStatus
     priority?: EnumTaskPriorityFilter<"Task"> | $Enums.TaskPriority
-    department?: StringFilter<"Task"> | string
     deadline?: DateTimeNullableFilter<"Task"> | Date | string | null
     progress?: IntFilter<"Task"> | number
     workflowStage?: EnumWorkflowStageFilter<"Task"> | $Enums.WorkflowStage
@@ -51128,7 +49974,7 @@ export namespace Prisma {
     contentCycleId?: StringNullableFilter<"Task"> | string | null
     agreementId?: StringNullableFilter<"Task"> | string | null
     workflowStepId?: StringNullableFilter<"Task"> | string | null
-    user?: XOR<UserRelationFilter, UserWhereInput>
+    user?: XOR<StaffRelationFilter, StaffWhereInput>
     project?: XOR<ProjectNullableRelationFilter, ProjectWhereInput> | null
     contentRequest?: XOR<ContentRequestNullableRelationFilter, ContentRequestWhereInput> | null
     contentCycle?: XOR<ContentCycleNullableRelationFilter, ContentCycleWhereInput> | null
@@ -51145,7 +49991,6 @@ export namespace Prisma {
     description?: SortOrder
     status?: SortOrder
     priority?: SortOrder
-    department?: SortOrder
     deadline?: SortOrderInput | SortOrder
     progress?: SortOrder
     workflowStage?: SortOrder
@@ -51176,7 +50021,6 @@ export namespace Prisma {
     description?: StringWithAggregatesFilter<"Task"> | string
     status?: EnumTaskStatusWithAggregatesFilter<"Task"> | $Enums.TaskStatus
     priority?: EnumTaskPriorityWithAggregatesFilter<"Task"> | $Enums.TaskPriority
-    department?: StringWithAggregatesFilter<"Task"> | string
     deadline?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
     progress?: IntWithAggregatesFilter<"Task"> | number
     workflowStage?: EnumWorkflowStageWithAggregatesFilter<"Task"> | $Enums.WorkflowStage
@@ -51410,7 +50254,7 @@ export namespace Prisma {
     amountPaid?: FloatFilter<"IncomeTransaction"> | number
     subTotal?: FloatNullableFilter<"IncomeTransaction"> | number | null
     agreementId?: StringFilter<"IncomeTransaction"> | string
-    user?: XOR<UserRelationFilter, UserWhereInput>
+    user?: XOR<StaffRelationFilter, StaffWhereInput>
     income?: XOR<IncomeNullableRelationFilter, IncomeWhereInput> | null
     serviceAgreement?: XOR<IncomeServiceAgreementRelationFilter, IncomeServiceAgreementWhereInput>
     transactionDetails?: IncomeTransactionDetailsListRelationFilter
@@ -51432,7 +50276,7 @@ export namespace Prisma {
     amountPaid?: SortOrder
     subTotal?: SortOrderInput | SortOrder
     agreementId?: SortOrder
-    user?: UserOrderByWithRelationInput
+    user?: StaffOrderByWithRelationInput
     income?: IncomeOrderByWithRelationInput
     serviceAgreement?: IncomeServiceAgreementOrderByWithRelationInput
     transactionDetails?: IncomeTransactionDetailsOrderByRelationAggregateInput
@@ -51457,7 +50301,7 @@ export namespace Prisma {
     amountPaid?: FloatFilter<"IncomeTransaction"> | number
     subTotal?: FloatNullableFilter<"IncomeTransaction"> | number | null
     agreementId?: StringFilter<"IncomeTransaction"> | string
-    user?: XOR<UserRelationFilter, UserWhereInput>
+    user?: XOR<StaffRelationFilter, StaffWhereInput>
     income?: XOR<IncomeNullableRelationFilter, IncomeWhereInput> | null
     serviceAgreement?: XOR<IncomeServiceAgreementRelationFilter, IncomeServiceAgreementWhereInput>
     transactionDetails?: IncomeTransactionDetailsListRelationFilter
@@ -51522,7 +50366,7 @@ export namespace Prisma {
     amountPaid?: FloatFilter<"ExpenseTransaction"> | number
     expenseCategoryId?: StringFilter<"ExpenseTransaction"> | string
     expneseAgreementId?: StringFilter<"ExpenseTransaction"> | string
-    user?: XOR<UserRelationFilter, UserWhereInput>
+    user?: XOR<StaffRelationFilter, StaffWhereInput>
     expense?: XOR<ExpenseRelationFilter, ExpenseWhereInput>
     expenseServiceAgreement?: XOR<ExpenseServiceAgreementRelationFilter, ExpenseServiceAgreementWhereInput>
     expenseTransactionDetails?: ExpenseTransactionDetailsListRelationFilter
@@ -51540,7 +50384,7 @@ export namespace Prisma {
     amountPaid?: SortOrder
     expenseCategoryId?: SortOrder
     expneseAgreementId?: SortOrder
-    user?: UserOrderByWithRelationInput
+    user?: StaffOrderByWithRelationInput
     expense?: ExpenseOrderByWithRelationInput
     expenseServiceAgreement?: ExpenseServiceAgreementOrderByWithRelationInput
     expenseTransactionDetails?: ExpenseTransactionDetailsOrderByRelationAggregateInput
@@ -51561,7 +50405,7 @@ export namespace Prisma {
     amountPaid?: FloatFilter<"ExpenseTransaction"> | number
     expenseCategoryId?: StringFilter<"ExpenseTransaction"> | string
     expneseAgreementId?: StringFilter<"ExpenseTransaction"> | string
-    user?: XOR<UserRelationFilter, UserWhereInput>
+    user?: XOR<StaffRelationFilter, StaffWhereInput>
     expense?: XOR<ExpenseRelationFilter, ExpenseWhereInput>
     expenseServiceAgreement?: XOR<ExpenseServiceAgreementRelationFilter, ExpenseServiceAgreementWhereInput>
     expenseTransactionDetails?: ExpenseTransactionDetailsListRelationFilter
@@ -51665,7 +50509,7 @@ export namespace Prisma {
     name?: StringFilter<"UserFiles"> | string
     fileSize?: IntFilter<"UserFiles"> | number
     userId?: StringFilter<"UserFiles"> | string
-    user?: XOR<UserRelationFilter, UserWhereInput>
+    user?: XOR<StaffRelationFilter, StaffWhereInput>
   }
 
   export type UserFilesOrderByWithRelationInput = {
@@ -51675,7 +50519,7 @@ export namespace Prisma {
     name?: SortOrder
     fileSize?: SortOrder
     userId?: SortOrder
-    user?: UserOrderByWithRelationInput
+    user?: StaffOrderByWithRelationInput
   }
 
   export type UserFilesWhereUniqueInput = Prisma.AtLeast<{
@@ -51688,7 +50532,7 @@ export namespace Prisma {
     name?: StringFilter<"UserFiles"> | string
     fileSize?: IntFilter<"UserFiles"> | number
     userId?: StringFilter<"UserFiles"> | string
-    user?: XOR<UserRelationFilter, UserWhereInput>
+    user?: XOR<StaffRelationFilter, StaffWhereInput>
   }, "id">
 
   export type UserFilesOrderByWithAggregationInput = {
@@ -51933,8 +50777,8 @@ export namespace Prisma {
     taxType?: StringFilter<"UserSalary"> | string
     recieverId?: StringFilter<"UserSalary"> | string
     registeredBy?: StringFilter<"UserSalary"> | string
-    registeredUser?: XOR<UserRelationFilter, UserWhereInput>
-    recieverUser?: XOR<UserRelationFilter, UserWhereInput>
+    registeredUser?: XOR<StaffRelationFilter, StaffWhereInput>
+    recieverUser?: XOR<StaffRelationFilter, StaffWhereInput>
     UserSalaryDetails?: UserSalaryDetailsListRelationFilter
   }
 
@@ -51950,8 +50794,8 @@ export namespace Prisma {
     taxType?: SortOrder
     recieverId?: SortOrder
     registeredBy?: SortOrder
-    registeredUser?: UserOrderByWithRelationInput
-    recieverUser?: UserOrderByWithRelationInput
+    registeredUser?: StaffOrderByWithRelationInput
+    recieverUser?: StaffOrderByWithRelationInput
     UserSalaryDetails?: UserSalaryDetailsOrderByRelationAggregateInput
   }
 
@@ -51970,8 +50814,8 @@ export namespace Prisma {
     taxType?: StringFilter<"UserSalary"> | string
     recieverId?: StringFilter<"UserSalary"> | string
     registeredBy?: StringFilter<"UserSalary"> | string
-    registeredUser?: XOR<UserRelationFilter, UserWhereInput>
-    recieverUser?: XOR<UserRelationFilter, UserWhereInput>
+    registeredUser?: XOR<StaffRelationFilter, StaffWhereInput>
+    recieverUser?: XOR<StaffRelationFilter, StaffWhereInput>
     UserSalaryDetails?: UserSalaryDetailsListRelationFilter
   }, "id">
 
@@ -52457,7 +51301,7 @@ export namespace Prisma {
     entity?: StringFilter<"AuditLog"> | string
     entityId?: StringNullableFilter<"AuditLog"> | string | null
     description?: StringNullableFilter<"AuditLog"> | string | null
-    user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    user?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
   }
 
   export type AuditLogOrderByWithRelationInput = {
@@ -52468,7 +51312,7 @@ export namespace Prisma {
     entity?: SortOrder
     entityId?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
-    user?: UserOrderByWithRelationInput
+    user?: StaffOrderByWithRelationInput
   }
 
   export type AuditLogWhereUniqueInput = Prisma.AtLeast<{
@@ -52482,7 +51326,7 @@ export namespace Prisma {
     entity?: StringFilter<"AuditLog"> | string
     entityId?: StringNullableFilter<"AuditLog"> | string | null
     description?: StringNullableFilter<"AuditLog"> | string | null
-    user?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    user?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
   }, "id">
 
   export type AuditLogOrderByWithAggregationInput = {
@@ -52526,11 +51370,11 @@ export namespace Prisma {
     startDate?: DateTimeNullableFilter<"Project"> | Date | string | null
     dueDate?: DateTimeNullableFilter<"Project"> | Date | string | null
     clientId?: StringFilter<"Project"> | string
-    branchId?: StringNullableFilter<"Project"> | string | null
+    portfolioId?: StringNullableFilter<"Project"> | string | null
     createdById?: StringNullableFilter<"Project"> | string | null
     client?: XOR<ClientRelationFilter, ClientWhereInput>
-    branch?: XOR<BranchNullableRelationFilter, BranchWhereInput> | null
-    createdBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
+    createdBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     serviceAgreements?: IncomeServiceAgreementListRelationFilter
     contentRequests?: ContentRequestListRelationFilter
     tasks?: TaskListRelationFilter
@@ -52549,11 +51393,11 @@ export namespace Prisma {
     startDate?: SortOrderInput | SortOrder
     dueDate?: SortOrderInput | SortOrder
     clientId?: SortOrder
-    branchId?: SortOrderInput | SortOrder
+    portfolioId?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
     client?: ClientOrderByWithRelationInput
-    branch?: BranchOrderByWithRelationInput
-    createdBy?: UserOrderByWithRelationInput
+    portfolio?: PortfolioOrderByWithRelationInput
+    createdBy?: StaffOrderByWithRelationInput
     serviceAgreements?: IncomeServiceAgreementOrderByRelationAggregateInput
     contentRequests?: ContentRequestOrderByRelationAggregateInput
     tasks?: TaskOrderByRelationAggregateInput
@@ -52575,11 +51419,11 @@ export namespace Prisma {
     startDate?: DateTimeNullableFilter<"Project"> | Date | string | null
     dueDate?: DateTimeNullableFilter<"Project"> | Date | string | null
     clientId?: StringFilter<"Project"> | string
-    branchId?: StringNullableFilter<"Project"> | string | null
+    portfolioId?: StringNullableFilter<"Project"> | string | null
     createdById?: StringNullableFilter<"Project"> | string | null
     client?: XOR<ClientRelationFilter, ClientWhereInput>
-    branch?: XOR<BranchNullableRelationFilter, BranchWhereInput> | null
-    createdBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
+    createdBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     serviceAgreements?: IncomeServiceAgreementListRelationFilter
     contentRequests?: ContentRequestListRelationFilter
     tasks?: TaskListRelationFilter
@@ -52598,7 +51442,7 @@ export namespace Prisma {
     startDate?: SortOrderInput | SortOrder
     dueDate?: SortOrderInput | SortOrder
     clientId?: SortOrder
-    branchId?: SortOrderInput | SortOrder
+    portfolioId?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
     _count?: ProjectCountOrderByAggregateInput
     _max?: ProjectMaxOrderByAggregateInput
@@ -52620,7 +51464,7 @@ export namespace Prisma {
     startDate?: DateTimeNullableWithAggregatesFilter<"Project"> | Date | string | null
     dueDate?: DateTimeNullableWithAggregatesFilter<"Project"> | Date | string | null
     clientId?: StringWithAggregatesFilter<"Project"> | string
-    branchId?: StringNullableWithAggregatesFilter<"Project"> | string | null
+    portfolioId?: StringNullableWithAggregatesFilter<"Project"> | string | null
     createdById?: StringNullableWithAggregatesFilter<"Project"> | string | null
   }
 
@@ -52643,12 +51487,12 @@ export namespace Prisma {
     notes?: StringNullableFilter<"Contract"> | string | null
     clientId?: StringFilter<"Contract"> | string
     projectId?: StringNullableFilter<"Contract"> | string | null
-    branchId?: StringNullableFilter<"Contract"> | string | null
+    portfolioId?: StringNullableFilter<"Contract"> | string | null
     createdById?: StringNullableFilter<"Contract"> | string | null
     client?: XOR<ClientRelationFilter, ClientWhereInput>
     project?: XOR<ProjectNullableRelationFilter, ProjectWhereInput> | null
-    branch?: XOR<BranchNullableRelationFilter, BranchWhereInput> | null
-    createdBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
+    createdBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     documents?: ContractDocumentListRelationFilter
     installments?: ClientInstallmentListRelationFilter
   }
@@ -52669,12 +51513,12 @@ export namespace Prisma {
     notes?: SortOrderInput | SortOrder
     clientId?: SortOrder
     projectId?: SortOrderInput | SortOrder
-    branchId?: SortOrderInput | SortOrder
+    portfolioId?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
     client?: ClientOrderByWithRelationInput
     project?: ProjectOrderByWithRelationInput
-    branch?: BranchOrderByWithRelationInput
-    createdBy?: UserOrderByWithRelationInput
+    portfolio?: PortfolioOrderByWithRelationInput
+    createdBy?: StaffOrderByWithRelationInput
     documents?: ContractDocumentOrderByRelationAggregateInput
     installments?: ClientInstallmentOrderByRelationAggregateInput
   }
@@ -52698,12 +51542,12 @@ export namespace Prisma {
     notes?: StringNullableFilter<"Contract"> | string | null
     clientId?: StringFilter<"Contract"> | string
     projectId?: StringNullableFilter<"Contract"> | string | null
-    branchId?: StringNullableFilter<"Contract"> | string | null
+    portfolioId?: StringNullableFilter<"Contract"> | string | null
     createdById?: StringNullableFilter<"Contract"> | string | null
     client?: XOR<ClientRelationFilter, ClientWhereInput>
     project?: XOR<ProjectNullableRelationFilter, ProjectWhereInput> | null
-    branch?: XOR<BranchNullableRelationFilter, BranchWhereInput> | null
-    createdBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
+    createdBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     documents?: ContractDocumentListRelationFilter
     installments?: ClientInstallmentListRelationFilter
   }, "id" | "contractNumber">
@@ -52724,7 +51568,7 @@ export namespace Prisma {
     notes?: SortOrderInput | SortOrder
     clientId?: SortOrder
     projectId?: SortOrderInput | SortOrder
-    branchId?: SortOrderInput | SortOrder
+    portfolioId?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
     _count?: ContractCountOrderByAggregateInput
     _avg?: ContractAvgOrderByAggregateInput
@@ -52752,7 +51596,7 @@ export namespace Prisma {
     notes?: StringNullableWithAggregatesFilter<"Contract"> | string | null
     clientId?: StringWithAggregatesFilter<"Contract"> | string
     projectId?: StringNullableWithAggregatesFilter<"Contract"> | string | null
-    branchId?: StringNullableWithAggregatesFilter<"Contract"> | string | null
+    portfolioId?: StringNullableWithAggregatesFilter<"Contract"> | string | null
     createdById?: StringNullableWithAggregatesFilter<"Contract"> | string | null
   }
 
@@ -52871,7 +51715,7 @@ export namespace Prisma {
     mimeType?: StringFilter<"ContractDocument"> | string
     uploadedById?: StringNullableFilter<"ContractDocument"> | string | null
     contract?: XOR<ContractRelationFilter, ContractWhereInput>
-    uploadedBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    uploadedBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
   }
 
   export type ContractDocumentOrderByWithRelationInput = {
@@ -52885,7 +51729,7 @@ export namespace Prisma {
     mimeType?: SortOrder
     uploadedById?: SortOrderInput | SortOrder
     contract?: ContractOrderByWithRelationInput
-    uploadedBy?: UserOrderByWithRelationInput
+    uploadedBy?: StaffOrderByWithRelationInput
   }
 
   export type ContractDocumentWhereUniqueInput = Prisma.AtLeast<{
@@ -52903,7 +51747,7 @@ export namespace Prisma {
     mimeType?: StringFilter<"ContractDocument"> | string
     uploadedById?: StringNullableFilter<"ContractDocument"> | string | null
     contract?: XOR<ContractRelationFilter, ContractWhereInput>
-    uploadedBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    uploadedBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
   }, "id" | "contractId_version">
 
   export type ContractDocumentOrderByWithAggregationInput = {
@@ -52952,12 +51796,12 @@ export namespace Prisma {
     deadline?: DateTimeNullableFilter<"ContentRequest"> | Date | string | null
     clientId?: StringFilter<"ContentRequest"> | string
     projectId?: StringNullableFilter<"ContentRequest"> | string | null
-    branchId?: StringNullableFilter<"ContentRequest"> | string | null
+    portfolioId?: StringNullableFilter<"ContentRequest"> | string | null
     createdById?: StringNullableFilter<"ContentRequest"> | string | null
     client?: XOR<ClientRelationFilter, ClientWhereInput>
     project?: XOR<ProjectNullableRelationFilter, ProjectWhereInput> | null
-    branch?: XOR<BranchNullableRelationFilter, BranchWhereInput> | null
-    createdBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
+    createdBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     assignees?: ContentRequestAssigneeListRelationFilter
     tasks?: TaskListRelationFilter
   }
@@ -52973,12 +51817,12 @@ export namespace Prisma {
     deadline?: SortOrderInput | SortOrder
     clientId?: SortOrder
     projectId?: SortOrderInput | SortOrder
-    branchId?: SortOrderInput | SortOrder
+    portfolioId?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
     client?: ClientOrderByWithRelationInput
     project?: ProjectOrderByWithRelationInput
-    branch?: BranchOrderByWithRelationInput
-    createdBy?: UserOrderByWithRelationInput
+    portfolio?: PortfolioOrderByWithRelationInput
+    createdBy?: StaffOrderByWithRelationInput
     assignees?: ContentRequestAssigneeOrderByRelationAggregateInput
     tasks?: TaskOrderByRelationAggregateInput
   }
@@ -52997,12 +51841,12 @@ export namespace Prisma {
     deadline?: DateTimeNullableFilter<"ContentRequest"> | Date | string | null
     clientId?: StringFilter<"ContentRequest"> | string
     projectId?: StringNullableFilter<"ContentRequest"> | string | null
-    branchId?: StringNullableFilter<"ContentRequest"> | string | null
+    portfolioId?: StringNullableFilter<"ContentRequest"> | string | null
     createdById?: StringNullableFilter<"ContentRequest"> | string | null
     client?: XOR<ClientRelationFilter, ClientWhereInput>
     project?: XOR<ProjectNullableRelationFilter, ProjectWhereInput> | null
-    branch?: XOR<BranchNullableRelationFilter, BranchWhereInput> | null
-    createdBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
+    createdBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     assignees?: ContentRequestAssigneeListRelationFilter
     tasks?: TaskListRelationFilter
   }, "id">
@@ -53018,7 +51862,7 @@ export namespace Prisma {
     deadline?: SortOrderInput | SortOrder
     clientId?: SortOrder
     projectId?: SortOrderInput | SortOrder
-    branchId?: SortOrderInput | SortOrder
+    portfolioId?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
     _count?: ContentRequestCountOrderByAggregateInput
     _max?: ContentRequestMaxOrderByAggregateInput
@@ -53039,7 +51883,7 @@ export namespace Prisma {
     deadline?: DateTimeNullableWithAggregatesFilter<"ContentRequest"> | Date | string | null
     clientId?: StringWithAggregatesFilter<"ContentRequest"> | string
     projectId?: StringNullableWithAggregatesFilter<"ContentRequest"> | string | null
-    branchId?: StringNullableWithAggregatesFilter<"ContentRequest"> | string | null
+    portfolioId?: StringNullableWithAggregatesFilter<"ContentRequest"> | string | null
     createdById?: StringNullableWithAggregatesFilter<"ContentRequest"> | string | null
   }
 
@@ -53053,7 +51897,7 @@ export namespace Prisma {
     userId?: StringFilter<"ContentRequestAssignee"> | string
     role?: StringNullableFilter<"ContentRequestAssignee"> | string | null
     contentRequest?: XOR<ContentRequestRelationFilter, ContentRequestWhereInput>
-    user?: XOR<UserRelationFilter, UserWhereInput>
+    user?: XOR<StaffRelationFilter, StaffWhereInput>
   }
 
   export type ContentRequestAssigneeOrderByWithRelationInput = {
@@ -53063,7 +51907,7 @@ export namespace Prisma {
     userId?: SortOrder
     role?: SortOrderInput | SortOrder
     contentRequest?: ContentRequestOrderByWithRelationInput
-    user?: UserOrderByWithRelationInput
+    user?: StaffOrderByWithRelationInput
   }
 
   export type ContentRequestAssigneeWhereUniqueInput = Prisma.AtLeast<{
@@ -53077,7 +51921,7 @@ export namespace Prisma {
     userId?: StringFilter<"ContentRequestAssignee"> | string
     role?: StringNullableFilter<"ContentRequestAssignee"> | string | null
     contentRequest?: XOR<ContentRequestRelationFilter, ContentRequestWhereInput>
-    user?: XOR<UserRelationFilter, UserWhereInput>
+    user?: XOR<StaffRelationFilter, StaffWhereInput>
   }, "id" | "contentRequestId_userId">
 
   export type ContentRequestAssigneeOrderByWithAggregationInput = {
@@ -53118,9 +51962,9 @@ export namespace Prisma {
     isActive?: BoolFilter<"RecurringSchedule"> | boolean
     autoGenerateTasks?: BoolFilter<"RecurringSchedule"> | boolean
     clientId?: StringFilter<"RecurringSchedule"> | string
-    branchId?: StringNullableFilter<"RecurringSchedule"> | string | null
+    portfolioId?: StringNullableFilter<"RecurringSchedule"> | string | null
     client?: XOR<ClientRelationFilter, ClientWhereInput>
-    branch?: XOR<BranchNullableRelationFilter, BranchWhereInput> | null
+    portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
     steps?: RecurringScheduleStepListRelationFilter
     cycles?: ContentCycleListRelationFilter
   }
@@ -53138,9 +51982,9 @@ export namespace Prisma {
     isActive?: SortOrder
     autoGenerateTasks?: SortOrder
     clientId?: SortOrder
-    branchId?: SortOrderInput | SortOrder
+    portfolioId?: SortOrderInput | SortOrder
     client?: ClientOrderByWithRelationInput
-    branch?: BranchOrderByWithRelationInput
+    portfolio?: PortfolioOrderByWithRelationInput
     steps?: RecurringScheduleStepOrderByRelationAggregateInput
     cycles?: ContentCycleOrderByRelationAggregateInput
   }
@@ -53161,9 +52005,9 @@ export namespace Prisma {
     isActive?: BoolFilter<"RecurringSchedule"> | boolean
     autoGenerateTasks?: BoolFilter<"RecurringSchedule"> | boolean
     clientId?: StringFilter<"RecurringSchedule"> | string
-    branchId?: StringNullableFilter<"RecurringSchedule"> | string | null
+    portfolioId?: StringNullableFilter<"RecurringSchedule"> | string | null
     client?: XOR<ClientRelationFilter, ClientWhereInput>
-    branch?: XOR<BranchNullableRelationFilter, BranchWhereInput> | null
+    portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
     steps?: RecurringScheduleStepListRelationFilter
     cycles?: ContentCycleListRelationFilter
   }, "id">
@@ -53181,7 +52025,7 @@ export namespace Prisma {
     isActive?: SortOrder
     autoGenerateTasks?: SortOrder
     clientId?: SortOrder
-    branchId?: SortOrderInput | SortOrder
+    portfolioId?: SortOrderInput | SortOrder
     _count?: RecurringScheduleCountOrderByAggregateInput
     _max?: RecurringScheduleMaxOrderByAggregateInput
     _min?: RecurringScheduleMinOrderByAggregateInput
@@ -53203,7 +52047,7 @@ export namespace Prisma {
     isActive?: BoolWithAggregatesFilter<"RecurringSchedule"> | boolean
     autoGenerateTasks?: BoolWithAggregatesFilter<"RecurringSchedule"> | boolean
     clientId?: StringWithAggregatesFilter<"RecurringSchedule"> | string
-    branchId?: StringNullableWithAggregatesFilter<"RecurringSchedule"> | string | null
+    portfolioId?: StringNullableWithAggregatesFilter<"RecurringSchedule"> | string | null
   }
 
   export type RecurringScheduleStepWhereInput = {
@@ -53219,12 +52063,11 @@ export namespace Prisma {
     stepOrder?: IntFilter<"RecurringScheduleStep"> | number
     label?: StringFilter<"RecurringScheduleStep"> | string
     contentType?: EnumContentTypeNullableFilter<"RecurringScheduleStep"> | $Enums.ContentType | null
-    department?: StringNullableFilter<"RecurringScheduleStep"> | string | null
     supervisor?: StringFilter<"RecurringScheduleStep"> | string
     assigneeId?: StringNullableFilter<"RecurringScheduleStep"> | string | null
     templateId?: StringNullableFilter<"RecurringScheduleStep"> | string | null
     schedule?: XOR<RecurringScheduleRelationFilter, RecurringScheduleWhereInput>
-    assignee?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    assignee?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     template?: XOR<WorkflowTemplateNullableRelationFilter, WorkflowTemplateWhereInput> | null
     occurrences?: RecurringTaskOccurrenceListRelationFilter
   }
@@ -53239,12 +52082,11 @@ export namespace Prisma {
     stepOrder?: SortOrder
     label?: SortOrder
     contentType?: SortOrderInput | SortOrder
-    department?: SortOrderInput | SortOrder
     supervisor?: SortOrder
     assigneeId?: SortOrderInput | SortOrder
     templateId?: SortOrderInput | SortOrder
     schedule?: RecurringScheduleOrderByWithRelationInput
-    assignee?: UserOrderByWithRelationInput
+    assignee?: StaffOrderByWithRelationInput
     template?: WorkflowTemplateOrderByWithRelationInput
     occurrences?: RecurringTaskOccurrenceOrderByRelationAggregateInput
   }
@@ -53262,12 +52104,11 @@ export namespace Prisma {
     stepOrder?: IntFilter<"RecurringScheduleStep"> | number
     label?: StringFilter<"RecurringScheduleStep"> | string
     contentType?: EnumContentTypeNullableFilter<"RecurringScheduleStep"> | $Enums.ContentType | null
-    department?: StringNullableFilter<"RecurringScheduleStep"> | string | null
     supervisor?: StringFilter<"RecurringScheduleStep"> | string
     assigneeId?: StringNullableFilter<"RecurringScheduleStep"> | string | null
     templateId?: StringNullableFilter<"RecurringScheduleStep"> | string | null
     schedule?: XOR<RecurringScheduleRelationFilter, RecurringScheduleWhereInput>
-    assignee?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+    assignee?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     template?: XOR<WorkflowTemplateNullableRelationFilter, WorkflowTemplateWhereInput> | null
     occurrences?: RecurringTaskOccurrenceListRelationFilter
   }, "id">
@@ -53282,7 +52123,6 @@ export namespace Prisma {
     stepOrder?: SortOrder
     label?: SortOrder
     contentType?: SortOrderInput | SortOrder
-    department?: SortOrderInput | SortOrder
     supervisor?: SortOrder
     assigneeId?: SortOrderInput | SortOrder
     templateId?: SortOrderInput | SortOrder
@@ -53306,7 +52146,6 @@ export namespace Prisma {
     stepOrder?: IntWithAggregatesFilter<"RecurringScheduleStep"> | number
     label?: StringWithAggregatesFilter<"RecurringScheduleStep"> | string
     contentType?: EnumContentTypeNullableWithAggregatesFilter<"RecurringScheduleStep"> | $Enums.ContentType | null
-    department?: StringNullableWithAggregatesFilter<"RecurringScheduleStep"> | string | null
     supervisor?: StringWithAggregatesFilter<"RecurringScheduleStep"> | string
     assigneeId?: StringNullableWithAggregatesFilter<"RecurringScheduleStep"> | string | null
     templateId?: StringNullableWithAggregatesFilter<"RecurringScheduleStep"> | string | null
@@ -53542,7 +52381,6 @@ export namespace Prisma {
     stepOrder?: IntFilter<"WorkflowTemplateStep"> | number
     taskName?: StringFilter<"WorkflowTemplateStep"> | string
     description?: StringNullableFilter<"WorkflowTemplateStep"> | string | null
-    department?: StringNullableFilter<"WorkflowTemplateStep"> | string | null
     defaultPriority?: EnumTaskPriorityFilter<"WorkflowTemplateStep"> | $Enums.TaskPriority
     estimatedDays?: IntNullableFilter<"WorkflowTemplateStep"> | number | null
     workflowStage?: EnumWorkflowStageFilter<"WorkflowTemplateStep"> | $Enums.WorkflowStage
@@ -53557,7 +52395,6 @@ export namespace Prisma {
     stepOrder?: SortOrder
     taskName?: SortOrder
     description?: SortOrderInput | SortOrder
-    department?: SortOrderInput | SortOrder
     defaultPriority?: SortOrder
     estimatedDays?: SortOrderInput | SortOrder
     workflowStage?: SortOrder
@@ -53576,7 +52413,6 @@ export namespace Prisma {
     stepOrder?: IntFilter<"WorkflowTemplateStep"> | number
     taskName?: StringFilter<"WorkflowTemplateStep"> | string
     description?: StringNullableFilter<"WorkflowTemplateStep"> | string | null
-    department?: StringNullableFilter<"WorkflowTemplateStep"> | string | null
     defaultPriority?: EnumTaskPriorityFilter<"WorkflowTemplateStep"> | $Enums.TaskPriority
     estimatedDays?: IntNullableFilter<"WorkflowTemplateStep"> | number | null
     workflowStage?: EnumWorkflowStageFilter<"WorkflowTemplateStep"> | $Enums.WorkflowStage
@@ -53591,7 +52427,6 @@ export namespace Prisma {
     stepOrder?: SortOrder
     taskName?: SortOrder
     description?: SortOrderInput | SortOrder
-    department?: SortOrderInput | SortOrder
     defaultPriority?: SortOrder
     estimatedDays?: SortOrderInput | SortOrder
     workflowStage?: SortOrder
@@ -53612,7 +52447,6 @@ export namespace Prisma {
     stepOrder?: IntWithAggregatesFilter<"WorkflowTemplateStep"> | number
     taskName?: StringWithAggregatesFilter<"WorkflowTemplateStep"> | string
     description?: StringNullableWithAggregatesFilter<"WorkflowTemplateStep"> | string | null
-    department?: StringNullableWithAggregatesFilter<"WorkflowTemplateStep"> | string | null
     defaultPriority?: EnumTaskPriorityWithAggregatesFilter<"WorkflowTemplateStep"> | $Enums.TaskPriority
     estimatedDays?: IntNullableWithAggregatesFilter<"WorkflowTemplateStep"> | number | null
     workflowStage?: EnumWorkflowStageWithAggregatesFilter<"WorkflowTemplateStep"> | $Enums.WorkflowStage
@@ -53625,7 +52459,7 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    users?: UserCreateNestedManyWithoutDynamicRoleInput
+    users?: StaffCreateNestedManyWithoutDynamicRoleInput
     menuAccess?: RoleMenuAccessCreateNestedManyWithoutRoleInput
   }
 
@@ -53636,7 +52470,7 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    users?: UserUncheckedCreateNestedManyWithoutDynamicRoleInput
+    users?: StaffUncheckedCreateNestedManyWithoutDynamicRoleInput
     menuAccess?: RoleMenuAccessUncheckedCreateNestedManyWithoutRoleInput
   }
 
@@ -53647,7 +52481,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    users?: UserUpdateManyWithoutDynamicRoleNestedInput
+    users?: StaffUpdateManyWithoutDynamicRoleNestedInput
     menuAccess?: RoleMenuAccessUpdateManyWithoutRoleNestedInput
   }
 
@@ -53658,7 +52492,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    users?: UserUncheckedUpdateManyWithoutDynamicRoleNestedInput
+    users?: StaffUncheckedUpdateManyWithoutDynamicRoleNestedInput
     menuAccess?: RoleMenuAccessUncheckedUpdateManyWithoutRoleNestedInput
   }
 
@@ -53689,7 +52523,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type UserCreateInput = {
+  export type StaffCreateInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -53699,12 +52533,11 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    branch?: BranchCreateNestedOneWithoutUsersInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -53724,7 +52557,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserUncheckedCreateInput = {
+  export type StaffUncheckedCreateInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -53734,8 +52567,7 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -53759,7 +52591,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserUpdateInput = {
+  export type StaffUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -53769,12 +52601,11 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    branch?: BranchUpdateOneWithoutUsersNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -53794,7 +52625,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserUncheckedUpdateInput = {
+  export type StaffUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -53804,8 +52635,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -53829,7 +52659,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserCreateManyInput = {
+  export type StaffCreateManyInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -53839,8 +52669,7 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -53848,7 +52677,7 @@ export namespace Prisma {
     banExpires?: Date | string | null
   }
 
-  export type UserUpdateManyMutationInput = {
+  export type StaffUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -53858,14 +52687,13 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
-  export type UserUncheckedUpdateManyInput = {
+  export type StaffUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -53875,8 +52703,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -53893,7 +52720,7 @@ export namespace Prisma {
     ipAddress?: string | null
     userAgent?: string | null
     impersonatedBy?: string | null
-    user: UserCreateNestedOneWithoutSessionsInput
+    user: StaffCreateNestedOneWithoutSessionsInput
   }
 
   export type SessionUncheckedCreateInput = {
@@ -53917,7 +52744,7 @@ export namespace Prisma {
     ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
     userAgent?: NullableStringFieldUpdateOperationsInput | string | null
     impersonatedBy?: NullableStringFieldUpdateOperationsInput | string | null
-    user?: UserUpdateOneRequiredWithoutSessionsNestedInput
+    user?: StaffUpdateOneRequiredWithoutSessionsNestedInput
   }
 
   export type SessionUncheckedUpdateInput = {
@@ -53980,7 +52807,7 @@ export namespace Prisma {
     refreshTokenExpiresAt?: Date | string | null
     scope?: string | null
     password?: string | null
-    user: UserCreateNestedOneWithoutAccountsInput
+    user: StaffCreateNestedOneWithoutAccountsInput
   }
 
   export type AccountUncheckedCreateInput = {
@@ -54012,7 +52839,7 @@ export namespace Prisma {
     refreshTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    user?: UserUpdateOneRequiredWithoutAccountsNestedInput
+    user?: StaffUpdateOneRequiredWithoutAccountsNestedInput
   }
 
   export type AccountUncheckedUpdateInput = {
@@ -54159,8 +52986,8 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branch?: BranchCreateNestedOneWithoutClientsInput
-    accountManager?: UserCreateNestedOneWithoutManagedClientsInput
+    portfolio?: PortfolioCreateNestedOneWithoutClientsInput
+    accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
@@ -54191,7 +53018,7 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branchId?: string | null
+    portfolioId?: string | null
     accountManagerId?: string | null
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
@@ -54223,8 +53050,8 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branch?: BranchUpdateOneWithoutClientsNestedInput
-    accountManager?: UserUpdateOneWithoutManagedClientsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
+    accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
@@ -54255,7 +53082,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
@@ -54287,7 +53114,7 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branchId?: string | null
+    portfolioId?: string | null
     accountManagerId?: string | null
   }
 
@@ -54329,7 +53156,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -54337,7 +53164,7 @@ export namespace Prisma {
     id: string
     serviceName: string
     description?: string | null
-    branch?: BranchCreateNestedOneWithoutServicesInput
+    portfolio?: PortfolioCreateNestedOneWithoutServicesInput
     clientService?: ClientServiceCreateNestedManyWithoutServiceInput
     subService?: SubServiceCreateNestedManyWithoutServiceInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutServiceInput
@@ -54347,7 +53174,7 @@ export namespace Prisma {
     id: string
     serviceName: string
     description?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
     subService?: SubServiceUncheckedCreateNestedManyWithoutServiceInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutServiceInput
@@ -54357,7 +53184,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    branch?: BranchUpdateOneWithoutServicesNestedInput
+    portfolio?: PortfolioUpdateOneWithoutServicesNestedInput
     clientService?: ClientServiceUpdateManyWithoutServiceNestedInput
     subService?: SubServiceUpdateManyWithoutServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutServiceNestedInput
@@ -54367,7 +53194,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientService?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
     subService?: SubServiceUncheckedUpdateManyWithoutServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutServiceNestedInput
@@ -54377,7 +53204,7 @@ export namespace Prisma {
     id: string
     serviceName: string
     description?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
   }
 
   export type ServiceUpdateManyMutationInput = {
@@ -54390,7 +53217,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SubServiceCreateInput = {
@@ -54449,7 +53276,7 @@ export namespace Prisma {
     categoryId?: StringFieldUpdateOperationsInput | string
   }
 
-  export type BranchCreateInput = {
+  export type PortfolioCreateInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -54466,17 +53293,16 @@ export namespace Prisma {
     secondaryColor?: string
     customDomain?: string | null
     isActive?: boolean
-    users?: UserCreateNestedManyWithoutBranchInput
-    services?: ServiceCreateNestedManyWithoutBranchInput
-    departments?: DepartmentCreateNestedManyWithoutBranchInput
-    clients?: ClientCreateNestedManyWithoutBranchInput
-    projects?: ProjectCreateNestedManyWithoutBranchInput
-    contentRequests?: ContentRequestCreateNestedManyWithoutBranchInput
-    recurringSchedules?: RecurringScheduleCreateNestedManyWithoutBranchInput
-    contracts?: ContractCreateNestedManyWithoutBranchInput
+    users?: StaffCreateNestedManyWithoutPortfolioInput
+    services?: ServiceCreateNestedManyWithoutPortfolioInput
+    clients?: ClientCreateNestedManyWithoutPortfolioInput
+    projects?: ProjectCreateNestedManyWithoutPortfolioInput
+    contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
+    recurringSchedules?: RecurringScheduleCreateNestedManyWithoutPortfolioInput
+    contracts?: ContractCreateNestedManyWithoutPortfolioInput
   }
 
-  export type BranchUncheckedCreateInput = {
+  export type PortfolioUncheckedCreateInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -54493,17 +53319,16 @@ export namespace Prisma {
     secondaryColor?: string
     customDomain?: string | null
     isActive?: boolean
-    users?: UserUncheckedCreateNestedManyWithoutBranchInput
-    services?: ServiceUncheckedCreateNestedManyWithoutBranchInput
-    departments?: DepartmentUncheckedCreateNestedManyWithoutBranchInput
-    clients?: ClientUncheckedCreateNestedManyWithoutBranchInput
-    projects?: ProjectUncheckedCreateNestedManyWithoutBranchInput
-    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutBranchInput
-    recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutBranchInput
-    contracts?: ContractUncheckedCreateNestedManyWithoutBranchInput
+    users?: StaffUncheckedCreateNestedManyWithoutPortfolioInput
+    services?: ServiceUncheckedCreateNestedManyWithoutPortfolioInput
+    clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutPortfolioInput
+    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
+    recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutPortfolioInput
+    contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
   }
 
-  export type BranchUpdateInput = {
+  export type PortfolioUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54520,17 +53345,16 @@ export namespace Prisma {
     secondaryColor?: StringFieldUpdateOperationsInput | string
     customDomain?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    users?: UserUpdateManyWithoutBranchNestedInput
-    services?: ServiceUpdateManyWithoutBranchNestedInput
-    departments?: DepartmentUpdateManyWithoutBranchNestedInput
-    clients?: ClientUpdateManyWithoutBranchNestedInput
-    projects?: ProjectUpdateManyWithoutBranchNestedInput
-    contentRequests?: ContentRequestUpdateManyWithoutBranchNestedInput
-    recurringSchedules?: RecurringScheduleUpdateManyWithoutBranchNestedInput
-    contracts?: ContractUpdateManyWithoutBranchNestedInput
+    users?: StaffUpdateManyWithoutPortfolioNestedInput
+    services?: ServiceUpdateManyWithoutPortfolioNestedInput
+    clients?: ClientUpdateManyWithoutPortfolioNestedInput
+    projects?: ProjectUpdateManyWithoutPortfolioNestedInput
+    contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
+    recurringSchedules?: RecurringScheduleUpdateManyWithoutPortfolioNestedInput
+    contracts?: ContractUpdateManyWithoutPortfolioNestedInput
   }
 
-  export type BranchUncheckedUpdateInput = {
+  export type PortfolioUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54547,17 +53371,16 @@ export namespace Prisma {
     secondaryColor?: StringFieldUpdateOperationsInput | string
     customDomain?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    users?: UserUncheckedUpdateManyWithoutBranchNestedInput
-    services?: ServiceUncheckedUpdateManyWithoutBranchNestedInput
-    departments?: DepartmentUncheckedUpdateManyWithoutBranchNestedInput
-    clients?: ClientUncheckedUpdateManyWithoutBranchNestedInput
-    projects?: ProjectUncheckedUpdateManyWithoutBranchNestedInput
-    contentRequests?: ContentRequestUncheckedUpdateManyWithoutBranchNestedInput
-    recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutBranchNestedInput
-    contracts?: ContractUncheckedUpdateManyWithoutBranchNestedInput
+    users?: StaffUncheckedUpdateManyWithoutPortfolioNestedInput
+    services?: ServiceUncheckedUpdateManyWithoutPortfolioNestedInput
+    clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutPortfolioNestedInput
+    contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
+    recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutPortfolioNestedInput
+    contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
-  export type BranchCreateManyInput = {
+  export type PortfolioCreateManyInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -54576,7 +53399,7 @@ export namespace Prisma {
     isActive?: boolean
   }
 
-  export type BranchUpdateManyMutationInput = {
+  export type PortfolioUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54595,7 +53418,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
-  export type BranchUncheckedUpdateManyInput = {
+  export type PortfolioUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54612,75 +53435,6 @@ export namespace Prisma {
     secondaryColor?: StringFieldUpdateOperationsInput | string
     customDomain?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-  }
-
-  export type DepartmentCreateInput = {
-    id: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    name: string
-    description?: string | null
-    isActive?: boolean
-    branch: BranchCreateNestedOneWithoutDepartmentsInput
-  }
-
-  export type DepartmentUncheckedCreateInput = {
-    id: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    name: string
-    description?: string | null
-    isActive?: boolean
-    branchId: string
-  }
-
-  export type DepartmentUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    branch?: BranchUpdateOneRequiredWithoutDepartmentsNestedInput
-  }
-
-  export type DepartmentUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    branchId?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type DepartmentCreateManyInput = {
-    id: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    name: string
-    description?: string | null
-    isActive?: boolean
-    branchId: string
-  }
-
-  export type DepartmentUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-  }
-
-  export type DepartmentUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    branchId?: StringFieldUpdateOperationsInput | string
   }
 
   export type ClientSubServiceCreateInput = {
@@ -54777,7 +53531,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -54785,7 +53538,7 @@ export namespace Prisma {
     supervisor?: string
     serviceInformation?: string | null
     isPersonal?: boolean
-    user: UserCreateNestedOneWithoutAssignedTasksInput
+    user: StaffCreateNestedOneWithoutAssignedTasksInput
     project?: ProjectCreateNestedOneWithoutTasksInput
     contentRequest?: ContentRequestCreateNestedOneWithoutTasksInput
     contentCycle?: ContentCycleCreateNestedOneWithoutTasksInput
@@ -54802,7 +53555,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -54827,7 +53579,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -54835,7 +53586,7 @@ export namespace Prisma {
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
-    user?: UserUpdateOneRequiredWithoutAssignedTasksNestedInput
+    user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
     project?: ProjectUpdateOneWithoutTasksNestedInput
     contentRequest?: ContentRequestUpdateOneWithoutTasksNestedInput
     contentCycle?: ContentCycleUpdateOneWithoutTasksNestedInput
@@ -54852,7 +53603,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -54877,7 +53627,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -54900,7 +53649,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -54917,7 +53665,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -55138,7 +53885,7 @@ export namespace Prisma {
     totalAmount: number
     amountPaid: number
     subTotal?: number | null
-    user: UserCreateNestedOneWithoutIncomeTransactionInput
+    user: StaffCreateNestedOneWithoutIncomeTransactionInput
     income?: IncomeCreateNestedOneWithoutIncomeTransactionInput
     serviceAgreement: IncomeServiceAgreementCreateNestedOneWithoutIncomeTransactionInput
     transactionDetails?: IncomeTransactionDetailsCreateNestedManyWithoutTransctionInput
@@ -55176,7 +53923,7 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
     subTotal?: NullableFloatFieldUpdateOperationsInput | number | null
-    user?: UserUpdateOneRequiredWithoutIncomeTransactionNestedInput
+    user?: StaffUpdateOneRequiredWithoutIncomeTransactionNestedInput
     income?: IncomeUpdateOneWithoutIncomeTransactionNestedInput
     serviceAgreement?: IncomeServiceAgreementUpdateOneRequiredWithoutIncomeTransactionNestedInput
     transactionDetails?: IncomeTransactionDetailsUpdateManyWithoutTransctionNestedInput
@@ -55261,7 +54008,7 @@ export namespace Prisma {
     notes: string
     totalAmount: number
     amountPaid: number
-    user: UserCreateNestedOneWithoutExpenseTransactionInput
+    user: StaffCreateNestedOneWithoutExpenseTransactionInput
     expense: ExpenseCreateNestedOneWithoutExpenseTransactionInput
     expenseServiceAgreement: ExpenseServiceAgreementCreateNestedOneWithoutExpenseTransactionInput
     expenseTransactionDetails?: ExpenseTransactionDetailsCreateNestedManyWithoutExpenseTransactionInput
@@ -55291,7 +54038,7 @@ export namespace Prisma {
     notes?: StringFieldUpdateOperationsInput | string
     totalAmount?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
-    user?: UserUpdateOneRequiredWithoutExpenseTransactionNestedInput
+    user?: StaffUpdateOneRequiredWithoutExpenseTransactionNestedInput
     expense?: ExpenseUpdateOneRequiredWithoutExpenseTransactionNestedInput
     expenseServiceAgreement?: ExpenseServiceAgreementUpdateOneRequiredWithoutExpenseTransactionNestedInput
     expenseTransactionDetails?: ExpenseTransactionDetailsUpdateManyWithoutExpenseTransactionNestedInput
@@ -55405,7 +54152,7 @@ export namespace Prisma {
     url: string
     name: string
     fileSize: number
-    user: UserCreateNestedOneWithoutUserFilesInput
+    user: StaffCreateNestedOneWithoutUserFilesInput
   }
 
   export type UserFilesUncheckedCreateInput = {
@@ -55423,7 +54170,7 @@ export namespace Prisma {
     url?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     fileSize?: IntFieldUpdateOperationsInput | number
-    user?: UserUpdateOneRequiredWithoutUserFilesNestedInput
+    user?: StaffUpdateOneRequiredWithoutUserFilesNestedInput
   }
 
   export type UserFilesUncheckedUpdateInput = {
@@ -55667,8 +54414,8 @@ export namespace Prisma {
     method: string
     notes?: string | null
     taxType: string
-    registeredUser: UserCreateNestedOneWithoutRegistererInput
-    recieverUser: UserCreateNestedOneWithoutRecieverInput
+    registeredUser: StaffCreateNestedOneWithoutRegistererInput
+    recieverUser: StaffCreateNestedOneWithoutRecieverInput
     UserSalaryDetails?: UserSalaryDetailsCreateNestedManyWithoutUserSalaryInput
   }
 
@@ -55697,8 +54444,8 @@ export namespace Prisma {
     method?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     taxType?: StringFieldUpdateOperationsInput | string
-    registeredUser?: UserUpdateOneRequiredWithoutRegistererNestedInput
-    recieverUser?: UserUpdateOneRequiredWithoutRecieverNestedInput
+    registeredUser?: StaffUpdateOneRequiredWithoutRegistererNestedInput
+    recieverUser?: StaffUpdateOneRequiredWithoutRecieverNestedInput
     UserSalaryDetails?: UserSalaryDetailsUpdateManyWithoutUserSalaryNestedInput
   }
 
@@ -56229,7 +54976,7 @@ export namespace Prisma {
     entity: string
     entityId?: string | null
     description?: string | null
-    user?: UserCreateNestedOneWithoutAuditLogsInput
+    user?: StaffCreateNestedOneWithoutAuditLogsInput
   }
 
   export type AuditLogUncheckedCreateInput = {
@@ -56249,7 +54996,7 @@ export namespace Prisma {
     entity?: StringFieldUpdateOperationsInput | string
     entityId?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    user?: UserUpdateOneWithoutAuditLogsNestedInput
+    user?: StaffUpdateOneWithoutAuditLogsNestedInput
   }
 
   export type AuditLogUncheckedUpdateInput = {
@@ -56303,8 +55050,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDate?: Date | string | null
     client: ClientCreateNestedOneWithoutProjectsInput
-    branch?: BranchCreateNestedOneWithoutProjectsInput
-    createdBy?: UserCreateNestedOneWithoutCreatedProjectsInput
+    portfolio?: PortfolioCreateNestedOneWithoutProjectsInput
+    createdBy?: StaffCreateNestedOneWithoutCreatedProjectsInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestCreateNestedManyWithoutProjectInput
     tasks?: TaskCreateNestedManyWithoutProjectInput
@@ -56323,7 +55070,7 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDate?: Date | string | null
     clientId: string
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutProjectInput
@@ -56343,8 +55090,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     client?: ClientUpdateOneRequiredWithoutProjectsNestedInput
-    branch?: BranchUpdateOneWithoutProjectsNestedInput
-    createdBy?: UserUpdateOneWithoutCreatedProjectsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutProjectsNestedInput
+    createdBy?: StaffUpdateOneWithoutCreatedProjectsNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutProjectNestedInput
     tasks?: TaskUpdateManyWithoutProjectNestedInput
@@ -56363,7 +55110,7 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientId?: StringFieldUpdateOperationsInput | string
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutProjectNestedInput
@@ -56383,7 +55130,7 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDate?: Date | string | null
     clientId: string
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
   }
 
@@ -56412,7 +55159,7 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientId?: StringFieldUpdateOperationsInput | string
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -56432,8 +55179,8 @@ export namespace Prisma {
     notes?: string | null
     client: ClientCreateNestedOneWithoutContractsInput
     project?: ProjectCreateNestedOneWithoutContractsInput
-    branch?: BranchCreateNestedOneWithoutContractsInput
-    createdBy?: UserCreateNestedOneWithoutCreatedContractsInput
+    portfolio?: PortfolioCreateNestedOneWithoutContractsInput
+    createdBy?: StaffCreateNestedOneWithoutCreatedContractsInput
     documents?: ContractDocumentCreateNestedManyWithoutContractInput
     installments?: ClientInstallmentCreateNestedManyWithoutContractInput
   }
@@ -56454,7 +55201,7 @@ export namespace Prisma {
     notes?: string | null
     clientId: string
     projectId?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
     documents?: ContractDocumentUncheckedCreateNestedManyWithoutContractInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutContractInput
@@ -56476,8 +55223,8 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     client?: ClientUpdateOneRequiredWithoutContractsNestedInput
     project?: ProjectUpdateOneWithoutContractsNestedInput
-    branch?: BranchUpdateOneWithoutContractsNestedInput
-    createdBy?: UserUpdateOneWithoutCreatedContractsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutContractsNestedInput
+    createdBy?: StaffUpdateOneWithoutCreatedContractsNestedInput
     documents?: ContractDocumentUpdateManyWithoutContractNestedInput
     installments?: ClientInstallmentUpdateManyWithoutContractNestedInput
   }
@@ -56498,7 +55245,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: StringFieldUpdateOperationsInput | string
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     documents?: ContractDocumentUncheckedUpdateManyWithoutContractNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutContractNestedInput
@@ -56520,7 +55267,7 @@ export namespace Prisma {
     notes?: string | null
     clientId: string
     projectId?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
   }
 
@@ -56556,7 +55303,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: StringFieldUpdateOperationsInput | string
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -56679,7 +55426,7 @@ export namespace Prisma {
     fileSize?: number | null
     mimeType?: string
     contract: ContractCreateNestedOneWithoutDocumentsInput
-    uploadedBy?: UserCreateNestedOneWithoutUploadedContractDocumentsInput
+    uploadedBy?: StaffCreateNestedOneWithoutUploadedContractDocumentsInput
   }
 
   export type ContractDocumentUncheckedCreateInput = {
@@ -56703,7 +55450,7 @@ export namespace Prisma {
     fileSize?: NullableIntFieldUpdateOperationsInput | number | null
     mimeType?: StringFieldUpdateOperationsInput | string
     contract?: ContractUpdateOneRequiredWithoutDocumentsNestedInput
-    uploadedBy?: UserUpdateOneWithoutUploadedContractDocumentsNestedInput
+    uploadedBy?: StaffUpdateOneWithoutUploadedContractDocumentsNestedInput
   }
 
   export type ContractDocumentUncheckedUpdateInput = {
@@ -56763,8 +55510,8 @@ export namespace Prisma {
     deadline?: Date | string | null
     client: ClientCreateNestedOneWithoutContentRequestsInput
     project?: ProjectCreateNestedOneWithoutContentRequestsInput
-    branch?: BranchCreateNestedOneWithoutContentRequestsInput
-    createdBy?: UserCreateNestedOneWithoutContentRequestsCreatedInput
+    portfolio?: PortfolioCreateNestedOneWithoutContentRequestsInput
+    createdBy?: StaffCreateNestedOneWithoutContentRequestsCreatedInput
     assignees?: ContentRequestAssigneeCreateNestedManyWithoutContentRequestInput
     tasks?: TaskCreateNestedManyWithoutContentRequestInput
   }
@@ -56780,7 +55527,7 @@ export namespace Prisma {
     deadline?: Date | string | null
     clientId: string
     projectId?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
     assignees?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutContentRequestInput
     tasks?: TaskUncheckedCreateNestedManyWithoutContentRequestInput
@@ -56797,8 +55544,8 @@ export namespace Prisma {
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     client?: ClientUpdateOneRequiredWithoutContentRequestsNestedInput
     project?: ProjectUpdateOneWithoutContentRequestsNestedInput
-    branch?: BranchUpdateOneWithoutContentRequestsNestedInput
-    createdBy?: UserUpdateOneWithoutContentRequestsCreatedNestedInput
+    portfolio?: PortfolioUpdateOneWithoutContentRequestsNestedInput
+    createdBy?: StaffUpdateOneWithoutContentRequestsCreatedNestedInput
     assignees?: ContentRequestAssigneeUpdateManyWithoutContentRequestNestedInput
     tasks?: TaskUpdateManyWithoutContentRequestNestedInput
   }
@@ -56814,7 +55561,7 @@ export namespace Prisma {
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientId?: StringFieldUpdateOperationsInput | string
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     assignees?: ContentRequestAssigneeUncheckedUpdateManyWithoutContentRequestNestedInput
     tasks?: TaskUncheckedUpdateManyWithoutContentRequestNestedInput
@@ -56831,7 +55578,7 @@ export namespace Prisma {
     deadline?: Date | string | null
     clientId: string
     projectId?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
   }
 
@@ -56857,7 +55604,7 @@ export namespace Prisma {
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientId?: StringFieldUpdateOperationsInput | string
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -56866,7 +55613,7 @@ export namespace Prisma {
     createdAt?: Date | string
     role?: string | null
     contentRequest: ContentRequestCreateNestedOneWithoutAssigneesInput
-    user: UserCreateNestedOneWithoutContentRequestAssignmentsInput
+    user: StaffCreateNestedOneWithoutContentRequestAssignmentsInput
   }
 
   export type ContentRequestAssigneeUncheckedCreateInput = {
@@ -56882,7 +55629,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     role?: NullableStringFieldUpdateOperationsInput | string | null
     contentRequest?: ContentRequestUpdateOneRequiredWithoutAssigneesNestedInput
-    user?: UserUpdateOneRequiredWithoutContentRequestAssignmentsNestedInput
+    user?: StaffUpdateOneRequiredWithoutContentRequestAssignmentsNestedInput
   }
 
   export type ContentRequestAssigneeUncheckedUpdateInput = {
@@ -56928,7 +55675,7 @@ export namespace Prisma {
     isActive?: boolean
     autoGenerateTasks?: boolean
     client: ClientCreateNestedOneWithoutRecurringSchedulesInput
-    branch?: BranchCreateNestedOneWithoutRecurringSchedulesInput
+    portfolio?: PortfolioCreateNestedOneWithoutRecurringSchedulesInput
     steps?: RecurringScheduleStepCreateNestedManyWithoutScheduleInput
     cycles?: ContentCycleCreateNestedManyWithoutScheduleInput
   }
@@ -56946,7 +55693,7 @@ export namespace Prisma {
     isActive?: boolean
     autoGenerateTasks?: boolean
     clientId: string
-    branchId?: string | null
+    portfolioId?: string | null
     steps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutScheduleInput
     cycles?: ContentCycleUncheckedCreateNestedManyWithoutScheduleInput
   }
@@ -56964,7 +55711,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     autoGenerateTasks?: BoolFieldUpdateOperationsInput | boolean
     client?: ClientUpdateOneRequiredWithoutRecurringSchedulesNestedInput
-    branch?: BranchUpdateOneWithoutRecurringSchedulesNestedInput
+    portfolio?: PortfolioUpdateOneWithoutRecurringSchedulesNestedInput
     steps?: RecurringScheduleStepUpdateManyWithoutScheduleNestedInput
     cycles?: ContentCycleUpdateManyWithoutScheduleNestedInput
   }
@@ -56982,7 +55729,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     autoGenerateTasks?: BoolFieldUpdateOperationsInput | boolean
     clientId?: StringFieldUpdateOperationsInput | string
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     steps?: RecurringScheduleStepUncheckedUpdateManyWithoutScheduleNestedInput
     cycles?: ContentCycleUncheckedUpdateManyWithoutScheduleNestedInput
   }
@@ -57000,7 +55747,7 @@ export namespace Prisma {
     isActive?: boolean
     autoGenerateTasks?: boolean
     clientId: string
-    branchId?: string | null
+    portfolioId?: string | null
   }
 
   export type RecurringScheduleUpdateManyMutationInput = {
@@ -57030,7 +55777,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     autoGenerateTasks?: BoolFieldUpdateOperationsInput | boolean
     clientId?: StringFieldUpdateOperationsInput | string
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type RecurringScheduleStepCreateInput = {
@@ -57042,10 +55789,9 @@ export namespace Prisma {
     stepOrder?: number
     label: string
     contentType?: $Enums.ContentType | null
-    department?: string | null
     supervisor?: string
     schedule: RecurringScheduleCreateNestedOneWithoutStepsInput
-    assignee?: UserCreateNestedOneWithoutAssignedRecurringStepsInput
+    assignee?: StaffCreateNestedOneWithoutAssignedRecurringStepsInput
     template?: WorkflowTemplateCreateNestedOneWithoutRecurringStepsInput
     occurrences?: RecurringTaskOccurrenceCreateNestedManyWithoutScheduleStepInput
   }
@@ -57060,7 +55806,6 @@ export namespace Prisma {
     stepOrder?: number
     label: string
     contentType?: $Enums.ContentType | null
-    department?: string | null
     supervisor?: string
     assigneeId?: string | null
     templateId?: string | null
@@ -57076,10 +55821,9 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     label?: StringFieldUpdateOperationsInput | string
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     supervisor?: StringFieldUpdateOperationsInput | string
     schedule?: RecurringScheduleUpdateOneRequiredWithoutStepsNestedInput
-    assignee?: UserUpdateOneWithoutAssignedRecurringStepsNestedInput
+    assignee?: StaffUpdateOneWithoutAssignedRecurringStepsNestedInput
     template?: WorkflowTemplateUpdateOneWithoutRecurringStepsNestedInput
     occurrences?: RecurringTaskOccurrenceUpdateManyWithoutScheduleStepNestedInput
   }
@@ -57094,7 +55838,6 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     label?: StringFieldUpdateOperationsInput | string
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     supervisor?: StringFieldUpdateOperationsInput | string
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57111,7 +55854,6 @@ export namespace Prisma {
     stepOrder?: number
     label: string
     contentType?: $Enums.ContentType | null
-    department?: string | null
     supervisor?: string
     assigneeId?: string | null
     templateId?: string | null
@@ -57126,7 +55868,6 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     label?: StringFieldUpdateOperationsInput | string
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     supervisor?: StringFieldUpdateOperationsInput | string
   }
 
@@ -57140,7 +55881,6 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     label?: StringFieldUpdateOperationsInput | string
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     supervisor?: StringFieldUpdateOperationsInput | string
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57384,7 +56124,6 @@ export namespace Prisma {
     stepOrder: number
     taskName: string
     description?: string | null
-    department?: string | null
     defaultPriority?: $Enums.TaskPriority
     estimatedDays?: number | null
     workflowStage?: $Enums.WorkflowStage
@@ -57399,7 +56138,6 @@ export namespace Prisma {
     stepOrder: number
     taskName: string
     description?: string | null
-    department?: string | null
     defaultPriority?: $Enums.TaskPriority
     estimatedDays?: number | null
     workflowStage?: $Enums.WorkflowStage
@@ -57412,7 +56150,6 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     taskName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     defaultPriority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     estimatedDays?: NullableIntFieldUpdateOperationsInput | number | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -57427,7 +56164,6 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     taskName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     defaultPriority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     estimatedDays?: NullableIntFieldUpdateOperationsInput | number | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -57441,7 +56177,6 @@ export namespace Prisma {
     stepOrder: number
     taskName: string
     description?: string | null
-    department?: string | null
     defaultPriority?: $Enums.TaskPriority
     estimatedDays?: number | null
     workflowStage?: $Enums.WorkflowStage
@@ -57453,7 +56188,6 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     taskName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     defaultPriority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     estimatedDays?: NullableIntFieldUpdateOperationsInput | number | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -57466,7 +56200,6 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     taskName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     defaultPriority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     estimatedDays?: NullableIntFieldUpdateOperationsInput | number | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -57516,10 +56249,10 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
-  export type UserListRelationFilter = {
-    every?: UserWhereInput
-    some?: UserWhereInput
-    none?: UserWhereInput
+  export type StaffListRelationFilter = {
+    every?: StaffWhereInput
+    some?: StaffWhereInput
+    none?: StaffWhereInput
   }
 
   export type RoleMenuAccessListRelationFilter = {
@@ -57533,7 +56266,7 @@ export namespace Prisma {
     nulls?: NullsOrder
   }
 
-  export type UserOrderByRelationAggregateInput = {
+  export type StaffOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -57640,9 +56373,9 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
-  export type BranchNullableRelationFilter = {
-    is?: BranchWhereInput | null
-    isNot?: BranchWhereInput | null
+  export type PortfolioNullableRelationFilter = {
+    is?: PortfolioWhereInput | null
+    isNot?: PortfolioWhereInput | null
   }
 
   export type SessionListRelationFilter = {
@@ -57800,7 +56533,7 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type UserCountOrderByAggregateInput = {
+  export type StaffCountOrderByAggregateInput = {
     id?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -57810,8 +56543,7 @@ export namespace Prisma {
     image?: SortOrder
     gender?: SortOrder
     salary?: SortOrder
-    department?: SortOrder
-    branchId?: SortOrder
+    portfolioId?: SortOrder
     roleId?: SortOrder
     role?: SortOrder
     banned?: SortOrder
@@ -57819,7 +56551,7 @@ export namespace Prisma {
     banExpires?: SortOrder
   }
 
-  export type UserMaxOrderByAggregateInput = {
+  export type StaffMaxOrderByAggregateInput = {
     id?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -57829,8 +56561,7 @@ export namespace Prisma {
     image?: SortOrder
     gender?: SortOrder
     salary?: SortOrder
-    department?: SortOrder
-    branchId?: SortOrder
+    portfolioId?: SortOrder
     roleId?: SortOrder
     role?: SortOrder
     banned?: SortOrder
@@ -57838,7 +56569,7 @@ export namespace Prisma {
     banExpires?: SortOrder
   }
 
-  export type UserMinOrderByAggregateInput = {
+  export type StaffMinOrderByAggregateInput = {
     id?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -57848,8 +56579,7 @@ export namespace Prisma {
     image?: SortOrder
     gender?: SortOrder
     salary?: SortOrder
-    department?: SortOrder
-    branchId?: SortOrder
+    portfolioId?: SortOrder
     roleId?: SortOrder
     role?: SortOrder
     banned?: SortOrder
@@ -57879,9 +56609,9 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
-  export type UserRelationFilter = {
-    is?: UserWhereInput
-    isNot?: UserWhereInput
+  export type StaffRelationFilter = {
+    is?: StaffWhereInput
+    isNot?: StaffWhereInput
   }
 
   export type SessionCountOrderByAggregateInput = {
@@ -58013,9 +56743,9 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
-  export type UserNullableRelationFilter = {
-    is?: UserWhereInput | null
-    isNot?: UserWhereInput | null
+  export type StaffNullableRelationFilter = {
+    is?: StaffWhereInput | null
+    isNot?: StaffWhereInput | null
   }
 
   export type ClientServiceListRelationFilter = {
@@ -58106,7 +56836,7 @@ export namespace Prisma {
     notes?: SortOrder
     isActive?: SortOrder
     isDraft?: SortOrder
-    branchId?: SortOrder
+    portfolioId?: SortOrder
     accountManagerId?: SortOrder
   }
 
@@ -58132,7 +56862,7 @@ export namespace Prisma {
     notes?: SortOrder
     isActive?: SortOrder
     isDraft?: SortOrder
-    branchId?: SortOrder
+    portfolioId?: SortOrder
     accountManagerId?: SortOrder
   }
 
@@ -58154,7 +56884,7 @@ export namespace Prisma {
     notes?: SortOrder
     isActive?: SortOrder
     isDraft?: SortOrder
-    branchId?: SortOrder
+    portfolioId?: SortOrder
     accountManagerId?: SortOrder
   }
 
@@ -58198,30 +56928,30 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type ServiceServiceNameBranchIdCompoundUniqueInput = {
+  export type ServiceServiceNamePortfolioIdCompoundUniqueInput = {
     serviceName: string
-    branchId: string
+    portfolioId: string
   }
 
   export type ServiceCountOrderByAggregateInput = {
     id?: SortOrder
     serviceName?: SortOrder
     description?: SortOrder
-    branchId?: SortOrder
+    portfolioId?: SortOrder
   }
 
   export type ServiceMaxOrderByAggregateInput = {
     id?: SortOrder
     serviceName?: SortOrder
     description?: SortOrder
-    branchId?: SortOrder
+    portfolioId?: SortOrder
   }
 
   export type ServiceMinOrderByAggregateInput = {
     id?: SortOrder
     serviceName?: SortOrder
     description?: SortOrder
-    branchId?: SortOrder
+    portfolioId?: SortOrder
   }
 
   export type ServiceRelationFilter = {
@@ -58261,21 +56991,11 @@ export namespace Prisma {
     none?: ServiceWhereInput
   }
 
-  export type DepartmentListRelationFilter = {
-    every?: DepartmentWhereInput
-    some?: DepartmentWhereInput
-    none?: DepartmentWhereInput
-  }
-
   export type ServiceOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
-  export type DepartmentOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type BranchCountOrderByAggregateInput = {
+  export type PortfolioCountOrderByAggregateInput = {
     id?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -58294,7 +57014,7 @@ export namespace Prisma {
     isActive?: SortOrder
   }
 
-  export type BranchMaxOrderByAggregateInput = {
+  export type PortfolioMaxOrderByAggregateInput = {
     id?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -58313,7 +57033,7 @@ export namespace Prisma {
     isActive?: SortOrder
   }
 
-  export type BranchMinOrderByAggregateInput = {
+  export type PortfolioMinOrderByAggregateInput = {
     id?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -58330,46 +57050,6 @@ export namespace Prisma {
     secondaryColor?: SortOrder
     customDomain?: SortOrder
     isActive?: SortOrder
-  }
-
-  export type BranchRelationFilter = {
-    is?: BranchWhereInput
-    isNot?: BranchWhereInput
-  }
-
-  export type DepartmentNameBranchIdCompoundUniqueInput = {
-    name: string
-    branchId: string
-  }
-
-  export type DepartmentCountOrderByAggregateInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    name?: SortOrder
-    description?: SortOrder
-    isActive?: SortOrder
-    branchId?: SortOrder
-  }
-
-  export type DepartmentMaxOrderByAggregateInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    name?: SortOrder
-    description?: SortOrder
-    isActive?: SortOrder
-    branchId?: SortOrder
-  }
-
-  export type DepartmentMinOrderByAggregateInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    name?: SortOrder
-    description?: SortOrder
-    isActive?: SortOrder
-    branchId?: SortOrder
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -58524,7 +57204,6 @@ export namespace Prisma {
     description?: SortOrder
     status?: SortOrder
     priority?: SortOrder
-    department?: SortOrder
     deadline?: SortOrder
     progress?: SortOrder
     workflowStage?: SortOrder
@@ -58552,7 +57231,6 @@ export namespace Prisma {
     description?: SortOrder
     status?: SortOrder
     priority?: SortOrder
-    department?: SortOrder
     deadline?: SortOrder
     progress?: SortOrder
     workflowStage?: SortOrder
@@ -58575,7 +57253,6 @@ export namespace Prisma {
     description?: SortOrder
     status?: SortOrder
     priority?: SortOrder
-    department?: SortOrder
     deadline?: SortOrder
     progress?: SortOrder
     workflowStage?: SortOrder
@@ -59536,7 +58213,7 @@ export namespace Prisma {
     startDate?: SortOrder
     dueDate?: SortOrder
     clientId?: SortOrder
-    branchId?: SortOrder
+    portfolioId?: SortOrder
     createdById?: SortOrder
   }
 
@@ -59552,7 +58229,7 @@ export namespace Prisma {
     startDate?: SortOrder
     dueDate?: SortOrder
     clientId?: SortOrder
-    branchId?: SortOrder
+    portfolioId?: SortOrder
     createdById?: SortOrder
   }
 
@@ -59568,7 +58245,7 @@ export namespace Prisma {
     startDate?: SortOrder
     dueDate?: SortOrder
     clientId?: SortOrder
-    branchId?: SortOrder
+    portfolioId?: SortOrder
     createdById?: SortOrder
   }
 
@@ -59636,7 +58313,7 @@ export namespace Prisma {
     notes?: SortOrder
     clientId?: SortOrder
     projectId?: SortOrder
-    branchId?: SortOrder
+    portfolioId?: SortOrder
     createdById?: SortOrder
   }
 
@@ -59662,7 +58339,7 @@ export namespace Prisma {
     notes?: SortOrder
     clientId?: SortOrder
     projectId?: SortOrder
-    branchId?: SortOrder
+    portfolioId?: SortOrder
     createdById?: SortOrder
   }
 
@@ -59682,7 +58359,7 @@ export namespace Prisma {
     notes?: SortOrder
     clientId?: SortOrder
     projectId?: SortOrder
-    branchId?: SortOrder
+    portfolioId?: SortOrder
     createdById?: SortOrder
   }
 
@@ -59882,7 +58559,7 @@ export namespace Prisma {
     deadline?: SortOrder
     clientId?: SortOrder
     projectId?: SortOrder
-    branchId?: SortOrder
+    portfolioId?: SortOrder
     createdById?: SortOrder
   }
 
@@ -59897,7 +58574,7 @@ export namespace Prisma {
     deadline?: SortOrder
     clientId?: SortOrder
     projectId?: SortOrder
-    branchId?: SortOrder
+    portfolioId?: SortOrder
     createdById?: SortOrder
   }
 
@@ -59912,7 +58589,7 @@ export namespace Prisma {
     deadline?: SortOrder
     clientId?: SortOrder
     projectId?: SortOrder
-    branchId?: SortOrder
+    portfolioId?: SortOrder
     createdById?: SortOrder
   }
 
@@ -59980,7 +58657,7 @@ export namespace Prisma {
     isActive?: SortOrder
     autoGenerateTasks?: SortOrder
     clientId?: SortOrder
-    branchId?: SortOrder
+    portfolioId?: SortOrder
   }
 
   export type RecurringScheduleMaxOrderByAggregateInput = {
@@ -59996,7 +58673,7 @@ export namespace Prisma {
     isActive?: SortOrder
     autoGenerateTasks?: SortOrder
     clientId?: SortOrder
-    branchId?: SortOrder
+    portfolioId?: SortOrder
   }
 
   export type RecurringScheduleMinOrderByAggregateInput = {
@@ -60012,7 +58689,7 @@ export namespace Prisma {
     isActive?: SortOrder
     autoGenerateTasks?: SortOrder
     clientId?: SortOrder
-    branchId?: SortOrder
+    portfolioId?: SortOrder
   }
 
   export type EnumRecurrenceTypeWithAggregatesFilter<$PrismaModel = never> = {
@@ -60062,7 +58739,6 @@ export namespace Prisma {
     stepOrder?: SortOrder
     label?: SortOrder
     contentType?: SortOrder
-    department?: SortOrder
     supervisor?: SortOrder
     assigneeId?: SortOrder
     templateId?: SortOrder
@@ -60085,7 +58761,6 @@ export namespace Prisma {
     stepOrder?: SortOrder
     label?: SortOrder
     contentType?: SortOrder
-    department?: SortOrder
     supervisor?: SortOrder
     assigneeId?: SortOrder
     templateId?: SortOrder
@@ -60101,7 +58776,6 @@ export namespace Prisma {
     stepOrder?: SortOrder
     label?: SortOrder
     contentType?: SortOrder
-    department?: SortOrder
     supervisor?: SortOrder
     assigneeId?: SortOrder
     templateId?: SortOrder
@@ -60304,7 +58978,6 @@ export namespace Prisma {
     stepOrder?: SortOrder
     taskName?: SortOrder
     description?: SortOrder
-    department?: SortOrder
     defaultPriority?: SortOrder
     estimatedDays?: SortOrder
     workflowStage?: SortOrder
@@ -60322,7 +58995,6 @@ export namespace Prisma {
     stepOrder?: SortOrder
     taskName?: SortOrder
     description?: SortOrder
-    department?: SortOrder
     defaultPriority?: SortOrder
     estimatedDays?: SortOrder
     workflowStage?: SortOrder
@@ -60335,7 +59007,6 @@ export namespace Prisma {
     stepOrder?: SortOrder
     taskName?: SortOrder
     description?: SortOrder
-    department?: SortOrder
     defaultPriority?: SortOrder
     estimatedDays?: SortOrder
     workflowStage?: SortOrder
@@ -60346,11 +59017,11 @@ export namespace Prisma {
     estimatedDays?: SortOrder
   }
 
-  export type UserCreateNestedManyWithoutDynamicRoleInput = {
-    create?: XOR<UserCreateWithoutDynamicRoleInput, UserUncheckedCreateWithoutDynamicRoleInput> | UserCreateWithoutDynamicRoleInput[] | UserUncheckedCreateWithoutDynamicRoleInput[]
-    connectOrCreate?: UserCreateOrConnectWithoutDynamicRoleInput | UserCreateOrConnectWithoutDynamicRoleInput[]
-    createMany?: UserCreateManyDynamicRoleInputEnvelope
-    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  export type StaffCreateNestedManyWithoutDynamicRoleInput = {
+    create?: XOR<StaffCreateWithoutDynamicRoleInput, StaffUncheckedCreateWithoutDynamicRoleInput> | StaffCreateWithoutDynamicRoleInput[] | StaffUncheckedCreateWithoutDynamicRoleInput[]
+    connectOrCreate?: StaffCreateOrConnectWithoutDynamicRoleInput | StaffCreateOrConnectWithoutDynamicRoleInput[]
+    createMany?: StaffCreateManyDynamicRoleInputEnvelope
+    connect?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
   }
 
   export type RoleMenuAccessCreateNestedManyWithoutRoleInput = {
@@ -60360,11 +59031,11 @@ export namespace Prisma {
     connect?: RoleMenuAccessWhereUniqueInput | RoleMenuAccessWhereUniqueInput[]
   }
 
-  export type UserUncheckedCreateNestedManyWithoutDynamicRoleInput = {
-    create?: XOR<UserCreateWithoutDynamicRoleInput, UserUncheckedCreateWithoutDynamicRoleInput> | UserCreateWithoutDynamicRoleInput[] | UserUncheckedCreateWithoutDynamicRoleInput[]
-    connectOrCreate?: UserCreateOrConnectWithoutDynamicRoleInput | UserCreateOrConnectWithoutDynamicRoleInput[]
-    createMany?: UserCreateManyDynamicRoleInputEnvelope
-    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  export type StaffUncheckedCreateNestedManyWithoutDynamicRoleInput = {
+    create?: XOR<StaffCreateWithoutDynamicRoleInput, StaffUncheckedCreateWithoutDynamicRoleInput> | StaffCreateWithoutDynamicRoleInput[] | StaffUncheckedCreateWithoutDynamicRoleInput[]
+    connectOrCreate?: StaffCreateOrConnectWithoutDynamicRoleInput | StaffCreateOrConnectWithoutDynamicRoleInput[]
+    createMany?: StaffCreateManyDynamicRoleInputEnvelope
+    connect?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
   }
 
   export type RoleMenuAccessUncheckedCreateNestedManyWithoutRoleInput = {
@@ -60390,18 +59061,18 @@ export namespace Prisma {
     set?: Date | string
   }
 
-  export type UserUpdateManyWithoutDynamicRoleNestedInput = {
-    create?: XOR<UserCreateWithoutDynamicRoleInput, UserUncheckedCreateWithoutDynamicRoleInput> | UserCreateWithoutDynamicRoleInput[] | UserUncheckedCreateWithoutDynamicRoleInput[]
-    connectOrCreate?: UserCreateOrConnectWithoutDynamicRoleInput | UserCreateOrConnectWithoutDynamicRoleInput[]
-    upsert?: UserUpsertWithWhereUniqueWithoutDynamicRoleInput | UserUpsertWithWhereUniqueWithoutDynamicRoleInput[]
-    createMany?: UserCreateManyDynamicRoleInputEnvelope
-    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    update?: UserUpdateWithWhereUniqueWithoutDynamicRoleInput | UserUpdateWithWhereUniqueWithoutDynamicRoleInput[]
-    updateMany?: UserUpdateManyWithWhereWithoutDynamicRoleInput | UserUpdateManyWithWhereWithoutDynamicRoleInput[]
-    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  export type StaffUpdateManyWithoutDynamicRoleNestedInput = {
+    create?: XOR<StaffCreateWithoutDynamicRoleInput, StaffUncheckedCreateWithoutDynamicRoleInput> | StaffCreateWithoutDynamicRoleInput[] | StaffUncheckedCreateWithoutDynamicRoleInput[]
+    connectOrCreate?: StaffCreateOrConnectWithoutDynamicRoleInput | StaffCreateOrConnectWithoutDynamicRoleInput[]
+    upsert?: StaffUpsertWithWhereUniqueWithoutDynamicRoleInput | StaffUpsertWithWhereUniqueWithoutDynamicRoleInput[]
+    createMany?: StaffCreateManyDynamicRoleInputEnvelope
+    set?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
+    disconnect?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
+    delete?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
+    connect?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
+    update?: StaffUpdateWithWhereUniqueWithoutDynamicRoleInput | StaffUpdateWithWhereUniqueWithoutDynamicRoleInput[]
+    updateMany?: StaffUpdateManyWithWhereWithoutDynamicRoleInput | StaffUpdateManyWithWhereWithoutDynamicRoleInput[]
+    deleteMany?: StaffScalarWhereInput | StaffScalarWhereInput[]
   }
 
   export type RoleMenuAccessUpdateManyWithoutRoleNestedInput = {
@@ -60418,18 +59089,18 @@ export namespace Prisma {
     deleteMany?: RoleMenuAccessScalarWhereInput | RoleMenuAccessScalarWhereInput[]
   }
 
-  export type UserUncheckedUpdateManyWithoutDynamicRoleNestedInput = {
-    create?: XOR<UserCreateWithoutDynamicRoleInput, UserUncheckedCreateWithoutDynamicRoleInput> | UserCreateWithoutDynamicRoleInput[] | UserUncheckedCreateWithoutDynamicRoleInput[]
-    connectOrCreate?: UserCreateOrConnectWithoutDynamicRoleInput | UserCreateOrConnectWithoutDynamicRoleInput[]
-    upsert?: UserUpsertWithWhereUniqueWithoutDynamicRoleInput | UserUpsertWithWhereUniqueWithoutDynamicRoleInput[]
-    createMany?: UserCreateManyDynamicRoleInputEnvelope
-    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    update?: UserUpdateWithWhereUniqueWithoutDynamicRoleInput | UserUpdateWithWhereUniqueWithoutDynamicRoleInput[]
-    updateMany?: UserUpdateManyWithWhereWithoutDynamicRoleInput | UserUpdateManyWithWhereWithoutDynamicRoleInput[]
-    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  export type StaffUncheckedUpdateManyWithoutDynamicRoleNestedInput = {
+    create?: XOR<StaffCreateWithoutDynamicRoleInput, StaffUncheckedCreateWithoutDynamicRoleInput> | StaffCreateWithoutDynamicRoleInput[] | StaffUncheckedCreateWithoutDynamicRoleInput[]
+    connectOrCreate?: StaffCreateOrConnectWithoutDynamicRoleInput | StaffCreateOrConnectWithoutDynamicRoleInput[]
+    upsert?: StaffUpsertWithWhereUniqueWithoutDynamicRoleInput | StaffUpsertWithWhereUniqueWithoutDynamicRoleInput[]
+    createMany?: StaffCreateManyDynamicRoleInputEnvelope
+    set?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
+    disconnect?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
+    delete?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
+    connect?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
+    update?: StaffUpdateWithWhereUniqueWithoutDynamicRoleInput | StaffUpdateWithWhereUniqueWithoutDynamicRoleInput[]
+    updateMany?: StaffUpdateManyWithWhereWithoutDynamicRoleInput | StaffUpdateManyWithWhereWithoutDynamicRoleInput[]
+    deleteMany?: StaffScalarWhereInput | StaffScalarWhereInput[]
   }
 
   export type RoleMenuAccessUncheckedUpdateManyWithoutRoleNestedInput = {
@@ -60446,10 +59117,10 @@ export namespace Prisma {
     deleteMany?: RoleMenuAccessScalarWhereInput | RoleMenuAccessScalarWhereInput[]
   }
 
-  export type BranchCreateNestedOneWithoutUsersInput = {
-    create?: XOR<BranchCreateWithoutUsersInput, BranchUncheckedCreateWithoutUsersInput>
-    connectOrCreate?: BranchCreateOrConnectWithoutUsersInput
-    connect?: BranchWhereUniqueInput
+  export type PortfolioCreateNestedOneWithoutUsersInput = {
+    create?: XOR<PortfolioCreateWithoutUsersInput, PortfolioUncheckedCreateWithoutUsersInput>
+    connectOrCreate?: PortfolioCreateOrConnectWithoutUsersInput
+    connect?: PortfolioWhereUniqueInput
   }
 
   export type SessionCreateNestedManyWithoutUserInput = {
@@ -60690,14 +59361,14 @@ export namespace Prisma {
     set?: Date | string | null
   }
 
-  export type BranchUpdateOneWithoutUsersNestedInput = {
-    create?: XOR<BranchCreateWithoutUsersInput, BranchUncheckedCreateWithoutUsersInput>
-    connectOrCreate?: BranchCreateOrConnectWithoutUsersInput
-    upsert?: BranchUpsertWithoutUsersInput
-    disconnect?: BranchWhereInput | boolean
-    delete?: BranchWhereInput | boolean
-    connect?: BranchWhereUniqueInput
-    update?: XOR<XOR<BranchUpdateToOneWithWhereWithoutUsersInput, BranchUpdateWithoutUsersInput>, BranchUncheckedUpdateWithoutUsersInput>
+  export type PortfolioUpdateOneWithoutUsersNestedInput = {
+    create?: XOR<PortfolioCreateWithoutUsersInput, PortfolioUncheckedCreateWithoutUsersInput>
+    connectOrCreate?: PortfolioCreateOrConnectWithoutUsersInput
+    upsert?: PortfolioUpsertWithoutUsersInput
+    disconnect?: PortfolioWhereInput | boolean
+    delete?: PortfolioWhereInput | boolean
+    connect?: PortfolioWhereUniqueInput
+    update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutUsersInput, PortfolioUpdateWithoutUsersInput>, PortfolioUncheckedUpdateWithoutUsersInput>
   }
 
   export type SessionUpdateManyWithoutUserNestedInput = {
@@ -61158,44 +59829,44 @@ export namespace Prisma {
     deleteMany?: ContractDocumentScalarWhereInput | ContractDocumentScalarWhereInput[]
   }
 
-  export type UserCreateNestedOneWithoutSessionsInput = {
-    create?: XOR<UserCreateWithoutSessionsInput, UserUncheckedCreateWithoutSessionsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutSessionsInput
-    connect?: UserWhereUniqueInput
+  export type StaffCreateNestedOneWithoutSessionsInput = {
+    create?: XOR<StaffCreateWithoutSessionsInput, StaffUncheckedCreateWithoutSessionsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutSessionsInput
+    connect?: StaffWhereUniqueInput
   }
 
-  export type UserUpdateOneRequiredWithoutSessionsNestedInput = {
-    create?: XOR<UserCreateWithoutSessionsInput, UserUncheckedCreateWithoutSessionsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutSessionsInput
-    upsert?: UserUpsertWithoutSessionsInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSessionsInput, UserUpdateWithoutSessionsInput>, UserUncheckedUpdateWithoutSessionsInput>
+  export type StaffUpdateOneRequiredWithoutSessionsNestedInput = {
+    create?: XOR<StaffCreateWithoutSessionsInput, StaffUncheckedCreateWithoutSessionsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutSessionsInput
+    upsert?: StaffUpsertWithoutSessionsInput
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutSessionsInput, StaffUpdateWithoutSessionsInput>, StaffUncheckedUpdateWithoutSessionsInput>
   }
 
-  export type UserCreateNestedOneWithoutAccountsInput = {
-    create?: XOR<UserCreateWithoutAccountsInput, UserUncheckedCreateWithoutAccountsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutAccountsInput
-    connect?: UserWhereUniqueInput
+  export type StaffCreateNestedOneWithoutAccountsInput = {
+    create?: XOR<StaffCreateWithoutAccountsInput, StaffUncheckedCreateWithoutAccountsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutAccountsInput
+    connect?: StaffWhereUniqueInput
   }
 
-  export type UserUpdateOneRequiredWithoutAccountsNestedInput = {
-    create?: XOR<UserCreateWithoutAccountsInput, UserUncheckedCreateWithoutAccountsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutAccountsInput
-    upsert?: UserUpsertWithoutAccountsInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAccountsInput, UserUpdateWithoutAccountsInput>, UserUncheckedUpdateWithoutAccountsInput>
+  export type StaffUpdateOneRequiredWithoutAccountsNestedInput = {
+    create?: XOR<StaffCreateWithoutAccountsInput, StaffUncheckedCreateWithoutAccountsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutAccountsInput
+    upsert?: StaffUpsertWithoutAccountsInput
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutAccountsInput, StaffUpdateWithoutAccountsInput>, StaffUncheckedUpdateWithoutAccountsInput>
   }
 
-  export type BranchCreateNestedOneWithoutClientsInput = {
-    create?: XOR<BranchCreateWithoutClientsInput, BranchUncheckedCreateWithoutClientsInput>
-    connectOrCreate?: BranchCreateOrConnectWithoutClientsInput
-    connect?: BranchWhereUniqueInput
+  export type PortfolioCreateNestedOneWithoutClientsInput = {
+    create?: XOR<PortfolioCreateWithoutClientsInput, PortfolioUncheckedCreateWithoutClientsInput>
+    connectOrCreate?: PortfolioCreateOrConnectWithoutClientsInput
+    connect?: PortfolioWhereUniqueInput
   }
 
-  export type UserCreateNestedOneWithoutManagedClientsInput = {
-    create?: XOR<UserCreateWithoutManagedClientsInput, UserUncheckedCreateWithoutManagedClientsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutManagedClientsInput
-    connect?: UserWhereUniqueInput
+  export type StaffCreateNestedOneWithoutManagedClientsInput = {
+    create?: XOR<StaffCreateWithoutManagedClientsInput, StaffUncheckedCreateWithoutManagedClientsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutManagedClientsInput
+    connect?: StaffWhereUniqueInput
   }
 
   export type ClientServiceCreateNestedManyWithoutClientInput = {
@@ -61350,24 +60021,24 @@ export namespace Prisma {
     divide?: number
   }
 
-  export type BranchUpdateOneWithoutClientsNestedInput = {
-    create?: XOR<BranchCreateWithoutClientsInput, BranchUncheckedCreateWithoutClientsInput>
-    connectOrCreate?: BranchCreateOrConnectWithoutClientsInput
-    upsert?: BranchUpsertWithoutClientsInput
-    disconnect?: BranchWhereInput | boolean
-    delete?: BranchWhereInput | boolean
-    connect?: BranchWhereUniqueInput
-    update?: XOR<XOR<BranchUpdateToOneWithWhereWithoutClientsInput, BranchUpdateWithoutClientsInput>, BranchUncheckedUpdateWithoutClientsInput>
+  export type PortfolioUpdateOneWithoutClientsNestedInput = {
+    create?: XOR<PortfolioCreateWithoutClientsInput, PortfolioUncheckedCreateWithoutClientsInput>
+    connectOrCreate?: PortfolioCreateOrConnectWithoutClientsInput
+    upsert?: PortfolioUpsertWithoutClientsInput
+    disconnect?: PortfolioWhereInput | boolean
+    delete?: PortfolioWhereInput | boolean
+    connect?: PortfolioWhereUniqueInput
+    update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutClientsInput, PortfolioUpdateWithoutClientsInput>, PortfolioUncheckedUpdateWithoutClientsInput>
   }
 
-  export type UserUpdateOneWithoutManagedClientsNestedInput = {
-    create?: XOR<UserCreateWithoutManagedClientsInput, UserUncheckedCreateWithoutManagedClientsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutManagedClientsInput
-    upsert?: UserUpsertWithoutManagedClientsInput
-    disconnect?: UserWhereInput | boolean
-    delete?: UserWhereInput | boolean
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutManagedClientsInput, UserUpdateWithoutManagedClientsInput>, UserUncheckedUpdateWithoutManagedClientsInput>
+  export type StaffUpdateOneWithoutManagedClientsNestedInput = {
+    create?: XOR<StaffCreateWithoutManagedClientsInput, StaffUncheckedCreateWithoutManagedClientsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutManagedClientsInput
+    upsert?: StaffUpsertWithoutManagedClientsInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutManagedClientsInput, StaffUpdateWithoutManagedClientsInput>, StaffUncheckedUpdateWithoutManagedClientsInput>
   }
 
   export type ClientServiceUpdateManyWithoutClientNestedInput = {
@@ -61650,10 +60321,10 @@ export namespace Prisma {
     deleteMany?: ClientInstallmentScalarWhereInput | ClientInstallmentScalarWhereInput[]
   }
 
-  export type BranchCreateNestedOneWithoutServicesInput = {
-    create?: XOR<BranchCreateWithoutServicesInput, BranchUncheckedCreateWithoutServicesInput>
-    connectOrCreate?: BranchCreateOrConnectWithoutServicesInput
-    connect?: BranchWhereUniqueInput
+  export type PortfolioCreateNestedOneWithoutServicesInput = {
+    create?: XOR<PortfolioCreateWithoutServicesInput, PortfolioUncheckedCreateWithoutServicesInput>
+    connectOrCreate?: PortfolioCreateOrConnectWithoutServicesInput
+    connect?: PortfolioWhereUniqueInput
   }
 
   export type ClientServiceCreateNestedManyWithoutServiceInput = {
@@ -61698,14 +60369,14 @@ export namespace Prisma {
     connect?: IncomeServiceAgreementWhereUniqueInput | IncomeServiceAgreementWhereUniqueInput[]
   }
 
-  export type BranchUpdateOneWithoutServicesNestedInput = {
-    create?: XOR<BranchCreateWithoutServicesInput, BranchUncheckedCreateWithoutServicesInput>
-    connectOrCreate?: BranchCreateOrConnectWithoutServicesInput
-    upsert?: BranchUpsertWithoutServicesInput
-    disconnect?: BranchWhereInput | boolean
-    delete?: BranchWhereInput | boolean
-    connect?: BranchWhereUniqueInput
-    update?: XOR<XOR<BranchUpdateToOneWithWhereWithoutServicesInput, BranchUpdateWithoutServicesInput>, BranchUncheckedUpdateWithoutServicesInput>
+  export type PortfolioUpdateOneWithoutServicesNestedInput = {
+    create?: XOR<PortfolioCreateWithoutServicesInput, PortfolioUncheckedCreateWithoutServicesInput>
+    connectOrCreate?: PortfolioCreateOrConnectWithoutServicesInput
+    upsert?: PortfolioUpsertWithoutServicesInput
+    disconnect?: PortfolioWhereInput | boolean
+    delete?: PortfolioWhereInput | boolean
+    connect?: PortfolioWhereUniqueInput
+    update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutServicesInput, PortfolioUpdateWithoutServicesInput>, PortfolioUncheckedUpdateWithoutServicesInput>
   }
 
   export type ClientServiceUpdateManyWithoutServiceNestedInput = {
@@ -61890,354 +60561,298 @@ export namespace Prisma {
     deleteMany?: IncomeServiceAgreementScalarWhereInput | IncomeServiceAgreementScalarWhereInput[]
   }
 
-  export type UserCreateNestedManyWithoutBranchInput = {
-    create?: XOR<UserCreateWithoutBranchInput, UserUncheckedCreateWithoutBranchInput> | UserCreateWithoutBranchInput[] | UserUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: UserCreateOrConnectWithoutBranchInput | UserCreateOrConnectWithoutBranchInput[]
-    createMany?: UserCreateManyBranchInputEnvelope
-    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  export type StaffCreateNestedManyWithoutPortfolioInput = {
+    create?: XOR<StaffCreateWithoutPortfolioInput, StaffUncheckedCreateWithoutPortfolioInput> | StaffCreateWithoutPortfolioInput[] | StaffUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: StaffCreateOrConnectWithoutPortfolioInput | StaffCreateOrConnectWithoutPortfolioInput[]
+    createMany?: StaffCreateManyPortfolioInputEnvelope
+    connect?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
   }
 
-  export type ServiceCreateNestedManyWithoutBranchInput = {
-    create?: XOR<ServiceCreateWithoutBranchInput, ServiceUncheckedCreateWithoutBranchInput> | ServiceCreateWithoutBranchInput[] | ServiceUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: ServiceCreateOrConnectWithoutBranchInput | ServiceCreateOrConnectWithoutBranchInput[]
-    createMany?: ServiceCreateManyBranchInputEnvelope
+  export type ServiceCreateNestedManyWithoutPortfolioInput = {
+    create?: XOR<ServiceCreateWithoutPortfolioInput, ServiceUncheckedCreateWithoutPortfolioInput> | ServiceCreateWithoutPortfolioInput[] | ServiceUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: ServiceCreateOrConnectWithoutPortfolioInput | ServiceCreateOrConnectWithoutPortfolioInput[]
+    createMany?: ServiceCreateManyPortfolioInputEnvelope
     connect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
   }
 
-  export type DepartmentCreateNestedManyWithoutBranchInput = {
-    create?: XOR<DepartmentCreateWithoutBranchInput, DepartmentUncheckedCreateWithoutBranchInput> | DepartmentCreateWithoutBranchInput[] | DepartmentUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: DepartmentCreateOrConnectWithoutBranchInput | DepartmentCreateOrConnectWithoutBranchInput[]
-    createMany?: DepartmentCreateManyBranchInputEnvelope
-    connect?: DepartmentWhereUniqueInput | DepartmentWhereUniqueInput[]
-  }
-
-  export type ClientCreateNestedManyWithoutBranchInput = {
-    create?: XOR<ClientCreateWithoutBranchInput, ClientUncheckedCreateWithoutBranchInput> | ClientCreateWithoutBranchInput[] | ClientUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: ClientCreateOrConnectWithoutBranchInput | ClientCreateOrConnectWithoutBranchInput[]
-    createMany?: ClientCreateManyBranchInputEnvelope
+  export type ClientCreateNestedManyWithoutPortfolioInput = {
+    create?: XOR<ClientCreateWithoutPortfolioInput, ClientUncheckedCreateWithoutPortfolioInput> | ClientCreateWithoutPortfolioInput[] | ClientUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: ClientCreateOrConnectWithoutPortfolioInput | ClientCreateOrConnectWithoutPortfolioInput[]
+    createMany?: ClientCreateManyPortfolioInputEnvelope
     connect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
   }
 
-  export type ProjectCreateNestedManyWithoutBranchInput = {
-    create?: XOR<ProjectCreateWithoutBranchInput, ProjectUncheckedCreateWithoutBranchInput> | ProjectCreateWithoutBranchInput[] | ProjectUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: ProjectCreateOrConnectWithoutBranchInput | ProjectCreateOrConnectWithoutBranchInput[]
-    createMany?: ProjectCreateManyBranchInputEnvelope
+  export type ProjectCreateNestedManyWithoutPortfolioInput = {
+    create?: XOR<ProjectCreateWithoutPortfolioInput, ProjectUncheckedCreateWithoutPortfolioInput> | ProjectCreateWithoutPortfolioInput[] | ProjectUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutPortfolioInput | ProjectCreateOrConnectWithoutPortfolioInput[]
+    createMany?: ProjectCreateManyPortfolioInputEnvelope
     connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
   }
 
-  export type ContentRequestCreateNestedManyWithoutBranchInput = {
-    create?: XOR<ContentRequestCreateWithoutBranchInput, ContentRequestUncheckedCreateWithoutBranchInput> | ContentRequestCreateWithoutBranchInput[] | ContentRequestUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: ContentRequestCreateOrConnectWithoutBranchInput | ContentRequestCreateOrConnectWithoutBranchInput[]
-    createMany?: ContentRequestCreateManyBranchInputEnvelope
+  export type ContentRequestCreateNestedManyWithoutPortfolioInput = {
+    create?: XOR<ContentRequestCreateWithoutPortfolioInput, ContentRequestUncheckedCreateWithoutPortfolioInput> | ContentRequestCreateWithoutPortfolioInput[] | ContentRequestUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: ContentRequestCreateOrConnectWithoutPortfolioInput | ContentRequestCreateOrConnectWithoutPortfolioInput[]
+    createMany?: ContentRequestCreateManyPortfolioInputEnvelope
     connect?: ContentRequestWhereUniqueInput | ContentRequestWhereUniqueInput[]
   }
 
-  export type RecurringScheduleCreateNestedManyWithoutBranchInput = {
-    create?: XOR<RecurringScheduleCreateWithoutBranchInput, RecurringScheduleUncheckedCreateWithoutBranchInput> | RecurringScheduleCreateWithoutBranchInput[] | RecurringScheduleUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: RecurringScheduleCreateOrConnectWithoutBranchInput | RecurringScheduleCreateOrConnectWithoutBranchInput[]
-    createMany?: RecurringScheduleCreateManyBranchInputEnvelope
+  export type RecurringScheduleCreateNestedManyWithoutPortfolioInput = {
+    create?: XOR<RecurringScheduleCreateWithoutPortfolioInput, RecurringScheduleUncheckedCreateWithoutPortfolioInput> | RecurringScheduleCreateWithoutPortfolioInput[] | RecurringScheduleUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: RecurringScheduleCreateOrConnectWithoutPortfolioInput | RecurringScheduleCreateOrConnectWithoutPortfolioInput[]
+    createMany?: RecurringScheduleCreateManyPortfolioInputEnvelope
     connect?: RecurringScheduleWhereUniqueInput | RecurringScheduleWhereUniqueInput[]
   }
 
-  export type ContractCreateNestedManyWithoutBranchInput = {
-    create?: XOR<ContractCreateWithoutBranchInput, ContractUncheckedCreateWithoutBranchInput> | ContractCreateWithoutBranchInput[] | ContractUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: ContractCreateOrConnectWithoutBranchInput | ContractCreateOrConnectWithoutBranchInput[]
-    createMany?: ContractCreateManyBranchInputEnvelope
+  export type ContractCreateNestedManyWithoutPortfolioInput = {
+    create?: XOR<ContractCreateWithoutPortfolioInput, ContractUncheckedCreateWithoutPortfolioInput> | ContractCreateWithoutPortfolioInput[] | ContractUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: ContractCreateOrConnectWithoutPortfolioInput | ContractCreateOrConnectWithoutPortfolioInput[]
+    createMany?: ContractCreateManyPortfolioInputEnvelope
     connect?: ContractWhereUniqueInput | ContractWhereUniqueInput[]
   }
 
-  export type UserUncheckedCreateNestedManyWithoutBranchInput = {
-    create?: XOR<UserCreateWithoutBranchInput, UserUncheckedCreateWithoutBranchInput> | UserCreateWithoutBranchInput[] | UserUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: UserCreateOrConnectWithoutBranchInput | UserCreateOrConnectWithoutBranchInput[]
-    createMany?: UserCreateManyBranchInputEnvelope
-    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  export type StaffUncheckedCreateNestedManyWithoutPortfolioInput = {
+    create?: XOR<StaffCreateWithoutPortfolioInput, StaffUncheckedCreateWithoutPortfolioInput> | StaffCreateWithoutPortfolioInput[] | StaffUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: StaffCreateOrConnectWithoutPortfolioInput | StaffCreateOrConnectWithoutPortfolioInput[]
+    createMany?: StaffCreateManyPortfolioInputEnvelope
+    connect?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
   }
 
-  export type ServiceUncheckedCreateNestedManyWithoutBranchInput = {
-    create?: XOR<ServiceCreateWithoutBranchInput, ServiceUncheckedCreateWithoutBranchInput> | ServiceCreateWithoutBranchInput[] | ServiceUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: ServiceCreateOrConnectWithoutBranchInput | ServiceCreateOrConnectWithoutBranchInput[]
-    createMany?: ServiceCreateManyBranchInputEnvelope
+  export type ServiceUncheckedCreateNestedManyWithoutPortfolioInput = {
+    create?: XOR<ServiceCreateWithoutPortfolioInput, ServiceUncheckedCreateWithoutPortfolioInput> | ServiceCreateWithoutPortfolioInput[] | ServiceUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: ServiceCreateOrConnectWithoutPortfolioInput | ServiceCreateOrConnectWithoutPortfolioInput[]
+    createMany?: ServiceCreateManyPortfolioInputEnvelope
     connect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
   }
 
-  export type DepartmentUncheckedCreateNestedManyWithoutBranchInput = {
-    create?: XOR<DepartmentCreateWithoutBranchInput, DepartmentUncheckedCreateWithoutBranchInput> | DepartmentCreateWithoutBranchInput[] | DepartmentUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: DepartmentCreateOrConnectWithoutBranchInput | DepartmentCreateOrConnectWithoutBranchInput[]
-    createMany?: DepartmentCreateManyBranchInputEnvelope
-    connect?: DepartmentWhereUniqueInput | DepartmentWhereUniqueInput[]
-  }
-
-  export type ClientUncheckedCreateNestedManyWithoutBranchInput = {
-    create?: XOR<ClientCreateWithoutBranchInput, ClientUncheckedCreateWithoutBranchInput> | ClientCreateWithoutBranchInput[] | ClientUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: ClientCreateOrConnectWithoutBranchInput | ClientCreateOrConnectWithoutBranchInput[]
-    createMany?: ClientCreateManyBranchInputEnvelope
+  export type ClientUncheckedCreateNestedManyWithoutPortfolioInput = {
+    create?: XOR<ClientCreateWithoutPortfolioInput, ClientUncheckedCreateWithoutPortfolioInput> | ClientCreateWithoutPortfolioInput[] | ClientUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: ClientCreateOrConnectWithoutPortfolioInput | ClientCreateOrConnectWithoutPortfolioInput[]
+    createMany?: ClientCreateManyPortfolioInputEnvelope
     connect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
   }
 
-  export type ProjectUncheckedCreateNestedManyWithoutBranchInput = {
-    create?: XOR<ProjectCreateWithoutBranchInput, ProjectUncheckedCreateWithoutBranchInput> | ProjectCreateWithoutBranchInput[] | ProjectUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: ProjectCreateOrConnectWithoutBranchInput | ProjectCreateOrConnectWithoutBranchInput[]
-    createMany?: ProjectCreateManyBranchInputEnvelope
+  export type ProjectUncheckedCreateNestedManyWithoutPortfolioInput = {
+    create?: XOR<ProjectCreateWithoutPortfolioInput, ProjectUncheckedCreateWithoutPortfolioInput> | ProjectCreateWithoutPortfolioInput[] | ProjectUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutPortfolioInput | ProjectCreateOrConnectWithoutPortfolioInput[]
+    createMany?: ProjectCreateManyPortfolioInputEnvelope
     connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
   }
 
-  export type ContentRequestUncheckedCreateNestedManyWithoutBranchInput = {
-    create?: XOR<ContentRequestCreateWithoutBranchInput, ContentRequestUncheckedCreateWithoutBranchInput> | ContentRequestCreateWithoutBranchInput[] | ContentRequestUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: ContentRequestCreateOrConnectWithoutBranchInput | ContentRequestCreateOrConnectWithoutBranchInput[]
-    createMany?: ContentRequestCreateManyBranchInputEnvelope
+  export type ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput = {
+    create?: XOR<ContentRequestCreateWithoutPortfolioInput, ContentRequestUncheckedCreateWithoutPortfolioInput> | ContentRequestCreateWithoutPortfolioInput[] | ContentRequestUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: ContentRequestCreateOrConnectWithoutPortfolioInput | ContentRequestCreateOrConnectWithoutPortfolioInput[]
+    createMany?: ContentRequestCreateManyPortfolioInputEnvelope
     connect?: ContentRequestWhereUniqueInput | ContentRequestWhereUniqueInput[]
   }
 
-  export type RecurringScheduleUncheckedCreateNestedManyWithoutBranchInput = {
-    create?: XOR<RecurringScheduleCreateWithoutBranchInput, RecurringScheduleUncheckedCreateWithoutBranchInput> | RecurringScheduleCreateWithoutBranchInput[] | RecurringScheduleUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: RecurringScheduleCreateOrConnectWithoutBranchInput | RecurringScheduleCreateOrConnectWithoutBranchInput[]
-    createMany?: RecurringScheduleCreateManyBranchInputEnvelope
+  export type RecurringScheduleUncheckedCreateNestedManyWithoutPortfolioInput = {
+    create?: XOR<RecurringScheduleCreateWithoutPortfolioInput, RecurringScheduleUncheckedCreateWithoutPortfolioInput> | RecurringScheduleCreateWithoutPortfolioInput[] | RecurringScheduleUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: RecurringScheduleCreateOrConnectWithoutPortfolioInput | RecurringScheduleCreateOrConnectWithoutPortfolioInput[]
+    createMany?: RecurringScheduleCreateManyPortfolioInputEnvelope
     connect?: RecurringScheduleWhereUniqueInput | RecurringScheduleWhereUniqueInput[]
   }
 
-  export type ContractUncheckedCreateNestedManyWithoutBranchInput = {
-    create?: XOR<ContractCreateWithoutBranchInput, ContractUncheckedCreateWithoutBranchInput> | ContractCreateWithoutBranchInput[] | ContractUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: ContractCreateOrConnectWithoutBranchInput | ContractCreateOrConnectWithoutBranchInput[]
-    createMany?: ContractCreateManyBranchInputEnvelope
+  export type ContractUncheckedCreateNestedManyWithoutPortfolioInput = {
+    create?: XOR<ContractCreateWithoutPortfolioInput, ContractUncheckedCreateWithoutPortfolioInput> | ContractCreateWithoutPortfolioInput[] | ContractUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: ContractCreateOrConnectWithoutPortfolioInput | ContractCreateOrConnectWithoutPortfolioInput[]
+    createMany?: ContractCreateManyPortfolioInputEnvelope
     connect?: ContractWhereUniqueInput | ContractWhereUniqueInput[]
   }
 
-  export type UserUpdateManyWithoutBranchNestedInput = {
-    create?: XOR<UserCreateWithoutBranchInput, UserUncheckedCreateWithoutBranchInput> | UserCreateWithoutBranchInput[] | UserUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: UserCreateOrConnectWithoutBranchInput | UserCreateOrConnectWithoutBranchInput[]
-    upsert?: UserUpsertWithWhereUniqueWithoutBranchInput | UserUpsertWithWhereUniqueWithoutBranchInput[]
-    createMany?: UserCreateManyBranchInputEnvelope
-    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    update?: UserUpdateWithWhereUniqueWithoutBranchInput | UserUpdateWithWhereUniqueWithoutBranchInput[]
-    updateMany?: UserUpdateManyWithWhereWithoutBranchInput | UserUpdateManyWithWhereWithoutBranchInput[]
-    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  export type StaffUpdateManyWithoutPortfolioNestedInput = {
+    create?: XOR<StaffCreateWithoutPortfolioInput, StaffUncheckedCreateWithoutPortfolioInput> | StaffCreateWithoutPortfolioInput[] | StaffUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: StaffCreateOrConnectWithoutPortfolioInput | StaffCreateOrConnectWithoutPortfolioInput[]
+    upsert?: StaffUpsertWithWhereUniqueWithoutPortfolioInput | StaffUpsertWithWhereUniqueWithoutPortfolioInput[]
+    createMany?: StaffCreateManyPortfolioInputEnvelope
+    set?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
+    disconnect?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
+    delete?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
+    connect?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
+    update?: StaffUpdateWithWhereUniqueWithoutPortfolioInput | StaffUpdateWithWhereUniqueWithoutPortfolioInput[]
+    updateMany?: StaffUpdateManyWithWhereWithoutPortfolioInput | StaffUpdateManyWithWhereWithoutPortfolioInput[]
+    deleteMany?: StaffScalarWhereInput | StaffScalarWhereInput[]
   }
 
-  export type ServiceUpdateManyWithoutBranchNestedInput = {
-    create?: XOR<ServiceCreateWithoutBranchInput, ServiceUncheckedCreateWithoutBranchInput> | ServiceCreateWithoutBranchInput[] | ServiceUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: ServiceCreateOrConnectWithoutBranchInput | ServiceCreateOrConnectWithoutBranchInput[]
-    upsert?: ServiceUpsertWithWhereUniqueWithoutBranchInput | ServiceUpsertWithWhereUniqueWithoutBranchInput[]
-    createMany?: ServiceCreateManyBranchInputEnvelope
+  export type ServiceUpdateManyWithoutPortfolioNestedInput = {
+    create?: XOR<ServiceCreateWithoutPortfolioInput, ServiceUncheckedCreateWithoutPortfolioInput> | ServiceCreateWithoutPortfolioInput[] | ServiceUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: ServiceCreateOrConnectWithoutPortfolioInput | ServiceCreateOrConnectWithoutPortfolioInput[]
+    upsert?: ServiceUpsertWithWhereUniqueWithoutPortfolioInput | ServiceUpsertWithWhereUniqueWithoutPortfolioInput[]
+    createMany?: ServiceCreateManyPortfolioInputEnvelope
     set?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
     disconnect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
     delete?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
     connect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
-    update?: ServiceUpdateWithWhereUniqueWithoutBranchInput | ServiceUpdateWithWhereUniqueWithoutBranchInput[]
-    updateMany?: ServiceUpdateManyWithWhereWithoutBranchInput | ServiceUpdateManyWithWhereWithoutBranchInput[]
+    update?: ServiceUpdateWithWhereUniqueWithoutPortfolioInput | ServiceUpdateWithWhereUniqueWithoutPortfolioInput[]
+    updateMany?: ServiceUpdateManyWithWhereWithoutPortfolioInput | ServiceUpdateManyWithWhereWithoutPortfolioInput[]
     deleteMany?: ServiceScalarWhereInput | ServiceScalarWhereInput[]
   }
 
-  export type DepartmentUpdateManyWithoutBranchNestedInput = {
-    create?: XOR<DepartmentCreateWithoutBranchInput, DepartmentUncheckedCreateWithoutBranchInput> | DepartmentCreateWithoutBranchInput[] | DepartmentUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: DepartmentCreateOrConnectWithoutBranchInput | DepartmentCreateOrConnectWithoutBranchInput[]
-    upsert?: DepartmentUpsertWithWhereUniqueWithoutBranchInput | DepartmentUpsertWithWhereUniqueWithoutBranchInput[]
-    createMany?: DepartmentCreateManyBranchInputEnvelope
-    set?: DepartmentWhereUniqueInput | DepartmentWhereUniqueInput[]
-    disconnect?: DepartmentWhereUniqueInput | DepartmentWhereUniqueInput[]
-    delete?: DepartmentWhereUniqueInput | DepartmentWhereUniqueInput[]
-    connect?: DepartmentWhereUniqueInput | DepartmentWhereUniqueInput[]
-    update?: DepartmentUpdateWithWhereUniqueWithoutBranchInput | DepartmentUpdateWithWhereUniqueWithoutBranchInput[]
-    updateMany?: DepartmentUpdateManyWithWhereWithoutBranchInput | DepartmentUpdateManyWithWhereWithoutBranchInput[]
-    deleteMany?: DepartmentScalarWhereInput | DepartmentScalarWhereInput[]
-  }
-
-  export type ClientUpdateManyWithoutBranchNestedInput = {
-    create?: XOR<ClientCreateWithoutBranchInput, ClientUncheckedCreateWithoutBranchInput> | ClientCreateWithoutBranchInput[] | ClientUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: ClientCreateOrConnectWithoutBranchInput | ClientCreateOrConnectWithoutBranchInput[]
-    upsert?: ClientUpsertWithWhereUniqueWithoutBranchInput | ClientUpsertWithWhereUniqueWithoutBranchInput[]
-    createMany?: ClientCreateManyBranchInputEnvelope
+  export type ClientUpdateManyWithoutPortfolioNestedInput = {
+    create?: XOR<ClientCreateWithoutPortfolioInput, ClientUncheckedCreateWithoutPortfolioInput> | ClientCreateWithoutPortfolioInput[] | ClientUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: ClientCreateOrConnectWithoutPortfolioInput | ClientCreateOrConnectWithoutPortfolioInput[]
+    upsert?: ClientUpsertWithWhereUniqueWithoutPortfolioInput | ClientUpsertWithWhereUniqueWithoutPortfolioInput[]
+    createMany?: ClientCreateManyPortfolioInputEnvelope
     set?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
     disconnect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
     delete?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
     connect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
-    update?: ClientUpdateWithWhereUniqueWithoutBranchInput | ClientUpdateWithWhereUniqueWithoutBranchInput[]
-    updateMany?: ClientUpdateManyWithWhereWithoutBranchInput | ClientUpdateManyWithWhereWithoutBranchInput[]
+    update?: ClientUpdateWithWhereUniqueWithoutPortfolioInput | ClientUpdateWithWhereUniqueWithoutPortfolioInput[]
+    updateMany?: ClientUpdateManyWithWhereWithoutPortfolioInput | ClientUpdateManyWithWhereWithoutPortfolioInput[]
     deleteMany?: ClientScalarWhereInput | ClientScalarWhereInput[]
   }
 
-  export type ProjectUpdateManyWithoutBranchNestedInput = {
-    create?: XOR<ProjectCreateWithoutBranchInput, ProjectUncheckedCreateWithoutBranchInput> | ProjectCreateWithoutBranchInput[] | ProjectUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: ProjectCreateOrConnectWithoutBranchInput | ProjectCreateOrConnectWithoutBranchInput[]
-    upsert?: ProjectUpsertWithWhereUniqueWithoutBranchInput | ProjectUpsertWithWhereUniqueWithoutBranchInput[]
-    createMany?: ProjectCreateManyBranchInputEnvelope
+  export type ProjectUpdateManyWithoutPortfolioNestedInput = {
+    create?: XOR<ProjectCreateWithoutPortfolioInput, ProjectUncheckedCreateWithoutPortfolioInput> | ProjectCreateWithoutPortfolioInput[] | ProjectUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutPortfolioInput | ProjectCreateOrConnectWithoutPortfolioInput[]
+    upsert?: ProjectUpsertWithWhereUniqueWithoutPortfolioInput | ProjectUpsertWithWhereUniqueWithoutPortfolioInput[]
+    createMany?: ProjectCreateManyPortfolioInputEnvelope
     set?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
     disconnect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
     delete?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
     connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
-    update?: ProjectUpdateWithWhereUniqueWithoutBranchInput | ProjectUpdateWithWhereUniqueWithoutBranchInput[]
-    updateMany?: ProjectUpdateManyWithWhereWithoutBranchInput | ProjectUpdateManyWithWhereWithoutBranchInput[]
+    update?: ProjectUpdateWithWhereUniqueWithoutPortfolioInput | ProjectUpdateWithWhereUniqueWithoutPortfolioInput[]
+    updateMany?: ProjectUpdateManyWithWhereWithoutPortfolioInput | ProjectUpdateManyWithWhereWithoutPortfolioInput[]
     deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
   }
 
-  export type ContentRequestUpdateManyWithoutBranchNestedInput = {
-    create?: XOR<ContentRequestCreateWithoutBranchInput, ContentRequestUncheckedCreateWithoutBranchInput> | ContentRequestCreateWithoutBranchInput[] | ContentRequestUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: ContentRequestCreateOrConnectWithoutBranchInput | ContentRequestCreateOrConnectWithoutBranchInput[]
-    upsert?: ContentRequestUpsertWithWhereUniqueWithoutBranchInput | ContentRequestUpsertWithWhereUniqueWithoutBranchInput[]
-    createMany?: ContentRequestCreateManyBranchInputEnvelope
+  export type ContentRequestUpdateManyWithoutPortfolioNestedInput = {
+    create?: XOR<ContentRequestCreateWithoutPortfolioInput, ContentRequestUncheckedCreateWithoutPortfolioInput> | ContentRequestCreateWithoutPortfolioInput[] | ContentRequestUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: ContentRequestCreateOrConnectWithoutPortfolioInput | ContentRequestCreateOrConnectWithoutPortfolioInput[]
+    upsert?: ContentRequestUpsertWithWhereUniqueWithoutPortfolioInput | ContentRequestUpsertWithWhereUniqueWithoutPortfolioInput[]
+    createMany?: ContentRequestCreateManyPortfolioInputEnvelope
     set?: ContentRequestWhereUniqueInput | ContentRequestWhereUniqueInput[]
     disconnect?: ContentRequestWhereUniqueInput | ContentRequestWhereUniqueInput[]
     delete?: ContentRequestWhereUniqueInput | ContentRequestWhereUniqueInput[]
     connect?: ContentRequestWhereUniqueInput | ContentRequestWhereUniqueInput[]
-    update?: ContentRequestUpdateWithWhereUniqueWithoutBranchInput | ContentRequestUpdateWithWhereUniqueWithoutBranchInput[]
-    updateMany?: ContentRequestUpdateManyWithWhereWithoutBranchInput | ContentRequestUpdateManyWithWhereWithoutBranchInput[]
+    update?: ContentRequestUpdateWithWhereUniqueWithoutPortfolioInput | ContentRequestUpdateWithWhereUniqueWithoutPortfolioInput[]
+    updateMany?: ContentRequestUpdateManyWithWhereWithoutPortfolioInput | ContentRequestUpdateManyWithWhereWithoutPortfolioInput[]
     deleteMany?: ContentRequestScalarWhereInput | ContentRequestScalarWhereInput[]
   }
 
-  export type RecurringScheduleUpdateManyWithoutBranchNestedInput = {
-    create?: XOR<RecurringScheduleCreateWithoutBranchInput, RecurringScheduleUncheckedCreateWithoutBranchInput> | RecurringScheduleCreateWithoutBranchInput[] | RecurringScheduleUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: RecurringScheduleCreateOrConnectWithoutBranchInput | RecurringScheduleCreateOrConnectWithoutBranchInput[]
-    upsert?: RecurringScheduleUpsertWithWhereUniqueWithoutBranchInput | RecurringScheduleUpsertWithWhereUniqueWithoutBranchInput[]
-    createMany?: RecurringScheduleCreateManyBranchInputEnvelope
+  export type RecurringScheduleUpdateManyWithoutPortfolioNestedInput = {
+    create?: XOR<RecurringScheduleCreateWithoutPortfolioInput, RecurringScheduleUncheckedCreateWithoutPortfolioInput> | RecurringScheduleCreateWithoutPortfolioInput[] | RecurringScheduleUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: RecurringScheduleCreateOrConnectWithoutPortfolioInput | RecurringScheduleCreateOrConnectWithoutPortfolioInput[]
+    upsert?: RecurringScheduleUpsertWithWhereUniqueWithoutPortfolioInput | RecurringScheduleUpsertWithWhereUniqueWithoutPortfolioInput[]
+    createMany?: RecurringScheduleCreateManyPortfolioInputEnvelope
     set?: RecurringScheduleWhereUniqueInput | RecurringScheduleWhereUniqueInput[]
     disconnect?: RecurringScheduleWhereUniqueInput | RecurringScheduleWhereUniqueInput[]
     delete?: RecurringScheduleWhereUniqueInput | RecurringScheduleWhereUniqueInput[]
     connect?: RecurringScheduleWhereUniqueInput | RecurringScheduleWhereUniqueInput[]
-    update?: RecurringScheduleUpdateWithWhereUniqueWithoutBranchInput | RecurringScheduleUpdateWithWhereUniqueWithoutBranchInput[]
-    updateMany?: RecurringScheduleUpdateManyWithWhereWithoutBranchInput | RecurringScheduleUpdateManyWithWhereWithoutBranchInput[]
+    update?: RecurringScheduleUpdateWithWhereUniqueWithoutPortfolioInput | RecurringScheduleUpdateWithWhereUniqueWithoutPortfolioInput[]
+    updateMany?: RecurringScheduleUpdateManyWithWhereWithoutPortfolioInput | RecurringScheduleUpdateManyWithWhereWithoutPortfolioInput[]
     deleteMany?: RecurringScheduleScalarWhereInput | RecurringScheduleScalarWhereInput[]
   }
 
-  export type ContractUpdateManyWithoutBranchNestedInput = {
-    create?: XOR<ContractCreateWithoutBranchInput, ContractUncheckedCreateWithoutBranchInput> | ContractCreateWithoutBranchInput[] | ContractUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: ContractCreateOrConnectWithoutBranchInput | ContractCreateOrConnectWithoutBranchInput[]
-    upsert?: ContractUpsertWithWhereUniqueWithoutBranchInput | ContractUpsertWithWhereUniqueWithoutBranchInput[]
-    createMany?: ContractCreateManyBranchInputEnvelope
+  export type ContractUpdateManyWithoutPortfolioNestedInput = {
+    create?: XOR<ContractCreateWithoutPortfolioInput, ContractUncheckedCreateWithoutPortfolioInput> | ContractCreateWithoutPortfolioInput[] | ContractUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: ContractCreateOrConnectWithoutPortfolioInput | ContractCreateOrConnectWithoutPortfolioInput[]
+    upsert?: ContractUpsertWithWhereUniqueWithoutPortfolioInput | ContractUpsertWithWhereUniqueWithoutPortfolioInput[]
+    createMany?: ContractCreateManyPortfolioInputEnvelope
     set?: ContractWhereUniqueInput | ContractWhereUniqueInput[]
     disconnect?: ContractWhereUniqueInput | ContractWhereUniqueInput[]
     delete?: ContractWhereUniqueInput | ContractWhereUniqueInput[]
     connect?: ContractWhereUniqueInput | ContractWhereUniqueInput[]
-    update?: ContractUpdateWithWhereUniqueWithoutBranchInput | ContractUpdateWithWhereUniqueWithoutBranchInput[]
-    updateMany?: ContractUpdateManyWithWhereWithoutBranchInput | ContractUpdateManyWithWhereWithoutBranchInput[]
+    update?: ContractUpdateWithWhereUniqueWithoutPortfolioInput | ContractUpdateWithWhereUniqueWithoutPortfolioInput[]
+    updateMany?: ContractUpdateManyWithWhereWithoutPortfolioInput | ContractUpdateManyWithWhereWithoutPortfolioInput[]
     deleteMany?: ContractScalarWhereInput | ContractScalarWhereInput[]
   }
 
-  export type UserUncheckedUpdateManyWithoutBranchNestedInput = {
-    create?: XOR<UserCreateWithoutBranchInput, UserUncheckedCreateWithoutBranchInput> | UserCreateWithoutBranchInput[] | UserUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: UserCreateOrConnectWithoutBranchInput | UserCreateOrConnectWithoutBranchInput[]
-    upsert?: UserUpsertWithWhereUniqueWithoutBranchInput | UserUpsertWithWhereUniqueWithoutBranchInput[]
-    createMany?: UserCreateManyBranchInputEnvelope
-    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
-    update?: UserUpdateWithWhereUniqueWithoutBranchInput | UserUpdateWithWhereUniqueWithoutBranchInput[]
-    updateMany?: UserUpdateManyWithWhereWithoutBranchInput | UserUpdateManyWithWhereWithoutBranchInput[]
-    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  export type StaffUncheckedUpdateManyWithoutPortfolioNestedInput = {
+    create?: XOR<StaffCreateWithoutPortfolioInput, StaffUncheckedCreateWithoutPortfolioInput> | StaffCreateWithoutPortfolioInput[] | StaffUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: StaffCreateOrConnectWithoutPortfolioInput | StaffCreateOrConnectWithoutPortfolioInput[]
+    upsert?: StaffUpsertWithWhereUniqueWithoutPortfolioInput | StaffUpsertWithWhereUniqueWithoutPortfolioInput[]
+    createMany?: StaffCreateManyPortfolioInputEnvelope
+    set?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
+    disconnect?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
+    delete?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
+    connect?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
+    update?: StaffUpdateWithWhereUniqueWithoutPortfolioInput | StaffUpdateWithWhereUniqueWithoutPortfolioInput[]
+    updateMany?: StaffUpdateManyWithWhereWithoutPortfolioInput | StaffUpdateManyWithWhereWithoutPortfolioInput[]
+    deleteMany?: StaffScalarWhereInput | StaffScalarWhereInput[]
   }
 
-  export type ServiceUncheckedUpdateManyWithoutBranchNestedInput = {
-    create?: XOR<ServiceCreateWithoutBranchInput, ServiceUncheckedCreateWithoutBranchInput> | ServiceCreateWithoutBranchInput[] | ServiceUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: ServiceCreateOrConnectWithoutBranchInput | ServiceCreateOrConnectWithoutBranchInput[]
-    upsert?: ServiceUpsertWithWhereUniqueWithoutBranchInput | ServiceUpsertWithWhereUniqueWithoutBranchInput[]
-    createMany?: ServiceCreateManyBranchInputEnvelope
+  export type ServiceUncheckedUpdateManyWithoutPortfolioNestedInput = {
+    create?: XOR<ServiceCreateWithoutPortfolioInput, ServiceUncheckedCreateWithoutPortfolioInput> | ServiceCreateWithoutPortfolioInput[] | ServiceUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: ServiceCreateOrConnectWithoutPortfolioInput | ServiceCreateOrConnectWithoutPortfolioInput[]
+    upsert?: ServiceUpsertWithWhereUniqueWithoutPortfolioInput | ServiceUpsertWithWhereUniqueWithoutPortfolioInput[]
+    createMany?: ServiceCreateManyPortfolioInputEnvelope
     set?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
     disconnect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
     delete?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
     connect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
-    update?: ServiceUpdateWithWhereUniqueWithoutBranchInput | ServiceUpdateWithWhereUniqueWithoutBranchInput[]
-    updateMany?: ServiceUpdateManyWithWhereWithoutBranchInput | ServiceUpdateManyWithWhereWithoutBranchInput[]
+    update?: ServiceUpdateWithWhereUniqueWithoutPortfolioInput | ServiceUpdateWithWhereUniqueWithoutPortfolioInput[]
+    updateMany?: ServiceUpdateManyWithWhereWithoutPortfolioInput | ServiceUpdateManyWithWhereWithoutPortfolioInput[]
     deleteMany?: ServiceScalarWhereInput | ServiceScalarWhereInput[]
   }
 
-  export type DepartmentUncheckedUpdateManyWithoutBranchNestedInput = {
-    create?: XOR<DepartmentCreateWithoutBranchInput, DepartmentUncheckedCreateWithoutBranchInput> | DepartmentCreateWithoutBranchInput[] | DepartmentUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: DepartmentCreateOrConnectWithoutBranchInput | DepartmentCreateOrConnectWithoutBranchInput[]
-    upsert?: DepartmentUpsertWithWhereUniqueWithoutBranchInput | DepartmentUpsertWithWhereUniqueWithoutBranchInput[]
-    createMany?: DepartmentCreateManyBranchInputEnvelope
-    set?: DepartmentWhereUniqueInput | DepartmentWhereUniqueInput[]
-    disconnect?: DepartmentWhereUniqueInput | DepartmentWhereUniqueInput[]
-    delete?: DepartmentWhereUniqueInput | DepartmentWhereUniqueInput[]
-    connect?: DepartmentWhereUniqueInput | DepartmentWhereUniqueInput[]
-    update?: DepartmentUpdateWithWhereUniqueWithoutBranchInput | DepartmentUpdateWithWhereUniqueWithoutBranchInput[]
-    updateMany?: DepartmentUpdateManyWithWhereWithoutBranchInput | DepartmentUpdateManyWithWhereWithoutBranchInput[]
-    deleteMany?: DepartmentScalarWhereInput | DepartmentScalarWhereInput[]
-  }
-
-  export type ClientUncheckedUpdateManyWithoutBranchNestedInput = {
-    create?: XOR<ClientCreateWithoutBranchInput, ClientUncheckedCreateWithoutBranchInput> | ClientCreateWithoutBranchInput[] | ClientUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: ClientCreateOrConnectWithoutBranchInput | ClientCreateOrConnectWithoutBranchInput[]
-    upsert?: ClientUpsertWithWhereUniqueWithoutBranchInput | ClientUpsertWithWhereUniqueWithoutBranchInput[]
-    createMany?: ClientCreateManyBranchInputEnvelope
+  export type ClientUncheckedUpdateManyWithoutPortfolioNestedInput = {
+    create?: XOR<ClientCreateWithoutPortfolioInput, ClientUncheckedCreateWithoutPortfolioInput> | ClientCreateWithoutPortfolioInput[] | ClientUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: ClientCreateOrConnectWithoutPortfolioInput | ClientCreateOrConnectWithoutPortfolioInput[]
+    upsert?: ClientUpsertWithWhereUniqueWithoutPortfolioInput | ClientUpsertWithWhereUniqueWithoutPortfolioInput[]
+    createMany?: ClientCreateManyPortfolioInputEnvelope
     set?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
     disconnect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
     delete?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
     connect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
-    update?: ClientUpdateWithWhereUniqueWithoutBranchInput | ClientUpdateWithWhereUniqueWithoutBranchInput[]
-    updateMany?: ClientUpdateManyWithWhereWithoutBranchInput | ClientUpdateManyWithWhereWithoutBranchInput[]
+    update?: ClientUpdateWithWhereUniqueWithoutPortfolioInput | ClientUpdateWithWhereUniqueWithoutPortfolioInput[]
+    updateMany?: ClientUpdateManyWithWhereWithoutPortfolioInput | ClientUpdateManyWithWhereWithoutPortfolioInput[]
     deleteMany?: ClientScalarWhereInput | ClientScalarWhereInput[]
   }
 
-  export type ProjectUncheckedUpdateManyWithoutBranchNestedInput = {
-    create?: XOR<ProjectCreateWithoutBranchInput, ProjectUncheckedCreateWithoutBranchInput> | ProjectCreateWithoutBranchInput[] | ProjectUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: ProjectCreateOrConnectWithoutBranchInput | ProjectCreateOrConnectWithoutBranchInput[]
-    upsert?: ProjectUpsertWithWhereUniqueWithoutBranchInput | ProjectUpsertWithWhereUniqueWithoutBranchInput[]
-    createMany?: ProjectCreateManyBranchInputEnvelope
+  export type ProjectUncheckedUpdateManyWithoutPortfolioNestedInput = {
+    create?: XOR<ProjectCreateWithoutPortfolioInput, ProjectUncheckedCreateWithoutPortfolioInput> | ProjectCreateWithoutPortfolioInput[] | ProjectUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutPortfolioInput | ProjectCreateOrConnectWithoutPortfolioInput[]
+    upsert?: ProjectUpsertWithWhereUniqueWithoutPortfolioInput | ProjectUpsertWithWhereUniqueWithoutPortfolioInput[]
+    createMany?: ProjectCreateManyPortfolioInputEnvelope
     set?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
     disconnect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
     delete?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
     connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
-    update?: ProjectUpdateWithWhereUniqueWithoutBranchInput | ProjectUpdateWithWhereUniqueWithoutBranchInput[]
-    updateMany?: ProjectUpdateManyWithWhereWithoutBranchInput | ProjectUpdateManyWithWhereWithoutBranchInput[]
+    update?: ProjectUpdateWithWhereUniqueWithoutPortfolioInput | ProjectUpdateWithWhereUniqueWithoutPortfolioInput[]
+    updateMany?: ProjectUpdateManyWithWhereWithoutPortfolioInput | ProjectUpdateManyWithWhereWithoutPortfolioInput[]
     deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
   }
 
-  export type ContentRequestUncheckedUpdateManyWithoutBranchNestedInput = {
-    create?: XOR<ContentRequestCreateWithoutBranchInput, ContentRequestUncheckedCreateWithoutBranchInput> | ContentRequestCreateWithoutBranchInput[] | ContentRequestUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: ContentRequestCreateOrConnectWithoutBranchInput | ContentRequestCreateOrConnectWithoutBranchInput[]
-    upsert?: ContentRequestUpsertWithWhereUniqueWithoutBranchInput | ContentRequestUpsertWithWhereUniqueWithoutBranchInput[]
-    createMany?: ContentRequestCreateManyBranchInputEnvelope
+  export type ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput = {
+    create?: XOR<ContentRequestCreateWithoutPortfolioInput, ContentRequestUncheckedCreateWithoutPortfolioInput> | ContentRequestCreateWithoutPortfolioInput[] | ContentRequestUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: ContentRequestCreateOrConnectWithoutPortfolioInput | ContentRequestCreateOrConnectWithoutPortfolioInput[]
+    upsert?: ContentRequestUpsertWithWhereUniqueWithoutPortfolioInput | ContentRequestUpsertWithWhereUniqueWithoutPortfolioInput[]
+    createMany?: ContentRequestCreateManyPortfolioInputEnvelope
     set?: ContentRequestWhereUniqueInput | ContentRequestWhereUniqueInput[]
     disconnect?: ContentRequestWhereUniqueInput | ContentRequestWhereUniqueInput[]
     delete?: ContentRequestWhereUniqueInput | ContentRequestWhereUniqueInput[]
     connect?: ContentRequestWhereUniqueInput | ContentRequestWhereUniqueInput[]
-    update?: ContentRequestUpdateWithWhereUniqueWithoutBranchInput | ContentRequestUpdateWithWhereUniqueWithoutBranchInput[]
-    updateMany?: ContentRequestUpdateManyWithWhereWithoutBranchInput | ContentRequestUpdateManyWithWhereWithoutBranchInput[]
+    update?: ContentRequestUpdateWithWhereUniqueWithoutPortfolioInput | ContentRequestUpdateWithWhereUniqueWithoutPortfolioInput[]
+    updateMany?: ContentRequestUpdateManyWithWhereWithoutPortfolioInput | ContentRequestUpdateManyWithWhereWithoutPortfolioInput[]
     deleteMany?: ContentRequestScalarWhereInput | ContentRequestScalarWhereInput[]
   }
 
-  export type RecurringScheduleUncheckedUpdateManyWithoutBranchNestedInput = {
-    create?: XOR<RecurringScheduleCreateWithoutBranchInput, RecurringScheduleUncheckedCreateWithoutBranchInput> | RecurringScheduleCreateWithoutBranchInput[] | RecurringScheduleUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: RecurringScheduleCreateOrConnectWithoutBranchInput | RecurringScheduleCreateOrConnectWithoutBranchInput[]
-    upsert?: RecurringScheduleUpsertWithWhereUniqueWithoutBranchInput | RecurringScheduleUpsertWithWhereUniqueWithoutBranchInput[]
-    createMany?: RecurringScheduleCreateManyBranchInputEnvelope
+  export type RecurringScheduleUncheckedUpdateManyWithoutPortfolioNestedInput = {
+    create?: XOR<RecurringScheduleCreateWithoutPortfolioInput, RecurringScheduleUncheckedCreateWithoutPortfolioInput> | RecurringScheduleCreateWithoutPortfolioInput[] | RecurringScheduleUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: RecurringScheduleCreateOrConnectWithoutPortfolioInput | RecurringScheduleCreateOrConnectWithoutPortfolioInput[]
+    upsert?: RecurringScheduleUpsertWithWhereUniqueWithoutPortfolioInput | RecurringScheduleUpsertWithWhereUniqueWithoutPortfolioInput[]
+    createMany?: RecurringScheduleCreateManyPortfolioInputEnvelope
     set?: RecurringScheduleWhereUniqueInput | RecurringScheduleWhereUniqueInput[]
     disconnect?: RecurringScheduleWhereUniqueInput | RecurringScheduleWhereUniqueInput[]
     delete?: RecurringScheduleWhereUniqueInput | RecurringScheduleWhereUniqueInput[]
     connect?: RecurringScheduleWhereUniqueInput | RecurringScheduleWhereUniqueInput[]
-    update?: RecurringScheduleUpdateWithWhereUniqueWithoutBranchInput | RecurringScheduleUpdateWithWhereUniqueWithoutBranchInput[]
-    updateMany?: RecurringScheduleUpdateManyWithWhereWithoutBranchInput | RecurringScheduleUpdateManyWithWhereWithoutBranchInput[]
+    update?: RecurringScheduleUpdateWithWhereUniqueWithoutPortfolioInput | RecurringScheduleUpdateWithWhereUniqueWithoutPortfolioInput[]
+    updateMany?: RecurringScheduleUpdateManyWithWhereWithoutPortfolioInput | RecurringScheduleUpdateManyWithWhereWithoutPortfolioInput[]
     deleteMany?: RecurringScheduleScalarWhereInput | RecurringScheduleScalarWhereInput[]
   }
 
-  export type ContractUncheckedUpdateManyWithoutBranchNestedInput = {
-    create?: XOR<ContractCreateWithoutBranchInput, ContractUncheckedCreateWithoutBranchInput> | ContractCreateWithoutBranchInput[] | ContractUncheckedCreateWithoutBranchInput[]
-    connectOrCreate?: ContractCreateOrConnectWithoutBranchInput | ContractCreateOrConnectWithoutBranchInput[]
-    upsert?: ContractUpsertWithWhereUniqueWithoutBranchInput | ContractUpsertWithWhereUniqueWithoutBranchInput[]
-    createMany?: ContractCreateManyBranchInputEnvelope
+  export type ContractUncheckedUpdateManyWithoutPortfolioNestedInput = {
+    create?: XOR<ContractCreateWithoutPortfolioInput, ContractUncheckedCreateWithoutPortfolioInput> | ContractCreateWithoutPortfolioInput[] | ContractUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: ContractCreateOrConnectWithoutPortfolioInput | ContractCreateOrConnectWithoutPortfolioInput[]
+    upsert?: ContractUpsertWithWhereUniqueWithoutPortfolioInput | ContractUpsertWithWhereUniqueWithoutPortfolioInput[]
+    createMany?: ContractCreateManyPortfolioInputEnvelope
     set?: ContractWhereUniqueInput | ContractWhereUniqueInput[]
     disconnect?: ContractWhereUniqueInput | ContractWhereUniqueInput[]
     delete?: ContractWhereUniqueInput | ContractWhereUniqueInput[]
     connect?: ContractWhereUniqueInput | ContractWhereUniqueInput[]
-    update?: ContractUpdateWithWhereUniqueWithoutBranchInput | ContractUpdateWithWhereUniqueWithoutBranchInput[]
-    updateMany?: ContractUpdateManyWithWhereWithoutBranchInput | ContractUpdateManyWithWhereWithoutBranchInput[]
+    update?: ContractUpdateWithWhereUniqueWithoutPortfolioInput | ContractUpdateWithWhereUniqueWithoutPortfolioInput[]
+    updateMany?: ContractUpdateManyWithWhereWithoutPortfolioInput | ContractUpdateManyWithWhereWithoutPortfolioInput[]
     deleteMany?: ContractScalarWhereInput | ContractScalarWhereInput[]
-  }
-
-  export type BranchCreateNestedOneWithoutDepartmentsInput = {
-    create?: XOR<BranchCreateWithoutDepartmentsInput, BranchUncheckedCreateWithoutDepartmentsInput>
-    connectOrCreate?: BranchCreateOrConnectWithoutDepartmentsInput
-    connect?: BranchWhereUniqueInput
-  }
-
-  export type BranchUpdateOneRequiredWithoutDepartmentsNestedInput = {
-    create?: XOR<BranchCreateWithoutDepartmentsInput, BranchUncheckedCreateWithoutDepartmentsInput>
-    connectOrCreate?: BranchCreateOrConnectWithoutDepartmentsInput
-    upsert?: BranchUpsertWithoutDepartmentsInput
-    connect?: BranchWhereUniqueInput
-    update?: XOR<XOR<BranchUpdateToOneWithWhereWithoutDepartmentsInput, BranchUpdateWithoutDepartmentsInput>, BranchUncheckedUpdateWithoutDepartmentsInput>
   }
 
   export type SubServiceCreateNestedOneWithoutClientSubServiceInput = {
@@ -62304,10 +60919,10 @@ export namespace Prisma {
     update?: XOR<XOR<ClientUpdateToOneWithWhereWithoutClientServiceInput, ClientUpdateWithoutClientServiceInput>, ClientUncheckedUpdateWithoutClientServiceInput>
   }
 
-  export type UserCreateNestedOneWithoutAssignedTasksInput = {
-    create?: XOR<UserCreateWithoutAssignedTasksInput, UserUncheckedCreateWithoutAssignedTasksInput>
-    connectOrCreate?: UserCreateOrConnectWithoutAssignedTasksInput
-    connect?: UserWhereUniqueInput
+  export type StaffCreateNestedOneWithoutAssignedTasksInput = {
+    create?: XOR<StaffCreateWithoutAssignedTasksInput, StaffUncheckedCreateWithoutAssignedTasksInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutAssignedTasksInput
+    connect?: StaffWhereUniqueInput
   }
 
   export type ProjectCreateNestedOneWithoutTasksInput = {
@@ -62378,12 +60993,12 @@ export namespace Prisma {
     set?: $Enums.WorkflowStage
   }
 
-  export type UserUpdateOneRequiredWithoutAssignedTasksNestedInput = {
-    create?: XOR<UserCreateWithoutAssignedTasksInput, UserUncheckedCreateWithoutAssignedTasksInput>
-    connectOrCreate?: UserCreateOrConnectWithoutAssignedTasksInput
-    upsert?: UserUpsertWithoutAssignedTasksInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAssignedTasksInput, UserUpdateWithoutAssignedTasksInput>, UserUncheckedUpdateWithoutAssignedTasksInput>
+  export type StaffUpdateOneRequiredWithoutAssignedTasksNestedInput = {
+    create?: XOR<StaffCreateWithoutAssignedTasksInput, StaffUncheckedCreateWithoutAssignedTasksInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutAssignedTasksInput
+    upsert?: StaffUpsertWithoutAssignedTasksInput
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutAssignedTasksInput, StaffUpdateWithoutAssignedTasksInput>, StaffUncheckedUpdateWithoutAssignedTasksInput>
   }
 
   export type ProjectUpdateOneWithoutTasksNestedInput = {
@@ -62600,10 +61215,10 @@ export namespace Prisma {
     deleteMany?: ExpenseTransactionScalarWhereInput | ExpenseTransactionScalarWhereInput[]
   }
 
-  export type UserCreateNestedOneWithoutIncomeTransactionInput = {
-    create?: XOR<UserCreateWithoutIncomeTransactionInput, UserUncheckedCreateWithoutIncomeTransactionInput>
-    connectOrCreate?: UserCreateOrConnectWithoutIncomeTransactionInput
-    connect?: UserWhereUniqueInput
+  export type StaffCreateNestedOneWithoutIncomeTransactionInput = {
+    create?: XOR<StaffCreateWithoutIncomeTransactionInput, StaffUncheckedCreateWithoutIncomeTransactionInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutIncomeTransactionInput
+    connect?: StaffWhereUniqueInput
   }
 
   export type IncomeCreateNestedOneWithoutIncomeTransactionInput = {
@@ -62640,12 +61255,12 @@ export namespace Prisma {
     divide?: number
   }
 
-  export type UserUpdateOneRequiredWithoutIncomeTransactionNestedInput = {
-    create?: XOR<UserCreateWithoutIncomeTransactionInput, UserUncheckedCreateWithoutIncomeTransactionInput>
-    connectOrCreate?: UserCreateOrConnectWithoutIncomeTransactionInput
-    upsert?: UserUpsertWithoutIncomeTransactionInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutIncomeTransactionInput, UserUpdateWithoutIncomeTransactionInput>, UserUncheckedUpdateWithoutIncomeTransactionInput>
+  export type StaffUpdateOneRequiredWithoutIncomeTransactionNestedInput = {
+    create?: XOR<StaffCreateWithoutIncomeTransactionInput, StaffUncheckedCreateWithoutIncomeTransactionInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutIncomeTransactionInput
+    upsert?: StaffUpsertWithoutIncomeTransactionInput
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutIncomeTransactionInput, StaffUpdateWithoutIncomeTransactionInput>, StaffUncheckedUpdateWithoutIncomeTransactionInput>
   }
 
   export type IncomeUpdateOneWithoutIncomeTransactionNestedInput = {
@@ -62694,10 +61309,10 @@ export namespace Prisma {
     deleteMany?: IncomeTransactionDetailsScalarWhereInput | IncomeTransactionDetailsScalarWhereInput[]
   }
 
-  export type UserCreateNestedOneWithoutExpenseTransactionInput = {
-    create?: XOR<UserCreateWithoutExpenseTransactionInput, UserUncheckedCreateWithoutExpenseTransactionInput>
-    connectOrCreate?: UserCreateOrConnectWithoutExpenseTransactionInput
-    connect?: UserWhereUniqueInput
+  export type StaffCreateNestedOneWithoutExpenseTransactionInput = {
+    create?: XOR<StaffCreateWithoutExpenseTransactionInput, StaffUncheckedCreateWithoutExpenseTransactionInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutExpenseTransactionInput
+    connect?: StaffWhereUniqueInput
   }
 
   export type ExpenseCreateNestedOneWithoutExpenseTransactionInput = {
@@ -62726,12 +61341,12 @@ export namespace Prisma {
     connect?: ExpenseTransactionDetailsWhereUniqueInput | ExpenseTransactionDetailsWhereUniqueInput[]
   }
 
-  export type UserUpdateOneRequiredWithoutExpenseTransactionNestedInput = {
-    create?: XOR<UserCreateWithoutExpenseTransactionInput, UserUncheckedCreateWithoutExpenseTransactionInput>
-    connectOrCreate?: UserCreateOrConnectWithoutExpenseTransactionInput
-    upsert?: UserUpsertWithoutExpenseTransactionInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutExpenseTransactionInput, UserUpdateWithoutExpenseTransactionInput>, UserUncheckedUpdateWithoutExpenseTransactionInput>
+  export type StaffUpdateOneRequiredWithoutExpenseTransactionNestedInput = {
+    create?: XOR<StaffCreateWithoutExpenseTransactionInput, StaffUncheckedCreateWithoutExpenseTransactionInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutExpenseTransactionInput
+    upsert?: StaffUpsertWithoutExpenseTransactionInput
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutExpenseTransactionInput, StaffUpdateWithoutExpenseTransactionInput>, StaffUncheckedUpdateWithoutExpenseTransactionInput>
   }
 
   export type ExpenseUpdateOneRequiredWithoutExpenseTransactionNestedInput = {
@@ -62792,18 +61407,18 @@ export namespace Prisma {
     update?: XOR<XOR<IncomeTransactionUpdateToOneWithWhereWithoutTransactionDetailsInput, IncomeTransactionUpdateWithoutTransactionDetailsInput>, IncomeTransactionUncheckedUpdateWithoutTransactionDetailsInput>
   }
 
-  export type UserCreateNestedOneWithoutUserFilesInput = {
-    create?: XOR<UserCreateWithoutUserFilesInput, UserUncheckedCreateWithoutUserFilesInput>
-    connectOrCreate?: UserCreateOrConnectWithoutUserFilesInput
-    connect?: UserWhereUniqueInput
+  export type StaffCreateNestedOneWithoutUserFilesInput = {
+    create?: XOR<StaffCreateWithoutUserFilesInput, StaffUncheckedCreateWithoutUserFilesInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutUserFilesInput
+    connect?: StaffWhereUniqueInput
   }
 
-  export type UserUpdateOneRequiredWithoutUserFilesNestedInput = {
-    create?: XOR<UserCreateWithoutUserFilesInput, UserUncheckedCreateWithoutUserFilesInput>
-    connectOrCreate?: UserCreateOrConnectWithoutUserFilesInput
-    upsert?: UserUpsertWithoutUserFilesInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutUserFilesInput, UserUpdateWithoutUserFilesInput>, UserUncheckedUpdateWithoutUserFilesInput>
+  export type StaffUpdateOneRequiredWithoutUserFilesNestedInput = {
+    create?: XOR<StaffCreateWithoutUserFilesInput, StaffUncheckedCreateWithoutUserFilesInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutUserFilesInput
+    upsert?: StaffUpsertWithoutUserFilesInput
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutUserFilesInput, StaffUpdateWithoutUserFilesInput>, StaffUncheckedUpdateWithoutUserFilesInput>
   }
 
   export type ServiceCreateNestedOneWithoutServiceAgreementsInput = {
@@ -63008,16 +61623,16 @@ export namespace Prisma {
     update?: XOR<XOR<ExpenseTransactionUpdateToOneWithWhereWithoutExpenseTransactionDetailsInput, ExpenseTransactionUpdateWithoutExpenseTransactionDetailsInput>, ExpenseTransactionUncheckedUpdateWithoutExpenseTransactionDetailsInput>
   }
 
-  export type UserCreateNestedOneWithoutRegistererInput = {
-    create?: XOR<UserCreateWithoutRegistererInput, UserUncheckedCreateWithoutRegistererInput>
-    connectOrCreate?: UserCreateOrConnectWithoutRegistererInput
-    connect?: UserWhereUniqueInput
+  export type StaffCreateNestedOneWithoutRegistererInput = {
+    create?: XOR<StaffCreateWithoutRegistererInput, StaffUncheckedCreateWithoutRegistererInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutRegistererInput
+    connect?: StaffWhereUniqueInput
   }
 
-  export type UserCreateNestedOneWithoutRecieverInput = {
-    create?: XOR<UserCreateWithoutRecieverInput, UserUncheckedCreateWithoutRecieverInput>
-    connectOrCreate?: UserCreateOrConnectWithoutRecieverInput
-    connect?: UserWhereUniqueInput
+  export type StaffCreateNestedOneWithoutRecieverInput = {
+    create?: XOR<StaffCreateWithoutRecieverInput, StaffUncheckedCreateWithoutRecieverInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutRecieverInput
+    connect?: StaffWhereUniqueInput
   }
 
   export type UserSalaryDetailsCreateNestedManyWithoutUserSalaryInput = {
@@ -63034,20 +61649,20 @@ export namespace Prisma {
     connect?: UserSalaryDetailsWhereUniqueInput | UserSalaryDetailsWhereUniqueInput[]
   }
 
-  export type UserUpdateOneRequiredWithoutRegistererNestedInput = {
-    create?: XOR<UserCreateWithoutRegistererInput, UserUncheckedCreateWithoutRegistererInput>
-    connectOrCreate?: UserCreateOrConnectWithoutRegistererInput
-    upsert?: UserUpsertWithoutRegistererInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRegistererInput, UserUpdateWithoutRegistererInput>, UserUncheckedUpdateWithoutRegistererInput>
+  export type StaffUpdateOneRequiredWithoutRegistererNestedInput = {
+    create?: XOR<StaffCreateWithoutRegistererInput, StaffUncheckedCreateWithoutRegistererInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutRegistererInput
+    upsert?: StaffUpsertWithoutRegistererInput
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutRegistererInput, StaffUpdateWithoutRegistererInput>, StaffUncheckedUpdateWithoutRegistererInput>
   }
 
-  export type UserUpdateOneRequiredWithoutRecieverNestedInput = {
-    create?: XOR<UserCreateWithoutRecieverInput, UserUncheckedCreateWithoutRecieverInput>
-    connectOrCreate?: UserCreateOrConnectWithoutRecieverInput
-    upsert?: UserUpsertWithoutRecieverInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutRecieverInput, UserUpdateWithoutRecieverInput>, UserUncheckedUpdateWithoutRecieverInput>
+  export type StaffUpdateOneRequiredWithoutRecieverNestedInput = {
+    create?: XOR<StaffCreateWithoutRecieverInput, StaffUncheckedCreateWithoutRecieverInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutRecieverInput
+    upsert?: StaffUpsertWithoutRecieverInput
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutRecieverInput, StaffUpdateWithoutRecieverInput>, StaffUncheckedUpdateWithoutRecieverInput>
   }
 
   export type UserSalaryDetailsUpdateManyWithoutUserSalaryNestedInput = {
@@ -63330,20 +61945,20 @@ export namespace Prisma {
     update?: XOR<XOR<NavSubMenuUpdateToOneWithWhereWithoutRoleAccessInput, NavSubMenuUpdateWithoutRoleAccessInput>, NavSubMenuUncheckedUpdateWithoutRoleAccessInput>
   }
 
-  export type UserCreateNestedOneWithoutAuditLogsInput = {
-    create?: XOR<UserCreateWithoutAuditLogsInput, UserUncheckedCreateWithoutAuditLogsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutAuditLogsInput
-    connect?: UserWhereUniqueInput
+  export type StaffCreateNestedOneWithoutAuditLogsInput = {
+    create?: XOR<StaffCreateWithoutAuditLogsInput, StaffUncheckedCreateWithoutAuditLogsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutAuditLogsInput
+    connect?: StaffWhereUniqueInput
   }
 
-  export type UserUpdateOneWithoutAuditLogsNestedInput = {
-    create?: XOR<UserCreateWithoutAuditLogsInput, UserUncheckedCreateWithoutAuditLogsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutAuditLogsInput
-    upsert?: UserUpsertWithoutAuditLogsInput
-    disconnect?: UserWhereInput | boolean
-    delete?: UserWhereInput | boolean
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAuditLogsInput, UserUpdateWithoutAuditLogsInput>, UserUncheckedUpdateWithoutAuditLogsInput>
+  export type StaffUpdateOneWithoutAuditLogsNestedInput = {
+    create?: XOR<StaffCreateWithoutAuditLogsInput, StaffUncheckedCreateWithoutAuditLogsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutAuditLogsInput
+    upsert?: StaffUpsertWithoutAuditLogsInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutAuditLogsInput, StaffUpdateWithoutAuditLogsInput>, StaffUncheckedUpdateWithoutAuditLogsInput>
   }
 
   export type ClientCreateNestedOneWithoutProjectsInput = {
@@ -63352,16 +61967,16 @@ export namespace Prisma {
     connect?: ClientWhereUniqueInput
   }
 
-  export type BranchCreateNestedOneWithoutProjectsInput = {
-    create?: XOR<BranchCreateWithoutProjectsInput, BranchUncheckedCreateWithoutProjectsInput>
-    connectOrCreate?: BranchCreateOrConnectWithoutProjectsInput
-    connect?: BranchWhereUniqueInput
+  export type PortfolioCreateNestedOneWithoutProjectsInput = {
+    create?: XOR<PortfolioCreateWithoutProjectsInput, PortfolioUncheckedCreateWithoutProjectsInput>
+    connectOrCreate?: PortfolioCreateOrConnectWithoutProjectsInput
+    connect?: PortfolioWhereUniqueInput
   }
 
-  export type UserCreateNestedOneWithoutCreatedProjectsInput = {
-    create?: XOR<UserCreateWithoutCreatedProjectsInput, UserUncheckedCreateWithoutCreatedProjectsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutCreatedProjectsInput
-    connect?: UserWhereUniqueInput
+  export type StaffCreateNestedOneWithoutCreatedProjectsInput = {
+    create?: XOR<StaffCreateWithoutCreatedProjectsInput, StaffUncheckedCreateWithoutCreatedProjectsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedProjectsInput
+    connect?: StaffWhereUniqueInput
   }
 
   export type IncomeServiceAgreementCreateNestedManyWithoutProjectInput = {
@@ -63440,24 +62055,24 @@ export namespace Prisma {
     update?: XOR<XOR<ClientUpdateToOneWithWhereWithoutProjectsInput, ClientUpdateWithoutProjectsInput>, ClientUncheckedUpdateWithoutProjectsInput>
   }
 
-  export type BranchUpdateOneWithoutProjectsNestedInput = {
-    create?: XOR<BranchCreateWithoutProjectsInput, BranchUncheckedCreateWithoutProjectsInput>
-    connectOrCreate?: BranchCreateOrConnectWithoutProjectsInput
-    upsert?: BranchUpsertWithoutProjectsInput
-    disconnect?: BranchWhereInput | boolean
-    delete?: BranchWhereInput | boolean
-    connect?: BranchWhereUniqueInput
-    update?: XOR<XOR<BranchUpdateToOneWithWhereWithoutProjectsInput, BranchUpdateWithoutProjectsInput>, BranchUncheckedUpdateWithoutProjectsInput>
+  export type PortfolioUpdateOneWithoutProjectsNestedInput = {
+    create?: XOR<PortfolioCreateWithoutProjectsInput, PortfolioUncheckedCreateWithoutProjectsInput>
+    connectOrCreate?: PortfolioCreateOrConnectWithoutProjectsInput
+    upsert?: PortfolioUpsertWithoutProjectsInput
+    disconnect?: PortfolioWhereInput | boolean
+    delete?: PortfolioWhereInput | boolean
+    connect?: PortfolioWhereUniqueInput
+    update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutProjectsInput, PortfolioUpdateWithoutProjectsInput>, PortfolioUncheckedUpdateWithoutProjectsInput>
   }
 
-  export type UserUpdateOneWithoutCreatedProjectsNestedInput = {
-    create?: XOR<UserCreateWithoutCreatedProjectsInput, UserUncheckedCreateWithoutCreatedProjectsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutCreatedProjectsInput
-    upsert?: UserUpsertWithoutCreatedProjectsInput
-    disconnect?: UserWhereInput | boolean
-    delete?: UserWhereInput | boolean
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCreatedProjectsInput, UserUpdateWithoutCreatedProjectsInput>, UserUncheckedUpdateWithoutCreatedProjectsInput>
+  export type StaffUpdateOneWithoutCreatedProjectsNestedInput = {
+    create?: XOR<StaffCreateWithoutCreatedProjectsInput, StaffUncheckedCreateWithoutCreatedProjectsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedProjectsInput
+    upsert?: StaffUpsertWithoutCreatedProjectsInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutCreatedProjectsInput, StaffUpdateWithoutCreatedProjectsInput>, StaffUncheckedUpdateWithoutCreatedProjectsInput>
   }
 
   export type IncomeServiceAgreementUpdateManyWithoutProjectNestedInput = {
@@ -63584,16 +62199,16 @@ export namespace Prisma {
     connect?: ProjectWhereUniqueInput
   }
 
-  export type BranchCreateNestedOneWithoutContractsInput = {
-    create?: XOR<BranchCreateWithoutContractsInput, BranchUncheckedCreateWithoutContractsInput>
-    connectOrCreate?: BranchCreateOrConnectWithoutContractsInput
-    connect?: BranchWhereUniqueInput
+  export type PortfolioCreateNestedOneWithoutContractsInput = {
+    create?: XOR<PortfolioCreateWithoutContractsInput, PortfolioUncheckedCreateWithoutContractsInput>
+    connectOrCreate?: PortfolioCreateOrConnectWithoutContractsInput
+    connect?: PortfolioWhereUniqueInput
   }
 
-  export type UserCreateNestedOneWithoutCreatedContractsInput = {
-    create?: XOR<UserCreateWithoutCreatedContractsInput, UserUncheckedCreateWithoutCreatedContractsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutCreatedContractsInput
-    connect?: UserWhereUniqueInput
+  export type StaffCreateNestedOneWithoutCreatedContractsInput = {
+    create?: XOR<StaffCreateWithoutCreatedContractsInput, StaffUncheckedCreateWithoutCreatedContractsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedContractsInput
+    connect?: StaffWhereUniqueInput
   }
 
   export type ContractDocumentCreateNestedManyWithoutContractInput = {
@@ -63654,24 +62269,24 @@ export namespace Prisma {
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutContractsInput, ProjectUpdateWithoutContractsInput>, ProjectUncheckedUpdateWithoutContractsInput>
   }
 
-  export type BranchUpdateOneWithoutContractsNestedInput = {
-    create?: XOR<BranchCreateWithoutContractsInput, BranchUncheckedCreateWithoutContractsInput>
-    connectOrCreate?: BranchCreateOrConnectWithoutContractsInput
-    upsert?: BranchUpsertWithoutContractsInput
-    disconnect?: BranchWhereInput | boolean
-    delete?: BranchWhereInput | boolean
-    connect?: BranchWhereUniqueInput
-    update?: XOR<XOR<BranchUpdateToOneWithWhereWithoutContractsInput, BranchUpdateWithoutContractsInput>, BranchUncheckedUpdateWithoutContractsInput>
+  export type PortfolioUpdateOneWithoutContractsNestedInput = {
+    create?: XOR<PortfolioCreateWithoutContractsInput, PortfolioUncheckedCreateWithoutContractsInput>
+    connectOrCreate?: PortfolioCreateOrConnectWithoutContractsInput
+    upsert?: PortfolioUpsertWithoutContractsInput
+    disconnect?: PortfolioWhereInput | boolean
+    delete?: PortfolioWhereInput | boolean
+    connect?: PortfolioWhereUniqueInput
+    update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutContractsInput, PortfolioUpdateWithoutContractsInput>, PortfolioUncheckedUpdateWithoutContractsInput>
   }
 
-  export type UserUpdateOneWithoutCreatedContractsNestedInput = {
-    create?: XOR<UserCreateWithoutCreatedContractsInput, UserUncheckedCreateWithoutCreatedContractsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutCreatedContractsInput
-    upsert?: UserUpsertWithoutCreatedContractsInput
-    disconnect?: UserWhereInput | boolean
-    delete?: UserWhereInput | boolean
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCreatedContractsInput, UserUpdateWithoutCreatedContractsInput>, UserUncheckedUpdateWithoutCreatedContractsInput>
+  export type StaffUpdateOneWithoutCreatedContractsNestedInput = {
+    create?: XOR<StaffCreateWithoutCreatedContractsInput, StaffUncheckedCreateWithoutCreatedContractsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedContractsInput
+    upsert?: StaffUpsertWithoutCreatedContractsInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutCreatedContractsInput, StaffUpdateWithoutCreatedContractsInput>, StaffUncheckedUpdateWithoutCreatedContractsInput>
   }
 
   export type ContractDocumentUpdateManyWithoutContractNestedInput = {
@@ -63770,10 +62385,10 @@ export namespace Prisma {
     connect?: ContractWhereUniqueInput
   }
 
-  export type UserCreateNestedOneWithoutUploadedContractDocumentsInput = {
-    create?: XOR<UserCreateWithoutUploadedContractDocumentsInput, UserUncheckedCreateWithoutUploadedContractDocumentsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutUploadedContractDocumentsInput
-    connect?: UserWhereUniqueInput
+  export type StaffCreateNestedOneWithoutUploadedContractDocumentsInput = {
+    create?: XOR<StaffCreateWithoutUploadedContractDocumentsInput, StaffUncheckedCreateWithoutUploadedContractDocumentsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutUploadedContractDocumentsInput
+    connect?: StaffWhereUniqueInput
   }
 
   export type ContractUpdateOneRequiredWithoutDocumentsNestedInput = {
@@ -63784,14 +62399,14 @@ export namespace Prisma {
     update?: XOR<XOR<ContractUpdateToOneWithWhereWithoutDocumentsInput, ContractUpdateWithoutDocumentsInput>, ContractUncheckedUpdateWithoutDocumentsInput>
   }
 
-  export type UserUpdateOneWithoutUploadedContractDocumentsNestedInput = {
-    create?: XOR<UserCreateWithoutUploadedContractDocumentsInput, UserUncheckedCreateWithoutUploadedContractDocumentsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutUploadedContractDocumentsInput
-    upsert?: UserUpsertWithoutUploadedContractDocumentsInput
-    disconnect?: UserWhereInput | boolean
-    delete?: UserWhereInput | boolean
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutUploadedContractDocumentsInput, UserUpdateWithoutUploadedContractDocumentsInput>, UserUncheckedUpdateWithoutUploadedContractDocumentsInput>
+  export type StaffUpdateOneWithoutUploadedContractDocumentsNestedInput = {
+    create?: XOR<StaffCreateWithoutUploadedContractDocumentsInput, StaffUncheckedCreateWithoutUploadedContractDocumentsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutUploadedContractDocumentsInput
+    upsert?: StaffUpsertWithoutUploadedContractDocumentsInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutUploadedContractDocumentsInput, StaffUpdateWithoutUploadedContractDocumentsInput>, StaffUncheckedUpdateWithoutUploadedContractDocumentsInput>
   }
 
   export type ClientCreateNestedOneWithoutContentRequestsInput = {
@@ -63806,16 +62421,16 @@ export namespace Prisma {
     connect?: ProjectWhereUniqueInput
   }
 
-  export type BranchCreateNestedOneWithoutContentRequestsInput = {
-    create?: XOR<BranchCreateWithoutContentRequestsInput, BranchUncheckedCreateWithoutContentRequestsInput>
-    connectOrCreate?: BranchCreateOrConnectWithoutContentRequestsInput
-    connect?: BranchWhereUniqueInput
+  export type PortfolioCreateNestedOneWithoutContentRequestsInput = {
+    create?: XOR<PortfolioCreateWithoutContentRequestsInput, PortfolioUncheckedCreateWithoutContentRequestsInput>
+    connectOrCreate?: PortfolioCreateOrConnectWithoutContentRequestsInput
+    connect?: PortfolioWhereUniqueInput
   }
 
-  export type UserCreateNestedOneWithoutContentRequestsCreatedInput = {
-    create?: XOR<UserCreateWithoutContentRequestsCreatedInput, UserUncheckedCreateWithoutContentRequestsCreatedInput>
-    connectOrCreate?: UserCreateOrConnectWithoutContentRequestsCreatedInput
-    connect?: UserWhereUniqueInput
+  export type StaffCreateNestedOneWithoutContentRequestsCreatedInput = {
+    create?: XOR<StaffCreateWithoutContentRequestsCreatedInput, StaffUncheckedCreateWithoutContentRequestsCreatedInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutContentRequestsCreatedInput
+    connect?: StaffWhereUniqueInput
   }
 
   export type ContentRequestAssigneeCreateNestedManyWithoutContentRequestInput = {
@@ -63868,24 +62483,24 @@ export namespace Prisma {
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutContentRequestsInput, ProjectUpdateWithoutContentRequestsInput>, ProjectUncheckedUpdateWithoutContentRequestsInput>
   }
 
-  export type BranchUpdateOneWithoutContentRequestsNestedInput = {
-    create?: XOR<BranchCreateWithoutContentRequestsInput, BranchUncheckedCreateWithoutContentRequestsInput>
-    connectOrCreate?: BranchCreateOrConnectWithoutContentRequestsInput
-    upsert?: BranchUpsertWithoutContentRequestsInput
-    disconnect?: BranchWhereInput | boolean
-    delete?: BranchWhereInput | boolean
-    connect?: BranchWhereUniqueInput
-    update?: XOR<XOR<BranchUpdateToOneWithWhereWithoutContentRequestsInput, BranchUpdateWithoutContentRequestsInput>, BranchUncheckedUpdateWithoutContentRequestsInput>
+  export type PortfolioUpdateOneWithoutContentRequestsNestedInput = {
+    create?: XOR<PortfolioCreateWithoutContentRequestsInput, PortfolioUncheckedCreateWithoutContentRequestsInput>
+    connectOrCreate?: PortfolioCreateOrConnectWithoutContentRequestsInput
+    upsert?: PortfolioUpsertWithoutContentRequestsInput
+    disconnect?: PortfolioWhereInput | boolean
+    delete?: PortfolioWhereInput | boolean
+    connect?: PortfolioWhereUniqueInput
+    update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutContentRequestsInput, PortfolioUpdateWithoutContentRequestsInput>, PortfolioUncheckedUpdateWithoutContentRequestsInput>
   }
 
-  export type UserUpdateOneWithoutContentRequestsCreatedNestedInput = {
-    create?: XOR<UserCreateWithoutContentRequestsCreatedInput, UserUncheckedCreateWithoutContentRequestsCreatedInput>
-    connectOrCreate?: UserCreateOrConnectWithoutContentRequestsCreatedInput
-    upsert?: UserUpsertWithoutContentRequestsCreatedInput
-    disconnect?: UserWhereInput | boolean
-    delete?: UserWhereInput | boolean
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutContentRequestsCreatedInput, UserUpdateWithoutContentRequestsCreatedInput>, UserUncheckedUpdateWithoutContentRequestsCreatedInput>
+  export type StaffUpdateOneWithoutContentRequestsCreatedNestedInput = {
+    create?: XOR<StaffCreateWithoutContentRequestsCreatedInput, StaffUncheckedCreateWithoutContentRequestsCreatedInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutContentRequestsCreatedInput
+    upsert?: StaffUpsertWithoutContentRequestsCreatedInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutContentRequestsCreatedInput, StaffUpdateWithoutContentRequestsCreatedInput>, StaffUncheckedUpdateWithoutContentRequestsCreatedInput>
   }
 
   export type ContentRequestAssigneeUpdateManyWithoutContentRequestNestedInput = {
@@ -63950,10 +62565,10 @@ export namespace Prisma {
     connect?: ContentRequestWhereUniqueInput
   }
 
-  export type UserCreateNestedOneWithoutContentRequestAssignmentsInput = {
-    create?: XOR<UserCreateWithoutContentRequestAssignmentsInput, UserUncheckedCreateWithoutContentRequestAssignmentsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutContentRequestAssignmentsInput
-    connect?: UserWhereUniqueInput
+  export type StaffCreateNestedOneWithoutContentRequestAssignmentsInput = {
+    create?: XOR<StaffCreateWithoutContentRequestAssignmentsInput, StaffUncheckedCreateWithoutContentRequestAssignmentsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutContentRequestAssignmentsInput
+    connect?: StaffWhereUniqueInput
   }
 
   export type ContentRequestUpdateOneRequiredWithoutAssigneesNestedInput = {
@@ -63964,12 +62579,12 @@ export namespace Prisma {
     update?: XOR<XOR<ContentRequestUpdateToOneWithWhereWithoutAssigneesInput, ContentRequestUpdateWithoutAssigneesInput>, ContentRequestUncheckedUpdateWithoutAssigneesInput>
   }
 
-  export type UserUpdateOneRequiredWithoutContentRequestAssignmentsNestedInput = {
-    create?: XOR<UserCreateWithoutContentRequestAssignmentsInput, UserUncheckedCreateWithoutContentRequestAssignmentsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutContentRequestAssignmentsInput
-    upsert?: UserUpsertWithoutContentRequestAssignmentsInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutContentRequestAssignmentsInput, UserUpdateWithoutContentRequestAssignmentsInput>, UserUncheckedUpdateWithoutContentRequestAssignmentsInput>
+  export type StaffUpdateOneRequiredWithoutContentRequestAssignmentsNestedInput = {
+    create?: XOR<StaffCreateWithoutContentRequestAssignmentsInput, StaffUncheckedCreateWithoutContentRequestAssignmentsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutContentRequestAssignmentsInput
+    upsert?: StaffUpsertWithoutContentRequestAssignmentsInput
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutContentRequestAssignmentsInput, StaffUpdateWithoutContentRequestAssignmentsInput>, StaffUncheckedUpdateWithoutContentRequestAssignmentsInput>
   }
 
   export type ClientCreateNestedOneWithoutRecurringSchedulesInput = {
@@ -63978,10 +62593,10 @@ export namespace Prisma {
     connect?: ClientWhereUniqueInput
   }
 
-  export type BranchCreateNestedOneWithoutRecurringSchedulesInput = {
-    create?: XOR<BranchCreateWithoutRecurringSchedulesInput, BranchUncheckedCreateWithoutRecurringSchedulesInput>
-    connectOrCreate?: BranchCreateOrConnectWithoutRecurringSchedulesInput
-    connect?: BranchWhereUniqueInput
+  export type PortfolioCreateNestedOneWithoutRecurringSchedulesInput = {
+    create?: XOR<PortfolioCreateWithoutRecurringSchedulesInput, PortfolioUncheckedCreateWithoutRecurringSchedulesInput>
+    connectOrCreate?: PortfolioCreateOrConnectWithoutRecurringSchedulesInput
+    connect?: PortfolioWhereUniqueInput
   }
 
   export type RecurringScheduleStepCreateNestedManyWithoutScheduleInput = {
@@ -64024,14 +62639,14 @@ export namespace Prisma {
     update?: XOR<XOR<ClientUpdateToOneWithWhereWithoutRecurringSchedulesInput, ClientUpdateWithoutRecurringSchedulesInput>, ClientUncheckedUpdateWithoutRecurringSchedulesInput>
   }
 
-  export type BranchUpdateOneWithoutRecurringSchedulesNestedInput = {
-    create?: XOR<BranchCreateWithoutRecurringSchedulesInput, BranchUncheckedCreateWithoutRecurringSchedulesInput>
-    connectOrCreate?: BranchCreateOrConnectWithoutRecurringSchedulesInput
-    upsert?: BranchUpsertWithoutRecurringSchedulesInput
-    disconnect?: BranchWhereInput | boolean
-    delete?: BranchWhereInput | boolean
-    connect?: BranchWhereUniqueInput
-    update?: XOR<XOR<BranchUpdateToOneWithWhereWithoutRecurringSchedulesInput, BranchUpdateWithoutRecurringSchedulesInput>, BranchUncheckedUpdateWithoutRecurringSchedulesInput>
+  export type PortfolioUpdateOneWithoutRecurringSchedulesNestedInput = {
+    create?: XOR<PortfolioCreateWithoutRecurringSchedulesInput, PortfolioUncheckedCreateWithoutRecurringSchedulesInput>
+    connectOrCreate?: PortfolioCreateOrConnectWithoutRecurringSchedulesInput
+    upsert?: PortfolioUpsertWithoutRecurringSchedulesInput
+    disconnect?: PortfolioWhereInput | boolean
+    delete?: PortfolioWhereInput | boolean
+    connect?: PortfolioWhereUniqueInput
+    update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutRecurringSchedulesInput, PortfolioUpdateWithoutRecurringSchedulesInput>, PortfolioUncheckedUpdateWithoutRecurringSchedulesInput>
   }
 
   export type RecurringScheduleStepUpdateManyWithoutScheduleNestedInput = {
@@ -64096,10 +62711,10 @@ export namespace Prisma {
     connect?: RecurringScheduleWhereUniqueInput
   }
 
-  export type UserCreateNestedOneWithoutAssignedRecurringStepsInput = {
-    create?: XOR<UserCreateWithoutAssignedRecurringStepsInput, UserUncheckedCreateWithoutAssignedRecurringStepsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutAssignedRecurringStepsInput
-    connect?: UserWhereUniqueInput
+  export type StaffCreateNestedOneWithoutAssignedRecurringStepsInput = {
+    create?: XOR<StaffCreateWithoutAssignedRecurringStepsInput, StaffUncheckedCreateWithoutAssignedRecurringStepsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutAssignedRecurringStepsInput
+    connect?: StaffWhereUniqueInput
   }
 
   export type WorkflowTemplateCreateNestedOneWithoutRecurringStepsInput = {
@@ -64134,14 +62749,14 @@ export namespace Prisma {
     update?: XOR<XOR<RecurringScheduleUpdateToOneWithWhereWithoutStepsInput, RecurringScheduleUpdateWithoutStepsInput>, RecurringScheduleUncheckedUpdateWithoutStepsInput>
   }
 
-  export type UserUpdateOneWithoutAssignedRecurringStepsNestedInput = {
-    create?: XOR<UserCreateWithoutAssignedRecurringStepsInput, UserUncheckedCreateWithoutAssignedRecurringStepsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutAssignedRecurringStepsInput
-    upsert?: UserUpsertWithoutAssignedRecurringStepsInput
-    disconnect?: UserWhereInput | boolean
-    delete?: UserWhereInput | boolean
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAssignedRecurringStepsInput, UserUpdateWithoutAssignedRecurringStepsInput>, UserUncheckedUpdateWithoutAssignedRecurringStepsInput>
+  export type StaffUpdateOneWithoutAssignedRecurringStepsNestedInput = {
+    create?: XOR<StaffCreateWithoutAssignedRecurringStepsInput, StaffUncheckedCreateWithoutAssignedRecurringStepsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutAssignedRecurringStepsInput
+    upsert?: StaffUpsertWithoutAssignedRecurringStepsInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutAssignedRecurringStepsInput, StaffUpdateWithoutAssignedRecurringStepsInput>, StaffUncheckedUpdateWithoutAssignedRecurringStepsInput>
   }
 
   export type WorkflowTemplateUpdateOneWithoutRecurringStepsNestedInput = {
@@ -64948,7 +63563,7 @@ export namespace Prisma {
     _max?: NestedEnumClientTypeNullableFilter<$PrismaModel>
   }
 
-  export type UserCreateWithoutDynamicRoleInput = {
+  export type StaffCreateWithoutDynamicRoleInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64958,12 +63573,11 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    branch?: BranchCreateNestedOneWithoutUsersInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -64982,7 +63596,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserUncheckedCreateWithoutDynamicRoleInput = {
+  export type StaffUncheckedCreateWithoutDynamicRoleInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -64992,8 +63606,7 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -65016,13 +63629,13 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserCreateOrConnectWithoutDynamicRoleInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutDynamicRoleInput, UserUncheckedCreateWithoutDynamicRoleInput>
+  export type StaffCreateOrConnectWithoutDynamicRoleInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutDynamicRoleInput, StaffUncheckedCreateWithoutDynamicRoleInput>
   }
 
-  export type UserCreateManyDynamicRoleInputEnvelope = {
-    data: UserCreateManyDynamicRoleInput | UserCreateManyDynamicRoleInput[]
+  export type StaffCreateManyDynamicRoleInputEnvelope = {
+    data: StaffCreateManyDynamicRoleInput | StaffCreateManyDynamicRoleInput[]
     skipDuplicates?: boolean
   }
 
@@ -65060,42 +63673,41 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type UserUpsertWithWhereUniqueWithoutDynamicRoleInput = {
-    where: UserWhereUniqueInput
-    update: XOR<UserUpdateWithoutDynamicRoleInput, UserUncheckedUpdateWithoutDynamicRoleInput>
-    create: XOR<UserCreateWithoutDynamicRoleInput, UserUncheckedCreateWithoutDynamicRoleInput>
+  export type StaffUpsertWithWhereUniqueWithoutDynamicRoleInput = {
+    where: StaffWhereUniqueInput
+    update: XOR<StaffUpdateWithoutDynamicRoleInput, StaffUncheckedUpdateWithoutDynamicRoleInput>
+    create: XOR<StaffCreateWithoutDynamicRoleInput, StaffUncheckedCreateWithoutDynamicRoleInput>
   }
 
-  export type UserUpdateWithWhereUniqueWithoutDynamicRoleInput = {
-    where: UserWhereUniqueInput
-    data: XOR<UserUpdateWithoutDynamicRoleInput, UserUncheckedUpdateWithoutDynamicRoleInput>
+  export type StaffUpdateWithWhereUniqueWithoutDynamicRoleInput = {
+    where: StaffWhereUniqueInput
+    data: XOR<StaffUpdateWithoutDynamicRoleInput, StaffUncheckedUpdateWithoutDynamicRoleInput>
   }
 
-  export type UserUpdateManyWithWhereWithoutDynamicRoleInput = {
-    where: UserScalarWhereInput
-    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutDynamicRoleInput>
+  export type StaffUpdateManyWithWhereWithoutDynamicRoleInput = {
+    where: StaffScalarWhereInput
+    data: XOR<StaffUpdateManyMutationInput, StaffUncheckedUpdateManyWithoutDynamicRoleInput>
   }
 
-  export type UserScalarWhereInput = {
-    AND?: UserScalarWhereInput | UserScalarWhereInput[]
-    OR?: UserScalarWhereInput[]
-    NOT?: UserScalarWhereInput | UserScalarWhereInput[]
-    id?: StringFilter<"User"> | string
-    createdAt?: DateTimeFilter<"User"> | Date | string
-    updatedAt?: DateTimeFilter<"User"> | Date | string
-    name?: StringFilter<"User"> | string
-    email?: StringFilter<"User"> | string
-    emailVerified?: BoolFilter<"User"> | boolean
-    image?: StringNullableFilter<"User"> | string | null
-    gender?: StringNullableFilter<"User"> | string | null
-    salary?: StringNullableFilter<"User"> | string | null
-    department?: StringNullableFilter<"User"> | string | null
-    branchId?: StringNullableFilter<"User"> | string | null
-    roleId?: StringNullableFilter<"User"> | string | null
-    role?: StringNullableFilter<"User"> | string | null
-    banned?: BoolNullableFilter<"User"> | boolean | null
-    banReason?: StringNullableFilter<"User"> | string | null
-    banExpires?: DateTimeNullableFilter<"User"> | Date | string | null
+  export type StaffScalarWhereInput = {
+    AND?: StaffScalarWhereInput | StaffScalarWhereInput[]
+    OR?: StaffScalarWhereInput[]
+    NOT?: StaffScalarWhereInput | StaffScalarWhereInput[]
+    id?: StringFilter<"Staff"> | string
+    createdAt?: DateTimeFilter<"Staff"> | Date | string
+    updatedAt?: DateTimeFilter<"Staff"> | Date | string
+    name?: StringFilter<"Staff"> | string
+    email?: StringFilter<"Staff"> | string
+    emailVerified?: BoolFilter<"Staff"> | boolean
+    image?: StringNullableFilter<"Staff"> | string | null
+    gender?: StringNullableFilter<"Staff"> | string | null
+    salary?: StringNullableFilter<"Staff"> | string | null
+    portfolioId?: StringNullableFilter<"Staff"> | string | null
+    roleId?: StringNullableFilter<"Staff"> | string | null
+    role?: StringNullableFilter<"Staff"> | string | null
+    banned?: BoolNullableFilter<"Staff"> | boolean | null
+    banReason?: StringNullableFilter<"Staff"> | string | null
+    banExpires?: DateTimeNullableFilter<"Staff"> | Date | string | null
   }
 
   export type RoleMenuAccessUpsertWithWhereUniqueWithoutRoleInput = {
@@ -65129,7 +63741,7 @@ export namespace Prisma {
     canDelete?: BoolFilter<"RoleMenuAccess"> | boolean
   }
 
-  export type BranchCreateWithoutUsersInput = {
+  export type PortfolioCreateWithoutUsersInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65146,16 +63758,15 @@ export namespace Prisma {
     secondaryColor?: string
     customDomain?: string | null
     isActive?: boolean
-    services?: ServiceCreateNestedManyWithoutBranchInput
-    departments?: DepartmentCreateNestedManyWithoutBranchInput
-    clients?: ClientCreateNestedManyWithoutBranchInput
-    projects?: ProjectCreateNestedManyWithoutBranchInput
-    contentRequests?: ContentRequestCreateNestedManyWithoutBranchInput
-    recurringSchedules?: RecurringScheduleCreateNestedManyWithoutBranchInput
-    contracts?: ContractCreateNestedManyWithoutBranchInput
+    services?: ServiceCreateNestedManyWithoutPortfolioInput
+    clients?: ClientCreateNestedManyWithoutPortfolioInput
+    projects?: ProjectCreateNestedManyWithoutPortfolioInput
+    contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
+    recurringSchedules?: RecurringScheduleCreateNestedManyWithoutPortfolioInput
+    contracts?: ContractCreateNestedManyWithoutPortfolioInput
   }
 
-  export type BranchUncheckedCreateWithoutUsersInput = {
+  export type PortfolioUncheckedCreateWithoutUsersInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -65172,18 +63783,17 @@ export namespace Prisma {
     secondaryColor?: string
     customDomain?: string | null
     isActive?: boolean
-    services?: ServiceUncheckedCreateNestedManyWithoutBranchInput
-    departments?: DepartmentUncheckedCreateNestedManyWithoutBranchInput
-    clients?: ClientUncheckedCreateNestedManyWithoutBranchInput
-    projects?: ProjectUncheckedCreateNestedManyWithoutBranchInput
-    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutBranchInput
-    recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutBranchInput
-    contracts?: ContractUncheckedCreateNestedManyWithoutBranchInput
+    services?: ServiceUncheckedCreateNestedManyWithoutPortfolioInput
+    clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutPortfolioInput
+    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
+    recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutPortfolioInput
+    contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
   }
 
-  export type BranchCreateOrConnectWithoutUsersInput = {
-    where: BranchWhereUniqueInput
-    create: XOR<BranchCreateWithoutUsersInput, BranchUncheckedCreateWithoutUsersInput>
+  export type PortfolioCreateOrConnectWithoutUsersInput = {
+    where: PortfolioWhereUniqueInput
+    create: XOR<PortfolioCreateWithoutUsersInput, PortfolioUncheckedCreateWithoutUsersInput>
   }
 
   export type SessionCreateWithoutUserInput = {
@@ -65265,7 +63875,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -65289,7 +63898,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -65461,7 +64069,7 @@ export namespace Prisma {
     method: string
     notes?: string | null
     taxType: string
-    registeredUser: UserCreateNestedOneWithoutRegistererInput
+    registeredUser: StaffCreateNestedOneWithoutRegistererInput
     UserSalaryDetails?: UserSalaryDetailsCreateNestedManyWithoutUserSalaryInput
   }
 
@@ -65499,7 +64107,7 @@ export namespace Prisma {
     method: string
     notes?: string | null
     taxType: string
-    recieverUser: UserCreateNestedOneWithoutRecieverInput
+    recieverUser: StaffCreateNestedOneWithoutRecieverInput
     UserSalaryDetails?: UserSalaryDetailsCreateNestedManyWithoutUserSalaryInput
   }
 
@@ -65573,7 +64181,7 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branch?: BranchCreateNestedOneWithoutClientsInput
+    portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
@@ -65604,7 +64212,7 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branchId?: string | null
+    portfolioId?: string | null
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
@@ -65639,7 +64247,7 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDate?: Date | string | null
     client: ClientCreateNestedOneWithoutProjectsInput
-    branch?: BranchCreateNestedOneWithoutProjectsInput
+    portfolio?: PortfolioCreateNestedOneWithoutProjectsInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestCreateNestedManyWithoutProjectInput
     tasks?: TaskCreateNestedManyWithoutProjectInput
@@ -65658,7 +64266,7 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDate?: Date | string | null
     clientId: string
-    branchId?: string | null
+    portfolioId?: string | null
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutProjectInput
     tasks?: TaskUncheckedCreateNestedManyWithoutProjectInput
@@ -65686,7 +64294,7 @@ export namespace Prisma {
     deadline?: Date | string | null
     client: ClientCreateNestedOneWithoutContentRequestsInput
     project?: ProjectCreateNestedOneWithoutContentRequestsInput
-    branch?: BranchCreateNestedOneWithoutContentRequestsInput
+    portfolio?: PortfolioCreateNestedOneWithoutContentRequestsInput
     assignees?: ContentRequestAssigneeCreateNestedManyWithoutContentRequestInput
     tasks?: TaskCreateNestedManyWithoutContentRequestInput
   }
@@ -65702,7 +64310,7 @@ export namespace Prisma {
     deadline?: Date | string | null
     clientId: string
     projectId?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     assignees?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutContentRequestInput
     tasks?: TaskUncheckedCreateNestedManyWithoutContentRequestInput
   }
@@ -65750,7 +64358,6 @@ export namespace Prisma {
     stepOrder?: number
     label: string
     contentType?: $Enums.ContentType | null
-    department?: string | null
     supervisor?: string
     schedule: RecurringScheduleCreateNestedOneWithoutStepsInput
     template?: WorkflowTemplateCreateNestedOneWithoutRecurringStepsInput
@@ -65767,7 +64374,6 @@ export namespace Prisma {
     stepOrder?: number
     label: string
     contentType?: $Enums.ContentType | null
-    department?: string | null
     supervisor?: string
     templateId?: string | null
     occurrences?: RecurringTaskOccurrenceUncheckedCreateNestedManyWithoutScheduleStepInput
@@ -65799,7 +64405,7 @@ export namespace Prisma {
     notes?: string | null
     client: ClientCreateNestedOneWithoutContractsInput
     project?: ProjectCreateNestedOneWithoutContractsInput
-    branch?: BranchCreateNestedOneWithoutContractsInput
+    portfolio?: PortfolioCreateNestedOneWithoutContractsInput
     documents?: ContractDocumentCreateNestedManyWithoutContractInput
     installments?: ClientInstallmentCreateNestedManyWithoutContractInput
   }
@@ -65820,7 +64426,7 @@ export namespace Prisma {
     notes?: string | null
     clientId: string
     projectId?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     documents?: ContractDocumentUncheckedCreateNestedManyWithoutContractInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutContractInput
   }
@@ -65867,18 +64473,18 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type BranchUpsertWithoutUsersInput = {
-    update: XOR<BranchUpdateWithoutUsersInput, BranchUncheckedUpdateWithoutUsersInput>
-    create: XOR<BranchCreateWithoutUsersInput, BranchUncheckedCreateWithoutUsersInput>
-    where?: BranchWhereInput
+  export type PortfolioUpsertWithoutUsersInput = {
+    update: XOR<PortfolioUpdateWithoutUsersInput, PortfolioUncheckedUpdateWithoutUsersInput>
+    create: XOR<PortfolioCreateWithoutUsersInput, PortfolioUncheckedCreateWithoutUsersInput>
+    where?: PortfolioWhereInput
   }
 
-  export type BranchUpdateToOneWithWhereWithoutUsersInput = {
-    where?: BranchWhereInput
-    data: XOR<BranchUpdateWithoutUsersInput, BranchUncheckedUpdateWithoutUsersInput>
+  export type PortfolioUpdateToOneWithWhereWithoutUsersInput = {
+    where?: PortfolioWhereInput
+    data: XOR<PortfolioUpdateWithoutUsersInput, PortfolioUncheckedUpdateWithoutUsersInput>
   }
 
-  export type BranchUpdateWithoutUsersInput = {
+  export type PortfolioUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65895,16 +64501,15 @@ export namespace Prisma {
     secondaryColor?: StringFieldUpdateOperationsInput | string
     customDomain?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    services?: ServiceUpdateManyWithoutBranchNestedInput
-    departments?: DepartmentUpdateManyWithoutBranchNestedInput
-    clients?: ClientUpdateManyWithoutBranchNestedInput
-    projects?: ProjectUpdateManyWithoutBranchNestedInput
-    contentRequests?: ContentRequestUpdateManyWithoutBranchNestedInput
-    recurringSchedules?: RecurringScheduleUpdateManyWithoutBranchNestedInput
-    contracts?: ContractUpdateManyWithoutBranchNestedInput
+    services?: ServiceUpdateManyWithoutPortfolioNestedInput
+    clients?: ClientUpdateManyWithoutPortfolioNestedInput
+    projects?: ProjectUpdateManyWithoutPortfolioNestedInput
+    contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
+    recurringSchedules?: RecurringScheduleUpdateManyWithoutPortfolioNestedInput
+    contracts?: ContractUpdateManyWithoutPortfolioNestedInput
   }
 
-  export type BranchUncheckedUpdateWithoutUsersInput = {
+  export type PortfolioUncheckedUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65921,13 +64526,12 @@ export namespace Prisma {
     secondaryColor?: StringFieldUpdateOperationsInput | string
     customDomain?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    services?: ServiceUncheckedUpdateManyWithoutBranchNestedInput
-    departments?: DepartmentUncheckedUpdateManyWithoutBranchNestedInput
-    clients?: ClientUncheckedUpdateManyWithoutBranchNestedInput
-    projects?: ProjectUncheckedUpdateManyWithoutBranchNestedInput
-    contentRequests?: ContentRequestUncheckedUpdateManyWithoutBranchNestedInput
-    recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutBranchNestedInput
-    contracts?: ContractUncheckedUpdateManyWithoutBranchNestedInput
+    services?: ServiceUncheckedUpdateManyWithoutPortfolioNestedInput
+    clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutPortfolioNestedInput
+    contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
+    recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutPortfolioNestedInput
+    contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
   export type SessionUpsertWithWhereUniqueWithoutUserInput = {
@@ -66022,7 +64626,6 @@ export namespace Prisma {
     description?: StringFilter<"Task"> | string
     status?: EnumTaskStatusFilter<"Task"> | $Enums.TaskStatus
     priority?: EnumTaskPriorityFilter<"Task"> | $Enums.TaskPriority
-    department?: StringFilter<"Task"> | string
     deadline?: DateTimeNullableFilter<"Task"> | Date | string | null
     progress?: IntFilter<"Task"> | number
     workflowStage?: EnumWorkflowStageFilter<"Task"> | $Enums.WorkflowStage
@@ -66282,7 +64885,7 @@ export namespace Prisma {
     notes?: StringNullableFilter<"Client"> | string | null
     isActive?: BoolFilter<"Client"> | boolean
     isDraft?: BoolFilter<"Client"> | boolean
-    branchId?: StringNullableFilter<"Client"> | string | null
+    portfolioId?: StringNullableFilter<"Client"> | string | null
     accountManagerId?: StringNullableFilter<"Client"> | string | null
   }
 
@@ -66317,7 +64920,7 @@ export namespace Prisma {
     startDate?: DateTimeNullableFilter<"Project"> | Date | string | null
     dueDate?: DateTimeNullableFilter<"Project"> | Date | string | null
     clientId?: StringFilter<"Project"> | string
-    branchId?: StringNullableFilter<"Project"> | string | null
+    portfolioId?: StringNullableFilter<"Project"> | string | null
     createdById?: StringNullableFilter<"Project"> | string | null
   }
 
@@ -66351,7 +64954,7 @@ export namespace Prisma {
     deadline?: DateTimeNullableFilter<"ContentRequest"> | Date | string | null
     clientId?: StringFilter<"ContentRequest"> | string
     projectId?: StringNullableFilter<"ContentRequest"> | string | null
-    branchId?: StringNullableFilter<"ContentRequest"> | string | null
+    portfolioId?: StringNullableFilter<"ContentRequest"> | string | null
     createdById?: StringNullableFilter<"ContentRequest"> | string | null
   }
 
@@ -66411,7 +65014,6 @@ export namespace Prisma {
     stepOrder?: IntFilter<"RecurringScheduleStep"> | number
     label?: StringFilter<"RecurringScheduleStep"> | string
     contentType?: EnumContentTypeNullableFilter<"RecurringScheduleStep"> | $Enums.ContentType | null
-    department?: StringNullableFilter<"RecurringScheduleStep"> | string | null
     supervisor?: StringFilter<"RecurringScheduleStep"> | string
     assigneeId?: StringNullableFilter<"RecurringScheduleStep"> | string | null
     templateId?: StringNullableFilter<"RecurringScheduleStep"> | string | null
@@ -66452,7 +65054,7 @@ export namespace Prisma {
     notes?: StringNullableFilter<"Contract"> | string | null
     clientId?: StringFilter<"Contract"> | string
     projectId?: StringNullableFilter<"Contract"> | string | null
-    branchId?: StringNullableFilter<"Contract"> | string | null
+    portfolioId?: StringNullableFilter<"Contract"> | string | null
     createdById?: StringNullableFilter<"Contract"> | string | null
   }
 
@@ -66487,7 +65089,7 @@ export namespace Prisma {
     uploadedById?: StringNullableFilter<"ContractDocument"> | string | null
   }
 
-  export type UserCreateWithoutSessionsInput = {
+  export type StaffCreateWithoutSessionsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66497,12 +65099,11 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    branch?: BranchCreateNestedOneWithoutUsersInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -66521,7 +65122,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserUncheckedCreateWithoutSessionsInput = {
+  export type StaffUncheckedCreateWithoutSessionsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66531,8 +65132,7 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -66555,23 +65155,23 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserCreateOrConnectWithoutSessionsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutSessionsInput, UserUncheckedCreateWithoutSessionsInput>
+  export type StaffCreateOrConnectWithoutSessionsInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutSessionsInput, StaffUncheckedCreateWithoutSessionsInput>
   }
 
-  export type UserUpsertWithoutSessionsInput = {
-    update: XOR<UserUpdateWithoutSessionsInput, UserUncheckedUpdateWithoutSessionsInput>
-    create: XOR<UserCreateWithoutSessionsInput, UserUncheckedCreateWithoutSessionsInput>
-    where?: UserWhereInput
+  export type StaffUpsertWithoutSessionsInput = {
+    update: XOR<StaffUpdateWithoutSessionsInput, StaffUncheckedUpdateWithoutSessionsInput>
+    create: XOR<StaffCreateWithoutSessionsInput, StaffUncheckedCreateWithoutSessionsInput>
+    where?: StaffWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutSessionsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutSessionsInput, UserUncheckedUpdateWithoutSessionsInput>
+  export type StaffUpdateToOneWithWhereWithoutSessionsInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutSessionsInput, StaffUncheckedUpdateWithoutSessionsInput>
   }
 
-  export type UserUpdateWithoutSessionsInput = {
+  export type StaffUpdateWithoutSessionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66581,12 +65181,11 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    branch?: BranchUpdateOneWithoutUsersNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -66605,7 +65204,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutSessionsInput = {
+  export type StaffUncheckedUpdateWithoutSessionsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66615,8 +65214,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -66639,7 +65237,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserCreateWithoutAccountsInput = {
+  export type StaffCreateWithoutAccountsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66649,12 +65247,11 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    branch?: BranchCreateNestedOneWithoutUsersInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -66673,7 +65270,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserUncheckedCreateWithoutAccountsInput = {
+  export type StaffUncheckedCreateWithoutAccountsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66683,8 +65280,7 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -66707,23 +65303,23 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserCreateOrConnectWithoutAccountsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutAccountsInput, UserUncheckedCreateWithoutAccountsInput>
+  export type StaffCreateOrConnectWithoutAccountsInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutAccountsInput, StaffUncheckedCreateWithoutAccountsInput>
   }
 
-  export type UserUpsertWithoutAccountsInput = {
-    update: XOR<UserUpdateWithoutAccountsInput, UserUncheckedUpdateWithoutAccountsInput>
-    create: XOR<UserCreateWithoutAccountsInput, UserUncheckedCreateWithoutAccountsInput>
-    where?: UserWhereInput
+  export type StaffUpsertWithoutAccountsInput = {
+    update: XOR<StaffUpdateWithoutAccountsInput, StaffUncheckedUpdateWithoutAccountsInput>
+    create: XOR<StaffCreateWithoutAccountsInput, StaffUncheckedCreateWithoutAccountsInput>
+    where?: StaffWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutAccountsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutAccountsInput, UserUncheckedUpdateWithoutAccountsInput>
+  export type StaffUpdateToOneWithWhereWithoutAccountsInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutAccountsInput, StaffUncheckedUpdateWithoutAccountsInput>
   }
 
-  export type UserUpdateWithoutAccountsInput = {
+  export type StaffUpdateWithoutAccountsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66733,12 +65329,11 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    branch?: BranchUpdateOneWithoutUsersNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -66757,7 +65352,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutAccountsInput = {
+  export type StaffUncheckedUpdateWithoutAccountsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -66767,8 +65362,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -66791,7 +65385,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type BranchCreateWithoutClientsInput = {
+  export type PortfolioCreateWithoutClientsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66808,16 +65402,15 @@ export namespace Prisma {
     secondaryColor?: string
     customDomain?: string | null
     isActive?: boolean
-    users?: UserCreateNestedManyWithoutBranchInput
-    services?: ServiceCreateNestedManyWithoutBranchInput
-    departments?: DepartmentCreateNestedManyWithoutBranchInput
-    projects?: ProjectCreateNestedManyWithoutBranchInput
-    contentRequests?: ContentRequestCreateNestedManyWithoutBranchInput
-    recurringSchedules?: RecurringScheduleCreateNestedManyWithoutBranchInput
-    contracts?: ContractCreateNestedManyWithoutBranchInput
+    users?: StaffCreateNestedManyWithoutPortfolioInput
+    services?: ServiceCreateNestedManyWithoutPortfolioInput
+    projects?: ProjectCreateNestedManyWithoutPortfolioInput
+    contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
+    recurringSchedules?: RecurringScheduleCreateNestedManyWithoutPortfolioInput
+    contracts?: ContractCreateNestedManyWithoutPortfolioInput
   }
 
-  export type BranchUncheckedCreateWithoutClientsInput = {
+  export type PortfolioUncheckedCreateWithoutClientsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66834,21 +65427,20 @@ export namespace Prisma {
     secondaryColor?: string
     customDomain?: string | null
     isActive?: boolean
-    users?: UserUncheckedCreateNestedManyWithoutBranchInput
-    services?: ServiceUncheckedCreateNestedManyWithoutBranchInput
-    departments?: DepartmentUncheckedCreateNestedManyWithoutBranchInput
-    projects?: ProjectUncheckedCreateNestedManyWithoutBranchInput
-    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutBranchInput
-    recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutBranchInput
-    contracts?: ContractUncheckedCreateNestedManyWithoutBranchInput
+    users?: StaffUncheckedCreateNestedManyWithoutPortfolioInput
+    services?: ServiceUncheckedCreateNestedManyWithoutPortfolioInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutPortfolioInput
+    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
+    recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutPortfolioInput
+    contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
   }
 
-  export type BranchCreateOrConnectWithoutClientsInput = {
-    where: BranchWhereUniqueInput
-    create: XOR<BranchCreateWithoutClientsInput, BranchUncheckedCreateWithoutClientsInput>
+  export type PortfolioCreateOrConnectWithoutClientsInput = {
+    where: PortfolioWhereUniqueInput
+    create: XOR<PortfolioCreateWithoutClientsInput, PortfolioUncheckedCreateWithoutClientsInput>
   }
 
-  export type UserCreateWithoutManagedClientsInput = {
+  export type StaffCreateWithoutManagedClientsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66858,12 +65450,11 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    branch?: BranchCreateNestedOneWithoutUsersInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -66882,7 +65473,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserUncheckedCreateWithoutManagedClientsInput = {
+  export type StaffUncheckedCreateWithoutManagedClientsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -66892,8 +65483,7 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -66916,9 +65506,9 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserCreateOrConnectWithoutManagedClientsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutManagedClientsInput, UserUncheckedCreateWithoutManagedClientsInput>
+  export type StaffCreateOrConnectWithoutManagedClientsInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutManagedClientsInput, StaffUncheckedCreateWithoutManagedClientsInput>
   }
 
   export type ClientServiceCreateWithoutClientInput = {
@@ -67032,8 +65622,8 @@ export namespace Prisma {
     priority?: $Enums.ProjectPriority
     startDate?: Date | string | null
     dueDate?: Date | string | null
-    branch?: BranchCreateNestedOneWithoutProjectsInput
-    createdBy?: UserCreateNestedOneWithoutCreatedProjectsInput
+    portfolio?: PortfolioCreateNestedOneWithoutProjectsInput
+    createdBy?: StaffCreateNestedOneWithoutCreatedProjectsInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestCreateNestedManyWithoutProjectInput
     tasks?: TaskCreateNestedManyWithoutProjectInput
@@ -67051,7 +65641,7 @@ export namespace Prisma {
     priority?: $Enums.ProjectPriority
     startDate?: Date | string | null
     dueDate?: Date | string | null
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutProjectInput
@@ -67079,8 +65669,8 @@ export namespace Prisma {
     status?: $Enums.ContentRequestStatus
     deadline?: Date | string | null
     project?: ProjectCreateNestedOneWithoutContentRequestsInput
-    branch?: BranchCreateNestedOneWithoutContentRequestsInput
-    createdBy?: UserCreateNestedOneWithoutContentRequestsCreatedInput
+    portfolio?: PortfolioCreateNestedOneWithoutContentRequestsInput
+    createdBy?: StaffCreateNestedOneWithoutContentRequestsCreatedInput
     assignees?: ContentRequestAssigneeCreateNestedManyWithoutContentRequestInput
     tasks?: TaskCreateNestedManyWithoutContentRequestInput
   }
@@ -67095,7 +65685,7 @@ export namespace Prisma {
     status?: $Enums.ContentRequestStatus
     deadline?: Date | string | null
     projectId?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
     assignees?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutContentRequestInput
     tasks?: TaskUncheckedCreateNestedManyWithoutContentRequestInput
@@ -67123,7 +65713,7 @@ export namespace Prisma {
     endDate?: Date | string | null
     isActive?: boolean
     autoGenerateTasks?: boolean
-    branch?: BranchCreateNestedOneWithoutRecurringSchedulesInput
+    portfolio?: PortfolioCreateNestedOneWithoutRecurringSchedulesInput
     steps?: RecurringScheduleStepCreateNestedManyWithoutScheduleInput
     cycles?: ContentCycleCreateNestedManyWithoutScheduleInput
   }
@@ -67140,7 +65730,7 @@ export namespace Prisma {
     endDate?: Date | string | null
     isActive?: boolean
     autoGenerateTasks?: boolean
-    branchId?: string | null
+    portfolioId?: string | null
     steps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutScheduleInput
     cycles?: ContentCycleUncheckedCreateNestedManyWithoutScheduleInput
   }
@@ -67204,8 +65794,8 @@ export namespace Prisma {
     status?: $Enums.ContractStatus
     notes?: string | null
     project?: ProjectCreateNestedOneWithoutContractsInput
-    branch?: BranchCreateNestedOneWithoutContractsInput
-    createdBy?: UserCreateNestedOneWithoutCreatedContractsInput
+    portfolio?: PortfolioCreateNestedOneWithoutContractsInput
+    createdBy?: StaffCreateNestedOneWithoutCreatedContractsInput
     documents?: ContractDocumentCreateNestedManyWithoutContractInput
     installments?: ClientInstallmentCreateNestedManyWithoutContractInput
   }
@@ -67225,7 +65815,7 @@ export namespace Prisma {
     status?: $Enums.ContractStatus
     notes?: string | null
     projectId?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
     documents?: ContractDocumentUncheckedCreateNestedManyWithoutContractInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutContractInput
@@ -67281,18 +65871,18 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type BranchUpsertWithoutClientsInput = {
-    update: XOR<BranchUpdateWithoutClientsInput, BranchUncheckedUpdateWithoutClientsInput>
-    create: XOR<BranchCreateWithoutClientsInput, BranchUncheckedCreateWithoutClientsInput>
-    where?: BranchWhereInput
+  export type PortfolioUpsertWithoutClientsInput = {
+    update: XOR<PortfolioUpdateWithoutClientsInput, PortfolioUncheckedUpdateWithoutClientsInput>
+    create: XOR<PortfolioCreateWithoutClientsInput, PortfolioUncheckedCreateWithoutClientsInput>
+    where?: PortfolioWhereInput
   }
 
-  export type BranchUpdateToOneWithWhereWithoutClientsInput = {
-    where?: BranchWhereInput
-    data: XOR<BranchUpdateWithoutClientsInput, BranchUncheckedUpdateWithoutClientsInput>
+  export type PortfolioUpdateToOneWithWhereWithoutClientsInput = {
+    where?: PortfolioWhereInput
+    data: XOR<PortfolioUpdateWithoutClientsInput, PortfolioUncheckedUpdateWithoutClientsInput>
   }
 
-  export type BranchUpdateWithoutClientsInput = {
+  export type PortfolioUpdateWithoutClientsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67309,16 +65899,15 @@ export namespace Prisma {
     secondaryColor?: StringFieldUpdateOperationsInput | string
     customDomain?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    users?: UserUpdateManyWithoutBranchNestedInput
-    services?: ServiceUpdateManyWithoutBranchNestedInput
-    departments?: DepartmentUpdateManyWithoutBranchNestedInput
-    projects?: ProjectUpdateManyWithoutBranchNestedInput
-    contentRequests?: ContentRequestUpdateManyWithoutBranchNestedInput
-    recurringSchedules?: RecurringScheduleUpdateManyWithoutBranchNestedInput
-    contracts?: ContractUpdateManyWithoutBranchNestedInput
+    users?: StaffUpdateManyWithoutPortfolioNestedInput
+    services?: ServiceUpdateManyWithoutPortfolioNestedInput
+    projects?: ProjectUpdateManyWithoutPortfolioNestedInput
+    contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
+    recurringSchedules?: RecurringScheduleUpdateManyWithoutPortfolioNestedInput
+    contracts?: ContractUpdateManyWithoutPortfolioNestedInput
   }
 
-  export type BranchUncheckedUpdateWithoutClientsInput = {
+  export type PortfolioUncheckedUpdateWithoutClientsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67335,27 +65924,26 @@ export namespace Prisma {
     secondaryColor?: StringFieldUpdateOperationsInput | string
     customDomain?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    users?: UserUncheckedUpdateManyWithoutBranchNestedInput
-    services?: ServiceUncheckedUpdateManyWithoutBranchNestedInput
-    departments?: DepartmentUncheckedUpdateManyWithoutBranchNestedInput
-    projects?: ProjectUncheckedUpdateManyWithoutBranchNestedInput
-    contentRequests?: ContentRequestUncheckedUpdateManyWithoutBranchNestedInput
-    recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutBranchNestedInput
-    contracts?: ContractUncheckedUpdateManyWithoutBranchNestedInput
+    users?: StaffUncheckedUpdateManyWithoutPortfolioNestedInput
+    services?: ServiceUncheckedUpdateManyWithoutPortfolioNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutPortfolioNestedInput
+    contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
+    recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutPortfolioNestedInput
+    contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
-  export type UserUpsertWithoutManagedClientsInput = {
-    update: XOR<UserUpdateWithoutManagedClientsInput, UserUncheckedUpdateWithoutManagedClientsInput>
-    create: XOR<UserCreateWithoutManagedClientsInput, UserUncheckedCreateWithoutManagedClientsInput>
-    where?: UserWhereInput
+  export type StaffUpsertWithoutManagedClientsInput = {
+    update: XOR<StaffUpdateWithoutManagedClientsInput, StaffUncheckedUpdateWithoutManagedClientsInput>
+    create: XOR<StaffCreateWithoutManagedClientsInput, StaffUncheckedCreateWithoutManagedClientsInput>
+    where?: StaffWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutManagedClientsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutManagedClientsInput, UserUncheckedUpdateWithoutManagedClientsInput>
+  export type StaffUpdateToOneWithWhereWithoutManagedClientsInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutManagedClientsInput, StaffUncheckedUpdateWithoutManagedClientsInput>
   }
 
-  export type UserUpdateWithoutManagedClientsInput = {
+  export type StaffUpdateWithoutManagedClientsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67365,12 +65953,11 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    branch?: BranchUpdateOneWithoutUsersNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -67389,7 +65976,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutManagedClientsInput = {
+  export type StaffUncheckedUpdateWithoutManagedClientsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67399,8 +65986,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -67595,7 +66181,7 @@ export namespace Prisma {
     isActive?: BoolFilter<"RecurringSchedule"> | boolean
     autoGenerateTasks?: BoolFilter<"RecurringSchedule"> | boolean
     clientId?: StringFilter<"RecurringSchedule"> | string
-    branchId?: StringNullableFilter<"RecurringSchedule"> | string | null
+    portfolioId?: StringNullableFilter<"RecurringSchedule"> | string | null
   }
 
   export type ContentCycleUpsertWithWhereUniqueWithoutClientInput = {
@@ -67680,7 +66266,7 @@ export namespace Prisma {
     contractId?: StringNullableFilter<"ClientInstallment"> | string | null
   }
 
-  export type BranchCreateWithoutServicesInput = {
+  export type PortfolioCreateWithoutServicesInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -67697,16 +66283,15 @@ export namespace Prisma {
     secondaryColor?: string
     customDomain?: string | null
     isActive?: boolean
-    users?: UserCreateNestedManyWithoutBranchInput
-    departments?: DepartmentCreateNestedManyWithoutBranchInput
-    clients?: ClientCreateNestedManyWithoutBranchInput
-    projects?: ProjectCreateNestedManyWithoutBranchInput
-    contentRequests?: ContentRequestCreateNestedManyWithoutBranchInput
-    recurringSchedules?: RecurringScheduleCreateNestedManyWithoutBranchInput
-    contracts?: ContractCreateNestedManyWithoutBranchInput
+    users?: StaffCreateNestedManyWithoutPortfolioInput
+    clients?: ClientCreateNestedManyWithoutPortfolioInput
+    projects?: ProjectCreateNestedManyWithoutPortfolioInput
+    contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
+    recurringSchedules?: RecurringScheduleCreateNestedManyWithoutPortfolioInput
+    contracts?: ContractCreateNestedManyWithoutPortfolioInput
   }
 
-  export type BranchUncheckedCreateWithoutServicesInput = {
+  export type PortfolioUncheckedCreateWithoutServicesInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -67723,18 +66308,17 @@ export namespace Prisma {
     secondaryColor?: string
     customDomain?: string | null
     isActive?: boolean
-    users?: UserUncheckedCreateNestedManyWithoutBranchInput
-    departments?: DepartmentUncheckedCreateNestedManyWithoutBranchInput
-    clients?: ClientUncheckedCreateNestedManyWithoutBranchInput
-    projects?: ProjectUncheckedCreateNestedManyWithoutBranchInput
-    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutBranchInput
-    recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutBranchInput
-    contracts?: ContractUncheckedCreateNestedManyWithoutBranchInput
+    users?: StaffUncheckedCreateNestedManyWithoutPortfolioInput
+    clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutPortfolioInput
+    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
+    recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutPortfolioInput
+    contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
   }
 
-  export type BranchCreateOrConnectWithoutServicesInput = {
-    where: BranchWhereUniqueInput
-    create: XOR<BranchCreateWithoutServicesInput, BranchUncheckedCreateWithoutServicesInput>
+  export type PortfolioCreateOrConnectWithoutServicesInput = {
+    where: PortfolioWhereUniqueInput
+    create: XOR<PortfolioCreateWithoutServicesInput, PortfolioUncheckedCreateWithoutServicesInput>
   }
 
   export type ClientServiceCreateWithoutServiceInput = {
@@ -67823,18 +66407,18 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type BranchUpsertWithoutServicesInput = {
-    update: XOR<BranchUpdateWithoutServicesInput, BranchUncheckedUpdateWithoutServicesInput>
-    create: XOR<BranchCreateWithoutServicesInput, BranchUncheckedCreateWithoutServicesInput>
-    where?: BranchWhereInput
+  export type PortfolioUpsertWithoutServicesInput = {
+    update: XOR<PortfolioUpdateWithoutServicesInput, PortfolioUncheckedUpdateWithoutServicesInput>
+    create: XOR<PortfolioCreateWithoutServicesInput, PortfolioUncheckedCreateWithoutServicesInput>
+    where?: PortfolioWhereInput
   }
 
-  export type BranchUpdateToOneWithWhereWithoutServicesInput = {
-    where?: BranchWhereInput
-    data: XOR<BranchUpdateWithoutServicesInput, BranchUncheckedUpdateWithoutServicesInput>
+  export type PortfolioUpdateToOneWithWhereWithoutServicesInput = {
+    where?: PortfolioWhereInput
+    data: XOR<PortfolioUpdateWithoutServicesInput, PortfolioUncheckedUpdateWithoutServicesInput>
   }
 
-  export type BranchUpdateWithoutServicesInput = {
+  export type PortfolioUpdateWithoutServicesInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67851,16 +66435,15 @@ export namespace Prisma {
     secondaryColor?: StringFieldUpdateOperationsInput | string
     customDomain?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    users?: UserUpdateManyWithoutBranchNestedInput
-    departments?: DepartmentUpdateManyWithoutBranchNestedInput
-    clients?: ClientUpdateManyWithoutBranchNestedInput
-    projects?: ProjectUpdateManyWithoutBranchNestedInput
-    contentRequests?: ContentRequestUpdateManyWithoutBranchNestedInput
-    recurringSchedules?: RecurringScheduleUpdateManyWithoutBranchNestedInput
-    contracts?: ContractUpdateManyWithoutBranchNestedInput
+    users?: StaffUpdateManyWithoutPortfolioNestedInput
+    clients?: ClientUpdateManyWithoutPortfolioNestedInput
+    projects?: ProjectUpdateManyWithoutPortfolioNestedInput
+    contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
+    recurringSchedules?: RecurringScheduleUpdateManyWithoutPortfolioNestedInput
+    contracts?: ContractUpdateManyWithoutPortfolioNestedInput
   }
 
-  export type BranchUncheckedUpdateWithoutServicesInput = {
+  export type PortfolioUncheckedUpdateWithoutServicesInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67877,13 +66460,12 @@ export namespace Prisma {
     secondaryColor?: StringFieldUpdateOperationsInput | string
     customDomain?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    users?: UserUncheckedUpdateManyWithoutBranchNestedInput
-    departments?: DepartmentUncheckedUpdateManyWithoutBranchNestedInput
-    clients?: ClientUncheckedUpdateManyWithoutBranchNestedInput
-    projects?: ProjectUncheckedUpdateManyWithoutBranchNestedInput
-    contentRequests?: ContentRequestUncheckedUpdateManyWithoutBranchNestedInput
-    recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutBranchNestedInput
-    contracts?: ContractUncheckedUpdateManyWithoutBranchNestedInput
+    users?: StaffUncheckedUpdateManyWithoutPortfolioNestedInput
+    clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutPortfolioNestedInput
+    contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
+    recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutPortfolioNestedInput
+    contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
   export type ClientServiceUpsertWithWhereUniqueWithoutServiceInput = {
@@ -67948,7 +66530,7 @@ export namespace Prisma {
     id: string
     serviceName: string
     description?: string | null
-    branch?: BranchCreateNestedOneWithoutServicesInput
+    portfolio?: PortfolioCreateNestedOneWithoutServicesInput
     clientService?: ClientServiceCreateNestedManyWithoutServiceInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutServiceInput
   }
@@ -67957,7 +66539,7 @@ export namespace Prisma {
     id: string
     serviceName: string
     description?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutServiceInput
   }
@@ -68040,7 +66622,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    branch?: BranchUpdateOneWithoutServicesNestedInput
+    portfolio?: PortfolioUpdateOneWithoutServicesNestedInput
     clientService?: ClientServiceUpdateManyWithoutServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutServiceNestedInput
   }
@@ -68049,7 +66631,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientService?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutServiceNestedInput
   }
@@ -68086,7 +66668,7 @@ export namespace Prisma {
     data: XOR<IncomeServiceAgreementUpdateManyMutationInput, IncomeServiceAgreementUncheckedUpdateManyWithoutSubServiceInput>
   }
 
-  export type UserCreateWithoutBranchInput = {
+  export type StaffCreateWithoutPortfolioInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68096,7 +66678,6 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -68120,7 +66701,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserUncheckedCreateWithoutBranchInput = {
+  export type StaffUncheckedCreateWithoutPortfolioInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68130,7 +66711,6 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -68154,17 +66734,17 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserCreateOrConnectWithoutBranchInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutBranchInput, UserUncheckedCreateWithoutBranchInput>
+  export type StaffCreateOrConnectWithoutPortfolioInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutPortfolioInput, StaffUncheckedCreateWithoutPortfolioInput>
   }
 
-  export type UserCreateManyBranchInputEnvelope = {
-    data: UserCreateManyBranchInput | UserCreateManyBranchInput[]
+  export type StaffCreateManyPortfolioInputEnvelope = {
+    data: StaffCreateManyPortfolioInput | StaffCreateManyPortfolioInput[]
     skipDuplicates?: boolean
   }
 
-  export type ServiceCreateWithoutBranchInput = {
+  export type ServiceCreateWithoutPortfolioInput = {
     id: string
     serviceName: string
     description?: string | null
@@ -68173,7 +66753,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutServiceInput
   }
 
-  export type ServiceUncheckedCreateWithoutBranchInput = {
+  export type ServiceUncheckedCreateWithoutPortfolioInput = {
     id: string
     serviceName: string
     description?: string | null
@@ -68182,45 +66762,17 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutServiceInput
   }
 
-  export type ServiceCreateOrConnectWithoutBranchInput = {
+  export type ServiceCreateOrConnectWithoutPortfolioInput = {
     where: ServiceWhereUniqueInput
-    create: XOR<ServiceCreateWithoutBranchInput, ServiceUncheckedCreateWithoutBranchInput>
+    create: XOR<ServiceCreateWithoutPortfolioInput, ServiceUncheckedCreateWithoutPortfolioInput>
   }
 
-  export type ServiceCreateManyBranchInputEnvelope = {
-    data: ServiceCreateManyBranchInput | ServiceCreateManyBranchInput[]
+  export type ServiceCreateManyPortfolioInputEnvelope = {
+    data: ServiceCreateManyPortfolioInput | ServiceCreateManyPortfolioInput[]
     skipDuplicates?: boolean
   }
 
-  export type DepartmentCreateWithoutBranchInput = {
-    id: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    name: string
-    description?: string | null
-    isActive?: boolean
-  }
-
-  export type DepartmentUncheckedCreateWithoutBranchInput = {
-    id: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    name: string
-    description?: string | null
-    isActive?: boolean
-  }
-
-  export type DepartmentCreateOrConnectWithoutBranchInput = {
-    where: DepartmentWhereUniqueInput
-    create: XOR<DepartmentCreateWithoutBranchInput, DepartmentUncheckedCreateWithoutBranchInput>
-  }
-
-  export type DepartmentCreateManyBranchInputEnvelope = {
-    data: DepartmentCreateManyBranchInput | DepartmentCreateManyBranchInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type ClientCreateWithoutBranchInput = {
+  export type ClientCreateWithoutPortfolioInput = {
     id: string
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
@@ -68238,7 +66790,7 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    accountManager?: UserCreateNestedOneWithoutManagedClientsInput
+    accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
@@ -68251,7 +66803,7 @@ export namespace Prisma {
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
   }
 
-  export type ClientUncheckedCreateWithoutBranchInput = {
+  export type ClientUncheckedCreateWithoutPortfolioInput = {
     id: string
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
@@ -68282,17 +66834,17 @@ export namespace Prisma {
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
   }
 
-  export type ClientCreateOrConnectWithoutBranchInput = {
+  export type ClientCreateOrConnectWithoutPortfolioInput = {
     where: ClientWhereUniqueInput
-    create: XOR<ClientCreateWithoutBranchInput, ClientUncheckedCreateWithoutBranchInput>
+    create: XOR<ClientCreateWithoutPortfolioInput, ClientUncheckedCreateWithoutPortfolioInput>
   }
 
-  export type ClientCreateManyBranchInputEnvelope = {
-    data: ClientCreateManyBranchInput | ClientCreateManyBranchInput[]
+  export type ClientCreateManyPortfolioInputEnvelope = {
+    data: ClientCreateManyPortfolioInput | ClientCreateManyPortfolioInput[]
     skipDuplicates?: boolean
   }
 
-  export type ProjectCreateWithoutBranchInput = {
+  export type ProjectCreateWithoutPortfolioInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68304,14 +66856,14 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDate?: Date | string | null
     client: ClientCreateNestedOneWithoutProjectsInput
-    createdBy?: UserCreateNestedOneWithoutCreatedProjectsInput
+    createdBy?: StaffCreateNestedOneWithoutCreatedProjectsInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestCreateNestedManyWithoutProjectInput
     tasks?: TaskCreateNestedManyWithoutProjectInput
     contracts?: ContractCreateNestedManyWithoutProjectInput
   }
 
-  export type ProjectUncheckedCreateWithoutBranchInput = {
+  export type ProjectUncheckedCreateWithoutPortfolioInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68330,17 +66882,17 @@ export namespace Prisma {
     contracts?: ContractUncheckedCreateNestedManyWithoutProjectInput
   }
 
-  export type ProjectCreateOrConnectWithoutBranchInput = {
+  export type ProjectCreateOrConnectWithoutPortfolioInput = {
     where: ProjectWhereUniqueInput
-    create: XOR<ProjectCreateWithoutBranchInput, ProjectUncheckedCreateWithoutBranchInput>
+    create: XOR<ProjectCreateWithoutPortfolioInput, ProjectUncheckedCreateWithoutPortfolioInput>
   }
 
-  export type ProjectCreateManyBranchInputEnvelope = {
-    data: ProjectCreateManyBranchInput | ProjectCreateManyBranchInput[]
+  export type ProjectCreateManyPortfolioInputEnvelope = {
+    data: ProjectCreateManyPortfolioInput | ProjectCreateManyPortfolioInput[]
     skipDuplicates?: boolean
   }
 
-  export type ContentRequestCreateWithoutBranchInput = {
+  export type ContentRequestCreateWithoutPortfolioInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68351,12 +66903,12 @@ export namespace Prisma {
     deadline?: Date | string | null
     client: ClientCreateNestedOneWithoutContentRequestsInput
     project?: ProjectCreateNestedOneWithoutContentRequestsInput
-    createdBy?: UserCreateNestedOneWithoutContentRequestsCreatedInput
+    createdBy?: StaffCreateNestedOneWithoutContentRequestsCreatedInput
     assignees?: ContentRequestAssigneeCreateNestedManyWithoutContentRequestInput
     tasks?: TaskCreateNestedManyWithoutContentRequestInput
   }
 
-  export type ContentRequestUncheckedCreateWithoutBranchInput = {
+  export type ContentRequestUncheckedCreateWithoutPortfolioInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68372,17 +66924,17 @@ export namespace Prisma {
     tasks?: TaskUncheckedCreateNestedManyWithoutContentRequestInput
   }
 
-  export type ContentRequestCreateOrConnectWithoutBranchInput = {
+  export type ContentRequestCreateOrConnectWithoutPortfolioInput = {
     where: ContentRequestWhereUniqueInput
-    create: XOR<ContentRequestCreateWithoutBranchInput, ContentRequestUncheckedCreateWithoutBranchInput>
+    create: XOR<ContentRequestCreateWithoutPortfolioInput, ContentRequestUncheckedCreateWithoutPortfolioInput>
   }
 
-  export type ContentRequestCreateManyBranchInputEnvelope = {
-    data: ContentRequestCreateManyBranchInput | ContentRequestCreateManyBranchInput[]
+  export type ContentRequestCreateManyPortfolioInputEnvelope = {
+    data: ContentRequestCreateManyPortfolioInput | ContentRequestCreateManyPortfolioInput[]
     skipDuplicates?: boolean
   }
 
-  export type RecurringScheduleCreateWithoutBranchInput = {
+  export type RecurringScheduleCreateWithoutPortfolioInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68399,7 +66951,7 @@ export namespace Prisma {
     cycles?: ContentCycleCreateNestedManyWithoutScheduleInput
   }
 
-  export type RecurringScheduleUncheckedCreateWithoutBranchInput = {
+  export type RecurringScheduleUncheckedCreateWithoutPortfolioInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68416,17 +66968,17 @@ export namespace Prisma {
     cycles?: ContentCycleUncheckedCreateNestedManyWithoutScheduleInput
   }
 
-  export type RecurringScheduleCreateOrConnectWithoutBranchInput = {
+  export type RecurringScheduleCreateOrConnectWithoutPortfolioInput = {
     where: RecurringScheduleWhereUniqueInput
-    create: XOR<RecurringScheduleCreateWithoutBranchInput, RecurringScheduleUncheckedCreateWithoutBranchInput>
+    create: XOR<RecurringScheduleCreateWithoutPortfolioInput, RecurringScheduleUncheckedCreateWithoutPortfolioInput>
   }
 
-  export type RecurringScheduleCreateManyBranchInputEnvelope = {
-    data: RecurringScheduleCreateManyBranchInput | RecurringScheduleCreateManyBranchInput[]
+  export type RecurringScheduleCreateManyPortfolioInputEnvelope = {
+    data: RecurringScheduleCreateManyPortfolioInput | RecurringScheduleCreateManyPortfolioInput[]
     skipDuplicates?: boolean
   }
 
-  export type ContractCreateWithoutBranchInput = {
+  export type ContractCreateWithoutPortfolioInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68442,12 +66994,12 @@ export namespace Prisma {
     notes?: string | null
     client: ClientCreateNestedOneWithoutContractsInput
     project?: ProjectCreateNestedOneWithoutContractsInput
-    createdBy?: UserCreateNestedOneWithoutCreatedContractsInput
+    createdBy?: StaffCreateNestedOneWithoutCreatedContractsInput
     documents?: ContractDocumentCreateNestedManyWithoutContractInput
     installments?: ClientInstallmentCreateNestedManyWithoutContractInput
   }
 
-  export type ContractUncheckedCreateWithoutBranchInput = {
+  export type ContractUncheckedCreateWithoutPortfolioInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68468,46 +67020,46 @@ export namespace Prisma {
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutContractInput
   }
 
-  export type ContractCreateOrConnectWithoutBranchInput = {
+  export type ContractCreateOrConnectWithoutPortfolioInput = {
     where: ContractWhereUniqueInput
-    create: XOR<ContractCreateWithoutBranchInput, ContractUncheckedCreateWithoutBranchInput>
+    create: XOR<ContractCreateWithoutPortfolioInput, ContractUncheckedCreateWithoutPortfolioInput>
   }
 
-  export type ContractCreateManyBranchInputEnvelope = {
-    data: ContractCreateManyBranchInput | ContractCreateManyBranchInput[]
+  export type ContractCreateManyPortfolioInputEnvelope = {
+    data: ContractCreateManyPortfolioInput | ContractCreateManyPortfolioInput[]
     skipDuplicates?: boolean
   }
 
-  export type UserUpsertWithWhereUniqueWithoutBranchInput = {
-    where: UserWhereUniqueInput
-    update: XOR<UserUpdateWithoutBranchInput, UserUncheckedUpdateWithoutBranchInput>
-    create: XOR<UserCreateWithoutBranchInput, UserUncheckedCreateWithoutBranchInput>
+  export type StaffUpsertWithWhereUniqueWithoutPortfolioInput = {
+    where: StaffWhereUniqueInput
+    update: XOR<StaffUpdateWithoutPortfolioInput, StaffUncheckedUpdateWithoutPortfolioInput>
+    create: XOR<StaffCreateWithoutPortfolioInput, StaffUncheckedCreateWithoutPortfolioInput>
   }
 
-  export type UserUpdateWithWhereUniqueWithoutBranchInput = {
-    where: UserWhereUniqueInput
-    data: XOR<UserUpdateWithoutBranchInput, UserUncheckedUpdateWithoutBranchInput>
+  export type StaffUpdateWithWhereUniqueWithoutPortfolioInput = {
+    where: StaffWhereUniqueInput
+    data: XOR<StaffUpdateWithoutPortfolioInput, StaffUncheckedUpdateWithoutPortfolioInput>
   }
 
-  export type UserUpdateManyWithWhereWithoutBranchInput = {
-    where: UserScalarWhereInput
-    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutBranchInput>
+  export type StaffUpdateManyWithWhereWithoutPortfolioInput = {
+    where: StaffScalarWhereInput
+    data: XOR<StaffUpdateManyMutationInput, StaffUncheckedUpdateManyWithoutPortfolioInput>
   }
 
-  export type ServiceUpsertWithWhereUniqueWithoutBranchInput = {
+  export type ServiceUpsertWithWhereUniqueWithoutPortfolioInput = {
     where: ServiceWhereUniqueInput
-    update: XOR<ServiceUpdateWithoutBranchInput, ServiceUncheckedUpdateWithoutBranchInput>
-    create: XOR<ServiceCreateWithoutBranchInput, ServiceUncheckedCreateWithoutBranchInput>
+    update: XOR<ServiceUpdateWithoutPortfolioInput, ServiceUncheckedUpdateWithoutPortfolioInput>
+    create: XOR<ServiceCreateWithoutPortfolioInput, ServiceUncheckedCreateWithoutPortfolioInput>
   }
 
-  export type ServiceUpdateWithWhereUniqueWithoutBranchInput = {
+  export type ServiceUpdateWithWhereUniqueWithoutPortfolioInput = {
     where: ServiceWhereUniqueInput
-    data: XOR<ServiceUpdateWithoutBranchInput, ServiceUncheckedUpdateWithoutBranchInput>
+    data: XOR<ServiceUpdateWithoutPortfolioInput, ServiceUncheckedUpdateWithoutPortfolioInput>
   }
 
-  export type ServiceUpdateManyWithWhereWithoutBranchInput = {
+  export type ServiceUpdateManyWithWhereWithoutPortfolioInput = {
     where: ServiceScalarWhereInput
-    data: XOR<ServiceUpdateManyMutationInput, ServiceUncheckedUpdateManyWithoutBranchInput>
+    data: XOR<ServiceUpdateManyMutationInput, ServiceUncheckedUpdateManyWithoutPortfolioInput>
   }
 
   export type ServiceScalarWhereInput = {
@@ -68517,236 +67069,87 @@ export namespace Prisma {
     id?: StringFilter<"Service"> | string
     serviceName?: StringFilter<"Service"> | string
     description?: StringNullableFilter<"Service"> | string | null
-    branchId?: StringNullableFilter<"Service"> | string | null
+    portfolioId?: StringNullableFilter<"Service"> | string | null
   }
 
-  export type DepartmentUpsertWithWhereUniqueWithoutBranchInput = {
-    where: DepartmentWhereUniqueInput
-    update: XOR<DepartmentUpdateWithoutBranchInput, DepartmentUncheckedUpdateWithoutBranchInput>
-    create: XOR<DepartmentCreateWithoutBranchInput, DepartmentUncheckedCreateWithoutBranchInput>
-  }
-
-  export type DepartmentUpdateWithWhereUniqueWithoutBranchInput = {
-    where: DepartmentWhereUniqueInput
-    data: XOR<DepartmentUpdateWithoutBranchInput, DepartmentUncheckedUpdateWithoutBranchInput>
-  }
-
-  export type DepartmentUpdateManyWithWhereWithoutBranchInput = {
-    where: DepartmentScalarWhereInput
-    data: XOR<DepartmentUpdateManyMutationInput, DepartmentUncheckedUpdateManyWithoutBranchInput>
-  }
-
-  export type DepartmentScalarWhereInput = {
-    AND?: DepartmentScalarWhereInput | DepartmentScalarWhereInput[]
-    OR?: DepartmentScalarWhereInput[]
-    NOT?: DepartmentScalarWhereInput | DepartmentScalarWhereInput[]
-    id?: StringFilter<"Department"> | string
-    createdAt?: DateTimeFilter<"Department"> | Date | string
-    updatedAt?: DateTimeFilter<"Department"> | Date | string
-    name?: StringFilter<"Department"> | string
-    description?: StringNullableFilter<"Department"> | string | null
-    isActive?: BoolFilter<"Department"> | boolean
-    branchId?: StringFilter<"Department"> | string
-  }
-
-  export type ClientUpsertWithWhereUniqueWithoutBranchInput = {
+  export type ClientUpsertWithWhereUniqueWithoutPortfolioInput = {
     where: ClientWhereUniqueInput
-    update: XOR<ClientUpdateWithoutBranchInput, ClientUncheckedUpdateWithoutBranchInput>
-    create: XOR<ClientCreateWithoutBranchInput, ClientUncheckedCreateWithoutBranchInput>
+    update: XOR<ClientUpdateWithoutPortfolioInput, ClientUncheckedUpdateWithoutPortfolioInput>
+    create: XOR<ClientCreateWithoutPortfolioInput, ClientUncheckedCreateWithoutPortfolioInput>
   }
 
-  export type ClientUpdateWithWhereUniqueWithoutBranchInput = {
+  export type ClientUpdateWithWhereUniqueWithoutPortfolioInput = {
     where: ClientWhereUniqueInput
-    data: XOR<ClientUpdateWithoutBranchInput, ClientUncheckedUpdateWithoutBranchInput>
+    data: XOR<ClientUpdateWithoutPortfolioInput, ClientUncheckedUpdateWithoutPortfolioInput>
   }
 
-  export type ClientUpdateManyWithWhereWithoutBranchInput = {
+  export type ClientUpdateManyWithWhereWithoutPortfolioInput = {
     where: ClientScalarWhereInput
-    data: XOR<ClientUpdateManyMutationInput, ClientUncheckedUpdateManyWithoutBranchInput>
+    data: XOR<ClientUpdateManyMutationInput, ClientUncheckedUpdateManyWithoutPortfolioInput>
   }
 
-  export type ProjectUpsertWithWhereUniqueWithoutBranchInput = {
+  export type ProjectUpsertWithWhereUniqueWithoutPortfolioInput = {
     where: ProjectWhereUniqueInput
-    update: XOR<ProjectUpdateWithoutBranchInput, ProjectUncheckedUpdateWithoutBranchInput>
-    create: XOR<ProjectCreateWithoutBranchInput, ProjectUncheckedCreateWithoutBranchInput>
+    update: XOR<ProjectUpdateWithoutPortfolioInput, ProjectUncheckedUpdateWithoutPortfolioInput>
+    create: XOR<ProjectCreateWithoutPortfolioInput, ProjectUncheckedCreateWithoutPortfolioInput>
   }
 
-  export type ProjectUpdateWithWhereUniqueWithoutBranchInput = {
+  export type ProjectUpdateWithWhereUniqueWithoutPortfolioInput = {
     where: ProjectWhereUniqueInput
-    data: XOR<ProjectUpdateWithoutBranchInput, ProjectUncheckedUpdateWithoutBranchInput>
+    data: XOR<ProjectUpdateWithoutPortfolioInput, ProjectUncheckedUpdateWithoutPortfolioInput>
   }
 
-  export type ProjectUpdateManyWithWhereWithoutBranchInput = {
+  export type ProjectUpdateManyWithWhereWithoutPortfolioInput = {
     where: ProjectScalarWhereInput
-    data: XOR<ProjectUpdateManyMutationInput, ProjectUncheckedUpdateManyWithoutBranchInput>
+    data: XOR<ProjectUpdateManyMutationInput, ProjectUncheckedUpdateManyWithoutPortfolioInput>
   }
 
-  export type ContentRequestUpsertWithWhereUniqueWithoutBranchInput = {
+  export type ContentRequestUpsertWithWhereUniqueWithoutPortfolioInput = {
     where: ContentRequestWhereUniqueInput
-    update: XOR<ContentRequestUpdateWithoutBranchInput, ContentRequestUncheckedUpdateWithoutBranchInput>
-    create: XOR<ContentRequestCreateWithoutBranchInput, ContentRequestUncheckedCreateWithoutBranchInput>
+    update: XOR<ContentRequestUpdateWithoutPortfolioInput, ContentRequestUncheckedUpdateWithoutPortfolioInput>
+    create: XOR<ContentRequestCreateWithoutPortfolioInput, ContentRequestUncheckedCreateWithoutPortfolioInput>
   }
 
-  export type ContentRequestUpdateWithWhereUniqueWithoutBranchInput = {
+  export type ContentRequestUpdateWithWhereUniqueWithoutPortfolioInput = {
     where: ContentRequestWhereUniqueInput
-    data: XOR<ContentRequestUpdateWithoutBranchInput, ContentRequestUncheckedUpdateWithoutBranchInput>
+    data: XOR<ContentRequestUpdateWithoutPortfolioInput, ContentRequestUncheckedUpdateWithoutPortfolioInput>
   }
 
-  export type ContentRequestUpdateManyWithWhereWithoutBranchInput = {
+  export type ContentRequestUpdateManyWithWhereWithoutPortfolioInput = {
     where: ContentRequestScalarWhereInput
-    data: XOR<ContentRequestUpdateManyMutationInput, ContentRequestUncheckedUpdateManyWithoutBranchInput>
+    data: XOR<ContentRequestUpdateManyMutationInput, ContentRequestUncheckedUpdateManyWithoutPortfolioInput>
   }
 
-  export type RecurringScheduleUpsertWithWhereUniqueWithoutBranchInput = {
+  export type RecurringScheduleUpsertWithWhereUniqueWithoutPortfolioInput = {
     where: RecurringScheduleWhereUniqueInput
-    update: XOR<RecurringScheduleUpdateWithoutBranchInput, RecurringScheduleUncheckedUpdateWithoutBranchInput>
-    create: XOR<RecurringScheduleCreateWithoutBranchInput, RecurringScheduleUncheckedCreateWithoutBranchInput>
+    update: XOR<RecurringScheduleUpdateWithoutPortfolioInput, RecurringScheduleUncheckedUpdateWithoutPortfolioInput>
+    create: XOR<RecurringScheduleCreateWithoutPortfolioInput, RecurringScheduleUncheckedCreateWithoutPortfolioInput>
   }
 
-  export type RecurringScheduleUpdateWithWhereUniqueWithoutBranchInput = {
+  export type RecurringScheduleUpdateWithWhereUniqueWithoutPortfolioInput = {
     where: RecurringScheduleWhereUniqueInput
-    data: XOR<RecurringScheduleUpdateWithoutBranchInput, RecurringScheduleUncheckedUpdateWithoutBranchInput>
+    data: XOR<RecurringScheduleUpdateWithoutPortfolioInput, RecurringScheduleUncheckedUpdateWithoutPortfolioInput>
   }
 
-  export type RecurringScheduleUpdateManyWithWhereWithoutBranchInput = {
+  export type RecurringScheduleUpdateManyWithWhereWithoutPortfolioInput = {
     where: RecurringScheduleScalarWhereInput
-    data: XOR<RecurringScheduleUpdateManyMutationInput, RecurringScheduleUncheckedUpdateManyWithoutBranchInput>
+    data: XOR<RecurringScheduleUpdateManyMutationInput, RecurringScheduleUncheckedUpdateManyWithoutPortfolioInput>
   }
 
-  export type ContractUpsertWithWhereUniqueWithoutBranchInput = {
+  export type ContractUpsertWithWhereUniqueWithoutPortfolioInput = {
     where: ContractWhereUniqueInput
-    update: XOR<ContractUpdateWithoutBranchInput, ContractUncheckedUpdateWithoutBranchInput>
-    create: XOR<ContractCreateWithoutBranchInput, ContractUncheckedCreateWithoutBranchInput>
+    update: XOR<ContractUpdateWithoutPortfolioInput, ContractUncheckedUpdateWithoutPortfolioInput>
+    create: XOR<ContractCreateWithoutPortfolioInput, ContractUncheckedCreateWithoutPortfolioInput>
   }
 
-  export type ContractUpdateWithWhereUniqueWithoutBranchInput = {
+  export type ContractUpdateWithWhereUniqueWithoutPortfolioInput = {
     where: ContractWhereUniqueInput
-    data: XOR<ContractUpdateWithoutBranchInput, ContractUncheckedUpdateWithoutBranchInput>
+    data: XOR<ContractUpdateWithoutPortfolioInput, ContractUncheckedUpdateWithoutPortfolioInput>
   }
 
-  export type ContractUpdateManyWithWhereWithoutBranchInput = {
+  export type ContractUpdateManyWithWhereWithoutPortfolioInput = {
     where: ContractScalarWhereInput
-    data: XOR<ContractUpdateManyMutationInput, ContractUncheckedUpdateManyWithoutBranchInput>
-  }
-
-  export type BranchCreateWithoutDepartmentsInput = {
-    id: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    name: string
-    slug?: string | null
-    description?: string | null
-    location?: string | null
-    phone?: string | null
-    logoUrl?: string | null
-    iconLogoUrl?: string | null
-    usesRootLogin?: boolean
-    slugClearedOnce?: boolean
-    primaryColor?: string
-    secondaryColor?: string
-    customDomain?: string | null
-    isActive?: boolean
-    users?: UserCreateNestedManyWithoutBranchInput
-    services?: ServiceCreateNestedManyWithoutBranchInput
-    clients?: ClientCreateNestedManyWithoutBranchInput
-    projects?: ProjectCreateNestedManyWithoutBranchInput
-    contentRequests?: ContentRequestCreateNestedManyWithoutBranchInput
-    recurringSchedules?: RecurringScheduleCreateNestedManyWithoutBranchInput
-    contracts?: ContractCreateNestedManyWithoutBranchInput
-  }
-
-  export type BranchUncheckedCreateWithoutDepartmentsInput = {
-    id: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    name: string
-    slug?: string | null
-    description?: string | null
-    location?: string | null
-    phone?: string | null
-    logoUrl?: string | null
-    iconLogoUrl?: string | null
-    usesRootLogin?: boolean
-    slugClearedOnce?: boolean
-    primaryColor?: string
-    secondaryColor?: string
-    customDomain?: string | null
-    isActive?: boolean
-    users?: UserUncheckedCreateNestedManyWithoutBranchInput
-    services?: ServiceUncheckedCreateNestedManyWithoutBranchInput
-    clients?: ClientUncheckedCreateNestedManyWithoutBranchInput
-    projects?: ProjectUncheckedCreateNestedManyWithoutBranchInput
-    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutBranchInput
-    recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutBranchInput
-    contracts?: ContractUncheckedCreateNestedManyWithoutBranchInput
-  }
-
-  export type BranchCreateOrConnectWithoutDepartmentsInput = {
-    where: BranchWhereUniqueInput
-    create: XOR<BranchCreateWithoutDepartmentsInput, BranchUncheckedCreateWithoutDepartmentsInput>
-  }
-
-  export type BranchUpsertWithoutDepartmentsInput = {
-    update: XOR<BranchUpdateWithoutDepartmentsInput, BranchUncheckedUpdateWithoutDepartmentsInput>
-    create: XOR<BranchCreateWithoutDepartmentsInput, BranchUncheckedCreateWithoutDepartmentsInput>
-    where?: BranchWhereInput
-  }
-
-  export type BranchUpdateToOneWithWhereWithoutDepartmentsInput = {
-    where?: BranchWhereInput
-    data: XOR<BranchUpdateWithoutDepartmentsInput, BranchUncheckedUpdateWithoutDepartmentsInput>
-  }
-
-  export type BranchUpdateWithoutDepartmentsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    location?: NullableStringFieldUpdateOperationsInput | string | null
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
-    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
-    slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
-    primaryColor?: StringFieldUpdateOperationsInput | string
-    secondaryColor?: StringFieldUpdateOperationsInput | string
-    customDomain?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    users?: UserUpdateManyWithoutBranchNestedInput
-    services?: ServiceUpdateManyWithoutBranchNestedInput
-    clients?: ClientUpdateManyWithoutBranchNestedInput
-    projects?: ProjectUpdateManyWithoutBranchNestedInput
-    contentRequests?: ContentRequestUpdateManyWithoutBranchNestedInput
-    recurringSchedules?: RecurringScheduleUpdateManyWithoutBranchNestedInput
-    contracts?: ContractUpdateManyWithoutBranchNestedInput
-  }
-
-  export type BranchUncheckedUpdateWithoutDepartmentsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    location?: NullableStringFieldUpdateOperationsInput | string | null
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
-    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
-    slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
-    primaryColor?: StringFieldUpdateOperationsInput | string
-    secondaryColor?: StringFieldUpdateOperationsInput | string
-    customDomain?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    users?: UserUncheckedUpdateManyWithoutBranchNestedInput
-    services?: ServiceUncheckedUpdateManyWithoutBranchNestedInput
-    clients?: ClientUncheckedUpdateManyWithoutBranchNestedInput
-    projects?: ProjectUncheckedUpdateManyWithoutBranchNestedInput
-    contentRequests?: ContentRequestUncheckedUpdateManyWithoutBranchNestedInput
-    recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutBranchNestedInput
-    contracts?: ContractUncheckedUpdateManyWithoutBranchNestedInput
+    data: XOR<ContractUpdateManyMutationInput, ContractUncheckedUpdateManyWithoutPortfolioInput>
   }
 
   export type SubServiceCreateWithoutClientSubServiceInput = {
@@ -68788,8 +67191,8 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branch?: BranchCreateNestedOneWithoutClientsInput
-    accountManager?: UserCreateNestedOneWithoutManagedClientsInput
+    portfolio?: PortfolioCreateNestedOneWithoutClientsInput
+    accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
@@ -68819,7 +67222,7 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branchId?: string | null
+    portfolioId?: string | null
     accountManagerId?: string | null
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
@@ -68893,8 +67296,8 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branch?: BranchUpdateOneWithoutClientsNestedInput
-    accountManager?: UserUpdateOneWithoutManagedClientsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
+    accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
@@ -68924,7 +67327,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
@@ -68941,7 +67344,7 @@ export namespace Prisma {
     id: string
     serviceName: string
     description?: string | null
-    branch?: BranchCreateNestedOneWithoutServicesInput
+    portfolio?: PortfolioCreateNestedOneWithoutServicesInput
     subService?: SubServiceCreateNestedManyWithoutServiceInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutServiceInput
   }
@@ -68950,7 +67353,7 @@ export namespace Prisma {
     id: string
     serviceName: string
     description?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     subService?: SubServiceUncheckedCreateNestedManyWithoutServiceInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutServiceInput
   }
@@ -68978,8 +67381,8 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branch?: BranchCreateNestedOneWithoutClientsInput
-    accountManager?: UserCreateNestedOneWithoutManagedClientsInput
+    portfolio?: PortfolioCreateNestedOneWithoutClientsInput
+    accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
@@ -69009,7 +67412,7 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branchId?: string | null
+    portfolioId?: string | null
     accountManagerId?: string | null
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
@@ -69042,7 +67445,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    branch?: BranchUpdateOneWithoutServicesNestedInput
+    portfolio?: PortfolioUpdateOneWithoutServicesNestedInput
     subService?: SubServiceUpdateManyWithoutServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutServiceNestedInput
   }
@@ -69051,7 +67454,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     subService?: SubServiceUncheckedUpdateManyWithoutServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutServiceNestedInput
   }
@@ -69085,8 +67488,8 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branch?: BranchUpdateOneWithoutClientsNestedInput
-    accountManager?: UserUpdateOneWithoutManagedClientsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
+    accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
@@ -69116,7 +67519,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
@@ -69129,7 +67532,7 @@ export namespace Prisma {
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
   }
 
-  export type UserCreateWithoutAssignedTasksInput = {
+  export type StaffCreateWithoutAssignedTasksInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -69139,12 +67542,11 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    branch?: BranchCreateNestedOneWithoutUsersInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -69163,7 +67565,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserUncheckedCreateWithoutAssignedTasksInput = {
+  export type StaffUncheckedCreateWithoutAssignedTasksInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -69173,8 +67575,7 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -69197,9 +67598,9 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserCreateOrConnectWithoutAssignedTasksInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutAssignedTasksInput, UserUncheckedCreateWithoutAssignedTasksInput>
+  export type StaffCreateOrConnectWithoutAssignedTasksInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutAssignedTasksInput, StaffUncheckedCreateWithoutAssignedTasksInput>
   }
 
   export type ProjectCreateWithoutTasksInput = {
@@ -69214,8 +67615,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDate?: Date | string | null
     client: ClientCreateNestedOneWithoutProjectsInput
-    branch?: BranchCreateNestedOneWithoutProjectsInput
-    createdBy?: UserCreateNestedOneWithoutCreatedProjectsInput
+    portfolio?: PortfolioCreateNestedOneWithoutProjectsInput
+    createdBy?: StaffCreateNestedOneWithoutCreatedProjectsInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestCreateNestedManyWithoutProjectInput
     contracts?: ContractCreateNestedManyWithoutProjectInput
@@ -69233,7 +67634,7 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDate?: Date | string | null
     clientId: string
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutProjectInput
@@ -69256,8 +67657,8 @@ export namespace Prisma {
     deadline?: Date | string | null
     client: ClientCreateNestedOneWithoutContentRequestsInput
     project?: ProjectCreateNestedOneWithoutContentRequestsInput
-    branch?: BranchCreateNestedOneWithoutContentRequestsInput
-    createdBy?: UserCreateNestedOneWithoutContentRequestsCreatedInput
+    portfolio?: PortfolioCreateNestedOneWithoutContentRequestsInput
+    createdBy?: StaffCreateNestedOneWithoutContentRequestsCreatedInput
     assignees?: ContentRequestAssigneeCreateNestedManyWithoutContentRequestInput
   }
 
@@ -69272,7 +67673,7 @@ export namespace Prisma {
     deadline?: Date | string | null
     clientId: string
     projectId?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
     assignees?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutContentRequestInput
   }
@@ -69350,7 +67751,6 @@ export namespace Prisma {
     stepOrder: number
     taskName: string
     description?: string | null
-    department?: string | null
     defaultPriority?: $Enums.TaskPriority
     estimatedDays?: number | null
     workflowStage?: $Enums.WorkflowStage
@@ -69364,7 +67764,6 @@ export namespace Prisma {
     stepOrder: number
     taskName: string
     description?: string | null
-    department?: string | null
     defaultPriority?: $Enums.TaskPriority
     estimatedDays?: number | null
     workflowStage?: $Enums.WorkflowStage
@@ -69414,18 +67813,18 @@ export namespace Prisma {
     create: XOR<RecurringTaskOccurrenceCreateWithoutTaskInput, RecurringTaskOccurrenceUncheckedCreateWithoutTaskInput>
   }
 
-  export type UserUpsertWithoutAssignedTasksInput = {
-    update: XOR<UserUpdateWithoutAssignedTasksInput, UserUncheckedUpdateWithoutAssignedTasksInput>
-    create: XOR<UserCreateWithoutAssignedTasksInput, UserUncheckedCreateWithoutAssignedTasksInput>
-    where?: UserWhereInput
+  export type StaffUpsertWithoutAssignedTasksInput = {
+    update: XOR<StaffUpdateWithoutAssignedTasksInput, StaffUncheckedUpdateWithoutAssignedTasksInput>
+    create: XOR<StaffCreateWithoutAssignedTasksInput, StaffUncheckedCreateWithoutAssignedTasksInput>
+    where?: StaffWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutAssignedTasksInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutAssignedTasksInput, UserUncheckedUpdateWithoutAssignedTasksInput>
+  export type StaffUpdateToOneWithWhereWithoutAssignedTasksInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutAssignedTasksInput, StaffUncheckedUpdateWithoutAssignedTasksInput>
   }
 
-  export type UserUpdateWithoutAssignedTasksInput = {
+  export type StaffUpdateWithoutAssignedTasksInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -69435,12 +67834,11 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    branch?: BranchUpdateOneWithoutUsersNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -69459,7 +67857,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutAssignedTasksInput = {
+  export type StaffUncheckedUpdateWithoutAssignedTasksInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -69469,8 +67867,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -69516,8 +67913,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     client?: ClientUpdateOneRequiredWithoutProjectsNestedInput
-    branch?: BranchUpdateOneWithoutProjectsNestedInput
-    createdBy?: UserUpdateOneWithoutCreatedProjectsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutProjectsNestedInput
+    createdBy?: StaffUpdateOneWithoutCreatedProjectsNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutProjectNestedInput
     contracts?: ContractUpdateManyWithoutProjectNestedInput
@@ -69535,7 +67932,7 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientId?: StringFieldUpdateOperationsInput | string
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutProjectNestedInput
@@ -69564,8 +67961,8 @@ export namespace Prisma {
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     client?: ClientUpdateOneRequiredWithoutContentRequestsNestedInput
     project?: ProjectUpdateOneWithoutContentRequestsNestedInput
-    branch?: BranchUpdateOneWithoutContentRequestsNestedInput
-    createdBy?: UserUpdateOneWithoutContentRequestsCreatedNestedInput
+    portfolio?: PortfolioUpdateOneWithoutContentRequestsNestedInput
+    createdBy?: StaffUpdateOneWithoutContentRequestsCreatedNestedInput
     assignees?: ContentRequestAssigneeUpdateManyWithoutContentRequestNestedInput
   }
 
@@ -69580,7 +67977,7 @@ export namespace Prisma {
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientId?: StringFieldUpdateOperationsInput | string
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     assignees?: ContentRequestAssigneeUncheckedUpdateManyWithoutContentRequestNestedInput
   }
@@ -69676,7 +68073,6 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     taskName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     defaultPriority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     estimatedDays?: NullableIntFieldUpdateOperationsInput | number | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -69690,7 +68086,6 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     taskName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     defaultPriority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     estimatedDays?: NullableIntFieldUpdateOperationsInput | number | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -69755,8 +68150,8 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branch?: BranchCreateNestedOneWithoutClientsInput
-    accountManager?: UserCreateNestedOneWithoutManagedClientsInput
+    portfolio?: PortfolioCreateNestedOneWithoutClientsInput
+    accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
@@ -69786,7 +68181,7 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branchId?: string | null
+    portfolioId?: string | null
     accountManagerId?: string | null
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
@@ -69811,7 +68206,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -69819,7 +68213,7 @@ export namespace Prisma {
     supervisor?: string
     serviceInformation?: string | null
     isPersonal?: boolean
-    user: UserCreateNestedOneWithoutAssignedTasksInput
+    user: StaffCreateNestedOneWithoutAssignedTasksInput
     project?: ProjectCreateNestedOneWithoutTasksInput
     contentRequest?: ContentRequestCreateNestedOneWithoutTasksInput
     contentCycle?: ContentCycleCreateNestedOneWithoutTasksInput
@@ -69835,7 +68229,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -69886,8 +68279,8 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branch?: BranchUpdateOneWithoutClientsNestedInput
-    accountManager?: UserUpdateOneWithoutManagedClientsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
+    accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
@@ -69917,7 +68310,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
@@ -69948,7 +68341,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -69956,7 +68348,7 @@ export namespace Prisma {
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
-    user?: UserUpdateOneRequiredWithoutAssignedTasksNestedInput
+    user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
     project?: ProjectUpdateOneWithoutTasksNestedInput
     contentRequest?: ContentRequestUpdateOneWithoutTasksNestedInput
     contentCycle?: ContentCycleUpdateOneWithoutTasksNestedInput
@@ -69972,7 +68364,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -70002,7 +68393,7 @@ export namespace Prisma {
     totalAmount: number
     amountPaid: number
     subTotal?: number | null
-    user: UserCreateNestedOneWithoutIncomeTransactionInput
+    user: StaffCreateNestedOneWithoutIncomeTransactionInput
     serviceAgreement: IncomeServiceAgreementCreateNestedOneWithoutIncomeTransactionInput
     transactionDetails?: IncomeTransactionDetailsCreateNestedManyWithoutTransctionInput
   }
@@ -70060,7 +68451,7 @@ export namespace Prisma {
     notes: string
     totalAmount: number
     amountPaid: number
-    user: UserCreateNestedOneWithoutExpenseTransactionInput
+    user: StaffCreateNestedOneWithoutExpenseTransactionInput
     expenseServiceAgreement: ExpenseServiceAgreementCreateNestedOneWithoutExpenseTransactionInput
     expenseTransactionDetails?: ExpenseTransactionDetailsCreateNestedManyWithoutExpenseTransactionInput
   }
@@ -70105,7 +68496,7 @@ export namespace Prisma {
     data: XOR<ExpenseTransactionUpdateManyMutationInput, ExpenseTransactionUncheckedUpdateManyWithoutExpenseInput>
   }
 
-  export type UserCreateWithoutIncomeTransactionInput = {
+  export type StaffCreateWithoutIncomeTransactionInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -70115,12 +68506,11 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    branch?: BranchCreateNestedOneWithoutUsersInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -70139,7 +68529,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserUncheckedCreateWithoutIncomeTransactionInput = {
+  export type StaffUncheckedCreateWithoutIncomeTransactionInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -70149,8 +68539,7 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -70173,9 +68562,9 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserCreateOrConnectWithoutIncomeTransactionInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutIncomeTransactionInput, UserUncheckedCreateWithoutIncomeTransactionInput>
+  export type StaffCreateOrConnectWithoutIncomeTransactionInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutIncomeTransactionInput, StaffUncheckedCreateWithoutIncomeTransactionInput>
   }
 
   export type IncomeCreateWithoutIncomeTransactionInput = {
@@ -70250,18 +68639,18 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type UserUpsertWithoutIncomeTransactionInput = {
-    update: XOR<UserUpdateWithoutIncomeTransactionInput, UserUncheckedUpdateWithoutIncomeTransactionInput>
-    create: XOR<UserCreateWithoutIncomeTransactionInput, UserUncheckedCreateWithoutIncomeTransactionInput>
-    where?: UserWhereInput
+  export type StaffUpsertWithoutIncomeTransactionInput = {
+    update: XOR<StaffUpdateWithoutIncomeTransactionInput, StaffUncheckedUpdateWithoutIncomeTransactionInput>
+    create: XOR<StaffCreateWithoutIncomeTransactionInput, StaffUncheckedCreateWithoutIncomeTransactionInput>
+    where?: StaffWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutIncomeTransactionInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutIncomeTransactionInput, UserUncheckedUpdateWithoutIncomeTransactionInput>
+  export type StaffUpdateToOneWithWhereWithoutIncomeTransactionInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutIncomeTransactionInput, StaffUncheckedUpdateWithoutIncomeTransactionInput>
   }
 
-  export type UserUpdateWithoutIncomeTransactionInput = {
+  export type StaffUpdateWithoutIncomeTransactionInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70271,12 +68660,11 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    branch?: BranchUpdateOneWithoutUsersNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -70295,7 +68683,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutIncomeTransactionInput = {
+  export type StaffUncheckedUpdateWithoutIncomeTransactionInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70305,8 +68693,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -70417,7 +68804,7 @@ export namespace Prisma {
     incomeTransactionId?: StringFilter<"IncomeTransactionDetails"> | string
   }
 
-  export type UserCreateWithoutExpenseTransactionInput = {
+  export type StaffCreateWithoutExpenseTransactionInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -70427,12 +68814,11 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    branch?: BranchCreateNestedOneWithoutUsersInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -70451,7 +68837,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserUncheckedCreateWithoutExpenseTransactionInput = {
+  export type StaffUncheckedCreateWithoutExpenseTransactionInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -70461,8 +68847,7 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -70485,9 +68870,9 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserCreateOrConnectWithoutExpenseTransactionInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutExpenseTransactionInput, UserUncheckedCreateWithoutExpenseTransactionInput>
+  export type StaffCreateOrConnectWithoutExpenseTransactionInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutExpenseTransactionInput, StaffUncheckedCreateWithoutExpenseTransactionInput>
   }
 
   export type ExpenseCreateWithoutExpenseTransactionInput = {
@@ -70548,18 +68933,18 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type UserUpsertWithoutExpenseTransactionInput = {
-    update: XOR<UserUpdateWithoutExpenseTransactionInput, UserUncheckedUpdateWithoutExpenseTransactionInput>
-    create: XOR<UserCreateWithoutExpenseTransactionInput, UserUncheckedCreateWithoutExpenseTransactionInput>
-    where?: UserWhereInput
+  export type StaffUpsertWithoutExpenseTransactionInput = {
+    update: XOR<StaffUpdateWithoutExpenseTransactionInput, StaffUncheckedUpdateWithoutExpenseTransactionInput>
+    create: XOR<StaffCreateWithoutExpenseTransactionInput, StaffUncheckedCreateWithoutExpenseTransactionInput>
+    where?: StaffWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutExpenseTransactionInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutExpenseTransactionInput, UserUncheckedUpdateWithoutExpenseTransactionInput>
+  export type StaffUpdateToOneWithWhereWithoutExpenseTransactionInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutExpenseTransactionInput, StaffUncheckedUpdateWithoutExpenseTransactionInput>
   }
 
-  export type UserUpdateWithoutExpenseTransactionInput = {
+  export type StaffUpdateWithoutExpenseTransactionInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70569,12 +68954,11 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    branch?: BranchUpdateOneWithoutUsersNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -70593,7 +68977,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutExpenseTransactionInput = {
+  export type StaffUncheckedUpdateWithoutExpenseTransactionInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70603,8 +68987,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -70714,7 +69097,7 @@ export namespace Prisma {
     totalAmount: number
     amountPaid: number
     subTotal?: number | null
-    user: UserCreateNestedOneWithoutIncomeTransactionInput
+    user: StaffCreateNestedOneWithoutIncomeTransactionInput
     income?: IncomeCreateNestedOneWithoutIncomeTransactionInput
     serviceAgreement: IncomeServiceAgreementCreateNestedOneWithoutIncomeTransactionInput
   }
@@ -70766,7 +69149,7 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
     subTotal?: NullableFloatFieldUpdateOperationsInput | number | null
-    user?: UserUpdateOneRequiredWithoutIncomeTransactionNestedInput
+    user?: StaffUpdateOneRequiredWithoutIncomeTransactionNestedInput
     income?: IncomeUpdateOneWithoutIncomeTransactionNestedInput
     serviceAgreement?: IncomeServiceAgreementUpdateOneRequiredWithoutIncomeTransactionNestedInput
   }
@@ -70789,7 +69172,7 @@ export namespace Prisma {
     agreementId?: StringFieldUpdateOperationsInput | string
   }
 
-  export type UserCreateWithoutUserFilesInput = {
+  export type StaffCreateWithoutUserFilesInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -70799,12 +69182,11 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    branch?: BranchCreateNestedOneWithoutUsersInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -70823,7 +69205,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserUncheckedCreateWithoutUserFilesInput = {
+  export type StaffUncheckedCreateWithoutUserFilesInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -70833,8 +69215,7 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -70857,23 +69238,23 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserCreateOrConnectWithoutUserFilesInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutUserFilesInput, UserUncheckedCreateWithoutUserFilesInput>
+  export type StaffCreateOrConnectWithoutUserFilesInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutUserFilesInput, StaffUncheckedCreateWithoutUserFilesInput>
   }
 
-  export type UserUpsertWithoutUserFilesInput = {
-    update: XOR<UserUpdateWithoutUserFilesInput, UserUncheckedUpdateWithoutUserFilesInput>
-    create: XOR<UserCreateWithoutUserFilesInput, UserUncheckedCreateWithoutUserFilesInput>
-    where?: UserWhereInput
+  export type StaffUpsertWithoutUserFilesInput = {
+    update: XOR<StaffUpdateWithoutUserFilesInput, StaffUncheckedUpdateWithoutUserFilesInput>
+    create: XOR<StaffCreateWithoutUserFilesInput, StaffUncheckedCreateWithoutUserFilesInput>
+    where?: StaffWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutUserFilesInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutUserFilesInput, UserUncheckedUpdateWithoutUserFilesInput>
+  export type StaffUpdateToOneWithWhereWithoutUserFilesInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutUserFilesInput, StaffUncheckedUpdateWithoutUserFilesInput>
   }
 
-  export type UserUpdateWithoutUserFilesInput = {
+  export type StaffUpdateWithoutUserFilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70883,12 +69264,11 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    branch?: BranchUpdateOneWithoutUsersNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -70907,7 +69287,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutUserFilesInput = {
+  export type StaffUncheckedUpdateWithoutUserFilesInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70917,8 +69297,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -70945,7 +69324,7 @@ export namespace Prisma {
     id: string
     serviceName: string
     description?: string | null
-    branch?: BranchCreateNestedOneWithoutServicesInput
+    portfolio?: PortfolioCreateNestedOneWithoutServicesInput
     clientService?: ClientServiceCreateNestedManyWithoutServiceInput
     subService?: SubServiceCreateNestedManyWithoutServiceInput
   }
@@ -70954,7 +69333,7 @@ export namespace Prisma {
     id: string
     serviceName: string
     description?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
     subService?: SubServiceUncheckedCreateNestedManyWithoutServiceInput
   }
@@ -71003,8 +69382,8 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branch?: BranchCreateNestedOneWithoutClientsInput
-    accountManager?: UserCreateNestedOneWithoutManagedClientsInput
+    portfolio?: PortfolioCreateNestedOneWithoutClientsInput
+    accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
@@ -71034,7 +69413,7 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branchId?: string | null
+    portfolioId?: string | null
     accountManagerId?: string | null
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
@@ -71064,8 +69443,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDate?: Date | string | null
     client: ClientCreateNestedOneWithoutProjectsInput
-    branch?: BranchCreateNestedOneWithoutProjectsInput
-    createdBy?: UserCreateNestedOneWithoutCreatedProjectsInput
+    portfolio?: PortfolioCreateNestedOneWithoutProjectsInput
+    createdBy?: StaffCreateNestedOneWithoutCreatedProjectsInput
     contentRequests?: ContentRequestCreateNestedManyWithoutProjectInput
     tasks?: TaskCreateNestedManyWithoutProjectInput
     contracts?: ContractCreateNestedManyWithoutProjectInput
@@ -71083,7 +69462,7 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDate?: Date | string | null
     clientId: string
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutProjectInput
     tasks?: TaskUncheckedCreateNestedManyWithoutProjectInput
@@ -71108,7 +69487,7 @@ export namespace Prisma {
     totalAmount: number
     amountPaid: number
     subTotal?: number | null
-    user: UserCreateNestedOneWithoutIncomeTransactionInput
+    user: StaffCreateNestedOneWithoutIncomeTransactionInput
     income?: IncomeCreateNestedOneWithoutIncomeTransactionInput
     transactionDetails?: IncomeTransactionDetailsCreateNestedManyWithoutTransctionInput
   }
@@ -71148,7 +69527,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -71156,7 +69534,7 @@ export namespace Prisma {
     supervisor?: string
     serviceInformation?: string | null
     isPersonal?: boolean
-    user: UserCreateNestedOneWithoutAssignedTasksInput
+    user: StaffCreateNestedOneWithoutAssignedTasksInput
     project?: ProjectCreateNestedOneWithoutTasksInput
     contentRequest?: ContentRequestCreateNestedOneWithoutTasksInput
     contentCycle?: ContentCycleCreateNestedOneWithoutTasksInput
@@ -71172,7 +69550,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -71214,7 +69591,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    branch?: BranchUpdateOneWithoutServicesNestedInput
+    portfolio?: PortfolioUpdateOneWithoutServicesNestedInput
     clientService?: ClientServiceUpdateManyWithoutServiceNestedInput
     subService?: SubServiceUpdateManyWithoutServiceNestedInput
   }
@@ -71223,7 +69600,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientService?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
     subService?: SubServiceUncheckedUpdateManyWithoutServiceNestedInput
   }
@@ -71284,8 +69661,8 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branch?: BranchUpdateOneWithoutClientsNestedInput
-    accountManager?: UserUpdateOneWithoutManagedClientsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
+    accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
@@ -71315,7 +69692,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
@@ -71351,8 +69728,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     client?: ClientUpdateOneRequiredWithoutProjectsNestedInput
-    branch?: BranchUpdateOneWithoutProjectsNestedInput
-    createdBy?: UserUpdateOneWithoutCreatedProjectsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutProjectsNestedInput
+    createdBy?: StaffUpdateOneWithoutCreatedProjectsNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutProjectNestedInput
     tasks?: TaskUpdateManyWithoutProjectNestedInput
     contracts?: ContractUpdateManyWithoutProjectNestedInput
@@ -71370,7 +69747,7 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientId?: StringFieldUpdateOperationsInput | string
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutProjectNestedInput
     tasks?: TaskUncheckedUpdateManyWithoutProjectNestedInput
@@ -71418,7 +69795,7 @@ export namespace Prisma {
     notes: string
     totalAmount: number
     amountPaid: number
-    user: UserCreateNestedOneWithoutExpenseTransactionInput
+    user: StaffCreateNestedOneWithoutExpenseTransactionInput
     expense: ExpenseCreateNestedOneWithoutExpenseTransactionInput
     expenseTransactionDetails?: ExpenseTransactionDetailsCreateNestedManyWithoutExpenseTransactionInput
   }
@@ -71472,7 +69849,7 @@ export namespace Prisma {
     notes: string
     totalAmount: number
     amountPaid: number
-    user: UserCreateNestedOneWithoutExpenseTransactionInput
+    user: StaffCreateNestedOneWithoutExpenseTransactionInput
     expense: ExpenseCreateNestedOneWithoutExpenseTransactionInput
     expenseServiceAgreement: ExpenseServiceAgreementCreateNestedOneWithoutExpenseTransactionInput
   }
@@ -71516,7 +69893,7 @@ export namespace Prisma {
     notes?: StringFieldUpdateOperationsInput | string
     totalAmount?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
-    user?: UserUpdateOneRequiredWithoutExpenseTransactionNestedInput
+    user?: StaffUpdateOneRequiredWithoutExpenseTransactionNestedInput
     expense?: ExpenseUpdateOneRequiredWithoutExpenseTransactionNestedInput
     expenseServiceAgreement?: ExpenseServiceAgreementUpdateOneRequiredWithoutExpenseTransactionNestedInput
   }
@@ -71535,7 +69912,7 @@ export namespace Prisma {
     expneseAgreementId?: StringFieldUpdateOperationsInput | string
   }
 
-  export type UserCreateWithoutRegistererInput = {
+  export type StaffCreateWithoutRegistererInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -71545,12 +69922,11 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    branch?: BranchCreateNestedOneWithoutUsersInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -71569,7 +69945,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserUncheckedCreateWithoutRegistererInput = {
+  export type StaffUncheckedCreateWithoutRegistererInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -71579,8 +69955,7 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -71603,12 +69978,12 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserCreateOrConnectWithoutRegistererInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutRegistererInput, UserUncheckedCreateWithoutRegistererInput>
+  export type StaffCreateOrConnectWithoutRegistererInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutRegistererInput, StaffUncheckedCreateWithoutRegistererInput>
   }
 
-  export type UserCreateWithoutRecieverInput = {
+  export type StaffCreateWithoutRecieverInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -71618,12 +69993,11 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    branch?: BranchCreateNestedOneWithoutUsersInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -71642,7 +70016,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserUncheckedCreateWithoutRecieverInput = {
+  export type StaffUncheckedCreateWithoutRecieverInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -71652,8 +70026,7 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -71676,9 +70049,9 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserCreateOrConnectWithoutRecieverInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutRecieverInput, UserUncheckedCreateWithoutRecieverInput>
+  export type StaffCreateOrConnectWithoutRecieverInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutRecieverInput, StaffUncheckedCreateWithoutRecieverInput>
   }
 
   export type UserSalaryDetailsCreateWithoutUserSalaryInput = {
@@ -71703,18 +70076,18 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type UserUpsertWithoutRegistererInput = {
-    update: XOR<UserUpdateWithoutRegistererInput, UserUncheckedUpdateWithoutRegistererInput>
-    create: XOR<UserCreateWithoutRegistererInput, UserUncheckedCreateWithoutRegistererInput>
-    where?: UserWhereInput
+  export type StaffUpsertWithoutRegistererInput = {
+    update: XOR<StaffUpdateWithoutRegistererInput, StaffUncheckedUpdateWithoutRegistererInput>
+    create: XOR<StaffCreateWithoutRegistererInput, StaffUncheckedCreateWithoutRegistererInput>
+    where?: StaffWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutRegistererInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutRegistererInput, UserUncheckedUpdateWithoutRegistererInput>
+  export type StaffUpdateToOneWithWhereWithoutRegistererInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutRegistererInput, StaffUncheckedUpdateWithoutRegistererInput>
   }
 
-  export type UserUpdateWithoutRegistererInput = {
+  export type StaffUpdateWithoutRegistererInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -71724,12 +70097,11 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    branch?: BranchUpdateOneWithoutUsersNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -71748,7 +70120,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutRegistererInput = {
+  export type StaffUncheckedUpdateWithoutRegistererInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -71758,8 +70130,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -71782,18 +70153,18 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserUpsertWithoutRecieverInput = {
-    update: XOR<UserUpdateWithoutRecieverInput, UserUncheckedUpdateWithoutRecieverInput>
-    create: XOR<UserCreateWithoutRecieverInput, UserUncheckedCreateWithoutRecieverInput>
-    where?: UserWhereInput
+  export type StaffUpsertWithoutRecieverInput = {
+    update: XOR<StaffUpdateWithoutRecieverInput, StaffUncheckedUpdateWithoutRecieverInput>
+    create: XOR<StaffCreateWithoutRecieverInput, StaffUncheckedCreateWithoutRecieverInput>
+    where?: StaffWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutRecieverInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutRecieverInput, UserUncheckedUpdateWithoutRecieverInput>
+  export type StaffUpdateToOneWithWhereWithoutRecieverInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutRecieverInput, StaffUncheckedUpdateWithoutRecieverInput>
   }
 
-  export type UserUpdateWithoutRecieverInput = {
+  export type StaffUpdateWithoutRecieverInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -71803,12 +70174,11 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    branch?: BranchUpdateOneWithoutUsersNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -71827,7 +70197,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutRecieverInput = {
+  export type StaffUncheckedUpdateWithoutRecieverInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -71837,8 +70207,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -71897,8 +70266,8 @@ export namespace Prisma {
     method: string
     notes?: string | null
     taxType: string
-    registeredUser: UserCreateNestedOneWithoutRegistererInput
-    recieverUser: UserCreateNestedOneWithoutRecieverInput
+    registeredUser: StaffCreateNestedOneWithoutRegistererInput
+    recieverUser: StaffCreateNestedOneWithoutRecieverInput
   }
 
   export type UserSalaryUncheckedCreateWithoutUserSalaryDetailsInput = {
@@ -71941,8 +70310,8 @@ export namespace Prisma {
     method?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     taxType?: StringFieldUpdateOperationsInput | string
-    registeredUser?: UserUpdateOneRequiredWithoutRegistererNestedInput
-    recieverUser?: UserUpdateOneRequiredWithoutRecieverNestedInput
+    registeredUser?: StaffUpdateOneRequiredWithoutRegistererNestedInput
+    recieverUser?: StaffUpdateOneRequiredWithoutRecieverNestedInput
   }
 
   export type UserSalaryUncheckedUpdateWithoutUserSalaryDetailsInput = {
@@ -72205,7 +70574,7 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    users?: UserCreateNestedManyWithoutDynamicRoleInput
+    users?: StaffCreateNestedManyWithoutDynamicRoleInput
   }
 
   export type RoleUncheckedCreateWithoutMenuAccessInput = {
@@ -72215,7 +70584,7 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
-    users?: UserUncheckedCreateNestedManyWithoutDynamicRoleInput
+    users?: StaffUncheckedCreateNestedManyWithoutDynamicRoleInput
   }
 
   export type RoleCreateOrConnectWithoutMenuAccessInput = {
@@ -72302,7 +70671,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    users?: UserUpdateManyWithoutDynamicRoleNestedInput
+    users?: StaffUpdateManyWithoutDynamicRoleNestedInput
   }
 
   export type RoleUncheckedUpdateWithoutMenuAccessInput = {
@@ -72312,7 +70681,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    users?: UserUncheckedUpdateManyWithoutDynamicRoleNestedInput
+    users?: StaffUncheckedUpdateManyWithoutDynamicRoleNestedInput
   }
 
   export type NavMenuUpsertWithoutRoleAccessInput = {
@@ -72490,7 +70859,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
-  export type UserCreateWithoutAuditLogsInput = {
+  export type StaffCreateWithoutAuditLogsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -72500,12 +70869,11 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    branch?: BranchCreateNestedOneWithoutUsersInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -72524,7 +70892,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserUncheckedCreateWithoutAuditLogsInput = {
+  export type StaffUncheckedCreateWithoutAuditLogsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -72534,8 +70902,7 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -72558,23 +70925,23 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserCreateOrConnectWithoutAuditLogsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutAuditLogsInput, UserUncheckedCreateWithoutAuditLogsInput>
+  export type StaffCreateOrConnectWithoutAuditLogsInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutAuditLogsInput, StaffUncheckedCreateWithoutAuditLogsInput>
   }
 
-  export type UserUpsertWithoutAuditLogsInput = {
-    update: XOR<UserUpdateWithoutAuditLogsInput, UserUncheckedUpdateWithoutAuditLogsInput>
-    create: XOR<UserCreateWithoutAuditLogsInput, UserUncheckedCreateWithoutAuditLogsInput>
-    where?: UserWhereInput
+  export type StaffUpsertWithoutAuditLogsInput = {
+    update: XOR<StaffUpdateWithoutAuditLogsInput, StaffUncheckedUpdateWithoutAuditLogsInput>
+    create: XOR<StaffCreateWithoutAuditLogsInput, StaffUncheckedCreateWithoutAuditLogsInput>
+    where?: StaffWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutAuditLogsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutAuditLogsInput, UserUncheckedUpdateWithoutAuditLogsInput>
+  export type StaffUpdateToOneWithWhereWithoutAuditLogsInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutAuditLogsInput, StaffUncheckedUpdateWithoutAuditLogsInput>
   }
 
-  export type UserUpdateWithoutAuditLogsInput = {
+  export type StaffUpdateWithoutAuditLogsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -72584,12 +70951,11 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    branch?: BranchUpdateOneWithoutUsersNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -72608,7 +70974,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutAuditLogsInput = {
+  export type StaffUncheckedUpdateWithoutAuditLogsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -72618,8 +70984,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -72660,8 +71025,8 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branch?: BranchCreateNestedOneWithoutClientsInput
-    accountManager?: UserCreateNestedOneWithoutManagedClientsInput
+    portfolio?: PortfolioCreateNestedOneWithoutClientsInput
+    accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
@@ -72691,7 +71056,7 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branchId?: string | null
+    portfolioId?: string | null
     accountManagerId?: string | null
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
@@ -72709,7 +71074,7 @@ export namespace Prisma {
     create: XOR<ClientCreateWithoutProjectsInput, ClientUncheckedCreateWithoutProjectsInput>
   }
 
-  export type BranchCreateWithoutProjectsInput = {
+  export type PortfolioCreateWithoutProjectsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -72726,16 +71091,15 @@ export namespace Prisma {
     secondaryColor?: string
     customDomain?: string | null
     isActive?: boolean
-    users?: UserCreateNestedManyWithoutBranchInput
-    services?: ServiceCreateNestedManyWithoutBranchInput
-    departments?: DepartmentCreateNestedManyWithoutBranchInput
-    clients?: ClientCreateNestedManyWithoutBranchInput
-    contentRequests?: ContentRequestCreateNestedManyWithoutBranchInput
-    recurringSchedules?: RecurringScheduleCreateNestedManyWithoutBranchInput
-    contracts?: ContractCreateNestedManyWithoutBranchInput
+    users?: StaffCreateNestedManyWithoutPortfolioInput
+    services?: ServiceCreateNestedManyWithoutPortfolioInput
+    clients?: ClientCreateNestedManyWithoutPortfolioInput
+    contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
+    recurringSchedules?: RecurringScheduleCreateNestedManyWithoutPortfolioInput
+    contracts?: ContractCreateNestedManyWithoutPortfolioInput
   }
 
-  export type BranchUncheckedCreateWithoutProjectsInput = {
+  export type PortfolioUncheckedCreateWithoutProjectsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -72752,21 +71116,20 @@ export namespace Prisma {
     secondaryColor?: string
     customDomain?: string | null
     isActive?: boolean
-    users?: UserUncheckedCreateNestedManyWithoutBranchInput
-    services?: ServiceUncheckedCreateNestedManyWithoutBranchInput
-    departments?: DepartmentUncheckedCreateNestedManyWithoutBranchInput
-    clients?: ClientUncheckedCreateNestedManyWithoutBranchInput
-    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutBranchInput
-    recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutBranchInput
-    contracts?: ContractUncheckedCreateNestedManyWithoutBranchInput
+    users?: StaffUncheckedCreateNestedManyWithoutPortfolioInput
+    services?: ServiceUncheckedCreateNestedManyWithoutPortfolioInput
+    clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
+    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
+    recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutPortfolioInput
+    contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
   }
 
-  export type BranchCreateOrConnectWithoutProjectsInput = {
-    where: BranchWhereUniqueInput
-    create: XOR<BranchCreateWithoutProjectsInput, BranchUncheckedCreateWithoutProjectsInput>
+  export type PortfolioCreateOrConnectWithoutProjectsInput = {
+    where: PortfolioWhereUniqueInput
+    create: XOR<PortfolioCreateWithoutProjectsInput, PortfolioUncheckedCreateWithoutProjectsInput>
   }
 
-  export type UserCreateWithoutCreatedProjectsInput = {
+  export type StaffCreateWithoutCreatedProjectsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -72776,12 +71139,11 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    branch?: BranchCreateNestedOneWithoutUsersInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -72800,7 +71162,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserUncheckedCreateWithoutCreatedProjectsInput = {
+  export type StaffUncheckedCreateWithoutCreatedProjectsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -72810,8 +71172,7 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -72834,9 +71195,9 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserCreateOrConnectWithoutCreatedProjectsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutCreatedProjectsInput, UserUncheckedCreateWithoutCreatedProjectsInput>
+  export type StaffCreateOrConnectWithoutCreatedProjectsInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutCreatedProjectsInput, StaffUncheckedCreateWithoutCreatedProjectsInput>
   }
 
   export type IncomeServiceAgreementCreateWithoutProjectInput = {
@@ -72887,8 +71248,8 @@ export namespace Prisma {
     status?: $Enums.ContentRequestStatus
     deadline?: Date | string | null
     client: ClientCreateNestedOneWithoutContentRequestsInput
-    branch?: BranchCreateNestedOneWithoutContentRequestsInput
-    createdBy?: UserCreateNestedOneWithoutContentRequestsCreatedInput
+    portfolio?: PortfolioCreateNestedOneWithoutContentRequestsInput
+    createdBy?: StaffCreateNestedOneWithoutContentRequestsCreatedInput
     assignees?: ContentRequestAssigneeCreateNestedManyWithoutContentRequestInput
     tasks?: TaskCreateNestedManyWithoutContentRequestInput
   }
@@ -72903,7 +71264,7 @@ export namespace Prisma {
     status?: $Enums.ContentRequestStatus
     deadline?: Date | string | null
     clientId: string
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
     assignees?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutContentRequestInput
     tasks?: TaskUncheckedCreateNestedManyWithoutContentRequestInput
@@ -72926,7 +71287,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -72934,7 +71294,7 @@ export namespace Prisma {
     supervisor?: string
     serviceInformation?: string | null
     isPersonal?: boolean
-    user: UserCreateNestedOneWithoutAssignedTasksInput
+    user: StaffCreateNestedOneWithoutAssignedTasksInput
     contentRequest?: ContentRequestCreateNestedOneWithoutTasksInput
     contentCycle?: ContentCycleCreateNestedOneWithoutTasksInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
@@ -72950,7 +71310,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -72992,8 +71351,8 @@ export namespace Prisma {
     status?: $Enums.ContractStatus
     notes?: string | null
     client: ClientCreateNestedOneWithoutContractsInput
-    branch?: BranchCreateNestedOneWithoutContractsInput
-    createdBy?: UserCreateNestedOneWithoutCreatedContractsInput
+    portfolio?: PortfolioCreateNestedOneWithoutContractsInput
+    createdBy?: StaffCreateNestedOneWithoutCreatedContractsInput
     documents?: ContractDocumentCreateNestedManyWithoutContractInput
     installments?: ClientInstallmentCreateNestedManyWithoutContractInput
   }
@@ -73013,7 +71372,7 @@ export namespace Prisma {
     status?: $Enums.ContractStatus
     notes?: string | null
     clientId: string
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
     documents?: ContractDocumentUncheckedCreateNestedManyWithoutContractInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutContractInput
@@ -73058,8 +71417,8 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branch?: BranchUpdateOneWithoutClientsNestedInput
-    accountManager?: UserUpdateOneWithoutManagedClientsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
+    accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
@@ -73089,7 +71448,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
@@ -73102,18 +71461,18 @@ export namespace Prisma {
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
   }
 
-  export type BranchUpsertWithoutProjectsInput = {
-    update: XOR<BranchUpdateWithoutProjectsInput, BranchUncheckedUpdateWithoutProjectsInput>
-    create: XOR<BranchCreateWithoutProjectsInput, BranchUncheckedCreateWithoutProjectsInput>
-    where?: BranchWhereInput
+  export type PortfolioUpsertWithoutProjectsInput = {
+    update: XOR<PortfolioUpdateWithoutProjectsInput, PortfolioUncheckedUpdateWithoutProjectsInput>
+    create: XOR<PortfolioCreateWithoutProjectsInput, PortfolioUncheckedCreateWithoutProjectsInput>
+    where?: PortfolioWhereInput
   }
 
-  export type BranchUpdateToOneWithWhereWithoutProjectsInput = {
-    where?: BranchWhereInput
-    data: XOR<BranchUpdateWithoutProjectsInput, BranchUncheckedUpdateWithoutProjectsInput>
+  export type PortfolioUpdateToOneWithWhereWithoutProjectsInput = {
+    where?: PortfolioWhereInput
+    data: XOR<PortfolioUpdateWithoutProjectsInput, PortfolioUncheckedUpdateWithoutProjectsInput>
   }
 
-  export type BranchUpdateWithoutProjectsInput = {
+  export type PortfolioUpdateWithoutProjectsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -73130,16 +71489,15 @@ export namespace Prisma {
     secondaryColor?: StringFieldUpdateOperationsInput | string
     customDomain?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    users?: UserUpdateManyWithoutBranchNestedInput
-    services?: ServiceUpdateManyWithoutBranchNestedInput
-    departments?: DepartmentUpdateManyWithoutBranchNestedInput
-    clients?: ClientUpdateManyWithoutBranchNestedInput
-    contentRequests?: ContentRequestUpdateManyWithoutBranchNestedInput
-    recurringSchedules?: RecurringScheduleUpdateManyWithoutBranchNestedInput
-    contracts?: ContractUpdateManyWithoutBranchNestedInput
+    users?: StaffUpdateManyWithoutPortfolioNestedInput
+    services?: ServiceUpdateManyWithoutPortfolioNestedInput
+    clients?: ClientUpdateManyWithoutPortfolioNestedInput
+    contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
+    recurringSchedules?: RecurringScheduleUpdateManyWithoutPortfolioNestedInput
+    contracts?: ContractUpdateManyWithoutPortfolioNestedInput
   }
 
-  export type BranchUncheckedUpdateWithoutProjectsInput = {
+  export type PortfolioUncheckedUpdateWithoutProjectsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -73156,27 +71514,26 @@ export namespace Prisma {
     secondaryColor?: StringFieldUpdateOperationsInput | string
     customDomain?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    users?: UserUncheckedUpdateManyWithoutBranchNestedInput
-    services?: ServiceUncheckedUpdateManyWithoutBranchNestedInput
-    departments?: DepartmentUncheckedUpdateManyWithoutBranchNestedInput
-    clients?: ClientUncheckedUpdateManyWithoutBranchNestedInput
-    contentRequests?: ContentRequestUncheckedUpdateManyWithoutBranchNestedInput
-    recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutBranchNestedInput
-    contracts?: ContractUncheckedUpdateManyWithoutBranchNestedInput
+    users?: StaffUncheckedUpdateManyWithoutPortfolioNestedInput
+    services?: ServiceUncheckedUpdateManyWithoutPortfolioNestedInput
+    clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
+    contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
+    recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutPortfolioNestedInput
+    contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
-  export type UserUpsertWithoutCreatedProjectsInput = {
-    update: XOR<UserUpdateWithoutCreatedProjectsInput, UserUncheckedUpdateWithoutCreatedProjectsInput>
-    create: XOR<UserCreateWithoutCreatedProjectsInput, UserUncheckedCreateWithoutCreatedProjectsInput>
-    where?: UserWhereInput
+  export type StaffUpsertWithoutCreatedProjectsInput = {
+    update: XOR<StaffUpdateWithoutCreatedProjectsInput, StaffUncheckedUpdateWithoutCreatedProjectsInput>
+    create: XOR<StaffCreateWithoutCreatedProjectsInput, StaffUncheckedCreateWithoutCreatedProjectsInput>
+    where?: StaffWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutCreatedProjectsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutCreatedProjectsInput, UserUncheckedUpdateWithoutCreatedProjectsInput>
+  export type StaffUpdateToOneWithWhereWithoutCreatedProjectsInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutCreatedProjectsInput, StaffUncheckedUpdateWithoutCreatedProjectsInput>
   }
 
-  export type UserUpdateWithoutCreatedProjectsInput = {
+  export type StaffUpdateWithoutCreatedProjectsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -73186,12 +71543,11 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    branch?: BranchUpdateOneWithoutUsersNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -73210,7 +71566,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutCreatedProjectsInput = {
+  export type StaffUncheckedUpdateWithoutCreatedProjectsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -73220,8 +71576,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -73326,8 +71681,8 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branch?: BranchCreateNestedOneWithoutClientsInput
-    accountManager?: UserCreateNestedOneWithoutManagedClientsInput
+    portfolio?: PortfolioCreateNestedOneWithoutClientsInput
+    accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
@@ -73357,7 +71712,7 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branchId?: string | null
+    portfolioId?: string | null
     accountManagerId?: string | null
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
@@ -73387,8 +71742,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDate?: Date | string | null
     client: ClientCreateNestedOneWithoutProjectsInput
-    branch?: BranchCreateNestedOneWithoutProjectsInput
-    createdBy?: UserCreateNestedOneWithoutCreatedProjectsInput
+    portfolio?: PortfolioCreateNestedOneWithoutProjectsInput
+    createdBy?: StaffCreateNestedOneWithoutCreatedProjectsInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestCreateNestedManyWithoutProjectInput
     tasks?: TaskCreateNestedManyWithoutProjectInput
@@ -73406,7 +71761,7 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDate?: Date | string | null
     clientId: string
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutProjectInput
@@ -73418,7 +71773,7 @@ export namespace Prisma {
     create: XOR<ProjectCreateWithoutContractsInput, ProjectUncheckedCreateWithoutContractsInput>
   }
 
-  export type BranchCreateWithoutContractsInput = {
+  export type PortfolioCreateWithoutContractsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -73435,16 +71790,15 @@ export namespace Prisma {
     secondaryColor?: string
     customDomain?: string | null
     isActive?: boolean
-    users?: UserCreateNestedManyWithoutBranchInput
-    services?: ServiceCreateNestedManyWithoutBranchInput
-    departments?: DepartmentCreateNestedManyWithoutBranchInput
-    clients?: ClientCreateNestedManyWithoutBranchInput
-    projects?: ProjectCreateNestedManyWithoutBranchInput
-    contentRequests?: ContentRequestCreateNestedManyWithoutBranchInput
-    recurringSchedules?: RecurringScheduleCreateNestedManyWithoutBranchInput
+    users?: StaffCreateNestedManyWithoutPortfolioInput
+    services?: ServiceCreateNestedManyWithoutPortfolioInput
+    clients?: ClientCreateNestedManyWithoutPortfolioInput
+    projects?: ProjectCreateNestedManyWithoutPortfolioInput
+    contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
+    recurringSchedules?: RecurringScheduleCreateNestedManyWithoutPortfolioInput
   }
 
-  export type BranchUncheckedCreateWithoutContractsInput = {
+  export type PortfolioUncheckedCreateWithoutContractsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -73461,21 +71815,20 @@ export namespace Prisma {
     secondaryColor?: string
     customDomain?: string | null
     isActive?: boolean
-    users?: UserUncheckedCreateNestedManyWithoutBranchInput
-    services?: ServiceUncheckedCreateNestedManyWithoutBranchInput
-    departments?: DepartmentUncheckedCreateNestedManyWithoutBranchInput
-    clients?: ClientUncheckedCreateNestedManyWithoutBranchInput
-    projects?: ProjectUncheckedCreateNestedManyWithoutBranchInput
-    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutBranchInput
-    recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutBranchInput
+    users?: StaffUncheckedCreateNestedManyWithoutPortfolioInput
+    services?: ServiceUncheckedCreateNestedManyWithoutPortfolioInput
+    clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutPortfolioInput
+    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
+    recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutPortfolioInput
   }
 
-  export type BranchCreateOrConnectWithoutContractsInput = {
-    where: BranchWhereUniqueInput
-    create: XOR<BranchCreateWithoutContractsInput, BranchUncheckedCreateWithoutContractsInput>
+  export type PortfolioCreateOrConnectWithoutContractsInput = {
+    where: PortfolioWhereUniqueInput
+    create: XOR<PortfolioCreateWithoutContractsInput, PortfolioUncheckedCreateWithoutContractsInput>
   }
 
-  export type UserCreateWithoutCreatedContractsInput = {
+  export type StaffCreateWithoutCreatedContractsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -73485,12 +71838,11 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    branch?: BranchCreateNestedOneWithoutUsersInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -73509,7 +71861,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserUncheckedCreateWithoutCreatedContractsInput = {
+  export type StaffUncheckedCreateWithoutCreatedContractsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -73519,8 +71871,7 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -73543,9 +71894,9 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserCreateOrConnectWithoutCreatedContractsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutCreatedContractsInput, UserUncheckedCreateWithoutCreatedContractsInput>
+  export type StaffCreateOrConnectWithoutCreatedContractsInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutCreatedContractsInput, StaffUncheckedCreateWithoutCreatedContractsInput>
   }
 
   export type ContractDocumentCreateWithoutContractInput = {
@@ -73556,7 +71907,7 @@ export namespace Prisma {
     fileUrl: string
     fileSize?: number | null
     mimeType?: string
-    uploadedBy?: UserCreateNestedOneWithoutUploadedContractDocumentsInput
+    uploadedBy?: StaffCreateNestedOneWithoutUploadedContractDocumentsInput
   }
 
   export type ContractDocumentUncheckedCreateWithoutContractInput = {
@@ -73649,8 +72000,8 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branch?: BranchUpdateOneWithoutClientsNestedInput
-    accountManager?: UserUpdateOneWithoutManagedClientsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
+    accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
@@ -73680,7 +72031,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
@@ -73716,8 +72067,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     client?: ClientUpdateOneRequiredWithoutProjectsNestedInput
-    branch?: BranchUpdateOneWithoutProjectsNestedInput
-    createdBy?: UserUpdateOneWithoutCreatedProjectsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutProjectsNestedInput
+    createdBy?: StaffUpdateOneWithoutCreatedProjectsNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutProjectNestedInput
     tasks?: TaskUpdateManyWithoutProjectNestedInput
@@ -73735,25 +72086,25 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientId?: StringFieldUpdateOperationsInput | string
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutProjectNestedInput
     tasks?: TaskUncheckedUpdateManyWithoutProjectNestedInput
   }
 
-  export type BranchUpsertWithoutContractsInput = {
-    update: XOR<BranchUpdateWithoutContractsInput, BranchUncheckedUpdateWithoutContractsInput>
-    create: XOR<BranchCreateWithoutContractsInput, BranchUncheckedCreateWithoutContractsInput>
-    where?: BranchWhereInput
+  export type PortfolioUpsertWithoutContractsInput = {
+    update: XOR<PortfolioUpdateWithoutContractsInput, PortfolioUncheckedUpdateWithoutContractsInput>
+    create: XOR<PortfolioCreateWithoutContractsInput, PortfolioUncheckedCreateWithoutContractsInput>
+    where?: PortfolioWhereInput
   }
 
-  export type BranchUpdateToOneWithWhereWithoutContractsInput = {
-    where?: BranchWhereInput
-    data: XOR<BranchUpdateWithoutContractsInput, BranchUncheckedUpdateWithoutContractsInput>
+  export type PortfolioUpdateToOneWithWhereWithoutContractsInput = {
+    where?: PortfolioWhereInput
+    data: XOR<PortfolioUpdateWithoutContractsInput, PortfolioUncheckedUpdateWithoutContractsInput>
   }
 
-  export type BranchUpdateWithoutContractsInput = {
+  export type PortfolioUpdateWithoutContractsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -73770,16 +72121,15 @@ export namespace Prisma {
     secondaryColor?: StringFieldUpdateOperationsInput | string
     customDomain?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    users?: UserUpdateManyWithoutBranchNestedInput
-    services?: ServiceUpdateManyWithoutBranchNestedInput
-    departments?: DepartmentUpdateManyWithoutBranchNestedInput
-    clients?: ClientUpdateManyWithoutBranchNestedInput
-    projects?: ProjectUpdateManyWithoutBranchNestedInput
-    contentRequests?: ContentRequestUpdateManyWithoutBranchNestedInput
-    recurringSchedules?: RecurringScheduleUpdateManyWithoutBranchNestedInput
+    users?: StaffUpdateManyWithoutPortfolioNestedInput
+    services?: ServiceUpdateManyWithoutPortfolioNestedInput
+    clients?: ClientUpdateManyWithoutPortfolioNestedInput
+    projects?: ProjectUpdateManyWithoutPortfolioNestedInput
+    contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
+    recurringSchedules?: RecurringScheduleUpdateManyWithoutPortfolioNestedInput
   }
 
-  export type BranchUncheckedUpdateWithoutContractsInput = {
+  export type PortfolioUncheckedUpdateWithoutContractsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -73796,27 +72146,26 @@ export namespace Prisma {
     secondaryColor?: StringFieldUpdateOperationsInput | string
     customDomain?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    users?: UserUncheckedUpdateManyWithoutBranchNestedInput
-    services?: ServiceUncheckedUpdateManyWithoutBranchNestedInput
-    departments?: DepartmentUncheckedUpdateManyWithoutBranchNestedInput
-    clients?: ClientUncheckedUpdateManyWithoutBranchNestedInput
-    projects?: ProjectUncheckedUpdateManyWithoutBranchNestedInput
-    contentRequests?: ContentRequestUncheckedUpdateManyWithoutBranchNestedInput
-    recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutBranchNestedInput
+    users?: StaffUncheckedUpdateManyWithoutPortfolioNestedInput
+    services?: ServiceUncheckedUpdateManyWithoutPortfolioNestedInput
+    clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutPortfolioNestedInput
+    contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
+    recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
-  export type UserUpsertWithoutCreatedContractsInput = {
-    update: XOR<UserUpdateWithoutCreatedContractsInput, UserUncheckedUpdateWithoutCreatedContractsInput>
-    create: XOR<UserCreateWithoutCreatedContractsInput, UserUncheckedCreateWithoutCreatedContractsInput>
-    where?: UserWhereInput
+  export type StaffUpsertWithoutCreatedContractsInput = {
+    update: XOR<StaffUpdateWithoutCreatedContractsInput, StaffUncheckedUpdateWithoutCreatedContractsInput>
+    create: XOR<StaffCreateWithoutCreatedContractsInput, StaffUncheckedCreateWithoutCreatedContractsInput>
+    where?: StaffWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutCreatedContractsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutCreatedContractsInput, UserUncheckedUpdateWithoutCreatedContractsInput>
+  export type StaffUpdateToOneWithWhereWithoutCreatedContractsInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutCreatedContractsInput, StaffUncheckedUpdateWithoutCreatedContractsInput>
   }
 
-  export type UserUpdateWithoutCreatedContractsInput = {
+  export type StaffUpdateWithoutCreatedContractsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -73826,12 +72175,11 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    branch?: BranchUpdateOneWithoutUsersNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -73850,7 +72198,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutCreatedContractsInput = {
+  export type StaffUncheckedUpdateWithoutCreatedContractsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -73860,8 +72208,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -73934,8 +72281,8 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branch?: BranchCreateNestedOneWithoutClientsInput
-    accountManager?: UserCreateNestedOneWithoutManagedClientsInput
+    portfolio?: PortfolioCreateNestedOneWithoutClientsInput
+    accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
@@ -73965,7 +72312,7 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branchId?: string | null
+    portfolioId?: string | null
     accountManagerId?: string | null
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
@@ -73999,8 +72346,8 @@ export namespace Prisma {
     notes?: string | null
     client: ClientCreateNestedOneWithoutContractsInput
     project?: ProjectCreateNestedOneWithoutContractsInput
-    branch?: BranchCreateNestedOneWithoutContractsInput
-    createdBy?: UserCreateNestedOneWithoutCreatedContractsInput
+    portfolio?: PortfolioCreateNestedOneWithoutContractsInput
+    createdBy?: StaffCreateNestedOneWithoutCreatedContractsInput
     documents?: ContractDocumentCreateNestedManyWithoutContractInput
   }
 
@@ -74020,7 +72367,7 @@ export namespace Prisma {
     notes?: string | null
     clientId: string
     projectId?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
     documents?: ContractDocumentUncheckedCreateNestedManyWithoutContractInput
   }
@@ -74059,8 +72406,8 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branch?: BranchUpdateOneWithoutClientsNestedInput
-    accountManager?: UserUpdateOneWithoutManagedClientsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
+    accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
@@ -74090,7 +72437,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
@@ -74130,8 +72477,8 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     client?: ClientUpdateOneRequiredWithoutContractsNestedInput
     project?: ProjectUpdateOneWithoutContractsNestedInput
-    branch?: BranchUpdateOneWithoutContractsNestedInput
-    createdBy?: UserUpdateOneWithoutCreatedContractsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutContractsNestedInput
+    createdBy?: StaffUpdateOneWithoutCreatedContractsNestedInput
     documents?: ContractDocumentUpdateManyWithoutContractNestedInput
   }
 
@@ -74151,7 +72498,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: StringFieldUpdateOperationsInput | string
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     documents?: ContractDocumentUncheckedUpdateManyWithoutContractNestedInput
   }
@@ -74172,8 +72519,8 @@ export namespace Prisma {
     notes?: string | null
     client: ClientCreateNestedOneWithoutContractsInput
     project?: ProjectCreateNestedOneWithoutContractsInput
-    branch?: BranchCreateNestedOneWithoutContractsInput
-    createdBy?: UserCreateNestedOneWithoutCreatedContractsInput
+    portfolio?: PortfolioCreateNestedOneWithoutContractsInput
+    createdBy?: StaffCreateNestedOneWithoutCreatedContractsInput
     installments?: ClientInstallmentCreateNestedManyWithoutContractInput
   }
 
@@ -74193,7 +72540,7 @@ export namespace Prisma {
     notes?: string | null
     clientId: string
     projectId?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutContractInput
   }
@@ -74203,7 +72550,7 @@ export namespace Prisma {
     create: XOR<ContractCreateWithoutDocumentsInput, ContractUncheckedCreateWithoutDocumentsInput>
   }
 
-  export type UserCreateWithoutUploadedContractDocumentsInput = {
+  export type StaffCreateWithoutUploadedContractDocumentsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -74213,12 +72560,11 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    branch?: BranchCreateNestedOneWithoutUsersInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -74237,7 +72583,7 @@ export namespace Prisma {
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
   }
 
-  export type UserUncheckedCreateWithoutUploadedContractDocumentsInput = {
+  export type StaffUncheckedCreateWithoutUploadedContractDocumentsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -74247,8 +72593,7 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -74271,9 +72616,9 @@ export namespace Prisma {
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
   }
 
-  export type UserCreateOrConnectWithoutUploadedContractDocumentsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutUploadedContractDocumentsInput, UserUncheckedCreateWithoutUploadedContractDocumentsInput>
+  export type StaffCreateOrConnectWithoutUploadedContractDocumentsInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutUploadedContractDocumentsInput, StaffUncheckedCreateWithoutUploadedContractDocumentsInput>
   }
 
   export type ContractUpsertWithoutDocumentsInput = {
@@ -74303,8 +72648,8 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     client?: ClientUpdateOneRequiredWithoutContractsNestedInput
     project?: ProjectUpdateOneWithoutContractsNestedInput
-    branch?: BranchUpdateOneWithoutContractsNestedInput
-    createdBy?: UserUpdateOneWithoutCreatedContractsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutContractsNestedInput
+    createdBy?: StaffUpdateOneWithoutCreatedContractsNestedInput
     installments?: ClientInstallmentUpdateManyWithoutContractNestedInput
   }
 
@@ -74324,23 +72669,23 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: StringFieldUpdateOperationsInput | string
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     installments?: ClientInstallmentUncheckedUpdateManyWithoutContractNestedInput
   }
 
-  export type UserUpsertWithoutUploadedContractDocumentsInput = {
-    update: XOR<UserUpdateWithoutUploadedContractDocumentsInput, UserUncheckedUpdateWithoutUploadedContractDocumentsInput>
-    create: XOR<UserCreateWithoutUploadedContractDocumentsInput, UserUncheckedCreateWithoutUploadedContractDocumentsInput>
-    where?: UserWhereInput
+  export type StaffUpsertWithoutUploadedContractDocumentsInput = {
+    update: XOR<StaffUpdateWithoutUploadedContractDocumentsInput, StaffUncheckedUpdateWithoutUploadedContractDocumentsInput>
+    create: XOR<StaffCreateWithoutUploadedContractDocumentsInput, StaffUncheckedCreateWithoutUploadedContractDocumentsInput>
+    where?: StaffWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutUploadedContractDocumentsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutUploadedContractDocumentsInput, UserUncheckedUpdateWithoutUploadedContractDocumentsInput>
+  export type StaffUpdateToOneWithWhereWithoutUploadedContractDocumentsInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutUploadedContractDocumentsInput, StaffUncheckedUpdateWithoutUploadedContractDocumentsInput>
   }
 
-  export type UserUpdateWithoutUploadedContractDocumentsInput = {
+  export type StaffUpdateWithoutUploadedContractDocumentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74350,12 +72695,11 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    branch?: BranchUpdateOneWithoutUsersNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -74374,7 +72718,7 @@ export namespace Prisma {
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutUploadedContractDocumentsInput = {
+  export type StaffUncheckedUpdateWithoutUploadedContractDocumentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74384,8 +72728,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -74426,8 +72769,8 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branch?: BranchCreateNestedOneWithoutClientsInput
-    accountManager?: UserCreateNestedOneWithoutManagedClientsInput
+    portfolio?: PortfolioCreateNestedOneWithoutClientsInput
+    accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
@@ -74457,7 +72800,7 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branchId?: string | null
+    portfolioId?: string | null
     accountManagerId?: string | null
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
@@ -74487,8 +72830,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDate?: Date | string | null
     client: ClientCreateNestedOneWithoutProjectsInput
-    branch?: BranchCreateNestedOneWithoutProjectsInput
-    createdBy?: UserCreateNestedOneWithoutCreatedProjectsInput
+    portfolio?: PortfolioCreateNestedOneWithoutProjectsInput
+    createdBy?: StaffCreateNestedOneWithoutCreatedProjectsInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutProjectInput
     tasks?: TaskCreateNestedManyWithoutProjectInput
     contracts?: ContractCreateNestedManyWithoutProjectInput
@@ -74506,7 +72849,7 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDate?: Date | string | null
     clientId: string
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutProjectInput
     tasks?: TaskUncheckedCreateNestedManyWithoutProjectInput
@@ -74518,7 +72861,7 @@ export namespace Prisma {
     create: XOR<ProjectCreateWithoutContentRequestsInput, ProjectUncheckedCreateWithoutContentRequestsInput>
   }
 
-  export type BranchCreateWithoutContentRequestsInput = {
+  export type PortfolioCreateWithoutContentRequestsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -74535,16 +72878,15 @@ export namespace Prisma {
     secondaryColor?: string
     customDomain?: string | null
     isActive?: boolean
-    users?: UserCreateNestedManyWithoutBranchInput
-    services?: ServiceCreateNestedManyWithoutBranchInput
-    departments?: DepartmentCreateNestedManyWithoutBranchInput
-    clients?: ClientCreateNestedManyWithoutBranchInput
-    projects?: ProjectCreateNestedManyWithoutBranchInput
-    recurringSchedules?: RecurringScheduleCreateNestedManyWithoutBranchInput
-    contracts?: ContractCreateNestedManyWithoutBranchInput
+    users?: StaffCreateNestedManyWithoutPortfolioInput
+    services?: ServiceCreateNestedManyWithoutPortfolioInput
+    clients?: ClientCreateNestedManyWithoutPortfolioInput
+    projects?: ProjectCreateNestedManyWithoutPortfolioInput
+    recurringSchedules?: RecurringScheduleCreateNestedManyWithoutPortfolioInput
+    contracts?: ContractCreateNestedManyWithoutPortfolioInput
   }
 
-  export type BranchUncheckedCreateWithoutContentRequestsInput = {
+  export type PortfolioUncheckedCreateWithoutContentRequestsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -74561,21 +72903,20 @@ export namespace Prisma {
     secondaryColor?: string
     customDomain?: string | null
     isActive?: boolean
-    users?: UserUncheckedCreateNestedManyWithoutBranchInput
-    services?: ServiceUncheckedCreateNestedManyWithoutBranchInput
-    departments?: DepartmentUncheckedCreateNestedManyWithoutBranchInput
-    clients?: ClientUncheckedCreateNestedManyWithoutBranchInput
-    projects?: ProjectUncheckedCreateNestedManyWithoutBranchInput
-    recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutBranchInput
-    contracts?: ContractUncheckedCreateNestedManyWithoutBranchInput
+    users?: StaffUncheckedCreateNestedManyWithoutPortfolioInput
+    services?: ServiceUncheckedCreateNestedManyWithoutPortfolioInput
+    clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutPortfolioInput
+    recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutPortfolioInput
+    contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
   }
 
-  export type BranchCreateOrConnectWithoutContentRequestsInput = {
-    where: BranchWhereUniqueInput
-    create: XOR<BranchCreateWithoutContentRequestsInput, BranchUncheckedCreateWithoutContentRequestsInput>
+  export type PortfolioCreateOrConnectWithoutContentRequestsInput = {
+    where: PortfolioWhereUniqueInput
+    create: XOR<PortfolioCreateWithoutContentRequestsInput, PortfolioUncheckedCreateWithoutContentRequestsInput>
   }
 
-  export type UserCreateWithoutContentRequestsCreatedInput = {
+  export type StaffCreateWithoutContentRequestsCreatedInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -74585,12 +72926,11 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    branch?: BranchCreateNestedOneWithoutUsersInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -74609,7 +72949,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserUncheckedCreateWithoutContentRequestsCreatedInput = {
+  export type StaffUncheckedCreateWithoutContentRequestsCreatedInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -74619,8 +72959,7 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -74643,16 +72982,16 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserCreateOrConnectWithoutContentRequestsCreatedInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutContentRequestsCreatedInput, UserUncheckedCreateWithoutContentRequestsCreatedInput>
+  export type StaffCreateOrConnectWithoutContentRequestsCreatedInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutContentRequestsCreatedInput, StaffUncheckedCreateWithoutContentRequestsCreatedInput>
   }
 
   export type ContentRequestAssigneeCreateWithoutContentRequestInput = {
     id?: string
     createdAt?: Date | string
     role?: string | null
-    user: UserCreateNestedOneWithoutContentRequestAssignmentsInput
+    user: StaffCreateNestedOneWithoutContentRequestAssignmentsInput
   }
 
   export type ContentRequestAssigneeUncheckedCreateWithoutContentRequestInput = {
@@ -74679,7 +73018,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -74687,7 +73025,7 @@ export namespace Prisma {
     supervisor?: string
     serviceInformation?: string | null
     isPersonal?: boolean
-    user: UserCreateNestedOneWithoutAssignedTasksInput
+    user: StaffCreateNestedOneWithoutAssignedTasksInput
     project?: ProjectCreateNestedOneWithoutTasksInput
     contentCycle?: ContentCycleCreateNestedOneWithoutTasksInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
@@ -74703,7 +73041,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -74759,8 +73096,8 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branch?: BranchUpdateOneWithoutClientsNestedInput
-    accountManager?: UserUpdateOneWithoutManagedClientsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
+    accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
@@ -74790,7 +73127,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
@@ -74826,8 +73163,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     client?: ClientUpdateOneRequiredWithoutProjectsNestedInput
-    branch?: BranchUpdateOneWithoutProjectsNestedInput
-    createdBy?: UserUpdateOneWithoutCreatedProjectsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutProjectsNestedInput
+    createdBy?: StaffUpdateOneWithoutCreatedProjectsNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutProjectNestedInput
     tasks?: TaskUpdateManyWithoutProjectNestedInput
     contracts?: ContractUpdateManyWithoutProjectNestedInput
@@ -74845,25 +73182,25 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientId?: StringFieldUpdateOperationsInput | string
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutProjectNestedInput
     tasks?: TaskUncheckedUpdateManyWithoutProjectNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutProjectNestedInput
   }
 
-  export type BranchUpsertWithoutContentRequestsInput = {
-    update: XOR<BranchUpdateWithoutContentRequestsInput, BranchUncheckedUpdateWithoutContentRequestsInput>
-    create: XOR<BranchCreateWithoutContentRequestsInput, BranchUncheckedCreateWithoutContentRequestsInput>
-    where?: BranchWhereInput
+  export type PortfolioUpsertWithoutContentRequestsInput = {
+    update: XOR<PortfolioUpdateWithoutContentRequestsInput, PortfolioUncheckedUpdateWithoutContentRequestsInput>
+    create: XOR<PortfolioCreateWithoutContentRequestsInput, PortfolioUncheckedCreateWithoutContentRequestsInput>
+    where?: PortfolioWhereInput
   }
 
-  export type BranchUpdateToOneWithWhereWithoutContentRequestsInput = {
-    where?: BranchWhereInput
-    data: XOR<BranchUpdateWithoutContentRequestsInput, BranchUncheckedUpdateWithoutContentRequestsInput>
+  export type PortfolioUpdateToOneWithWhereWithoutContentRequestsInput = {
+    where?: PortfolioWhereInput
+    data: XOR<PortfolioUpdateWithoutContentRequestsInput, PortfolioUncheckedUpdateWithoutContentRequestsInput>
   }
 
-  export type BranchUpdateWithoutContentRequestsInput = {
+  export type PortfolioUpdateWithoutContentRequestsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74880,16 +73217,15 @@ export namespace Prisma {
     secondaryColor?: StringFieldUpdateOperationsInput | string
     customDomain?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    users?: UserUpdateManyWithoutBranchNestedInput
-    services?: ServiceUpdateManyWithoutBranchNestedInput
-    departments?: DepartmentUpdateManyWithoutBranchNestedInput
-    clients?: ClientUpdateManyWithoutBranchNestedInput
-    projects?: ProjectUpdateManyWithoutBranchNestedInput
-    recurringSchedules?: RecurringScheduleUpdateManyWithoutBranchNestedInput
-    contracts?: ContractUpdateManyWithoutBranchNestedInput
+    users?: StaffUpdateManyWithoutPortfolioNestedInput
+    services?: ServiceUpdateManyWithoutPortfolioNestedInput
+    clients?: ClientUpdateManyWithoutPortfolioNestedInput
+    projects?: ProjectUpdateManyWithoutPortfolioNestedInput
+    recurringSchedules?: RecurringScheduleUpdateManyWithoutPortfolioNestedInput
+    contracts?: ContractUpdateManyWithoutPortfolioNestedInput
   }
 
-  export type BranchUncheckedUpdateWithoutContentRequestsInput = {
+  export type PortfolioUncheckedUpdateWithoutContentRequestsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74906,27 +73242,26 @@ export namespace Prisma {
     secondaryColor?: StringFieldUpdateOperationsInput | string
     customDomain?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    users?: UserUncheckedUpdateManyWithoutBranchNestedInput
-    services?: ServiceUncheckedUpdateManyWithoutBranchNestedInput
-    departments?: DepartmentUncheckedUpdateManyWithoutBranchNestedInput
-    clients?: ClientUncheckedUpdateManyWithoutBranchNestedInput
-    projects?: ProjectUncheckedUpdateManyWithoutBranchNestedInput
-    recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutBranchNestedInput
-    contracts?: ContractUncheckedUpdateManyWithoutBranchNestedInput
+    users?: StaffUncheckedUpdateManyWithoutPortfolioNestedInput
+    services?: ServiceUncheckedUpdateManyWithoutPortfolioNestedInput
+    clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutPortfolioNestedInput
+    recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutPortfolioNestedInput
+    contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
-  export type UserUpsertWithoutContentRequestsCreatedInput = {
-    update: XOR<UserUpdateWithoutContentRequestsCreatedInput, UserUncheckedUpdateWithoutContentRequestsCreatedInput>
-    create: XOR<UserCreateWithoutContentRequestsCreatedInput, UserUncheckedCreateWithoutContentRequestsCreatedInput>
-    where?: UserWhereInput
+  export type StaffUpsertWithoutContentRequestsCreatedInput = {
+    update: XOR<StaffUpdateWithoutContentRequestsCreatedInput, StaffUncheckedUpdateWithoutContentRequestsCreatedInput>
+    create: XOR<StaffCreateWithoutContentRequestsCreatedInput, StaffUncheckedCreateWithoutContentRequestsCreatedInput>
+    where?: StaffWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutContentRequestsCreatedInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutContentRequestsCreatedInput, UserUncheckedUpdateWithoutContentRequestsCreatedInput>
+  export type StaffUpdateToOneWithWhereWithoutContentRequestsCreatedInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutContentRequestsCreatedInput, StaffUncheckedUpdateWithoutContentRequestsCreatedInput>
   }
 
-  export type UserUpdateWithoutContentRequestsCreatedInput = {
+  export type StaffUpdateWithoutContentRequestsCreatedInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74936,12 +73271,11 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    branch?: BranchUpdateOneWithoutUsersNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -74960,7 +73294,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutContentRequestsCreatedInput = {
+  export type StaffUncheckedUpdateWithoutContentRequestsCreatedInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -74970,8 +73304,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -75037,8 +73370,8 @@ export namespace Prisma {
     deadline?: Date | string | null
     client: ClientCreateNestedOneWithoutContentRequestsInput
     project?: ProjectCreateNestedOneWithoutContentRequestsInput
-    branch?: BranchCreateNestedOneWithoutContentRequestsInput
-    createdBy?: UserCreateNestedOneWithoutContentRequestsCreatedInput
+    portfolio?: PortfolioCreateNestedOneWithoutContentRequestsInput
+    createdBy?: StaffCreateNestedOneWithoutContentRequestsCreatedInput
     tasks?: TaskCreateNestedManyWithoutContentRequestInput
   }
 
@@ -75053,7 +73386,7 @@ export namespace Prisma {
     deadline?: Date | string | null
     clientId: string
     projectId?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
     tasks?: TaskUncheckedCreateNestedManyWithoutContentRequestInput
   }
@@ -75063,7 +73396,7 @@ export namespace Prisma {
     create: XOR<ContentRequestCreateWithoutAssigneesInput, ContentRequestUncheckedCreateWithoutAssigneesInput>
   }
 
-  export type UserCreateWithoutContentRequestAssignmentsInput = {
+  export type StaffCreateWithoutContentRequestAssignmentsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -75073,12 +73406,11 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    branch?: BranchCreateNestedOneWithoutUsersInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -75097,7 +73429,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserUncheckedCreateWithoutContentRequestAssignmentsInput = {
+  export type StaffUncheckedCreateWithoutContentRequestAssignmentsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -75107,8 +73439,7 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -75131,9 +73462,9 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserCreateOrConnectWithoutContentRequestAssignmentsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutContentRequestAssignmentsInput, UserUncheckedCreateWithoutContentRequestAssignmentsInput>
+  export type StaffCreateOrConnectWithoutContentRequestAssignmentsInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutContentRequestAssignmentsInput, StaffUncheckedCreateWithoutContentRequestAssignmentsInput>
   }
 
   export type ContentRequestUpsertWithoutAssigneesInput = {
@@ -75158,8 +73489,8 @@ export namespace Prisma {
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     client?: ClientUpdateOneRequiredWithoutContentRequestsNestedInput
     project?: ProjectUpdateOneWithoutContentRequestsNestedInput
-    branch?: BranchUpdateOneWithoutContentRequestsNestedInput
-    createdBy?: UserUpdateOneWithoutContentRequestsCreatedNestedInput
+    portfolio?: PortfolioUpdateOneWithoutContentRequestsNestedInput
+    createdBy?: StaffUpdateOneWithoutContentRequestsCreatedNestedInput
     tasks?: TaskUpdateManyWithoutContentRequestNestedInput
   }
 
@@ -75174,23 +73505,23 @@ export namespace Prisma {
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientId?: StringFieldUpdateOperationsInput | string
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     tasks?: TaskUncheckedUpdateManyWithoutContentRequestNestedInput
   }
 
-  export type UserUpsertWithoutContentRequestAssignmentsInput = {
-    update: XOR<UserUpdateWithoutContentRequestAssignmentsInput, UserUncheckedUpdateWithoutContentRequestAssignmentsInput>
-    create: XOR<UserCreateWithoutContentRequestAssignmentsInput, UserUncheckedCreateWithoutContentRequestAssignmentsInput>
-    where?: UserWhereInput
+  export type StaffUpsertWithoutContentRequestAssignmentsInput = {
+    update: XOR<StaffUpdateWithoutContentRequestAssignmentsInput, StaffUncheckedUpdateWithoutContentRequestAssignmentsInput>
+    create: XOR<StaffCreateWithoutContentRequestAssignmentsInput, StaffUncheckedCreateWithoutContentRequestAssignmentsInput>
+    where?: StaffWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutContentRequestAssignmentsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutContentRequestAssignmentsInput, UserUncheckedUpdateWithoutContentRequestAssignmentsInput>
+  export type StaffUpdateToOneWithWhereWithoutContentRequestAssignmentsInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutContentRequestAssignmentsInput, StaffUncheckedUpdateWithoutContentRequestAssignmentsInput>
   }
 
-  export type UserUpdateWithoutContentRequestAssignmentsInput = {
+  export type StaffUpdateWithoutContentRequestAssignmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -75200,12 +73531,11 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    branch?: BranchUpdateOneWithoutUsersNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -75224,7 +73554,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutContentRequestAssignmentsInput = {
+  export type StaffUncheckedUpdateWithoutContentRequestAssignmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -75234,8 +73564,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -75276,8 +73605,8 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branch?: BranchCreateNestedOneWithoutClientsInput
-    accountManager?: UserCreateNestedOneWithoutManagedClientsInput
+    portfolio?: PortfolioCreateNestedOneWithoutClientsInput
+    accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
@@ -75307,7 +73636,7 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branchId?: string | null
+    portfolioId?: string | null
     accountManagerId?: string | null
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
@@ -75325,7 +73654,7 @@ export namespace Prisma {
     create: XOR<ClientCreateWithoutRecurringSchedulesInput, ClientUncheckedCreateWithoutRecurringSchedulesInput>
   }
 
-  export type BranchCreateWithoutRecurringSchedulesInput = {
+  export type PortfolioCreateWithoutRecurringSchedulesInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -75342,16 +73671,15 @@ export namespace Prisma {
     secondaryColor?: string
     customDomain?: string | null
     isActive?: boolean
-    users?: UserCreateNestedManyWithoutBranchInput
-    services?: ServiceCreateNestedManyWithoutBranchInput
-    departments?: DepartmentCreateNestedManyWithoutBranchInput
-    clients?: ClientCreateNestedManyWithoutBranchInput
-    projects?: ProjectCreateNestedManyWithoutBranchInput
-    contentRequests?: ContentRequestCreateNestedManyWithoutBranchInput
-    contracts?: ContractCreateNestedManyWithoutBranchInput
+    users?: StaffCreateNestedManyWithoutPortfolioInput
+    services?: ServiceCreateNestedManyWithoutPortfolioInput
+    clients?: ClientCreateNestedManyWithoutPortfolioInput
+    projects?: ProjectCreateNestedManyWithoutPortfolioInput
+    contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
+    contracts?: ContractCreateNestedManyWithoutPortfolioInput
   }
 
-  export type BranchUncheckedCreateWithoutRecurringSchedulesInput = {
+  export type PortfolioUncheckedCreateWithoutRecurringSchedulesInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -75368,18 +73696,17 @@ export namespace Prisma {
     secondaryColor?: string
     customDomain?: string | null
     isActive?: boolean
-    users?: UserUncheckedCreateNestedManyWithoutBranchInput
-    services?: ServiceUncheckedCreateNestedManyWithoutBranchInput
-    departments?: DepartmentUncheckedCreateNestedManyWithoutBranchInput
-    clients?: ClientUncheckedCreateNestedManyWithoutBranchInput
-    projects?: ProjectUncheckedCreateNestedManyWithoutBranchInput
-    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutBranchInput
-    contracts?: ContractUncheckedCreateNestedManyWithoutBranchInput
+    users?: StaffUncheckedCreateNestedManyWithoutPortfolioInput
+    services?: ServiceUncheckedCreateNestedManyWithoutPortfolioInput
+    clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutPortfolioInput
+    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
+    contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
   }
 
-  export type BranchCreateOrConnectWithoutRecurringSchedulesInput = {
-    where: BranchWhereUniqueInput
-    create: XOR<BranchCreateWithoutRecurringSchedulesInput, BranchUncheckedCreateWithoutRecurringSchedulesInput>
+  export type PortfolioCreateOrConnectWithoutRecurringSchedulesInput = {
+    where: PortfolioWhereUniqueInput
+    create: XOR<PortfolioCreateWithoutRecurringSchedulesInput, PortfolioUncheckedCreateWithoutRecurringSchedulesInput>
   }
 
   export type RecurringScheduleStepCreateWithoutScheduleInput = {
@@ -75391,9 +73718,8 @@ export namespace Prisma {
     stepOrder?: number
     label: string
     contentType?: $Enums.ContentType | null
-    department?: string | null
     supervisor?: string
-    assignee?: UserCreateNestedOneWithoutAssignedRecurringStepsInput
+    assignee?: StaffCreateNestedOneWithoutAssignedRecurringStepsInput
     template?: WorkflowTemplateCreateNestedOneWithoutRecurringStepsInput
     occurrences?: RecurringTaskOccurrenceCreateNestedManyWithoutScheduleStepInput
   }
@@ -75407,7 +73733,6 @@ export namespace Prisma {
     stepOrder?: number
     label: string
     contentType?: $Enums.ContentType | null
-    department?: string | null
     supervisor?: string
     assigneeId?: string | null
     templateId?: string | null
@@ -75487,8 +73812,8 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branch?: BranchUpdateOneWithoutClientsNestedInput
-    accountManager?: UserUpdateOneWithoutManagedClientsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
+    accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
@@ -75518,7 +73843,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
@@ -75531,18 +73856,18 @@ export namespace Prisma {
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
   }
 
-  export type BranchUpsertWithoutRecurringSchedulesInput = {
-    update: XOR<BranchUpdateWithoutRecurringSchedulesInput, BranchUncheckedUpdateWithoutRecurringSchedulesInput>
-    create: XOR<BranchCreateWithoutRecurringSchedulesInput, BranchUncheckedCreateWithoutRecurringSchedulesInput>
-    where?: BranchWhereInput
+  export type PortfolioUpsertWithoutRecurringSchedulesInput = {
+    update: XOR<PortfolioUpdateWithoutRecurringSchedulesInput, PortfolioUncheckedUpdateWithoutRecurringSchedulesInput>
+    create: XOR<PortfolioCreateWithoutRecurringSchedulesInput, PortfolioUncheckedCreateWithoutRecurringSchedulesInput>
+    where?: PortfolioWhereInput
   }
 
-  export type BranchUpdateToOneWithWhereWithoutRecurringSchedulesInput = {
-    where?: BranchWhereInput
-    data: XOR<BranchUpdateWithoutRecurringSchedulesInput, BranchUncheckedUpdateWithoutRecurringSchedulesInput>
+  export type PortfolioUpdateToOneWithWhereWithoutRecurringSchedulesInput = {
+    where?: PortfolioWhereInput
+    data: XOR<PortfolioUpdateWithoutRecurringSchedulesInput, PortfolioUncheckedUpdateWithoutRecurringSchedulesInput>
   }
 
-  export type BranchUpdateWithoutRecurringSchedulesInput = {
+  export type PortfolioUpdateWithoutRecurringSchedulesInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -75559,16 +73884,15 @@ export namespace Prisma {
     secondaryColor?: StringFieldUpdateOperationsInput | string
     customDomain?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    users?: UserUpdateManyWithoutBranchNestedInput
-    services?: ServiceUpdateManyWithoutBranchNestedInput
-    departments?: DepartmentUpdateManyWithoutBranchNestedInput
-    clients?: ClientUpdateManyWithoutBranchNestedInput
-    projects?: ProjectUpdateManyWithoutBranchNestedInput
-    contentRequests?: ContentRequestUpdateManyWithoutBranchNestedInput
-    contracts?: ContractUpdateManyWithoutBranchNestedInput
+    users?: StaffUpdateManyWithoutPortfolioNestedInput
+    services?: ServiceUpdateManyWithoutPortfolioNestedInput
+    clients?: ClientUpdateManyWithoutPortfolioNestedInput
+    projects?: ProjectUpdateManyWithoutPortfolioNestedInput
+    contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
+    contracts?: ContractUpdateManyWithoutPortfolioNestedInput
   }
 
-  export type BranchUncheckedUpdateWithoutRecurringSchedulesInput = {
+  export type PortfolioUncheckedUpdateWithoutRecurringSchedulesInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -75585,13 +73909,12 @@ export namespace Prisma {
     secondaryColor?: StringFieldUpdateOperationsInput | string
     customDomain?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
-    users?: UserUncheckedUpdateManyWithoutBranchNestedInput
-    services?: ServiceUncheckedUpdateManyWithoutBranchNestedInput
-    departments?: DepartmentUncheckedUpdateManyWithoutBranchNestedInput
-    clients?: ClientUncheckedUpdateManyWithoutBranchNestedInput
-    projects?: ProjectUncheckedUpdateManyWithoutBranchNestedInput
-    contentRequests?: ContentRequestUncheckedUpdateManyWithoutBranchNestedInput
-    contracts?: ContractUncheckedUpdateManyWithoutBranchNestedInput
+    users?: StaffUncheckedUpdateManyWithoutPortfolioNestedInput
+    services?: ServiceUncheckedUpdateManyWithoutPortfolioNestedInput
+    clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutPortfolioNestedInput
+    contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
+    contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
   export type RecurringScheduleStepUpsertWithWhereUniqueWithoutScheduleInput = {
@@ -75639,7 +73962,7 @@ export namespace Prisma {
     isActive?: boolean
     autoGenerateTasks?: boolean
     client: ClientCreateNestedOneWithoutRecurringSchedulesInput
-    branch?: BranchCreateNestedOneWithoutRecurringSchedulesInput
+    portfolio?: PortfolioCreateNestedOneWithoutRecurringSchedulesInput
     cycles?: ContentCycleCreateNestedManyWithoutScheduleInput
   }
 
@@ -75656,7 +73979,7 @@ export namespace Prisma {
     isActive?: boolean
     autoGenerateTasks?: boolean
     clientId: string
-    branchId?: string | null
+    portfolioId?: string | null
     cycles?: ContentCycleUncheckedCreateNestedManyWithoutScheduleInput
   }
 
@@ -75665,7 +73988,7 @@ export namespace Prisma {
     create: XOR<RecurringScheduleCreateWithoutStepsInput, RecurringScheduleUncheckedCreateWithoutStepsInput>
   }
 
-  export type UserCreateWithoutAssignedRecurringStepsInput = {
+  export type StaffCreateWithoutAssignedRecurringStepsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -75675,12 +73998,11 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    branch?: BranchCreateNestedOneWithoutUsersInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
@@ -75699,7 +74021,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserUncheckedCreateWithoutAssignedRecurringStepsInput = {
+  export type StaffUncheckedCreateWithoutAssignedRecurringStepsInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -75709,8 +74031,7 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -75733,9 +74054,9 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
   }
 
-  export type UserCreateOrConnectWithoutAssignedRecurringStepsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutAssignedRecurringStepsInput, UserUncheckedCreateWithoutAssignedRecurringStepsInput>
+  export type StaffCreateOrConnectWithoutAssignedRecurringStepsInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutAssignedRecurringStepsInput, StaffUncheckedCreateWithoutAssignedRecurringStepsInput>
   }
 
   export type WorkflowTemplateCreateWithoutRecurringStepsInput = {
@@ -75817,7 +74138,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     autoGenerateTasks?: BoolFieldUpdateOperationsInput | boolean
     client?: ClientUpdateOneRequiredWithoutRecurringSchedulesNestedInput
-    branch?: BranchUpdateOneWithoutRecurringSchedulesNestedInput
+    portfolio?: PortfolioUpdateOneWithoutRecurringSchedulesNestedInput
     cycles?: ContentCycleUpdateManyWithoutScheduleNestedInput
   }
 
@@ -75834,22 +74155,22 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     autoGenerateTasks?: BoolFieldUpdateOperationsInput | boolean
     clientId?: StringFieldUpdateOperationsInput | string
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     cycles?: ContentCycleUncheckedUpdateManyWithoutScheduleNestedInput
   }
 
-  export type UserUpsertWithoutAssignedRecurringStepsInput = {
-    update: XOR<UserUpdateWithoutAssignedRecurringStepsInput, UserUncheckedUpdateWithoutAssignedRecurringStepsInput>
-    create: XOR<UserCreateWithoutAssignedRecurringStepsInput, UserUncheckedCreateWithoutAssignedRecurringStepsInput>
-    where?: UserWhereInput
+  export type StaffUpsertWithoutAssignedRecurringStepsInput = {
+    update: XOR<StaffUpdateWithoutAssignedRecurringStepsInput, StaffUncheckedUpdateWithoutAssignedRecurringStepsInput>
+    create: XOR<StaffCreateWithoutAssignedRecurringStepsInput, StaffUncheckedCreateWithoutAssignedRecurringStepsInput>
+    where?: StaffWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutAssignedRecurringStepsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutAssignedRecurringStepsInput, UserUncheckedUpdateWithoutAssignedRecurringStepsInput>
+  export type StaffUpdateToOneWithWhereWithoutAssignedRecurringStepsInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutAssignedRecurringStepsInput, StaffUncheckedUpdateWithoutAssignedRecurringStepsInput>
   }
 
-  export type UserUpdateWithoutAssignedRecurringStepsInput = {
+  export type StaffUpdateWithoutAssignedRecurringStepsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -75859,12 +74180,11 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    branch?: BranchUpdateOneWithoutUsersNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -75883,7 +74203,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutAssignedRecurringStepsInput = {
+  export type StaffUncheckedUpdateWithoutAssignedRecurringStepsInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -75893,8 +74213,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -75990,10 +74309,9 @@ export namespace Prisma {
     stepOrder?: number
     label: string
     contentType?: $Enums.ContentType | null
-    department?: string | null
     supervisor?: string
     schedule: RecurringScheduleCreateNestedOneWithoutStepsInput
-    assignee?: UserCreateNestedOneWithoutAssignedRecurringStepsInput
+    assignee?: StaffCreateNestedOneWithoutAssignedRecurringStepsInput
     template?: WorkflowTemplateCreateNestedOneWithoutRecurringStepsInput
   }
 
@@ -76007,7 +74325,6 @@ export namespace Prisma {
     stepOrder?: number
     label: string
     contentType?: $Enums.ContentType | null
-    department?: string | null
     supervisor?: string
     assigneeId?: string | null
     templateId?: string | null
@@ -76025,7 +74342,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -76033,7 +74349,7 @@ export namespace Prisma {
     supervisor?: string
     serviceInformation?: string | null
     isPersonal?: boolean
-    user: UserCreateNestedOneWithoutAssignedTasksInput
+    user: StaffCreateNestedOneWithoutAssignedTasksInput
     project?: ProjectCreateNestedOneWithoutTasksInput
     contentRequest?: ContentRequestCreateNestedOneWithoutTasksInput
     contentCycle?: ContentCycleCreateNestedOneWithoutTasksInput
@@ -76049,7 +74365,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -76091,10 +74406,9 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     label?: StringFieldUpdateOperationsInput | string
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     supervisor?: StringFieldUpdateOperationsInput | string
     schedule?: RecurringScheduleUpdateOneRequiredWithoutStepsNestedInput
-    assignee?: UserUpdateOneWithoutAssignedRecurringStepsNestedInput
+    assignee?: StaffUpdateOneWithoutAssignedRecurringStepsNestedInput
     template?: WorkflowTemplateUpdateOneWithoutRecurringStepsNestedInput
   }
 
@@ -76108,7 +74422,6 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     label?: StringFieldUpdateOperationsInput | string
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     supervisor?: StringFieldUpdateOperationsInput | string
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -76132,7 +74445,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -76140,7 +74452,7 @@ export namespace Prisma {
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
-    user?: UserUpdateOneRequiredWithoutAssignedTasksNestedInput
+    user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
     project?: ProjectUpdateOneWithoutTasksNestedInput
     contentRequest?: ContentRequestUpdateOneWithoutTasksNestedInput
     contentCycle?: ContentCycleUpdateOneWithoutTasksNestedInput
@@ -76156,7 +74468,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -76186,7 +74497,7 @@ export namespace Prisma {
     isActive?: boolean
     autoGenerateTasks?: boolean
     client: ClientCreateNestedOneWithoutRecurringSchedulesInput
-    branch?: BranchCreateNestedOneWithoutRecurringSchedulesInput
+    portfolio?: PortfolioCreateNestedOneWithoutRecurringSchedulesInput
     steps?: RecurringScheduleStepCreateNestedManyWithoutScheduleInput
   }
 
@@ -76203,7 +74514,7 @@ export namespace Prisma {
     isActive?: boolean
     autoGenerateTasks?: boolean
     clientId: string
-    branchId?: string | null
+    portfolioId?: string | null
     steps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutScheduleInput
   }
 
@@ -76230,8 +74541,8 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branch?: BranchCreateNestedOneWithoutClientsInput
-    accountManager?: UserCreateNestedOneWithoutManagedClientsInput
+    portfolio?: PortfolioCreateNestedOneWithoutClientsInput
+    accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
@@ -76261,7 +74572,7 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branchId?: string | null
+    portfolioId?: string | null
     accountManagerId?: string | null
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
@@ -76286,7 +74597,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -76294,7 +74604,7 @@ export namespace Prisma {
     supervisor?: string
     serviceInformation?: string | null
     isPersonal?: boolean
-    user: UserCreateNestedOneWithoutAssignedTasksInput
+    user: StaffCreateNestedOneWithoutAssignedTasksInput
     project?: ProjectCreateNestedOneWithoutTasksInput
     contentRequest?: ContentRequestCreateNestedOneWithoutTasksInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
@@ -76310,7 +74620,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -76361,7 +74670,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     autoGenerateTasks?: BoolFieldUpdateOperationsInput | boolean
     client?: ClientUpdateOneRequiredWithoutRecurringSchedulesNestedInput
-    branch?: BranchUpdateOneWithoutRecurringSchedulesNestedInput
+    portfolio?: PortfolioUpdateOneWithoutRecurringSchedulesNestedInput
     steps?: RecurringScheduleStepUpdateManyWithoutScheduleNestedInput
   }
 
@@ -76378,7 +74687,7 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     autoGenerateTasks?: BoolFieldUpdateOperationsInput | boolean
     clientId?: StringFieldUpdateOperationsInput | string
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     steps?: RecurringScheduleStepUncheckedUpdateManyWithoutScheduleNestedInput
   }
 
@@ -76411,8 +74720,8 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branch?: BranchUpdateOneWithoutClientsNestedInput
-    accountManager?: UserUpdateOneWithoutManagedClientsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
+    accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
@@ -76442,7 +74751,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
@@ -76477,7 +74786,6 @@ export namespace Prisma {
     stepOrder: number
     taskName: string
     description?: string | null
-    department?: string | null
     defaultPriority?: $Enums.TaskPriority
     estimatedDays?: number | null
     workflowStage?: $Enums.WorkflowStage
@@ -76490,7 +74798,6 @@ export namespace Prisma {
     stepOrder: number
     taskName: string
     description?: string | null
-    department?: string | null
     defaultPriority?: $Enums.TaskPriority
     estimatedDays?: number | null
     workflowStage?: $Enums.WorkflowStage
@@ -76516,10 +74823,9 @@ export namespace Prisma {
     stepOrder?: number
     label: string
     contentType?: $Enums.ContentType | null
-    department?: string | null
     supervisor?: string
     schedule: RecurringScheduleCreateNestedOneWithoutStepsInput
-    assignee?: UserCreateNestedOneWithoutAssignedRecurringStepsInput
+    assignee?: StaffCreateNestedOneWithoutAssignedRecurringStepsInput
     occurrences?: RecurringTaskOccurrenceCreateNestedManyWithoutScheduleStepInput
   }
 
@@ -76533,7 +74839,6 @@ export namespace Prisma {
     stepOrder?: number
     label: string
     contentType?: $Enums.ContentType | null
-    department?: string | null
     supervisor?: string
     assigneeId?: string | null
     occurrences?: RecurringTaskOccurrenceUncheckedCreateNestedManyWithoutScheduleStepInput
@@ -76575,7 +74880,6 @@ export namespace Prisma {
     stepOrder?: IntFilter<"WorkflowTemplateStep"> | number
     taskName?: StringFilter<"WorkflowTemplateStep"> | string
     description?: StringNullableFilter<"WorkflowTemplateStep"> | string | null
-    department?: StringNullableFilter<"WorkflowTemplateStep"> | string | null
     defaultPriority?: EnumTaskPriorityFilter<"WorkflowTemplateStep"> | $Enums.TaskPriority
     estimatedDays?: IntNullableFilter<"WorkflowTemplateStep"> | number | null
     workflowStage?: EnumWorkflowStageFilter<"WorkflowTemplateStep"> | $Enums.WorkflowStage
@@ -76635,7 +74939,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -76643,7 +74946,7 @@ export namespace Prisma {
     supervisor?: string
     serviceInformation?: string | null
     isPersonal?: boolean
-    user: UserCreateNestedOneWithoutAssignedTasksInput
+    user: StaffCreateNestedOneWithoutAssignedTasksInput
     project?: ProjectCreateNestedOneWithoutTasksInput
     contentRequest?: ContentRequestCreateNestedOneWithoutTasksInput
     contentCycle?: ContentCycleCreateNestedOneWithoutTasksInput
@@ -76659,7 +74962,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -76739,7 +75041,7 @@ export namespace Prisma {
     data: XOR<TaskUpdateManyMutationInput, TaskUncheckedUpdateManyWithoutWorkflowStepInput>
   }
 
-  export type UserCreateManyDynamicRoleInput = {
+  export type StaffCreateManyDynamicRoleInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -76749,8 +75051,7 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -76768,7 +75069,7 @@ export namespace Prisma {
     canDelete?: boolean
   }
 
-  export type UserUpdateWithoutDynamicRoleInput = {
+  export type StaffUpdateWithoutDynamicRoleInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -76778,12 +75079,11 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    branch?: BranchUpdateOneWithoutUsersNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
@@ -76802,7 +75102,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutDynamicRoleInput = {
+  export type StaffUncheckedUpdateWithoutDynamicRoleInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -76812,8 +75112,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -76836,7 +75135,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserUncheckedUpdateManyWithoutDynamicRoleInput = {
+  export type StaffUncheckedUpdateManyWithoutDynamicRoleInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -76846,8 +75145,7 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -76922,7 +75220,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -77028,7 +75325,7 @@ export namespace Prisma {
     notes?: string | null
     isActive?: boolean
     isDraft?: boolean
-    branchId?: string | null
+    portfolioId?: string | null
   }
 
   export type ProjectCreateManyCreatedByInput = {
@@ -77043,7 +75340,7 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDate?: Date | string | null
     clientId: string
-    branchId?: string | null
+    portfolioId?: string | null
   }
 
   export type ContentRequestCreateManyCreatedByInput = {
@@ -77057,7 +75354,7 @@ export namespace Prisma {
     deadline?: Date | string | null
     clientId: string
     projectId?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
   }
 
   export type ContentRequestAssigneeCreateManyUserInput = {
@@ -77077,7 +75374,6 @@ export namespace Prisma {
     stepOrder?: number
     label: string
     contentType?: $Enums.ContentType | null
-    department?: string | null
     supervisor?: string
     templateId?: string | null
   }
@@ -77098,7 +75394,7 @@ export namespace Prisma {
     notes?: string | null
     clientId: string
     projectId?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
   }
 
   export type ContractDocumentCreateManyUploadedByInput = {
@@ -77197,7 +75493,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -77221,7 +75516,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -77245,7 +75539,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -77388,7 +75681,7 @@ export namespace Prisma {
     method?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     taxType?: StringFieldUpdateOperationsInput | string
-    registeredUser?: UserUpdateOneRequiredWithoutRegistererNestedInput
+    registeredUser?: StaffUpdateOneRequiredWithoutRegistererNestedInput
     UserSalaryDetails?: UserSalaryDetailsUpdateManyWithoutUserSalaryNestedInput
   }
 
@@ -77429,7 +75722,7 @@ export namespace Prisma {
     method?: StringFieldUpdateOperationsInput | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     taxType?: StringFieldUpdateOperationsInput | string
-    recieverUser?: UserUpdateOneRequiredWithoutRecieverNestedInput
+    recieverUser?: StaffUpdateOneRequiredWithoutRecieverNestedInput
     UserSalaryDetails?: UserSalaryDetailsUpdateManyWithoutUserSalaryNestedInput
   }
 
@@ -77505,7 +75798,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branch?: BranchUpdateOneWithoutClientsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
@@ -77536,7 +75829,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
@@ -77567,7 +75860,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ProjectUpdateWithoutCreatedByInput = {
@@ -77582,7 +75875,7 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     client?: ClientUpdateOneRequiredWithoutProjectsNestedInput
-    branch?: BranchUpdateOneWithoutProjectsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutProjectsNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutProjectNestedInput
     tasks?: TaskUpdateManyWithoutProjectNestedInput
@@ -77601,7 +75894,7 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientId?: StringFieldUpdateOperationsInput | string
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutProjectNestedInput
     tasks?: TaskUncheckedUpdateManyWithoutProjectNestedInput
@@ -77620,7 +75913,7 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientId?: StringFieldUpdateOperationsInput | string
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ContentRequestUpdateWithoutCreatedByInput = {
@@ -77634,7 +75927,7 @@ export namespace Prisma {
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     client?: ClientUpdateOneRequiredWithoutContentRequestsNestedInput
     project?: ProjectUpdateOneWithoutContentRequestsNestedInput
-    branch?: BranchUpdateOneWithoutContentRequestsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutContentRequestsNestedInput
     assignees?: ContentRequestAssigneeUpdateManyWithoutContentRequestNestedInput
     tasks?: TaskUpdateManyWithoutContentRequestNestedInput
   }
@@ -77650,7 +75943,7 @@ export namespace Prisma {
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientId?: StringFieldUpdateOperationsInput | string
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     assignees?: ContentRequestAssigneeUncheckedUpdateManyWithoutContentRequestNestedInput
     tasks?: TaskUncheckedUpdateManyWithoutContentRequestNestedInput
   }
@@ -77666,7 +75959,7 @@ export namespace Prisma {
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientId?: StringFieldUpdateOperationsInput | string
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ContentRequestAssigneeUpdateWithoutUserInput = {
@@ -77699,7 +75992,6 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     label?: StringFieldUpdateOperationsInput | string
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     supervisor?: StringFieldUpdateOperationsInput | string
     schedule?: RecurringScheduleUpdateOneRequiredWithoutStepsNestedInput
     template?: WorkflowTemplateUpdateOneWithoutRecurringStepsNestedInput
@@ -77716,7 +76008,6 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     label?: StringFieldUpdateOperationsInput | string
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     supervisor?: StringFieldUpdateOperationsInput | string
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
     occurrences?: RecurringTaskOccurrenceUncheckedUpdateManyWithoutScheduleStepNestedInput
@@ -77732,7 +76023,6 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     label?: StringFieldUpdateOperationsInput | string
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     supervisor?: StringFieldUpdateOperationsInput | string
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -77753,7 +76043,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     client?: ClientUpdateOneRequiredWithoutContractsNestedInput
     project?: ProjectUpdateOneWithoutContractsNestedInput
-    branch?: BranchUpdateOneWithoutContractsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutContractsNestedInput
     documents?: ContractDocumentUpdateManyWithoutContractNestedInput
     installments?: ClientInstallmentUpdateManyWithoutContractNestedInput
   }
@@ -77774,7 +76064,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: StringFieldUpdateOperationsInput | string
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     documents?: ContractDocumentUncheckedUpdateManyWithoutContractNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutContractNestedInput
   }
@@ -77795,7 +76085,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: StringFieldUpdateOperationsInput | string
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ContractDocumentUpdateWithoutUploadedByInput = {
@@ -77870,7 +76160,7 @@ export namespace Prisma {
     priority?: $Enums.ProjectPriority
     startDate?: Date | string | null
     dueDate?: Date | string | null
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
   }
 
@@ -77884,7 +76174,7 @@ export namespace Prisma {
     status?: $Enums.ContentRequestStatus
     deadline?: Date | string | null
     projectId?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
   }
 
@@ -77900,7 +76190,7 @@ export namespace Prisma {
     endDate?: Date | string | null
     isActive?: boolean
     autoGenerateTasks?: boolean
-    branchId?: string | null
+    portfolioId?: string | null
   }
 
   export type ContentCycleCreateManyClientInput = {
@@ -77929,7 +76219,7 @@ export namespace Prisma {
     status?: $Enums.ContractStatus
     notes?: string | null
     projectId?: string | null
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
   }
 
@@ -78047,8 +76337,8 @@ export namespace Prisma {
     priority?: EnumProjectPriorityFieldUpdateOperationsInput | $Enums.ProjectPriority
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    branch?: BranchUpdateOneWithoutProjectsNestedInput
-    createdBy?: UserUpdateOneWithoutCreatedProjectsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutProjectsNestedInput
+    createdBy?: StaffUpdateOneWithoutCreatedProjectsNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutProjectNestedInput
     tasks?: TaskUpdateManyWithoutProjectNestedInput
@@ -78066,7 +76356,7 @@ export namespace Prisma {
     priority?: EnumProjectPriorityFieldUpdateOperationsInput | $Enums.ProjectPriority
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutProjectNestedInput
@@ -78085,7 +76375,7 @@ export namespace Prisma {
     priority?: EnumProjectPriorityFieldUpdateOperationsInput | $Enums.ProjectPriority
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -78099,8 +76389,8 @@ export namespace Prisma {
     status?: EnumContentRequestStatusFieldUpdateOperationsInput | $Enums.ContentRequestStatus
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     project?: ProjectUpdateOneWithoutContentRequestsNestedInput
-    branch?: BranchUpdateOneWithoutContentRequestsNestedInput
-    createdBy?: UserUpdateOneWithoutContentRequestsCreatedNestedInput
+    portfolio?: PortfolioUpdateOneWithoutContentRequestsNestedInput
+    createdBy?: StaffUpdateOneWithoutContentRequestsCreatedNestedInput
     assignees?: ContentRequestAssigneeUpdateManyWithoutContentRequestNestedInput
     tasks?: TaskUpdateManyWithoutContentRequestNestedInput
   }
@@ -78115,7 +76405,7 @@ export namespace Prisma {
     status?: EnumContentRequestStatusFieldUpdateOperationsInput | $Enums.ContentRequestStatus
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     assignees?: ContentRequestAssigneeUncheckedUpdateManyWithoutContentRequestNestedInput
     tasks?: TaskUncheckedUpdateManyWithoutContentRequestNestedInput
@@ -78131,7 +76421,7 @@ export namespace Prisma {
     status?: EnumContentRequestStatusFieldUpdateOperationsInput | $Enums.ContentRequestStatus
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -78147,7 +76437,7 @@ export namespace Prisma {
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     autoGenerateTasks?: BoolFieldUpdateOperationsInput | boolean
-    branch?: BranchUpdateOneWithoutRecurringSchedulesNestedInput
+    portfolio?: PortfolioUpdateOneWithoutRecurringSchedulesNestedInput
     steps?: RecurringScheduleStepUpdateManyWithoutScheduleNestedInput
     cycles?: ContentCycleUpdateManyWithoutScheduleNestedInput
   }
@@ -78164,7 +76454,7 @@ export namespace Prisma {
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     autoGenerateTasks?: BoolFieldUpdateOperationsInput | boolean
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     steps?: RecurringScheduleStepUncheckedUpdateManyWithoutScheduleNestedInput
     cycles?: ContentCycleUncheckedUpdateManyWithoutScheduleNestedInput
   }
@@ -78181,7 +76471,7 @@ export namespace Prisma {
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     autoGenerateTasks?: BoolFieldUpdateOperationsInput | boolean
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ContentCycleUpdateWithoutClientInput = {
@@ -78234,8 +76524,8 @@ export namespace Prisma {
     status?: EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     project?: ProjectUpdateOneWithoutContractsNestedInput
-    branch?: BranchUpdateOneWithoutContractsNestedInput
-    createdBy?: UserUpdateOneWithoutCreatedContractsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutContractsNestedInput
+    createdBy?: StaffUpdateOneWithoutCreatedContractsNestedInput
     documents?: ContractDocumentUpdateManyWithoutContractNestedInput
     installments?: ClientInstallmentUpdateManyWithoutContractNestedInput
   }
@@ -78255,7 +76545,7 @@ export namespace Prisma {
     status?: EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     documents?: ContractDocumentUncheckedUpdateManyWithoutContractNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutContractNestedInput
@@ -78276,7 +76566,7 @@ export namespace Prisma {
     status?: EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -78501,7 +76791,7 @@ export namespace Prisma {
     serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
   }
 
-  export type UserCreateManyBranchInput = {
+  export type StaffCreateManyPortfolioInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -78511,7 +76801,6 @@ export namespace Prisma {
     image?: string | null
     gender?: string | null
     salary?: string | null
-    department?: string | null
     roleId?: string | null
     role?: string | null
     banned?: boolean | null
@@ -78519,22 +76808,13 @@ export namespace Prisma {
     banExpires?: Date | string | null
   }
 
-  export type ServiceCreateManyBranchInput = {
+  export type ServiceCreateManyPortfolioInput = {
     id: string
     serviceName: string
     description?: string | null
   }
 
-  export type DepartmentCreateManyBranchInput = {
-    id: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    name: string
-    description?: string | null
-    isActive?: boolean
-  }
-
-  export type ClientCreateManyBranchInput = {
+  export type ClientCreateManyPortfolioInput = {
     id: string
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
@@ -78555,7 +76835,7 @@ export namespace Prisma {
     accountManagerId?: string | null
   }
 
-  export type ProjectCreateManyBranchInput = {
+  export type ProjectCreateManyPortfolioInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -78570,7 +76850,7 @@ export namespace Prisma {
     createdById?: string | null
   }
 
-  export type ContentRequestCreateManyBranchInput = {
+  export type ContentRequestCreateManyPortfolioInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -78584,7 +76864,7 @@ export namespace Prisma {
     createdById?: string | null
   }
 
-  export type RecurringScheduleCreateManyBranchInput = {
+  export type RecurringScheduleCreateManyPortfolioInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -78599,7 +76879,7 @@ export namespace Prisma {
     clientId: string
   }
 
-  export type ContractCreateManyBranchInput = {
+  export type ContractCreateManyPortfolioInput = {
     id: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -78618,7 +76898,7 @@ export namespace Prisma {
     createdById?: string | null
   }
 
-  export type UserUpdateWithoutBranchInput = {
+  export type StaffUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78628,7 +76908,6 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -78652,7 +76931,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutBranchInput = {
+  export type StaffUncheckedUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78662,7 +76941,6 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -78686,7 +76964,7 @@ export namespace Prisma {
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   }
 
-  export type UserUncheckedUpdateManyWithoutBranchInput = {
+  export type StaffUncheckedUpdateManyWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78696,7 +76974,6 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     gender?: NullableStringFieldUpdateOperationsInput | string | null
     salary?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     roleId?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
@@ -78704,7 +76981,7 @@ export namespace Prisma {
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
-  export type ServiceUpdateWithoutBranchInput = {
+  export type ServiceUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -78713,7 +76990,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutServiceNestedInput
   }
 
-  export type ServiceUncheckedUpdateWithoutBranchInput = {
+  export type ServiceUncheckedUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -78722,40 +76999,13 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutServiceNestedInput
   }
 
-  export type ServiceUncheckedUpdateManyWithoutBranchInput = {
+  export type ServiceUncheckedUpdateManyWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type DepartmentUpdateWithoutBranchInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-  }
-
-  export type DepartmentUncheckedUpdateWithoutBranchInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-  }
-
-  export type DepartmentUncheckedUpdateManyWithoutBranchInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-  }
-
-  export type ClientUpdateWithoutBranchInput = {
+  export type ClientUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -78773,7 +77023,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     isDraft?: BoolFieldUpdateOperationsInput | boolean
-    accountManager?: UserUpdateOneWithoutManagedClientsNestedInput
+    accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
@@ -78786,7 +77036,7 @@ export namespace Prisma {
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
   }
 
-  export type ClientUncheckedUpdateWithoutBranchInput = {
+  export type ClientUncheckedUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -78817,7 +77067,7 @@ export namespace Prisma {
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
   }
 
-  export type ClientUncheckedUpdateManyWithoutBranchInput = {
+  export type ClientUncheckedUpdateManyWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -78838,7 +77088,7 @@ export namespace Prisma {
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type ProjectUpdateWithoutBranchInput = {
+  export type ProjectUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78850,14 +77100,14 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     client?: ClientUpdateOneRequiredWithoutProjectsNestedInput
-    createdBy?: UserUpdateOneWithoutCreatedProjectsNestedInput
+    createdBy?: StaffUpdateOneWithoutCreatedProjectsNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutProjectNestedInput
     tasks?: TaskUpdateManyWithoutProjectNestedInput
     contracts?: ContractUpdateManyWithoutProjectNestedInput
   }
 
-  export type ProjectUncheckedUpdateWithoutBranchInput = {
+  export type ProjectUncheckedUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78876,7 +77126,7 @@ export namespace Prisma {
     contracts?: ContractUncheckedUpdateManyWithoutProjectNestedInput
   }
 
-  export type ProjectUncheckedUpdateManyWithoutBranchInput = {
+  export type ProjectUncheckedUpdateManyWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78891,7 +77141,7 @@ export namespace Prisma {
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type ContentRequestUpdateWithoutBranchInput = {
+  export type ContentRequestUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78902,12 +77152,12 @@ export namespace Prisma {
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     client?: ClientUpdateOneRequiredWithoutContentRequestsNestedInput
     project?: ProjectUpdateOneWithoutContentRequestsNestedInput
-    createdBy?: UserUpdateOneWithoutContentRequestsCreatedNestedInput
+    createdBy?: StaffUpdateOneWithoutContentRequestsCreatedNestedInput
     assignees?: ContentRequestAssigneeUpdateManyWithoutContentRequestNestedInput
     tasks?: TaskUpdateManyWithoutContentRequestNestedInput
   }
 
-  export type ContentRequestUncheckedUpdateWithoutBranchInput = {
+  export type ContentRequestUncheckedUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78923,7 +77173,7 @@ export namespace Prisma {
     tasks?: TaskUncheckedUpdateManyWithoutContentRequestNestedInput
   }
 
-  export type ContentRequestUncheckedUpdateManyWithoutBranchInput = {
+  export type ContentRequestUncheckedUpdateManyWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78937,7 +77187,7 @@ export namespace Prisma {
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type RecurringScheduleUpdateWithoutBranchInput = {
+  export type RecurringScheduleUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78954,7 +77204,7 @@ export namespace Prisma {
     cycles?: ContentCycleUpdateManyWithoutScheduleNestedInput
   }
 
-  export type RecurringScheduleUncheckedUpdateWithoutBranchInput = {
+  export type RecurringScheduleUncheckedUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78971,7 +77221,7 @@ export namespace Prisma {
     cycles?: ContentCycleUncheckedUpdateManyWithoutScheduleNestedInput
   }
 
-  export type RecurringScheduleUncheckedUpdateManyWithoutBranchInput = {
+  export type RecurringScheduleUncheckedUpdateManyWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -78986,7 +77236,7 @@ export namespace Prisma {
     clientId?: StringFieldUpdateOperationsInput | string
   }
 
-  export type ContractUpdateWithoutBranchInput = {
+  export type ContractUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -79002,12 +77252,12 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     client?: ClientUpdateOneRequiredWithoutContractsNestedInput
     project?: ProjectUpdateOneWithoutContractsNestedInput
-    createdBy?: UserUpdateOneWithoutCreatedContractsNestedInput
+    createdBy?: StaffUpdateOneWithoutCreatedContractsNestedInput
     documents?: ContractDocumentUpdateManyWithoutContractNestedInput
     installments?: ClientInstallmentUpdateManyWithoutContractNestedInput
   }
 
-  export type ContractUncheckedUpdateWithoutBranchInput = {
+  export type ContractUncheckedUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -79028,7 +77278,7 @@ export namespace Prisma {
     installments?: ClientInstallmentUncheckedUpdateManyWithoutContractNestedInput
   }
 
-  export type ContractUncheckedUpdateManyWithoutBranchInput = {
+  export type ContractUncheckedUpdateManyWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -79097,7 +77347,7 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
     subTotal?: NullableFloatFieldUpdateOperationsInput | number | null
-    user?: UserUpdateOneRequiredWithoutIncomeTransactionNestedInput
+    user?: StaffUpdateOneRequiredWithoutIncomeTransactionNestedInput
     serviceAgreement?: IncomeServiceAgreementUpdateOneRequiredWithoutIncomeTransactionNestedInput
     transactionDetails?: IncomeTransactionDetailsUpdateManyWithoutTransctionNestedInput
   }
@@ -79159,7 +77409,7 @@ export namespace Prisma {
     notes?: StringFieldUpdateOperationsInput | string
     totalAmount?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
-    user?: UserUpdateOneRequiredWithoutExpenseTransactionNestedInput
+    user?: StaffUpdateOneRequiredWithoutExpenseTransactionNestedInput
     expenseServiceAgreement?: ExpenseServiceAgreementUpdateOneRequiredWithoutExpenseTransactionNestedInput
     expenseTransactionDetails?: ExpenseTransactionDetailsUpdateManyWithoutExpenseTransactionNestedInput
   }
@@ -79263,7 +77513,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -79291,7 +77540,7 @@ export namespace Prisma {
     totalAmount?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
     subTotal?: NullableFloatFieldUpdateOperationsInput | number | null
-    user?: UserUpdateOneRequiredWithoutIncomeTransactionNestedInput
+    user?: StaffUpdateOneRequiredWithoutIncomeTransactionNestedInput
     income?: IncomeUpdateOneWithoutIncomeTransactionNestedInput
     transactionDetails?: IncomeTransactionDetailsUpdateManyWithoutTransctionNestedInput
   }
@@ -79338,7 +77587,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -79346,7 +77594,7 @@ export namespace Prisma {
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
-    user?: UserUpdateOneRequiredWithoutAssignedTasksNestedInput
+    user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
     project?: ProjectUpdateOneWithoutTasksNestedInput
     contentRequest?: ContentRequestUpdateOneWithoutTasksNestedInput
     contentCycle?: ContentCycleUpdateOneWithoutTasksNestedInput
@@ -79362,7 +77610,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -79386,7 +77633,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -79423,7 +77669,7 @@ export namespace Prisma {
     notes?: StringFieldUpdateOperationsInput | string
     totalAmount?: FloatFieldUpdateOperationsInput | number
     amountPaid?: FloatFieldUpdateOperationsInput | number
-    user?: UserUpdateOneRequiredWithoutExpenseTransactionNestedInput
+    user?: StaffUpdateOneRequiredWithoutExpenseTransactionNestedInput
     expense?: ExpenseUpdateOneRequiredWithoutExpenseTransactionNestedInput
     expenseTransactionDetails?: ExpenseTransactionDetailsUpdateManyWithoutExpenseTransactionNestedInput
   }
@@ -79677,7 +77923,7 @@ export namespace Prisma {
     status?: $Enums.ContentRequestStatus
     deadline?: Date | string | null
     clientId: string
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
   }
 
@@ -79688,7 +77934,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -79718,7 +77963,7 @@ export namespace Prisma {
     status?: $Enums.ContractStatus
     notes?: string | null
     clientId: string
-    branchId?: string | null
+    portfolioId?: string | null
     createdById?: string | null
   }
 
@@ -79772,8 +78017,8 @@ export namespace Prisma {
     status?: EnumContentRequestStatusFieldUpdateOperationsInput | $Enums.ContentRequestStatus
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     client?: ClientUpdateOneRequiredWithoutContentRequestsNestedInput
-    branch?: BranchUpdateOneWithoutContentRequestsNestedInput
-    createdBy?: UserUpdateOneWithoutContentRequestsCreatedNestedInput
+    portfolio?: PortfolioUpdateOneWithoutContentRequestsNestedInput
+    createdBy?: StaffUpdateOneWithoutContentRequestsCreatedNestedInput
     assignees?: ContentRequestAssigneeUpdateManyWithoutContentRequestNestedInput
     tasks?: TaskUpdateManyWithoutContentRequestNestedInput
   }
@@ -79788,7 +78033,7 @@ export namespace Prisma {
     status?: EnumContentRequestStatusFieldUpdateOperationsInput | $Enums.ContentRequestStatus
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientId?: StringFieldUpdateOperationsInput | string
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     assignees?: ContentRequestAssigneeUncheckedUpdateManyWithoutContentRequestNestedInput
     tasks?: TaskUncheckedUpdateManyWithoutContentRequestNestedInput
@@ -79804,7 +78049,7 @@ export namespace Prisma {
     status?: EnumContentRequestStatusFieldUpdateOperationsInput | $Enums.ContentRequestStatus
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientId?: StringFieldUpdateOperationsInput | string
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -79815,7 +78060,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -79823,7 +78067,7 @@ export namespace Prisma {
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
-    user?: UserUpdateOneRequiredWithoutAssignedTasksNestedInput
+    user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
     contentRequest?: ContentRequestUpdateOneWithoutTasksNestedInput
     contentCycle?: ContentCycleUpdateOneWithoutTasksNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
@@ -79839,7 +78083,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -79863,7 +78106,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -79893,8 +78135,8 @@ export namespace Prisma {
     status?: EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     client?: ClientUpdateOneRequiredWithoutContractsNestedInput
-    branch?: BranchUpdateOneWithoutContractsNestedInput
-    createdBy?: UserUpdateOneWithoutCreatedContractsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutContractsNestedInput
+    createdBy?: StaffUpdateOneWithoutCreatedContractsNestedInput
     documents?: ContractDocumentUpdateManyWithoutContractNestedInput
     installments?: ClientInstallmentUpdateManyWithoutContractNestedInput
   }
@@ -79914,7 +78156,7 @@ export namespace Prisma {
     status?: EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: StringFieldUpdateOperationsInput | string
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     documents?: ContractDocumentUncheckedUpdateManyWithoutContractNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutContractNestedInput
@@ -79935,7 +78177,7 @@ export namespace Prisma {
     status?: EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: StringFieldUpdateOperationsInput | string
-    branchId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -79973,7 +78215,7 @@ export namespace Prisma {
     fileUrl?: StringFieldUpdateOperationsInput | string
     fileSize?: NullableIntFieldUpdateOperationsInput | number | null
     mimeType?: StringFieldUpdateOperationsInput | string
-    uploadedBy?: UserUpdateOneWithoutUploadedContractDocumentsNestedInput
+    uploadedBy?: StaffUpdateOneWithoutUploadedContractDocumentsNestedInput
   }
 
   export type ContractDocumentUncheckedUpdateWithoutContractInput = {
@@ -80057,7 +78299,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -80076,7 +78317,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     role?: NullableStringFieldUpdateOperationsInput | string | null
-    user?: UserUpdateOneRequiredWithoutContentRequestAssignmentsNestedInput
+    user?: StaffUpdateOneRequiredWithoutContentRequestAssignmentsNestedInput
   }
 
   export type ContentRequestAssigneeUncheckedUpdateWithoutContentRequestInput = {
@@ -80100,7 +78341,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -80108,7 +78348,7 @@ export namespace Prisma {
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
-    user?: UserUpdateOneRequiredWithoutAssignedTasksNestedInput
+    user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
     project?: ProjectUpdateOneWithoutTasksNestedInput
     contentCycle?: ContentCycleUpdateOneWithoutTasksNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
@@ -80124,7 +78364,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -80148,7 +78387,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -80172,7 +78410,6 @@ export namespace Prisma {
     stepOrder?: number
     label: string
     contentType?: $Enums.ContentType | null
-    department?: string | null
     supervisor?: string
     assigneeId?: string | null
     templateId?: string | null
@@ -80198,9 +78435,8 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     label?: StringFieldUpdateOperationsInput | string
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     supervisor?: StringFieldUpdateOperationsInput | string
-    assignee?: UserUpdateOneWithoutAssignedRecurringStepsNestedInput
+    assignee?: StaffUpdateOneWithoutAssignedRecurringStepsNestedInput
     template?: WorkflowTemplateUpdateOneWithoutRecurringStepsNestedInput
     occurrences?: RecurringTaskOccurrenceUpdateManyWithoutScheduleStepNestedInput
   }
@@ -80214,7 +78450,6 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     label?: StringFieldUpdateOperationsInput | string
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     supervisor?: StringFieldUpdateOperationsInput | string
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -80230,7 +78465,6 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     label?: StringFieldUpdateOperationsInput | string
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     supervisor?: StringFieldUpdateOperationsInput | string
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -80306,7 +78540,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -80328,7 +78561,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -80336,7 +78568,7 @@ export namespace Prisma {
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
-    user?: UserUpdateOneRequiredWithoutAssignedTasksNestedInput
+    user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
     project?: ProjectUpdateOneWithoutTasksNestedInput
     contentRequest?: ContentRequestUpdateOneWithoutTasksNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
@@ -80352,7 +78584,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -80376,7 +78607,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -80397,7 +78627,6 @@ export namespace Prisma {
     stepOrder: number
     taskName: string
     description?: string | null
-    department?: string | null
     defaultPriority?: $Enums.TaskPriority
     estimatedDays?: number | null
     workflowStage?: $Enums.WorkflowStage
@@ -80413,7 +78642,6 @@ export namespace Prisma {
     stepOrder?: number
     label: string
     contentType?: $Enums.ContentType | null
-    department?: string | null
     supervisor?: string
     assigneeId?: string | null
   }
@@ -80424,7 +78652,6 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     taskName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     defaultPriority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     estimatedDays?: NullableIntFieldUpdateOperationsInput | number | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -80437,7 +78664,6 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     taskName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     defaultPriority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     estimatedDays?: NullableIntFieldUpdateOperationsInput | number | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -80450,7 +78676,6 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     taskName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     defaultPriority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     estimatedDays?: NullableIntFieldUpdateOperationsInput | number | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -80465,10 +78690,9 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     label?: StringFieldUpdateOperationsInput | string
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     supervisor?: StringFieldUpdateOperationsInput | string
     schedule?: RecurringScheduleUpdateOneRequiredWithoutStepsNestedInput
-    assignee?: UserUpdateOneWithoutAssignedRecurringStepsNestedInput
+    assignee?: StaffUpdateOneWithoutAssignedRecurringStepsNestedInput
     occurrences?: RecurringTaskOccurrenceUpdateManyWithoutScheduleStepNestedInput
   }
 
@@ -80482,7 +78706,6 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     label?: StringFieldUpdateOperationsInput | string
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     supervisor?: StringFieldUpdateOperationsInput | string
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
     occurrences?: RecurringTaskOccurrenceUncheckedUpdateManyWithoutScheduleStepNestedInput
@@ -80498,7 +78721,6 @@ export namespace Prisma {
     stepOrder?: IntFieldUpdateOperationsInput | number
     label?: StringFieldUpdateOperationsInput | string
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
-    department?: NullableStringFieldUpdateOperationsInput | string | null
     supervisor?: StringFieldUpdateOperationsInput | string
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -80510,7 +78732,6 @@ export namespace Prisma {
     description: string
     status: $Enums.TaskStatus
     priority?: $Enums.TaskPriority
-    department: string
     deadline?: Date | string | null
     progress?: number
     workflowStage?: $Enums.WorkflowStage
@@ -80532,7 +78753,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -80540,7 +78760,7 @@ export namespace Prisma {
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
-    user?: UserUpdateOneRequiredWithoutAssignedTasksNestedInput
+    user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
     project?: ProjectUpdateOneWithoutTasksNestedInput
     contentRequest?: ContentRequestUpdateOneWithoutTasksNestedInput
     contentCycle?: ContentCycleUpdateOneWithoutTasksNestedInput
@@ -80556,7 +78776,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -80580,7 +78799,6 @@ export namespace Prisma {
     description?: StringFieldUpdateOperationsInput | string
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
@@ -80605,9 +78823,9 @@ export namespace Prisma {
      */
     export type RoleCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = RoleCountOutputTypeDefaultArgs<ExtArgs>
     /**
-     * @deprecated Use UserCountOutputTypeDefaultArgs instead
+     * @deprecated Use StaffCountOutputTypeDefaultArgs instead
      */
-    export type UserCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = UserCountOutputTypeDefaultArgs<ExtArgs>
+    export type StaffCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = StaffCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use ClientCountOutputTypeDefaultArgs instead
      */
@@ -80621,9 +78839,9 @@ export namespace Prisma {
      */
     export type SubServiceCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SubServiceCountOutputTypeDefaultArgs<ExtArgs>
     /**
-     * @deprecated Use BranchCountOutputTypeDefaultArgs instead
+     * @deprecated Use PortfolioCountOutputTypeDefaultArgs instead
      */
-    export type BranchCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BranchCountOutputTypeDefaultArgs<ExtArgs>
+    export type PortfolioCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PortfolioCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use TaskCountOutputTypeDefaultArgs instead
      */
@@ -80705,9 +78923,9 @@ export namespace Prisma {
      */
     export type RoleArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = RoleDefaultArgs<ExtArgs>
     /**
-     * @deprecated Use UserDefaultArgs instead
+     * @deprecated Use StaffDefaultArgs instead
      */
-    export type UserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = UserDefaultArgs<ExtArgs>
+    export type StaffArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = StaffDefaultArgs<ExtArgs>
     /**
      * @deprecated Use SessionDefaultArgs instead
      */
@@ -80733,13 +78951,9 @@ export namespace Prisma {
      */
     export type SubServiceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SubServiceDefaultArgs<ExtArgs>
     /**
-     * @deprecated Use BranchDefaultArgs instead
+     * @deprecated Use PortfolioDefaultArgs instead
      */
-    export type BranchArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BranchDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use DepartmentDefaultArgs instead
-     */
-    export type DepartmentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DepartmentDefaultArgs<ExtArgs>
+    export type PortfolioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PortfolioDefaultArgs<ExtArgs>
     /**
      * @deprecated Use ClientSubServiceDefaultArgs instead
      */

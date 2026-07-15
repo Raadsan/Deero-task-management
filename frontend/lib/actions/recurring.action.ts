@@ -32,7 +32,7 @@ export type RecurringScheduleRecord = {
   autoGenerateTasks: boolean;
   clientId: string;
   client?: { id: string; institution: string; accountManagerId?: string | null };
-  branch?: { id: string; name: string } | null;
+  portfolio?: { id: string; name: string } | null;
   steps?: RecurringScheduleStep[];
   _count?: { cycles: number };
 };

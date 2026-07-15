@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prisma.js";
 import { logAction } from "./trackingcontroller.js";
-import { getScope, canManageRolePermissions } from "../lib/branch-scope.js";
+import { getScope, canManageRolePermissions } from "../lib/portfolio-scope.js";
 import {
   clampPermissionsPayload,
   loadRolePermissionCeiling,
@@ -61,7 +61,7 @@ async function resolveActorRoleId(scope) {
   if (scope.user?.roleId) return scope.user.roleId;
   if (!scope.user?.id) return null;
 
-  const dbUser = await prisma.user.findUnique({
+  const dbUser = await prisma.staff.findUnique({
     where: { id: scope.user.id },
     select: { roleId: true, role: true },
   });
@@ -536,10 +536,9 @@ const DEFAULT_MENUS = [
       { title: "Schedules", url: "/recurring-schedules", order: 3 },
     ],
   },
-  { title: "Users", url: "/users", icon: "Users", order: 5, submenus: [] },
+  { title: "Staff", url: "/staff", icon: "Users", order: 5, submenus: [] },
   { title: "Services", url: "/services", icon: "Layers", order: 6, submenus: [] },
-  { title: "Branches", url: "/branches", icon: "Building2", order: 7, submenus: [] },
-  { title: "Departments", url: "/departments", icon: "FolderTree", order: 8, submenus: [] },
+  { title: "Portfolios", url: "/portfolios", icon: "Building2", order: 7, submenus: [] },
   {
     title: "Payment",
     url: "/payments/revenue",
@@ -557,7 +556,7 @@ const DEFAULT_MENUS = [
     order: 10,
     submenus: [
       { title: "Payment Report", url: "/reports/payments", order: 1 },
-      { title: "Users Report", url: "/reports/users", order: 2 },
+      { title: "Employees Report", url: "/reports/users", order: 2 },
       { title: "Client Report", url: "/reports/clients", order: 3 },
       { title: "Tasks Report", url: "/reports/tasks", order: 4 },
     ],
@@ -620,14 +619,31 @@ async function upsertMenuAccess(roleId, menuId, submenuItems = []) {
 }
 
 async function ensureMissingDefaultMenus() {
+  await prisma.navMenu.deleteMany({
+    where: {
+      url: { in: ["/users", "/employees", "/branches", "/departments"] },
+    },
+  });
+
   const urls = DEFAULT_MENUS.map((menu) => menu.url);
   const existing = await prisma.navMenu.findMany({
     where: { url: { in: urls } },
-    select: { url: true },
+    select: { url: true, title: true, icon: true, order: true },
   });
   const existingUrls = new Set(existing.map((menu) => menu.url));
   const hasMissing = DEFAULT_MENUS.some((menu) => !existingUrls.has(menu.url));
   if (hasMissing) {
+    await ensureDefaultMenus();
+    return true;
+  }
+
+  const existingByUrl = new Map(existing.map((menu) => [menu.url, menu]));
+  const hasOutdatedMenu = DEFAULT_MENUS.some((menu) => {
+    const current = existingByUrl.get(menu.url);
+    return current &&
+      (current.title !== menu.title || current.icon !== menu.icon || current.order !== menu.order);
+  });
+  if (hasOutdatedMenu) {
     await ensureDefaultMenus();
     return true;
   }
@@ -752,8 +768,9 @@ async function runEnsureDefaultMenus() {
           "/payments/expense",
           "/payments/unpaid",
           "/reports/unpaid",
-          "/reports/employees",
+          "/reports/staff",
           "/users/report",
+          "/staff/report",
         ],
       },
     },
@@ -779,18 +796,18 @@ async function runEnsureDefaultMenus() {
     data: { isActive: false },
   });
 
-  await prisma.user.updateMany({
+  await prisma.staff.updateMany({
     where: { role: "superadmin", roleId: null },
     data: { roleId: superadmin.id },
   });
-  await prisma.user.updateMany({
+  await prisma.staff.updateMany({
     where: { role: "admin", roleId: null },
     data: { roleId: admin.id },
   });
 
   const configRoles = await prisma.role.findMany({ select: { id: true, name: true } });
   for (const configRole of configRoles) {
-    await prisma.user.updateMany({
+    await prisma.staff.updateMany({
       where: { role: configRole.name, roleId: null },
       data: { roleId: configRole.id },
     });

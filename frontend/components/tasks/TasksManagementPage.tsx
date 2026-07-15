@@ -16,7 +16,7 @@ import {
 import { getAllTasks } from "@/lib/actions/task.action";
 import { getAllUsers } from "@/lib/actions/user.action";
 import { authClient } from "@/lib/auth-client";
-import { isBranchScopedRole, normalizeRoleName } from "@/lib/branch-access";
+import { isBranchScopedRole, normalizeRoleName } from "@/lib/portfolio-access";
 import { ROUTES, SWR_CACH_KEYS } from "@/lib/constants";
 import {
   actionBtnDelete,
@@ -71,19 +71,19 @@ export default function TasksManagementPage() {
 
   const session = authClient.useSession();
   const user = session.data?.user as
-    | { role?: string; branchId?: string | null }
+    | { role?: string; portfolioId?: string | null }
     | undefined;
   const normalizedRole = normalizeRoleName(user?.role);
   const isScopedUser = isBranchScopedRole(normalizedRole);
   const tasksKey = [
     SWR_CACH_KEYS.tasks.key,
     normalizedRole || "guest",
-    user?.branchId ?? "all",
+    user?.portfolioId ?? "all",
   ].join(":");
   const usersKey = [
     "tasks-users-filter",
     normalizedRole || "guest",
-    user?.branchId ?? "all",
+    user?.portfolioId ?? "all",
   ].join(":");
 
   const { data: tasksRes, isLoading } = useSWR(
@@ -98,15 +98,15 @@ export default function TasksManagementPage() {
   const tasksRaw = (tasksRes?.data as Task[]) ?? [];
   const usersRaw = usersRes?.data ?? [];
   const tasks = useMemo(() => {
-    if (!isScopedUser || !user?.branchId) return tasksRaw;
-    return tasksRaw.filter((task) => task.assignedTo?.branchId === user.branchId);
-  }, [tasksRaw, isScopedUser, user?.branchId]);
+    if (!isScopedUser || !user?.portfolioId) return tasksRaw;
+    return tasksRaw.filter((task) => task.assignedTo?.portfolioId === user.portfolioId);
+  }, [tasksRaw, isScopedUser, user?.portfolioId]);
   const users = useMemo(() => {
-    if (!isScopedUser || !user?.branchId) return usersRaw;
+    if (!isScopedUser || !user?.portfolioId) return usersRaw;
     return usersRaw.filter(
-      (userItem: { branchId?: string | null }) => userItem.branchId === user.branchId,
+      (userItem: { portfolioId?: string | null }) => userItem.portfolioId === user.portfolioId,
     );
-  }, [usersRaw, isScopedUser, user?.branchId]);
+  }, [usersRaw, isScopedUser, user?.portfolioId]);
 
   const isTasksLoading = !mounted || session.isPending || isLoading;
 

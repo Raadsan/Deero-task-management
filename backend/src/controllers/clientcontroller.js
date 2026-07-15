@@ -6,7 +6,7 @@ import {
   getScope,
   mergeWhere,
   resolveWritableBranchId,
-} from "../lib/branch-scope.js";
+} from "../lib/portfolio-scope.js";
 import {
   findWorkflowTemplate,
   generateTasksFromTemplate,
@@ -42,13 +42,13 @@ async function attachClientServiceAgreement(tx, {
   base,
   description,
   discount,
-  branchId,
+  portfolioId,
   createdAt,
   serviceStatus,
 }) {
   const serviceWhere = { serviceName };
-  if (branchId) {
-    serviceWhere.branchId = branchId;
+  if (portfolioId) {
+    serviceWhere.portfolioId = portfolioId;
   }
 
   let service = await tx.service.findFirst({ where: serviceWhere });
@@ -58,7 +58,7 @@ async function attachClientServiceAgreement(tx, {
       data: {
         id: serviceId.data || serviceId,
         serviceName,
-        branchId: branchId || null,
+        portfolioId: portfolioId || null,
       },
     });
   }
@@ -136,13 +136,13 @@ async function attachClientServiceAgreement(tx, {
 const clientListInclude = {
   clientService: {
     include: {
-      service: { include: { branch: { select: { id: true, name: true } } } },
+      service: { include: { portfolio: { select: { id: true, name: true } } } },
     },
   },
   clientSubService: { include: { subService: true } },
   serviceAgreements: {
     include: {
-      service: { include: { branch: { select: { id: true, name: true } } } },
+      service: { include: { portfolio: { select: { id: true, name: true } } } },
       subService: true,
     },
     orderBy: { createdAt: "desc" },
@@ -204,7 +204,7 @@ export const createClient = async (req, res) => {
   const data = req.body;
   try {
     const scope = getScope(req);
-    const scopedBranchId = resolveWritableBranchId(scope, data.branchId);
+    const scopedBranchId = resolveWritableBranchId(scope, data.portfolioId);
     const clientType = data.clientType ?? "ONE_TIME";
     const isDraft = data.isDraft === true;
     const draftToken = `${Date.now()}${Math.random().toString(36).slice(2, 8)}`;
@@ -275,7 +275,7 @@ export const createClient = async (req, res) => {
               ? Number(data.monthlyBudget)
               : null,
           notes: data.notes ?? null,
-          branchId: scopedBranchId ?? null,
+          portfolioId: scopedBranchId ?? null,
           accountManagerId: data.accountManagerId ?? scope.user?.id ?? null,
           isActive: data.isActive !== false,
           isDraft,
@@ -295,7 +295,7 @@ export const createClient = async (req, res) => {
           base: data.base,
           description: data.description,
           discount: data.discount,
-          branchId: scopedBranchId,
+          portfolioId: scopedBranchId,
           createdAt: data.createdAt,
           serviceStatus: data.serviceStatus,
         });
@@ -332,7 +332,7 @@ export const createClient = async (req, res) => {
                 ? new Date(data.dueDate)
                 : null,
             clientId: client.id,
-            branchId: scopedBranchId ?? null,
+            portfolioId: scopedBranchId ?? null,
             createdById: scope.user?.id ?? null,
           },
         });
@@ -389,7 +389,7 @@ export const createClient = async (req, res) => {
               ? new Date(data.schedule.endDate)
               : null,
             clientId: client.id,
-            branchId: scopedBranchId ?? null,
+            portfolioId: scopedBranchId ?? null,
             steps: {
               create: (data.schedule.steps ?? []).map((step, index) => ({
                 dayOfWeek: step.dayOfWeek ?? null,
@@ -443,7 +443,7 @@ export const addClientService = async (req, res) => {
 
   try {
     const scope = getScope(req);
-    const scopedBranchId = resolveWritableBranchId(scope, data.branchId);
+    const scopedBranchId = resolveWritableBranchId(scope, data.portfolioId);
     const client = await prisma.client.findFirst({
       where: mergeWhere({ id }, clientBranchWhere(scope)),
     });
@@ -459,7 +459,7 @@ export const addClientService = async (req, res) => {
         base: data.base,
         description: data.description,
         discount: data.discount,
-        branchId: scopedBranchId,
+        portfolioId: scopedBranchId,
         createdAt: data.createdAt,
         serviceStatus: data.serviceStatus,
       });
@@ -547,7 +547,7 @@ export const updateClient = async (req, res) => {
           ? { monthlyBudget: data.monthlyBudget !== null ? Number(data.monthlyBudget) : null }
           : {}),
         ...(data.notes !== undefined ? { notes: data.notes } : {}),
-        ...(data.branchId !== undefined ? { branchId: data.branchId } : {}),
+        ...(data.portfolioId !== undefined ? { portfolioId: data.portfolioId } : {}),
         ...(data.accountManagerId !== undefined
           ? { accountManagerId: data.accountManagerId }
           : {}),
@@ -591,7 +591,7 @@ export const updateClientAgreement = async (req, res) => {
     subServiceName,
     serviceStatus,
     serviceName,
-    branchId,
+    portfolioId,
     discount,
     createdAt,
   } = req.body;
@@ -612,8 +612,8 @@ export const updateClientAgreement = async (req, res) => {
 
       if (serviceName) {
         const serviceWhere = { serviceName };
-        if (branchId) {
-          serviceWhere.branchId = branchId;
+        if (portfolioId) {
+          serviceWhere.portfolioId = portfolioId;
         }
 
         let service = await tx.service.findFirst({ where: serviceWhere });
@@ -626,7 +626,7 @@ export const updateClientAgreement = async (req, res) => {
             data: {
               id: newServiceId.data || newServiceId,
               serviceName,
-              branchId: branchId || null,
+              portfolioId: portfolioId || null,
             },
           });
         }

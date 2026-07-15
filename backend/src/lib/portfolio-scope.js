@@ -1,7 +1,7 @@
 import { prisma } from "./prisma.js";
 
-export function isMainBranch(branch) {
-  return Boolean(branch?.usesRootLogin);
+export function isMainBranch(portfolio) {
+  return Boolean(portfolio?.usesRootLogin);
 }
 
 let cachedMainBranch = null;
@@ -13,7 +13,7 @@ export async function getMainBranch() {
   if (cachedMainBranch && now - cachedMainBranchAt < MAIN_BRANCH_CACHE_MS) {
     return cachedMainBranch;
   }
-  cachedMainBranch = await prisma.branch.findFirst({
+  cachedMainBranch = await prisma.portfolio.findFirst({
     where: { usesRootLogin: true, isActive: true },
     select: { id: true, usesRootLogin: true, name: true },
     orderBy: { createdAt: "asc" },
@@ -28,7 +28,7 @@ export function clearMainBranchCache() {
 }
 
 export async function resolveEffectiveBranchId(user) {
-  if (user?.branchId) return user.branchId;
+  if (user?.portfolioId) return user.portfolioId;
   const mainBranch = await getMainBranch();
   return mainBranch?.id ?? null;
 }
@@ -39,25 +39,25 @@ async function shouldNotifyUserForBranch(user, eventBranchId, mainBranch) {
   const role = normalizeRoleName(user.role);
 
   if (role === "superadmin") {
-    if (!user.branchId) return true;
-    if (mainBranch && user.branchId === mainBranch.id) return true;
-    return user.branchId === eventBranchId;
+    if (!user.portfolioId) return true;
+    if (mainBranch && user.portfolioId === mainBranch.id) return true;
+    return user.portfolioId === eventBranchId;
   }
 
-  if (!user.branchId) return true;
+  if (!user.portfolioId) return true;
 
-  if (mainBranch && user.branchId === mainBranch.id) return true;
+  if (mainBranch && user.portfolioId === mainBranch.id) return true;
 
   if (isBranchScopedRole(role)) {
-    return user.branchId === eventBranchId;
+    return user.portfolioId === eventBranchId;
   }
 
-  const branch = await prisma.branch.findUnique({
-    where: { id: user.branchId },
+  const portfolio = await prisma.portfolio.findUnique({
+    where: { id: user.portfolioId },
     select: { usesRootLogin: true },
   });
-  if (isMainBranch(branch)) return true;
-  return user.branchId === eventBranchId;
+  if (isMainBranch(portfolio)) return true;
+  return user.portfolioId === eventBranchId;
 }
 
 export async function filterUsersForBranchNotification(users, eventBranchId) {
@@ -72,8 +72,8 @@ export async function filterUsersForBranchNotification(users, eventBranchId) {
 }
 
 const BRANCH_SCOPED_ROLES = new Set([
-  "branch admin",
-  "branch manager",
+  "portfolio admin",
+  "portfolio manager",
   "employee",
   "manager",
 ]);
@@ -105,16 +105,16 @@ export function canManageRolePermissions(actorRole, targetRoleName) {
   const target = normalizeRoleName(targetRoleName);
 
   if (actor === "superadmin") return true;
-  if (actor === "branch admin") {
+  if (actor === "portfolio admin") {
     return BRANCH_ADMIN_MANAGEABLE_ROLES.has(target);
   }
   return false;
 }
 
 export function auditLogBranchWhere(scope) {
-  const branchId = scopedBranchId(scope);
-  if (!branchId) return {};
-  return { user: { branchId } };
+  const portfolioId = scopedBranchId(scope);
+  if (!portfolioId) return {};
+  return { user: { portfolioId } };
 }
 
 export async function resolveBranchScopeFromSession(session) {
@@ -122,12 +122,12 @@ export async function resolveBranchScopeFromSession(session) {
     return {
       authenticated: false,
       seesAllBranches: true,
-      branchId: null,
+      portfolioId: null,
       user: null,
     };
   }
 
-  const dbUser = await prisma.user.findUnique({
+  const dbUser = await prisma.staff.findUnique({
     where: { id: session.user.id },
     select: {
       id: true,
@@ -135,7 +135,7 @@ export async function resolveBranchScopeFromSession(session) {
       email: true,
       role: true,
       roleId: true,
-      branchId: true,
+      portfolioId: true,
     },
   });
 
@@ -143,16 +143,16 @@ export async function resolveBranchScopeFromSession(session) {
   const role = normalizeRoleName(user.role);
 
   if (role === "superadmin") {
-    if (user.branchId) {
-      const branch = await prisma.branch.findUnique({
-        where: { id: user.branchId },
+    if (user.portfolioId) {
+      const portfolio = await prisma.portfolio.findUnique({
+        where: { id: user.portfolioId },
         select: { id: true, usesRootLogin: true },
       });
-      const onMainBranch = !branch || isMainBranch(branch);
+      const onMainBranch = !portfolio || isMainBranch(portfolio);
       return {
         authenticated: true,
         seesAllBranches: onMainBranch,
-        branchId: user.branchId,
+        portfolioId: user.portfolioId,
         user,
       };
     }
@@ -161,24 +161,24 @@ export async function resolveBranchScopeFromSession(session) {
     return {
       authenticated: true,
       seesAllBranches: true,
-      branchId: mainBranch?.id ?? null,
+      portfolioId: mainBranch?.id ?? null,
       user,
     };
   }
 
-  if (!user.branchId) {
+  if (!user.portfolioId) {
     if (isBranchScopedRole(role)) {
       return {
         authenticated: true,
         seesAllBranches: false,
-        branchId: null,
+        portfolioId: null,
         user,
       };
     }
     return {
       authenticated: true,
       seesAllBranches: true,
-      branchId: null,
+      portfolioId: null,
       user,
     };
   }
@@ -187,21 +187,21 @@ export async function resolveBranchScopeFromSession(session) {
     return {
       authenticated: true,
       seesAllBranches: false,
-      branchId: user.branchId,
+      portfolioId: user.portfolioId,
       user,
     };
   }
 
-  const branch = await prisma.branch.findUnique({
-    where: { id: user.branchId },
+  const portfolio = await prisma.portfolio.findUnique({
+    where: { id: user.portfolioId },
     select: { id: true, usesRootLogin: true },
   });
 
-  if (!branch || isMainBranch(branch)) {
+  if (!portfolio || isMainBranch(portfolio)) {
     return {
       authenticated: true,
       seesAllBranches: true,
-      branchId: user.branchId,
+      portfolioId: user.portfolioId,
       user,
     };
   }
@@ -209,7 +209,7 @@ export async function resolveBranchScopeFromSession(session) {
   return {
     authenticated: true,
     seesAllBranches: false,
-    branchId: user.branchId,
+    portfolioId: user.portfolioId,
     user,
   };
 }
@@ -219,7 +219,7 @@ export function getScope(req) {
     req.branchScope ?? {
       authenticated: false,
       seesAllBranches: true,
-      branchId: null,
+      portfolioId: null,
       user: null,
     }
   );
@@ -229,61 +229,61 @@ export function resolveWritableBranchId(scope, requestedBranchId) {
   if (isSuperadminScope(scope) || scope.seesAllBranches) {
     return requestedBranchId || null;
   }
-  return scope.branchId;
+  return scope.portfolioId;
 }
 
 export function isWithinBranchScope(scope, targetBranchId) {
   if (isSuperadminScope(scope) || scope.seesAllBranches) return true;
-  if (!scope.branchId || !targetBranchId) return false;
-  return scope.branchId === targetBranchId;
+  if (!scope.portfolioId || !targetBranchId) return false;
+  return scope.portfolioId === targetBranchId;
 }
 
 export function denyIfOutOfScope(res, scope, targetBranchId) {
   if (isWithinBranchScope(scope, targetBranchId)) return false;
   res.status(403).json({
     success: false,
-    error: "Forbidden: outside your branch scope",
+    error: "Forbidden: outside your portfolio scope",
   });
   return true;
 }
 
 function scopedBranchId(scope) {
   if (scope.seesAllBranches) return undefined;
-  if (!scope.branchId) return "__no_branch__";
-  return scope.branchId;
+  if (!scope.portfolioId) return "__no_branch__";
+  return scope.portfolioId;
 }
 
 export function branchListWhere(scope) {
   if (isSuperadminScope(scope)) return {};
-  const branchId = scopedBranchId(scope);
-  return branchId ? { id: branchId } : {};
+  const portfolioId = scopedBranchId(scope);
+  return portfolioId ? { id: portfolioId } : {};
 }
 
 export function userBranchWhere(scope) {
-  const branchId = scopedBranchId(scope);
-  return branchId ? { branchId } : {};
+  const portfolioId = scopedBranchId(scope);
+  return portfolioId ? { portfolioId } : {};
 }
 
 export function directBranchWhere(scope) {
-  const branchId = scopedBranchId(scope);
-  return branchId ? { branchId } : {};
+  const portfolioId = scopedBranchId(scope);
+  return portfolioId ? { portfolioId } : {};
 }
 
 export function clientBranchWhere(scope) {
-  const branchId = scopedBranchId(scope);
-  if (!branchId) return {};
+  const portfolioId = scopedBranchId(scope);
+  if (!portfolioId) return {};
 
   return {
     OR: [
-      { branchId },
+      { portfolioId },
       {
         serviceAgreements: {
-          some: { service: { branchId } },
+          some: { service: { portfolioId } },
         },
       },
       {
         clientService: {
-          some: { service: { branchId } },
+          some: { service: { portfolioId } },
         },
       },
     ],
@@ -291,9 +291,9 @@ export function clientBranchWhere(scope) {
 }
 
 export function projectBranchWhere(scope) {
-  const branchId = scopedBranchId(scope);
-  if (!branchId) return {};
-  return { branchId };
+  const portfolioId = scopedBranchId(scope);
+  if (!portfolioId) return {};
+  return { portfolioId };
 }
 
 export function contractBranchWhere(scope) {
@@ -301,12 +301,12 @@ export function contractBranchWhere(scope) {
 }
 
 export function taskBranchWhere(scope) {
-  const branchId = scopedBranchId(scope);
-  if (!branchId) return {};
+  const portfolioId = scopedBranchId(scope);
+  if (!portfolioId) return {};
 
   return {
     AND: [
-      { user: { branchId } },
+      { user: { portfolioId } },
       {
         OR: [
           { clientTask: { none: {} } },
@@ -317,12 +317,12 @@ export function taskBranchWhere(scope) {
                   OR: [
                     {
                       serviceAgreements: {
-                        some: { service: { branchId } },
+                        some: { service: { portfolioId } },
                       },
                     },
                     {
                       clientService: {
-                        some: { service: { branchId } },
+                        some: { service: { portfolioId } },
                       },
                     },
                   ],
@@ -337,33 +337,33 @@ export function taskBranchWhere(scope) {
 }
 
 export function incomeTransactionBranchWhere(scope) {
-  const branchId = scopedBranchId(scope);
-  if (!branchId) return {};
+  const portfolioId = scopedBranchId(scope);
+  if (!portfolioId) return {};
 
   return {
     serviceAgreement: {
-      service: { branchId },
+      service: { portfolioId },
     },
   };
 }
 
 export function expenseTransactionBranchWhere(scope) {
-  const branchId = scopedBranchId(scope);
-  if (!branchId) return {};
+  const portfolioId = scopedBranchId(scope);
+  if (!portfolioId) return {};
 
   return {
-    user: { branchId },
+    user: { portfolioId },
   };
 }
 
 export function salaryBranchWhere(scope) {
-  const branchId = scopedBranchId(scope);
-  if (!branchId) return {};
+  const portfolioId = scopedBranchId(scope);
+  if (!portfolioId) return {};
 
   return {
     OR: [
-      { recieverUser: { branchId } },
-      { registeredUser: { branchId } },
+      { recieverUser: { portfolioId } },
+      { registeredUser: { portfolioId } },
     ],
   };
 }

@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getBranchSlugFromPath } from "./lib/branch-branding";
+import { getBranchSlugFromPath } from "./lib/portfolio-branding";
 
 const LOGIN_PATH = "/auth/login";
 const AUTH_ROUTES = {

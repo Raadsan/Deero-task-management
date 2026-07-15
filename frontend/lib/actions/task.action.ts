@@ -10,15 +10,15 @@ import { getUserSession } from "./auth.action";
 function mapAssignedTo(user: {
   id?: string;
   name?: string;
-  branchId?: string | null;
+  portfolioId?: string | null;
 } | null | undefined) {
   if (!user?.id) {
-    return { id: "", name: "Unassigned", branchId: null };
+    return { id: "", name: "Unassigned", portfolioId: null };
   }
   return {
     id: user.id,
     name: user.name ?? "Unassigned",
-    branchId: user.branchId ?? null,
+    portfolioId: user.portfolioId ?? null,
   };
 }
 

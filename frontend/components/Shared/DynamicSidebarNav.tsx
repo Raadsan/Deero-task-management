@@ -5,7 +5,7 @@ import {
   getNavMenusByRole,
   NavMenuItem,
 } from "@/lib/actions/config.action";
-import { normalizeRoleName } from "@/lib/branch-access";
+import { normalizeRoleName } from "@/lib/portfolio-access";
 import { getLucideIcon } from "@/lib/lucide-icons";
 import {
   isLegacySidebarRole,
@@ -47,7 +47,7 @@ function myTaskSubIcon(url: string) {
 }
 
 function usesMyTasksDropdown(role: string) {
-  return role === "superadmin" || role === "branch admin";
+  return role === "superadmin" || role === "portfolio admin";
 }
 
 function menuPathActive(pathname: string, href: string) {

@@ -1,12 +1,12 @@
 export function isMainBranch(
-  branch?: { usesRootLogin?: boolean } | null,
+  portfolio?: { usesRootLogin?: boolean } | null,
 ) {
-  return Boolean(branch?.usesRootLogin);
+  return Boolean(portfolio?.usesRootLogin);
 }
 
 const BRANCH_SCOPED_ROLES = new Set([
-  "branch admin",
-  "branch manager",
+  "portfolio admin",
+  "portfolio manager",
   "employee",
   "manager",
 ]);
@@ -37,7 +37,7 @@ export function canManageRolePermissions(
   const target = normalizeRoleName(targetRoleName);
 
   if (actor === "superadmin") return true;
-  if (actor === "branch admin") {
+  if (actor === "portfolio admin") {
     return BRANCH_ADMIN_MANAGEABLE_ROLE_NAMES.includes(
       target as (typeof BRANCH_ADMIN_MANAGEABLE_ROLE_NAMES)[number],
     );
@@ -45,10 +45,10 @@ export function canManageRolePermissions(
   return false;
 }
 
-export function isGlobalScopeRole(role?: string | null, branchId?: string | null) {
+export function isGlobalScopeRole(role?: string | null, portfolioId?: string | null) {
   if (isSuperadminRole(role)) return true;
   const normalizedRole = normalizeRoleName(role);
-  if (!branchId) return true;
+  if (!portfolioId) return true;
   if (isBranchScopedRole(normalizedRole)) return false;
   return false;
 }
@@ -59,12 +59,12 @@ export function isSuperadminRole(role?: string | null) {
 
 export function seesAllBranchesForUser(
   role?: string | null,
-  branch?: { usesRootLogin?: boolean } | null,
-  branchId?: string | null,
+  portfolio?: { usesRootLogin?: boolean } | null,
+  portfolioId?: string | null,
 ) {
   const normalizedRole = normalizeRoleName(role);
   if (isSuperadminRole(normalizedRole)) return true;
-  if (!branchId) return true;
+  if (!portfolioId) return true;
   if (isBranchScopedRole(normalizedRole)) return false;
-  return isMainBranch(branch);
+  return isMainBranch(portfolio);
 }

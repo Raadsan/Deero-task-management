@@ -17,10 +17,10 @@ export const DEFAULT_BRANCH_BRANDING: BranchBranding = {
   secondaryColor: "#ec4724",
 };
 
-/** App routes that must not be treated as branch slugs */
+/** App routes that must not be treated as portfolio slugs */
 export const RESERVED_BRANCH_SLUGS = new Set([
   "auth",
-  "users",
+  "staff",
   "clients",
   "contracts",
   "payments",
@@ -28,8 +28,7 @@ export const RESERVED_BRANCH_SLUGS = new Set([
   "recurring-schedules",
   "tasks",
   "services",
-  "branches",
-  "departments",
+  "portfolios",
   "payments",
   "my-tasks",
   "profile",
@@ -50,7 +49,7 @@ export function slugifyBranchName(name: string) {
   return normalizeBranchSlug(name);
 }
 
-/** Preserve case for branch URLs */
+/** Preserve case for portfolio URLs */
 export function normalizeBranchSlug(value: string) {
   const trimmed = String(value ?? "").trim();
   if (trimmed === "/") return "";
@@ -66,12 +65,12 @@ export function isRootLoginPath(value?: string | null) {
   return String(value ?? "").trim() === "/";
 }
 
-export function formatBranchLoginPath(branch: {
+export function formatBranchLoginPath(portfolio: {
   usesRootLogin?: boolean;
   slug?: string | null;
 }) {
-  if (branch.usesRootLogin) return "/";
-  return branch.slug ? `/${branch.slug}` : "—";
+  if (portfolio.usesRootLogin) return "/";
+  return portfolio.slug ? `/${portfolio.slug}` : "—";
 }
 
 export function getBranchSlugFromPath(pathname: string) {
@@ -102,8 +101,8 @@ export function buildBranchThemeVariables(
   const secondary = theme.secondaryColor;
 
   return {
-    "--branch-primary": primary,
-    "--branch-secondary": secondary,
+    "--portfolio-primary": primary,
+    "--portfolio-secondary": secondary,
     "--color-brand-primary": primary,
     "--color-brand-secondary": secondary,
     "--color-primary": primary,
@@ -142,7 +141,7 @@ export function clearBranchBranding() {
   applyBranchBranding(DEFAULT_BRANCH_BRANDING);
 }
 
-/** Branch login URL: /deero-advert */
+/** Portfolio login URL: /deero-advert */
 export function getBranchPathUrl(slug: string, baseUrl?: string) {
   const origin =
     baseUrl || (typeof window !== "undefined" ? window.location.origin : "");

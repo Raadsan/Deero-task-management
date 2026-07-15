@@ -112,15 +112,15 @@ export default function TaskForm({
   const showBranchFields = formType !== "own:edit";
 
   const { data: branchOptionsRes } = useSWR(
-    showBranchFields ? "task-form-branches" : null,
+    showBranchFields ? "task-form-portfolios" : null,
     getTaskFormBranchOptions,
   );
-  const branchOptions = branchOptionsRes?.data?.branches ?? [];
+  const branchOptions = branchOptionsRes?.data?.portfolios ?? [];
   const singleBranch = branchOptionsRes?.data?.singleBranch ?? false;
 
   const editBranchId =
-    currentTask?.assignedTo?.branchId != null
-      ? String(currentTask.assignedTo.branchId)
+    currentTask?.assignedTo?.portfolioId != null
+      ? String(currentTask.assignedTo.portfolioId)
       : "";
 
   const [selectedBranchId, setSelectedBranchId] = useState("");
@@ -142,7 +142,7 @@ export default function TaskForm({
     selectedBranchId ? ["task-form-assignees", selectedBranchId, formType] : null,
     () =>
       getAllAssignees({
-        branchId: selectedBranchId,
+        portfolioId: selectedBranchId,
         ownAssigned: formType === "own:edit",
       }),
   );
@@ -150,7 +150,7 @@ export default function TaskForm({
 
   const { data: departmentsRes } = useSWR(
     selectedBranchId ? [SWR_CACH_KEYS.departments.key, selectedBranchId, "task-form"] : null,
-    () => getAllDepartments({ branchId: selectedBranchId, activeOnly: true }),
+    () => getAllDepartments({ portfolioId: selectedBranchId, activeOnly: true }),
   );
   const departmentOptions = useMemo(
     () => departmentsRes?.data?.map((department) => department.name) ?? [],
@@ -158,7 +158,7 @@ export default function TaskForm({
   );
 
   const selectedBranchName =
-    branchOptions.find((branch) => branch.id === selectedBranchId)?.name ?? "";
+    branchOptions.find((portfolio) => portfolio.id === selectedBranchId)?.name ?? "";
 
   const { data: branchClientsRes } = useSWR(
     isCreate && selectedBranchId
@@ -263,7 +263,7 @@ export default function TaskForm({
 
   function handleSubmitForm(data: FormValues) {
     if (showBranchFields && !selectedBranchId) {
-      toast.error("Please select a branch first");
+      toast.error("Please select a portfolio first");
       return;
     }
 
@@ -360,19 +360,19 @@ export default function TaskForm({
       >
       {showBranchFields && (
         <SelectElement
-          labelText="Select Branch"
-          placeholder="Select branch first"
+          labelText="Select Portfolio"
+          placeholder="Select portfolio first"
           value={selectedBranchName}
           disbaleSelect={transiton || singleBranch}
           compact={isModal}
           elementRenderer={() =>
-            branchOptions.map((branch) => (
-              <GetSelectItem key={branch.id} value={branch.name} label={branch.name} />
+            branchOptions.map((portfolio) => (
+              <GetSelectItem key={portfolio.id} value={portfolio.name} label={portfolio.name} />
             ))
           }
           onChange={(value) => {
-            const branch = branchOptions.find((item) => item.name === value);
-            const nextBranchId = branch?.id ?? "";
+            const portfolio = branchOptions.find((item) => item.name === value);
+            const nextBranchId = portfolio?.id ?? "";
             setSelectedBranchId(nextBranchId);
             setTaskKind(null);
             setValue("taskKind", undefined, { shouldValidate: false });
@@ -520,7 +520,7 @@ export default function TaskForm({
         <>
       <SelectElement
         labelText="Select Assignee"
-        placeholder={selectedBranchId ? "Select assignee" : "Select branch first"}
+        placeholder={selectedBranchId ? "Select assignee" : "Select portfolio first"}
         defaultValue={watchAssingneeId}
         disbaleSelect={transiton || formType === "own:edit" || !selectedBranchId}
         errorMessage={fieldMessage("assigneeId")}
@@ -550,7 +550,7 @@ export default function TaskForm({
       <SelectElement
         labelText="Department"
         placeholder={
-          selectedBranchId ? "Select department" : "Select branch first"
+          selectedBranchId ? "Select department" : "Select portfolio first"
         }
         value={watchedDepartment}
         defaultValue={watchedDepartment}

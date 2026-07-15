@@ -7,7 +7,7 @@ import {
   mergeWhere,
   projectBranchWhere,
   resolveWritableBranchId,
-} from "../lib/branch-scope.js";
+} from "../lib/portfolio-scope.js";
 import {
   findWorkflowTemplate,
   generateTasksFromTemplate,
@@ -17,7 +17,7 @@ import {
 
 const projectInclude = {
   client: { select: { id: true, institution: true, clientType: true } },
-  branch: { select: { id: true, name: true } },
+  portfolio: { select: { id: true, name: true } },
   createdBy: { select: { id: true, name: true } },
   _count: { select: { tasks: true, contentRequests: true } },
 };
@@ -32,12 +32,12 @@ async function findAccessibleProject(scope, id, include = projectInclude) {
 export const getAllProjects = async (req, res) => {
   try {
     const scope = getScope(req);
-    const { clientId, status, branchId } = req.query;
+    const { clientId, status, portfolioId } = req.query;
 
     const where = mergeWhere(projectBranchWhere(scope), {
       ...(clientId ? { clientId: String(clientId) } : {}),
       ...(status ? { status: String(status) } : {}),
-      ...(branchId ? { branchId: String(branchId) } : {}),
+      ...(portfolioId ? { portfolioId: String(portfolioId) } : {}),
     });
 
     const projects = await prisma.project.findMany({
@@ -80,7 +80,7 @@ export const createProject = async (req, res) => {
   const data = req.body;
   try {
     const scope = getScope(req);
-    const branchId = resolveWritableBranchId(scope, data.branchId);
+    const portfolioId = resolveWritableBranchId(scope, data.portfolioId);
 
     const client = await prisma.client.findFirst({
       where: mergeWhere({ id: data.clientId }, clientBranchWhere(scope)),
@@ -88,7 +88,7 @@ export const createProject = async (req, res) => {
     if (!client) {
       return res.status(404).json({ success: false, error: "Client not found" });
     }
-    if (branchId && denyIfOutOfScope(res, scope, branchId)) return;
+    if (portfolioId && denyIfOutOfScope(res, scope, portfolioId)) return;
 
     const result = await prisma.$transaction(async (tx) => {
       const id = await generateCustomId({ entityTybe: "projects", prisma: tx });
@@ -103,7 +103,7 @@ export const createProject = async (req, res) => {
           startDate: data.startDate ? new Date(data.startDate) : null,
           dueDate: data.dueDate ? new Date(data.dueDate) : null,
           clientId: client.id,
-          branchId: branchId ?? client.branchId ?? null,
+          portfolioId: portfolioId ?? client.portfolioId ?? null,
           createdById: scope.user?.id ?? null,
         },
       });

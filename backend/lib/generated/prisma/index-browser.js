@@ -131,7 +131,7 @@ exports.Prisma.RoleScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.UserScalarFieldEnum = {
+exports.Prisma.StaffScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -141,8 +141,7 @@ exports.Prisma.UserScalarFieldEnum = {
   image: 'image',
   gender: 'gender',
   salary: 'salary',
-  department: 'department',
-  branchId: 'branchId',
+  portfolioId: 'portfolioId',
   roleId: 'roleId',
   role: 'role',
   banned: 'banned',
@@ -205,7 +204,7 @@ exports.Prisma.ClientScalarFieldEnum = {
   notes: 'notes',
   isActive: 'isActive',
   isDraft: 'isDraft',
-  branchId: 'branchId',
+  portfolioId: 'portfolioId',
   accountManagerId: 'accountManagerId'
 };
 
@@ -213,7 +212,7 @@ exports.Prisma.ServiceScalarFieldEnum = {
   id: 'id',
   serviceName: 'serviceName',
   description: 'description',
-  branchId: 'branchId'
+  portfolioId: 'portfolioId'
 };
 
 exports.Prisma.SubServiceScalarFieldEnum = {
@@ -223,7 +222,7 @@ exports.Prisma.SubServiceScalarFieldEnum = {
   categoryId: 'categoryId'
 };
 
-exports.Prisma.BranchScalarFieldEnum = {
+exports.Prisma.PortfolioScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -240,16 +239,6 @@ exports.Prisma.BranchScalarFieldEnum = {
   secondaryColor: 'secondaryColor',
   customDomain: 'customDomain',
   isActive: 'isActive'
-};
-
-exports.Prisma.DepartmentScalarFieldEnum = {
-  id: 'id',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  name: 'name',
-  description: 'description',
-  isActive: 'isActive',
-  branchId: 'branchId'
 };
 
 exports.Prisma.ClientSubServiceScalarFieldEnum = {
@@ -272,7 +261,6 @@ exports.Prisma.TaskScalarFieldEnum = {
   description: 'description',
   status: 'status',
   priority: 'priority',
-  department: 'department',
   deadline: 'deadline',
   progress: 'progress',
   workflowStage: 'workflowStage',
@@ -491,7 +479,7 @@ exports.Prisma.ProjectScalarFieldEnum = {
   startDate: 'startDate',
   dueDate: 'dueDate',
   clientId: 'clientId',
-  branchId: 'branchId',
+  portfolioId: 'portfolioId',
   createdById: 'createdById'
 };
 
@@ -511,7 +499,7 @@ exports.Prisma.ContractScalarFieldEnum = {
   notes: 'notes',
   clientId: 'clientId',
   projectId: 'projectId',
-  branchId: 'branchId',
+  portfolioId: 'portfolioId',
   createdById: 'createdById'
 };
 
@@ -554,7 +542,7 @@ exports.Prisma.ContentRequestScalarFieldEnum = {
   deadline: 'deadline',
   clientId: 'clientId',
   projectId: 'projectId',
-  branchId: 'branchId',
+  portfolioId: 'portfolioId',
   createdById: 'createdById'
 };
 
@@ -579,7 +567,7 @@ exports.Prisma.RecurringScheduleScalarFieldEnum = {
   isActive: 'isActive',
   autoGenerateTasks: 'autoGenerateTasks',
   clientId: 'clientId',
-  branchId: 'branchId'
+  portfolioId: 'portfolioId'
 };
 
 exports.Prisma.RecurringScheduleStepScalarFieldEnum = {
@@ -592,7 +580,6 @@ exports.Prisma.RecurringScheduleStepScalarFieldEnum = {
   stepOrder: 'stepOrder',
   label: 'label',
   contentType: 'contentType',
-  department: 'department',
   supervisor: 'supervisor',
   assigneeId: 'assigneeId',
   templateId: 'templateId'
@@ -637,7 +624,6 @@ exports.Prisma.WorkflowTemplateStepScalarFieldEnum = {
   stepOrder: 'stepOrder',
   taskName: 'taskName',
   description: 'description',
-  department: 'department',
   defaultPriority: 'defaultPriority',
   estimatedDays: 'estimatedDays',
   workflowStage: 'workflowStage'
@@ -687,7 +673,7 @@ exports.EntityType = exports.$Enums.EntityType = {
   payments: 'payments',
   invoice: 'invoice',
   tax: 'tax',
-  branches: 'branches',
+  portfolios: 'portfolios',
   departments: 'departments',
   projects: 'projects',
   content_requests: 'content_requests',
@@ -771,15 +757,14 @@ exports.ContentCycleStatus = exports.$Enums.ContentCycleStatus = {
 
 exports.Prisma.ModelName = {
   Role: 'Role',
-  User: 'User',
+  Staff: 'Staff',
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
   Client: 'Client',
   Service: 'Service',
   SubService: 'SubService',
-  Branch: 'Branch',
-  Department: 'Department',
+  Portfolio: 'Portfolio',
   ClientSubService: 'ClientSubService',
   ClientService: 'ClientService',
   Task: 'Task',

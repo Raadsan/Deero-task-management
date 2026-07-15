@@ -7,20 +7,20 @@ import { handleError } from "../error/handle-error";
 function mapAssignedTo(user: {
   id?: string;
   name?: string;
-  branchId?: string | null;
+  portfolioId?: string | null;
 } | null | undefined) {
   if (!user?.id) {
-    return { id: "", name: "Unassigned", branchId: null };
+    return { id: "", name: "Unassigned", portfolioId: null };
   }
   return {
     id: user.id,
     name: user.name ?? "Unassigned",
-    branchId: user.branchId ?? null,
+    portfolioId: user.portfolioId ?? null,
   };
 }
 
 function mapTask(task: {
-  user?: { id?: string; name?: string; branchId?: string | null };
+  user?: { id?: string; name?: string; portfolioId?: string | null };
   clientTask?: Array<{ Client?: { id?: string; institution?: string } }>;
   [key: string]: unknown;
 }) {

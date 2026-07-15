@@ -20,7 +20,7 @@ export async function saveUserFile(userId, fileData) {
   }
 
   const ext = path.extname(name) || ".pdf";
-  const filename = `users/${userId}/${randomUUID()}${ext}`;
+  const filename = `staff/${userId}/${randomUUID()}${ext}`;
   
   const url = await uploadToS3(filename, buffer, mimeType);
 

@@ -12,7 +12,7 @@ import {
 import { getAdminDashboardBundle } from "@/lib/actions/dashboard.action";
 import { getTaskFormBranchOptions } from "@/lib/actions/shared.action";
 import { authClient } from "@/lib/auth-client";
-import { isBranchScopedRole, normalizeRoleName } from "@/lib/branch-access";
+import { isBranchScopedRole, normalizeRoleName } from "@/lib/portfolio-access";
 import { Task } from "@/lib/types";
 import { ROUTES } from "@/lib/constants";
 import {
@@ -102,14 +102,14 @@ export default function AdminDashboard() {
 
   const session = authClient.useSession();
   const user = session.data?.user as
-    | { id?: string; role?: string; branchId?: string | null }
+    | { id?: string; role?: string; portfolioId?: string | null }
     | undefined;
   const normalizedRole = normalizeRoleName(user?.role);
   const isBranchDashboard = isBranchScopedRole(normalizedRole);
   const dashboardKey = [
     "dashboard-bundle",
     normalizedRole || "guest",
-    user?.branchId ?? "all",
+    user?.portfolioId ?? "all",
   ].join(":");
 
   const { data: bundleRes, isLoading } = useSWR(
@@ -122,16 +122,16 @@ export default function AdminDashboard() {
   );
 
   const { data: branchOptionsRes } = useSWR(
-    mounted && isBranchDashboard && user?.branchId && !session.isPending
-      ? ["dashboard-branch", user.branchId]
+    mounted && isBranchDashboard && user?.portfolioId && !session.isPending
+      ? ["dashboard-portfolio", user.portfolioId]
       : null,
     getTaskFormBranchOptions,
   );
 
   const branchName =
-    branchOptionsRes?.data?.branches?.find(
-      (branch: { id: string; name: string }) =>
-        String(branch.id) === String(user?.branchId ?? ""),
+    branchOptionsRes?.data?.portfolios?.find(
+      (portfolio: { id: string; name: string }) =>
+        String(portfolio.id) === String(user?.portfolioId ?? ""),
     )?.name ?? "";
 
   const metrics = (bundleRes?.data?.metrics ?? []) as Array<{
@@ -166,13 +166,13 @@ export default function AdminDashboard() {
   const recentTasks = useMemo(() => {
     const tasks = (bundleRes?.data?.tasks ?? []) as Task[];
     const scoped =
-      isBranchDashboard && user?.branchId
-        ? tasks.filter((task) => task.assignedTo?.branchId === user.branchId)
+      isBranchDashboard && user?.portfolioId
+        ? tasks.filter((task) => task.assignedTo?.portfolioId === user.portfolioId)
         : tasks;
     return scoped.slice(0, 5);
-  }, [bundleRes?.data?.tasks, isBranchDashboard, user?.branchId]);
+  }, [bundleRes?.data?.tasks, isBranchDashboard, user?.portfolioId]);
 
-  const isPersonalDashboard = ["employee", "manager", "branch manager"].includes(
+  const isPersonalDashboard = ["employee", "manager", "portfolio manager"].includes(
     normalizedRole,
   );
   const personalTasks = useMemo(() => {
@@ -467,7 +467,7 @@ export default function AdminDashboard() {
     >
       <div className={pageHeaderWrapperClass}>
         <h1 className={pageHeaderTitleClass}>
-          {isBranchDashboard ? "Branch Dashboard" : "Admin Dashboard"}
+          {isBranchDashboard ? "Portfolio Dashboard" : "Admin Dashboard"}
         </h1>
         {isBranchDashboard && branchName ? (
           <p className="mt-1 text-sm text-zinc-500">

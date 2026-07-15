@@ -8,7 +8,7 @@ import { headers } from "next/headers";
 
 export async function signUpWithEmial(params: any): Promise<ActionResponse> {
   try {
-    const response = await api.post("/api/users", params);
+    const response = await api.post("/api/staffs", params);
     if (response.data.success) {
       return { success: true };
     }

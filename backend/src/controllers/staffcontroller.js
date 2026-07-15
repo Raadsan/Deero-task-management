@@ -6,18 +6,18 @@ import {
   getScope,
   resolveWritableBranchId,
   userBranchWhere,
-} from "../lib/branch-scope.js";
+} from "../lib/portfolio-scope.js";
 
-export const getAllUsers = async (req, res) => {
+export const getAllStaff = async (req, res) => {
   try {
     const scope = getScope(req);
-    const users = await prisma.user.findMany({
+    const users = await prisma.staff.findMany({
       where: userBranchWhere(scope),
       orderBy: {
         createdAt: "desc",
       },
       include: {
-        branch: {
+        portfolio: {
           select: { id: true, name: true },
         },
       },
@@ -28,14 +28,14 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
-export const getUserById = async (req, res) => {
+export const getStaffById = async (req, res) => {
   const { id } = req.params;
   try {
     const scope = getScope(req);
-    const user = await prisma.user.findUnique({
+    const user = await prisma.staff.findUnique({
       where: { id },
       include: {
-        branch: {
+        portfolio: {
           select: { id: true, name: true, location: true },
         },
         userFiles: {
@@ -44,30 +44,41 @@ export const getUserById = async (req, res) => {
       },
     });
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res.status(404).json({ success: false, message: "Staff not found" });
     }
-    if (denyIfOutOfScope(res, scope, user.branchId)) return;
+    if (denyIfOutOfScope(res, scope, user.portfolioId)) return;
     res.json({ success: true, data: user });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 };
 
-export const createUser = async (req, res) => {
-  const { name, email, password, role, gender, department, salary, branchId, banned } = req.body;
+export const createStaff = async (req, res) => {
+  const { name, email, password, role, gender, salary, portfolioId, banned } = req.body;
   try {
+    if (
+      salary === undefined ||
+      salary === null ||
+      salary === "" ||
+      !/^\d+(\.\d{1,2})?$/.test(String(salary))
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "A valid salary is required",
+      });
+    }
     const scope = getScope(req);
     const resolvedBranchId =
-      branchId === null || branchId === undefined || branchId === ""
+      portfolioId === null || portfolioId === undefined || portfolioId === ""
         ? null
-        : resolveWritableBranchId(scope, branchId);
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+        : resolveWritableBranchId(scope, portfolioId);
+    const existingUser = await prisma.staff.findUnique({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ success: false, message: "Email already exists" });
     }
 
     // Use better-auth to create user so password is hashed
-    const result = await auth.api.createUser({
+    const result = await auth.api.createStaff({
       body: {
         name,
         email,
@@ -85,13 +96,12 @@ export const createUser = async (req, res) => {
       resolvedRoleId = dynamicRole?.id ?? null;
     }
 
-    const updatedUser = await prisma.user.update({
+    const updatedUser = await prisma.staff.update({
       where: { id: result.user.id },
       data: {
         gender,
-        department,
         salary: salary ? String(salary) : null,
-        branchId: resolvedBranchId,
+        portfolioId: resolvedBranchId,
         banned: banned === true,
         roleId: resolvedRoleId,
         role: role || "user",
@@ -104,27 +114,38 @@ export const createUser = async (req, res) => {
   }
 };
 
-export const updateUser = async (req, res) => {
+export const updateStaff = async (req, res) => {
   const { id } = req.params;
-  const { name, email, role, gender, department, salary, branchId, banned, roleId } =
+  const { name, email, role, gender, salary, portfolioId, banned, roleId } =
     req.body;
   try {
+    if (
+      salary !== undefined &&
+      (salary === null ||
+        salary === "" ||
+        !/^\d+(\.\d{1,2})?$/.test(String(salary)))
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Salary must be a valid amount",
+      });
+    }
     const scope = getScope(req);
-    const existing = await prisma.user.findUnique({
+    const existing = await prisma.staff.findUnique({
       where: { id },
-      select: { branchId: true },
+      select: { portfolioId: true },
     });
     if (!existing) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res.status(404).json({ success: false, message: "Staff not found" });
     }
-    if (denyIfOutOfScope(res, scope, existing.branchId)) return;
+    if (denyIfOutOfScope(res, scope, existing.portfolioId)) return;
 
     const resolvedBranchId =
-      branchId === undefined
+      portfolioId === undefined
         ? undefined
-        : branchId === null || branchId === ""
+        : portfolioId === null || portfolioId === ""
           ? null
-          : resolveWritableBranchId(scope, branchId);
+          : resolveWritableBranchId(scope, portfolioId);
 
     let resolvedRoleId = roleId || null;
     if (!resolvedRoleId && role) {
@@ -134,21 +155,20 @@ export const updateUser = async (req, res) => {
       resolvedRoleId = dynamicRole?.id ?? null;
     }
 
-    const user = await prisma.user.update({
+    const user = await prisma.staff.update({
       where: { id },
       data: {
         name,
         email,
         role,
         gender,
-        department,
         salary: salary === undefined ? undefined : salary ? String(salary) : null,
-        branchId: resolvedBranchId,
+        portfolioId: resolvedBranchId,
         ...(banned !== undefined ? { banned: !!banned } : {}),
         ...(role !== undefined ? { roleId: resolvedRoleId } : {}),
       },
       include: {
-        branch: {
+        portfolio: {
           select: { id: true, name: true },
         },
       },
@@ -158,40 +178,40 @@ export const updateUser = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
-export const deleteUser = async (req, res) => {
+export const deleteStaff = async (req, res) => {
   const { id } = req.params;
   try {
     const scope = getScope(req);
-    const existing = await prisma.user.findUnique({
+    const existing = await prisma.staff.findUnique({
       where: { id },
-      select: { branchId: true },
+      select: { portfolioId: true },
     });
     if (!existing) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res.status(404).json({ success: false, message: "Staff not found" });
     }
-    if (denyIfOutOfScope(res, scope, existing.branchId)) return;
+    if (denyIfOutOfScope(res, scope, existing.portfolioId)) return;
 
-    await prisma.user.delete({
+    await prisma.staff.delete({
       where: { id },
     });
-    res.json({ success: true, message: "User deleted successfully" });
+    res.json({ success: true, message: "Staff deleted successfully" });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 };
 
-export const getUserFiles = async (req, res) => {
+export const getStaffFiles = async (req, res) => {
   const { id } = req.params;
   try {
     const scope = getScope(req);
-    const user = await prisma.user.findUnique({
+    const user = await prisma.staff.findUnique({
       where: { id },
-      select: { branchId: true },
+      select: { portfolioId: true },
     });
     if (!user) {
-      return res.status(404).json({ success: false, error: "User not found" });
+      return res.status(404).json({ success: false, error: "Staff not found" });
     }
-    if (denyIfOutOfScope(res, scope, user.branchId)) return;
+    if (denyIfOutOfScope(res, scope, user.portfolioId)) return;
 
     const files = await prisma.userFiles.findMany({
       where: { userId: id },
@@ -203,17 +223,17 @@ export const getUserFiles = async (req, res) => {
   }
 };
 
-export const uploadUserFiles = async (req, res) => {
+export const uploadStaffFiles = async (req, res) => {
   const { id } = req.params;
   const { files } = req.body;
 
   try {
     const scope = getScope(req);
-    const user = await prisma.user.findUnique({ where: { id }, select: { id: true, branchId: true } });
+    const user = await prisma.staff.findUnique({ where: { id }, select: { id: true, portfolioId: true } });
     if (!user) {
-      return res.status(404).json({ success: false, error: "User not found" });
+      return res.status(404).json({ success: false, error: "Staff not found" });
     }
-    if (denyIfOutOfScope(res, scope, user.branchId)) return;
+    if (denyIfOutOfScope(res, scope, user.portfolioId)) return;
 
     if (!Array.isArray(files) || files.length === 0) {
       return res.status(400).json({ success: false, error: "No files provided" });
@@ -257,19 +277,19 @@ export const uploadUserFiles = async (req, res) => {
   }
 };
 
-export const deleteUserFile = async (req, res) => {
+export const deleteStaffFile = async (req, res) => {
   const { id, fileId } = req.params;
 
   try {
     const scope = getScope(req);
-    const user = await prisma.user.findUnique({
+    const user = await prisma.staff.findUnique({
       where: { id },
-      select: { branchId: true },
+      select: { portfolioId: true },
     });
     if (!user) {
-      return res.status(404).json({ success: false, error: "User not found" });
+      return res.status(404).json({ success: false, error: "Staff not found" });
     }
-    if (denyIfOutOfScope(res, scope, user.branchId)) return;
+    if (denyIfOutOfScope(res, scope, user.portfolioId)) return;
 
     const file = await prisma.userFiles.findFirst({
       where: { id: fileId, userId: id },

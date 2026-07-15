@@ -43,15 +43,15 @@ const PRIORITY_COLORS: Record<string, { bg: string; text: string }> = {
 
 export default function TaskViewModal({ open, onOpenChange, task }: Props) {
   const { data: branchOptionsRes } = useSWR(
-    open && task ? "task-view-branches" : null,
+    open && task ? "task-view-portfolios" : null,
     getTaskFormBranchOptions,
   );
 
   if (!task) return null;
   const assignedBranchName =
-    branchOptionsRes?.data?.branches?.find(
-      (branch: { id: string; name: string }) =>
-        String(branch.id) === String(task.assignedTo?.branchId ?? ""),
+    branchOptionsRes?.data?.portfolios?.find(
+      (portfolio: { id: string; name: string }) =>
+        String(portfolio.id) === String(task.assignedTo?.portfolioId ?? ""),
     )?.name ?? "";
 
   const displayStatus = resolveTaskDisplayStatus(task);
@@ -76,11 +76,11 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
           <div className="flex items-center justify-between">
             <div className="text-xs font-mono text-zinc-400">ID: {task.id}</div>
             <div className="text-xs font-medium text-zinc-500">
-              Assigned Branch:{" "}
+              Assigned Portfolio:{" "}
               <span className="font-semibold text-zinc-700">
                 {assignedBranchName ||
-                  (task.assignedTo?.branchId
-                    ? `Branch ${task.assignedTo.branchId}`
+                  (task.assignedTo?.portfolioId
+                    ? `Portfolio ${task.assignedTo.portfolioId}`
                     : "—")}
               </span>
             </div>
@@ -130,11 +130,11 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
             />
             <InfoItem
               icon={GitBranch}
-              label="Assignee Branch"
+              label="Assignee Portfolio"
               value={
                 assignedBranchName ||
-                (task.assignedTo?.branchId
-                  ? `Branch ${task.assignedTo.branchId}`
+                (task.assignedTo?.portfolioId
+                  ? `Portfolio ${task.assignedTo.portfolioId}`
                   : "—")
               }
             />

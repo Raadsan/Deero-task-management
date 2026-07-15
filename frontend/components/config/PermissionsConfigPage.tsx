@@ -22,7 +22,7 @@ import { authClient } from "@/lib/auth-client";
 import {
   BRANCH_ADMIN_MANAGEABLE_ROLE_NAMES,
   canManageRolePermissions,
-} from "@/lib/branch-access";
+} from "@/lib/portfolio-access";
 import {
   buildPermissionCeilingFromMenus,
   canGrantPermission,
@@ -100,8 +100,8 @@ export default function PermissionsConfigPage() {
   const session = authClient.useSession();
   const currentRole = String(session.data?.user.role ?? "").toLowerCase();
   const isSuperadmin = currentRole === "superadmin";
-  const isBranchAdmin = currentRole === "branch admin";
-  const isBranchManager = currentRole === "branch manager";
+  const isBranchAdmin = currentRole === "portfolio admin";
+  const isBranchManager = currentRole === "portfolio manager";
   const usesPermissionCeiling = isBranchAdmin || isBranchManager;
   const canManagePermissions = isSuperadmin || isBranchAdmin;
   const { data: rolesRes } = useSWR(SWR_CACH_KEYS.configRoles.key, getConfigRoles);
@@ -398,7 +398,7 @@ export default function PermissionsConfigPage() {
         {(isBranchAdmin || isBranchManager) && (
           <div className="border-b border-zinc-100 bg-sky-50 px-6 py-2 text-xs text-sky-700">
             {isBranchAdmin
-              ? "Branch admin can manage admin, employee, and manager roles only, and only sees menus you have permission for."
+              ? "Portfolio admin can manage admin, employee, and manager roles only, and only sees menus you have permission for."
               : "You only see menus you have permission for."}
           </div>
         )}

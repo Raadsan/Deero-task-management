@@ -41,7 +41,7 @@ export default function ClientCompleteServiceModal({
           <span className="font-medium text-zinc-800">Client:</span> {clientName}
         </p>
         <p>
-          <span className="font-medium text-zinc-800">Branch:</span>{" "}
+          <span className="font-medium text-zinc-800">Portfolio:</span>{" "}
           {agreement?.branchName || "—"}
         </p>
         <p>

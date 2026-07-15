@@ -14,6 +14,7 @@ import { UserFiles } from "@/lib/schema";
 import { formatDate } from "@/lib/utils";
 import {
   Building2,
+  Banknote,
   Calendar,
   ExternalLink,
   FileText,
@@ -48,8 +49,8 @@ export default function UserViewModal({ open, onOpenChange, userId }: Props) {
         email?: string;
         role?: string;
         gender?: string;
-        department?: string;
-        branch?: { name?: string };
+        salary?: string | null;
+        portfolio?: { name?: string };
         createdAt?: string;
         banned?: boolean;
         userFiles?: UserFiles[];
@@ -64,40 +65,55 @@ export default function UserViewModal({ open, onOpenChange, userId }: Props) {
       <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden border-zinc-200 bg-white p-0 sm:max-w-2xl">
         <DialogHeader className="shrink-0 border-b border-zinc-100 px-6 py-4 text-left">
           <DialogTitle className="text-xl font-bold text-[#1e293b]">
-            User Details
+            Staff Details
           </DialogTitle>
           <DialogDescription className="text-sm text-zinc-500">
-            View team member information and uploaded documents.
+            View staff information and uploaded documents.
           </DialogDescription>
         </DialogHeader>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
           {isLoading ? (
-            <div className="space-y-4 animate-pulse py-4">
+            <div className="animate-pulse space-y-4 py-4">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="h-16 rounded-lg bg-zinc-100" />
               ))}
             </div>
           ) : !user ? (
             <p className="py-8 text-center text-sm text-zinc-500">
-              User not found.
+              Employee not found.
             </p>
           ) : (
             <div className="space-y-5">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <InfoItem icon={UserIcon} label="Name" value={user.name ?? "—"} />
+                <InfoItem
+                  icon={UserIcon}
+                  label="Name"
+                  value={user.name ?? "—"}
+                />
                 <InfoItem icon={Mail} label="Email" value={user.email ?? "—"} />
                 <InfoItem icon={Shield} label="Role" value={user.role ?? "—"} />
-                <InfoItem icon={Users} label="Gender" value={user.gender ?? "—"} />
                 <InfoItem
-                  icon={Building2}
-                  label="Department"
-                  value={user.department ?? "—"}
+                  icon={Users}
+                  label="Gender"
+                  value={user.gender ?? "—"}
                 />
                 <InfoItem
                   icon={Building2}
-                  label="Branch"
-                  value={user.branch?.name ?? "—"}
+                  label="Portfolio"
+                  value={user.portfolio?.name ?? "—"}
+                />
+                <InfoItem
+                  icon={Banknote}
+                  label="Monthly Salary"
+                  value={
+                    user.salary
+                      ? new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          currency: "USD",
+                        }).format(Number(user.salary))
+                      : "—"
+                  }
                 />
                 <InfoItem
                   icon={Calendar}
@@ -121,7 +137,7 @@ export default function UserViewModal({ open, onOpenChange, userId }: Props) {
 
                 {documents.length === 0 ? (
                   <p className="text-sm text-zinc-500">
-                    No documents uploaded for this user.
+                    No documents uploaded for this employee.
                   </p>
                 ) : (
                   <div className="space-y-2">
@@ -143,7 +159,7 @@ export default function UserViewModal({ open, onOpenChange, userId }: Props) {
                           href={resolveUserFileUrl(file.url)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-primary hover:underline"
+                          className="text-primary inline-flex shrink-0 items-center gap-1 text-sm font-medium hover:underline"
                         >
                           View
                           <ExternalLink className="size-3.5" />
@@ -186,10 +202,10 @@ function InfoItem({
     <div className="flex items-start gap-3 rounded-lg border border-zinc-100 bg-zinc-50 p-3">
       <Icon className="mt-0.5 size-4 shrink-0 text-zinc-400" />
       <div className="min-w-0">
-        <p className="text-xs font-semibold uppercase tracking-wide text-zinc-400">
+        <p className="text-xs font-semibold tracking-wide text-zinc-400 uppercase">
           {label}
         </p>
-        <p className="truncate text-sm font-medium capitalize text-zinc-800">
+        <p className="truncate text-sm font-medium text-zinc-800 capitalize">
           {value}
         </p>
       </div>

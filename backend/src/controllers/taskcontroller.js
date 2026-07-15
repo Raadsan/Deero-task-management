@@ -6,7 +6,7 @@ import {
   getScope,
   mergeWhere,
   taskBranchWhere,
-} from "../lib/branch-scope.js";
+} from "../lib/portfolio-scope.js";
 import {
   normalizeTaskWriteStatus,
   syncOverdueTasks,
@@ -53,7 +53,7 @@ export const getMyTasks = async (req, res) => {
     const tasks = await prisma.task.findMany({
       where,
       include: {
-        user: { select: { id: true, name: true, branchId: true } },
+        user: { select: { id: true, name: true, portfolioId: true } },
         clientTask: {
           include: {
             Client: { select: { id: true, institution: true } },
@@ -118,14 +118,14 @@ export const createTask = async (req, res) => {
   const data = req.body;
   try {
     const scope = getScope(req);
-    const assignee = await prisma.user.findUnique({
+    const assignee = await prisma.staff.findUnique({
       where: { id: data.assgineeId },
-      select: { id: true, branchId: true },
+      select: { id: true, portfolioId: true },
     });
     if (!assignee) {
       return res.status(400).json({ success: false, error: "Assignee not found" });
     }
-    if (denyIfOutOfScope(res, scope, assignee.branchId)) return;
+    if (denyIfOutOfScope(res, scope, assignee.portfolioId)) return;
 
     if (data.clientId) {
       const scopedClient = await prisma.client.findFirst({
@@ -135,7 +135,7 @@ export const createTask = async (req, res) => {
       if (!scopedClient) {
         return res.status(403).json({
           success: false,
-          error: "Client is outside your branch scope",
+          error: "Client is outside your portfolio scope",
         });
       }
     }
@@ -252,14 +252,14 @@ export const updateTask = async (req, res) => {
     }
 
     if (assgineeId) {
-      const assignee = await prisma.user.findUnique({
+      const assignee = await prisma.staff.findUnique({
         where: { id: assgineeId },
-        select: { id: true, branchId: true },
+        select: { id: true, portfolioId: true },
       });
       if (!assignee) {
         return res.status(400).json({ success: false, error: "Assignee not found" });
       }
-      if (denyIfOutOfScope(res, scope, assignee.branchId)) return;
+      if (denyIfOutOfScope(res, scope, assignee.portfolioId)) return;
     }
 
     const task = await prisma.task.update({
@@ -282,7 +282,7 @@ export const updateTask = async (req, res) => {
 
     // Create notifications if progress or status changed
     if (originalTask && (originalTask.status !== task.status || originalTask.progress !== task.progress)) {
-      const admins = await prisma.user.findMany({
+      const admins = await prisma.staff.findMany({
         where: {
           role: { in: ["admin", "superadmin"] }
         }
@@ -502,7 +502,7 @@ export const getTasksReport = async (req, res) => {
       orderBy: { createdAt: "desc" },
     });
 
-    const user = await prisma.user.findUnique({ where: { id: userIdForTaskReport } });
+    const user = await prisma.staff.findUnique({ where: { id: userIdForTaskReport } });
 
     const data = {
       meta: {

@@ -3,7 +3,7 @@
 import api from "../api";
 import { ActionResponse, ErrorResponse } from "../types";
 import { handleError } from "../error/handle-error";
-import { BranchBranding } from "../branch-branding";
+import { BranchBranding } from "../portfolio-branding";
 import { getUserSession } from "./auth.action";
 import { cache } from "react";
 
@@ -27,7 +27,7 @@ export type BranchRecord = BranchBranding & {
 
 export async function getAllBranches(): Promise<ActionResponse<BranchRecord[]>> {
   try {
-    const response = await api.get("/api/branches");
+    const response = await api.get("/api/portfolios");
     if (response.data.success) {
       return { success: true, data: response.data.data };
     }
@@ -39,11 +39,11 @@ export async function getAllBranches(): Promise<ActionResponse<BranchRecord[]>> 
 
 export async function getBranchById(id: string): Promise<ActionResponse<BranchRecord>> {
   try {
-    const response = await api.get(`/api/branches/${id}`);
+    const response = await api.get(`/api/portfolios/${id}`);
     if (response.data.success) {
       return { success: true, data: response.data.data };
     }
-    return { success: false, errors: { message: "Branch not found" } };
+    return { success: false, errors: { message: "Portfolio not found" } };
   } catch (error) {
     return handleError({ errors: error, type: "server" }) as ErrorResponse;
   }
@@ -53,11 +53,11 @@ export async function getBranchBrandingById(
   id: string,
 ): Promise<ActionResponse<BranchBranding>> {
   try {
-    const response = await api.get(`/api/branches/branding/${id}`);
+    const response = await api.get(`/api/portfolios/branding/${id}`);
     if (response.data.success) {
       return { success: true, data: response.data.data };
     }
-    return { success: false, errors: { message: "Branch not found" } };
+    return { success: false, errors: { message: "Portfolio not found" } };
   } catch (error) {
     return handleError({ errors: error, type: "server" }) as ErrorResponse;
   }
@@ -67,11 +67,11 @@ export async function getPublicBranchBySlug(
   slug: string,
 ): Promise<ActionResponse<BranchBranding>> {
   try {
-    const response = await api.get(`/api/branches/public/slug/${slug}`);
+    const response = await api.get(`/api/portfolios/public/slug/${slug}`);
     if (response.data.success) {
       return { success: true, data: response.data.data };
     }
-    return { success: false, errors: { message: "Branch not found" } };
+    return { success: false, errors: { message: "Portfolio not found" } };
   } catch (error) {
     return handleError({ errors: error, type: "server" }) as ErrorResponse;
   }
@@ -79,11 +79,11 @@ export async function getPublicBranchBySlug(
 
 export async function getRootLoginBranchBranding(): Promise<ActionResponse<BranchBranding>> {
   try {
-    const response = await api.get("/api/branches/public/root-login");
+    const response = await api.get("/api/portfolios/public/root-login");
     if (response.data.success) {
       return { success: true, data: response.data.data };
     }
-    return { success: false, errors: { message: "Root login branch not found" } };
+    return { success: false, errors: { message: "Root login portfolio not found" } };
   } catch (error) {
     return handleError({ errors: error, type: "server" }) as ErrorResponse;
   }
@@ -91,10 +91,10 @@ export async function getRootLoginBranchBranding(): Promise<ActionResponse<Branc
 
 export const resolveSessionBranding = cache(
   async (
-    user?: { branchId?: string | null; role?: string } | null,
+    user?: { portfolioId?: string | null; role?: string } | null,
   ): Promise<BranchBranding | null> => {
-    if (user?.branchId) {
-      const result = await getBranchBrandingById(user.branchId);
+    if (user?.portfolioId) {
+      const result = await getBranchBrandingById(user.portfolioId);
       if (result.success && result.data) return result.data;
     }
 
@@ -106,7 +106,7 @@ export const resolveSessionBranding = cache(
 );
 
 export async function clearLoginBranchCookie() {
-  // Unified login at / — no per-branch login cookie.
+  // Unified login at / — no per-portfolio login cookie.
 }
 
 export const getDashboardSession = cache(async () => {
@@ -135,7 +135,7 @@ export async function createBranch(data: {
   useRootLogin?: boolean;
 }): Promise<ActionResponse> {
   try {
-    const response = await api.post("/api/branches", data);
+    const response = await api.post("/api/portfolios", data);
     if (response.data.success) return { success: true, data: response.data.data };
     return { success: false, errors: { message: response.data.error } };
   } catch (error) {
@@ -161,7 +161,7 @@ export async function updateBranch(
   },
 ): Promise<ActionResponse> {
   try {
-    const response = await api.put(`/api/branches/${id}`, data);
+    const response = await api.put(`/api/portfolios/${id}`, data);
     if (response.data.success) return { success: true, data: response.data.data };
     return { success: false, errors: { message: response.data.error } };
   } catch (error) {
@@ -171,7 +171,7 @@ export async function updateBranch(
 
 export async function deleteBranch(id: string): Promise<ActionResponse> {
   try {
-    const response = await api.delete(`/api/branches/${id}`);
+    const response = await api.delete(`/api/portfolios/${id}`);
     if (response.data.success) return { success: true };
     return { success: false, errors: { message: response.data.error } };
   } catch (error) {

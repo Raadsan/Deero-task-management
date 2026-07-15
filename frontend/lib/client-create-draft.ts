@@ -6,7 +6,7 @@ export type ClientCreateDraftState = {
   phone: string;
   email: string;
   source: string;
-  branchId: string;
+  portfolioId: string;
   includeService: boolean;
   serviceName: string;
   subServiceName: string;

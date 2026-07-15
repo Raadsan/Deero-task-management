@@ -3,9 +3,9 @@ import { prisma } from "../lib/prisma.js";
 import { generateCustomId } from "../lib/id-generator.js";
 import { DEFAULT_SERVICES } from "../data/default-services.js";
 
-async function ensureServiceWithSubs(branchId, { serviceName, subServices }) {
+async function ensureServiceWithSubs(portfolioId, { serviceName, subServices }) {
   let service = await prisma.service.findFirst({
-    where: { serviceName, branchId },
+    where: { serviceName, portfolioId },
     include: { subService: true },
   });
 
@@ -15,7 +15,7 @@ async function ensureServiceWithSubs(branchId, { serviceName, subServices }) {
       data: {
         id,
         serviceName,
-        branchId,
+        portfolioId,
       },
       include: { subService: true },
     });
@@ -47,20 +47,20 @@ async function ensureServiceWithSubs(branchId, { serviceName, subServices }) {
 async function main() {
   console.log("Seeding default services and sub-services...\n");
 
-  const branches = await prisma.branch.findMany({
+  const portfolios = await prisma.portfolio.findMany({
     where: { isActive: true },
     orderBy: [{ usesRootLogin: "desc" }, { name: "asc" }],
   });
 
-  if (branches.length === 0) {
-    console.log("No active branches found. Create a branch first, then run this script again.");
+  if (portfolios.length === 0) {
+    console.log("No active portfolios found. Create a portfolio first, then run this script again.");
     return;
   }
 
-  for (const branch of branches) {
-    console.log(`Branch: ${branch.name} (${branch.id})`);
+  for (const portfolio of portfolios) {
+    console.log(`Portfolio: ${portfolio.name} (${portfolio.id})`);
     for (const catalog of DEFAULT_SERVICES) {
-      await ensureServiceWithSubs(branch.id, catalog);
+      await ensureServiceWithSubs(portfolio.id, catalog);
     }
     console.log("");
   }

@@ -1,9 +1,9 @@
 "use client";
 
 import ManagementPageShell from "@/components/Shared/ManagementPageShell";
-import UserSimpleViewModal, {
-  UserSimpleEditModal,
-} from "@/components/users/UserSimpleModals";
+import UserFormModal from "@/components/users/UserFormModal";
+import UserViewModal from "@/components/users/UserViewModal";
+import UploadDocumentsModal from "@/components/upload/UploadDocumentsModal";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -33,7 +33,7 @@ import {
 } from "@/lib/dashboard-ui";
 import { User } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Edit, Eye, Search } from "lucide-react";
+import { Edit, Eye, FileUp, Plus, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 
@@ -60,6 +60,9 @@ export default function UsersManagementPage() {
   const [viewOpen, setViewOpen] = useState(false);
   const [editUserId, setEditUserId] = useState<string | undefined>();
   const [editOpen, setEditOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [documentsUserId, setDocumentsUserId] = useState<string | undefined>();
+  const [documentsOpen, setDocumentsOpen] = useState(false);
 
   const filteredUsers = useMemo(() => {
     const query = search.toLowerCase();
@@ -87,7 +90,7 @@ export default function UsersManagementPage() {
   }, [search, pageSize]);
 
   return (
-    <ManagementPageShell title="Users">
+    <ManagementPageShell title="Staff">
       <div className={dashboardCardClass}>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-50 px-6 py-3">
           <div className={cn("flex items-center gap-2", dashboardLabelClass)}>
@@ -106,11 +109,20 @@ export default function UsersManagementPage() {
 
           <div className="min-w-4 flex-1" />
 
+          <Button
+            type="button"
+            onClick={() => setCreateOpen(true)}
+            className="h-9 gap-2"
+          >
+            <Plus className="size-4" />
+            Add Staff
+          </Button>
+
           <div className="group relative w-52">
             <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-400" />
             <input
               type="text"
-              placeholder="Search users..."
+              placeholder="Search staff..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className={compactInputClass}
@@ -123,11 +135,33 @@ export default function UsersManagementPage() {
             <Table className="w-full">
               <TableHeader className={dashboardTableHeaderClass}>
                 <TableRow className={dashboardTableHeadRowClass}>
-                  <TableHead className={dashboardTableHeadClass}>User ID</TableHead>
-                  <TableHead className={dashboardTableHeadClass}>Name</TableHead>
-                  <TableHead className={dashboardTableHeadClass}>Email</TableHead>
-                  <TableHead className={dashboardTableHeadClass}>Password</TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-right")}>
+                  <TableHead className={dashboardTableHeadClass}>
+                    Staff ID
+                  </TableHead>
+                  <TableHead className={dashboardTableHeadClass}>
+                    Name
+                  </TableHead>
+                  <TableHead className={dashboardTableHeadClass}>
+                    Email
+                  </TableHead>
+                  <TableHead className={dashboardTableHeadClass}>
+                    Role
+                  </TableHead>
+                  <TableHead className={dashboardTableHeadClass}>
+                    Department
+                  </TableHead>
+                  <TableHead className={dashboardTableHeadClass}>
+                    Portfolio
+                  </TableHead>
+                  <TableHead className={dashboardTableHeadClass}>
+                    Monthly Salary
+                  </TableHead>
+                  <TableHead className={dashboardTableHeadClass}>
+                    Status
+                  </TableHead>
+                  <TableHead
+                    className={cn(dashboardTableHeadClass, "text-right")}
+                  >
                     Actions
                   </TableHead>
                 </TableRow>
@@ -136,7 +170,7 @@ export default function UsersManagementPage() {
                 {isLoading ? (
                   [...Array(5)].map((_, i) => (
                     <TableRow key={i} className="h-14 animate-pulse">
-                      {[...Array(5)].map((_, j) => (
+                      {[...Array(9)].map((_, j) => (
                         <TableCell key={j} className="px-6 py-4">
                           <div className="h-4 w-full rounded bg-zinc-100" />
                         </TableCell>
@@ -146,28 +180,66 @@ export default function UsersManagementPage() {
                 ) : paginatedUsers.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={5}
-                      className="px-6 py-10 text-center text-muted-foreground"
+                      colSpan={9}
+                      className="text-muted-foreground px-6 py-10 text-center"
                     >
-                      No users found
+                      No staff found
                     </TableCell>
                   </TableRow>
                 ) : (
                   paginatedUsers.map((user) => (
-                    <TableRow key={user.id} className={dashboardTableBodyRowClass}>
+                    <TableRow
+                      key={user.id}
+                      className={dashboardTableBodyRowClass}
+                    >
                       <TableCell className={dashboardTableCellClass}>
                         <span className={dashboardTableIdClass}>{user.id}</span>
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
-                        <span className={dashboardTextPrimary}>{user.name}</span>
+                        <span className={dashboardTextPrimary}>
+                          {user.name}
+                        </span>
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
-                        <span className={dashboardTextSecondary}>{user.email}</span>
+                        <span className={dashboardTextSecondary}>
+                          {user.email}
+                        </span>
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
-                        <span className="font-mono text-zinc-500">••••••••</span>
+                        {user.role || "—"}
                       </TableCell>
-                      <TableCell className={cn(dashboardTableCellClass, "text-right")}>
+                      <TableCell className={dashboardTableCellClass}>
+                        {user.department || "—"}
+                      </TableCell>
+                      <TableCell className={dashboardTableCellClass}>
+                        {(user as UserRow & { portfolio?: { name?: string } })
+                          .portfolio?.name || "—"}
+                      </TableCell>
+                      <TableCell className={dashboardTableCellClass}>
+                        {user.salary
+                          ? new Intl.NumberFormat("en-US", {
+                              style: "currency",
+                              currency: "USD",
+                            }).format(Number(user.salary))
+                          : "—"}
+                      </TableCell>
+                      <TableCell className={dashboardTableCellClass}>
+                        <span
+                          className={cn(
+                            "rounded-full px-2 py-1 text-xs font-medium",
+                            (user as UserRow & { banned?: boolean }).banned
+                              ? "bg-red-50 text-red-700"
+                              : "bg-emerald-50 text-emerald-700",
+                          )}
+                        >
+                          {(user as UserRow & { banned?: boolean }).banned
+                            ? "Inactive"
+                            : "Active"}
+                        </span>
+                      </TableCell>
+                      <TableCell
+                        className={cn(dashboardTableCellClass, "text-right")}
+                      >
                         <div className="flex justify-end gap-1">
                           <Button
                             type="button"
@@ -181,6 +253,19 @@ export default function UsersManagementPage() {
                             title="View"
                           >
                             <Eye className="size-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setDocumentsUserId(String(user.id));
+                              setDocumentsOpen(true);
+                            }}
+                            className={actionBtnView}
+                            title="Employee documents"
+                          >
+                            <FileUp className="size-4" />
                           </Button>
                           <Button
                             type="button"
@@ -235,15 +320,26 @@ export default function UsersManagementPage() {
         </div>
       </div>
 
-      <UserSimpleViewModal
+      <UserViewModal
         open={viewOpen}
         onOpenChange={setViewOpen}
         userId={viewUserId}
       />
-      <UserSimpleEditModal
+      <UserFormModal
         open={editOpen}
         onOpenChange={setEditOpen}
+        mode="edit"
         userId={editUserId}
+      />
+      <UserFormModal
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        mode="create"
+      />
+      <UploadDocumentsModal
+        open={documentsOpen}
+        onOpenChange={setDocumentsOpen}
+        userId={documentsUserId}
       />
     </ManagementPageShell>
   );

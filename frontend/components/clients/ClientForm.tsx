@@ -51,7 +51,7 @@ type ClientAgreementForm = {
   serviceName: string;
   subServiceName: string;
   serviceStatus: "pending" | "completed";
-  branchId?: string | null;
+  portfolioId?: string | null;
   base?: number;
   description?: string;
   discount?: number;
@@ -156,10 +156,10 @@ export default function ClientForm({
   }, [currentClient?.id]);
 
   const { data: branchOptionsRes } = useSWR(
-    showServiceFlow ? "client-form-branches" : null,
+    showServiceFlow ? "client-form-portfolios" : null,
     getTaskFormBranchOptions,
   );
-  const branchOptions = branchOptionsRes?.data?.branches ?? EMPTY_ARRAY;
+  const branchOptions = branchOptionsRes?.data?.portfolios ?? EMPTY_ARRAY;
   const singleBranch = branchOptionsRes?.data?.singleBranch ?? false;
 
   const { data: clientsRes } = useSWR(
@@ -169,8 +169,8 @@ export default function ClientForm({
   const allClients = clientsRes?.data ?? EMPTY_ARRAY;
 
   const { data: branchServicesRes, isLoading: isLoadingBranchServices } = useSWR(
-    selectedBranchId ? ["client-branch-services", selectedBranchId] : null,
-    () => getAllServices({ branchId: selectedBranchId }),
+    selectedBranchId ? ["client-portfolio-services", selectedBranchId] : null,
+    () => getAllServices({ portfolioId: selectedBranchId }),
   );
 
   const branchServices = branchServicesRes?.data ?? EMPTY_ARRAY;
@@ -256,7 +256,7 @@ export default function ClientForm({
   );
 
   const selectedBranchName =
-    branchOptions.find((branch) => branch.id === selectedBranchId)?.name ?? "";
+    branchOptions.find((portfolio) => portfolio.id === selectedBranchId)?.name ?? "";
 
   const parseDiscount = Number.parseFloat(watchDiscount) || 0;
   const parseBase = Number.parseFloat(watchBaseValue) || 0;
@@ -291,16 +291,16 @@ export default function ClientForm({
         ? new Date(currentClient.createdAt)
         : new Date();
 
-    const branchId =
-      agreement.branchId ??
-      (currentClient.service?.[0] as { branchId?: string } | undefined)?.branchId ??
+    const portfolioId =
+      agreement.portfolioId ??
+      (currentClient.service?.[0] as { portfolioId?: string } | undefined)?.portfolioId ??
       branchOptionsRes?.data?.defaultBranchId ??
       "";
 
     const subServiceName = getAgreementSubServiceName(agreement, currentClient);
     const isCustomService = agreement.serviceName === CUSTOM_SERVICE;
 
-    setSelectedBranchId(branchId);
+    setSelectedBranchId(portfolioId);
 
     reset({
       institution: currentClient.institution ?? "",
@@ -388,8 +388,8 @@ export default function ClientForm({
   }
 
   function handleBranchChange(branchName: string) {
-    const branch = branchOptions.find((item) => item.name === branchName);
-    const nextBranchId = branch?.id ?? "";
+    const portfolio = branchOptions.find((item) => item.name === branchName);
+    const nextBranchId = portfolio?.id ?? "";
     setSelectedBranchId(nextBranchId);
     if (isEditFlow) return;
     setValue("service", "", { shouldValidate: true });
@@ -415,7 +415,7 @@ export default function ClientForm({
 
   function handleSubmitForm(data: z.infer<typeof ClientSchema>) {
     if (showServiceFlow && !selectedBranchId) {
-      toast.error("Please select a branch first");
+      toast.error("Please select a portfolio first");
       return;
     }
 
@@ -453,7 +453,7 @@ export default function ClientForm({
       base: parseFloat(data.base),
       description: data.description,
       discount: Number.parseFloat(data.discount) || 0,
-      branchId: selectedBranchId,
+      portfolioId: selectedBranchId,
       createdAt: data.createdAt,
       serviceStatus: data.serviceStatus ?? "pending",
     };
@@ -532,7 +532,7 @@ export default function ClientForm({
           clientId: String(currentClient?.id!),
           serviceName: data.service!,
           subServiceName,
-          branchId: selectedBranchId,
+          portfolioId: selectedBranchId,
           base: parseFloat(data.base),
           description: data.description ?? "",
           discount: Number.parseFloat(data.discount) || 0,
@@ -716,14 +716,14 @@ export default function ClientForm({
 
         {showServiceFlow && (
           <SelectElement
-            labelText="Branch"
-            placeholder="Select branch first"
+            labelText="Portfolio"
+            placeholder="Select portfolio first"
             value={selectedBranchName}
             disbaleSelect={transition || singleBranch}
             compact={fieldCompact}
             elementRenderer={() =>
-              branchOptions.map((branch) => (
-                <GetSelectItem key={branch.id} value={branch.name} label={branch.name} />
+              branchOptions.map((portfolio) => (
+                <GetSelectItem key={portfolio.id} value={portfolio.name} label={portfolio.name} />
               ))
             }
             onChange={handleBranchChange}
@@ -760,12 +760,12 @@ export default function ClientForm({
             labelText="Service"
             placeholder={
               !selectedBranchId
-                ? "Select branch first"
+                ? "Select portfolio first"
                 : isLoadingBranchServices
-                  ? "Loading branch services..."
+                  ? "Loading portfolio services..."
                   : serviceOptions.length
                     ? "Select service"
-                    : "No services found for this branch"
+                    : "No services found for this portfolio"
             }
             value={watchService}
             disbaleSelect={
@@ -840,7 +840,7 @@ export default function ClientForm({
             labelText="Sub-service"
             placeholder={
               !selectedBranchId
-                ? "Select branch first"
+                ? "Select portfolio first"
                 : !watchService
                   ? "Select service first"
                   : subCategories.length

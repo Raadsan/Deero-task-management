@@ -92,13 +92,13 @@ export default function DepartmentsManagementPage() {
     getAllDepartments,
   );
   const { data: branchScopeRes } = useSWR(
-    "departments-branch-scope",
+    "departments-portfolio-scope",
     getTaskFormBranchOptions,
   );
   const { mutate } = useSWRConfig();
 
   const departments = (departmentsRes?.data as DepartmentRecord[]) ?? [];
-  const branches = branchScopeRes?.data?.branches ?? [];
+  const portfolios = branchScopeRes?.data?.portfolios ?? [];
   const singleBranch = branchScopeRes?.data?.singleBranch ?? false;
 
   const [search, setSearch] = useState("");
@@ -113,7 +113,7 @@ export default function DepartmentsManagementPage() {
   const [viewLoading, setViewLoading] = useState(false);
   const [mode, setMode] = useState<"create" | "edit">("create");
   const [selected, setSelected] = useState<DepartmentRecord | null>(null);
-  const [branchId, setBranchId] = useState("");
+  const [portfolioId, setBranchId] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState<"active" | "inactive">("active");
@@ -128,14 +128,14 @@ export default function DepartmentsManagementPage() {
     const query = search.trim().toLowerCase();
     return departments.filter((dept) => {
       const active = dept.isActive !== false;
-      if (branchFilter !== "all" && dept.branchId !== branchFilter) return false;
+      if (branchFilter !== "all" && dept.portfolioId !== branchFilter) return false;
       if (statusFilter === "active" && !active) return false;
       if (statusFilter === "inactive" && active) return false;
       if (!query) return true;
       return (
         dept.name.toLowerCase().includes(query) ||
         (dept.description ?? "").toLowerCase().includes(query) ||
-        (dept.branch?.name ?? "").toLowerCase().includes(query) ||
+        (dept.portfolio?.name ?? "").toLowerCase().includes(query) ||
         dept.id.toLowerCase().includes(query)
       );
     });
@@ -154,15 +154,15 @@ export default function DepartmentsManagementPage() {
   useEffect(() => {
     if (!singleBranch) return;
     const onlyBranchId =
-      branchScopeRes?.data?.defaultBranchId ?? branches[0]?.id ?? "all";
+      branchScopeRes?.data?.defaultBranchId ?? portfolios[0]?.id ?? "all";
     if (onlyBranchId && branchFilter !== onlyBranchId) {
       setBranchFilter(onlyBranchId);
     }
-  }, [singleBranch, branchScopeRes?.data?.defaultBranchId, branches, branchFilter]);
+  }, [singleBranch, branchScopeRes?.data?.defaultBranchId, portfolios, branchFilter]);
 
   function resetForm() {
     const defaultBranchId =
-      branchScopeRes?.data?.defaultBranchId ?? branches[0]?.id ?? "";
+      branchScopeRes?.data?.defaultBranchId ?? portfolios[0]?.id ?? "";
     setBranchId(singleBranch ? defaultBranchId : "");
     setName("");
     setDescription("");
@@ -179,7 +179,7 @@ export default function DepartmentsManagementPage() {
   function openEdit(dept: DepartmentRecord) {
     setMode("edit");
     setSelected(dept);
-    setBranchId(dept.branchId);
+    setBranchId(dept.portfolioId);
     setName(dept.name);
     setDescription(dept.description ?? "");
     setStatus(dept.isActive ? "active" : "inactive");
@@ -201,8 +201,8 @@ export default function DepartmentsManagementPage() {
   }
 
   async function handleSave() {
-    if (!branchId) {
-      toast.error("Please select a branch first");
+    if (!portfolioId) {
+      toast.error("Please select a portfolio first");
       return;
     }
     if (!name.trim()) {
@@ -213,7 +213,7 @@ export default function DepartmentsManagementPage() {
     setIsSaving(true);
     try {
       const payload = {
-        branchId,
+        portfolioId,
         name: name.trim(),
         description: description.trim() || undefined,
         isActive: status === "active",
@@ -275,10 +275,10 @@ export default function DepartmentsManagementPage() {
             className={cn("min-w-[140px]", compactSelectClass)}
             disabled={singleBranch}
           >
-            {!singleBranch && <option value="all">All branches</option>}
-            {branches.map((branch) => (
-              <option key={branch.id} value={branch.id}>
-                {branch.name}
+            {!singleBranch && <option value="all">All portfolios</option>}
+            {portfolios.map((portfolio) => (
+              <option key={portfolio.id} value={portfolio.id}>
+                {portfolio.name}
               </option>
             ))}
           </select>
@@ -325,7 +325,7 @@ export default function DepartmentsManagementPage() {
                     ID
                   </TableHead>
                   <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Branch
+                    Portfolio
                   </TableHead>
                   <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
                     Department
@@ -369,7 +369,7 @@ export default function DepartmentsManagementPage() {
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
                         <span className={dashboardTextSecondary}>
-                          {dept.branch?.name ?? "—"}
+                          {dept.portfolio?.name ?? "—"}
                         </span>
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
@@ -470,23 +470,23 @@ export default function DepartmentsManagementPage() {
               {mode === "create" ? "Create Department" : "Edit Department"}
             </DialogTitle>
             <DialogDescription>
-              Select branch first, then enter department details.
+              Select portfolio first, then enter department details.
             </DialogDescription>
           </DialogHeader>
 
           <div className={configDialogBodyClass}>
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-zinc-700">Branch</label>
+              <label className="text-sm font-medium text-zinc-700">Portfolio</label>
               <select
-                value={branchId}
+                value={portfolioId}
                 onChange={(e) => setBranchId(e.target.value)}
                 className={configCompactSelectClass}
                 disabled={singleBranch}
               >
-                <option value="">Select branch</option>
-                {branches.map((branch) => (
-                  <option key={branch.id} value={branch.id}>
-                    {branch.name}
+                <option value="">Select portfolio</option>
+                {portfolios.map((portfolio) => (
+                  <option key={portfolio.id} value={portfolio.id}>
+                    {portfolio.name}
                   </option>
                 ))}
               </select>
@@ -499,9 +499,9 @@ export default function DepartmentsManagementPage() {
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                disabled={!branchId}
-                placeholder={branchId ? "Enter department name" : "Select branch first"}
-                className={cn(configCompactInputClass, !branchId && "opacity-60")}
+                disabled={!portfolioId}
+                placeholder={portfolioId ? "Enter department name" : "Select portfolio first"}
+                className={cn(configCompactInputClass, !portfolioId && "opacity-60")}
               />
             </div>
 
@@ -583,8 +583,8 @@ export default function DepartmentsManagementPage() {
                   }
                 />
                 <ConfigInfoField
-                  label="Branch"
-                  value={viewDepartment.branch?.name ?? "—"}
+                  label="Portfolio"
+                  value={viewDepartment.portfolio?.name ?? "—"}
                   className="sm:col-span-2"
                 />
                 <ConfigInfoField

@@ -24,7 +24,7 @@ export default function UsersHeaderButtons() {
       ) : null}
 
       <Link href={ROUTES.createUser}>
-        <Button className={btnCreatePage}>Create User</Button>
+        <Button className={btnCreatePage}>Create Staff</Button>
       </Link>
     </>
   );

@@ -1,12 +1,15 @@
 "use client";
 
 import ManagementPageShell from "@/components/Shared/ManagementPageShell";
-import PaymentPaidPage from "@/components/payments/PaymentPaidPage";
+import PaymentInstallmentsPage from "@/components/payments/PaymentInstallmentsPage";
 
 export default function PaymentPaidRoutePage() {
   return (
     <ManagementPageShell title="Paid Payments">
-      <PaymentPaidPage />
+      <PaymentInstallmentsPage
+        mode="paid"
+        emptyMessage="No paid payments recorded for this period."
+      />
     </ManagementPageShell>
   );
 }

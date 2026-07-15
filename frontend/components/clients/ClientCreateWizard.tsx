@@ -66,7 +66,7 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [source, setSource] = useState("");
-  const [branchId, setBranchId] = useState("");
+  const [portfolioId, setBranchId] = useState("");
 
   const [includeService, setIncludeService] = useState(false);
   const [serviceName, setServiceName] = useState("");
@@ -91,10 +91,10 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
   const [clientSearch, setClientSearch] = useState("");
   const [existingClientId, setExistingClientId] = useState("");
 
-  const { data: branchRes } = useSWR("client-wizard-branches", getTaskFormBranchOptions);
-  const branches = useMemo(
-    () => (branchRes?.data?.branches ?? []).filter((b) => Boolean(b?.id && b?.name)),
-    [branchRes?.data?.branches],
+  const { data: branchRes } = useSWR("client-wizard-portfolios", getTaskFormBranchOptions);
+  const portfolios = useMemo(
+    () => (branchRes?.data?.portfolios ?? []).filter((b) => Boolean(b?.id && b?.name)),
+    [branchRes?.data?.portfolios],
   );
   const singleBranch = branchRes?.data?.singleBranch ?? false;
 
@@ -108,8 +108,8 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
   );
 
   const { data: servicesRes } = useSWR(
-    branchId ? ["client-wizard-services", branchId] : null,
-    ([, id]) => getAllServices({ branchId: id }),
+    portfolioId ? ["client-wizard-services", portfolioId] : null,
+    ([, id]) => getAllServices({ portfolioId: id }),
   );
   const branchServices = useMemo(
     () => (servicesRes?.data ?? []).filter((s) => Boolean(s?.serviceName)),
@@ -162,7 +162,7 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
     const rawEmail = String(c.email ?? "");
     setEmail(rawEmail.includes("@deero.internal") ? "" : rawEmail);
     setSource(String(c.source ?? ""));
-    setBranchId(String(c.branchId ?? ""));
+    setBranchId(String(c.portfolioId ?? ""));
     if (c.contractStartDate) {
       setIncludeContract(true);
       setContractStartDate(String(c.contractStartDate).slice(0, 10));
@@ -187,7 +187,7 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
     setPhone(saved.phone);
     setEmail(saved.email);
     setSource(saved.source);
-    setBranchId(saved.branchId);
+    setBranchId(saved.portfolioId);
     setIncludeService(saved.includeService);
     setServiceName(saved.serviceName);
     setSubServiceName(saved.subServiceName);
@@ -210,10 +210,10 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
   }, [flowMode, initialDraftId, localDraftLoaded]);
 
   useEffect(() => {
-    if (branchRes?.data?.defaultBranchId && !branchId) {
+    if (branchRes?.data?.defaultBranchId && !portfolioId) {
       setBranchId(branchRes.data.defaultBranchId);
     }
-  }, [branchRes?.data?.defaultBranchId, branchId]);
+  }, [branchRes?.data?.defaultBranchId, portfolioId]);
 
   function persistLocalDraft(nextStep = step) {
     writeClientCreateDraft({
@@ -222,7 +222,7 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
       phone,
       email,
       source,
-      branchId,
+      portfolioId,
       includeService,
       serviceName,
       subServiceName,
@@ -255,8 +255,8 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
         return false;
       }
       if (step === 2) {
-        if (!branchId) {
-          toast.error("Select a branch");
+        if (!portfolioId) {
+          toast.error("Select a portfolio");
           return false;
         }
         if (!serviceName) {
@@ -290,8 +290,8 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
         toast.error("Source is required");
         return false;
       }
-      if (!branchId) {
-        toast.error("Select a branch");
+      if (!portfolioId) {
+        toast.error("Select a portfolio");
         return false;
       }
     }
@@ -342,7 +342,7 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
         base: parseFloat(base) || 0,
         description: serviceDescription,
         discount: parseFloat(discount) || 0,
-        branchId,
+        portfolioId,
         serviceStatus: "pending",
       });
       if (result.success) {
@@ -362,7 +362,7 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
       email: email.trim() || undefined,
       source: source.trim() || (isDraft ? "Draft" : ""),
       clientType,
-      branchId,
+      portfolioId,
       isDraft,
     };
 
@@ -406,7 +406,7 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
         base: parseFloat(base) || 0,
         description: serviceDescription,
         discount: parseFloat(discount) || 0,
-        branchId,
+        portfolioId,
         serviceStatus: "pending",
       });
     }
@@ -426,7 +426,7 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
             email: payload.email,
             source: payload.source,
             clientType: payload.clientType,
-            branchId: payload.branchId,
+            portfolioId: payload.portfolioId,
             contractStartDate: payload.contractStartDate,
             contractEndDate: payload.contractEndDate,
             monthlyBudget: payload.monthlyBudget,
@@ -474,7 +474,7 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
             email: payload.email,
             source: payload.source,
             clientType: payload.clientType,
-            branchId: payload.branchId,
+            portfolioId: payload.portfolioId,
             contractStartDate: payload.contractStartDate,
             contractEndDate: payload.contractEndDate,
             monthlyBudget: payload.monthlyBudget,
@@ -650,15 +650,15 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
               </select>
             </div>
             <div>
-              <FieldLabel>Branch *</FieldLabel>
+              <FieldLabel>Portfolio *</FieldLabel>
               <select
                 className={configCompactSelectClass}
-                value={branchId}
+                value={portfolioId}
                 onChange={(e) => setBranchId(e.target.value)}
                 disabled={singleBranch}
               >
-                <option value="">Select branch</option>
-                {branches.map((b) => (
+                <option value="">Select portfolio</option>
+                {portfolios.map((b) => (
                   <option key={b.id} value={b.id}>
                     {b.name}
                   </option>
@@ -679,7 +679,7 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
                 <p><span className="text-zinc-500">Phone:</span> {phone || "—"}</p>
                 <p><span className="text-zinc-500">Email:</span> {email || "—"}</p>
                 <p><span className="text-zinc-500">Source:</span> {source || "—"}</p>
-                <p><span className="text-zinc-500">Branch:</span> {branches.find((b) => b.id === branchId)?.name ?? "—"}</p>
+                <p><span className="text-zinc-500">Portfolio:</span> {portfolios.find((b) => b.id === portfolioId)?.name ?? "—"}</p>
               </div>
             </div>
 
@@ -806,15 +806,15 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
         {flowMode === "existing" && step === 2 ? (
           <div className="space-y-4">
             <div>
-              <FieldLabel>Branch *</FieldLabel>
+              <FieldLabel>Portfolio *</FieldLabel>
               <select
                 className={configCompactSelectClass}
-                value={branchId}
+                value={portfolioId}
                 onChange={(e) => setBranchId(e.target.value)}
                 disabled={singleBranch}
               >
-                <option value="">Select branch</option>
-                {branches.map((b) => (
+                <option value="">Select portfolio</option>
+                {portfolios.map((b) => (
                   <option key={b.id} value={b.id}>
                     {b.name}
                   </option>
@@ -954,7 +954,7 @@ function ServiceFields({
             onChange={(e) => setIncludeService(e.target.checked)}
             className="size-4 rounded accent-primary"
           />
-          Include service agreement (optional — branch services)
+          Include service agreement (optional — portfolio services)
         </label>
         {includeService ? (
           <ServiceFieldsInner

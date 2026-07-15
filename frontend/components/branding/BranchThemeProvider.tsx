@@ -5,7 +5,7 @@ import {
   applyBranchBranding,
   BranchBranding,
   clearBranchBranding,
-} from "@/lib/branch-branding";
+} from "@/lib/portfolio-branding";
 
 type Props = {
   branding?: BranchBranding | null;

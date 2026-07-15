@@ -29,10 +29,10 @@ export type ContractRecord = {
   notes?: string | null;
   clientId: string;
   projectId?: string | null;
-  branchId?: string | null;
+  portfolioId?: string | null;
   client?: { id: string; institution: string; companyName?: string | null };
   project?: { id: string; name: string } | null;
-  branch?: { id: string; name: string } | null;
+  portfolio?: { id: string; name: string } | null;
   documents?: ContractDocument[];
   createdAt?: string;
 };

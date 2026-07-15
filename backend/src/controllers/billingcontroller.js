@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prisma.js";
 import { computeStatus } from "../lib/monthly-billing-generator.js";
-import { getScope } from "../lib/branch-scope.js";
+import { getScope } from "../lib/portfolio-scope.js";
 
 const MONTH_NAMES = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -31,8 +31,8 @@ function installmentWhere(scope, filters = {}) {
     where.status = status;
   }
 
-  if (scope?.branchId) {
-    where.client = { branchId: scope.branchId };
+  if (scope?.portfolioId) {
+    where.client = { portfolioId: scope.portfolioId };
   }
 
   return where;
@@ -68,7 +68,7 @@ export const getInstallments = async (req, res) => {
     const rows = await prisma.clientInstallment.findMany({
       where: installmentWhere(scope, { tab, clientId, year, month, status }),
       include: {
-        client: { select: { institution: true, companyName: true, branchId: true } },
+        client: { select: { institution: true, companyName: true, portfolioId: true } },
         contract: { select: { contractNumber: true } },
       },
       orderBy: [{ periodYear: "desc" }, { periodMonth: "desc" }, { dueDate: "desc" }],
@@ -100,8 +100,8 @@ export const getClientPaymentSummary = async (req, res) => {
     const { clientId } = req.params;
 
     const where = { clientId };
-    if (scope?.branchId) {
-      where.client = { branchId: scope.branchId };
+    if (scope?.portfolioId) {
+      where.client = { portfolioId: scope.portfolioId };
     }
 
     const rows = await prisma.clientInstallment.findMany({

@@ -1,6 +1,6 @@
 import { uploadToS3 } from "./s3-client.js";
 
-export async function saveBranchLogo(branchId, logoData, variant = "logo") {
+export async function saveBranchLogo(portfolioId, logoData, variant = "logo") {
   if (!logoData || typeof logoData !== "string") return null;
 
   const matches = logoData.match(/^data:image\/(\w+);base64,(.+)$/);
@@ -14,7 +14,7 @@ export async function saveBranchLogo(branchId, logoData, variant = "logo") {
   }
 
   const safeVariant = variant === "icon" ? "icon" : "logo";
-  const filename = `branches/${branchId}-${safeVariant}.${ext}`;
+  const filename = `portfolios/${portfolioId}-${safeVariant}.${ext}`;
   const contentType = `image/${matches[1]}`;
 
   return await uploadToS3(filename, buffer, contentType);
@@ -44,7 +44,7 @@ export const RESERVED_BRANCH_SLUGS = new Set([
   "recurring-schedules",
   "tasks",
   "services",
-  "branches",
+  "portfolios",
   "departments",
   "payments",
   "my-tasks",

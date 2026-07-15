@@ -25,11 +25,11 @@ import {
   getAllBranches,
   getBranchById,
   updateBranch,
-} from "@/lib/actions/branch.action";
+} from "@/lib/actions/portfolio.action";
 import {
   resolveBranchLogoUrl,
   formatBranchLoginPath,
-} from "@/lib/branch-branding";
+} from "@/lib/portfolio-branding";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {
   actionBtnDelete,
@@ -74,14 +74,14 @@ function readImageAsDataUrl(file: File): Promise<string> {
   });
 }
 
-export default function BranchesManagementPage() {
+export default function BranchesPage() {
   const { data: branchesRes, isLoading } = useSWR(
-    SWR_CACH_KEYS.branches.key,
+    SWR_CACH_KEYS.portfolios.key,
     getAllBranches,
   );
   const { mutate } = useSWRConfig();
 
-  const branches = (branchesRes?.data as BranchRecord[]) ?? [];
+  const portfolios = (branchesRes?.data as BranchRecord[]) ?? [];
 
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -115,17 +115,17 @@ export default function BranchesManagementPage() {
 
   const filtered = useMemo(() => {
     const query = search.toLowerCase();
-    return branches.filter((branch) => {
+    return portfolios.filter((portfolio) => {
       return (
         !query ||
-        branch.name.toLowerCase().includes(query) ||
-        (branch.slug ?? "").toLowerCase().includes(query) ||
-        (branch.description ?? "").toLowerCase().includes(query) ||
-        (branch.location ?? "").toLowerCase().includes(query) ||
-        (branch.phone ?? "").toLowerCase().includes(query)
+        portfolio.name.toLowerCase().includes(query) ||
+        (portfolio.slug ?? "").toLowerCase().includes(query) ||
+        (portfolio.description ?? "").toLowerCase().includes(query) ||
+        (portfolio.location ?? "").toLowerCase().includes(query) ||
+        (portfolio.phone ?? "").toLowerCase().includes(query)
       );
     });
-  }, [branches, search]);
+  }, [portfolios, search]);
 
   const totalPages = Math.ceil(filtered.length / pageSize) || 1;
   const paginated = useMemo(() => {
@@ -159,30 +159,30 @@ export default function BranchesManagementPage() {
     setModalOpen(true);
   }
 
-  function openEdit(branch: BranchRecord) {
+  function openEdit(portfolio: BranchRecord) {
     setMode("edit");
-    setEditingBranch(branch);
-    setName(branch.name);
-    setDescription(branch.description ?? "");
-    setPhone(branch.phone ?? "");
-    setLocation(branch.location ?? "");
-    setPrimaryColor(branch.primaryColor || "#651210");
-    setSecondaryColor(branch.secondaryColor || "#ec4724");
-    setStatus(branch.isActive ? "active" : "inactive");
-    setIsMainBranch(Boolean(branch.usesRootLogin));
-    setLogoPreview(resolveBranchLogoUrl(branch.logoUrl));
-    setIconLogoPreview(resolveBranchLogoUrl(branch.iconLogoUrl));
+    setEditingBranch(portfolio);
+    setName(portfolio.name);
+    setDescription(portfolio.description ?? "");
+    setPhone(portfolio.phone ?? "");
+    setLocation(portfolio.location ?? "");
+    setPrimaryColor(portfolio.primaryColor || "#651210");
+    setSecondaryColor(portfolio.secondaryColor || "#ec4724");
+    setStatus(portfolio.isActive ? "active" : "inactive");
+    setIsMainBranch(Boolean(portfolio.usesRootLogin));
+    setLogoPreview(resolveBranchLogoUrl(portfolio.logoUrl));
+    setIconLogoPreview(resolveBranchLogoUrl(portfolio.iconLogoUrl));
     setLogoData(null);
     setIconLogoData(null);
     setModalOpen(true);
   }
 
-  async function openView(branch: BranchRecord) {
+  async function openView(portfolio: BranchRecord) {
     setViewOpen(true);
-    setViewingBranch(branch);
+    setViewingBranch(portfolio);
     setViewLoading(true);
     try {
-      const result = await getBranchById(branch.id);
+      const result = await getBranchById(portfolio.id);
       if (result.success && result.data) {
         setViewingBranch(result.data);
       }
@@ -216,7 +216,7 @@ export default function BranchesManagementPage() {
 
   async function handleSave() {
     if (!name.trim()) {
-      toast.error("Branch name is required");
+      toast.error("Portfolio name is required");
       return;
     }
 
@@ -241,39 +241,39 @@ export default function BranchesManagementPage() {
           : await updateBranch(editingBranch!.id, payload);
 
       if (result.success) {
-        toast.success(mode === "create" ? "Branch created" : "Branch updated");
-        await mutate(SWR_CACH_KEYS.branches.key);
+        toast.success(mode === "create" ? "Portfolio created" : "Portfolio updated");
+        await mutate(SWR_CACH_KEYS.portfolios.key);
         setModalOpen(false);
         return;
       }
-      toast.error(result.errors?.message ?? "Failed to save branch");
+      toast.error(result.errors?.message ?? "Failed to save portfolio");
     } finally {
       setIsSaving(false);
     }
   }
 
-  async function handleSetAsMain(branch: BranchRecord) {
+  async function handleSetAsMain(portfolio: BranchRecord) {
     setIsSaving(true);
     try {
-      const result = await updateBranch(branch.id, {
-        name: branch.name,
+      const result = await updateBranch(portfolio.id, {
+        name: portfolio.name,
         useRootLogin: true,
       });
       if (result.success) {
-        toast.success(`"${branch.name}" is now the main branch`);
-        await mutate(SWR_CACH_KEYS.branches.key);
+        toast.success(`"${portfolio.name}" is now the main portfolio`);
+        await mutate(SWR_CACH_KEYS.portfolios.key);
         return;
       }
-      toast.error(result.errors?.message ?? "Failed to set main branch");
+      toast.error(result.errors?.message ?? "Failed to set main portfolio");
     } finally {
       setIsSaving(false);
     }
   }
 
   async function handleDelete(id: string) {
-    const branch = branches.find((b) => b.id === id);
-    if (branch?.usesRootLogin) {
-      toast.error("Cannot delete the root login branch");
+    const portfolio = portfolios.find((b) => b.id === id);
+    if (portfolio?.usesRootLogin) {
+      toast.error("Cannot delete the root login portfolio");
       setDeleteTarget(null);
       return;
     }
@@ -282,31 +282,31 @@ export default function BranchesManagementPage() {
     const result = await deleteBranch(id);
     setIsDeleting(false);
     if (result.success) {
-      toast.success("Branch deleted");
+      toast.success("Portfolio deleted");
       setDeleteTarget(null);
-      await mutate(SWR_CACH_KEYS.branches.key);
+      await mutate(SWR_CACH_KEYS.portfolios.key);
       return;
     }
-    toast.error(result.errors?.message ?? "Failed to delete branch");
+    toast.error(result.errors?.message ?? "Failed to delete portfolio");
   }
 
-  function requestDeleteBranch(branch: BranchRecord) {
-    if (branch.usesRootLogin) {
-      toast.error("Cannot delete the root login branch");
+  function requestDeleteBranch(portfolio: BranchRecord) {
+    if (portfolio.usesRootLogin) {
+      toast.error("Cannot delete the root login portfolio");
       return;
     }
-    setDeleteTarget({ id: branch.id, name: branch.name });
+    setDeleteTarget({ id: portfolio.id, name: portfolio.name });
   }
 
   return (
-    <ManagementPageShell title="Branches management">
+    <ManagementPageShell title="Portfolios management">
       <div className={dashboardCardClass}>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-50 px-6 py-3">
           <div className="group relative ml-auto w-52">
             <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-400" />
             <input
               type="text"
-              placeholder="Search branches..."
+              placeholder="Search portfolios..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className={cn(compactInputClass, "pl-9")}
@@ -318,7 +318,7 @@ export default function BranchesManagementPage() {
             className={cn(btnCreatePage, "h-9 px-4 text-sm")}
           >
             <Plus className="size-4" />
-            Create Branch
+            Create Portfolio
           </Button>
         </div>
 
@@ -327,7 +327,7 @@ export default function BranchesManagementPage() {
             <Table className="w-full">
               <TableHeader className={dashboardTableHeaderClass}>
                 <TableRow className={dashboardTableHeadRowClass}>
-                  <TableHead className={dashboardTableHeadClass}>Branch Name</TableHead>
+                  <TableHead className={dashboardTableHeadClass}>Portfolio Name</TableHead>
                   <TableHead className={dashboardTableHeadClass}>Phone</TableHead>
                   <TableHead className={dashboardTableHeadClass}>Location</TableHead>
                   <TableHead className={dashboardTableHeadClass}>Employees</TableHead>
@@ -352,66 +352,66 @@ export default function BranchesManagementPage() {
                       colSpan={6}
                       className="px-6 py-10 text-center text-muted-foreground"
                     >
-                      No branches found
+                      No portfolios found
                     </TableCell>
                   </TableRow>
                 ) : (
-                  paginated.map((branch) => (
-                    <TableRow key={branch.id} className={dashboardTableBodyRowClass}>
+                  paginated.map((portfolio) => (
+                    <TableRow key={portfolio.id} className={dashboardTableBodyRowClass}>
                       <TableCell className={dashboardTableCellClass}>
                         <div className="flex items-center gap-2">
-                          {branch.logoUrl ? (
+                          {portfolio.logoUrl ? (
                             <img
-                              src={resolveBranchLogoUrl(branch.logoUrl) ?? ""}
-                              alt={branch.name}
+                              src={resolveBranchLogoUrl(portfolio.logoUrl) ?? ""}
+                              alt={portfolio.name}
                               className="size-8 rounded object-contain"
                             />
                           ) : null}
-                          <span className={dashboardTextPrimary}>{branch.name}</span>
-                          {branch.usesRootLogin ? (
+                          <span className={dashboardTextPrimary}>{portfolio.name}</span>
+                          {portfolio.usesRootLogin ? (
                             <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-primary">
-                              Main branch
+                              Main portfolio
                             </span>
                           ) : null}
                         </div>
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
                         <span className={dashboardTextSecondary}>
-                          {branch.phone || "—"}
+                          {portfolio.phone || "â€”"}
                         </span>
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
                         <span className={dashboardTextSecondary}>
-                          {branch.location || "—"}
+                          {portfolio.location || "â€”"}
                         </span>
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
-                        {branch._count?.users ?? 0}
+                        {portfolio._count?.users ?? 0}
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
                         <span
                           className={cn(
                             dashboardStatusBadgeClass,
-                            branch.isActive
+                            portfolio.isActive
                               ? getTaskStatusBadgeClass("completed")
                               : getTaskStatusBadgeClass("overdue"),
                           )}
                         >
-                          {branch.isActive ? "Active" : "Inactive"}
+                          {portfolio.isActive ? "Active" : "Inactive"}
                         </span>
                       </TableCell>
                       <TableCell
                         className={cn(dashboardTableCellClass, "text-right")}
                       >
                         <div className="flex justify-end gap-1">
-                          {!branch.usesRootLogin ? (
+                          {!portfolio.usesRootLogin ? (
                             <Button
                               type="button"
                               variant="ghost"
                               size="sm"
                               className="text-xs text-primary"
-                              onClick={() => handleSetAsMain(branch)}
-                              title="Set as main branch"
+                              onClick={() => handleSetAsMain(portfolio)}
+                              title="Set as main portfolio"
                             >
                               Set main
                             </Button>
@@ -421,7 +421,7 @@ export default function BranchesManagementPage() {
                             variant="ghost"
                             size="sm"
                             className={actionBtnView}
-                            onClick={() => openView(branch)}
+                            onClick={() => openView(portfolio)}
                             title="View"
                           >
                             <Eye className="size-4" />
@@ -431,7 +431,7 @@ export default function BranchesManagementPage() {
                             variant="ghost"
                             size="sm"
                             className={actionBtnEdit}
-                            onClick={() => openEdit(branch)}
+                            onClick={() => openEdit(portfolio)}
                             title="Edit"
                           >
                             <Edit className="size-4" />
@@ -441,7 +441,7 @@ export default function BranchesManagementPage() {
                             variant="ghost"
                             size="sm"
                             className={actionBtnDelete}
-                            onClick={() => requestDeleteBranch(branch)}
+                            onClick={() => requestDeleteBranch(portfolio)}
                           >
                             <Trash2 className="size-4" />
                           </Button>
@@ -489,56 +489,56 @@ export default function BranchesManagementPage() {
         <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden border-zinc-200 bg-white p-0 sm:max-w-lg">
           <DialogHeader className="shrink-0 border-b border-zinc-100 px-6 py-4 text-left">
             <DialogTitle>
-              {mode === "create" ? "Create Branch" : "Edit Branch"}
+              {mode === "create" ? "Create Portfolio" : "Edit Portfolio"}
             </DialogTitle>
             <DialogDescription>
-              Set branch details and branding. Employees sign in at the unified login page.
+              Set portfolio details and branding. Employees sign in at the unified login page.
             </DialogDescription>
           </DialogHeader>
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-4">
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-zinc-700">Branch name</label>
+              <label className="text-sm font-medium text-zinc-700">Portfolio name</label>
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Branch name (case-sensitive)"
+                placeholder="Portfolio name (case-sensitive)"
                 className={compactInputClass}
               />
             </div>
 
             <div className="rounded-lg border border-zinc-100 bg-zinc-50 px-3 py-2.5 text-sm text-zinc-600">
               All employees sign in at <strong>/</strong>. After login, each user sees
-              their branch logo and colors automatically.
+              their portfolio logo and colors automatically.
             </div>
 
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-zinc-700">
-                Branch description
+                Portfolio description
               </label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Branch description"
+                placeholder="Portfolio description"
                 className={textareaClass}
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-zinc-700">Branch phone</label>
+              <label className="text-sm font-medium text-zinc-700">Portfolio phone</label>
               <input
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="Branch phone"
+                placeholder="Portfolio phone"
                 className={compactInputClass}
               />
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-zinc-700">
-                Branch location
+                Portfolio location
               </label>
               <input
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="Branch location"
+                placeholder="Portfolio location"
                 className={compactInputClass}
               />
             </div>
@@ -656,10 +656,10 @@ export default function BranchesManagementPage() {
                 className="mt-0.5 h-4 w-4 rounded border-zinc-300 text-primary focus:ring-primary/30"
               />
               <span className="text-sm text-zinc-600">
-                <span className="font-medium text-zinc-800">Main branch</span>
+                <span className="font-medium text-zinc-800">Main portfolio</span>
                 <br />
-                Default branch for users without a branch (e.g. Deero Advert).
-                Only one branch can be main at a time.
+                Default portfolio for users without a portfolio (e.g. Deero Advert).
+                Only one portfolio can be main at a time.
               </span>
             </label>
 
@@ -704,9 +704,9 @@ export default function BranchesManagementPage() {
       <Dialog open={viewOpen} onOpenChange={setViewOpen}>
         <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden border-zinc-200 bg-white p-0 sm:max-w-lg">
           <DialogHeader className="shrink-0 border-b border-zinc-100 px-6 py-4 text-left">
-            <DialogTitle>Branch Details</DialogTitle>
+            <DialogTitle>Portfolio Details</DialogTitle>
             <DialogDescription>
-              View all information for this branch.
+              View all information for this portfolio.
             </DialogDescription>
           </DialogHeader>
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-4">
@@ -744,13 +744,13 @@ export default function BranchesManagementPage() {
                 ) : null}
 
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <InfoField label="Branch ID" value={viewingBranch.id} />
+                  <InfoField label="Portfolio ID" value={viewingBranch.id} />
                   <InfoField
                     label="Status"
                     value={viewingBranch.isActive ? "Active" : "Inactive"}
                   />
                   <InfoField
-                    label="Branch Name"
+                    label="Portfolio Name"
                     value={viewingBranch.name}
                     className="sm:col-span-2"
                   />
@@ -761,13 +761,13 @@ export default function BranchesManagementPage() {
                   />
                   <InfoField
                     label="Description"
-                    value={viewingBranch.description || "—"}
+                    value={viewingBranch.description || "â€”"}
                     className="sm:col-span-2"
                   />
-                  <InfoField label="Phone" value={viewingBranch.phone || "—"} />
+                  <InfoField label="Phone" value={viewingBranch.phone || "â€”"} />
                   <InfoField
                     label="Location"
-                    value={viewingBranch.location || "—"}
+                    value={viewingBranch.location || "â€”"}
                   />
                 </div>
 
@@ -863,8 +863,8 @@ export default function BranchesManagementPage() {
         onOpenChange={(open) => {
           if (!open) setDeleteTarget(null);
         }}
-        title="Delete branch"
-        description="Delete this branch? Employees will be unassigned. This action cannot be undone."
+        title="Delete portfolio"
+        description="Delete this portfolio? Employees will be unassigned. This action cannot be undone."
         confirmLabel="Delete"
         destructive
         loading={isDeleting}
@@ -875,7 +875,7 @@ export default function BranchesManagementPage() {
         {deleteTarget ? (
           <div className="rounded-lg border border-zinc-100 bg-zinc-50 px-4 py-3">
             <p>
-              <span className="font-medium text-zinc-800">Branch:</span>{" "}
+              <span className="font-medium text-zinc-800">Portfolio:</span>{" "}
               {deleteTarget.name}
             </p>
           </div>

@@ -2,7 +2,7 @@ import { prisma } from "./prisma.js";
 import {
   filterUsersForBranchNotification,
   getMainBranch,
-} from "./branch-scope.js";
+} from "./portfolio-scope.js";
 
 function createNotificationId() {
   return Math.random().toString(36).substring(2, 15);
@@ -37,23 +37,23 @@ export async function createNotificationForAdmins({
   deadline,
   type,
   excludeUserId,
-  branchId,
+  portfolioId,
 }) {
-  const admins = await prisma.user.findMany({
+  const admins = await prisma.staff.findMany({
     where: {
       role: { in: ["admin", "superadmin"] },
       ...(excludeUserId ? { id: { not: excludeUserId } } : {}),
     },
-    select: { id: true, branchId: true, role: true },
+    select: { id: true, portfolioId: true, role: true },
   });
 
-  let eventBranchId = branchId ?? null;
+  let eventBranchId = portfolioId ?? null;
   if (!eventBranchId && excludeUserId) {
-    const actor = await prisma.user.findUnique({
+    const actor = await prisma.staff.findUnique({
       where: { id: excludeUserId },
-      select: { branchId: true },
+      select: { portfolioId: true },
     });
-    eventBranchId = actor?.branchId ?? null;
+    eventBranchId = actor?.portfolioId ?? null;
   }
   if (!eventBranchId) {
     const mainBranch = await getMainBranch();

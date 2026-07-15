@@ -30,7 +30,7 @@
 // app.all("/api/auth/*", toNodeHandler(auth));
 
 // // Routes
-// app.use("/api/users", userRoutes);
+// app.use("/api/staffs", userRoutes);
 // app.use("/api/auth-custom", authRoutes);
 // app.use("/api/clients", clientRoutes);
 // app.use("/api/tasks", taskRoutes);
@@ -69,7 +69,7 @@ import { fileURLToPath } from "url";
 import { auth } from "./lib/auth.js";
 import { toNodeHandler } from "better-auth/node";
 
-import userRoutes from "./routes/userrouter.js";
+import staffRoutes from "./routes/staffrouter.js";
 import authRoutes from "./routes/authrouter.js";
 import clientRoutes from "./routes/clientrouter.js";
 import taskRoutes from "./routes/taskrouter.js";
@@ -79,8 +79,7 @@ import salaryRoutes from "./routes/salaryrouter.js";
 import roleRoutes from "./routes/rolerouter.js";
 import utilRoutes from "./routes/utilrouter.js";
 import notificationRoutes from "./routes/notificationrouter.js";
-import branchRoutes from "./routes/branchrouter.js";
-import departmentRoutes from "./routes/departmentrouter.js";
+import portfolioRoutes from "./routes/portfoliorouter.js";
 import navMenuRoutes from "./routes/navmenurouter.js";
 import trackingRoutes from "./routes/trackingrouter.js";
 import projectRoutes from "./routes/projectrouter.js";
@@ -111,7 +110,7 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.all("/api/auth/*", toNodeHandler(auth));
 
-app.use("/api/users", attachSessionScope, userRoutes);
+app.use("/api/staffs", attachSessionScope, staffRoutes);
 app.use("/api/auth-custom", authRoutes);
 app.use("/api/clients", attachSessionScope, clientRoutes);
 app.use("/api/projects", attachSessionScope, projectRoutes);
@@ -123,8 +122,7 @@ app.use("/api/workflow-templates", attachSessionScope, workflowTemplateRoutes);
 app.use("/api/jobs", attachSessionScope, jobRoutes);
 app.use("/api/tasks", attachSessionScope, taskRoutes);
 app.use("/api/services", attachSessionScope, serviceRoutes);
-app.use("/api/branches", attachSessionScope, branchRoutes);
-app.use("/api/departments", attachSessionScope, departmentRoutes);
+app.use("/api/portfolios", attachSessionScope, portfolioRoutes);
 app.use("/api/nav-menus", attachSessionScope, navMenuRoutes);
 app.use("/api/tracking", attachSessionScope, trackingRoutes);
 app.use("/api/transactions", attachSessionScope, transactionRoutes);

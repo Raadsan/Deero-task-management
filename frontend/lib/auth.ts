@@ -74,7 +74,7 @@ export const auth = betterAuth({
         type: "string",
         input: true,
       },
-      branchId: {
+      portfolioId: {
         type: "string",
         input: true,
         required: false,

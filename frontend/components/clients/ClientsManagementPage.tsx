@@ -55,7 +55,7 @@ type ClientAgreementStatus = {
   serviceName: string;
   subServiceName: string;
   serviceStatus: "pending" | "completed";
-  branchId?: string | null;
+  portfolioId?: string | null;
   branchName?: string;
 };
 
@@ -65,7 +65,7 @@ function filterAgreements(
   branchFilter: string,
 ) {
   return agreements.filter((agreement) => {
-    if (branchFilter !== "all" && agreement.branchId !== branchFilter) {
+    if (branchFilter !== "all" && agreement.portfolioId !== branchFilter) {
       return false;
     }
     if (statusFilter === "pending" && agreement.serviceStatus !== "pending") {
@@ -161,10 +161,10 @@ export default function ClientsManagementPage() {
   const [isDeleting, startDelete] = useTransition();
 
   const { data: branchOptionsRes } = useSWR(
-    "client-list-branches",
+    "client-list-portfolios",
     getTaskFormBranchOptions,
   );
-  const branchOptions = branchOptionsRes?.data?.branches ?? [];
+  const branchOptions = branchOptionsRes?.data?.portfolios ?? [];
   const singleBranch = branchOptionsRes?.data?.singleBranch ?? false;
 
   const clients = (clientsRes?.data as AllClients[]) ?? [];
@@ -207,7 +207,7 @@ export default function ClientsManagementPage() {
         return (
           matchesSearch &&
           (statusFilter === "all" || statusFilter === "draft") &&
-          (branchFilter === "all" || (client as AllClients & { branchId?: string }).branchId === branchFilter)
+          (branchFilter === "all" || (client as AllClients & { portfolioId?: string }).portfolioId === branchFilter)
         );
       }
 
@@ -351,17 +351,17 @@ export default function ClientsManagementPage() {
           </div>
 
           <div className={cn("flex items-center gap-2", dashboardLabelClass)}>
-            <span>Branch</span>
+            <span>Portfolio</span>
             <select
               value={branchFilter}
               onChange={(e) => setBranchFilter(e.target.value)}
               disabled={singleBranch}
               className={cn("min-w-[9rem]", compactSelectClass)}
             >
-              <option value="all">All branches</option>
-              {branchOptions.map((branch) => (
-                <option key={branch.id} value={branch.id}>
-                  {branch.name}
+              <option value="all">All portfolios</option>
+              {branchOptions.map((portfolio) => (
+                <option key={portfolio.id} value={portfolio.id}>
+                  {portfolio.name}
                 </option>
               ))}
             </select>

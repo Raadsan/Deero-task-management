@@ -1,18 +1,14 @@
 "use client";
 
 import { createUser, updateUserData } from "@/lib/actions/user.action";
-import { getAllDepartments } from "@/lib/actions/department.action";
 import { getConfigRoles } from "@/lib/actions/config.action";
 import { getTaskFormBranchOptions } from "@/lib/actions/shared.action";
 import { authClient } from "@/lib/auth-client";
 import { ROUTES, SWR_CACH_KEYS } from "@/lib/constants";
 import { User } from "@/lib/schema";
 import { canChangeUserPassword } from "@/lib/user-permissions";
-import {
-  buildUserRoleOptions,
-  resolveConfigRoleId,
-} from "@/lib/role-options";
-import { isSuperadminRole } from "@/lib/branch-access";
+import { buildUserRoleOptions, resolveConfigRoleId } from "@/lib/role-options";
+import { isSuperadminRole } from "@/lib/portfolio-access";
 import { btnFormCancel, btnFormSubmit } from "@/lib/dashboard-ui";
 import { cn } from "@/lib/utils";
 import { EditCreateUserSchema } from "@/lib/validations";
@@ -60,18 +56,19 @@ export default function UserForm({
       role: data?.role ?? "",
       password: "",
       gender: data?.gender ?? "",
-      department: data?.department ?? "",
-      branchId: (data as { branchId?: string; branch?: { id: string } })?.branchId
-        ?? (data as { branch?: { id: string } })?.branch?.id
-        ?? "",
+      salary: data?.salary ?? "",
+      portfolioId:
+        (data as { portfolioId?: string; portfolio?: { id: string } })?.portfolioId ??
+        (data as { portfolio?: { id: string } })?.portfolio?.id ??
+        "",
       status: data?.banned ? "inactive" : "active",
     },
     resolver: standardSchemaResolver(EditCreateUserSchema),
   });
 
   const defaultBranchId =
-    (data as { branchId?: string; branch?: { id: string } })?.branchId ??
-    (data as { branch?: { id: string } })?.branch?.id ??
+    (data as { portfolioId?: string; portfolio?: { id: string } })?.portfolioId ??
+    (data as { portfolio?: { id: string } })?.portfolio?.id ??
     "";
 
   const [selectedBranchId, setSelectedBranchId] = useState(defaultBranchId);
@@ -83,32 +80,16 @@ export default function UserForm({
   const configRoles = rolesRes?.data ?? [];
 
   const { data: branchOptionsRes } = useSWR(
-    "task-form-branches-users",
+    "task-form-portfolios-users",
     getTaskFormBranchOptions,
   );
-  const scopedBranches = branchOptionsRes?.data?.branches ?? [];
+  const scopedBranches = branchOptionsRes?.data?.portfolios ?? [];
   const singleBranch = branchOptionsRes?.data?.singleBranch ?? false;
-  const branchOptions = scopedBranches.map((branch) => branch.name);
+  const branchOptions = scopedBranches.map((portfolio) => portfolio.name);
 
-  const branchIdValue = watch("branchId");
+  const portfolioIdValue = watch("portfolioId");
   const roleValue = watch("role");
   const isSuperadmin = isSuperadminRole(roleValue);
-  const effectiveBranchForDepartments =
-    selectedBranchId ||
-    (isSuperadmin ? branchOptionsRes?.data?.defaultBranchId ?? "" : "");
-
-  const { data: departmentsRes } = useSWR(
-    effectiveBranchForDepartments
-      ? [SWR_CACH_KEYS.departments.key, effectiveBranchForDepartments]
-      : null,
-    () =>
-      getAllDepartments({
-        branchId: effectiveBranchForDepartments,
-        activeOnly: true,
-      }),
-  );
-  const departmentOptions =
-    departmentsRes?.data?.map((department) => department.name) ?? [];
 
   useEffect(() => {
     setSelectedBranchId(defaultBranchId);
@@ -134,12 +115,12 @@ export default function UserForm({
   );
 
   const genderValue = watch("gender");
-  const departmentValue = watch("department");
   const statusValue = watch("status");
   const selectedBranchName =
-    isSuperadmin && !branchIdValue
-      ? "— None (main branch) —"
-      : scopedBranches.find((branch) => branch.id === branchIdValue)?.name ?? "";
+    isSuperadmin && !portfolioIdValue
+      ? "— None (main portfolio) —"
+      : (scopedBranches.find((portfolio) => portfolio.id === portfolioIdValue)?.name ??
+        "");
 
   const genderOptions = [
     { value: "female", label: "Female" },
@@ -161,17 +142,18 @@ export default function UserForm({
   }, [formType, roleOptions, roleValue, setValue]);
 
   useEffect(() => {
-    if (formType !== "create" || branchIdValue || !scopedBranches.length) return;
+    if (formType !== "create" || portfolioIdValue || !scopedBranches.length)
+      return;
     if (isSuperadminRole(roleValue)) return;
     const nextBranchId =
       branchOptionsRes?.data?.defaultBranchId ?? scopedBranches[0]?.id;
     if (nextBranchId) {
       setSelectedBranchId(nextBranchId);
-      setValue("branchId", nextBranchId, { shouldValidate: false });
+      setValue("portfolioId", nextBranchId, { shouldValidate: false });
     }
   }, [
     formType,
-    branchIdValue,
+    portfolioIdValue,
     scopedBranches,
     branchOptionsRes?.data?.defaultBranchId,
     roleValue,
@@ -190,7 +172,7 @@ export default function UserForm({
         setError(
           "password",
           {
-            message: "Password Is required to create user",
+            message: "Password is required to create a staff member",
           },
           {
             shouldFocus: true,
@@ -208,12 +190,12 @@ export default function UserForm({
           role: formData.role,
           roleId,
           gender: formData.gender,
-          department: formData.department?.trim() || undefined,
-          branchId: formData.branchId?.trim() || undefined,
+          salary: formData.salary.trim(),
+          portfolioId: formData.portfolioId?.trim() || undefined,
           banned: formData.status === "inactive",
         });
         if (result.success) {
-          toast.success("Successfully Created a user.");
+          toast.success("Staff created successfully.");
           await mutate(SWR_CACH_KEYS.users.key);
           reset();
           if (onSuccess) {
@@ -223,7 +205,7 @@ export default function UserForm({
           router.replace(ROUTES.users);
         } else {
           toast.error(
-            result.errors?.message ?? "Failed to create User. try again",
+            result.errors?.message ?? "Failed to create employee. Try again.",
           );
         }
       });
@@ -248,10 +230,10 @@ export default function UserForm({
           role: formData.role,
           roleId,
           gender: formData.gender,
-          department: formData.department?.trim() || undefined,
-          branchId: isSuperadmin
-            ? formData.branchId?.trim() || null
-            : formData.branchId?.trim() || undefined,
+          salary: formData.salary.trim(),
+          portfolioId: isSuperadmin
+            ? formData.portfolioId?.trim() || null
+            : formData.portfolioId?.trim() || undefined,
           banned: formData.status === "inactive",
         });
 
@@ -300,17 +282,13 @@ export default function UserForm({
       onSubmit={handleSubmit(handleSubmitForm)}
       className={cn(
         "flex w-full flex-col",
-        isModal
-          ? "min-h-0 flex-1 overflow-hidden"
-          : "mx-auto max-w-2/3 gap-6",
+        isModal ? "min-h-0 flex-1 overflow-hidden" : "mx-auto max-w-2/3 gap-6",
       )}
     >
       <div
         className={cn(
           "flex w-full flex-col",
-          isModal
-            ? "min-h-0 flex-1 gap-4 overflow-y-auto px-6 pt-5"
-            : "gap-6",
+          isModal ? "min-h-0 flex-1 gap-4 overflow-y-auto px-6 pt-5" : "gap-6",
         )}
       >
         <TextInput
@@ -351,61 +329,35 @@ export default function UserForm({
         />
         <SelectElement
           disbaleSelect={pending || (singleBranch && !isSuperadmin)}
-          labelText={isSuperadmin ? "Branch (optional)" : "Branch"}
+          labelText={isSuperadmin ? "Portfolio (optional)" : "Portfolio"}
           placeholder={
             isSuperadmin
-              ? "Default: main branch (Deero Advert)"
-              : "Select branch"
+              ? "Default: main portfolio (Deero Advert)"
+              : "Select portfolio"
           }
           wrapperStyle="max-w-full"
-          errorMessage={errors.branchId?.message}
+          errorMessage={errors.portfolioId?.message}
           value={selectedBranchName}
           elements={
             isSuperadmin
-              ? ["— None (main branch) —", ...branchOptions]
+              ? ["— None (main portfolio) —", ...branchOptions]
               : branchOptions
           }
           compact={fieldCompact}
           onChange={(value) => {
-            if (isSuperadmin && value === "— None (main branch) —") {
+            if (isSuperadmin && value === "— None (main portfolio) —") {
               setSelectedBranchId("");
-              setValue("branchId", "", { shouldValidate: true });
-              setValue("department", "", { shouldValidate: true });
+              setValue("portfolioId", "", { shouldValidate: true });
               return;
             }
-            const branch = scopedBranches.find((item) => item.name === value);
-            const nextBranchId = branch?.id ?? "";
+            const portfolio = scopedBranches.find((item) => item.name === value);
+            const nextBranchId = portfolio?.id ?? "";
             setSelectedBranchId(nextBranchId);
-            setValue("branchId", nextBranchId, {
-              shouldValidate: true,
-            });
-            setValue("department", "", {
+            setValue("portfolioId", nextBranchId, {
               shouldValidate: true,
             });
           }}
         />
-
-        <SelectElement
-          disbaleSelect={pending || !effectiveBranchForDepartments}
-          labelText="Department (optional)"
-          placeholder={
-            effectiveBranchForDepartments
-              ? "Select department (optional)"
-              : "Select branch first"
-          }
-          wrapperStyle="max-w-full"
-          errorMessage={errors.department?.message}
-          value={departmentValue}
-          elements={departmentOptions}
-          compact={fieldCompact}
-          onChange={(value) => {
-            setValue("department", value, {
-              shouldValidate: true,
-            });
-          }}
-        />
-
-        
 
         <SelectElement
           disbaleSelect={pending || rolesLoading || !roleOptions.length}
@@ -429,7 +381,23 @@ export default function UserForm({
           }}
         />
 
-<SelectElement
+        <TextInput
+          labelId="salary"
+          labelText="Monthly Salary"
+          type="number"
+          placeholder="Enter monthly salary"
+          disbaled={pending}
+          otherProps={{
+            ...register("salary"),
+            min: 0,
+            step: "0.01",
+            inputMode: "decimal",
+          }}
+          errorMessage={errors.salary?.message}
+          compact={fieldCompact}
+        />
+
+        <SelectElement
           disbaleSelect={pending}
           labelText="Status"
           placeholder="Select status"
@@ -449,9 +417,7 @@ export default function UserForm({
           <TextInput
             labelId="password"
             labelText={
-              formType === "edit"
-                ? "New Password (optional)"
-                : "Password"
+              formType === "edit" ? "New Password (optional)" : "Password"
             }
             type="password"
             showEyeIcon
@@ -500,7 +466,7 @@ export default function UserForm({
                 classNames="text-white"
                 type="normal"
               >
-                {formType === "edit" ? "Save Changes" : "Create User"}
+                {formType === "edit" ? "Save Changes" : "Create Staff"}
               </ButtonBuilder>
             )}
           </>

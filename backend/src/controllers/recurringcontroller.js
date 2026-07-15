@@ -5,7 +5,7 @@ import {
   getScope,
   mergeWhere,
   resolveWritableBranchId,
-} from "../lib/branch-scope.js";
+} from "../lib/portfolio-scope.js";
 import {
   findWorkflowTemplate,
   generateTasksFromTemplate,
@@ -16,14 +16,14 @@ import { generateDailyRecurringTasks } from "../lib/recurring-task-generator.js"
 
 const scheduleInclude = {
   client: { select: { id: true, institution: true, accountManagerId: true } },
-  branch: { select: { id: true, name: true } },
+  portfolio: { select: { id: true, name: true } },
   steps: { orderBy: { stepOrder: "asc" } },
   _count: { select: { cycles: true } },
 };
 
 function recurringWhere(scope, extra = {}) {
-  const branchId = scope.branchId && !scope.seesAllBranches ? scope.branchId : null;
-  return mergeWhere(branchId ? { branchId } : {}, extra);
+  const portfolioId = scope.portfolioId && !scope.seesAllBranches ? scope.portfolioId : null;
+  return mergeWhere(portfolioId ? { portfolioId } : {}, extra);
 }
 
 async function findAccessibleSchedule(scope, id, include = scheduleInclude) {
@@ -86,7 +86,7 @@ export const createRecurringSchedule = async (req, res) => {
   const data = req.body;
   try {
     const scope = getScope(req);
-    const branchId = resolveWritableBranchId(scope, data.branchId);
+    const portfolioId = resolveWritableBranchId(scope, data.portfolioId);
 
     const client = await prisma.client.findFirst({
       where: mergeWhere({ id: data.clientId }, clientBranchWhere(scope)),
@@ -109,7 +109,7 @@ export const createRecurringSchedule = async (req, res) => {
           isActive: data.isActive !== false,
           autoGenerateTasks: data.autoGenerateTasks !== false,
           clientId: client.id,
-          branchId: branchId ?? client.branchId ?? null,
+          portfolioId: portfolioId ?? client.portfolioId ?? null,
           steps: {
             create: (data.steps ?? []).map((step, index) => ({
               dayOfWeek: step.dayOfWeek ?? null,

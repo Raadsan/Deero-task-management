@@ -7,7 +7,7 @@ const MY_TASKS_BASE = `${API_URL}/api/tasks/assigned/me`;
 export type MyTasksScope = "personal" | "company" | "all";
 
 function mapMyTask(task: Record<string, unknown>): Task {
-  const user = task.user as { id?: string; name?: string; branchId?: string | null } | null;
+  const user = task.user as { id?: string; name?: string; portfolioId?: string | null } | null;
   const clientTask = (task.clientTask as Array<{ Client?: { id?: string; institution?: string } }>) ?? [];
 
   return {
@@ -15,7 +15,7 @@ function mapMyTask(task: Record<string, unknown>): Task {
     assignedTo: {
       id: user?.id ?? "",
       name: user?.name ?? "Unassigned",
-      branchId: user?.branchId ?? null,
+      portfolioId: user?.portfolioId ?? null,
     },
     isAssignedToCurrentUser: true,
     isPersonal: Boolean(task.isPersonal),

@@ -1,7 +1,7 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
-import { clearLoginBranchCookie } from "@/lib/actions/branch.action";
+import { clearLoginBranchCookie } from "@/lib/actions/portfolio.action";
 import { ROUTES } from "@/lib/constants";
 import { LogOut } from "lucide-react";
 import { useTransition } from "react";

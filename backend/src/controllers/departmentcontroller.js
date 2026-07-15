@@ -6,10 +6,10 @@ import {
   getScope,
   mergeWhere,
   resolveWritableBranchId,
-} from "../lib/branch-scope.js";
+} from "../lib/portfolio-scope.js";
 
 const departmentInclude = {
-  branch: {
+  portfolio: {
     select: { id: true, name: true },
   },
 };
@@ -25,7 +25,7 @@ export const getAllDepartments = async (req, res) => {
         activeOnly === "true" ? { isActive: true } : {},
       ),
       include: departmentInclude,
-      orderBy: [{ branch: { name: "asc" } }, { name: "asc" }],
+      orderBy: [{ portfolio: { name: "asc" } }, { name: "asc" }],
     });
 
     res.json({ success: true, data: departments });
@@ -55,35 +55,35 @@ export const getDepartmentById = async (req, res) => {
 };
 
 export const createDepartment = async (req, res) => {
-  const { name, description, isActive, branchId } = req.body;
+  const { name, description, isActive, portfolioId } = req.body;
 
   try {
     const scope = getScope(req);
     const trimmedName = String(name ?? "").trim();
-    const trimmedBranchId = resolveWritableBranchId(scope, branchId);
+    const trimmedBranchId = resolveWritableBranchId(scope, portfolioId);
 
     if (!trimmedBranchId) {
-      return res.status(400).json({ success: false, error: "Branch is required" });
+      return res.status(400).json({ success: false, error: "Portfolio is required" });
     }
     if (!trimmedName) {
       return res.status(400).json({ success: false, error: "Department name is required" });
     }
 
-    const branch = await prisma.branch.findUnique({
+    const portfolio = await prisma.portfolio.findUnique({
       where: { id: trimmedBranchId },
       select: { id: true },
     });
-    if (!branch) {
-      return res.status(400).json({ success: false, error: "Branch not found" });
+    if (!portfolio) {
+      return res.status(400).json({ success: false, error: "Portfolio not found" });
     }
 
     const existing = await prisma.department.findFirst({
-      where: { name: trimmedName, branchId: trimmedBranchId },
+      where: { name: trimmedName, portfolioId: trimmedBranchId },
     });
     if (existing) {
       return res.status(400).json({
         success: false,
-        error: "Department name already exists for this branch",
+        error: "Department name already exists for this portfolio",
       });
     }
 
@@ -94,7 +94,7 @@ export const createDepartment = async (req, res) => {
         name: trimmedName,
         description: description?.trim() || null,
         isActive: isActive !== false,
-        branchId: trimmedBranchId,
+        portfolioId: trimmedBranchId,
       },
       include: departmentInclude,
     });
@@ -107,7 +107,7 @@ export const createDepartment = async (req, res) => {
 
 export const updateDepartment = async (req, res) => {
   const { id } = req.params;
-  const { name, description, isActive, branchId } = req.body;
+  const { name, description, isActive, portfolioId } = req.body;
 
   try {
     const scope = getScope(req);
@@ -117,16 +117,16 @@ export const updateDepartment = async (req, res) => {
     if (!existing) {
       return res.status(404).json({ success: false, error: "Department not found" });
     }
-    if (denyIfOutOfScope(res, scope, existing.branchId)) return;
+    if (denyIfOutOfScope(res, scope, existing.portfolioId)) return;
 
     const trimmedName = String(name ?? existing.name).trim();
     const trimmedBranchId = resolveWritableBranchId(
       scope,
-      branchId ?? existing.branchId,
+      portfolioId ?? existing.portfolioId,
     );
 
     if (!trimmedBranchId) {
-      return res.status(400).json({ success: false, error: "Branch is required" });
+      return res.status(400).json({ success: false, error: "Portfolio is required" });
     }
     if (!trimmedName) {
       return res.status(400).json({ success: false, error: "Department name is required" });
@@ -135,14 +135,14 @@ export const updateDepartment = async (req, res) => {
     const duplicate = await prisma.department.findFirst({
       where: {
         name: trimmedName,
-        branchId: trimmedBranchId,
+        portfolioId: trimmedBranchId,
         NOT: { id },
       },
     });
     if (duplicate) {
       return res.status(400).json({
         success: false,
-        error: "Department name already exists for this branch",
+        error: "Department name already exists for this portfolio",
       });
     }
 
@@ -152,7 +152,7 @@ export const updateDepartment = async (req, res) => {
         name: trimmedName,
         description: description === undefined ? undefined : description?.trim() || null,
         isActive: isActive !== undefined ? !!isActive : undefined,
-        branchId: trimmedBranchId,
+        portfolioId: trimmedBranchId,
       },
       include: departmentInclude,
     });
@@ -174,11 +174,11 @@ export const deleteDepartment = async (req, res) => {
     if (!existing) {
       return res.status(404).json({ success: false, error: "Department not found" });
     }
-    if (denyIfOutOfScope(res, scope, existing.branchId)) return;
+    if (denyIfOutOfScope(res, scope, existing.portfolioId)) return;
 
-    const usersCount = await prisma.user.count({
+    const usersCount = await prisma.staff.count({
       where: {
-        branchId: existing.branchId,
+        portfolioId: existing.portfolioId,
         department: existing.name,
       },
     });

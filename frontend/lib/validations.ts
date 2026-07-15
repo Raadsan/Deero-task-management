@@ -133,8 +133,14 @@ const EditCreateUserFieldsSchema = z.object({
       "Name must contain only letters, numbers, and spaces.",
     ),
   gender: z.string().min(1, "Gender is Required"),
-  department: z.string().optional(),
-  branchId: z.string().optional(),
+  salary: z
+    .string()
+    .trim()
+    .min(1, "Salary is required.")
+    .regex(/^\d+(\.\d{1,2})?$/, {
+      message: "Salary must be a valid amount, e.g. 500 or 500.00",
+    }),
+  portfolioId: z.string().optional(),
   status: z.enum(["active", "inactive"]).optional(),
   email: z
     .email("Invalid email address.")
@@ -163,11 +169,11 @@ function refineUserBranchRequired(
   ctx: z.RefinementCtx,
 ) {
   const role = String(data.role ?? "").trim().toLowerCase();
-  if (role !== "superadmin" && !data.branchId?.trim()) {
+  if (role !== "superadmin" && !data.portfolioId?.trim()) {
     ctx.addIssue({
       code: "custom",
-      path: ["branchId"],
-      message: "Branch is required",
+      path: ["portfolioId"],
+      message: "Portfolio is required",
     });
   }
 }

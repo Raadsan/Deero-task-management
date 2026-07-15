@@ -4,8 +4,8 @@ import {
   isReservedBranchSlug,
   normalizeBranchSlug,
   saveBranchLogo,
-} from "../lib/branch-logo.js";
-import { branchListWhere, canManageBranches, clearMainBranchCache, denyIfOutOfScope, getScope } from "../lib/branch-scope.js";
+} from "../lib/portfolio-logo.js";
+import { branchListWhere, canManageBranches, clearMainBranchCache, denyIfOutOfScope, getScope } from "../lib/portfolio-scope.js";
 
 const publicBranchSelect = {
   id: true,
@@ -23,7 +23,7 @@ async function ensureUniqueSlug(baseSlug, excludeId) {
   let counter = 1;
 
   while (true) {
-    const existing = await prisma.branch.findFirst({
+    const existing = await prisma.portfolio.findFirst({
       where: {
         slug,
         ...(excludeId ? { NOT: { id: excludeId } } : {}),
@@ -39,7 +39,7 @@ async function ensureUniqueSlug(baseSlug, excludeId) {
 
 async function resolveBranchSlug({ name, slug, excludeId }) {
   if (isRootLoginPath(slug)) {
-    throw new Error('Use "/" as the only root login path via branch URL field');
+    throw new Error('Use "/" as the only root login path via portfolio URL field');
   }
   const raw = slug !== undefined && slug !== null ? slug : name;
   const base = normalizeBranchSlug(raw);
@@ -56,7 +56,7 @@ function isRootLoginPath(value) {
 }
 
 async function clearOtherRootLoginBranches(excludeId) {
-  await prisma.branch.updateMany({
+  await prisma.portfolio.updateMany({
     where: {
       usesRootLogin: true,
       ...(excludeId ? { NOT: { id: excludeId } } : {}),
@@ -66,7 +66,7 @@ async function clearOtherRootLoginBranches(excludeId) {
 }
 
 async function assertRootLoginAvailable(excludeId) {
-  const existing = await prisma.branch.findFirst({
+  const existing = await prisma.portfolio.findFirst({
     where: {
       usesRootLogin: true,
       ...(excludeId ? { NOT: { id: excludeId } } : {}),
@@ -76,7 +76,7 @@ async function assertRootLoginAvailable(excludeId) {
 
   if (existing) {
     throw new Error(
-      `"/" is already used by branch "${existing.name}". Only one branch can use /.`,
+      `"/" is already used by portfolio "${existing.name}". Only one portfolio can use /.`,
     );
   }
 }
@@ -89,10 +89,10 @@ async function assignRootLogin(updateData, excludeId) {
   return updateData;
 }
 
-export const getAllBranches = async (req, res) => {
+export const getAllPortfolios = async (req, res) => {
   try {
     const scope = getScope(req);
-    const branches = await prisma.branch.findMany({
+    const portfolios = await prisma.portfolio.findMany({
       where: branchListWhere(scope),
       orderBy: [{ usesRootLogin: "desc" }, { createdAt: "desc" }],
       include: {
@@ -100,17 +100,17 @@ export const getAllBranches = async (req, res) => {
       },
     });
 
-    res.json({ success: true, data: branches });
+    res.json({ success: true, data: portfolios });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 };
 
-export const getBranchById = async (req, res) => {
+export const getPortfolioById = async (req, res) => {
   const { id } = req.params;
   try {
     const scope = getScope(req);
-    const branch = await prisma.branch.findFirst({
+    const portfolio = await prisma.portfolio.findFirst({
       where: { id, ...branchListWhere(scope) },
       include: {
         users: {
@@ -125,36 +125,36 @@ export const getBranchById = async (req, res) => {
         _count: { select: { users: true } },
       },
     });
-    if (!branch) {
-      return res.status(404).json({ success: false, message: "Branch not found" });
+    if (!portfolio) {
+      return res.status(404).json({ success: false, message: "Portfolio not found" });
     }
-    res.json({ success: true, data: branch });
+    res.json({ success: true, data: portfolio });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 };
 
-function branchLoginPath(branch) {
-  if (!branch) return null;
-  if (branch.usesRootLogin) return "/";
-  return branch.slug ? `/${branch.slug}` : null;
+function branchLoginPath(portfolio) {
+  if (!portfolio) return null;
+  if (portfolio.usesRootLogin) return "/";
+  return portfolio.slug ? `/${portfolio.slug}` : null;
 }
 
-export const validateBranchLogin = async (req, res) => {
+export const validatePortfolioLogin = async (req, res) => {
   const { userBranchId, loginBranchId, userRole } = req.body;
 
   if (userRole === "superadmin" && !userBranchId) {
-    return res.json({ success: true, data: { branchId: loginBranchId || null } });
+    return res.json({ success: true, data: { portfolioId: loginBranchId || null } });
   }
 
   if (!userBranchId) {
     return res.status(403).json({
       success: false,
-      error: "This account has no branch assigned",
+      error: "This account has no portfolio assigned",
     });
   }
 
-  const userBranch = await prisma.branch.findUnique({
+  const userBranch = await prisma.portfolio.findUnique({
     where: { id: userBranchId },
     select: {
       id: true,
@@ -167,12 +167,12 @@ export const validateBranchLogin = async (req, res) => {
   if (!userBranch?.isActive) {
     return res.status(403).json({
       success: false,
-      error: "Your branch is not active",
+      error: "Your portfolio is not active",
     });
   }
 
   if (loginBranchId && loginBranchId === userBranchId) {
-    return res.json({ success: true, data: { branchId: userBranchId } });
+    return res.json({ success: true, data: { portfolioId: userBranchId } });
   }
 
   return res.status(403).json({
@@ -182,11 +182,11 @@ export const validateBranchLogin = async (req, res) => {
   });
 };
 
-export const getBranchLoginPath = async (req, res) => {
-  const { branchId } = req.params;
+export const getPortfolioLoginPath = async (req, res) => {
+  const { portfolioId } = req.params;
   try {
-    const branch = await prisma.branch.findUnique({
-      where: { id: branchId },
+    const portfolio = await prisma.portfolio.findUnique({
+      where: { id: portfolioId },
       select: {
         id: true,
         slug: true,
@@ -194,77 +194,77 @@ export const getBranchLoginPath = async (req, res) => {
         isActive: true,
       },
     });
-    if (!branch) {
-      return res.status(404).json({ success: false, error: "Branch not found" });
+    if (!portfolio) {
+      return res.status(404).json({ success: false, error: "Portfolio not found" });
     }
     res.json({
       success: true,
-      data: { path: branchLoginPath(branch), branchId: branch.id },
+      data: { path: branchLoginPath(portfolio), portfolioId: portfolio.id },
     });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 };
 
-export const getPublicBranchBySlug = async (req, res) => {
+export const getPublicPortfolioBySlug = async (req, res) => {
   const { slug } = req.params;
   try {
-    const branch = await prisma.branch.findFirst({
+    const portfolio = await prisma.portfolio.findFirst({
       where: { slug, isActive: true, usesRootLogin: false },
       select: publicBranchSelect,
     });
-    if (!branch) {
-      return res.status(404).json({ success: false, message: "Branch not found" });
+    if (!portfolio) {
+      return res.status(404).json({ success: false, message: "Portfolio not found" });
     }
-    res.json({ success: true, data: branch });
+    res.json({ success: true, data: portfolio });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 };
 
-export const getRootLoginBranchBranding = async (req, res) => {
+export const getRootLoginPortfolioBranding = async (req, res) => {
   try {
-    const branch = await prisma.branch.findFirst({
+    const portfolio = await prisma.portfolio.findFirst({
       where: {
         isActive: true,
         usesRootLogin: true,
       },
       select: publicBranchSelect,
     });
-    if (!branch) {
-      return res.status(404).json({ success: false, message: "Root login branch not found" });
+    if (!portfolio) {
+      return res.status(404).json({ success: false, message: "Root login portfolio not found" });
     }
-    res.json({ success: true, data: branch });
+    res.json({ success: true, data: portfolio });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 };
 
-/** @deprecated Use getRootLoginBranchBranding */
-export const getMainBranchBranding = getRootLoginBranchBranding;
+/** @deprecated Use getRootLoginPortfolioBranding */
+export const getMainBranchBranding = getRootLoginPortfolioBranding;
 
-export const getBranchBrandingById = async (req, res) => {
+export const getPortfolioBrandingById = async (req, res) => {
   const { id } = req.params;
   try {
-    const branch = await prisma.branch.findUnique({
+    const portfolio = await prisma.portfolio.findUnique({
       where: { id },
       select: publicBranchSelect,
     });
-    if (!branch) {
-      return res.status(404).json({ success: false, message: "Branch not found" });
+    if (!portfolio) {
+      return res.status(404).json({ success: false, message: "Portfolio not found" });
     }
-    res.json({ success: true, data: branch });
+    res.json({ success: true, data: portfolio });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 };
 
-export const createBranch = async (req, res) => {
+export const createPortfolio = async (req, res) => {
   const scope = getScope(req);
   if (!canManageBranches(scope)) {
     return res.status(403).json({
       success: false,
-      error: "Forbidden: branch management is restricted",
+      error: "Forbidden: portfolio management is restricted",
     });
   }
 
@@ -285,13 +285,13 @@ export const createBranch = async (req, res) => {
   try {
     const trimmedName = String(name ?? "").trim();
     if (!trimmedName) {
-      return res.status(400).json({ success: false, error: "Branch name is required" });
+      return res.status(400).json({ success: false, error: "Portfolio name is required" });
     }
 
-    const id = await generateCustomId({ entityTybe: "branches" });
+    const id = await generateCustomId({ entityTybe: "portfolios" });
     const wantsRootLogin = !!useRootLogin || isRootLoginPath(slug);
 
-    let branchSlug = null;
+    let portfolioSlug = null;
     let usesRootLogin = false;
 
     if (wantsRootLogin) {
@@ -299,7 +299,7 @@ export const createBranch = async (req, res) => {
       await clearOtherRootLoginBranches();
       usesRootLogin = true;
     } else {
-      branchSlug = await resolveBranchSlug({ name: trimmedName, slug });
+      portfolioSlug = await resolveBranchSlug({ name: trimmedName, slug });
     }
 
     let logoUrl = null;
@@ -307,11 +307,11 @@ export const createBranch = async (req, res) => {
     if (logoData) logoUrl = await saveBranchLogo(id, logoData, "logo");
     if (iconLogoData) iconLogoUrl = await saveBranchLogo(id, iconLogoData, "icon");
 
-    const branch = await prisma.branch.create({
+    const portfolio = await prisma.portfolio.create({
       data: {
         id,
         name: trimmedName,
-        slug: branchSlug,
+        slug: portfolioSlug,
         description: description || null,
         location: location || null,
         phone: phone || null,
@@ -325,19 +325,19 @@ export const createBranch = async (req, res) => {
     });
 
     clearMainBranchCache();
-    res.status(201).json({ success: true, data: branch });
+    res.status(201).json({ success: true, data: portfolio });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 };
 
-export const updateBranch = async (req, res) => {
+export const updatePortfolio = async (req, res) => {
   const { id } = req.params;
   const scope = getScope(req);
   if (!canManageBranches(scope)) {
     return res.status(403).json({
       success: false,
-      error: "Forbidden: branch management is restricted",
+      error: "Forbidden: portfolio management is restricted",
     });
   }
 
@@ -357,14 +357,14 @@ export const updateBranch = async (req, res) => {
   } = req.body;
 
   try {
-    const existing = await prisma.branch.findUnique({ where: { id } });
+    const existing = await prisma.portfolio.findUnique({ where: { id } });
     if (!existing) {
-      return res.status(404).json({ success: false, error: "Branch not found" });
+      return res.status(404).json({ success: false, error: "Portfolio not found" });
     }
 
     const trimmedName = String(name ?? existing.name).trim();
     if (!trimmedName) {
-      return res.status(400).json({ success: false, error: "Branch name is required" });
+      return res.status(400).json({ success: false, error: "Portfolio name is required" });
     }
 
     const updateData = {
@@ -394,7 +394,7 @@ export const updateBranch = async (req, res) => {
       } else {
         return res.status(400).json({
           success: false,
-          error: "Branch URL can only be removed once",
+          error: "Portfolio URL can only be removed once",
         });
       }
     } else if (slug !== undefined && slug !== null && String(slug).trim()) {
@@ -419,38 +419,38 @@ export const updateBranch = async (req, res) => {
       updateData.iconLogoUrl = await saveBranchLogo(id, iconLogoData, "icon");
     }
 
-    const branch = await prisma.branch.update({
+    const portfolio = await prisma.portfolio.update({
       where: { id },
       data: updateData,
     });
 
     clearMainBranchCache();
-    res.json({ success: true, data: branch });
+    res.json({ success: true, data: portfolio });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 };
 
-export const deleteBranch = async (req, res) => {
+export const deletePortfolio = async (req, res) => {
   const { id } = req.params;
   try {
     const scope = getScope(req);
     if (!canManageBranches(scope)) {
       return res.status(403).json({
         success: false,
-        error: "Forbidden: branch management is restricted",
+        error: "Forbidden: portfolio management is restricted",
       });
     }
 
-    const branch = await prisma.branch.findUnique({ where: { id } });
-    if (branch?.usesRootLogin) {
+    const portfolio = await prisma.portfolio.findUnique({ where: { id } });
+    if (portfolio?.usesRootLogin) {
       return res.status(400).json({
         success: false,
-        error: "Cannot delete the root login branch",
+        error: "Cannot delete the root login portfolio",
       });
     }
-    await prisma.branch.delete({ where: { id } });
-    res.json({ success: true, message: "Branch deleted successfully" });
+    await prisma.portfolio.delete({ where: { id } });
+    res.json({ success: true, message: "Portfolio deleted successfully" });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

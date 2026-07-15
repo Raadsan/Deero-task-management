@@ -6,11 +6,11 @@ import {
   getScope,
   mergeWhere,
   resolveWritableBranchId,
-} from "../lib/branch-scope.js";
+} from "../lib/portfolio-scope.js";
 
 const serviceInclude = {
   subService: { orderBy: { name: "asc" } },
-  branch: { select: { id: true, name: true, slug: true } },
+  portfolio: { select: { id: true, name: true, slug: true } },
   _count: { select: { subService: true } },
 };
 
@@ -18,7 +18,7 @@ function mapServiceError(error) {
   const raw = error?.message || "";
 
   if (error.code === "P2002") {
-    return "A service or sub-service with this name already exists for this branch.";
+    return "A service or sub-service with this name already exists for this portfolio.";
   }
   if (error.code === "P2003") {
     return "This service or sub-service is linked to clients and cannot be removed.";
@@ -93,7 +93,7 @@ export const getAllServices = async (req, res) => {
     const services = await prisma.service.findMany({
       where: directBranchWhere(scope),
       include: serviceInclude,
-      orderBy: [{ branch: { name: "asc" } }, { serviceName: "asc" }],
+      orderBy: [{ portfolio: { name: "asc" } }, { serviceName: "asc" }],
     });
     res.json({ success: true, data: services });
   } catch (error) {
@@ -119,31 +119,31 @@ export const getServiceById = async (req, res) => {
 };
 
 export const createService = async (req, res) => {
-  const { serviceName, description, branchId, subServices = [] } = req.body;
+  const { serviceName, description, portfolioId, subServices = [] } = req.body;
   try {
     const scope = getScope(req);
-    const resolvedBranchId = resolveWritableBranchId(scope, branchId);
+    const resolvedBranchId = resolveWritableBranchId(scope, portfolioId);
     const trimmedName = String(serviceName ?? "").trim();
     if (!trimmedName) {
       return res.status(400).json({ success: false, error: "Service name is required" });
     }
 
     if (!resolvedBranchId) {
-      return res.status(400).json({ success: false, error: "Branch is required" });
+      return res.status(400).json({ success: false, error: "Portfolio is required" });
     }
 
-    const branch = await prisma.branch.findUnique({ where: { id: resolvedBranchId } });
-    if (!branch) {
-      return res.status(400).json({ success: false, error: "Branch not found" });
+    const portfolio = await prisma.portfolio.findUnique({ where: { id: resolvedBranchId } });
+    if (!portfolio) {
+      return res.status(400).json({ success: false, error: "Portfolio not found" });
     }
 
     const existing = await prisma.service.findFirst({
-      where: { serviceName: trimmedName, branchId: resolvedBranchId },
+      where: { serviceName: trimmedName, portfolioId: resolvedBranchId },
     });
     if (existing) {
       return res.status(400).json({
         success: false,
-        error: "This service already exists for the selected branch",
+        error: "This service already exists for the selected portfolio",
       });
     }
 
@@ -156,7 +156,7 @@ export const createService = async (req, res) => {
           id,
           serviceName: trimmedName,
           description: description?.trim() || null,
-          branchId: resolvedBranchId,
+          portfolioId: resolvedBranchId,
         },
       });
 
@@ -192,17 +192,17 @@ export const createService = async (req, res) => {
 
 export const updateService = async (req, res) => {
   const { id } = req.params;
-  const { serviceName, description, branchId, subServices = [] } = req.body;
+  const { serviceName, description, portfolioId, subServices = [] } = req.body;
   try {
     const scope = getScope(req);
-    const resolvedBranchId = resolveWritableBranchId(scope, branchId);
+    const resolvedBranchId = resolveWritableBranchId(scope, portfolioId);
     const trimmedName = String(serviceName ?? "").trim();
     if (!trimmedName) {
       return res.status(400).json({ success: false, error: "Service name is required" });
     }
 
     if (!resolvedBranchId) {
-      return res.status(400).json({ success: false, error: "Branch is required" });
+      return res.status(400).json({ success: false, error: "Portfolio is required" });
     }
 
     const existingService = await prisma.service.findFirst({
@@ -211,24 +211,24 @@ export const updateService = async (req, res) => {
     if (!existingService) {
       return res.status(404).json({ success: false, error: "Service not found" });
     }
-    if (denyIfOutOfScope(res, scope, existingService.branchId)) return;
+    if (denyIfOutOfScope(res, scope, existingService.portfolioId)) return;
 
-    const branch = await prisma.branch.findUnique({ where: { id: resolvedBranchId } });
-    if (!branch) {
-      return res.status(400).json({ success: false, error: "Branch not found" });
+    const portfolio = await prisma.portfolio.findUnique({ where: { id: resolvedBranchId } });
+    if (!portfolio) {
+      return res.status(400).json({ success: false, error: "Portfolio not found" });
     }
 
     const duplicate = await prisma.service.findFirst({
       where: {
         serviceName: trimmedName,
-        branchId: resolvedBranchId,
+        portfolioId: resolvedBranchId,
         NOT: { id },
       },
     });
     if (duplicate) {
       return res.status(400).json({
         success: false,
-        error: "This service already exists for the selected branch",
+        error: "This service already exists for the selected portfolio",
       });
     }
 
@@ -240,7 +240,7 @@ export const updateService = async (req, res) => {
         data: {
           serviceName: trimmedName,
           description: description?.trim() ?? null,
-          branchId: resolvedBranchId,
+          portfolioId: resolvedBranchId,
         },
       });
 
@@ -299,7 +299,7 @@ export const deleteService = async (req, res) => {
     if (!existing) {
       return res.status(404).json({ success: false, error: "Service not found" });
     }
-    if (denyIfOutOfScope(res, scope, existing.branchId)) return;
+    if (denyIfOutOfScope(res, scope, existing.portfolioId)) return;
 
     await prisma.service.delete({ where: { id } });
     res.json({ success: true, message: "Service deleted successfully" });

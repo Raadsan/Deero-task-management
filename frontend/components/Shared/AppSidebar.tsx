@@ -11,7 +11,11 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { ICONS, ROUTES } from "@/lib/constants";
-import { BranchBranding, getBranchThemeStyle, resolveBranchLogoUrl } from "@/lib/branch-branding";
+import {
+  BranchBranding,
+  getBranchThemeStyle,
+  resolveBranchLogoUrl,
+} from "@/lib/portfolio-branding";
 import { UserRole } from "@/lib/schema";
 import { AuthSession, SidebarItem } from "@/lib/types";
 import {
@@ -45,7 +49,9 @@ const NAVIGATION_LINKS: SidebarItem[] = [
   {
     name: "Tasks",
     href: ROUTES.tasks,
-    icon: <BriefcaseBusiness className="size-[18px] shrink-0" strokeWidth={2} />,
+    icon: (
+      <BriefcaseBusiness className="size-[18px] shrink-0" strokeWidth={2} />
+    ),
     role: [UserRole.admin, UserRole.superadmin],
   },
   {
@@ -66,7 +72,7 @@ const NAVIGATION_LINKS: SidebarItem[] = [
     ],
   },
   {
-    name: "Users",
+    name: "Staff",
     href: ROUTES.users,
     icon: <Users className="size-[18px] shrink-0" strokeWidth={2} />,
     role: [UserRole.admin, UserRole.superadmin],
@@ -78,15 +84,9 @@ const NAVIGATION_LINKS: SidebarItem[] = [
     role: [UserRole.admin, UserRole.superadmin],
   },
   {
-    name: "Branches",
-    href: ROUTES.branches,
+    name: "Portfolios",
+    href: ROUTES.portfolios,
     icon: <Building2 className="size-[18px] shrink-0" strokeWidth={2} />,
-    role: [UserRole.admin, UserRole.superadmin],
-  },
-  {
-    name: "Departments",
-    href: ROUTES.departments,
-    icon: <FolderTree className="size-[18px] shrink-0" strokeWidth={2} />,
     role: [UserRole.admin, UserRole.superadmin],
   },
   {
@@ -144,7 +144,7 @@ export function AppSidebar({ data, branding }: Props) {
       style={getBranchThemeStyle(branding)}
       className="sidebar-brand border-sidebar-border text-sidebar-foreground border-r shadow-none"
     >
-      <SidebarHeader className="!flex !h-[96px] !items-center !justify-center !p-0 overflow-hidden border-b border-sidebar-border sidebar-brand group-data-[collapsible=icon]:!h-[56px]">
+      <SidebarHeader className="border-sidebar-border sidebar-brand !flex !h-[96px] !items-center !justify-center overflow-hidden border-b !p-0 group-data-[collapsible=icon]:!h-[56px]">
         <Link
           href={ROUTES.dashboard}
           className="flex h-full w-full items-center justify-center px-4 py-2 transition-opacity hover:opacity-90"
@@ -183,35 +183,35 @@ export function AppSidebar({ data, branding }: Props) {
                     items: link.items?.map((item) => ({ href: item.href })),
                   }))}
                   fallback={NAVIGATION_LINKS.map((link, index) => {
-                  const currentRole = data?.user.role;
-                  if (link.items?.length) {
+                    const currentRole = data?.user.role;
+                    if (link.items?.length) {
+                      return (
+                        <SidebarCollapsibleNavItem
+                          key={link.name}
+                          id={link.name}
+                          name={link.name}
+                          icon={link.icon}
+                          items={link.items.map((sub, subIndex) => ({
+                            id: `${link.name}-${subIndex}`,
+                            name: sub.name,
+                            href: sub.href,
+                          }))}
+                          role={link.role}
+                          currentRole={currentRole as UserRole}
+                        />
+                      );
+                    }
                     return (
-                      <SidebarCollapsibleNavItem
-                        key={link.name}
-                        id={link.name}
-                        name={link.name}
-                        icon={link.icon}
-                        items={link.items.map((sub, subIndex) => ({
-                          id: `${link.name}-${subIndex}`,
-                          name: sub.name,
-                          href: sub.href,
-                        }))}
+                      <SideBarItem
+                        key={index}
                         role={link.role}
+                        icon={link.icon}
                         currentRole={currentRole as UserRole}
+                        href={link.href}
+                        name={link.name}
                       />
                     );
-                  }
-                  return (
-                    <SideBarItem
-                      key={index}
-                      role={link.role}
-                      icon={link.icon}
-                      currentRole={currentRole as UserRole}
-                      href={link.href}
-                      name={link.name}
-                    />
-                  );
-                })}
+                  })}
                 />
               </SidebarAccordionProvider>
             </SidebarMenu>
@@ -219,7 +219,7 @@ export function AppSidebar({ data, branding }: Props) {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="sidebar-brand border-t border-sidebar-border px-3 py-4">
+      <SidebarFooter className="sidebar-brand border-sidebar-border border-t px-3 py-4">
         {data?.user && <SettingAndLogoutMenu />}
       </SidebarFooter>
       <SidebarRail />

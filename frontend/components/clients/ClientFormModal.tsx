@@ -51,7 +51,7 @@ export default function ClientFormModal({
           <DialogDescription className="text-sm text-zinc-500">
             {mode === "create"
               ? "3 steps: type, details, then optional service, contract, and schedule. Save as draft anytime."
-              : "Update client details, branch, service, and agreement information."}
+              : "Update client details, portfolio, service, and agreement information."}
           </DialogDescription>
         </DialogHeader>
 

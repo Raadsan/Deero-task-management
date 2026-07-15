@@ -28,8 +28,8 @@ export default function UploadDocumentsModal({
             Upload Documents
           </DialogTitle>
           <DialogDescription className="text-sm text-zinc-500">
-            Add or replace user documents: Certificate, Transcription, CV, and
-            CID.
+            Add or replace staff documents: Certificate, Transcription, CV,
+            and CID.
           </DialogDescription>
         </DialogHeader>
 
@@ -41,7 +41,7 @@ export default function UploadDocumentsModal({
           />
         ) : (
           <p className="px-6 py-8 text-center text-sm text-zinc-500">
-            No user selected.
+            No employee selected.
           </p>
         )}
       </DialogContent>

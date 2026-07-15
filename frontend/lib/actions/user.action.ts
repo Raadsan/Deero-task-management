@@ -9,7 +9,7 @@ import { formatDate } from "../utils";
 
 export async function getAllUsers(): Promise<ActionResponse<any[]>> {
   try {
-    const response = await api.get("/api/users");
+    const response = await api.get("/api/staffs");
     const result = response.data;
 
     if (result.success) {
@@ -29,7 +29,7 @@ export async function getAllUsers(): Promise<ActionResponse<any[]>> {
 
 export async function createUser(params: any): Promise<ActionResponse> {
   try {
-    const response = await api.post("/api/users", params);
+    const response = await api.post("/api/staffs", params);
     if (response.data.success) {
       revalidatePath(ROUTES.users);
       return { success: true };
@@ -42,7 +42,7 @@ export async function createUser(params: any): Promise<ActionResponse> {
 
 export async function getUserById(userId: string): Promise<ActionResponse> {
   try {
-    const response = await api.get(`/api/users/${userId}`);
+    const response = await api.get(`/api/staffs/${userId}`);
     return { success: true, data: response.data.data };
   } catch (error) {
     return handleError({ errors: error, type: "server" }) as ErrorResponse;
@@ -55,7 +55,7 @@ export async function deleteUserById({
   userId: string;
 }): Promise<ActionResponse> {
   try {
-    const response = await api.delete(`/api/users/${userId}`);
+    const response = await api.delete(`/api/staffs/${userId}`);
     if (response.data.success) {
       revalidatePath(ROUTES.users);
       return { success: true };
@@ -72,7 +72,7 @@ export async function updateUserData(params: {
 }): Promise<ActionResponse> {
   try {
     const { id, ...data } = params;
-    const response = await api.put(`/api/users/${id}`, data);
+    const response = await api.put(`/api/staffs/${id}`, data);
     if (response.data.success) {
       revalidatePath(ROUTES.users);
       return { success: true };
@@ -85,7 +85,7 @@ export async function updateUserData(params: {
 
 export async function getUserUploadedFiles(userId: string): Promise<ActionResponse<any[]>> {
   try {
-    const response = await api.get(`/api/users/${userId}/files`);
+    const response = await api.get(`/api/staffs/${userId}/files`);
     return { success: true, data: response.data.data || [] };
   } catch (error) {
     return handleError({ errors: error, type: "server" }) as ErrorResponse;
@@ -94,7 +94,7 @@ export async function getUserUploadedFiles(userId: string): Promise<ActionRespon
 
 export async function deleteUserFileById({ fileId, userId, filePath }: { fileId: string; userId: string; filePath?: string }): Promise<ActionResponse> {
   try {
-    const response = await api.delete(`/api/users/${userId}/files/${fileId}`);
+    const response = await api.delete(`/api/staffs/${userId}/files/${fileId}`);
     if (response.data.success) {
       return { success: true };
     }
@@ -117,7 +117,7 @@ export async function saveUserFiles({
   }>;
 }): Promise<ActionResponse> {
   try {
-    const response = await api.post(`/api/users/${userId}/files`, { files });
+    const response = await api.post(`/api/staffs/${userId}/files`, { files });
     if (response.data.success) {
       return { success: true, data: response.data.data };
     }

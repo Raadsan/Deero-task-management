@@ -1,10 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  getUserUploadedFiles,
-  saveUserFiles,
-} from "@/lib/actions/user.action";
+import { getUserUploadedFiles, saveUserFiles } from "@/lib/actions/user.action";
 import { USER_DOCUMENT_TYPES } from "@/lib/constants";
 import { btnFormCancel, btnFormSubmit } from "@/lib/dashboard-ui";
 import { cn } from "@/lib/utils";
@@ -62,7 +59,10 @@ export default function UploadUserDocumentsForm({
     if (!fileList?.length) return;
     const file = fileList[0];
 
-    if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+    if (
+      file.type !== "application/pdf" &&
+      !file.name.toLowerCase().endsWith(".pdf")
+    ) {
       toast.error("Only PDF files are allowed.");
       return;
     }
@@ -87,10 +87,12 @@ export default function UploadUserDocumentsForm({
   }
 
   function handleUpload() {
-    const entries: DocumentSelection[] = USER_DOCUMENT_TYPES.map(({ label }) => ({
-      label: label as string,
-      file: selections[label],
-    })).filter((item): item is DocumentSelection => Boolean(item.file));
+    const entries: DocumentSelection[] = USER_DOCUMENT_TYPES.map(
+      ({ label }) => ({
+        label: label as string,
+        file: selections[label],
+      }),
+    ).filter((item): item is DocumentSelection => Boolean(item.file));
 
     if (!entries.length) {
       toast.error("Select at least one document to upload.");
@@ -145,8 +147,8 @@ export default function UploadUserDocumentsForm({
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-6 py-5">
         <p className="text-sm text-zinc-500">
-          Upload PDF documents for this user. Each type can have one file (max
-          1MB). Uploading again replaces the previous file of that type.
+          Upload PDF documents for this employee. Each type can have one file
+          (max 1MB). Uploading again replaces the previous file of that type.
         </p>
 
         {USER_DOCUMENT_TYPES.map(({ id, label }) => {
@@ -170,8 +172,8 @@ export default function UploadUserDocumentsForm({
 
               {existing && !selected && (
                 <p className="mb-2 truncate text-xs text-zinc-500">
-                  Current: {existing.name} ({(existing.fileSize / 1024).toFixed(1)}{" "}
-                  KB)
+                  Current: {existing.name} (
+                  {(existing.fileSize / 1024).toFixed(1)} KB)
                 </p>
               )}
 
@@ -182,15 +184,13 @@ export default function UploadUserDocumentsForm({
                 type="file"
                 accept=".pdf,application/pdf"
                 className="hidden"
-                onChange={(event) =>
-                  handleFilePick(label, event.target.files)
-                }
+                onChange={(event) => handleFilePick(label, event.target.files)}
               />
 
               {selected ? (
                 <div className="flex items-center justify-between gap-3 rounded-md border border-zinc-200 bg-white px-3 py-2">
                   <div className="flex min-w-0 items-center gap-2">
-                    <FileText className="size-4 shrink-0 text-primary" />
+                    <FileText className="text-primary size-4 shrink-0" />
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-zinc-800">
                         {selected.name}
@@ -216,7 +216,7 @@ export default function UploadUserDocumentsForm({
                   disabled={transition}
                   onClick={() => inputRefs.current[label]?.click()}
                   className={cn(
-                    "flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-600 transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-60",
+                    "hover:border-primary hover:text-primary flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-zinc-300 bg-white px-4 py-3 text-sm text-zinc-600 transition-colors disabled:cursor-not-allowed disabled:opacity-60",
                   )}
                 >
                   <Upload className="size-4" />
@@ -243,7 +243,11 @@ export default function UploadUserDocumentsForm({
                 Cancel
               </Button>
             )}
-            <Button type="button" onClick={handleUpload} className={btnFormSubmit}>
+            <Button
+              type="button"
+              onClick={handleUpload}
+              className={btnFormSubmit}
+            >
               Upload Documents
             </Button>
           </>

@@ -6,7 +6,7 @@ import {
   mergeWhere,
   projectBranchWhere,
   resolveWritableBranchId,
-} from "../lib/branch-scope.js";
+} from "../lib/portfolio-scope.js";
 import {
   findWorkflowTemplate,
   generateTasksFromTemplate,
@@ -17,7 +17,7 @@ import {
 const requestInclude = {
   client: { select: { id: true, institution: true, clientType: true, accountManagerId: true } },
   project: { select: { id: true, name: true } },
-  branch: { select: { id: true, name: true } },
+  portfolio: { select: { id: true, name: true } },
   createdBy: { select: { id: true, name: true } },
   assignees: {
     include: { user: { select: { id: true, name: true, role: true } } },
@@ -26,9 +26,9 @@ const requestInclude = {
 };
 
 function contentRequestWhere(scope, extra = {}) {
-  const branchId = scope.branchId && !scope.seesAllBranches ? scope.branchId : null;
+  const portfolioId = scope.portfolioId && !scope.seesAllBranches ? scope.portfolioId : null;
   return mergeWhere(
-    branchId ? { branchId } : {},
+    portfolioId ? { portfolioId } : {},
     extra,
   );
 }
@@ -93,7 +93,7 @@ export const createContentRequest = async (req, res) => {
   const data = req.body;
   try {
     const scope = getScope(req);
-    const branchId = resolveWritableBranchId(scope, data.branchId);
+    const portfolioId = resolveWritableBranchId(scope, data.portfolioId);
 
     const client = await prisma.client.findFirst({
       where: mergeWhere({ id: data.clientId }, clientBranchWhere(scope)),
@@ -114,7 +114,7 @@ export const createContentRequest = async (req, res) => {
           deadline: data.deadline ? new Date(data.deadline) : null,
           clientId: client.id,
           projectId: data.projectId ?? null,
-          branchId: branchId ?? client.branchId ?? null,
+          portfolioId: portfolioId ?? client.portfolioId ?? null,
           createdById: scope.user?.id ?? null,
         },
       });

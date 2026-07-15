@@ -9,7 +9,7 @@ async function main() {
 
   console.log(`Checking if user ${email} exists...`);
 
-  const existingUser = await prisma.user.findUnique({
+  const existingUser = await prisma.staff.findUnique({
     where: { email },
   });
 
@@ -33,7 +33,7 @@ async function main() {
 
     if (res) {
       console.log("User created. Setting role to superadmin...");
-      await prisma.user.update({
+      await prisma.staff.update({
         where: { email },
         data: { role: "superadmin" },
       });

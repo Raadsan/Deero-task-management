@@ -5,7 +5,7 @@ import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
 import { SidebarSkeletonLoader } from "@/components/Shared/Loader";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { PermissionProvider } from "@/context/PermissionContext";
-import { getDashboardSession } from "@/lib/actions/branch.action";
+import { getDashboardSession } from "@/lib/actions/portfolio.action";
 import { Suspense } from "react";
 
 export default async function DashboardShell({

@@ -1,6 +1,6 @@
 import { generateDailyRecurringTasks } from "../lib/recurring-task-generator.js";
 import { generateMonthlyInstallments } from "../lib/monthly-billing-generator.js";
-import { getScope } from "../lib/branch-scope.js";
+import { getScope } from "../lib/portfolio-scope.js";
 
 function isAuthorizedJobRequest(req) {
   const secret = process.env.CRON_SECRET?.trim();

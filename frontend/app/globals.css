@@ -1,29 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  --branch-primary: #5f3a16;
-  --branch-secondary: #c3986b;
+  --portfolio-primary: #5f3a16;
+  --portfolio-secondary: #c3986b;
 }
 
 @theme {
-  --color-brand-primary: var(--branch-primary);
-  --color-brand-secondary: var(--branch-secondary);
-  --color-primary: var(--branch-primary);
+  --color-brand-primary: var(--portfolio-primary);
+  --color-brand-secondary: var(--portfolio-secondary);
+  --color-primary: var(--portfolio-primary);
   --color-primary-foreground: #ffffff;
-  --color-secondary: var(--branch-secondary);
+  --color-secondary: var(--portfolio-secondary);
   --color-secondary-foreground: #ffffff;
-  --color-secondary-100: var(--branch-primary);
-  --color-orange-100: var(--branch-secondary);
-  --color-orange-200: var(--branch-secondary);
-  --color-secondary-200: var(--branch-primary);
-  --color-orange-300: var(--branch-secondary);
-  --color-dark-red: var(--branch-primary);
+  --color-secondary-100: var(--portfolio-primary);
+  --color-orange-100: var(--portfolio-secondary);
+  --color-orange-200: var(--portfolio-secondary);
+  --color-secondary-200: var(--portfolio-primary);
+  --color-orange-300: var(--portfolio-secondary);
+  --color-dark-red: var(--portfolio-primary);
   --color-foreground: hsla(323deg, 98%, 3%, 1);
   --color-dark-gray: hsl(180deg, 1%, 37%);
   --color-light-gray: hsl(120deg, 1%, 84%);
   --color-light: hsl(212deg, 48%, 94%);
   --color-success: hsl(154deg, 85%, 37%);
-  --color-warning: var(--branch-secondary);
+  --color-warning: var(--portfolio-secondary);
   --color-mint: hsl(124deg, 29%, 73%);
   --color-cream: hsl(55deg, 62%, 73%);
   --color-light-blue: hsl(225deg, 88%, 94%);
@@ -39,19 +39,19 @@
   --color-light-rose: hsl(0deg, 44%, 96%);
   --color-muted: hsl(210deg, 40%, 96%);
   --color-muted-foreground: hsl(215deg, 16%, 47%);
-  --color-sidebar: var(--branch-primary);
+  --color-sidebar: var(--portfolio-primary);
   --color-sidebar-foreground: #ffffff;
-  --color-sidebar-primary: var(--branch-primary);
+  --color-sidebar-primary: var(--portfolio-primary);
   --color-sidebar-primary-foreground: #ffffff;
-  --color-sidebar-accent: var(--branch-secondary);
+  --color-sidebar-accent: var(--portfolio-secondary);
   --color-sidebar-accent-foreground: #ffffff;
   --color-sidebar-border: rgb(255 255 255 / 0.12);
-  --color-sidebar-ring: var(--branch-secondary);
+  --color-sidebar-ring: var(--portfolio-secondary);
 }
 
 @layer components {
   .btn-brand {
-    background-color: var(--branch-primary);
+    background-color: var(--portfolio-primary);
     color: #ffffff;
     transition:
       background-color 0.2s ease,
@@ -60,17 +60,17 @@
   }
 
   .btn-brand:hover:not(:disabled) {
-    background-color: var(--branch-secondary);
+    background-color: var(--portfolio-secondary);
     color: #ffffff;
   }
 
   .table-head-brand {
-    background-color: var(--branch-primary);
-    border-color: var(--branch-primary);
+    background-color: var(--portfolio-primary);
+    border-color: var(--portfolio-primary);
   }
 
   .action-icon-view {
-    color: var(--branch-primary);
+    color: var(--portfolio-primary);
     transition:
       color 0.2s ease,
       background-color 0.2s ease;
@@ -83,7 +83,7 @@
   }
 
   .action-icon-edit {
-    color: var(--branch-primary);
+    color: var(--portfolio-primary);
     transition:
       color 0.2s ease,
       background-color 0.2s ease;
@@ -107,12 +107,12 @@
   }
 
   .sidebar-brand {
-    background-color: var(--branch-primary);
+    background-color: var(--portfolio-primary);
     color: #ffffff;
   }
 
   .sidebar-brand-active {
-    background-color: var(--branch-secondary);
+    background-color: var(--portfolio-secondary);
     color: #ffffff;
   }
 }

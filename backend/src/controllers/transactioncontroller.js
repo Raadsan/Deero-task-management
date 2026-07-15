@@ -6,7 +6,7 @@ import {
   incomeTransactionBranchWhere,
   mergeWhere,
   salaryBranchWhere,
-} from "../lib/branch-scope.js";
+} from "../lib/portfolio-scope.js";
 
 export const getAllIncomes = async (req, res) => {
   try {

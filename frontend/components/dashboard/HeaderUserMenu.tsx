@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
-import { clearLoginBranchCookie } from "@/lib/actions/branch.action";
+import { clearLoginBranchCookie } from "@/lib/actions/portfolio.action";
 import { ROUTES } from "@/lib/constants";
 import { UserRole } from "@/lib/schema";
 import { cn } from "@/lib/utils";

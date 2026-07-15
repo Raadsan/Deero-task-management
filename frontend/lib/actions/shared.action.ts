@@ -6,8 +6,8 @@ import { handleError } from "../error/handle-error";
 import api from "../api";
 import { ActionResponse, ErrorResponse, Client, User } from "../types";
 import { getUserSession } from "./auth.action";
-import { getAllBranches, getBranchById, BranchRecord } from "./branch.action";
-import { seesAllBranchesForUser } from "../branch-access";
+import { getAllBranches, getBranchById, BranchRecord } from "./portfolio.action";
+import { seesAllBranchesForUser } from "../portfolio-access";
 
 export type TaskFormClientOption = {
   id: string;
@@ -39,10 +39,10 @@ function resolveAgreementSubService(client: any, agreement: any) {
 }
 
 export async function getTaskFormClientsByBranch(
-  branchId: string,
+  portfolioId: string,
 ): Promise<ActionResponse<TaskFormClientOption[]>> {
   try {
-    if (!branchId) {
+    if (!portfolioId) {
       return { success: true, data: [] };
     }
 
@@ -58,11 +58,11 @@ export async function getTaskFormClientsByBranch(
             const service = resolveAgreementService(client, agreement);
             const subService = resolveAgreementSubService(client, agreement);
             const agreementBranchId =
-              service?.branchId ?? service?.branch?.id ?? null;
+              service?.portfolioId ?? service?.portfolio?.id ?? null;
             const serviceStatus = agreement.serviceStatus ?? "pending";
 
             if (serviceStatus === "completed") return null;
-            if (agreementBranchId !== branchId) return null;
+            if (agreementBranchId !== portfolioId) return null;
 
             const serviceName = service?.serviceName ?? "";
             const subServiceName = subService?.name ?? "";
@@ -99,7 +99,7 @@ export async function getTaskFormClientsByBranch(
 
 export async function getTaskFormBranchOptions(): Promise<
   ActionResponse<{
-    branches: Array<{ id: string; name: string }>;
+    portfolios: Array<{ id: string; name: string }>;
     defaultBranchId: string;
     singleBranch: boolean;
   }>
@@ -111,19 +111,19 @@ export async function getTaskFormBranchOptions(): Promise<
     }
 
     const user = session.data.user as {
-      branchId?: string | null;
+      portfolioId?: string | null;
       role?: string | null;
     };
     const branchesRes = await getAllBranches();
     const activeBranches = (branchesRes.data ?? []).filter(
-      (branch) => branch.isActive !== false,
+      (portfolio) => portfolio.isActive !== false,
     );
 
     let userBranch: BranchRecord | null =
-      activeBranches.find((branch) => branch.id === user.branchId) ?? null;
+      activeBranches.find((portfolio) => portfolio.id === user.portfolioId) ?? null;
 
-    if (!userBranch && user.branchId) {
-      const branchResult = await getBranchById(user.branchId);
+    if (!userBranch && user.portfolioId) {
+      const branchResult = await getBranchById(user.portfolioId);
       if (branchResult.success && branchResult.data) {
         userBranch = branchResult.data;
       }
@@ -132,28 +132,28 @@ export async function getTaskFormBranchOptions(): Promise<
     const seesAllBranches = seesAllBranchesForUser(
       user.role,
       userBranch,
-      user.branchId,
+      user.portfolioId,
     );
-    const branches = seesAllBranches
+    const portfolios = seesAllBranches
       ? activeBranches
-      : user.branchId
-        ? activeBranches.filter((branch) => branch.id === user.branchId)
+      : user.portfolioId
+        ? activeBranches.filter((portfolio) => portfolio.id === user.portfolioId)
         : activeBranches;
 
     const defaultBranchId =
-      user.branchId && branches.some((branch) => branch.id === user.branchId)
-        ? user.branchId
-        : (branches.find((branch) => branch.usesRootLogin)?.id ?? branches[0]?.id ?? "");
+      user.portfolioId && portfolios.some((portfolio) => portfolio.id === user.portfolioId)
+        ? user.portfolioId
+        : (portfolios.find((portfolio) => portfolio.usesRootLogin)?.id ?? portfolios[0]?.id ?? "");
 
     return {
       success: true,
       data: {
-        branches: branches.map((branch) => ({
-          id: branch.id,
-          name: branch.name,
+        portfolios: portfolios.map((portfolio) => ({
+          id: portfolio.id,
+          name: portfolio.name,
         })),
         defaultBranchId,
-        singleBranch: branches.length <= 1,
+        singleBranch: portfolios.length <= 1,
       },
     };
   } catch (error) {
@@ -163,10 +163,10 @@ export async function getTaskFormBranchOptions(): Promise<
 
 export async function GetAssigneesAndInstitutions({
   ownAssigned,
-  branchId,
+  portfolioId,
 }: {
   ownAssigned?: boolean;
-  branchId?: string;
+  portfolioId?: string;
 }): Promise<
   ActionResponse<{
     institutions: Pick<Client, "id" | "institution">[] | undefined;
@@ -176,7 +176,7 @@ export async function GetAssigneesAndInstitutions({
   try {
     const [institutionsRes, assigneesRes] = await Promise.all([
       getAllInstitutions(),
-      getAllAssignees({ ownAssigned, branchId }),
+      getAllAssignees({ ownAssigned, portfolioId }),
     ]);
 
     return {
@@ -211,10 +211,10 @@ export async function getAllInstitutions(): Promise<
 
 export async function getAllAssignees({
   ownAssigned,
-  branchId,
+  portfolioId,
 }: {
   ownAssigned?: boolean;
-  branchId?: string;
+  portfolioId?: string;
 }): Promise<ActionResponse<Pick<User, "name" | "email" | "id" | "role" | "department">[]>> {
   try {
     const session = await getUserSession();
@@ -230,12 +230,12 @@ export async function getAllAssignees({
       };
     }
 
-    const response = await api.get("/api/users");
+    const response = await api.get("/api/staffs");
     if (response.data.success) {
       let users = response.data.data;
 
-      if (branchId) {
-        users = users.filter((u: { branchId?: string | null }) => u.branchId === branchId);
+      if (portfolioId) {
+        users = users.filter((u: { portfolioId?: string | null }) => u.portfolioId === portfolioId);
       }
 
       if (currentUserRole === "admin") {

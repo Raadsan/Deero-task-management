@@ -9,6 +9,7 @@ import { usePathname } from "next/navigation";
 
 function getPageTitle(pathname: string) {
   if (pathname === "/") return "Dashboard";
+  if (pathname === "/staff") return "Staff";
   const segment = pathname.split("/").filter(Boolean).pop() ?? "Dashboard";
   return segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, " ");
 }
@@ -21,7 +22,7 @@ export default function DashboardTopBar() {
     <header className="z-30 shrink-0 border-b border-zinc-200 bg-white">
       <div className="flex h-14 items-center gap-4 px-4 lg:h-16 lg:px-6">
         <div className="flex shrink-0 items-center gap-3">
-          <SidebarTrigger className="size-9 shrink-0 rounded-md text-zinc-600 hover:bg-zinc-100 hover:text-primary focus-visible:ring-0" />
+          <SidebarTrigger className="hover:text-primary size-9 shrink-0 rounded-md text-zinc-600 hover:bg-zinc-100 focus-visible:ring-0" />
           <h1 className="truncate text-base font-bold tracking-tight text-zinc-900">
             {pageTitle}
           </h1>
@@ -35,7 +36,7 @@ export default function DashboardTopBar() {
               placeholder="Search anything... (Ctrl + K)"
               aria-label="Search"
               className={cn(
-                "h-9 w-full rounded-full border-0 bg-zinc-100 pr-4 pl-10 text-sm text-zinc-800 outline-none transition-all",
+                "h-9 w-full rounded-full border-0 bg-zinc-100 pr-4 pl-10 text-sm text-zinc-800 transition-all outline-none",
                 "placeholder:text-zinc-400 focus:bg-zinc-50 focus:ring-2 focus:ring-zinc-200",
               )}
             />

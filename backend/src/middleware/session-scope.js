@@ -1,5 +1,5 @@
 import { auth } from "../lib/auth.js";
-import { resolveBranchScopeFromSession } from "../lib/branch-scope.js";
+import { resolveBranchScopeFromSession } from "../lib/portfolio-scope.js";
 
 export async function attachSessionScope(req, res, next) {
   try {
@@ -13,7 +13,7 @@ export async function attachSessionScope(req, res, next) {
     req.branchScope = {
       authenticated: false,
       seesAllBranches: true,
-      branchId: null,
+      portfolioId: null,
       user: null,
     };
   }

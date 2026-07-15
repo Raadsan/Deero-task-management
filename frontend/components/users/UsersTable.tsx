@@ -15,7 +15,7 @@ export default function UsersTable() {
 
   return (
     <TableRenderer
-      title="Users management"
+      title="Employees management"
       toolbar={<UsersHeaderButtons />}
       tableType="users"
       columns={usersColumns}

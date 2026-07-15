@@ -758,7 +758,7 @@ export default function MenusConfigPage() {
               <label className="text-sm font-medium text-zinc-700">URL</label>
               <input
                 className={configCompactInputClass}
-                placeholder="e.g. /users"
+                placeholder="e.g. /staff"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
               />

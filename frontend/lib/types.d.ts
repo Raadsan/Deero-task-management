@@ -37,7 +37,7 @@ interface Task {
   assignedTo: {
     id: string;
     name: string;
-    branchId?: string | null;
+    portfolioId?: string | null;
   };
   assignedToId: string;
   description: string;
@@ -118,7 +118,7 @@ interface AllClients extends Omit<Client, "subServices" | "service"> {
     serviceName: string;
     subServiceName: string;
     serviceStatus: "pending" | "completed";
-    branchId?: string | null;
+    portfolioId?: string | null;
     branchName?: string;
     base?: number;
     description?: string;
@@ -174,7 +174,7 @@ type AuthSession = {
     role: UserRole;
     roleId?: string | null;
     department?: string | null;
-    branchId?: string | null;
+    portfolioId?: string | null;
     banned: boolean;
     banReason?: string | undefined;
     banExpires?: Date | undefined;

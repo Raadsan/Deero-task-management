@@ -40,7 +40,7 @@ type ClientAgreementView = {
   serviceName: string;
   subServiceName: string;
   serviceStatus: "pending" | "completed";
-  branchId?: string | null;
+  portfolioId?: string | null;
   branchName?: string;
   base?: number;
   description?: string;
@@ -53,14 +53,14 @@ export default function ClientViewModal({ open, onOpenChange, clientId }: Props)
     () => getClientById(clientId!),
   );
   const { data: branchOptionsRes } = useSWR(
-    open ? "client-view-branches" : null,
+    open ? "client-view-portfolios" : null,
     getTaskFormBranchOptions,
   );
 
   const branchNameById = useMemo(() => {
-    const branches = branchOptionsRes?.data?.branches ?? [];
-    return Object.fromEntries(branches.map((branch) => [branch.id, branch.name]));
-  }, [branchOptionsRes?.data?.branches]);
+    const portfolios = branchOptionsRes?.data?.portfolios ?? [];
+    return Object.fromEntries(portfolios.map((portfolio) => [portfolio.id, portfolio.name]));
+  }, [branchOptionsRes?.data?.portfolios]);
 
   const client = data?.data;
   const agreements =
@@ -75,7 +75,7 @@ export default function ClientViewModal({ open, onOpenChange, clientId }: Props)
             Client Details
           </DialogTitle>
           <DialogDescription className="text-sm text-zinc-500">
-            View client information, branch, and service agreements.
+            View client information, portfolio, and service agreements.
           </DialogDescription>
         </DialogHeader>
 
@@ -146,10 +146,10 @@ export default function ClientViewModal({ open, onOpenChange, clientId }: Props)
                           <span className="inline-flex items-center gap-1">
                             <GitBranch className="size-3.5" />
                             {agreement.branchName ||
-                              (agreement.branchId
-                                ? branchNameById[agreement.branchId]
+                              (agreement.portfolioId
+                                ? branchNameById[agreement.portfolioId]
                                 : "") ||
-                              "No branch"}
+                              "No portfolio"}
                           </span>
                           {agreement.base != null && (
                             <span>Amount: ${agreement.base}</span>

@@ -9,19 +9,19 @@ export type DepartmentRecord = {
   name: string;
   description?: string | null;
   isActive: boolean;
-  branchId: string;
-  branch?: { id: string; name: string };
+  portfolioId: string;
+  portfolio?: { id: string; name: string };
   createdAt?: string;
   updatedAt?: string;
 };
 
 export async function getAllDepartments(params?: {
-  branchId?: string;
+  portfolioId?: string;
   activeOnly?: boolean;
 }): Promise<ActionResponse<DepartmentRecord[]>> {
   try {
     const search = new URLSearchParams();
-    if (params?.branchId) search.set("branchId", params.branchId);
+    if (params?.portfolioId) search.set("portfolioId", params.portfolioId);
     if (params?.activeOnly) search.set("activeOnly", "true");
     const query = search.toString();
     const response = await api.get(`/api/departments${query ? `?${query}` : ""}`);
@@ -52,7 +52,7 @@ export async function createDepartment(data: {
   name: string;
   description?: string;
   isActive?: boolean;
-  branchId: string;
+  portfolioId: string;
 }): Promise<ActionResponse> {
   try {
     const response = await api.post("/api/departments", data);
@@ -69,7 +69,7 @@ export async function updateDepartment(
     name: string;
     description?: string;
     isActive?: boolean;
-    branchId: string;
+    portfolioId: string;
   },
 ): Promise<ActionResponse> {
   try {

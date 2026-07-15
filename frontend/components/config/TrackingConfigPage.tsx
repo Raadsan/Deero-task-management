@@ -48,7 +48,7 @@ import {
 
 export default function TrackingConfigPage() {
   const session = authClient.useSession();
-  const scopeKey = `${session.data?.user.role ?? ""}:${session.data?.user.branchId ?? "all"}`;
+  const scopeKey = `${session.data?.user.role ?? ""}:${session.data?.user.portfolioId ?? "all"}`;
   const { data, isLoading } = useSWR(
     [SWR_CACH_KEYS.tracking.key, scopeKey],
     getAuditLogs,

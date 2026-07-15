@@ -15,7 +15,7 @@ model Role {
   isActive    Boolean          @default(true)
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @default(now()) @updatedAt
-  users       User[]
+  users       Staff[]
   menuAccess  RoleMenuAccess[]
 
   @@map("roles")
@@ -135,7 +135,7 @@ enum EntityType {
   payments
   invoice
   tax
-  branches
+  portfolios
   departments
   projects
   content_requests
@@ -145,7 +145,7 @@ enum EntityType {
   contracts
 }
 
-model User {
+model Staff {
   id        String   @id
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -157,9 +157,8 @@ model User {
   gender        String?
   salary        String?
 
-  department String?
-  branchId   String?
-  branch     Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  portfolioId   String?
+  portfolio     Portfolio? @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
 
   sessions      Session[]
   accounts      Account[]
@@ -186,7 +185,7 @@ model User {
   createdContracts          Contract[]               @relation("ContractCreatedBy")
   uploadedContractDocuments ContractDocument[]       @relation("ContractDocumentUploadedBy")
 
-  @@map("Users")
+  @@map("staffs")
 }
 
 model Session {
@@ -200,7 +199,7 @@ model Session {
   userAgent String?
 
   userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   Staff   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   impersonatedBy String?
 
@@ -216,7 +215,7 @@ model Account {
   providerId String
 
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                  Staff      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -260,10 +259,10 @@ model Client {
   isActive          Boolean    @default(true)
   isDraft           Boolean    @default(false)
 
-  branchId         String?
-  branch           Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  portfolioId         String?
+  portfolio           Portfolio? @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
   accountManagerId String?
-  accountManager   User?   @relation("ClientAccountManager", fields: [accountManagerId], references: [id], onDelete: SetNull)
+  accountManager   Staff?   @relation("ClientAccountManager", fields: [accountManagerId], references: [id], onDelete: SetNull)
 
   clientService      ClientService[]
   clientTask         ClientTask[]
@@ -277,7 +276,7 @@ model Client {
   installments       ClientInstallment[]
 
   @@index([clientType])
-  @@index([branchId])
+  @@index([portfolioId])
   @@index([isDraft])
   @@map("clients")
 }
@@ -287,14 +286,14 @@ model Service {
 
   serviceName   String
   description   String?         @db.Text
-  branchId      String?
-  branch        Branch?         @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  portfolioId      String?
+  portfolio        Portfolio?         @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
   clientService ClientService[]
   subService    SubService[]
 
   serviceAgreements IncomeServiceAgreement[]
 
-  @@unique([serviceName, branchId])
+  @@unique([serviceName, portfolioId])
   @@map("services")
 }
 
@@ -314,7 +313,7 @@ model SubService {
   @@map("subservices")
 }
 
-model Branch {
+model Portfolio {
   id        String   @id
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -333,31 +332,15 @@ model Branch {
   customDomain    String? @unique
   isActive        Boolean @default(true)
 
-  users              User[]
+  users              Staff[]
   services           Service[]
-  departments        Department[]
   clients            Client[]
   projects           Project[]
   contentRequests    ContentRequest[]
   recurringSchedules RecurringSchedule[]
   contracts          Contract[]
 
-  @@map("branches")
-}
-
-model Department {
-  id        String   @id
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  name        String
-  description String? @db.Text
-  isActive    Boolean @default(true)
-  branchId    String
-  branch      Branch  @relation(fields: [branchId], references: [id], onDelete: Cascade)
-
-  @@unique([name, branchId])
-  @@map("departments")
+  @@map("portfolios")
 }
 
 model ClientSubService {
@@ -394,14 +377,13 @@ model Task {
   description   String
   status        TaskStatus
   priority      TaskPriority  @default(normal)
-  department    String
   deadline      DateTime?
   progress      Int           @default(0)
   workflowStage WorkflowStage @default(pending)
   sortOrder     Int           @default(0)
 
   assgineeId         String
-  user               User    @relation("TaskAssignee", fields: [assgineeId], references: [id], onDelete: Cascade)
+  user               Staff    @relation("TaskAssignee", fields: [assgineeId], references: [id], onDelete: Cascade)
   supervisor         String  @default("")
   serviceInformation String?
   isPersonal         Boolean @default(false)
@@ -476,7 +458,7 @@ model IncomeTransaction {
   createdAt DateTime @default(now())
 
   userId           String
-  user             User    @relation(fields: [userId], references: [id])
+  user             Staff    @relation(fields: [userId], references: [id])
   incomeCategoryId String?
 
   duetoDate DateTime?
@@ -512,7 +494,7 @@ model ExpenseTransaction {
   id        String   @id
   createdAt DateTime @default(now())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      Staff     @relation(fields: [userId], references: [id])
 
   duetoDate DateTime?
   status    String
@@ -555,7 +537,7 @@ model UserFiles {
   name      String
   fileSize  Int
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      Staff     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model IncomeServiceAgreement {
@@ -613,8 +595,8 @@ model UserSalary {
   recieverId   String
   registeredBy String
 
-  registeredUser User @relation(name: "Registerer", fields: [registeredBy], references: [id])
-  recieverUser   User @relation(name: "Reciever", fields: [recieverId], references: [id])
+  registeredUser Staff @relation(name: "Registerer", fields: [registeredBy], references: [id])
+  recieverUser   Staff @relation(name: "Reciever", fields: [recieverId], references: [id])
 
   UserSalaryDetails UserSalaryDetails[]
 }
@@ -717,7 +699,7 @@ model AuditLog {
   id          String   @id @default(uuid())
   createdAt   DateTime @default(now())
   userId      String?
-  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user        Staff?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   action      String
   entity      String
   entityId    String?
@@ -743,10 +725,10 @@ model Project {
 
   clientId    String
   client      Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  branchId    String?
-  branch      Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  portfolioId    String?
+  portfolio      Portfolio? @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
   createdById String?
-  createdBy   User?   @relation("ProjectCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdBy   Staff?   @relation("ProjectCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
   serviceAgreements IncomeServiceAgreement[]
   contentRequests   ContentRequest[]
@@ -755,7 +737,7 @@ model Project {
 
   @@index([clientId])
   @@index([status])
-  @@index([branchId])
+  @@index([portfolioId])
   @@map("projects")
 }
 
@@ -779,10 +761,10 @@ model Contract {
   client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
   projectId   String?
   project     Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  branchId    String?
-  branch      Branch?  @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  portfolioId    String?
+  portfolio      Portfolio?  @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
   createdById String?
-  createdBy   User?    @relation("ContractCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdBy   Staff?    @relation("ContractCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
   documents    ContractDocument[]
   installments ClientInstallment[]
@@ -790,7 +772,7 @@ model Contract {
   @@index([clientId])
   @@index([projectId])
   @@index([status])
-  @@index([branchId])
+  @@index([portfolioId])
   @@map("contracts")
 }
 
@@ -832,7 +814,7 @@ model ContractDocument {
   fileSize     Int?
   mimeType     String   @default("application/pdf")
   uploadedById String?
-  uploadedBy   User?    @relation("ContractDocumentUploadedBy", fields: [uploadedById], references: [id], onDelete: SetNull)
+  uploadedBy   Staff?    @relation("ContractDocumentUploadedBy", fields: [uploadedById], references: [id], onDelete: SetNull)
 
   @@unique([contractId, version])
   @@index([contractId])
@@ -854,10 +836,10 @@ model ContentRequest {
   client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
   projectId   String?
   project     Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  branchId    String?
-  branch      Branch?  @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  portfolioId    String?
+  portfolio      Portfolio?  @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
   createdById String?
-  createdBy   User?    @relation("ContentRequestCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdBy   Staff?    @relation("ContentRequestCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
   assignees ContentRequestAssignee[]
   tasks     Task[]
@@ -874,7 +856,7 @@ model ContentRequestAssignee {
   contentRequestId String
   contentRequest   ContentRequest @relation(fields: [contentRequestId], references: [id], onDelete: Cascade)
   userId           String
-  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             Staff           @relation(fields: [userId], references: [id], onDelete: Cascade)
   role             String?
 
   @@unique([contentRequestId, userId])
@@ -897,8 +879,8 @@ model RecurringSchedule {
 
   clientId String
   client   Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  branchId String?
-  branch   Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  portfolioId String?
+  portfolio   Portfolio? @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
 
   steps  RecurringScheduleStep[]
   cycles ContentCycle[]
@@ -921,10 +903,9 @@ model RecurringScheduleStep {
   stepOrder   Int               @default(0)
   label       String
   contentType ContentType?
-  department  String?
   supervisor  String            @default("")
   assigneeId  String?
-  assignee    User?             @relation("RecurringStepAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  assignee    Staff?             @relation("RecurringStepAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
   templateId  String?
   template    WorkflowTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
 
@@ -1000,7 +981,6 @@ model WorkflowTemplateStep {
   stepOrder       Int
   taskName        String
   description     String?          @db.Text
-  department      String?
   defaultPriority TaskPriority     @default(normal)
   estimatedDays   Int?
   workflowStage   WorkflowStage    @default(pending)

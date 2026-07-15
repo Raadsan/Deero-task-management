@@ -1,10 +1,10 @@
-import { resolveSessionBranding } from "@/lib/actions/branch.action";
+import { resolveSessionBranding } from "@/lib/actions/portfolio.action";
 import { getUserSession } from "@/lib/actions/auth.action";
 import {
   BranchBranding,
   getBranchThemeCssText,
   getBranchThemeStyle,
-} from "@/lib/branch-branding";
+} from "@/lib/portfolio-branding";
 import { BranchThemeProvider } from "./BranchThemeProvider";
 
 type Props = {

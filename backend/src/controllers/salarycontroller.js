@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma.js";
-import { getScope, salaryBranchWhere } from "../lib/branch-scope.js";
+import { getScope, salaryBranchWhere } from "../lib/portfolio-scope.js";
 
 export const getAllSalaries = async (req, res) => {
   try {
