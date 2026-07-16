@@ -115,7 +115,7 @@ export default function MyTasksBoardRoutePage() {
     [view, search],
   );
 
-  // Only pull from server when remote data changes â€” never wipe optimistic drag updates
+  // Only pull from server when remote data changes N/A never wipe optimistic drag updates
   useEffect(() => {
     if (pendingSyncRef.current > 0) return;
     const list = remoteTasks ?? [];
@@ -387,7 +387,7 @@ export default function MyTasksBoardRoutePage() {
 
                             {laneTasks.length === 0 ? (
                               <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed border-zinc-200 px-3 py-10 text-center text-xs text-zinc-400">
-                                Drop tasks here â€” add as many as you need
+                                Drop tasks here N/A add as many as you need
                               </div>
                             ) : (
                               laneTasks.map((task, index) => {

@@ -467,7 +467,7 @@ export default function PermissionsConfigPage() {
                           <TableRow key={sub.id} className={dashboardTableBodyRowClass}>
                             <TableCell className={dashboardTableCellClass}>
                               <span className="pl-4 text-sm text-zinc-700">
-                                ↳ {sub.title}
+                                {sub.title}
                               </span>
                             </TableCell>
                             {permCols.map((col) => (

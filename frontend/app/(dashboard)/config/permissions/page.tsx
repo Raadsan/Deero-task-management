@@ -336,7 +336,7 @@ export default function PermissionsConfigRoute() {
             <span>
               Managing permissions for{" "}
               <span className="font-semibold text-zinc-800">
-                {selectedRole?.name ?? "â€”"}
+                {selectedRole?.name ?? "N/A"}
               </span>
             </span>
           </div>
@@ -429,10 +429,10 @@ export default function PermissionsConfigRoute() {
                       className="px-6 py-10 text-center text-muted-foreground"
                     >
                       {matrixRes?.success === false
-                        ? "Could not load menus â€” check backend connection and click Refresh"
+                        ? "Could not load menus N/A check backend connection and click Refresh"
                         : actorCeiling
                           ? "No menus available for your permission level"
-                          : "No menus in database â€” click Refresh to sync sidebar menus"}
+                          : "No menus in database N/A click Refresh to sync sidebar menus"}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -467,7 +467,7 @@ export default function PermissionsConfigRoute() {
                           <TableRow key={sub.id} className={dashboardTableBodyRowClass}>
                             <TableCell className={dashboardTableCellClass}>
                               <span className="pl-4 text-sm text-zinc-700">
-                                â†³ {sub.title}
+                                {sub.title}
                               </span>
                             </TableCell>
                             {permCols.map((col) => (

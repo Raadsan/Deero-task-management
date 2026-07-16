@@ -256,7 +256,7 @@ export default function RolesConfigRoute() {
                     </TableCell>
                     <TableCell className={dashboardTableCellClass}>
                       <span className={dashboardTextSecondary}>
-                        {role.description || "â€”"}
+                        {role.description || "N/A"}
                       </span>
                     </TableCell>
                     <TableCell className={dashboardTableCellClass}>
@@ -331,7 +331,7 @@ export default function RolesConfigRoute() {
               <ConfigInfoField label="Name" value={viewRole.name} />
               <ConfigInfoField
                 label="Description"
-                value={viewRole.description || "â€”"}
+                value={viewRole.description || "N/A"}
                 className="sm:col-span-2"
               />
               <ConfigInfoField

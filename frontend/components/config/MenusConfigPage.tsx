@@ -603,7 +603,7 @@ export default function MenusConfigPage() {
                     <TableRow key={sub.id} className={dashboardTableBodyRowClass}>
                       <TableCell className={dashboardTableCellClass}>{sub.order}</TableCell>
                       <TableCell className={dashboardTableCellClass}>
-                        <span className="pl-6 text-sm text-zinc-700">↳ {sub.title}</span>
+                        <span className="pl-6 text-sm text-zinc-700">{sub.title}</span>
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
                         <span className={dashboardTextSecondary}>{sub.url}</span>

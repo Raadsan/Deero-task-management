@@ -17,6 +17,7 @@ import {
 } from "@/lib/actions/client.action";
 import { getAllServices } from "@/lib/actions/service.action";
 import { getTaskFormBranchOptions } from "@/lib/actions/shared.action";
+import { createContract, ContractFilePayload } from "@/lib/actions/contract.action";
 import {
   clearClientCreateDraft,
   readClientCreateDraft,
@@ -31,7 +32,7 @@ import {
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import { btnFormCancel, btnFormSubmit } from "@/lib/dashboard-ui";
 import { cn } from "@/lib/utils";
-import { Check, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import toast from "react-hot-toast";
 import useSWR, { useSWRConfig } from "swr";
@@ -51,6 +52,19 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
     <label className="mb-1 block text-sm font-medium text-zinc-700">{children}</label>
   );
+}
+
+function fileToContractPayload(file: File): Promise<ContractFilePayload> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve({
+      name: file.name,
+      data: String(reader.result),
+      fileSize: file.size,
+    });
+    reader.onerror = () => reject(new Error("Could not read contract document"));
+    reader.readAsDataURL(file);
+  });
 }
 
 export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId: initialDraftId }: Props) {
@@ -75,11 +89,18 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
   const [base, setBase] = useState("0");
   const [discount, setDiscount] = useState("0");
   const [serviceDescription, setServiceDescription] = useState("");
+  const [contractFeatures, setContractFeatures] = useState<Array<{
+    name: string; quantity: number; frequency: string; description: string;
+  }>>([]);
+  const [editingFeatures, setEditingFeatures] = useState(false);
 
   const [includeContract, setIncludeContract] = useState(false);
   const [contractStartDate, setContractStartDate] = useState("");
   const [contractEndDate, setContractEndDate] = useState("");
   const [monthlyBudget, setMonthlyBudget] = useState("");
+  const [contractNumber, setContractNumber] = useState("");
+  const [contractTerms, setContractTerms] = useState("");
+  const [contractFile, setContractFile] = useState<File | null>(null);
 
   const [includeSchedule, setIncludeSchedule] = useState(false);
   const [scheduleName, setScheduleName] = useState("");
@@ -115,8 +136,23 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
     () => (servicesRes?.data ?? []).filter((s) => Boolean(s?.serviceName)),
     [servicesRes?.data],
   );
+  const availableServices = useMemo(
+    () => branchServices.filter((service) =>
+      clientType === "MANAGED_RECURRING"
+        ? service.serviceType === "SUBSCRIPTION"
+        : service.serviceType !== "SUBSCRIPTION"),
+    [branchServices, clientType],
+  );
 
-  const selectedService = branchServices.find((s) => s.serviceName === serviceName);
+  const selectedService = availableServices.find((s) => s.serviceName === serviceName);
+  const detectedClientType: ClientType =
+    selectedService?.serviceType === "SUBSCRIPTION" ? "MANAGED_RECURRING" : "ONE_TIME";
+
+  useEffect(() => {
+    if (!selectedService) return;
+    setClientType(detectedClientType);
+    if (detectedClientType === "ONE_TIME") setIncludeSchedule(false);
+  }, [selectedService?.id, detectedClientType]);
   const customSubServiceId =
     serviceName === CUSTOM_SERVICE ? selectedService?.id : undefined;
 
@@ -134,6 +170,18 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
     );
   }, [selectedService, serviceName]);
 
+  useEffect(() => {
+    const selectedPackage = selectedService?.subService?.find(
+      (item) => item.name === subServiceName,
+    );
+    if (!selectedPackage) return;
+    setBase(String(selectedPackage.price ?? 0));
+    setContractFeatures((selectedPackage.features ?? []).map((feature) => ({
+      name: feature, quantity: 1, frequency: "", description: "",
+    })));
+    setEditingFeatures(false);
+  }, [selectedService?.id, subServiceName]);
+
   const filteredClients = useMemo(() => {
     const q = clientSearch.trim().toLowerCase();
     if (!q) return allClients;
@@ -145,7 +193,7 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
     );
   }, [allClients, clientSearch]);
 
-  const totalSteps = flowMode === "existing" ? 2 : 3;
+  const totalSteps = flowMode === "existing" ? 3 : 4;
 
   const { data: draftClientRes } = useSWR(
     draftClientId ? ["client-wizard-draft", draftClientId] : null,
@@ -182,27 +230,27 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
       setLocalDraftLoaded(true);
       return;
     }
-    setClientType(saved.clientType as ClientType);
-    setInstitution(saved.institution);
-    setPhone(saved.phone);
-    setEmail(saved.email);
-    setSource(saved.source);
-    setBranchId(saved.portfolioId);
-    setIncludeService(saved.includeService);
-    setServiceName(saved.serviceName);
-    setSubServiceName(saved.subServiceName);
-    setCustomSubService(saved.customSubService);
-    setBase(saved.base);
-    setDiscount(saved.discount);
-    setServiceDescription(saved.serviceDescription);
-    setIncludeContract(saved.includeContract);
-    setContractStartDate(saved.contractStartDate);
-    setContractEndDate(saved.contractEndDate);
-    setMonthlyBudget(saved.monthlyBudget);
-    setIncludeSchedule(saved.includeSchedule);
-    setScheduleName(saved.scheduleName);
-    setRecurrenceType(saved.recurrenceType);
-    setScheduleStartDate(saved.scheduleStartDate);
+    setClientType((saved.clientType as ClientType) ?? "ONE_TIME");
+    setInstitution(saved.institution ?? "");
+    setPhone(saved.phone ?? "");
+    setEmail(saved.email ?? "");
+    setSource(saved.source ?? "");
+    setBranchId(saved.portfolioId ?? "");
+    setIncludeService(saved.includeService ?? false);
+    setServiceName(saved.serviceName ?? "");
+    setSubServiceName(saved.subServiceName ?? "");
+    setCustomSubService(saved.customSubService ?? "");
+    setBase(saved.base ?? "0");
+    setDiscount(saved.discount ?? "0");
+    setServiceDescription(saved.serviceDescription ?? "");
+    setIncludeContract(saved.includeContract ?? false);
+    setContractStartDate(saved.contractStartDate ?? "");
+    setContractEndDate(saved.contractEndDate ?? "");
+    setMonthlyBudget(saved.monthlyBudget ?? "");
+    setIncludeSchedule(saved.includeSchedule ?? false);
+    setScheduleName(saved.scheduleName ?? "");
+    setRecurrenceType(saved.recurrenceType ?? "WEEKLY");
+    setScheduleStartDate(saved.scheduleStartDate ?? "");
     setDraftClientId(saved.draftClientId);
     setStep(saved.step || 1);
     setFlowMode("new");
@@ -341,11 +389,27 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
         newSubService: sub,
         base: parseFloat(base) || 0,
         description: serviceDescription,
-        discount: parseFloat(discount) || 0,
+        discount: (parseFloat(discount) || 0) / 100,
+        contractFeatures,
         portfolioId,
         serviceStatus: "pending",
       });
       if (result.success) {
+        if (includeContract) {
+          const file = contractFile ? await fileToContractPayload(contractFile) : undefined;
+          const contract = await createContract({
+            clientId: existingClientId,
+            startDate: contractStartDate || undefined,
+            endDate: contractEndDate || undefined,
+            totalAmount: Number(base) * (1 - (Number(discount) || 0) / 100),
+            status: "ACTIVE",
+            file,
+          });
+          if (!contract.success) {
+            toast.error(contract.errors?.message ?? "Service saved, but contract failed");
+            return;
+          }
+        }
         toast.success("Service added to client");
         await mutate(SWR_CACH_KEYS.clients.key);
         onSuccess?.();
@@ -378,7 +442,8 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
       payload.serviceName = serviceName;
       payload.subServiceName = sub;
       payload.base = parseFloat(base) || 0;
-      payload.discount = parseFloat(discount) || 0;
+      payload.discount = (parseFloat(discount) || 0) / 100;
+      payload.contractFeatures = contractFeatures;
       payload.description = serviceDescription;
     }
 
@@ -405,7 +470,8 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
         newSubService: sub,
         base: parseFloat(base) || 0,
         description: serviceDescription,
-        discount: parseFloat(discount) || 0,
+        discount: (parseFloat(discount) || 0) / 100,
+        contractFeatures,
         portfolioId,
         serviceStatus: "pending",
       });
@@ -448,6 +514,22 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
         toast.error(result.errors?.message ?? "Failed to save draft");
         return;
       }
+      const clientId = (result.data as { client?: { id?: string } })?.client?.id;
+      if (includeContract && clientId) {
+        const file = contractFile ? await fileToContractPayload(contractFile) : undefined;
+        const contract = await createContract({
+          clientId,
+          startDate: contractStartDate || undefined,
+          endDate: contractEndDate || undefined,
+          totalAmount: Number(base) * (1 - (Number(discount) || 0) / 100),
+          status: "ACTIVE",
+          file,
+        });
+        if (!contract.success) {
+          toast.error(contract.errors?.message ?? "Client saved, but contract failed");
+          return;
+        }
+      }
       const id = (result.data as { client?: { id?: string } })?.client?.id
         ?? (result.data as { id?: string })?.id;
       if (id) setDraftClientId(id);
@@ -486,6 +568,21 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
           return;
         }
         await attachExtrasAfterSave(draftClientId);
+        if (includeContract) {
+          const file = contractFile ? await fileToContractPayload(contractFile) : undefined;
+          const contract = await createContract({
+            clientId: draftClientId,
+            startDate: contractStartDate || undefined,
+            endDate: contractEndDate || undefined,
+            totalAmount: Number(base) * (1 - (Number(discount) || 0) / 100),
+            status: "ACTIVE",
+            file,
+          });
+          if (!contract.success) {
+            toast.error(contract.errors?.message ?? "Client saved, but contract failed");
+            return;
+          }
+        }
         toast.success("Client created successfully");
         await mutate(SWR_CACH_KEYS.clients.key);
         onSuccess?.();
@@ -565,38 +662,18 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
       <div className={configDialogBodyClass}>
         {flowMode === "new" && step === 1 ? (
           <div className="space-y-3">
-            <p className="text-sm text-zinc-600">Dooro nooca macmiilka / Select client type</p>
-            <div className="grid gap-3">
-              {CLIENT_TYPE_OPTIONS.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => setClientType(option.value)}
-                  className={cn(
-                    "flex items-start gap-3 rounded-xl border-2 p-4 text-left transition",
-                    clientType === option.value
-                      ? "border-primary bg-primary/5"
-                      : "border-zinc-200 hover:border-zinc-300",
-                  )}
-                >
-                  <span
-                    className={cn(
-                      "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border",
-                      clientType === option.value
-                        ? "border-primary bg-primary text-white"
-                        : "border-zinc-300",
-                    )}
-                  >
-                    {clientType === option.value ? <Check className="size-3" /> : null}
-                  </span>
-                  <span>
-                    <span className="font-semibold text-zinc-900">{option.title}</span>
-                    <span className="mt-0.5 block text-sm text-zinc-500">
-                      {option.description}
-                    </span>
-                  </span>
-                </button>
-              ))}
+            <p className="text-sm text-zinc-600">Choose the service workflow</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <button type="button" onClick={() => setClientType("ONE_TIME")}
+                className={cn("rounded-xl border-2 p-5 text-left", clientType === "ONE_TIME" ? "border-primary bg-primary/5" : "border-zinc-200")}>
+                <p className="font-semibold">Single Job</p>
+                <p className="mt-1 text-sm text-zinc-500">All one-time services except Digital Marketing.</p>
+              </button>
+              <button type="button" onClick={() => setClientType("MANAGED_RECURRING")}
+                className={cn("rounded-xl border-2 p-5 text-left", clientType === "MANAGED_RECURRING" ? "border-primary bg-primary/5" : "border-zinc-200")}>
+                <p className="font-semibold">Subscription</p>
+                <p className="mt-1 text-sm text-zinc-500">Digital Marketing packages and recurring work.</p>
+              </button>
             </div>
           </div>
         ) : null}
@@ -611,7 +688,7 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
               <FieldLabel>Client name *</FieldLabel>
               <input
                 className={configCompactInputClass}
-                value={institution}
+                value={institution ?? ""}
                 onChange={(e) => setInstitution(e.target.value)}
                 placeholder="Client / institution name"
               />
@@ -620,7 +697,7 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
               <FieldLabel>Phone *</FieldLabel>
               <input
                 className={configCompactInputClass}
-                value={phone}
+                value={phone ?? ""}
                 onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
                 placeholder="612345678"
               />
@@ -630,7 +707,7 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
               <input
                 type="email"
                 className={configCompactInputClass}
-                value={email}
+                value={email ?? ""}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
@@ -638,7 +715,7 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
               <FieldLabel>Source *</FieldLabel>
               <select
                 className={configCompactSelectClass}
-                value={source}
+                value={source ?? ""}
                 onChange={(e) => setSource(e.target.value)}
               >
                 <option value="">Select source</option>
@@ -653,7 +730,7 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
               <FieldLabel>Portfolio *</FieldLabel>
               <select
                 className={configCompactSelectClass}
-                value={portfolioId}
+                value={portfolioId ?? ""}
                 onChange={(e) => setBranchId(e.target.value)}
                 disabled={singleBranch}
               >
@@ -671,7 +748,7 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
 
         {flowMode === "new" && step === 3 ? (
           <div className="space-y-5">
-            <div className="rounded-lg border border-zinc-100 bg-zinc-50 p-4 text-sm">
+            <div className="hidden">
               <p className="mb-2 font-semibold text-zinc-800">Summary</p>
               <div className="grid gap-1 sm:grid-cols-2">
                 <p><span className="text-zinc-500">Type:</span> {clientTypeLabel(clientType)}</p>
@@ -702,12 +779,45 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
               setDiscount={setDiscount}
               serviceDescription={serviceDescription}
               setServiceDescription={setServiceDescription}
-              branchServices={branchServices}
+              branchServices={availableServices}
               subServiceOptions={subServiceOptions}
               customSubs={customSubsRes?.data ?? []}
+              featureEditor={subServiceName ? (
+                <PackageFeatureEditor features={contractFeatures} setFeatures={setContractFeatures}
+                  editing={editingFeatures} setEditing={setEditingFeatures} />
+              ) : null}
             />
 
-            {(clientType === "MANAGED_ON_DEMAND" || clientType === "MANAGED_RECURRING") ? (
+            {false && includeService && subServiceName ? (
+              <div className="-mt-5 rounded-b-xl border border-t-0 border-zinc-200 bg-white p-4">
+                <div className="mb-3 flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold text-zinc-900">Package feature summary</p>
+                    <p className="text-xs text-zinc-500">This is an editable copy for this client only.</p>
+                  </div>
+                  <Button type="button" variant="outline" size="sm" onClick={() => setEditingFeatures((value) => !value)}>
+                    {editingFeatures ? "Done" : "Edit features"}
+                  </Button>
+                </div>
+                <div className="space-y-3">
+                  {contractFeatures.map((feature, index) => (
+                    <div key={index} className="flex gap-2 rounded-lg bg-zinc-50 p-2">
+                      {editingFeatures ? (
+                        <>
+                          <input className={configCompactInputClass} value={feature.name} onChange={(e) => setContractFeatures((items) => items.map((item, i) => i === index ? { ...item, name: e.target.value } : item))} />
+                          <Button type="button" variant="ghost" className="shrink-0 text-red-500" onClick={() => setContractFeatures((items) => items.filter((_, i) => i !== index))}></Button>
+                        </>
+                      ) : (
+                        <p className="sm:col-span-4"><Check className="mr-2 inline size-4 text-primary" />{feature.name}  Qty {feature.quantity}{feature.frequency ? `  ${feature.frequency}` : ""}</p>
+                      )}
+                    </div>
+                  ))}
+                  {editingFeatures ? <Button type="button" variant="outline" onClick={() => setContractFeatures((items) => [...items, { name: "", quantity: 1, frequency: "", description: "" }])}>+ Add Feature</Button> : null}
+                </div>
+              </div>
+            ) : null}
+
+            {includeService ? (
               <div className="space-y-3 rounded-lg border border-zinc-100 p-3">
                 <label className="flex items-center gap-2 text-sm font-medium text-zinc-700">
                   <input
@@ -729,15 +839,31 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
                       <input type="date" className={configCompactInputClass} value={contractEndDate} onChange={(e) => setContractEndDate(e.target.value)} />
                     </div>
                     <div>
-                      <FieldLabel>Monthly budget ($)</FieldLabel>
-                      <input type="number" className={configCompactInputClass} value={monthlyBudget} onChange={(e) => setMonthlyBudget(e.target.value)} />
+                      <FieldLabel>Contract document</FieldLabel>
+                      <input type="file" accept=".pdf,image/*" className={configCompactInputClass}
+                        onChange={(e) => setContractFile(e.target.files?.[0] ?? null)} />
+                      {contractFile ? <p className="mt-1 text-xs text-zinc-500">{contractFile.name}</p> : null}
+                    </div>
+                    <div className="hidden">
+                      <FieldLabel>Contract number</FieldLabel>
+                      <input className={configCompactInputClass} value={contractNumber} onChange={(e) => setContractNumber(e.target.value)} placeholder="Auto-generated if empty" />
+                    </div>
+                    <div className="hidden">
+                      <FieldLabel>Terms &amp; conditions</FieldLabel>
+                      <textarea className={cn(configCompactInputClass, "min-h-20 py-2")} value={contractTerms} onChange={(e) => setContractTerms(e.target.value)} />
+                    </div>
+                    <div className="hidden">
+                      <FieldLabel>Contract document (PDF or image, max 5MB)</FieldLabel>
+                      <input type="file" accept=".pdf,image/*" className={configCompactInputClass}
+                        onChange={(e) => setContractFile(e.target.files?.[0] ?? null)} />
+                      {contractFile ? <p className="mt-1 text-xs text-zinc-500">{contractFile.name}</p> : null}
                     </div>
                   </div>
                 ) : null}
               </div>
             ) : null}
 
-            {clientType === "MANAGED_RECURRING" ? (
+            {false && clientType === "MANAGED_RECURRING" ? (
               <div className="space-y-3 rounded-lg border border-zinc-100 p-3">
                 <label className="flex items-center gap-2 text-sm font-medium text-zinc-700">
                   <input
@@ -780,7 +906,7 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
               <input
                 className={cn(configCompactInputClass, "pl-9")}
                 placeholder="Search by name, phone, or email..."
-                value={clientSearch}
+                value={clientSearch ?? ""}
                 onChange={(e) => setClientSearch(e.target.value)}
               />
             </div>
@@ -805,11 +931,23 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
 
         {flowMode === "existing" && step === 2 ? (
           <div className="space-y-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <button type="button" onClick={() => setClientType("ONE_TIME")}
+                className={cn("rounded-xl border-2 p-4 text-left", clientType === "ONE_TIME" ? "border-primary bg-primary/5" : "border-zinc-200")}>
+                <p className="font-semibold">Single Job</p>
+                <p className="text-xs text-zinc-500">One-time services</p>
+              </button>
+              <button type="button" onClick={() => setClientType("MANAGED_RECURRING")}
+                className={cn("rounded-xl border-2 p-4 text-left", clientType === "MANAGED_RECURRING" ? "border-primary bg-primary/5" : "border-zinc-200")}>
+                <p className="font-semibold">Subscription</p>
+                <p className="text-xs text-zinc-500">Digital Marketing only</p>
+              </button>
+            </div>
             <div>
               <FieldLabel>Portfolio *</FieldLabel>
               <select
                 className={configCompactSelectClass}
-                value={portfolioId}
+                value={portfolioId ?? ""}
                 onChange={(e) => setBranchId(e.target.value)}
                 disabled={singleBranch}
               >
@@ -837,10 +975,80 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
               setDiscount={setDiscount}
               serviceDescription={serviceDescription}
               setServiceDescription={setServiceDescription}
-              branchServices={branchServices}
+              branchServices={availableServices}
               subServiceOptions={subServiceOptions}
               customSubs={customSubsRes?.data ?? []}
+              featureEditor={subServiceName ? (
+                <PackageFeatureEditor features={contractFeatures} setFeatures={setContractFeatures}
+                  editing={editingFeatures} setEditing={setEditingFeatures} />
+              ) : null}
             />
+            {false && subServiceName && contractFeatures.length ? (
+              <div className="rounded-xl border border-zinc-200 p-4">
+                <div className="mb-3 flex justify-between">
+                  <p className="font-semibold">Client package features</p>
+                  <Button type="button" variant="outline" size="sm" onClick={() => setEditingFeatures((value) => !value)}>{editingFeatures ? "Done" : "Edit"}</Button>
+                </div>
+                <div className="space-y-2">
+                  {contractFeatures.map((feature, index) => editingFeatures ? (
+                    <div key={index} className="flex gap-2">
+                      <input className={configCompactInputClass} value={feature.name} onChange={(e) => setContractFeatures((items) => items.map((item, i) => i === index ? {...item, name: e.target.value} : item))} />
+                      <Button type="button" variant="ghost" className="text-red-500" onClick={() => setContractFeatures((items) => items.filter((_, i) => i !== index))}></Button>
+                    </div>
+                  ) : <p key={index} className="text-sm"><Check className="mr-2 inline size-4 text-primary" />{feature.name}  Qty {feature.quantity}</p>)}
+                  {editingFeatures ? <Button type="button" variant="outline" onClick={() => setContractFeatures((items) => [...items, {name: "", quantity: 1, frequency: "", description: ""}])}>+ Add Feature</Button> : null}
+                </div>
+              </div>
+            ) : null}
+            <div className="rounded-xl border border-zinc-200 p-4">
+              <label className="flex items-center gap-2 text-sm font-medium">
+                <input type="checkbox" checked={includeContract} onChange={(e) => setIncludeContract(e.target.checked)} className="size-4 accent-primary" />
+                Create contract and upload document
+              </label>
+              {includeContract ? (
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  <input className="hidden" value={contractNumber} readOnly />
+                  <input type="date" className={configCompactInputClass} value={contractStartDate} onChange={(e) => setContractStartDate(e.target.value)} />
+                  <input type="date" className={configCompactInputClass} value={contractEndDate} onChange={(e) => setContractEndDate(e.target.value)} />
+                  <input type="file" accept=".pdf,image/*" className={configCompactInputClass} onChange={(e) => setContractFile(e.target.files?.[0] ?? null)} />
+                  <textarea className="hidden" value={contractTerms} readOnly />
+                </div>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
+
+        {((flowMode === "new" && step === 4) || (flowMode === "existing" && step === 3)) ? (
+          <div className="space-y-4">
+            <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-5">
+              <h3 className="mb-3 text-lg font-semibold text-zinc-900">Review client &amp; service</h3>
+              <div className="grid gap-2 text-sm sm:grid-cols-2">
+                <p><span className="text-zinc-500">Client:</span> {flowMode === "new" ? institution : filteredClients.find((client) => String(client.id) === existingClientId)?.institution}</p>
+                <p><span className="text-zinc-500">Job type:</span> {clientType === "MANAGED_RECURRING" ? "Subscription" : "Single Job"}</p>
+                <p><span className="text-zinc-500">Service:</span> {serviceName}</p>
+                <p><span className="text-zinc-500">Package:</span> {subServiceName || customSubService}</p>
+                <p><span className="text-zinc-500">Original amount:</span> ${(Number(base) || 0).toFixed(2)}</p>
+                <p><span className="text-zinc-500">Discount:</span> {Number(discount) || 0}%</p>
+                <p className="font-semibold text-primary"><span className="text-zinc-500">Final amount:</span> ${((Number(base) || 0) * (1 - (Number(discount) || 0) / 100)).toFixed(2)}</p>
+                <p><span className="text-zinc-500">Features:</span> {contractFeatures.length}</p>
+              </div>
+            </div>
+            {includeContract ? (
+              <div className="rounded-xl border border-zinc-200 p-5">
+                <FieldLabel>Contract document (PDF or image, max 5MB)</FieldLabel>
+                <input type="file" accept=".pdf,image/*" className={configCompactInputClass}
+                  onChange={(e) => setContractFile(e.target.files?.[0] ?? null)} />
+                <p className="mt-2 text-xs text-zinc-500">
+                  Contract number is generated automatically. {contractFile ? `Selected: ${contractFile.name}` : "You can upload the document later from Contracts."}
+                </p>
+              </div>
+            ) : null}
+            <div className="rounded-xl border border-zinc-200 p-5">
+              <p className="font-semibold">Client package features</p>
+              <ul className="mt-3 space-y-2">
+                {contractFeatures.map((feature, index) => <li key={index} className="rounded-lg bg-zinc-50 p-3 text-sm"><Check className="mr-2 inline size-4 text-primary" />{feature.name}  Qty {feature.quantity}{feature.frequency ? `  ${feature.frequency}` : ""}</li>)}
+              </ul>
+            </div>
           </div>
         ) : null}
       </div>
@@ -900,6 +1108,34 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
   );
 }
 
+function PackageFeatureEditor({
+  features, setFeatures, editing, setEditing,
+}: {
+  features: Array<{ name: string; quantity: number; frequency: string; description: string }>;
+  setFeatures: React.Dispatch<React.SetStateAction<Array<{ name: string; quantity: number; frequency: string; description: string }>>>;
+  editing: boolean;
+  setEditing: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  if (!features.length && !editing) return null;
+  return (
+    <div className="border-t border-zinc-200 pt-4">
+      <div className="mb-3 flex items-center justify-between">
+        <div><p className="font-semibold text-zinc-900">Package features</p><p className="text-xs text-zinc-500">Editable copy for this client only.</p></div>
+        <Button type="button" variant="outline" size="sm" onClick={() => setEditing((value) => !value)}>{editing ? "Done" : "Edit features"}</Button>
+      </div>
+      <div className="space-y-2">
+        {features.map((feature, index) => editing ? (
+          <div key={index} className="flex items-center gap-2">
+            <input className={configCompactInputClass} value={feature.name ?? ""} onChange={(e) => setFeatures((items) => items.map((item, i) => i === index ? { ...item, name: e.target.value } : item))} />
+            <button type="button" className="rounded p-2 text-red-500 hover:bg-red-50" aria-label="Remove feature" onClick={() => setFeatures((items) => items.filter((_, i) => i !== index))}><X className="size-4" /></button>
+          </div>
+        ) : <p key={index} className="flex items-start gap-2 text-sm text-zinc-600"><Check className="mt-0.5 size-4 shrink-0 text-emerald-500" /><span>{feature.name}</span></p>)}
+        {editing ? <Button type="button" variant="outline" size="sm" onClick={() => setFeatures((items) => [...items, { name: "", quantity: 1, frequency: "", description: "" }])}>+ Add Feature</Button> : null}
+      </div>
+    </div>
+  );
+}
+
 function ServiceFields({
   includeService,
   setIncludeService,
@@ -919,6 +1155,7 @@ function ServiceFields({
   branchServices,
   subServiceOptions,
   customSubs,
+  featureEditor,
 }: {
   includeService: boolean;
   setIncludeService: (v: boolean) => void;
@@ -938,6 +1175,7 @@ function ServiceFields({
   branchServices: Array<{ serviceName: string; subService?: Array<{ name: string }> }>;
   subServiceOptions: string[];
   customSubs: Array<{ name: string }>;
+  featureEditor?: React.ReactNode;
 }) {
   const serviceOptions = [
     ...new Set(branchServices.map((s) => s.serviceName)),
@@ -957,6 +1195,7 @@ function ServiceFields({
           Include service agreement (optional — portfolio services)
         </label>
         {includeService ? (
+          <>
           <ServiceFieldsInner
             serviceName={serviceName}
             setServiceName={setServiceName}
@@ -974,12 +1213,15 @@ function ServiceFields({
             subServiceOptions={subServiceOptions}
             customSubs={customSubs}
           />
+          {featureEditor}
+          </>
         ) : null}
       </div>
     );
   }
 
   return (
+    <div className="space-y-4">
     <ServiceFieldsInner
       serviceName={serviceName}
       setServiceName={setServiceName}
@@ -997,6 +1239,8 @@ function ServiceFields({
       subServiceOptions={subServiceOptions}
       customSubs={customSubs}
     />
+    {featureEditor}
+    </div>
   );
 }
 
@@ -1033,13 +1277,18 @@ function ServiceFieldsInner({
   subServiceOptions: string[];
   customSubs: Array<{ name: string }>;
 }) {
+  const originalAmount = Number(base) || 0;
+  const discountValue = Math.min(Math.max(Number(discount) || 0, 0), 100);
+  const discountAmount = originalAmount * (discountValue / 100);
+  const finalAmount = originalAmount - discountAmount;
+
   return (
     <div className="grid gap-3 sm:grid-cols-2">
       <div>
         <FieldLabel>Service *</FieldLabel>
         <select
           className={configCompactSelectClass}
-          value={serviceName}
+          value={serviceName ?? ""}
           onChange={(e) => {
             setServiceName(e.target.value);
             setSubServiceName("");
@@ -1059,7 +1308,7 @@ function ServiceFieldsInner({
           <FieldLabel>Sub-service *</FieldLabel>
           <select
             className={configCompactSelectClass}
-            value={subServiceName}
+            value={subServiceName ?? ""}
             onChange={(e) => setSubServiceName(e.target.value)}
           >
             <option value="">Select sub-service</option>
@@ -1076,7 +1325,7 @@ function ServiceFieldsInner({
           <FieldLabel>Custom sub-service *</FieldLabel>
           <input
             className={configCompactInputClass}
-            value={customSubService}
+            value={customSubService ?? ""}
             onChange={(e) => setCustomSubService(e.target.value)}
             list="custom-subs-list"
           />
@@ -1091,23 +1340,33 @@ function ServiceFieldsInner({
         <FieldLabel>Amount ($)</FieldLabel>
         <input
           className={configCompactInputClass}
-          value={base}
+          value={base ?? ""}
           onChange={(e) => setBase(e.target.value)}
         />
       </div>
       <div>
-        <FieldLabel>Discount (0–1)</FieldLabel>
+        <FieldLabel>Discount (%)</FieldLabel>
         <input
+          type="number"
+          min="0"
+          max="100"
+          placeholder="e.g. 10"
           className={configCompactInputClass}
-          value={discount}
+          value={discount ?? ""}
           onChange={(e) => setDiscount(e.target.value)}
         />
+      </div>
+      <div className="grid grid-cols-2 gap-2 rounded-lg bg-zinc-50 p-3 text-sm sm:col-span-2 sm:grid-cols-4">
+        <p><span className="block text-xs text-zinc-500">Original</span><strong>${originalAmount.toFixed(2)}</strong></p>
+        <p><span className="block text-xs text-zinc-500">Discount</span><strong>{discountValue.toFixed(1)}%</strong></p>
+        <p><span className="block text-xs text-zinc-500">Discount amount</span><strong>${discountAmount.toFixed(2)}</strong></p>
+        <p><span className="block text-xs text-zinc-500">Final total</span><strong className="text-primary">${finalAmount.toFixed(2)}</strong></p>
       </div>
       <div className="sm:col-span-2">
         <FieldLabel>Description</FieldLabel>
         <input
           className={configCompactInputClass}
-          value={serviceDescription}
+          value={serviceDescription ?? ""}
           onChange={(e) => setServiceDescription(e.target.value)}
         />
       </div>

@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   SidebarMenuButton,
   SidebarMenuItem,
@@ -40,8 +41,16 @@ export default function SidebarCollapsibleNavItem({
   currentRole,
 }: Props) {
   const pathname = usePathname();
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
   const { isOpen, toggle } = useSidebarAccordion();
   const open = isOpen(id);
+
+  useEffect(() => setPendingHref(null), [pathname]);
+  useEffect(() => {
+    const handler = (event: Event) => setPendingHref((event as CustomEvent<string>).detail);
+    window.addEventListener("sidebar-navigation-start", handler);
+    return () => window.removeEventListener("sidebar-navigation-start", handler);
+  }, []);
 
   const canManageSee = role?.includes(UserRole.superadmin);
   const canAdminSee = role?.includes(UserRole.admin);
@@ -84,7 +93,9 @@ export default function SidebarCollapsibleNavItem({
         {open && (
           <SidebarMenuSub className="mt-1 ml-6 gap-1 border-white/20 pl-2">
             {items.map((sub) => {
-              const subActive = isSubNavActive(pathname, sub.href);
+              const subActive = pendingHref !== null
+                ? pendingHref === sub.href
+                : isSubNavActive(pathname, sub.href);
               return (
                 <SidebarMenuSubItem key={sub.id}>
                   <SidebarMenuSubButton
@@ -97,7 +108,9 @@ export default function SidebarCollapsibleNavItem({
                         : "!text-white/80 hover:!bg-white/10 hover:!text-white",
                     )}
                   >
-                    <Link href={sub.href}>{sub.name}</Link>
+                    <Link href={sub.href} prefetch onClick={() => {
+                      window.dispatchEvent(new CustomEvent("sidebar-navigation-start", { detail: sub.href }));
+                    }}>{sub.name}</Link>
                   </SidebarMenuSubButton>
                 </SidebarMenuSubItem>
               );

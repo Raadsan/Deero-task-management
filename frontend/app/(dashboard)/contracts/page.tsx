@@ -235,25 +235,25 @@ export default function ContractsPage() {
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
                           <span className={dashboardTextPrimary}>
-                            {row.client?.institution ?? "â€”"}
+                            {row.client?.institution ?? "N/A"}
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
                           <span className={dashboardTextSecondary}>
-                            {row.project?.name ?? "â€”"}
+                            {row.project?.name ?? "N/A"}
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
                           <span className={dashboardTextSecondary}>
-                            {row.startDate ? formatDate(String(row.startDate)) : "â€”"}
-                            {row.endDate ? ` â†’ ${formatDate(String(row.endDate))}` : ""}
+                            {row.startDate ? formatDate(String(row.startDate)) : "N/A"}
+                            {row.endDate ? ` to ${formatDate(String(row.endDate))}` : ""}
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
                           <span className={dashboardTextSecondary}>
                             {row.totalAmount != null
                               ? `$${row.totalAmount.toLocaleString()}`
-                              : "â€”"}
+                              : "N/A"}
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
@@ -273,7 +273,7 @@ export default function ContractsPage() {
                               v{latestDoc.version}
                             </span>
                           ) : (
-                            <span className={dashboardTextSecondary}>â€”</span>
+                            <span className={dashboardTextSecondary}>N/A</span>
                           )}
                         </TableCell>
                         <TableCell className={cn(dashboardTableCellClass, "text-right")}>

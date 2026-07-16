@@ -1,6 +1,7 @@
 "use client";
 
-import { getNavMenusByRole, getConfigRoles, NavMenuItem } from "@/lib/actions/config.action";
+import { getConfigRoles, NavMenuItem } from "@/lib/actions/config.action";
+import { clearNavMenuClientCache, getNavMenusByRoleClient } from "@/lib/client-nav-api";
 import { getUserSession } from "@/lib/actions/auth.action";
 import { resolveConfigRoleId } from "@/lib/role-options";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -85,7 +86,7 @@ export function PermissionProvider({
       setIsPrivileged(!!privileged);
 
       if (roleId) {
-        const res = await getNavMenusByRole(roleId);
+        const res = await getNavMenusByRoleClient(roleId, true);
         if (res.success) setMenus(res.data ?? []);
       } else {
         setMenus([]);
@@ -102,7 +103,7 @@ export function PermissionProvider({
         try {
           const privileged = initialRole === "superadmin";
           setIsPrivileged(!!privileged);
-          const res = await getNavMenusByRole(initialRoleId);
+          const res = await getNavMenusByRoleClient(initialRoleId);
           if (res.success) setMenus(res.data ?? []);
         } finally {
           setLoading(false);
@@ -113,9 +114,22 @@ export function PermissionProvider({
     }
 
     loadInitial();
-    const handler = () => refresh();
+    const handler = () => {
+      clearNavMenuClientCache();
+      localStorage.setItem("deero-sidebar-menu-version", String(Date.now()));
+      void refresh();
+    };
+    const storageHandler = (event: StorageEvent) => {
+      if (event.key !== "deero-sidebar-menu-version") return;
+      clearNavMenuClientCache();
+      void refresh();
+    };
     window.addEventListener("sidebar-menu-updated", handler);
-    return () => window.removeEventListener("sidebar-menu-updated", handler);
+    window.addEventListener("storage", storageHandler);
+    return () => {
+      window.removeEventListener("sidebar-menu-updated", handler);
+      window.removeEventListener("storage", storageHandler);
+    };
   }, []);
 
   const check = (

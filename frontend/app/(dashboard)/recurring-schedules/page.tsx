@@ -55,7 +55,7 @@ const compactInputClass =
   "h-9 w-full rounded-md border border-zinc-200 bg-zinc-50 pl-9 pr-3 text-sm text-zinc-600 outline-none focus:border-primary focus:ring-1 focus:ring-primary/10";
 
 function weekdayLabel(value?: number | null) {
-  if (value == null) return "â€”";
+  if (value == null) return "N/A";
   return WEEKDAY_OPTIONS.find((d) => d.value === value)?.label ?? String(value);
 }
 
@@ -232,7 +232,7 @@ export default function RecurringSchedulesPage() {
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
                         <span className={dashboardTextSecondary}>
-                          {row.client?.institution ?? "â€”"}
+                          {row.client?.institution ?? "N/A"}
                         </span>
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
@@ -244,7 +244,7 @@ export default function RecurringSchedulesPage() {
                       <TableCell className={dashboardTableCellClass}>
                         <span className={dashboardTextSecondary}>
                           {formatDate(String(row.startDate))}
-                          {row.endDate ? ` â†’ ${formatDate(String(row.endDate))}` : " â†’ ongoing"}
+                          {row.endDate ? ` to ${formatDate(String(row.endDate))}` : " to ongoing"}
                         </span>
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
@@ -381,7 +381,7 @@ export default function RecurringSchedulesPage() {
                         <TableRow key={step.id}>
                           <TableCell>{weekdayLabel(step.dayOfWeek)}</TableCell>
                           <TableCell>{step.label}</TableCell>
-                          <TableCell>{step.department ?? "â€”"}</TableCell>
+                          <TableCell>{step.department ?? "N/A"}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -392,7 +392,7 @@ export default function RecurringSchedulesPage() {
               <div>
                 <h3 className="mb-2 text-sm font-semibold text-zinc-800">Auto-generated history</h3>
                 {historyLoading ? (
-                  <p className="text-sm text-zinc-500">Loading historyâ€¦</p>
+                  <p className="text-sm text-zinc-500">Loading history...</p>
                 ) : occurrences.length === 0 ? (
                   <p className="text-sm text-zinc-500">
                     No tasks generated yet. They appear automatically on scheduled days.
@@ -413,10 +413,10 @@ export default function RecurringSchedulesPage() {
                         {occurrences.map((row) => (
                           <TableRow key={row.id}>
                             <TableCell>{formatDate(String(row.scheduledDate))}</TableCell>
-                            <TableCell>{row.scheduleStep?.label ?? "â€”"}</TableCell>
-                            <TableCell>{row.task?.description ?? "â€”"}</TableCell>
-                            <TableCell>{row.task?.user?.name ?? "â€”"}</TableCell>
-                            <TableCell>{row.task?.status ?? "â€”"}</TableCell>
+                            <TableCell>{row.scheduleStep?.label ?? "N/A"}</TableCell>
+                            <TableCell>{row.task?.description ?? "N/A"}</TableCell>
+                            <TableCell>{row.task?.user?.name ?? "N/A"}</TableCell>
+                            <TableCell>{row.task?.status ?? "N/A"}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>

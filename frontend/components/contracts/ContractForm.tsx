@@ -12,6 +12,7 @@ import { getClientsForForm } from "@/lib/actions/client.action";
 import {
   ContractRecord,
   createContract,
+  getAllContracts,
   getProjectsForClient,
   updateContract,
   uploadContractDocument,
@@ -79,6 +80,13 @@ export default function ContractForm({
     const result = await getClientsForForm();
     return result.data ?? [];
   });
+  const { data: existingContracts = [] } = useSWR("contracts/client-coverage", async () => {
+    const result = await getAllContracts();
+    return result.data ?? [];
+  });
+  const selectableClients = formType === "create"
+    ? clients.filter((client) => !existingContracts.some((item) => item.clientId === client.id))
+    : clients;
 
   const { data: projects = [] } = useSWR(
     clientId ? `contracts/projects/${clientId}` : null,
@@ -187,7 +195,7 @@ export default function ContractForm({
             disabled={formType === "edit"}
           >
             <option value="">Select client</option>
-            {clients.map((c) => (
+            {selectableClients.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.institution}
               </option>
@@ -212,13 +220,12 @@ export default function ContractForm({
           </select>
         </div>
 
-        <div>
+        <div className={formType === "create" ? "hidden" : ""}>
           <FieldLabel>Contract number</FieldLabel>
           <input
             className={configCompactInputClass}
             value={contractNumber}
-            onChange={(e) => setContractNumber(e.target.value)}
-            placeholder="Auto-generated if empty"
+            readOnly
           />
         </div>
 
@@ -288,7 +295,7 @@ export default function ContractForm({
           </div>
         </div>
 
-        <div>
+        <div className="hidden">
           <FieldLabel>Payment terms</FieldLabel>
           <textarea
             className={configTextareaClass}

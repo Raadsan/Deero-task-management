@@ -377,12 +377,12 @@ export default function BranchesPage() {
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
                         <span className={dashboardTextSecondary}>
-                          {portfolio.phone || "â€”"}
+                          {portfolio.phone || "N/A"}
                         </span>
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
                         <span className={dashboardTextSecondary}>
-                          {portfolio.location || "â€”"}
+                          {portfolio.location || "N/A"}
                         </span>
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
@@ -761,13 +761,13 @@ export default function BranchesPage() {
                   />
                   <InfoField
                     label="Description"
-                    value={viewingBranch.description || "â€”"}
+                    value={viewingBranch.description || "N/A"}
                     className="sm:col-span-2"
                   />
-                  <InfoField label="Phone" value={viewingBranch.phone || "â€”"} />
+                  <InfoField label="Phone" value={viewingBranch.phone || "N/A"} />
                   <InfoField
                     label="Location"
-                    value={viewingBranch.location || "â€”"}
+                    value={viewingBranch.location || "N/A"}
                   />
                 </div>
 

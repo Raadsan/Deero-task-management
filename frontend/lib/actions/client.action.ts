@@ -93,6 +93,8 @@ export async function createClient(data: {
   base?: number;
   description?: string;
   discount?: number;
+  discountType?: "PERCENTAGE" | "FIXED";
+  contractFeatures?: Array<{ name: string; quantity: number; frequency: string; description: string }>;
   createdAt?: Date;
   serviceStatus?: "pending" | "completed";
   project?: {
@@ -273,6 +275,8 @@ export async function addAnotherService(params: {
   base: number;
   description?: string;
   discount?: number;
+  discountType?: "PERCENTAGE" | "FIXED";
+  contractFeatures?: Array<{ name: string; quantity: number; frequency: string; description: string }>;
   portfolioId?: string;
   createdAt?: Date;
   serviceStatus?: "pending" | "completed";
@@ -285,6 +289,8 @@ export async function addAnotherService(params: {
       base: rest.base,
       description: rest.description,
       discount: rest.discount,
+      discountType: rest.discountType,
+      contractFeatures: rest.contractFeatures,
       portfolioId: rest.portfolioId,
       createdAt: rest.createdAt,
       serviceStatus: rest.serviceStatus,

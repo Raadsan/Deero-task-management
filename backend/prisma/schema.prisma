@@ -43,6 +43,11 @@ enum ClientServiceStatus {
   completed
 }
 
+enum ServiceType {
+  ONE_TIME
+  SUBSCRIPTION
+}
+
 // ─── Media agency client & workflow enums ───────────────────────────────────
 
 enum ClientType {
@@ -157,8 +162,8 @@ model Staff {
   gender        String?
   salary        String?
 
-  portfolioId   String?
-  portfolio     Portfolio? @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
+  portfolioId String?
+  portfolio   Portfolio? @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
 
   sessions      Session[]
   accounts      Account[]
@@ -199,7 +204,7 @@ model Session {
   userAgent String?
 
   userId String
-  user   Staff   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   Staff  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   impersonatedBy String?
 
@@ -215,7 +220,7 @@ model Account {
   providerId String
 
   userId                String
-  user                  Staff      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                  Staff     @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -259,10 +264,10 @@ model Client {
   isActive          Boolean    @default(true)
   isDraft           Boolean    @default(false)
 
-  portfolioId         String?
-  portfolio           Portfolio? @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
+  portfolioId      String?
+  portfolio        Portfolio? @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
   accountManagerId String?
-  accountManager   Staff?   @relation("ClientAccountManager", fields: [accountManagerId], references: [id], onDelete: SetNull)
+  accountManager   Staff?     @relation("ClientAccountManager", fields: [accountManagerId], references: [id], onDelete: SetNull)
 
   clientService      ClientService[]
   clientTask         ClientTask[]
@@ -286,14 +291,20 @@ model Service {
 
   serviceName   String
   description   String?         @db.Text
-  portfolioId      String?
-  portfolio        Portfolio?         @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
+  iconUrl       String?         @db.Text
+  source        String          @default("CUSTOM")
+  serviceType   ServiceType     @default(ONE_TIME)
+  externalId    String?
+  lastSyncedAt  DateTime?
+  portfolioId   String?
+  portfolio     Portfolio?      @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
   clientService ClientService[]
   subService    SubService[]
 
   serviceAgreements IncomeServiceAgreement[]
 
   @@unique([serviceName, portfolioId])
+  @@unique([source, externalId])
   @@map("services")
 }
 
@@ -301,6 +312,11 @@ model SubService {
   id          String  @id
   name        String
   description String? @db.Text
+  price       Float?
+  currency    String  @default("USD")
+  features    Json?
+  externalId  String?
+  sortOrder   Int     @default(0)
 
   categoryId String
   service    Service @relation(fields: [categoryId], references: [id], onDelete: Cascade)
@@ -310,6 +326,7 @@ model SubService {
   serviceAgreements IncomeServiceAgreement[]
 
   @@unique([name, categoryId])
+  @@unique([categoryId, externalId])
   @@map("subservices")
 }
 
@@ -383,7 +400,7 @@ model Task {
   sortOrder     Int           @default(0)
 
   assgineeId         String
-  user               Staff    @relation("TaskAssignee", fields: [assgineeId], references: [id], onDelete: Cascade)
+  user               Staff   @relation("TaskAssignee", fields: [assgineeId], references: [id], onDelete: Cascade)
   supervisor         String  @default("")
   serviceInformation String?
   isPersonal         Boolean @default(false)
@@ -458,7 +475,7 @@ model IncomeTransaction {
   createdAt DateTime @default(now())
 
   userId           String
-  user             Staff    @relation(fields: [userId], references: [id])
+  user             Staff   @relation(fields: [userId], references: [id])
   incomeCategoryId String?
 
   duetoDate DateTime?
@@ -494,7 +511,7 @@ model ExpenseTransaction {
   id        String   @id
   createdAt DateTime @default(now())
   userId    String
-  user      Staff     @relation(fields: [userId], references: [id])
+  user      Staff    @relation(fields: [userId], references: [id])
 
   duetoDate DateTime?
   status    String
@@ -537,7 +554,7 @@ model UserFiles {
   name      String
   fileSize  Int
   userId    String
-  user      Staff     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      Staff    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model IncomeServiceAgreement {
@@ -546,6 +563,12 @@ model IncomeServiceAgreement {
   base        Float
   discount    Float
   description String
+  packageSnapshot Json?
+  contractFeatures Json?
+  discountType String @default("PERCENTAGE")
+  discountValue Float @default(0)
+  discountAmount Float @default(0)
+  finalAmount Float @default(0)
   serviceId   String
   service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
@@ -699,7 +722,7 @@ model AuditLog {
   id          String   @id @default(uuid())
   createdAt   DateTime @default(now())
   userId      String?
-  user        Staff?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user        Staff?   @relation(fields: [userId], references: [id], onDelete: SetNull)
   action      String
   entity      String
   entityId    String?
@@ -724,11 +747,11 @@ model Project {
   dueDate     DateTime?
 
   clientId    String
-  client      Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  portfolioId    String?
-  portfolio      Portfolio? @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
+  client      Client     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  portfolioId String?
+  portfolio   Portfolio? @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
   createdById String?
-  createdBy   Staff?   @relation("ProjectCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdBy   Staff?     @relation("ProjectCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
   serviceAgreements IncomeServiceAgreement[]
   contentRequests   ContentRequest[]
@@ -758,13 +781,13 @@ model Contract {
   notes          String?        @db.Text
 
   clientId    String
-  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  client      Client     @relation(fields: [clientId], references: [id], onDelete: Cascade)
   projectId   String?
-  project     Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  portfolioId    String?
-  portfolio      Portfolio?  @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
+  project     Project?   @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  portfolioId String?
+  portfolio   Portfolio? @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
   createdById String?
-  createdBy   Staff?    @relation("ContractCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdBy   Staff?     @relation("ContractCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
   documents    ContractDocument[]
   installments ClientInstallment[]
@@ -814,7 +837,7 @@ model ContractDocument {
   fileSize     Int?
   mimeType     String   @default("application/pdf")
   uploadedById String?
-  uploadedBy   Staff?    @relation("ContractDocumentUploadedBy", fields: [uploadedById], references: [id], onDelete: SetNull)
+  uploadedBy   Staff?   @relation("ContractDocumentUploadedBy", fields: [uploadedById], references: [id], onDelete: SetNull)
 
   @@unique([contractId, version])
   @@index([contractId])
@@ -833,13 +856,13 @@ model ContentRequest {
   deadline    DateTime?
 
   clientId    String
-  client      Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  client      Client     @relation(fields: [clientId], references: [id], onDelete: Cascade)
   projectId   String?
-  project     Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  portfolioId    String?
-  portfolio      Portfolio?  @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
+  project     Project?   @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  portfolioId String?
+  portfolio   Portfolio? @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
   createdById String?
-  createdBy   Staff?    @relation("ContentRequestCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdBy   Staff?     @relation("ContentRequestCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
   assignees ContentRequestAssignee[]
   tasks     Task[]
@@ -856,7 +879,7 @@ model ContentRequestAssignee {
   contentRequestId String
   contentRequest   ContentRequest @relation(fields: [contentRequestId], references: [id], onDelete: Cascade)
   userId           String
-  user             Staff           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             Staff          @relation(fields: [userId], references: [id], onDelete: Cascade)
   role             String?
 
   @@unique([contentRequestId, userId])
@@ -877,8 +900,8 @@ model RecurringSchedule {
   isActive          Boolean        @default(true)
   autoGenerateTasks Boolean        @default(true)
 
-  clientId String
-  client   Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId    String
+  client      Client     @relation(fields: [clientId], references: [id], onDelete: Cascade)
   portfolioId String?
   portfolio   Portfolio? @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
 
@@ -895,19 +918,19 @@ model RecurringScheduleStep {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
 
-  scheduleId  String
-  schedule    RecurringSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
-  dayOfWeek   Int?
-  dayOfMonth  Int?
+  scheduleId   String
+  schedule     RecurringSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  dayOfWeek    Int?
+  dayOfMonth   Int?
   intervalDays Int?
-  stepOrder   Int               @default(0)
-  label       String
-  contentType ContentType?
-  supervisor  String            @default("")
-  assigneeId  String?
-  assignee    Staff?             @relation("RecurringStepAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
-  templateId  String?
-  template    WorkflowTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  stepOrder    Int               @default(0)
+  label        String
+  contentType  ContentType?
+  supervisor   String            @default("")
+  assigneeId   String?
+  assignee     Staff?            @relation("RecurringStepAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  templateId   String?
+  template     WorkflowTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
 
   occurrences RecurringTaskOccurrence[]
 

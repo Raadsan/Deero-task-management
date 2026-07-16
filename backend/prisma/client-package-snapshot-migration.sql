@@ -1,0 +1,7 @@
+ALTER TABLE `IncomeServiceAgreement`
+  ADD COLUMN `packageSnapshot` JSON NULL,
+  ADD COLUMN `contractFeatures` JSON NULL,
+  ADD COLUMN `discountType` VARCHAR(191) NOT NULL DEFAULT 'PERCENTAGE',
+  ADD COLUMN `discountValue` DOUBLE NOT NULL DEFAULT 0,
+  ADD COLUMN `discountAmount` DOUBLE NOT NULL DEFAULT 0,
+  ADD COLUMN `finalAmount` DOUBLE NOT NULL DEFAULT 0;

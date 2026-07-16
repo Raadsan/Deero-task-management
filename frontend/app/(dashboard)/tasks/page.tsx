@@ -312,7 +312,7 @@ export default function TasksPage() {
                     const serviceInfo =
                       task.serviceInformation ||
                       task.institutions?.[0]?.institution ||
-                      "â€”";
+                      "N/A";
                     const displayStatus = resolveTaskDisplayStatus(task);
 
                     return (

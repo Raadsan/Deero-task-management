@@ -8,6 +8,9 @@ export type ServiceRecord = {
   id: string;
   serviceName: string;
   description?: string | null;
+  iconUrl?: string | null;
+  source?: "CUSTOM" | "ADVERT";
+  serviceType?: "ONE_TIME" | "SUBSCRIPTION";
   portfolioId?: string | null;
   portfolio?: {
     id: string;
@@ -22,6 +25,9 @@ export type SubServiceRecord = {
   id: string;
   name: string;
   description?: string | null;
+  price?: number | null;
+  currency?: string;
+  features?: string[];
   categoryId: string;
   service?: {
     id: string;
@@ -49,7 +55,20 @@ export async function getAllServices(params?: {
 export type SubServiceInput = {
   id?: string;
   name: string;
+  price?: number | null;
+  currency?: string;
+  features?: string[];
 };
+
+export async function syncAdvertServices(): Promise<ActionResponse<{ synced: number; portfolio: string }>> {
+  try {
+    const response = await api.post("/api/services/sync-advert");
+    if (response.data.success) return { success: true, data: response.data.data };
+    return { success: false, errors: { message: response.data.error } };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}
 
 export async function getServiceById(
   id: string,
@@ -69,6 +88,7 @@ export async function createService(data: {
   serviceName: string;
   description?: string;
   portfolioId: string;
+  serviceType?: "ONE_TIME" | "SUBSCRIPTION";
   subServices?: SubServiceInput[] | string[];
 }): Promise<ActionResponse> {
   try {
@@ -86,6 +106,7 @@ export async function updateService(
     serviceName: string;
     description?: string;
     portfolioId: string;
+    serviceType?: "ONE_TIME" | "SUBSCRIPTION";
     subServices?: SubServiceInput[];
   },
 ): Promise<ActionResponse> {

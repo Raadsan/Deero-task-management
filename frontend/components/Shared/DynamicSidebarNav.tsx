@@ -1,20 +1,14 @@
 "use client";
 
-import {
-  getConfigRoles,
-  getNavMenusByRole,
-  NavMenuItem,
-} from "@/lib/actions/config.action";
+import type { NavMenuItem } from "@/lib/actions/config.action";
+import { usePermissions } from "@/context/PermissionContext";
 import { normalizeRoleName } from "@/lib/portfolio-access";
 import { getLucideIcon } from "@/lib/lucide-icons";
-import {
-  isLegacySidebarRole,
-  resolveConfigRoleId,
-} from "@/lib/role-options";
+import { isLegacySidebarRole } from "@/lib/role-options";
 import { AuthSession } from "@/lib/types";
 import { CalendarDays, LayoutGrid, ShoppingBag } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { usePathname } from "next/navigation";
+import { useEffect, useMemo } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import SideBarItem from "./SidebarItem";
 import SidebarCollapsibleNavItem from "./SidebarCollapsibleNavItem";
 import { useSidebarAccordion } from "./SidebarAccordionContext";
@@ -68,53 +62,26 @@ function dedupeMenus(menus: NavMenuItem[]) {
 
 export default function DynamicSidebarNav({ data, fallback, fallbackMenus = [] }: Props) {
   const pathname = usePathname();
+  const router = useRouter();
   const { setOpenId } = useSidebarAccordion();
-  const [menus, setMenus] = useState<NavMenuItem[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const { menus, loading } = usePermissions();
   const userRole = data?.user?.role ?? "";
   const normalizedRole = normalizeRoleName(userRole);
-
-  const loadMenus = useCallback(async () => {
-    try {
-      let roleId = (data?.user as { roleId?: string })?.roleId ?? null;
-
-      if (!roleId && userRole) {
-        const rolesRes = await getConfigRoles();
-        roleId = resolveConfigRoleId(rolesRes?.data, userRole) ?? null;
-      }
-
-      if (!roleId) {
-        setMenus([]);
-        return;
-      }
-
-      const res = await getNavMenusByRole(roleId);
-      if (res.success && res.data?.length) {
-        setMenus(res.data);
-      } else {
-        setMenus([]);
-      }
-    } finally {
-      setLoaded(true);
-    }
-  }, [data?.user, userRole]);
-
-  useEffect(() => {
-    setLoaded(false);
-    void loadMenus();
-    const onUpdate = () => {
-      setLoaded(false);
-      void loadMenus();
-    };
-    window.addEventListener("sidebar-menu-updated", onUpdate);
-    return () => window.removeEventListener("sidebar-menu-updated", onUpdate);
-  }, [loadMenus]);
 
   const sortedMenus = useMemo(() => {
     return dedupeMenus([...menus]).sort(
       (a, b) => (a.order ?? 0) - (b.order ?? 0),
     );
   }, [menus]);
+
+  useEffect(() => {
+    for (const menu of sortedMenus) {
+      if (menu.url) router.prefetch(menu.url);
+      for (const sub of menu.items || menu.subMenus || []) {
+        if (sub.url) router.prefetch(sub.url);
+      }
+    }
+  }, [router, sortedMenus]);
 
   useEffect(() => {
     const menuRefs = sortedMenus.length
@@ -141,7 +108,7 @@ export default function DynamicSidebarNav({ data, fallback, fallbackMenus = [] }
     setOpenId(null);
   }, [pathname, sortedMenus, fallbackMenus, setOpenId]);
 
-  if (!loaded) {
+  if (loading) {
     return null;
   }
 

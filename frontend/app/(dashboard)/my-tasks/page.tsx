@@ -230,7 +230,7 @@ export default function MyTasksPage() {
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
                           <span className={dashboardTextSecondary}>
-                            {task.description || task.serviceInformation || "â€”"}
+                            {task.description || task.serviceInformation || "N/A"}
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
@@ -271,7 +271,7 @@ export default function MyTasksPage() {
                               Process
                             </Button>
                           ) : (
-                            <span className="text-xs text-zinc-400">â€”</span>
+                            <span className="text-xs text-zinc-400">N/A</span>
                           )}
                         </TableCell>
                       </TableRow>

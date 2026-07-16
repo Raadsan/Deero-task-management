@@ -9,12 +9,14 @@ import {
   getSubServicesByServiceId,
   updateService,
   updateSubService,
+  syncAdvertServices,
 } from "../controllers/servicecontroller.js";
 
 const router = Router();
 
 router.get("/", getAllServices);
 router.post("/", createService);
+router.post("/sync-advert", syncAdvertServices);
 router.post("/sub", createSubService);
 router.put("/sub/:id", updateSubService);
 router.delete("/sub/:id", deleteSubService);

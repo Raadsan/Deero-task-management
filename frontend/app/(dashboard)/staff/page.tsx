@@ -199,7 +199,7 @@ export default function EmployeesPage() {
                         </span>
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
-                        {user.role || "â€”"}
+                        {user.role || "N/A"}
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
                         <span

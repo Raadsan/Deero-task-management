@@ -45,6 +45,8 @@ async function attachClientServiceAgreement(tx, {
   portfolioId,
   createdAt,
   serviceStatus,
+  contractFeatures,
+  discountType = "PERCENTAGE",
 }) {
   const serviceWhere = { serviceName };
   if (portfolioId) {
@@ -125,6 +127,28 @@ async function attachClientServiceAgreement(tx, {
       base: Number(base),
       description: description || "",
       discount: Number(discount) || 0,
+      packageSnapshot: {
+        externalId: subService.externalId,
+        name: subService.name,
+        price: subService.price,
+        currency: subService.currency,
+        features: subService.features || [],
+      },
+      contractFeatures: Array.isArray(contractFeatures)
+        ? contractFeatures
+        : Array.isArray(subService.features)
+        ? subService.features.map((feature) => ({
+            name: String(feature),
+            quantity: 1,
+            frequency: "",
+            description: "",
+          }))
+        : [],
+      discountType: "PERCENTAGE",
+      ...(discountType ? { discountType } : {}),
+      discountValue: Number(discount) || 0,
+      discountAmount: Number(base) * (Number(discount) || 0),
+      finalAmount: Number(base) - Number(base) * (Number(discount) || 0),
       serviceStatus: serviceStatus === "completed" ? "completed" : "pending",
       ...(createdAt ? { createdAt: new Date(createdAt) } : {}),
     },
@@ -152,11 +176,85 @@ const clientListInclude = {
 export const getAllClients = async (req, res) => {
   try {
     const scope = getScope(req);
-    const clients = await prisma.client.findMany({
-      where: clientBranchWhere(scope),
-      include: clientListInclude,
-      orderBy: { createdAt: "desc" },
-    });
+    const portfolioFilter = scope.seesAllBranches ? "" : "WHERE c.portfolioId = ?";
+    const params = scope.seesAllBranches ? [] : [scope.portfolioId];
+    const rows = await prisma.$queryRawUnsafe(
+      `SELECT
+         c.id, c.createdAt, c.updatedAt, c.institution, c.companyName,
+         c.contactPerson, c.email, c.phone, c.address, c.source, c.clientType,
+         c.contractStartDate, c.contractEndDate, c.monthlyBudget, c.notes,
+         c.isActive, c.isDraft, c.portfolioId,
+         a.id agreementId, a.createdAt agreementCreatedAt, a.base,
+         a.discount, a.description agreementDescription, a.serviceStatus,
+         a.serviceId, a.subServiceId,
+         s.serviceName, s.portfolioId servicePortfolioId,
+         ss.name subServiceName,
+         p.id servicePortfolioRecordId, p.name servicePortfolioName
+       FROM clients c
+       LEFT JOIN IncomeServiceAgreement a ON a.clientId = c.id
+       LEFT JOIN services s ON s.id = a.serviceId
+       LEFT JOIN subservices ss ON ss.id = a.subServiceId
+       LEFT JOIN portfolios p ON p.id = s.portfolioId
+       ${portfolioFilter}
+       ORDER BY c.createdAt DESC, a.createdAt DESC`,
+      ...params,
+    );
+
+    const clientMap = new Map();
+    for (const row of rows) {
+      let client = clientMap.get(row.id);
+      if (!client) {
+        client = {
+          id: row.id,
+          createdAt: row.createdAt,
+          updatedAt: row.updatedAt,
+          institution: row.institution,
+          companyName: row.companyName,
+          contactPerson: row.contactPerson,
+          email: row.email,
+          phone: row.phone,
+          address: row.address,
+          source: row.source,
+          clientType: row.clientType,
+          contractStartDate: row.contractStartDate,
+          contractEndDate: row.contractEndDate,
+          monthlyBudget: row.monthlyBudget,
+          notes: row.notes,
+          isActive: Boolean(row.isActive),
+          isDraft: Boolean(row.isDraft),
+          portfolioId: row.portfolioId,
+          clientService: [],
+          serviceAgreements: [],
+        };
+        clientMap.set(row.id, client);
+      }
+      if (!row.agreementId) continue;
+      const portfolio = row.servicePortfolioRecordId
+        ? { id: row.servicePortfolioRecordId, name: row.servicePortfolioName }
+        : null;
+      const service = {
+        id: row.serviceId,
+        serviceName: row.serviceName,
+        portfolioId: row.servicePortfolioId,
+        portfolio,
+      };
+      if (!client.clientService.some((item) => item.service.id === service.id)) {
+        client.clientService.push({ service });
+      }
+      client.serviceAgreements.push({
+        id: row.agreementId,
+        createdAt: row.agreementCreatedAt,
+        base: row.base,
+        discount: row.discount,
+        description: row.agreementDescription,
+        serviceStatus: row.serviceStatus,
+        serviceId: row.serviceId,
+        subServiceId: row.subServiceId,
+        service,
+        subService: { id: row.subServiceId, name: row.subServiceName },
+      });
+    }
+    const clients = [...clientMap.values()];
     res.json({ success: true, data: clients });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -298,6 +396,8 @@ export const createClient = async (req, res) => {
           portfolioId: scopedBranchId,
           createdAt: data.createdAt,
           serviceStatus: data.serviceStatus,
+          contractFeatures: data.contractFeatures,
+          discountType: data.discountType,
         });
         agreement = attached.agreement;
       }
@@ -462,6 +562,8 @@ export const addClientService = async (req, res) => {
         portfolioId: scopedBranchId,
         createdAt: data.createdAt,
         serviceStatus: data.serviceStatus,
+        contractFeatures: data.contractFeatures,
+        discountType: data.discountType,
       });
     }, { timeout: 10000 });
 
@@ -591,6 +693,7 @@ export const updateClientAgreement = async (req, res) => {
     subServiceName,
     serviceStatus,
     serviceName,
+    contractFeatures,
     portfolioId,
     discount,
     createdAt,
@@ -693,6 +796,7 @@ export const updateClientAgreement = async (req, res) => {
           subServiceId,
           ...(base !== undefined ? { base: Number(base) } : {}),
           ...(description !== undefined ? { description } : {}),
+          ...(contractFeatures !== undefined ? { contractFeatures } : {}),
           ...(discount !== undefined ? { discount: Number(discount) } : {}),
           ...(serviceStatus !== undefined
             ? {

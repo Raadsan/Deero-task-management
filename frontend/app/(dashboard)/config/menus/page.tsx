@@ -574,7 +574,7 @@ export default function MenusConfigRoute() {
                           <span className={dashboardTextSecondary}>{menu.url}</span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          {menu.icon || "â€”"}
+                          {menu.icon || "N/A"}
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
                           <StatusBadge active={menuActive} />
@@ -603,12 +603,12 @@ export default function MenusConfigRoute() {
                     <TableRow key={sub.id} className={dashboardTableBodyRowClass}>
                       <TableCell className={dashboardTableCellClass}>{sub.order}</TableCell>
                       <TableCell className={dashboardTableCellClass}>
-                        <span className="pl-6 text-sm text-zinc-700">â†³ {sub.title}</span>
+                        <span className="pl-6 text-sm text-zinc-700">{sub.title}</span>
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
                         <span className={dashboardTextSecondary}>{sub.url}</span>
                       </TableCell>
-                      <TableCell className={dashboardTableCellClass}>â€”</TableCell>
+                      <TableCell className={dashboardTableCellClass}>N/A</TableCell>
                       <TableCell className={dashboardTableCellClass}>
                         <StatusBadge active={subActive} />
                       </TableCell>
@@ -701,7 +701,7 @@ export default function MenusConfigRoute() {
                         {viewRecord.icon}
                       </span>
                     ) : (
-                      "â€”"
+                      "N/A"
                     )
                   }
                 />

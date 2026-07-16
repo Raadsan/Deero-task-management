@@ -149,7 +149,7 @@ export default function TrackingConfigRoute() {
                     <TableCell className={dashboardTableCellClass}>{log.entity}</TableCell>
                     <TableCell className={dashboardTableCellClass}>
                       <span className="line-clamp-1 text-zinc-600">
-                        {log.description || "â€”"}
+                        {log.description || "N/A"}
                       </span>
                     </TableCell>
                     <TableCell className={cn(dashboardTableCellClass, "text-right")}>
@@ -207,7 +207,7 @@ export default function TrackingConfigRoute() {
               ) : null}
               <ConfigInfoField
                 label="Description"
-                value={viewLog.description || "â€”"}
+                value={viewLog.description || "N/A"}
               />
               <ConfigInfoField label="Log ID" value={viewLog.id} />
             </div>

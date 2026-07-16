@@ -14,7 +14,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAllClients, deleteClientById, updateClientServiceStatus } from "@/lib/actions/client.action";
+import { deleteClientById, updateClientServiceStatus } from "@/lib/actions/client.action";
+import { getAllClientsClient } from "@/lib/client-read-api";
 import { getTaskFormBranchOptions } from "@/lib/actions/shared.action";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {
@@ -86,7 +87,7 @@ function AgreementStack({
   renderItem: (agreement: ClientAgreementStatus) => ReactNode;
 }) {
   if (!agreements.length) {
-    return <span className={dashboardTextSecondary}>â€”</span>;
+    return <span className={dashboardTextSecondary}>N/A</span>;
   }
 
   return (
@@ -145,7 +146,7 @@ function ClientServiceStatusCell({
 export default function ClientsPage() {
   const { data: clientsRes, isLoading, mutate } = useSWR(
     SWR_CACH_KEYS.clients.key,
-    getAllClients,
+    getAllClientsClient,
   );
   const { mutate: globalMutate } = useSWRConfig();
   const [updatingAgreementId, setUpdatingAgreementId] = useState<string>();
@@ -456,9 +457,9 @@ export default function ClientsPage() {
 
                     const isDraft = Boolean((client as AllClients).isDraft);
                     const displayEmail =
-                      client.email?.includes("@deero.internal") ? "â€”" : client.email;
+                      client.email?.includes("@deero.internal") ? "N/A" : client.email;
                     const displayPhone =
-                      client.phone?.startsWith("DRAFT") ? "â€”" : client.phone;
+                      client.phone?.startsWith("DRAFT") ? "N/A" : client.phone;
 
                     return (
                       <TableRow key={client.id} className={dashboardTableBodyRowClass}>
@@ -484,7 +485,7 @@ export default function ClientsPage() {
                             agreements={serviceAgreements}
                             renderItem={(agreement) => (
                               <span className={dashboardTextPrimary}>
-                                {agreement.serviceName || "â€”"}
+                                {agreement.serviceName || "N/A"}
                               </span>
                             )}
                           />
@@ -494,7 +495,7 @@ export default function ClientsPage() {
                             agreements={serviceAgreements}
                             renderItem={(agreement) => (
                               <span className={dashboardTextSecondary}>
-                                {agreement.subServiceName || "â€”"}
+                                {agreement.subServiceName || "N/A"}
                               </span>
                             )}
                           />
@@ -507,7 +508,7 @@ export default function ClientsPage() {
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
                           <span className={dashboardTextSecondary}>
-                            {client.createdAt ?? "â€”"}
+                            {client.createdAt ?? "N/A"}
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>

@@ -212,6 +212,11 @@ exports.Prisma.ServiceScalarFieldEnum = {
   id: 'id',
   serviceName: 'serviceName',
   description: 'description',
+  iconUrl: 'iconUrl',
+  source: 'source',
+  serviceType: 'serviceType',
+  externalId: 'externalId',
+  lastSyncedAt: 'lastSyncedAt',
   portfolioId: 'portfolioId'
 };
 
@@ -219,6 +224,11 @@ exports.Prisma.SubServiceScalarFieldEnum = {
   id: 'id',
   name: 'name',
   description: 'description',
+  price: 'price',
+  currency: 'currency',
+  features: 'features',
+  externalId: 'externalId',
+  sortOrder: 'sortOrder',
   categoryId: 'categoryId'
 };
 
@@ -357,6 +367,12 @@ exports.Prisma.IncomeServiceAgreementScalarFieldEnum = {
   base: 'base',
   discount: 'discount',
   description: 'description',
+  packageSnapshot: 'packageSnapshot',
+  contractFeatures: 'contractFeatures',
+  discountType: 'discountType',
+  discountValue: 'discountValue',
+  discountAmount: 'discountAmount',
+  finalAmount: 'finalAmount',
   serviceId: 'serviceId',
   subServiceId: 'subServiceId',
   clientId: 'clientId',
@@ -634,14 +650,30 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.ClientType = exports.$Enums.ClientType = {
   ONE_TIME: 'ONE_TIME',
   MANAGED_ON_DEMAND: 'MANAGED_ON_DEMAND',
   MANAGED_RECURRING: 'MANAGED_RECURRING'
+};
+
+exports.ServiceType = exports.$Enums.ServiceType = {
+  ONE_TIME: 'ONE_TIME',
+  SUBSCRIPTION: 'SUBSCRIPTION'
 };
 
 exports.TaskStatus = exports.$Enums.TaskStatus = {

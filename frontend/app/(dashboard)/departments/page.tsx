@@ -369,7 +369,7 @@ export default function DepartmentsPage() {
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
                         <span className={dashboardTextSecondary}>
-                          {dept.portfolio?.name ?? "â€”"}
+                          {dept.portfolio?.name ?? "N/A"}
                         </span>
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
@@ -377,7 +377,7 @@ export default function DepartmentsPage() {
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
                         <span className="line-clamp-1 max-w-xs text-zinc-500">
-                          {dept.description || "â€”"}
+                          {dept.description || "N/A"}
                         </span>
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
@@ -584,7 +584,7 @@ export default function DepartmentsPage() {
                 />
                 <ConfigInfoField
                   label="Portfolio"
-                  value={viewDepartment.portfolio?.name ?? "â€”"}
+                  value={viewDepartment.portfolio?.name ?? "N/A"}
                   className="sm:col-span-2"
                 />
                 <ConfigInfoField
@@ -594,16 +594,16 @@ export default function DepartmentsPage() {
                 />
                 <ConfigInfoField
                   label="Description"
-                  value={viewDepartment.description || "â€”"}
+                  value={viewDepartment.description || "N/A"}
                   className="sm:col-span-2"
                 />
                 <ConfigInfoField
                   label="Created"
-                  value={formatDate(viewDepartment.createdAt ?? "") || "â€”"}
+                  value={formatDate(viewDepartment.createdAt ?? "") || "N/A"}
                 />
                 <ConfigInfoField
                   label="Updated"
-                  value={formatDate(viewDepartment.updatedAt ?? "") || "â€”"}
+                  value={formatDate(viewDepartment.updatedAt ?? "") || "N/A"}
                 />
               </div>
             ) : (

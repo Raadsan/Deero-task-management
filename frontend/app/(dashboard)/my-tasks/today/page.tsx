@@ -256,7 +256,7 @@ export default function TodayTasksPage() {
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
                           <span className={dashboardTextSecondary}>
-                            {task.description || task.serviceInformation || "â€”"}
+                            {task.description || task.serviceInformation || "N/A"}
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>

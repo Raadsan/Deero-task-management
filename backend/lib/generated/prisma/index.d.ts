@@ -242,6 +242,14 @@ export namespace $Enums {
 export type ClientType = (typeof ClientType)[keyof typeof ClientType]
 
 
+export const ServiceType: {
+  ONE_TIME: 'ONE_TIME',
+  SUBSCRIPTION: 'SUBSCRIPTION'
+};
+
+export type ServiceType = (typeof ServiceType)[keyof typeof ServiceType]
+
+
 export const TaskStatus: {
   pending: 'pending',
   overdue: 'overdue',
@@ -396,6 +404,10 @@ export type ContentCycleStatus = (typeof ContentCycleStatus)[keyof typeof Conten
 export type ClientType = $Enums.ClientType
 
 export const ClientType: typeof $Enums.ClientType
+
+export type ServiceType = $Enums.ServiceType
+
+export const ServiceType: typeof $Enums.ServiceType
 
 export type TaskStatus = $Enums.TaskStatus
 
@@ -12099,6 +12111,11 @@ export namespace Prisma {
     id: string | null
     serviceName: string | null
     description: string | null
+    iconUrl: string | null
+    source: string | null
+    serviceType: $Enums.ServiceType | null
+    externalId: string | null
+    lastSyncedAt: Date | null
     portfolioId: string | null
   }
 
@@ -12106,6 +12123,11 @@ export namespace Prisma {
     id: string | null
     serviceName: string | null
     description: string | null
+    iconUrl: string | null
+    source: string | null
+    serviceType: $Enums.ServiceType | null
+    externalId: string | null
+    lastSyncedAt: Date | null
     portfolioId: string | null
   }
 
@@ -12113,6 +12135,11 @@ export namespace Prisma {
     id: number
     serviceName: number
     description: number
+    iconUrl: number
+    source: number
+    serviceType: number
+    externalId: number
+    lastSyncedAt: number
     portfolioId: number
     _all: number
   }
@@ -12122,6 +12149,11 @@ export namespace Prisma {
     id?: true
     serviceName?: true
     description?: true
+    iconUrl?: true
+    source?: true
+    serviceType?: true
+    externalId?: true
+    lastSyncedAt?: true
     portfolioId?: true
   }
 
@@ -12129,6 +12161,11 @@ export namespace Prisma {
     id?: true
     serviceName?: true
     description?: true
+    iconUrl?: true
+    source?: true
+    serviceType?: true
+    externalId?: true
+    lastSyncedAt?: true
     portfolioId?: true
   }
 
@@ -12136,6 +12173,11 @@ export namespace Prisma {
     id?: true
     serviceName?: true
     description?: true
+    iconUrl?: true
+    source?: true
+    serviceType?: true
+    externalId?: true
+    lastSyncedAt?: true
     portfolioId?: true
     _all?: true
   }
@@ -12216,6 +12258,11 @@ export namespace Prisma {
     id: string
     serviceName: string
     description: string | null
+    iconUrl: string | null
+    source: string
+    serviceType: $Enums.ServiceType
+    externalId: string | null
+    lastSyncedAt: Date | null
     portfolioId: string | null
     _count: ServiceCountAggregateOutputType | null
     _min: ServiceMinAggregateOutputType | null
@@ -12240,6 +12287,11 @@ export namespace Prisma {
     id?: boolean
     serviceName?: boolean
     description?: boolean
+    iconUrl?: boolean
+    source?: boolean
+    serviceType?: boolean
+    externalId?: boolean
+    lastSyncedAt?: boolean
     portfolioId?: boolean
     portfolio?: boolean | Service$portfolioArgs<ExtArgs>
     clientService?: boolean | Service$clientServiceArgs<ExtArgs>
@@ -12253,6 +12305,11 @@ export namespace Prisma {
     id?: boolean
     serviceName?: boolean
     description?: boolean
+    iconUrl?: boolean
+    source?: boolean
+    serviceType?: boolean
+    externalId?: boolean
+    lastSyncedAt?: boolean
     portfolioId?: boolean
   }
 
@@ -12276,6 +12333,11 @@ export namespace Prisma {
       id: string
       serviceName: string
       description: string | null
+      iconUrl: string | null
+      source: string
+      serviceType: $Enums.ServiceType
+      externalId: string | null
+      lastSyncedAt: Date | null
       portfolioId: string | null
     }, ExtArgs["result"]["service"]>
     composites: {}
@@ -12653,6 +12715,11 @@ export namespace Prisma {
     readonly id: FieldRef<"Service", 'String'>
     readonly serviceName: FieldRef<"Service", 'String'>
     readonly description: FieldRef<"Service", 'String'>
+    readonly iconUrl: FieldRef<"Service", 'String'>
+    readonly source: FieldRef<"Service", 'String'>
+    readonly serviceType: FieldRef<"Service", 'ServiceType'>
+    readonly externalId: FieldRef<"Service", 'String'>
+    readonly lastSyncedAt: FieldRef<"Service", 'DateTime'>
     readonly portfolioId: FieldRef<"Service", 'String'>
   }
     
@@ -13048,14 +13115,30 @@ export namespace Prisma {
 
   export type AggregateSubService = {
     _count: SubServiceCountAggregateOutputType | null
+    _avg: SubServiceAvgAggregateOutputType | null
+    _sum: SubServiceSumAggregateOutputType | null
     _min: SubServiceMinAggregateOutputType | null
     _max: SubServiceMaxAggregateOutputType | null
+  }
+
+  export type SubServiceAvgAggregateOutputType = {
+    price: number | null
+    sortOrder: number | null
+  }
+
+  export type SubServiceSumAggregateOutputType = {
+    price: number | null
+    sortOrder: number | null
   }
 
   export type SubServiceMinAggregateOutputType = {
     id: string | null
     name: string | null
     description: string | null
+    price: number | null
+    currency: string | null
+    externalId: string | null
+    sortOrder: number | null
     categoryId: string | null
   }
 
@@ -13063,6 +13146,10 @@ export namespace Prisma {
     id: string | null
     name: string | null
     description: string | null
+    price: number | null
+    currency: string | null
+    externalId: string | null
+    sortOrder: number | null
     categoryId: string | null
   }
 
@@ -13070,15 +13157,34 @@ export namespace Prisma {
     id: number
     name: number
     description: number
+    price: number
+    currency: number
+    features: number
+    externalId: number
+    sortOrder: number
     categoryId: number
     _all: number
   }
 
 
+  export type SubServiceAvgAggregateInputType = {
+    price?: true
+    sortOrder?: true
+  }
+
+  export type SubServiceSumAggregateInputType = {
+    price?: true
+    sortOrder?: true
+  }
+
   export type SubServiceMinAggregateInputType = {
     id?: true
     name?: true
     description?: true
+    price?: true
+    currency?: true
+    externalId?: true
+    sortOrder?: true
     categoryId?: true
   }
 
@@ -13086,6 +13192,10 @@ export namespace Prisma {
     id?: true
     name?: true
     description?: true
+    price?: true
+    currency?: true
+    externalId?: true
+    sortOrder?: true
     categoryId?: true
   }
 
@@ -13093,6 +13203,11 @@ export namespace Prisma {
     id?: true
     name?: true
     description?: true
+    price?: true
+    currency?: true
+    features?: true
+    externalId?: true
+    sortOrder?: true
     categoryId?: true
     _all?: true
   }
@@ -13135,6 +13250,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: SubServiceAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: SubServiceSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: SubServiceMinAggregateInputType
@@ -13165,6 +13292,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: SubServiceCountAggregateInputType | true
+    _avg?: SubServiceAvgAggregateInputType
+    _sum?: SubServiceSumAggregateInputType
     _min?: SubServiceMinAggregateInputType
     _max?: SubServiceMaxAggregateInputType
   }
@@ -13173,8 +13302,15 @@ export namespace Prisma {
     id: string
     name: string
     description: string | null
+    price: number | null
+    currency: string
+    features: JsonValue | null
+    externalId: string | null
+    sortOrder: number
     categoryId: string
     _count: SubServiceCountAggregateOutputType | null
+    _avg: SubServiceAvgAggregateOutputType | null
+    _sum: SubServiceSumAggregateOutputType | null
     _min: SubServiceMinAggregateOutputType | null
     _max: SubServiceMaxAggregateOutputType | null
   }
@@ -13197,6 +13333,11 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     description?: boolean
+    price?: boolean
+    currency?: boolean
+    features?: boolean
+    externalId?: boolean
+    sortOrder?: boolean
     categoryId?: boolean
     service?: boolean | ServiceDefaultArgs<ExtArgs>
     clientSubService?: boolean | SubService$clientSubServiceArgs<ExtArgs>
@@ -13209,6 +13350,11 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     description?: boolean
+    price?: boolean
+    currency?: boolean
+    features?: boolean
+    externalId?: boolean
+    sortOrder?: boolean
     categoryId?: boolean
   }
 
@@ -13230,6 +13376,11 @@ export namespace Prisma {
       id: string
       name: string
       description: string | null
+      price: number | null
+      currency: string
+      features: Prisma.JsonValue | null
+      externalId: string | null
+      sortOrder: number
       categoryId: string
     }, ExtArgs["result"]["subService"]>
     composites: {}
@@ -13606,6 +13757,11 @@ export namespace Prisma {
     readonly id: FieldRef<"SubService", 'String'>
     readonly name: FieldRef<"SubService", 'String'>
     readonly description: FieldRef<"SubService", 'String'>
+    readonly price: FieldRef<"SubService", 'Float'>
+    readonly currency: FieldRef<"SubService", 'String'>
+    readonly features: FieldRef<"SubService", 'Json'>
+    readonly externalId: FieldRef<"SubService", 'String'>
+    readonly sortOrder: FieldRef<"SubService", 'Int'>
     readonly categoryId: FieldRef<"SubService", 'String'>
   }
     
@@ -25554,11 +25710,17 @@ export namespace Prisma {
   export type IncomeServiceAgreementAvgAggregateOutputType = {
     base: number | null
     discount: number | null
+    discountValue: number | null
+    discountAmount: number | null
+    finalAmount: number | null
   }
 
   export type IncomeServiceAgreementSumAggregateOutputType = {
     base: number | null
     discount: number | null
+    discountValue: number | null
+    discountAmount: number | null
+    finalAmount: number | null
   }
 
   export type IncomeServiceAgreementMinAggregateOutputType = {
@@ -25567,6 +25729,10 @@ export namespace Prisma {
     base: number | null
     discount: number | null
     description: string | null
+    discountType: string | null
+    discountValue: number | null
+    discountAmount: number | null
+    finalAmount: number | null
     serviceId: string | null
     subServiceId: string | null
     clientId: string | null
@@ -25580,6 +25746,10 @@ export namespace Prisma {
     base: number | null
     discount: number | null
     description: string | null
+    discountType: string | null
+    discountValue: number | null
+    discountAmount: number | null
+    finalAmount: number | null
     serviceId: string | null
     subServiceId: string | null
     clientId: string | null
@@ -25593,6 +25763,12 @@ export namespace Prisma {
     base: number
     discount: number
     description: number
+    packageSnapshot: number
+    contractFeatures: number
+    discountType: number
+    discountValue: number
+    discountAmount: number
+    finalAmount: number
     serviceId: number
     subServiceId: number
     clientId: number
@@ -25605,11 +25781,17 @@ export namespace Prisma {
   export type IncomeServiceAgreementAvgAggregateInputType = {
     base?: true
     discount?: true
+    discountValue?: true
+    discountAmount?: true
+    finalAmount?: true
   }
 
   export type IncomeServiceAgreementSumAggregateInputType = {
     base?: true
     discount?: true
+    discountValue?: true
+    discountAmount?: true
+    finalAmount?: true
   }
 
   export type IncomeServiceAgreementMinAggregateInputType = {
@@ -25618,6 +25800,10 @@ export namespace Prisma {
     base?: true
     discount?: true
     description?: true
+    discountType?: true
+    discountValue?: true
+    discountAmount?: true
+    finalAmount?: true
     serviceId?: true
     subServiceId?: true
     clientId?: true
@@ -25631,6 +25817,10 @@ export namespace Prisma {
     base?: true
     discount?: true
     description?: true
+    discountType?: true
+    discountValue?: true
+    discountAmount?: true
+    finalAmount?: true
     serviceId?: true
     subServiceId?: true
     clientId?: true
@@ -25644,6 +25834,12 @@ export namespace Prisma {
     base?: true
     discount?: true
     description?: true
+    packageSnapshot?: true
+    contractFeatures?: true
+    discountType?: true
+    discountValue?: true
+    discountAmount?: true
+    finalAmount?: true
     serviceId?: true
     subServiceId?: true
     clientId?: true
@@ -25744,6 +25940,12 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    packageSnapshot: JsonValue | null
+    contractFeatures: JsonValue | null
+    discountType: string
+    discountValue: number
+    discountAmount: number
+    finalAmount: number
     serviceId: string
     subServiceId: string
     clientId: string
@@ -25776,6 +25978,12 @@ export namespace Prisma {
     base?: boolean
     discount?: boolean
     description?: boolean
+    packageSnapshot?: boolean
+    contractFeatures?: boolean
+    discountType?: boolean
+    discountValue?: boolean
+    discountAmount?: boolean
+    finalAmount?: boolean
     serviceId?: boolean
     subServiceId?: boolean
     clientId?: boolean
@@ -25797,6 +26005,12 @@ export namespace Prisma {
     base?: boolean
     discount?: boolean
     description?: boolean
+    packageSnapshot?: boolean
+    contractFeatures?: boolean
+    discountType?: boolean
+    discountValue?: boolean
+    discountAmount?: boolean
+    finalAmount?: boolean
     serviceId?: boolean
     subServiceId?: boolean
     clientId?: boolean
@@ -25830,6 +26044,12 @@ export namespace Prisma {
       base: number
       discount: number
       description: string
+      packageSnapshot: Prisma.JsonValue | null
+      contractFeatures: Prisma.JsonValue | null
+      discountType: string
+      discountValue: number
+      discountAmount: number
+      finalAmount: number
       serviceId: string
       subServiceId: string
       clientId: string
@@ -26215,6 +26435,12 @@ export namespace Prisma {
     readonly base: FieldRef<"IncomeServiceAgreement", 'Float'>
     readonly discount: FieldRef<"IncomeServiceAgreement", 'Float'>
     readonly description: FieldRef<"IncomeServiceAgreement", 'String'>
+    readonly packageSnapshot: FieldRef<"IncomeServiceAgreement", 'Json'>
+    readonly contractFeatures: FieldRef<"IncomeServiceAgreement", 'Json'>
+    readonly discountType: FieldRef<"IncomeServiceAgreement", 'String'>
+    readonly discountValue: FieldRef<"IncomeServiceAgreement", 'Float'>
+    readonly discountAmount: FieldRef<"IncomeServiceAgreement", 'Float'>
+    readonly finalAmount: FieldRef<"IncomeServiceAgreement", 'Float'>
     readonly serviceId: FieldRef<"IncomeServiceAgreement", 'String'>
     readonly subServiceId: FieldRef<"IncomeServiceAgreement", 'String'>
     readonly clientId: FieldRef<"IncomeServiceAgreement", 'String'>
@@ -48247,6 +48473,11 @@ export namespace Prisma {
     id: 'id',
     serviceName: 'serviceName',
     description: 'description',
+    iconUrl: 'iconUrl',
+    source: 'source',
+    serviceType: 'serviceType',
+    externalId: 'externalId',
+    lastSyncedAt: 'lastSyncedAt',
     portfolioId: 'portfolioId'
   };
 
@@ -48257,6 +48488,11 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     description: 'description',
+    price: 'price',
+    currency: 'currency',
+    features: 'features',
+    externalId: 'externalId',
+    sortOrder: 'sortOrder',
     categoryId: 'categoryId'
   };
 
@@ -48434,6 +48670,12 @@ export namespace Prisma {
     base: 'base',
     discount: 'discount',
     description: 'description',
+    packageSnapshot: 'packageSnapshot',
+    contractFeatures: 'contractFeatures',
+    discountType: 'discountType',
+    discountValue: 'discountValue',
+    discountAmount: 'discountAmount',
+    finalAmount: 'finalAmount',
     serviceId: 'serviceId',
     subServiceId: 'subServiceId',
     clientId: 'clientId',
@@ -48783,12 +49025,29 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
   export const NullsOrder: {
     first: 'first',
     last: 'last'
   };
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
   /**
@@ -48828,6 +49087,20 @@ export namespace Prisma {
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+  /**
+   * Reference to a field of type 'ServiceType'
+   */
+  export type EnumServiceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceType'>
+    
+
+
+  /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
     
 
 
@@ -49545,6 +49818,11 @@ export namespace Prisma {
     id?: StringFilter<"Service"> | string
     serviceName?: StringFilter<"Service"> | string
     description?: StringNullableFilter<"Service"> | string | null
+    iconUrl?: StringNullableFilter<"Service"> | string | null
+    source?: StringFilter<"Service"> | string
+    serviceType?: EnumServiceTypeFilter<"Service"> | $Enums.ServiceType
+    externalId?: StringNullableFilter<"Service"> | string | null
+    lastSyncedAt?: DateTimeNullableFilter<"Service"> | Date | string | null
     portfolioId?: StringNullableFilter<"Service"> | string | null
     portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
     clientService?: ClientServiceListRelationFilter
@@ -49556,6 +49834,11 @@ export namespace Prisma {
     id?: SortOrder
     serviceName?: SortOrder
     description?: SortOrderInput | SortOrder
+    iconUrl?: SortOrderInput | SortOrder
+    source?: SortOrder
+    serviceType?: SortOrder
+    externalId?: SortOrderInput | SortOrder
+    lastSyncedAt?: SortOrderInput | SortOrder
     portfolioId?: SortOrderInput | SortOrder
     portfolio?: PortfolioOrderByWithRelationInput
     clientService?: ClientServiceOrderByRelationAggregateInput
@@ -49566,22 +49849,33 @@ export namespace Prisma {
   export type ServiceWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     serviceName_portfolioId?: ServiceServiceNamePortfolioIdCompoundUniqueInput
+    source_externalId?: ServiceSourceExternalIdCompoundUniqueInput
     AND?: ServiceWhereInput | ServiceWhereInput[]
     OR?: ServiceWhereInput[]
     NOT?: ServiceWhereInput | ServiceWhereInput[]
     serviceName?: StringFilter<"Service"> | string
     description?: StringNullableFilter<"Service"> | string | null
+    iconUrl?: StringNullableFilter<"Service"> | string | null
+    source?: StringFilter<"Service"> | string
+    serviceType?: EnumServiceTypeFilter<"Service"> | $Enums.ServiceType
+    externalId?: StringNullableFilter<"Service"> | string | null
+    lastSyncedAt?: DateTimeNullableFilter<"Service"> | Date | string | null
     portfolioId?: StringNullableFilter<"Service"> | string | null
     portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
     clientService?: ClientServiceListRelationFilter
     subService?: SubServiceListRelationFilter
     serviceAgreements?: IncomeServiceAgreementListRelationFilter
-  }, "id" | "serviceName_portfolioId">
+  }, "id" | "serviceName_portfolioId" | "source_externalId">
 
   export type ServiceOrderByWithAggregationInput = {
     id?: SortOrder
     serviceName?: SortOrder
     description?: SortOrderInput | SortOrder
+    iconUrl?: SortOrderInput | SortOrder
+    source?: SortOrder
+    serviceType?: SortOrder
+    externalId?: SortOrderInput | SortOrder
+    lastSyncedAt?: SortOrderInput | SortOrder
     portfolioId?: SortOrderInput | SortOrder
     _count?: ServiceCountOrderByAggregateInput
     _max?: ServiceMaxOrderByAggregateInput
@@ -49595,6 +49889,11 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Service"> | string
     serviceName?: StringWithAggregatesFilter<"Service"> | string
     description?: StringNullableWithAggregatesFilter<"Service"> | string | null
+    iconUrl?: StringNullableWithAggregatesFilter<"Service"> | string | null
+    source?: StringWithAggregatesFilter<"Service"> | string
+    serviceType?: EnumServiceTypeWithAggregatesFilter<"Service"> | $Enums.ServiceType
+    externalId?: StringNullableWithAggregatesFilter<"Service"> | string | null
+    lastSyncedAt?: DateTimeNullableWithAggregatesFilter<"Service"> | Date | string | null
     portfolioId?: StringNullableWithAggregatesFilter<"Service"> | string | null
   }
 
@@ -49605,6 +49904,11 @@ export namespace Prisma {
     id?: StringFilter<"SubService"> | string
     name?: StringFilter<"SubService"> | string
     description?: StringNullableFilter<"SubService"> | string | null
+    price?: FloatNullableFilter<"SubService"> | number | null
+    currency?: StringFilter<"SubService"> | string
+    features?: JsonNullableFilter<"SubService">
+    externalId?: StringNullableFilter<"SubService"> | string | null
+    sortOrder?: IntFilter<"SubService"> | number
     categoryId?: StringFilter<"SubService"> | string
     service?: XOR<ServiceRelationFilter, ServiceWhereInput>
     clientSubService?: ClientSubServiceListRelationFilter
@@ -49615,6 +49919,11 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
+    price?: SortOrderInput | SortOrder
+    currency?: SortOrder
+    features?: SortOrderInput | SortOrder
+    externalId?: SortOrderInput | SortOrder
+    sortOrder?: SortOrder
     categoryId?: SortOrder
     service?: ServiceOrderByWithRelationInput
     clientSubService?: ClientSubServiceOrderByRelationAggregateInput
@@ -49624,25 +49933,38 @@ export namespace Prisma {
   export type SubServiceWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     name_categoryId?: SubServiceNameCategoryIdCompoundUniqueInput
+    categoryId_externalId?: SubServiceCategoryIdExternalIdCompoundUniqueInput
     AND?: SubServiceWhereInput | SubServiceWhereInput[]
     OR?: SubServiceWhereInput[]
     NOT?: SubServiceWhereInput | SubServiceWhereInput[]
     name?: StringFilter<"SubService"> | string
     description?: StringNullableFilter<"SubService"> | string | null
+    price?: FloatNullableFilter<"SubService"> | number | null
+    currency?: StringFilter<"SubService"> | string
+    features?: JsonNullableFilter<"SubService">
+    externalId?: StringNullableFilter<"SubService"> | string | null
+    sortOrder?: IntFilter<"SubService"> | number
     categoryId?: StringFilter<"SubService"> | string
     service?: XOR<ServiceRelationFilter, ServiceWhereInput>
     clientSubService?: ClientSubServiceListRelationFilter
     serviceAgreements?: IncomeServiceAgreementListRelationFilter
-  }, "id" | "name_categoryId">
+  }, "id" | "name_categoryId" | "categoryId_externalId">
 
   export type SubServiceOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrderInput | SortOrder
+    price?: SortOrderInput | SortOrder
+    currency?: SortOrder
+    features?: SortOrderInput | SortOrder
+    externalId?: SortOrderInput | SortOrder
+    sortOrder?: SortOrder
     categoryId?: SortOrder
     _count?: SubServiceCountOrderByAggregateInput
+    _avg?: SubServiceAvgOrderByAggregateInput
     _max?: SubServiceMaxOrderByAggregateInput
     _min?: SubServiceMinOrderByAggregateInput
+    _sum?: SubServiceSumOrderByAggregateInput
   }
 
   export type SubServiceScalarWhereWithAggregatesInput = {
@@ -49652,6 +49974,11 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"SubService"> | string
     name?: StringWithAggregatesFilter<"SubService"> | string
     description?: StringNullableWithAggregatesFilter<"SubService"> | string | null
+    price?: FloatNullableWithAggregatesFilter<"SubService"> | number | null
+    currency?: StringWithAggregatesFilter<"SubService"> | string
+    features?: JsonNullableWithAggregatesFilter<"SubService">
+    externalId?: StringNullableWithAggregatesFilter<"SubService"> | string | null
+    sortOrder?: IntWithAggregatesFilter<"SubService"> | number
     categoryId?: StringWithAggregatesFilter<"SubService"> | string
   }
 
@@ -50570,6 +50897,12 @@ export namespace Prisma {
     base?: FloatFilter<"IncomeServiceAgreement"> | number
     discount?: FloatFilter<"IncomeServiceAgreement"> | number
     description?: StringFilter<"IncomeServiceAgreement"> | string
+    packageSnapshot?: JsonNullableFilter<"IncomeServiceAgreement">
+    contractFeatures?: JsonNullableFilter<"IncomeServiceAgreement">
+    discountType?: StringFilter<"IncomeServiceAgreement"> | string
+    discountValue?: FloatFilter<"IncomeServiceAgreement"> | number
+    discountAmount?: FloatFilter<"IncomeServiceAgreement"> | number
+    finalAmount?: FloatFilter<"IncomeServiceAgreement"> | number
     serviceId?: StringFilter<"IncomeServiceAgreement"> | string
     subServiceId?: StringFilter<"IncomeServiceAgreement"> | string
     clientId?: StringFilter<"IncomeServiceAgreement"> | string
@@ -50589,6 +50922,12 @@ export namespace Prisma {
     base?: SortOrder
     discount?: SortOrder
     description?: SortOrder
+    packageSnapshot?: SortOrderInput | SortOrder
+    contractFeatures?: SortOrderInput | SortOrder
+    discountType?: SortOrder
+    discountValue?: SortOrder
+    discountAmount?: SortOrder
+    finalAmount?: SortOrder
     serviceId?: SortOrder
     subServiceId?: SortOrder
     clientId?: SortOrder
@@ -50611,6 +50950,12 @@ export namespace Prisma {
     base?: FloatFilter<"IncomeServiceAgreement"> | number
     discount?: FloatFilter<"IncomeServiceAgreement"> | number
     description?: StringFilter<"IncomeServiceAgreement"> | string
+    packageSnapshot?: JsonNullableFilter<"IncomeServiceAgreement">
+    contractFeatures?: JsonNullableFilter<"IncomeServiceAgreement">
+    discountType?: StringFilter<"IncomeServiceAgreement"> | string
+    discountValue?: FloatFilter<"IncomeServiceAgreement"> | number
+    discountAmount?: FloatFilter<"IncomeServiceAgreement"> | number
+    finalAmount?: FloatFilter<"IncomeServiceAgreement"> | number
     serviceId?: StringFilter<"IncomeServiceAgreement"> | string
     subServiceId?: StringFilter<"IncomeServiceAgreement"> | string
     clientId?: StringFilter<"IncomeServiceAgreement"> | string
@@ -50630,6 +50975,12 @@ export namespace Prisma {
     base?: SortOrder
     discount?: SortOrder
     description?: SortOrder
+    packageSnapshot?: SortOrderInput | SortOrder
+    contractFeatures?: SortOrderInput | SortOrder
+    discountType?: SortOrder
+    discountValue?: SortOrder
+    discountAmount?: SortOrder
+    finalAmount?: SortOrder
     serviceId?: SortOrder
     subServiceId?: SortOrder
     clientId?: SortOrder
@@ -50651,6 +51002,12 @@ export namespace Prisma {
     base?: FloatWithAggregatesFilter<"IncomeServiceAgreement"> | number
     discount?: FloatWithAggregatesFilter<"IncomeServiceAgreement"> | number
     description?: StringWithAggregatesFilter<"IncomeServiceAgreement"> | string
+    packageSnapshot?: JsonNullableWithAggregatesFilter<"IncomeServiceAgreement">
+    contractFeatures?: JsonNullableWithAggregatesFilter<"IncomeServiceAgreement">
+    discountType?: StringWithAggregatesFilter<"IncomeServiceAgreement"> | string
+    discountValue?: FloatWithAggregatesFilter<"IncomeServiceAgreement"> | number
+    discountAmount?: FloatWithAggregatesFilter<"IncomeServiceAgreement"> | number
+    finalAmount?: FloatWithAggregatesFilter<"IncomeServiceAgreement"> | number
     serviceId?: StringWithAggregatesFilter<"IncomeServiceAgreement"> | string
     subServiceId?: StringWithAggregatesFilter<"IncomeServiceAgreement"> | string
     clientId?: StringWithAggregatesFilter<"IncomeServiceAgreement"> | string
@@ -53164,6 +53521,11 @@ export namespace Prisma {
     id: string
     serviceName: string
     description?: string | null
+    iconUrl?: string | null
+    source?: string
+    serviceType?: $Enums.ServiceType
+    externalId?: string | null
+    lastSyncedAt?: Date | string | null
     portfolio?: PortfolioCreateNestedOneWithoutServicesInput
     clientService?: ClientServiceCreateNestedManyWithoutServiceInput
     subService?: SubServiceCreateNestedManyWithoutServiceInput
@@ -53174,6 +53536,11 @@ export namespace Prisma {
     id: string
     serviceName: string
     description?: string | null
+    iconUrl?: string | null
+    source?: string
+    serviceType?: $Enums.ServiceType
+    externalId?: string | null
+    lastSyncedAt?: Date | string | null
     portfolioId?: string | null
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
     subService?: SubServiceUncheckedCreateNestedManyWithoutServiceInput
@@ -53184,6 +53551,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolio?: PortfolioUpdateOneWithoutServicesNestedInput
     clientService?: ClientServiceUpdateManyWithoutServiceNestedInput
     subService?: SubServiceUpdateManyWithoutServiceNestedInput
@@ -53194,6 +53566,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientService?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
     subService?: SubServiceUncheckedUpdateManyWithoutServiceNestedInput
@@ -53204,6 +53581,11 @@ export namespace Prisma {
     id: string
     serviceName: string
     description?: string | null
+    iconUrl?: string | null
+    source?: string
+    serviceType?: $Enums.ServiceType
+    externalId?: string | null
+    lastSyncedAt?: Date | string | null
     portfolioId?: string | null
   }
 
@@ -53211,12 +53593,22 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ServiceUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -53224,6 +53616,11 @@ export namespace Prisma {
     id: string
     name: string
     description?: string | null
+    price?: number | null
+    currency?: string
+    features?: NullableJsonNullValueInput | InputJsonValue
+    externalId?: string | null
+    sortOrder?: number
     service: ServiceCreateNestedOneWithoutSubServiceInput
     clientSubService?: ClientSubServiceCreateNestedManyWithoutSubServiceInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutSubServiceInput
@@ -53233,6 +53630,11 @@ export namespace Prisma {
     id: string
     name: string
     description?: string | null
+    price?: number | null
+    currency?: string
+    features?: NullableJsonNullValueInput | InputJsonValue
+    externalId?: string | null
+    sortOrder?: number
     categoryId: string
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutSubServiceInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutSubServiceInput
@@ -53242,6 +53644,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: StringFieldUpdateOperationsInput | string
+    features?: NullableJsonNullValueInput | InputJsonValue
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
     service?: ServiceUpdateOneRequiredWithoutSubServiceNestedInput
     clientSubService?: ClientSubServiceUpdateManyWithoutSubServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutSubServiceNestedInput
@@ -53251,6 +53658,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: StringFieldUpdateOperationsInput | string
+    features?: NullableJsonNullValueInput | InputJsonValue
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
     categoryId?: StringFieldUpdateOperationsInput | string
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutSubServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutSubServiceNestedInput
@@ -53260,6 +53672,11 @@ export namespace Prisma {
     id: string
     name: string
     description?: string | null
+    price?: number | null
+    currency?: string
+    features?: NullableJsonNullValueInput | InputJsonValue
+    externalId?: string | null
+    sortOrder?: number
     categoryId: string
   }
 
@@ -53267,12 +53684,22 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: StringFieldUpdateOperationsInput | string
+    features?: NullableJsonNullValueInput | InputJsonValue
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
   }
 
   export type SubServiceUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: StringFieldUpdateOperationsInput | string
+    features?: NullableJsonNullValueInput | InputJsonValue
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
     categoryId?: StringFieldUpdateOperationsInput | string
   }
 
@@ -54214,6 +54641,12 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: string
+    discountValue?: number
+    discountAmount?: number
+    finalAmount?: number
     serviceStatus?: $Enums.ClientServiceStatus
     service: ServiceCreateNestedOneWithoutServiceAgreementsInput
     subService: SubServiceCreateNestedOneWithoutServiceAgreementsInput
@@ -54229,6 +54662,12 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: string
+    discountValue?: number
+    discountAmount?: number
+    finalAmount?: number
     serviceId: string
     subServiceId: string
     clientId: string
@@ -54244,6 +54683,12 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: StringFieldUpdateOperationsInput | string
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    finalAmount?: FloatFieldUpdateOperationsInput | number
     serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
     service?: ServiceUpdateOneRequiredWithoutServiceAgreementsNestedInput
     subService?: SubServiceUpdateOneRequiredWithoutServiceAgreementsNestedInput
@@ -54259,6 +54704,12 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: StringFieldUpdateOperationsInput | string
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    finalAmount?: FloatFieldUpdateOperationsInput | number
     serviceId?: StringFieldUpdateOperationsInput | string
     subServiceId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
@@ -54274,6 +54725,12 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: string
+    discountValue?: number
+    discountAmount?: number
+    finalAmount?: number
     serviceId: string
     subServiceId: string
     clientId: string
@@ -54287,6 +54744,12 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: StringFieldUpdateOperationsInput | string
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    finalAmount?: FloatFieldUpdateOperationsInput | number
     serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
   }
 
@@ -54296,6 +54759,12 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: StringFieldUpdateOperationsInput | string
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    finalAmount?: FloatFieldUpdateOperationsInput | number
     serviceId?: StringFieldUpdateOperationsInput | string
     subServiceId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
@@ -56918,6 +57387,13 @@ export namespace Prisma {
     _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
+  export type EnumServiceTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ServiceType | EnumServiceTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ServiceType[]
+    notIn?: $Enums.ServiceType[]
+    not?: NestedEnumServiceTypeFilter<$PrismaModel> | $Enums.ServiceType
+  }
+
   export type SubServiceListRelationFilter = {
     every?: SubServiceWhereInput
     some?: SubServiceWhereInput
@@ -56933,10 +57409,20 @@ export namespace Prisma {
     portfolioId: string
   }
 
+  export type ServiceSourceExternalIdCompoundUniqueInput = {
+    source: string
+    externalId: string
+  }
+
   export type ServiceCountOrderByAggregateInput = {
     id?: SortOrder
     serviceName?: SortOrder
     description?: SortOrder
+    iconUrl?: SortOrder
+    source?: SortOrder
+    serviceType?: SortOrder
+    externalId?: SortOrder
+    lastSyncedAt?: SortOrder
     portfolioId?: SortOrder
   }
 
@@ -56944,6 +57430,11 @@ export namespace Prisma {
     id?: SortOrder
     serviceName?: SortOrder
     description?: SortOrder
+    iconUrl?: SortOrder
+    source?: SortOrder
+    serviceType?: SortOrder
+    externalId?: SortOrder
+    lastSyncedAt?: SortOrder
     portfolioId?: SortOrder
   }
 
@@ -56951,7 +57442,55 @@ export namespace Prisma {
     id?: SortOrder
     serviceName?: SortOrder
     description?: SortOrder
+    iconUrl?: SortOrder
+    source?: SortOrder
+    serviceType?: SortOrder
+    externalId?: SortOrder
+    lastSyncedAt?: SortOrder
     portfolioId?: SortOrder
+  }
+
+  export type EnumServiceTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ServiceType | EnumServiceTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ServiceType[]
+    notIn?: $Enums.ServiceType[]
+    not?: NestedEnumServiceTypeWithAggregatesFilter<$PrismaModel> | $Enums.ServiceType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumServiceTypeFilter<$PrismaModel>
+    _max?: NestedEnumServiceTypeFilter<$PrismaModel>
+  }
+  export type JsonNullableFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue
+    lte?: InputJsonValue
+    gt?: InputJsonValue
+    gte?: InputJsonValue
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type ServiceRelationFilter = {
@@ -56964,17 +57503,36 @@ export namespace Prisma {
     categoryId: string
   }
 
+  export type SubServiceCategoryIdExternalIdCompoundUniqueInput = {
+    categoryId: string
+    externalId: string
+  }
+
   export type SubServiceCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrder
+    price?: SortOrder
+    currency?: SortOrder
+    features?: SortOrder
+    externalId?: SortOrder
+    sortOrder?: SortOrder
     categoryId?: SortOrder
+  }
+
+  export type SubServiceAvgOrderByAggregateInput = {
+    price?: SortOrder
+    sortOrder?: SortOrder
   }
 
   export type SubServiceMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrder
+    price?: SortOrder
+    currency?: SortOrder
+    externalId?: SortOrder
+    sortOrder?: SortOrder
     categoryId?: SortOrder
   }
 
@@ -56982,7 +57540,57 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     description?: SortOrder
+    price?: SortOrder
+    currency?: SortOrder
+    externalId?: SortOrder
+    sortOrder?: SortOrder
     categoryId?: SortOrder
+  }
+
+  export type SubServiceSumOrderByAggregateInput = {
+    price?: SortOrder
+    sortOrder?: SortOrder
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue
+    lte?: InputJsonValue
+    gt?: InputJsonValue
+    gte?: InputJsonValue
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type ServiceListRelationFilter = {
@@ -57052,17 +57660,6 @@ export namespace Prisma {
     isActive?: SortOrder
   }
 
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
   export type SubServiceRelationFilter = {
     is?: SubServiceWhereInput
     isNot?: SubServiceWhereInput
@@ -57102,22 +57699,6 @@ export namespace Prisma {
 
   export type ClientSubServiceSumOrderByAggregateInput = {
     count?: SortOrder
-  }
-
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type ClientServiceServiceIdClientIdCompoundUniqueInput = {
@@ -57700,6 +58281,12 @@ export namespace Prisma {
     base?: SortOrder
     discount?: SortOrder
     description?: SortOrder
+    packageSnapshot?: SortOrder
+    contractFeatures?: SortOrder
+    discountType?: SortOrder
+    discountValue?: SortOrder
+    discountAmount?: SortOrder
+    finalAmount?: SortOrder
     serviceId?: SortOrder
     subServiceId?: SortOrder
     clientId?: SortOrder
@@ -57710,6 +58297,9 @@ export namespace Prisma {
   export type IncomeServiceAgreementAvgOrderByAggregateInput = {
     base?: SortOrder
     discount?: SortOrder
+    discountValue?: SortOrder
+    discountAmount?: SortOrder
+    finalAmount?: SortOrder
   }
 
   export type IncomeServiceAgreementMaxOrderByAggregateInput = {
@@ -57718,6 +58308,10 @@ export namespace Prisma {
     base?: SortOrder
     discount?: SortOrder
     description?: SortOrder
+    discountType?: SortOrder
+    discountValue?: SortOrder
+    discountAmount?: SortOrder
+    finalAmount?: SortOrder
     serviceId?: SortOrder
     subServiceId?: SortOrder
     clientId?: SortOrder
@@ -57731,6 +58325,10 @@ export namespace Prisma {
     base?: SortOrder
     discount?: SortOrder
     description?: SortOrder
+    discountType?: SortOrder
+    discountValue?: SortOrder
+    discountAmount?: SortOrder
+    finalAmount?: SortOrder
     serviceId?: SortOrder
     subServiceId?: SortOrder
     clientId?: SortOrder
@@ -57741,6 +58339,9 @@ export namespace Prisma {
   export type IncomeServiceAgreementSumOrderByAggregateInput = {
     base?: SortOrder
     discount?: SortOrder
+    discountValue?: SortOrder
+    discountAmount?: SortOrder
+    finalAmount?: SortOrder
   }
 
   export type EnumClientServiceStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -60369,6 +60970,10 @@ export namespace Prisma {
     connect?: IncomeServiceAgreementWhereUniqueInput | IncomeServiceAgreementWhereUniqueInput[]
   }
 
+  export type EnumServiceTypeFieldUpdateOperationsInput = {
+    set?: $Enums.ServiceType
+  }
+
   export type PortfolioUpdateOneWithoutServicesNestedInput = {
     create?: XOR<PortfolioCreateWithoutServicesInput, PortfolioUncheckedCreateWithoutServicesInput>
     connectOrCreate?: PortfolioCreateOrConnectWithoutServicesInput
@@ -60495,6 +61100,14 @@ export namespace Prisma {
     connectOrCreate?: IncomeServiceAgreementCreateOrConnectWithoutSubServiceInput | IncomeServiceAgreementCreateOrConnectWithoutSubServiceInput[]
     createMany?: IncomeServiceAgreementCreateManySubServiceInputEnvelope
     connect?: IncomeServiceAgreementWhereUniqueInput | IncomeServiceAgreementWhereUniqueInput[]
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type ServiceUpdateOneRequiredWithoutSubServiceNestedInput = {
@@ -60865,14 +61478,6 @@ export namespace Prisma {
     create?: XOR<ClientCreateWithoutClientSubServiceInput, ClientUncheckedCreateWithoutClientSubServiceInput>
     connectOrCreate?: ClientCreateOrConnectWithoutClientSubServiceInput
     connect?: ClientWhereUniqueInput
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type SubServiceUpdateOneRequiredWithoutClientSubServiceNestedInput = {
@@ -63249,6 +63854,45 @@ export namespace Prisma {
     _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
+  export type NestedEnumServiceTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ServiceType | EnumServiceTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ServiceType[]
+    notIn?: $Enums.ServiceType[]
+    not?: NestedEnumServiceTypeFilter<$PrismaModel> | $Enums.ServiceType
+  }
+
+  export type NestedEnumServiceTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ServiceType | EnumServiceTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.ServiceType[]
+    notIn?: $Enums.ServiceType[]
+    not?: NestedEnumServiceTypeWithAggregatesFilter<$PrismaModel> | $Enums.ServiceType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumServiceTypeFilter<$PrismaModel>
+    _max?: NestedEnumServiceTypeFilter<$PrismaModel>
+  }
+  export type NestedJsonNullableFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue
+    lte?: InputJsonValue
+    gt?: InputJsonValue
+    gte?: InputJsonValue
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -65579,6 +66223,12 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: string
+    discountValue?: number
+    discountAmount?: number
+    finalAmount?: number
     serviceStatus?: $Enums.ClientServiceStatus
     service: ServiceCreateNestedOneWithoutServiceAgreementsInput
     subService: SubServiceCreateNestedOneWithoutServiceAgreementsInput
@@ -65593,6 +66243,12 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: string
+    discountValue?: number
+    discountAmount?: number
+    finalAmount?: number
     serviceId: string
     subServiceId: string
     projectId?: string | null
@@ -66110,6 +66766,12 @@ export namespace Prisma {
     base?: FloatFilter<"IncomeServiceAgreement"> | number
     discount?: FloatFilter<"IncomeServiceAgreement"> | number
     description?: StringFilter<"IncomeServiceAgreement"> | string
+    packageSnapshot?: JsonNullableFilter<"IncomeServiceAgreement">
+    contractFeatures?: JsonNullableFilter<"IncomeServiceAgreement">
+    discountType?: StringFilter<"IncomeServiceAgreement"> | string
+    discountValue?: FloatFilter<"IncomeServiceAgreement"> | number
+    discountAmount?: FloatFilter<"IncomeServiceAgreement"> | number
+    finalAmount?: FloatFilter<"IncomeServiceAgreement"> | number
     serviceId?: StringFilter<"IncomeServiceAgreement"> | string
     subServiceId?: StringFilter<"IncomeServiceAgreement"> | string
     clientId?: StringFilter<"IncomeServiceAgreement"> | string
@@ -66347,6 +67009,11 @@ export namespace Prisma {
     id: string
     name: string
     description?: string | null
+    price?: number | null
+    currency?: string
+    features?: NullableJsonNullValueInput | InputJsonValue
+    externalId?: string | null
+    sortOrder?: number
     clientSubService?: ClientSubServiceCreateNestedManyWithoutSubServiceInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutSubServiceInput
   }
@@ -66355,6 +67022,11 @@ export namespace Prisma {
     id: string
     name: string
     description?: string | null
+    price?: number | null
+    currency?: string
+    features?: NullableJsonNullValueInput | InputJsonValue
+    externalId?: string | null
+    sortOrder?: number
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutSubServiceInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutSubServiceInput
   }
@@ -66375,6 +67047,12 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: string
+    discountValue?: number
+    discountAmount?: number
+    finalAmount?: number
     serviceStatus?: $Enums.ClientServiceStatus
     subService: SubServiceCreateNestedOneWithoutServiceAgreementsInput
     client: ClientCreateNestedOneWithoutServiceAgreementsInput
@@ -66389,6 +67067,12 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: string
+    discountValue?: number
+    discountAmount?: number
+    finalAmount?: number
     subServiceId: string
     clientId: string
     projectId?: string | null
@@ -66507,6 +67191,11 @@ export namespace Prisma {
     id?: StringFilter<"SubService"> | string
     name?: StringFilter<"SubService"> | string
     description?: StringNullableFilter<"SubService"> | string | null
+    price?: FloatNullableFilter<"SubService"> | number | null
+    currency?: StringFilter<"SubService"> | string
+    features?: JsonNullableFilter<"SubService">
+    externalId?: StringNullableFilter<"SubService"> | string | null
+    sortOrder?: IntFilter<"SubService"> | number
     categoryId?: StringFilter<"SubService"> | string
   }
 
@@ -66530,6 +67219,11 @@ export namespace Prisma {
     id: string
     serviceName: string
     description?: string | null
+    iconUrl?: string | null
+    source?: string
+    serviceType?: $Enums.ServiceType
+    externalId?: string | null
+    lastSyncedAt?: Date | string | null
     portfolio?: PortfolioCreateNestedOneWithoutServicesInput
     clientService?: ClientServiceCreateNestedManyWithoutServiceInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutServiceInput
@@ -66539,6 +67233,11 @@ export namespace Prisma {
     id: string
     serviceName: string
     description?: string | null
+    iconUrl?: string | null
+    source?: string
+    serviceType?: $Enums.ServiceType
+    externalId?: string | null
+    lastSyncedAt?: Date | string | null
     portfolioId?: string | null
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutServiceInput
@@ -66575,6 +67274,12 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: string
+    discountValue?: number
+    discountAmount?: number
+    finalAmount?: number
     serviceStatus?: $Enums.ClientServiceStatus
     service: ServiceCreateNestedOneWithoutServiceAgreementsInput
     client: ClientCreateNestedOneWithoutServiceAgreementsInput
@@ -66589,6 +67294,12 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: string
+    discountValue?: number
+    discountAmount?: number
+    finalAmount?: number
     serviceId: string
     clientId: string
     projectId?: string | null
@@ -66622,6 +67333,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolio?: PortfolioUpdateOneWithoutServicesNestedInput
     clientService?: ClientServiceUpdateManyWithoutServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutServiceNestedInput
@@ -66631,6 +67347,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientService?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutServiceNestedInput
@@ -66748,6 +67469,11 @@ export namespace Prisma {
     id: string
     serviceName: string
     description?: string | null
+    iconUrl?: string | null
+    source?: string
+    serviceType?: $Enums.ServiceType
+    externalId?: string | null
+    lastSyncedAt?: Date | string | null
     clientService?: ClientServiceCreateNestedManyWithoutServiceInput
     subService?: SubServiceCreateNestedManyWithoutServiceInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutServiceInput
@@ -66757,6 +67483,11 @@ export namespace Prisma {
     id: string
     serviceName: string
     description?: string | null
+    iconUrl?: string | null
+    source?: string
+    serviceType?: $Enums.ServiceType
+    externalId?: string | null
+    lastSyncedAt?: Date | string | null
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
     subService?: SubServiceUncheckedCreateNestedManyWithoutServiceInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutServiceInput
@@ -67069,6 +67800,11 @@ export namespace Prisma {
     id?: StringFilter<"Service"> | string
     serviceName?: StringFilter<"Service"> | string
     description?: StringNullableFilter<"Service"> | string | null
+    iconUrl?: StringNullableFilter<"Service"> | string | null
+    source?: StringFilter<"Service"> | string
+    serviceType?: EnumServiceTypeFilter<"Service"> | $Enums.ServiceType
+    externalId?: StringNullableFilter<"Service"> | string | null
+    lastSyncedAt?: DateTimeNullableFilter<"Service"> | Date | string | null
     portfolioId?: StringNullableFilter<"Service"> | string | null
   }
 
@@ -67156,6 +67892,11 @@ export namespace Prisma {
     id: string
     name: string
     description?: string | null
+    price?: number | null
+    currency?: string
+    features?: NullableJsonNullValueInput | InputJsonValue
+    externalId?: string | null
+    sortOrder?: number
     service: ServiceCreateNestedOneWithoutSubServiceInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutSubServiceInput
   }
@@ -67164,6 +67905,11 @@ export namespace Prisma {
     id: string
     name: string
     description?: string | null
+    price?: number | null
+    currency?: string
+    features?: NullableJsonNullValueInput | InputJsonValue
+    externalId?: string | null
+    sortOrder?: number
     categoryId: string
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutSubServiceInput
   }
@@ -67255,6 +68001,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: StringFieldUpdateOperationsInput | string
+    features?: NullableJsonNullValueInput | InputJsonValue
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
     service?: ServiceUpdateOneRequiredWithoutSubServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutSubServiceNestedInput
   }
@@ -67263,6 +68014,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: StringFieldUpdateOperationsInput | string
+    features?: NullableJsonNullValueInput | InputJsonValue
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
     categoryId?: StringFieldUpdateOperationsInput | string
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutSubServiceNestedInput
   }
@@ -67344,6 +68100,11 @@ export namespace Prisma {
     id: string
     serviceName: string
     description?: string | null
+    iconUrl?: string | null
+    source?: string
+    serviceType?: $Enums.ServiceType
+    externalId?: string | null
+    lastSyncedAt?: Date | string | null
     portfolio?: PortfolioCreateNestedOneWithoutServicesInput
     subService?: SubServiceCreateNestedManyWithoutServiceInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutServiceInput
@@ -67353,6 +68114,11 @@ export namespace Prisma {
     id: string
     serviceName: string
     description?: string | null
+    iconUrl?: string | null
+    source?: string
+    serviceType?: $Enums.ServiceType
+    externalId?: string | null
+    lastSyncedAt?: Date | string | null
     portfolioId?: string | null
     subService?: SubServiceUncheckedCreateNestedManyWithoutServiceInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutServiceInput
@@ -67445,6 +68211,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolio?: PortfolioUpdateOneWithoutServicesNestedInput
     subService?: SubServiceUpdateManyWithoutServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutServiceNestedInput
@@ -67454,6 +68225,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     subService?: SubServiceUncheckedUpdateManyWithoutServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutServiceNestedInput
@@ -67718,6 +68494,12 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: string
+    discountValue?: number
+    discountAmount?: number
+    finalAmount?: number
     serviceStatus?: $Enums.ClientServiceStatus
     service: ServiceCreateNestedOneWithoutServiceAgreementsInput
     subService: SubServiceCreateNestedOneWithoutServiceAgreementsInput
@@ -67732,6 +68514,12 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: string
+    discountValue?: number
+    discountAmount?: number
+    finalAmount?: number
     serviceId: string
     subServiceId: string
     clientId: string
@@ -68034,6 +68822,12 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: StringFieldUpdateOperationsInput | string
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    finalAmount?: FloatFieldUpdateOperationsInput | number
     serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
     service?: ServiceUpdateOneRequiredWithoutServiceAgreementsNestedInput
     subService?: SubServiceUpdateOneRequiredWithoutServiceAgreementsNestedInput
@@ -68048,6 +68842,12 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: StringFieldUpdateOperationsInput | string
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    finalAmount?: FloatFieldUpdateOperationsInput | number
     serviceId?: StringFieldUpdateOperationsInput | string
     subServiceId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
@@ -68590,6 +69390,12 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: string
+    discountValue?: number
+    discountAmount?: number
+    finalAmount?: number
     serviceStatus?: $Enums.ClientServiceStatus
     service: ServiceCreateNestedOneWithoutServiceAgreementsInput
     subService: SubServiceCreateNestedOneWithoutServiceAgreementsInput
@@ -68604,6 +69410,12 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: string
+    discountValue?: number
+    discountAmount?: number
+    finalAmount?: number
     serviceId: string
     subServiceId: string
     clientId: string
@@ -68756,6 +69568,12 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: StringFieldUpdateOperationsInput | string
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    finalAmount?: FloatFieldUpdateOperationsInput | number
     serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
     service?: ServiceUpdateOneRequiredWithoutServiceAgreementsNestedInput
     subService?: SubServiceUpdateOneRequiredWithoutServiceAgreementsNestedInput
@@ -68770,6 +69588,12 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: StringFieldUpdateOperationsInput | string
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    finalAmount?: FloatFieldUpdateOperationsInput | number
     serviceId?: StringFieldUpdateOperationsInput | string
     subServiceId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
@@ -69324,6 +70148,11 @@ export namespace Prisma {
     id: string
     serviceName: string
     description?: string | null
+    iconUrl?: string | null
+    source?: string
+    serviceType?: $Enums.ServiceType
+    externalId?: string | null
+    lastSyncedAt?: Date | string | null
     portfolio?: PortfolioCreateNestedOneWithoutServicesInput
     clientService?: ClientServiceCreateNestedManyWithoutServiceInput
     subService?: SubServiceCreateNestedManyWithoutServiceInput
@@ -69333,6 +70162,11 @@ export namespace Prisma {
     id: string
     serviceName: string
     description?: string | null
+    iconUrl?: string | null
+    source?: string
+    serviceType?: $Enums.ServiceType
+    externalId?: string | null
+    lastSyncedAt?: Date | string | null
     portfolioId?: string | null
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
     subService?: SubServiceUncheckedCreateNestedManyWithoutServiceInput
@@ -69347,6 +70181,11 @@ export namespace Prisma {
     id: string
     name: string
     description?: string | null
+    price?: number | null
+    currency?: string
+    features?: NullableJsonNullValueInput | InputJsonValue
+    externalId?: string | null
+    sortOrder?: number
     service: ServiceCreateNestedOneWithoutSubServiceInput
     clientSubService?: ClientSubServiceCreateNestedManyWithoutSubServiceInput
   }
@@ -69355,6 +70194,11 @@ export namespace Prisma {
     id: string
     name: string
     description?: string | null
+    price?: number | null
+    currency?: string
+    features?: NullableJsonNullValueInput | InputJsonValue
+    externalId?: string | null
+    sortOrder?: number
     categoryId: string
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutSubServiceInput
   }
@@ -69591,6 +70435,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolio?: PortfolioUpdateOneWithoutServicesNestedInput
     clientService?: ClientServiceUpdateManyWithoutServiceNestedInput
     subService?: SubServiceUpdateManyWithoutServiceNestedInput
@@ -69600,6 +70449,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientService?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
     subService?: SubServiceUncheckedUpdateManyWithoutServiceNestedInput
@@ -69620,6 +70474,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: StringFieldUpdateOperationsInput | string
+    features?: NullableJsonNullValueInput | InputJsonValue
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
     service?: ServiceUpdateOneRequiredWithoutSubServiceNestedInput
     clientSubService?: ClientSubServiceUpdateManyWithoutSubServiceNestedInput
   }
@@ -69628,6 +70487,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: StringFieldUpdateOperationsInput | string
+    features?: NullableJsonNullValueInput | InputJsonValue
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
     categoryId?: StringFieldUpdateOperationsInput | string
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutSubServiceNestedInput
   }
@@ -71206,6 +72070,12 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: string
+    discountValue?: number
+    discountAmount?: number
+    finalAmount?: number
     serviceStatus?: $Enums.ClientServiceStatus
     service: ServiceCreateNestedOneWithoutServiceAgreementsInput
     subService: SubServiceCreateNestedOneWithoutServiceAgreementsInput
@@ -71220,6 +72090,12 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: string
+    discountValue?: number
+    discountAmount?: number
+    finalAmount?: number
     serviceId: string
     subServiceId: string
     clientId: string
@@ -76143,6 +77019,12 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: string
+    discountValue?: number
+    discountAmount?: number
+    finalAmount?: number
     serviceId: string
     subServiceId: string
     projectId?: string | null
@@ -76292,6 +77174,12 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: StringFieldUpdateOperationsInput | string
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    finalAmount?: FloatFieldUpdateOperationsInput | number
     serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
     service?: ServiceUpdateOneRequiredWithoutServiceAgreementsNestedInput
     subService?: SubServiceUpdateOneRequiredWithoutServiceAgreementsNestedInput
@@ -76306,6 +77194,12 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: StringFieldUpdateOperationsInput | string
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    finalAmount?: FloatFieldUpdateOperationsInput | number
     serviceId?: StringFieldUpdateOperationsInput | string
     subServiceId?: StringFieldUpdateOperationsInput | string
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -76320,6 +77214,12 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: StringFieldUpdateOperationsInput | string
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    finalAmount?: FloatFieldUpdateOperationsInput | number
     serviceId?: StringFieldUpdateOperationsInput | string
     subServiceId?: StringFieldUpdateOperationsInput | string
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -76625,6 +77525,11 @@ export namespace Prisma {
     id: string
     name: string
     description?: string | null
+    price?: number | null
+    currency?: string
+    features?: NullableJsonNullValueInput | InputJsonValue
+    externalId?: string | null
+    sortOrder?: number
   }
 
   export type IncomeServiceAgreementCreateManyServiceInput = {
@@ -76633,6 +77538,12 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: string
+    discountValue?: number
+    discountAmount?: number
+    finalAmount?: number
     subServiceId: string
     clientId: string
     projectId?: string | null
@@ -76661,6 +77572,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: StringFieldUpdateOperationsInput | string
+    features?: NullableJsonNullValueInput | InputJsonValue
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
     clientSubService?: ClientSubServiceUpdateManyWithoutSubServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutSubServiceNestedInput
   }
@@ -76669,6 +77585,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: StringFieldUpdateOperationsInput | string
+    features?: NullableJsonNullValueInput | InputJsonValue
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutSubServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutSubServiceNestedInput
   }
@@ -76677,6 +77598,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: StringFieldUpdateOperationsInput | string
+    features?: NullableJsonNullValueInput | InputJsonValue
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
   }
 
   export type IncomeServiceAgreementUpdateWithoutServiceInput = {
@@ -76685,6 +77611,12 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: StringFieldUpdateOperationsInput | string
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    finalAmount?: FloatFieldUpdateOperationsInput | number
     serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
     subService?: SubServiceUpdateOneRequiredWithoutServiceAgreementsNestedInput
     client?: ClientUpdateOneRequiredWithoutServiceAgreementsNestedInput
@@ -76699,6 +77631,12 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: StringFieldUpdateOperationsInput | string
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    finalAmount?: FloatFieldUpdateOperationsInput | number
     subServiceId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -76713,6 +77651,12 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: StringFieldUpdateOperationsInput | string
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    finalAmount?: FloatFieldUpdateOperationsInput | number
     subServiceId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -76730,6 +77674,12 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: string
+    discountValue?: number
+    discountAmount?: number
+    finalAmount?: number
     serviceId: string
     clientId: string
     projectId?: string | null
@@ -76757,6 +77707,12 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: StringFieldUpdateOperationsInput | string
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    finalAmount?: FloatFieldUpdateOperationsInput | number
     serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
     service?: ServiceUpdateOneRequiredWithoutServiceAgreementsNestedInput
     client?: ClientUpdateOneRequiredWithoutServiceAgreementsNestedInput
@@ -76771,6 +77727,12 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: StringFieldUpdateOperationsInput | string
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    finalAmount?: FloatFieldUpdateOperationsInput | number
     serviceId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -76785,6 +77747,12 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: StringFieldUpdateOperationsInput | string
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    finalAmount?: FloatFieldUpdateOperationsInput | number
     serviceId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -76812,6 +77780,11 @@ export namespace Prisma {
     id: string
     serviceName: string
     description?: string | null
+    iconUrl?: string | null
+    source?: string
+    serviceType?: $Enums.ServiceType
+    externalId?: string | null
+    lastSyncedAt?: Date | string | null
   }
 
   export type ClientCreateManyPortfolioInput = {
@@ -76985,6 +77958,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientService?: ClientServiceUpdateManyWithoutServiceNestedInput
     subService?: SubServiceUpdateManyWithoutServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutServiceNestedInput
@@ -76994,6 +77972,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientService?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
     subService?: SubServiceUncheckedUpdateManyWithoutServiceNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutServiceNestedInput
@@ -77003,6 +77986,11 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ClientUpdateWithoutPortfolioInput = {
@@ -77907,6 +78895,12 @@ export namespace Prisma {
     base: number
     discount: number
     description: string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: string
+    discountValue?: number
+    discountAmount?: number
+    finalAmount?: number
     serviceId: string
     subServiceId: string
     clientId: string
@@ -77973,6 +78967,12 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: StringFieldUpdateOperationsInput | string
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    finalAmount?: FloatFieldUpdateOperationsInput | number
     serviceStatus?: EnumClientServiceStatusFieldUpdateOperationsInput | $Enums.ClientServiceStatus
     service?: ServiceUpdateOneRequiredWithoutServiceAgreementsNestedInput
     subService?: SubServiceUpdateOneRequiredWithoutServiceAgreementsNestedInput
@@ -77987,6 +78987,12 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: StringFieldUpdateOperationsInput | string
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    finalAmount?: FloatFieldUpdateOperationsInput | number
     serviceId?: StringFieldUpdateOperationsInput | string
     subServiceId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
@@ -78001,6 +79007,12 @@ export namespace Prisma {
     base?: FloatFieldUpdateOperationsInput | number
     discount?: FloatFieldUpdateOperationsInput | number
     description?: StringFieldUpdateOperationsInput | string
+    packageSnapshot?: NullableJsonNullValueInput | InputJsonValue
+    contractFeatures?: NullableJsonNullValueInput | InputJsonValue
+    discountType?: StringFieldUpdateOperationsInput | string
+    discountValue?: FloatFieldUpdateOperationsInput | number
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    finalAmount?: FloatFieldUpdateOperationsInput | number
     serviceId?: StringFieldUpdateOperationsInput | string
     subServiceId?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string

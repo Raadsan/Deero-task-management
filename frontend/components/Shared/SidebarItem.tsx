@@ -5,6 +5,7 @@ import { SidebarItem } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 
 /** Sibling routes under the same prefix — only exact path is active */
@@ -45,7 +46,22 @@ export default function SideBarItem({
   currentRole?: UserRole;
 }) {
   const pathname = usePathname();
-  const isActive = isNavActive(pathname, href);
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
+  const isActive = pendingHref !== null
+    ? normalizePath(pendingHref) === normalizePath(href)
+    : isNavActive(pathname, href);
+
+  useEffect(() => {
+    setPendingHref(null);
+  }, [pathname]);
+
+  useEffect(() => {
+    const handleNavigationStart = (event: Event) => {
+      setPendingHref((event as CustomEvent<string>).detail);
+    };
+    window.addEventListener("sidebar-navigation-start", handleNavigationStart);
+    return () => window.removeEventListener("sidebar-navigation-start", handleNavigationStart);
+  }, []);
 
   const canManageSee = role?.includes(UserRole.superadmin);
   const canAdminSee = role?.includes(UserRole.admin);
@@ -67,6 +83,12 @@ export default function SideBarItem({
       >
         <Link
           href={href}
+          prefetch
+          onClick={() => {
+            window.dispatchEvent(
+              new CustomEvent("sidebar-navigation-start", { detail: href }),
+            );
+          }}
           className="flex w-full items-center justify-start group-data-[collapsible=icon]:justify-center"
         >
           <span className="shrink-0 text-white [&_svg]:text-white">

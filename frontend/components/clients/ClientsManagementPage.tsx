@@ -14,7 +14,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAllClients, deleteClientById, updateClientServiceStatus } from "@/lib/actions/client.action";
+import { deleteClientById, updateClientServiceStatus } from "@/lib/actions/client.action";
+import { getAllClientsClient } from "@/lib/client-read-api";
 import { getTaskFormBranchOptions } from "@/lib/actions/shared.action";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {
@@ -145,7 +146,7 @@ function ClientServiceStatusCell({
 export default function ClientsManagementPage() {
   const { data: clientsRes, isLoading, mutate } = useSWR(
     SWR_CACH_KEYS.clients.key,
-    getAllClients,
+    getAllClientsClient,
   );
   const { mutate: globalMutate } = useSWRConfig();
   const [updatingAgreementId, setUpdatingAgreementId] = useState<string>();

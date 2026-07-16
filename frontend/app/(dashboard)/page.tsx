@@ -432,7 +432,7 @@ export default function DashboardPage() {
                           <span className={dashboardTableIdClass}>{String(task.id).slice(0, 8)}</span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className="text-[13px] font-medium text-zinc-700">{task.description?.slice(0, 50) || "â€”"}</span>
+                          <span className="text-[13px] font-medium text-zinc-700">{task.description?.slice(0, 50) || "N/A"}</span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
                           <span className={cn(dashboardStatusBadgeClass, getTaskStatusBadgeClass(displayStatus))}>
@@ -859,7 +859,7 @@ export default function DashboardPage() {
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
                         <span className="text-[13px] font-medium text-zinc-700">
-                          {task.description?.slice(0, 40) || "â€”"}
+                          {task.description?.slice(0, 40) || "N/A"}
                         </span>
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>

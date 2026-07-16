@@ -235,7 +235,7 @@ export default function NotificationsRoutePage() {
                   </label>
                   <textarea
                     readOnly
-                    value={activeNotification.taskName || "â€”"}
+                    value={activeNotification.taskName || "N/A"}
                     className={configTextareaClass}
                   />
                 </div>
