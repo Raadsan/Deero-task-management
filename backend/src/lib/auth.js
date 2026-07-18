@@ -29,7 +29,7 @@ export const auth = betterAuth({
     process.env.FRONTEND_URL
   ].filter(Boolean),
   advanced: {
-    useSecureCookies: process.env.NODE_ENV === "production" || process.env.BETTER_AUTH_URL?.startsWith("https"),
+    useSecureCookies: process.env.BETTER_AUTH_URL?.startsWith("https") === true,
     database: {
       generateId: false,
     },
