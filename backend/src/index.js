@@ -100,6 +100,10 @@ app.use(cors({
   origin: [
     "http://localhost:2000",
     "http://127.0.0.1:2000",
+    "http://178.18.241.5:2000",
+    "https://178.18.241.5:2000",
+    "http://localhost:2003",
+    "http://localhost:3000",
     frontendUrl,
   ].filter(Boolean),
   credentials: true

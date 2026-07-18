@@ -24,6 +24,8 @@ export const auth = betterAuth({
     "http://localhost:2000",
     "http://127.0.0.1:2000",
     "http://localhost:2003",
+    "http://178.18.241.5:2000",
+    "https://178.18.241.5:2000",
     process.env.FRONTEND_URL
   ].filter(Boolean),
   advanced: {
