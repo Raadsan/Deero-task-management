@@ -64,6 +64,7 @@ export const TaskSchema = z.object({
     .refine((date) => {
       return date.getTime() >= Date.now();
     }, "deadline must be now or a future date"),
+  startDate: z.date().optional(),
   progress: z.number().min(0).max(100).optional().default(0),
 });
 
@@ -83,6 +84,7 @@ export const CreateTaskSchema = z
     supervisor: z.string().optional(),
     status: z.nativeEnum(TaskStatus).default(TaskStatus.pending),
     deadline: z.date().optional(),
+    startDate: z.date().optional(),
     progress: z.number().min(0).max(100).optional().default(0),
   })
   .superRefine((data, ctx) => {

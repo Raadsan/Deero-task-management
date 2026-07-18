@@ -17113,6 +17113,7 @@ export namespace Prisma {
     updatedAt: Date | null
     workflowStage: $Enums.WorkflowStage | null
     workflowStepId: string | null
+    startDate: Date | null
   }
 
   export type TaskMaxAggregateOutputType = {
@@ -17136,6 +17137,7 @@ export namespace Prisma {
     updatedAt: Date | null
     workflowStage: $Enums.WorkflowStage | null
     workflowStepId: string | null
+    startDate: Date | null
   }
 
   export type TaskCountAggregateOutputType = {
@@ -17159,6 +17161,7 @@ export namespace Prisma {
     updatedAt: number
     workflowStage: number
     workflowStepId: number
+    startDate: number
     _all: number
   }
 
@@ -17194,6 +17197,7 @@ export namespace Prisma {
     updatedAt?: true
     workflowStage?: true
     workflowStepId?: true
+    startDate?: true
   }
 
   export type TaskMaxAggregateInputType = {
@@ -17217,6 +17221,7 @@ export namespace Prisma {
     updatedAt?: true
     workflowStage?: true
     workflowStepId?: true
+    startDate?: true
   }
 
   export type TaskCountAggregateInputType = {
@@ -17240,6 +17245,7 @@ export namespace Prisma {
     updatedAt?: true
     workflowStage?: true
     workflowStepId?: true
+    startDate?: true
     _all?: true
   }
 
@@ -17350,6 +17356,7 @@ export namespace Prisma {
     updatedAt: Date | null
     workflowStage: $Enums.WorkflowStage
     workflowStepId: string | null
+    startDate: Date | null
     _count: TaskCountAggregateOutputType | null
     _avg: TaskAvgAggregateOutputType | null
     _sum: TaskSumAggregateOutputType | null
@@ -17392,6 +17399,7 @@ export namespace Prisma {
     updatedAt?: boolean
     workflowStage?: boolean
     workflowStepId?: boolean
+    startDate?: boolean
     clientTask?: boolean | Task$clientTaskArgs<ExtArgs>
     recurringOccurrence?: boolean | Task$recurringOccurrenceArgs<ExtArgs>
     agreement?: boolean | Task$agreementArgs<ExtArgs>
@@ -17425,6 +17433,7 @@ export namespace Prisma {
     updatedAt?: boolean
     workflowStage?: boolean
     workflowStepId?: boolean
+    startDate?: boolean
   }
 
   export type TaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -17472,6 +17481,7 @@ export namespace Prisma {
       updatedAt: Date | null
       workflowStage: $Enums.WorkflowStage
       workflowStepId: string | null
+      startDate: Date | null
     }, ExtArgs["result"]["task"]>
     composites: {}
   }
@@ -17869,6 +17879,7 @@ export namespace Prisma {
     readonly updatedAt: FieldRef<"Task", 'DateTime'>
     readonly workflowStage: FieldRef<"Task", 'WorkflowStage'>
     readonly workflowStepId: FieldRef<"Task", 'String'>
+    readonly startDate: FieldRef<"Task", 'DateTime'>
   }
     
 
@@ -48616,7 +48627,8 @@ export namespace Prisma {
     sortOrder: 'sortOrder',
     updatedAt: 'updatedAt',
     workflowStage: 'workflowStage',
-    workflowStepId: 'workflowStepId'
+    workflowStepId: 'workflowStepId',
+    startDate: 'startDate'
   };
 
   export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof TaskScalarFieldEnum]
@@ -50308,6 +50320,7 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     workflowStage?: EnumWorkflowStageFilter<"Task"> | $Enums.WorkflowStage
     workflowStepId?: StringNullableFilter<"Task"> | string | null
+    startDate?: DateTimeNullableFilter<"Task"> | Date | string | null
     clientTask?: ClientTaskListRelationFilter
     recurringOccurrence?: XOR<RecurringTaskOccurrenceNullableRelationFilter, RecurringTaskOccurrenceWhereInput> | null
     agreement?: XOR<IncomeServiceAgreementNullableRelationFilter, IncomeServiceAgreementWhereInput> | null
@@ -50339,6 +50352,7 @@ export namespace Prisma {
     updatedAt?: SortOrderInput | SortOrder
     workflowStage?: SortOrder
     workflowStepId?: SortOrderInput | SortOrder
+    startDate?: SortOrderInput | SortOrder
     clientTask?: ClientTaskOrderByRelationAggregateInput
     recurringOccurrence?: RecurringTaskOccurrenceOrderByWithRelationInput
     agreement?: IncomeServiceAgreementOrderByWithRelationInput
@@ -50373,6 +50387,7 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     workflowStage?: EnumWorkflowStageFilter<"Task"> | $Enums.WorkflowStage
     workflowStepId?: StringNullableFilter<"Task"> | string | null
+    startDate?: DateTimeNullableFilter<"Task"> | Date | string | null
     clientTask?: ClientTaskListRelationFilter
     recurringOccurrence?: XOR<RecurringTaskOccurrenceNullableRelationFilter, RecurringTaskOccurrenceWhereInput> | null
     agreement?: XOR<IncomeServiceAgreementNullableRelationFilter, IncomeServiceAgreementWhereInput> | null
@@ -50404,6 +50419,7 @@ export namespace Prisma {
     updatedAt?: SortOrderInput | SortOrder
     workflowStage?: SortOrder
     workflowStepId?: SortOrderInput | SortOrder
+    startDate?: SortOrderInput | SortOrder
     _count?: TaskCountOrderByAggregateInput
     _avg?: TaskAvgOrderByAggregateInput
     _max?: TaskMaxOrderByAggregateInput
@@ -50435,6 +50451,7 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
     workflowStage?: EnumWorkflowStageWithAggregatesFilter<"Task"> | $Enums.WorkflowStage
     workflowStepId?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    startDate?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
   }
 
   export type ClientTaskWhereInput = {
@@ -54064,6 +54081,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
@@ -54095,6 +54113,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
   }
@@ -54114,6 +54133,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
@@ -54145,6 +54165,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
   }
@@ -54170,6 +54191,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
   }
 
   export type TaskUpdateManyMutationInput = {
@@ -54187,6 +54209,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type TaskUncheckedUpdateManyInput = {
@@ -54210,6 +54233,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ClientTaskCreateInput = {
@@ -57924,6 +57948,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     workflowStage?: SortOrder
     workflowStepId?: SortOrder
+    startDate?: SortOrder
   }
 
   export type TaskAvgOrderByAggregateInput = {
@@ -57952,6 +57977,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     workflowStage?: SortOrder
     workflowStepId?: SortOrder
+    startDate?: SortOrder
   }
 
   export type TaskMinOrderByAggregateInput = {
@@ -57975,6 +58001,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     workflowStage?: SortOrder
     workflowStepId?: SortOrder
+    startDate?: SortOrder
   }
 
   export type TaskSumOrderByAggregateInput = {
@@ -65217,6 +65244,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
@@ -65246,6 +65274,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
   }
@@ -65878,6 +65907,7 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     workflowStage?: EnumWorkflowStageFilter<"Task"> | $Enums.WorkflowStage
     workflowStepId?: StringNullableFilter<"Task"> | string | null
+    startDate?: DateTimeNullableFilter<"Task"> | Date | string | null
   }
 
   export type StaffCreateWithoutSessionsInput = {
@@ -69183,6 +69213,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
     user: StaffCreateNestedOneWithoutAssignedTasksInput
@@ -69213,6 +69244,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
   }
 
@@ -69320,6 +69352,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
     user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
@@ -69350,6 +69383,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
   }
 
@@ -70564,6 +70598,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
     user: StaffCreateNestedOneWithoutAssignedTasksInput
@@ -70593,6 +70628,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
   }
@@ -72428,6 +72464,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
@@ -72457,6 +72494,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
   }
@@ -74121,6 +74159,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
@@ -74150,6 +74189,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
   }
@@ -75461,6 +75501,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
     user: StaffCreateNestedOneWithoutAssignedTasksInput
@@ -75491,6 +75532,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
   }
 
@@ -75568,6 +75610,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
     user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
@@ -75598,6 +75641,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
   }
 
@@ -75722,6 +75766,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
@@ -75751,6 +75796,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
   }
@@ -76040,6 +76086,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
@@ -76069,6 +76116,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
   }
@@ -76538,6 +76586,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
   }
 
   export type ExpenseTransactionUpdateWithoutUserInput = {
@@ -77204,6 +77253,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
@@ -77233,6 +77283,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
   }
@@ -77257,6 +77308,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ClientSubServiceCreateManyClientInput = {
@@ -78780,6 +78832,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
   }
 
   export type IncomeTransactionUpdateWithoutServiceAgreementInput = {
@@ -78850,6 +78903,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
     user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
@@ -78879,6 +78933,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
   }
@@ -78903,6 +78958,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ExpenseTransactionCreateManyExpenseServiceAgreementInput = {
@@ -79230,6 +79286,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
   }
 
   export type IncomeServiceAgreementUpdateWithoutProjectInput = {
@@ -79412,6 +79469,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
@@ -79441,6 +79499,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
   }
@@ -79465,6 +79524,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ClientInstallmentCreateManyContractInput = {
@@ -79598,6 +79658,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
   }
 
   export type ContentRequestAssigneeUpdateWithoutContentRequestInput = {
@@ -79636,6 +79697,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
@@ -79665,6 +79727,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
   }
@@ -79689,6 +79752,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ContentCycleCreateManyScheduleInput = {
@@ -79847,6 +79911,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
   }
 
   export type TaskUpdateWithoutContentCycleInput = {
@@ -79864,6 +79929,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
@@ -79893,6 +79959,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
   }
@@ -79917,6 +79984,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type RecurringScheduleStepCreateManyTemplateInput = {
@@ -80051,6 +80119,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
   }
 
   export type TaskUpdateWithoutWorkflowStepInput = {
@@ -80068,6 +80137,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
@@ -80097,6 +80167,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
   }
@@ -80121,6 +80192,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
 

@@ -9,15 +9,15 @@ datasource db {
 }
 
 model Role {
-  id          String           @id @default(uuid())
-  name        String           @unique
-  createdAt   DateTime         @default(now())
-  description String?
-  updatedAt   DateTime         @default(now()) @updatedAt
-  isActive    Boolean          @default(true)
-  canViewSalary Boolean        @default(false)
-  menuAccess  RoleMenuAccess[]
-  users       Staff[]
+  id            String           @id @default(uuid())
+  name          String           @unique
+  createdAt     DateTime         @default(now())
+  description   String?
+  updatedAt     DateTime         @default(now()) @updatedAt
+  isActive      Boolean          @default(true)
+  canViewSalary Boolean          @default(false)
+  menuAccess    RoleMenuAccess[]
+  users         Staff[]
 
   @@map("roles")
 }
@@ -264,6 +264,7 @@ model Task {
   updatedAt           DateTime?                @updatedAt
   workflowStage       WorkflowStage            @default(pending)
   workflowStepId      String?
+  startDate           DateTime?
   clientTask          ClientTask[]
   recurringOccurrence RecurringTaskOccurrence?
   agreement           IncomeServiceAgreement?  @relation(fields: [agreementId], references: [id])

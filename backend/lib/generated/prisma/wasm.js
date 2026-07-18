@@ -286,7 +286,8 @@ exports.Prisma.TaskScalarFieldEnum = {
   sortOrder: 'sortOrder',
   updatedAt: 'updatedAt',
   workflowStage: 'workflowStage',
-  workflowStepId: 'workflowStepId'
+  workflowStepId: 'workflowStepId',
+  startDate: 'startDate'
 };
 
 exports.Prisma.ClientTaskScalarFieldEnum = {

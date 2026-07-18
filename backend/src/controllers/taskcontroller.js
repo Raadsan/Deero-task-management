@@ -169,6 +169,7 @@ export const createTask = async (req, res) => {
       priority: data.priority?.toLowerCase(),
       department: data.department || "General",
       deadline: data.deadline ? new Date(data.deadline) : null,
+      startDate: data.startDate ? new Date(data.startDate) : null,
       assgineeId: data.assgineeId,
       supervisor: data.supervisor || "",
       progress: normalized.progress,
@@ -236,7 +237,7 @@ async function notifyTaskAssignee(result) {
 
 export const updateTask = async (req, res) => {
   const { id } = req.params;
-  const { description, status, priority, department, deadline, assgineeId, supervisor, progress, serviceInformation } = req.body;
+  const { description, status, priority, department, deadline, startDate, assgineeId, supervisor, progress, serviceInformation } = req.body;
   try {
     const scope = getScope(req);
     const originalTask = await findAccessibleTask(scope, id, { user: true });
@@ -277,6 +278,9 @@ export const updateTask = async (req, res) => {
         ...(department !== undefined ? { department } : {}),
         ...(deadline !== undefined
           ? { deadline: deadline ? new Date(deadline) : null }
+          : {}),
+        ...(startDate !== undefined
+          ? { startDate: startDate ? new Date(startDate) : null }
           : {}),
         ...(assgineeId !== undefined ? { assgineeId } : {}),
         ...(supervisor !== undefined ? { supervisor } : {}),
