@@ -124,11 +124,6 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
               value={task.supervisor || "—"}
             />
             <InfoItem
-              icon={Building2}
-              label="Department"
-              value={task.department}
-            />
-            <InfoItem
               icon={GitBranch}
               label="Assignee Portfolio"
               value={

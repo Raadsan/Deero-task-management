@@ -1,7 +1,6 @@
 "use client";
 
 import { createTask, editTask } from "@/lib/actions/task.action";
-import { getAllDepartments } from "@/lib/actions/department.action";
 import {
   getAllAssignees,
   getTaskFormBranchOptions,
@@ -148,15 +147,6 @@ export default function TaskForm({
   );
   const assignees = assigneesRes?.data ?? [];
 
-  const { data: departmentsRes } = useSWR(
-    selectedBranchId ? [SWR_CACH_KEYS.departments.key, selectedBranchId, "task-form"] : null,
-    () => getAllDepartments({ portfolioId: selectedBranchId, activeOnly: true }),
-  );
-  const departmentOptions = useMemo(
-    () => departmentsRes?.data?.map((department) => department.name) ?? [],
-    [departmentsRes?.data],
-  );
-
   const selectedBranchName =
     branchOptions.find((portfolio) => portfolio.id === selectedBranchId)?.name ?? "";
 
@@ -186,11 +176,6 @@ export default function TaskForm({
     setValue("taskName", "", { shouldValidate: false });
     setValue("description", "", { shouldValidate: false });
     setValue("assigneeId", "", { shouldValidate: false });
-    if (session.data?.user?.department) {
-      setValue("department", session.data.user.department, {
-        shouldValidate: false,
-      });
-    }
   }
 
   const watchServiceInformation = watch("serviceInformation");
@@ -202,19 +187,9 @@ export default function TaskForm({
   const currentUserId = session.data?.user.id;
   const isAssignee = String(currentUserId) === String(watchAssingneeId);
 
-  const watchedDepartment = watch("department");
   const watchedPriority = watch("priority");
   const watchedStatus = watch("status");
   const watchedProgress = watch("progress");
-
-  useEffect(() => {
-    if (!isCreate || !session.data?.user?.department) return;
-    if (!watchedDepartment) {
-      setValue("department", session.data.user.department, {
-        shouldValidate: false,
-      });
-    }
-  }, [isCreate, session.data?.user?.department, watchedDepartment, setValue]);
 
   useEffect(() => {
     if (!isCreate) return;
@@ -381,13 +356,6 @@ export default function TaskForm({
             setValue("serviceInformation", "", { shouldValidate: false });
             setValue("taskName", "", { shouldValidate: false });
             setValue("description", "", { shouldValidate: false });
-            if (isCreate && session.data?.user?.department) {
-              setValue("department", session.data.user.department, {
-                shouldValidate: false,
-              });
-            } else {
-              setValue("department", "", { shouldValidate: false });
-            }
           }}
         />
       )}
@@ -536,31 +504,6 @@ export default function TaskForm({
         }}
         onChange={(value) => {
           setValue("assigneeId", value, {
-            shouldValidate: true,
-            shouldTouch: true,
-          });
-          const selectedUser = assignees.find((u) => String(u.id) === value);
-          if (selectedUser?.department) {
-            setValue("department", selectedUser.department, {
-              shouldValidate: isCreate ? false : true,
-            });
-          }
-        }}
-      />
-      <SelectElement
-        labelText="Department"
-        placeholder={
-          selectedBranchId ? "Select department" : "Select portfolio first"
-        }
-        value={watchedDepartment}
-        defaultValue={watchedDepartment}
-        disbaleSelect={transiton || formType === "own:edit" || !selectedBranchId}
-        errorMessage={fieldMessage("department")}
-        invalid={fieldInvalid("department")}
-        elements={departmentOptions}
-        compact={isModal}
-        onChange={(value) => {
-          setValue("department", value, {
             shouldValidate: true,
             shouldTouch: true,
           });
