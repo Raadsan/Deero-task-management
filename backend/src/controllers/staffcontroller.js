@@ -106,13 +106,14 @@ export const createStaff = async (req, res) => {
     }
 
     // Use better-auth to create user so password is hashed
-    const result = await auth.api.createStaff({
+    const result = await auth.api.createUser({
       body: {
         name,
         email,
         password,
         role: role || "user",
       },
+      headers: req.headers,
     });
 
     // Update additional fields

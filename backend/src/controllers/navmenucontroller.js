@@ -700,12 +700,7 @@ async function runEnsureDefaultMenus() {
   for (const menuData of DEFAULT_MENUS) {
     const { submenus, ...fields } = menuData;
     let menu = await prisma.navMenu.findFirst({ where: { url: fields.url } });
-    if (menu) {
-      menu = await prisma.navMenu.update({
-        where: { id: menu.id },
-        data: { ...fields, isActive: true },
-      });
-    } else {
+    if (!menu) {
       menu = await prisma.navMenu.create({
         data: { ...fields, isActive: true },
       });
@@ -716,12 +711,7 @@ async function runEnsureDefaultMenus() {
       let sub = await prisma.navSubMenu.findFirst({
         where: { menuId: menu.id, url: sm.url },
       });
-      if (sub) {
-        sub = await prisma.navSubMenu.update({
-          where: { id: sub.id },
-          data: { ...sm, menuId: menu.id, isActive: true },
-        });
-      } else {
+      if (!sub) {
         sub = await prisma.navSubMenu.create({
           data: { ...sm, menuId: menu.id, isActive: true },
         });
@@ -735,66 +725,6 @@ async function runEnsureDefaultMenus() {
 
     createdSubmenus.push({ menu, submenus: submenuRecords });
   }
-
-  await prisma.navMenu.updateMany({
-    where: {
-      title: { in: ["Clients", "Contracts", "Recurring Schedules"] },
-    },
-    data: { isActive: false },
-  });
-
-  await prisma.navMenu.updateMany({
-    where: {
-      title: "Reports",
-      url: { not: "/reports/payments" },
-    },
-    data: { isActive: false },
-  });
-
-  await prisma.navMenu.updateMany({
-    where: {
-      title: "Payment",
-      url: { not: "/payments/revenue" },
-    },
-    data: { isActive: false },
-  });
-
-  await prisma.navSubMenu.updateMany({
-    where: {
-      url: {
-        in: [
-          "/payments",
-          "/payments/income",
-          "/payments/expense",
-          "/payments/unpaid",
-          "/reports/unpaid",
-          "/reports/staff",
-          "/users/report",
-          "/staff/report",
-        ],
-      },
-    },
-    data: { isActive: false },
-  });
-
-  await prisma.navSubMenu.updateMany({
-    where: {
-      title: {
-        in: [
-          "All Reports",
-          "Revenue & Expense",
-          "Unpaid Balances",
-          "Employee Tasks",
-          "Employee Report",
-          "Client Summary",
-          "Salary Report",
-          "Unpaid",
-          "Revenue",
-        ],
-      },
-    },
-    data: { isActive: false },
-  });
 
   await prisma.staff.updateMany({
     where: { role: "superadmin", roleId: null },
