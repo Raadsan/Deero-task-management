@@ -1,4 +1,7 @@
 const ACTIVE_STATUSES = ["pending", "overdue"];
+const OVERDUE_SYNC_INTERVAL_MS = 60_000;
+let overdueSyncPromise = null;
+let lastOverdueSyncAt = 0;
 
 export function isTaskPastDeadline(deadline) {
   if (!deadline) return false;
@@ -14,23 +17,36 @@ export function resolveTaskStatus(task) {
 }
 
 export async function syncOverdueTasks(prisma) {
-  const now = new Date();
+  const currentTime = Date.now();
+  if (overdueSyncPromise) return overdueSyncPromise;
+  if (currentTime - lastOverdueSyncAt < OVERDUE_SYNC_INTERVAL_MS) return;
 
-  await prisma.task.updateMany({
-    where: {
-      status: { in: ACTIVE_STATUSES },
-      deadline: { not: null, lt: now },
-    },
-    data: { status: "overdue" },
-  });
+  overdueSyncPromise = (async () => {
+    const now = new Date();
+    await Promise.all([
+      prisma.task.updateMany({
+        where: {
+          status: { in: ACTIVE_STATUSES },
+          deadline: { not: null, lt: now },
+        },
+        data: { status: "overdue" },
+      }),
+      prisma.task.updateMany({
+        where: {
+          status: "overdue",
+          deadline: { not: null, gte: now },
+        },
+        data: { status: "pending" },
+      }),
+    ]);
+    lastOverdueSyncAt = Date.now();
+  })();
 
-  await prisma.task.updateMany({
-    where: {
-      status: "overdue",
-      deadline: { not: null, gte: now },
-    },
-    data: { status: "pending" },
-  });
+  try {
+    await overdueSyncPromise;
+  } finally {
+    overdueSyncPromise = null;
+  }
 }
 
 export function normalizeTaskWriteStatus({

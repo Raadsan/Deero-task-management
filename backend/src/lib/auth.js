@@ -21,6 +21,8 @@ export const auth = betterAuth({
     "https://task.deero.so",
     "http://localhost:3000",
     "http://localhost:5000",
+    "http://localhost:2000",
+    "http://127.0.0.1:2000",
     "http://localhost:2003",
     process.env.FRONTEND_URL
   ].filter(Boolean),
@@ -52,27 +54,29 @@ export const auth = betterAuth({
     },
     session: {
       create: {
-        async after(session) {
-          try {
-            const user = await prisma.staff.findUnique({
-              where: { id: session.userId },
-              select: { id: true, name: true, email: true, role: true, portfolioId: true },
-            });
+        after(session) {
+          void (async () => {
+            try {
+              const user = await prisma.staff.findUnique({
+                where: { id: session.userId },
+                select: { id: true, name: true, email: true, role: true, portfolioId: true },
+              });
 
-            if (!user) return;
+              if (!user) return;
 
-            await createNotificationForAdmins({
-              taskId: user.id,
-              taskName: user.name || user.email,
-              assigneeName: user.email || user.role,
-              deadline: new Date(),
-              type: "user-login",
-              excludeUserId: user.id,
-              portfolioId: user.portfolioId,
-            });
-          } catch (err) {
-            console.error("Failed to create login notification:", err);
-          }
+              await createNotificationForAdmins({
+                taskId: user.id,
+                taskName: user.name || user.email,
+                assigneeName: user.email || user.role,
+                deadline: new Date(),
+                type: "user-login",
+                excludeUserId: user.id,
+                portfolioId: user.portfolioId,
+              });
+            } catch (err) {
+              console.error("Failed to create login notification:", err);
+            }
+          })();
         },
       },
     },

@@ -54,7 +54,7 @@ export default function LoginPage() {
         return;
       }
 
-      window.location.assign(ROUTES.dashboard);
+      router.replace(ROUTES.dashboard);
     } finally {
       setSubmitting(false);
     }

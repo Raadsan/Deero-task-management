@@ -90,15 +90,17 @@ import contractRoutes from "./routes/contractrouter.js";
 import billingRoutes from "./routes/billingrouter.js";
 import jobRoutes from "./routes/jobrouter.js";
 import { attachSessionScope } from "./middleware/session-scope.js";
+import { prisma } from "./lib/prisma.js";
+import { syncOverdueTasks } from "./lib/task-status.js";
 
 const app = express();
 const port = process.env.PORT || 7003;
 
 app.use(cors({
   origin: [
-    "http://localhost:2003",
-    "http://127.0.0.1:2003",
-    process.env.FRONTEND_URL
+    "http://localhost:2000",
+    "http://127.0.0.1:2000",
+    frontendUrl,
   ].filter(Boolean),
   credentials: true
 }));
@@ -134,6 +136,14 @@ app.use("/api/notifications", notificationRoutes);
 app.get("/", (req, res) => {
   res.send("Deero Management API is running...");
 });
+
+const runOverdueSync = () => {
+  void syncOverdueTasks(prisma).catch((error) => {
+    console.error("[overdue-job] Failed:", error.message);
+  });
+};
+setTimeout(runOverdueSync, 30_000);
+setInterval(runOverdueSync, 5 * 60 * 1000);
 
 // 👇 muhiim
 app.listen(port, "0.0.0.0", async () => {

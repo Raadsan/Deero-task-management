@@ -9,18 +9,28 @@ import {
 } from "../lib/portfolio-scope.js";
 import {
   normalizeTaskWriteStatus,
-  syncOverdueTasks,
 } from "../lib/task-status.js";
 
 export const getAllTasks = async (req, res) => {
   try {
     const scope = getScope(req);
-    await syncOverdueTasks(prisma);
     const tasks = await prisma.task.findMany({
       where: mergeWhere({ isPersonal: false }, taskBranchWhere(scope)),
       include: {
-        user: true,
-        clientTask: { include: { Client: { include: { clientSubService: { include: { subService: true } } } } } },
+        user: { select: { id: true, name: true, portfolioId: true } },
+        clientTask: {
+          include: {
+            Client: {
+              select: {
+                id: true,
+                institution: true,
+                clientSubService: {
+                  select: { subService: { select: { id: true, name: true } } },
+                },
+              },
+            },
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -37,8 +47,6 @@ export const getMyTasks = async (req, res) => {
     if (!userId) {
       return res.status(401).json({ success: false, error: "Unauthorized" });
     }
-
-    void syncOverdueTasks(prisma).catch(() => {});
 
     const taskScope = String(req.query.scope ?? "personal").toLowerCase();
     const where = { assgineeId: userId };
@@ -100,8 +108,6 @@ export const getTaskById = async (req, res) => {
 
   try {
     const scope = getScope(req);
-    void syncOverdueTasks(prisma).catch(() => {});
-
     const task = await findAccessibleTask(scope, id, {
       user: true,
       clientTask: { include: { Client: true } },
@@ -361,6 +367,7 @@ export const getMonthlyGraphData = async (req, res) => {
     if (toDate) toDate.setHours(23, 59, 59, 999);
 
     const where = mergeWhere(
+      { isPersonal: false },
       taskBranchWhere(scope),
       fromDate || toDate ? { createdAt: { gte: fromDate, lte: toDate } } : {},
     );
@@ -407,6 +414,7 @@ export const getYearlyGraphData = async (req, res) => {
     if (toDate) toDate.setHours(23, 59, 59, 999);
 
     const where = mergeWhere(
+      { isPersonal: false },
       taskBranchWhere(scope),
       fromDate || toDate ? { createdAt: { gte: fromDate, lte: toDate } } : {},
     );
@@ -445,15 +453,13 @@ export const getDashboardMetrics = async (req, res) => {
   const { startDate, endDate } = req.query;
   try {
     const scope = getScope(req);
-    await syncOverdueTasks(prisma);
-
     const fromDate = startDate ? new Date(startDate) : undefined;
     const toDate = endDate ? new Date(endDate) : undefined;
     if (toDate) toDate.setHours(23, 59, 59, 999);
 
     const dateWhere =
       fromDate || toDate ? { createdAt: { gte: fromDate, lte: toDate } } : {};
-    const taskWhere = mergeWhere(taskBranchWhere(scope), dateWhere);
+    const taskWhere = mergeWhere({ isPersonal: false }, taskBranchWhere(scope), dateWhere);
     const clientWhere = mergeWhere(clientBranchWhere(scope), dateWhere);
 
     const [totalTasks, completedTasks, pendingTasks, overdueTasks, totalClients] = await Promise.all([
@@ -483,11 +489,9 @@ export const getTasksReport = async (req, res) => {
   const { userIdForTaskReport, startDate, endDate } = req.query;
   try {
     const scope = getScope(req);
-    await syncOverdueTasks(prisma);
-
     const from = startDate ? new Date(startDate) : undefined;
     const to = endDate ? new Date(endDate) : undefined;
-    const where = mergeWhere(taskBranchWhere(scope), {
+    const where = mergeWhere({ isPersonal: false }, taskBranchWhere(scope), {
       assgineeId: userIdForTaskReport,
     });
     if (from || to) {

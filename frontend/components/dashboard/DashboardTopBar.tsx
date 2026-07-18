@@ -14,7 +14,14 @@ function getPageTitle(pathname: string) {
   return segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, " ");
 }
 
-export default function DashboardTopBar() {
+type DashboardUser = {
+  id?: string;
+  name?: string | null;
+  email?: string | null;
+  role?: string | null;
+};
+
+export default function DashboardTopBar({ user }: { user: DashboardUser | null }) {
   const pathname = usePathname();
   const pageTitle = getPageTitle(pathname);
 
@@ -44,12 +51,12 @@ export default function DashboardTopBar() {
         </div>
 
         <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
-          <TaskNotifications />
+          <TaskNotifications userId={user?.id} />
           <span
             className="hidden h-5 w-px shrink-0 bg-zinc-200 sm:block"
             aria-hidden="true"
           />
-          <HeaderUserMenu />
+          <HeaderUserMenu user={user} />
         </div>
       </div>
     </header>

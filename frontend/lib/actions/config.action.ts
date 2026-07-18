@@ -9,6 +9,7 @@ export type ConfigRole = {
   name: string;
   description?: string | null;
   isActive?: boolean;
+  canViewSalary?: boolean;
   _count?: { users: number };
 };
 
@@ -64,6 +65,7 @@ export async function createConfigRole(data: {
   name: string;
   description?: string;
   isActive?: boolean;
+  canViewSalary?: boolean;
 }): Promise<ActionResponse> {
   try {
     const response = await api.post("/api/roles", data);
@@ -76,7 +78,7 @@ export async function createConfigRole(data: {
 
 export async function updateConfigRole(
   id: string,
-  data: { name?: string; description?: string; isActive?: boolean },
+  data: { name?: string; description?: string; isActive?: boolean; canViewSalary?: boolean },
 ): Promise<ActionResponse> {
   try {
     const response = await api.put(`/api/roles/${id}`, data);

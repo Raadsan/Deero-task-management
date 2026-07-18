@@ -1,14 +1,14 @@
 import { Task } from "@/lib/types";
 import { getTaskLane, TaskLane } from "@/lib/my-task-workflow";
 
-export const BOARD_LANES: TaskLane[] = ["todo", "processing", "review", "completed"];
+export const BOARD_LANES: TaskLane[] = ["todo", "processing", "completed"];
 
 export function emptyLaneOrder(): Record<TaskLane, string[]> {
-  return { todo: [], processing: [], review: [], completed: [] };
+  return { todo: [], processing: [], completed: [] };
 }
 
 export function groupTasksByLane(tasks: Task[]): Record<TaskLane, Task[]> {
-  const grouped: Record<TaskLane, Task[]> = { todo: [], processing: [], review: [], completed: [] };
+  const grouped: Record<TaskLane, Task[]> = { todo: [], processing: [], completed: [] };
   for (const task of tasks) {
     grouped[getTaskLane(task)].push(task);
   }
@@ -20,7 +20,6 @@ export function laneOrderFromTasks(tasks: Task[]): Record<TaskLane, string[]> {
   return {
     todo: grouped.todo.map((t) => String(t.id)),
     processing: grouped.processing.map((t) => String(t.id)),
-    review: grouped.review.map((t) => String(t.id)),
     completed: grouped.completed.map((t) => String(t.id)),
   };
 }
@@ -35,7 +34,6 @@ export function reorderLaneOrder(
   const next: Record<TaskLane, string[]> = {
     todo: [...order.todo],
     processing: [...order.processing],
-    review: [...order.review],
     completed: [...order.completed],
   };
 

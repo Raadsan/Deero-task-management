@@ -1,6 +1,6 @@
 "use client";
 
-import { getTaskNotifications } from "@/lib/actions/task.action";
+import { getTaskNotificationsClient } from "@/lib/client-read-api";
 import { ROUTES, SWR_CACH_KEYS } from "@/lib/constants";
 import { TaskNotification } from "@/lib/types";
 import { cn, formatTaskDeadline } from "@/lib/utils";
@@ -63,7 +63,7 @@ function readableType(type: TaskNotification["type"]) {
   return "User Login";
 }
 
-export default function TaskNotifications() {
+export default function TaskNotifications({ userId }: { userId?: string }) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
@@ -72,9 +72,9 @@ export default function TaskNotifications() {
     setMounted(true);
   }, []);
 
-  const { data: notificationsResponse, mutate } = useSWR(
-    SWR_CACH_KEYS.taskNotifications.key,
-    getTaskNotifications,
+  const { data: notificationsResponse } = useSWR(
+    userId ? [SWR_CACH_KEYS.taskNotifications.key, userId] : null,
+    () => getTaskNotificationsClient(userId!),
     { refreshInterval: 60_000 },
   );
 

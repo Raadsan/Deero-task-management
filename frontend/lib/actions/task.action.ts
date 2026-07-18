@@ -216,12 +216,16 @@ export async function getTasksReport({
     return handleError({ errors: error, type: "server" }) as ErrorResponse;
   }
 }
-export async function getTaskNotifications(): Promise<ActionResponse<TaskNotification[]>> {
+export async function getTaskNotifications(userId?: string): Promise<ActionResponse<TaskNotification[]>> {
   try {
-    const session = await getUserSession();
-    if (!session.data) return { success: true, data: [] };
+    let effectiveUserId = userId;
+    if (!effectiveUserId) {
+      const session = await getUserSession();
+      effectiveUserId = session.data?.user.id;
+    }
+    if (!effectiveUserId) return { success: true, data: [] };
     
-    const response = await api.get(`/api/notifications?userId=${session.data.user.id}`);
+    const response = await api.get(`/api/notifications?userId=${effectiveUserId}`);
     if (response.data.success) {
       return { success: true, data: response.data.data };
     }

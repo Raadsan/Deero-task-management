@@ -174,7 +174,7 @@ export function AppSidebar({ data, branding }: Props) {
         <SidebarGroup className="p-0">
           <SidebarGroupContent>
             <SidebarMenu className="gap-1 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:gap-2 group-data-[collapsible=icon]:px-0">
-              <SidebarAccordionProvider>
+              <SidebarAccordionProvider userId={data?.user.id}>
                 <DynamicSidebarNav
                   data={data}
                   fallbackMenus={NAVIGATION_LINKS.map((link) => ({

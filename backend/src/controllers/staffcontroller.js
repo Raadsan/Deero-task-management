@@ -8,9 +8,40 @@ import {
   userBranchWhere,
 } from "../lib/portfolio-scope.js";
 
+const staffListCache = new Map();
+const STAFF_LIST_CACHE_MS = 5 * 60 * 1000;
+
+function clearStaffListCache() {
+  staffListCache.clear();
+}
+
+async function actorCanViewSalary(scope) {
+  if (String(scope.user?.role ?? "").toLowerCase() === "superadmin") return true;
+  if (!scope.user?.roleId) return false;
+  const role = await prisma.role.findUnique({
+    where: { id: scope.user.roleId },
+    select: { canViewSalary: true },
+  });
+  return role?.canViewSalary === true;
+}
+
+function hideSalary(users, allowed) {
+  if (allowed) return users;
+  if (Array.isArray(users)) return users.map(({ salary, ...user }) => user);
+  if (!users) return users;
+  const { salary, ...user } = users;
+  return user;
+}
+
 export const getAllStaff = async (req, res) => {
   try {
     const scope = getScope(req);
+    const canViewSalary = await actorCanViewSalary(scope);
+    const cacheKey = scope.seesAllBranches ? "all" : scope.portfolioId || "none";
+    const cached = staffListCache.get(cacheKey);
+    if (cached && Date.now() - cached.createdAt < STAFF_LIST_CACHE_MS) {
+      return res.json({ success: true, data: hideSalary(cached.data, canViewSalary) });
+    }
     const users = await prisma.staff.findMany({
       where: userBranchWhere(scope),
       orderBy: {
@@ -22,7 +53,8 @@ export const getAllStaff = async (req, res) => {
         },
       },
     });
-    res.json({ success: true, data: users });
+    staffListCache.set(cacheKey, { createdAt: Date.now(), data: users });
+    res.json({ success: true, data: hideSalary(users, canViewSalary) });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -32,6 +64,7 @@ export const getStaffById = async (req, res) => {
   const { id } = req.params;
   try {
     const scope = getScope(req);
+    const canViewSalary = await actorCanViewSalary(scope);
     const user = await prisma.staff.findUnique({
       where: { id },
       include: {
@@ -47,7 +80,7 @@ export const getStaffById = async (req, res) => {
       return res.status(404).json({ success: false, message: "Staff not found" });
     }
     if (denyIfOutOfScope(res, scope, user.portfolioId)) return;
-    res.json({ success: true, data: user });
+    res.json({ success: true, data: hideSalary(user, canViewSalary) });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -56,15 +89,10 @@ export const getStaffById = async (req, res) => {
 export const createStaff = async (req, res) => {
   const { name, email, password, role, gender, salary, portfolioId, banned } = req.body;
   try {
-    if (
-      salary === undefined ||
-      salary === null ||
-      salary === "" ||
-      !/^\d+(\.\d{1,2})?$/.test(String(salary))
-    ) {
+    if (salary !== undefined && salary !== null && salary !== "" && !/^\d+(\.\d{1,2})?$/.test(String(salary))) {
       return res.status(400).json({
         success: false,
-        message: "A valid salary is required",
+        message: "Salary must be a valid amount",
       });
     }
     const scope = getScope(req);
@@ -108,6 +136,7 @@ export const createStaff = async (req, res) => {
       },
     });
 
+    clearStaffListCache();
     res.status(201).json({ success: true, data: updatedUser });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -121,9 +150,7 @@ export const updateStaff = async (req, res) => {
   try {
     if (
       salary !== undefined &&
-      (salary === null ||
-        salary === "" ||
-        !/^\d+(\.\d{1,2})?$/.test(String(salary)))
+      salary !== null && salary !== "" && !/^\d+(\.\d{1,2})?$/.test(String(salary))
     ) {
       return res.status(400).json({
         success: false,
@@ -173,6 +200,7 @@ export const updateStaff = async (req, res) => {
         },
       },
     });
+    clearStaffListCache();
     res.json({ success: true, data: user });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -194,6 +222,7 @@ export const deleteStaff = async (req, res) => {
     await prisma.staff.delete({
       where: { id },
     });
+    clearStaffListCache();
     res.json({ success: true, message: "Staff deleted successfully" });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });

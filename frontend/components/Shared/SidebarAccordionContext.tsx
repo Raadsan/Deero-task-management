@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 type SidebarAccordionContextValue = {
   openId: string | null;
@@ -13,8 +13,30 @@ const SidebarAccordionContext = createContext<SidebarAccordionContextValue | nul
   null,
 );
 
-export function SidebarAccordionProvider({ children }: { children: React.ReactNode }) {
+export function SidebarAccordionProvider({
+  children,
+  userId,
+}: {
+  children: React.ReactNode;
+  userId?: string;
+}) {
   const [openId, setOpenId] = useState<string | null>(null);
+  const hydrated = useRef(false);
+  const storageKey = `deero-sidebar-open-menu:${userId || "anonymous"}`;
+
+  useEffect(() => {
+    try {
+      setOpenId(localStorage.getItem(storageKey));
+    } finally {
+      hydrated.current = true;
+    }
+  }, [storageKey]);
+
+  useEffect(() => {
+    if (!hydrated.current) return;
+    if (openId) localStorage.setItem(storageKey, openId);
+    else localStorage.removeItem(storageKey);
+  }, [openId, storageKey]);
 
   const value = useMemo(
     () => ({

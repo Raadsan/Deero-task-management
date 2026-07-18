@@ -24,7 +24,7 @@ export const getAllRoles = async (req, res) => {
 };
 
 export const createRole = async (req, res) => {
-  const { name, description, isActive } = req.body;
+  const { name, description, isActive, canViewSalary } = req.body;
   try {
     const normalized = String(name ?? "").trim().toLowerCase();
     if (!normalized) {
@@ -36,6 +36,7 @@ export const createRole = async (req, res) => {
         name: normalized,
         description: description?.trim() || null,
         isActive: isActive !== false,
+        canViewSalary: canViewSalary === true,
       },
     });
 
@@ -56,7 +57,7 @@ export const createRole = async (req, res) => {
 
 export const updateRole = async (req, res) => {
   const { id } = req.params;
-  const { name, description, isActive } = req.body;
+  const { name, description, isActive, canViewSalary } = req.body;
   try {
     const role = await prisma.role.update({
       where: { id },
@@ -66,6 +67,7 @@ export const updateRole = async (req, res) => {
           ? { description: description?.trim() || null }
           : {}),
         ...(isActive !== undefined ? { isActive: !!isActive } : {}),
+        ...(canViewSalary !== undefined ? { canViewSalary: !!canViewSalary } : {}),
       },
     });
 

@@ -22,12 +22,15 @@ import toast from "react-hot-toast";
 
 interface Props {
   className?: string;
+  user: {
+    name?: string | null;
+    email?: string | null;
+    role?: string | null;
+  } | null;
 }
 
-export default function HeaderUserMenu({ className }: Props) {
+export default function HeaderUserMenu({ className, user }: Props) {
   const [transition, startTransition] = useTransition();
-  const { data: session, isPending } = authClient.useSession();
-  const user = session?.user;
 
   async function handleSignOut() {
     if (transition) return;
@@ -42,7 +45,7 @@ export default function HeaderUserMenu({ className }: Props) {
     });
   }
 
-  if (isPending || !user) {
+  if (!user) {
     return (
       <div
         className={cn(

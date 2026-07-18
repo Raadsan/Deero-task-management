@@ -50,7 +50,6 @@ import useSWR, { useSWRConfig } from "swr";
 const LANE_NEW_PAGE: Partial<Record<TaskLane, boolean>> = {
   todo: true,
   processing: true,
-  review: true,
   completed: true,
 };
 
@@ -144,7 +143,7 @@ export default function MyTasksBoardPage() {
   );
 
   const lanesDisplay = useMemo(() => {
-    const display: Record<TaskLane, Task[]> = { todo: [], processing: [], review: [], completed: [] };
+    const display: Record<TaskLane, Task[]> = { todo: [], processing: [], completed: [] };
     for (const lane of BOARD_LANES) {
       display[lane] = resolveLaneTasks(lane, normalizedOrder, taskMap);
     }

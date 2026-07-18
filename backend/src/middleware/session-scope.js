@@ -6,6 +6,7 @@ const scopeCache = new Map();
 const SCOPE_CACHE_MS = 10_000;
 const MAX_SCOPE_CACHE = 500;
 const responseCache = new Map();
+const inFlightResponses = new Map();
 const RESPONSE_CACHE_MS = 5 * 60 * 1000;
 const MAX_RESPONSE_CACHE = 2_000;
 
@@ -42,8 +43,35 @@ export async function attachSessionScope(req, res, next) {
       res.set("X-Cache", "HIT");
       return res.status(cached.status).json(cached.body);
     }
+
+    const inFlight = inFlightResponses.get(cacheKey);
+    if (inFlight) {
+      try {
+        const result = await inFlight;
+        if (result) {
+          res.set("X-Cache", "COALESCED");
+          return res.status(result.status).json(result.body);
+        }
+      } catch {
+        // The original request failed before producing JSON; continue normally.
+      }
+    }
   } else {
     responseCache.clear();
+  }
+
+  let settleInFlight;
+  if (cacheKey) {
+    const pending = new Promise((resolve) => {
+      settleInFlight = resolve;
+    });
+    inFlightResponses.set(cacheKey, pending);
+    res.once("close", () => {
+      if (inFlightResponses.get(cacheKey) === pending) {
+        inFlightResponses.delete(cacheKey);
+        settleInFlight?.(null);
+      }
+    });
   }
 
   try {
@@ -63,16 +91,19 @@ export async function attachSessionScope(req, res, next) {
   if (cacheKey) {
     const originalJson = res.json.bind(res);
     res.json = (body) => {
+      const result = { status: res.statusCode, body };
       if (res.statusCode < 400) {
         responseCache.set(cacheKey, {
           createdAt: Date.now(),
-          status: res.statusCode,
+          status: result.status,
           body,
         });
         if (responseCache.size > MAX_RESPONSE_CACHE) {
           responseCache.delete(responseCache.keys().next().value);
         }
       }
+      inFlightResponses.delete(cacheKey);
+      settleInFlight?.(result);
       res.set("X-Cache", "MISS");
       return originalJson(body);
     };

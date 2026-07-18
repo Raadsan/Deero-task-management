@@ -125,10 +125,11 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 exports.Prisma.RoleScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  description: 'description',
-  isActive: 'isActive',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  description: 'description',
+  updatedAt: 'updatedAt',
+  isActive: 'isActive',
+  canViewSalary: 'canViewSalary'
 };
 
 exports.Prisma.StaffScalarFieldEnum = {
@@ -141,12 +142,13 @@ exports.Prisma.StaffScalarFieldEnum = {
   image: 'image',
   gender: 'gender',
   salary: 'salary',
-  portfolioId: 'portfolioId',
+  department: 'department',
   roleId: 'roleId',
   role: 'role',
   banned: 'banned',
   banReason: 'banReason',
-  banExpires: 'banExpires'
+  banExpires: 'banExpires',
+  portfolioId: 'portfolioId'
 };
 
 exports.Prisma.SessionScalarFieldEnum = {
@@ -191,45 +193,45 @@ exports.Prisma.ClientScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   institution: 'institution',
-  companyName: 'companyName',
-  contactPerson: 'contactPerson',
   email: 'email',
   phone: 'phone',
-  address: 'address',
   source: 'source',
+  accountManagerId: 'accountManagerId',
+  address: 'address',
+  portfolioId: 'portfolioId',
   clientType: 'clientType',
-  contractStartDate: 'contractStartDate',
+  companyName: 'companyName',
+  contactPerson: 'contactPerson',
   contractEndDate: 'contractEndDate',
+  contractStartDate: 'contractStartDate',
+  isActive: 'isActive',
   monthlyBudget: 'monthlyBudget',
   notes: 'notes',
-  isActive: 'isActive',
-  isDraft: 'isDraft',
-  portfolioId: 'portfolioId',
-  accountManagerId: 'accountManagerId'
+  isDraft: 'isDraft'
 };
 
 exports.Prisma.ServiceScalarFieldEnum = {
   id: 'id',
   serviceName: 'serviceName',
   description: 'description',
+  portfolioId: 'portfolioId',
   iconUrl: 'iconUrl',
   source: 'source',
-  serviceType: 'serviceType',
   externalId: 'externalId',
   lastSyncedAt: 'lastSyncedAt',
-  portfolioId: 'portfolioId'
+  serviceType: 'serviceType'
 };
 
 exports.Prisma.SubServiceScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  categoryId: 'categoryId',
   description: 'description',
   price: 'price',
   currency: 'currency',
   features: 'features',
   externalId: 'externalId',
-  sortOrder: 'sortOrder',
-  categoryId: 'categoryId'
+  sortOrder: 'sortOrder'
 };
 
 exports.Prisma.PortfolioScalarFieldEnum = {
@@ -237,18 +239,18 @@ exports.Prisma.PortfolioScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   name: 'name',
-  slug: 'slug',
-  description: 'description',
   location: 'location',
   phone: 'phone',
+  isActive: 'isActive',
+  description: 'description',
+  customDomain: 'customDomain',
   logoUrl: 'logoUrl',
-  iconLogoUrl: 'iconLogoUrl',
-  usesRootLogin: 'usesRootLogin',
-  slugClearedOnce: 'slugClearedOnce',
   primaryColor: 'primaryColor',
   secondaryColor: 'secondaryColor',
-  customDomain: 'customDomain',
-  isActive: 'isActive'
+  slug: 'slug',
+  iconLogoUrl: 'iconLogoUrl',
+  slugClearedOnce: 'slugClearedOnce',
+  usesRootLogin: 'usesRootLogin'
 };
 
 exports.Prisma.ClientSubServiceScalarFieldEnum = {
@@ -267,22 +269,23 @@ exports.Prisma.ClientServiceScalarFieldEnum = {
 exports.Prisma.TaskScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
   description: 'description',
   status: 'status',
   priority: 'priority',
+  department: 'department',
   deadline: 'deadline',
-  progress: 'progress',
-  workflowStage: 'workflowStage',
-  sortOrder: 'sortOrder',
   assgineeId: 'assgineeId',
+  progress: 'progress',
   supervisor: 'supervisor',
   serviceInformation: 'serviceInformation',
   isPersonal: 'isPersonal',
-  projectId: 'projectId',
-  contentRequestId: 'contentRequestId',
-  contentCycleId: 'contentCycleId',
   agreementId: 'agreementId',
+  contentCycleId: 'contentCycleId',
+  contentRequestId: 'contentRequestId',
+  projectId: 'projectId',
+  sortOrder: 'sortOrder',
+  updatedAt: 'updatedAt',
+  workflowStage: 'workflowStage',
   workflowStepId: 'workflowStepId'
 };
 
@@ -367,17 +370,17 @@ exports.Prisma.IncomeServiceAgreementScalarFieldEnum = {
   base: 'base',
   discount: 'discount',
   description: 'description',
+  serviceId: 'serviceId',
+  subServiceId: 'subServiceId',
+  clientId: 'clientId',
+  serviceStatus: 'serviceStatus',
+  projectId: 'projectId',
   packageSnapshot: 'packageSnapshot',
   contractFeatures: 'contractFeatures',
   discountType: 'discountType',
   discountValue: 'discountValue',
   discountAmount: 'discountAmount',
-  finalAmount: 'finalAmount',
-  serviceId: 'serviceId',
-  subServiceId: 'subServiceId',
-  clientId: 'clientId',
-  projectId: 'projectId',
-  serviceStatus: 'serviceStatus'
+  finalAmount: 'finalAmount'
 };
 
 exports.Prisma.ExpenseServiceAgreementScalarFieldEnum = {
@@ -508,15 +511,15 @@ exports.Prisma.ContractScalarFieldEnum = {
   endDate: 'endDate',
   renewalDate: 'renewalDate',
   totalAmount: 'totalAmount',
-  monthlyAmount: 'monthlyAmount',
-  billingDay: 'billingDay',
   paymentTerms: 'paymentTerms',
   status: 'status',
   notes: 'notes',
   clientId: 'clientId',
   projectId: 'projectId',
   portfolioId: 'portfolioId',
-  createdById: 'createdById'
+  createdById: 'createdById',
+  billingDay: 'billingDay',
+  monthlyAmount: 'monthlyAmount'
 };
 
 exports.Prisma.ClientInstallmentScalarFieldEnum = {
@@ -592,13 +595,14 @@ exports.Prisma.RecurringScheduleStepScalarFieldEnum = {
   scheduleId: 'scheduleId',
   dayOfWeek: 'dayOfWeek',
   dayOfMonth: 'dayOfMonth',
-  intervalDays: 'intervalDays',
   stepOrder: 'stepOrder',
   label: 'label',
   contentType: 'contentType',
-  supervisor: 'supervisor',
+  department: 'department',
+  templateId: 'templateId',
   assigneeId: 'assigneeId',
-  templateId: 'templateId'
+  intervalDays: 'intervalDays',
+  supervisor: 'supervisor'
 };
 
 exports.Prisma.RecurringTaskOccurrenceScalarFieldEnum = {
@@ -640,6 +644,7 @@ exports.Prisma.WorkflowTemplateStepScalarFieldEnum = {
   stepOrder: 'stepOrder',
   taskName: 'taskName',
   description: 'description',
+  department: 'department',
   defaultPriority: 'defaultPriority',
   estimatedDays: 'estimatedDays',
   workflowStage: 'workflowStage'
@@ -691,12 +696,11 @@ exports.TaskPriority = exports.$Enums.TaskPriority = {
 exports.WorkflowStage = exports.$Enums.WorkflowStage = {
   pending: 'pending',
   in_progress: 'in_progress',
-  review: 'review',
   completed: 'completed',
   blocked: 'blocked'
 };
 
-exports.EntityType = exports.$Enums.EntityType = {
+exports.Counter_entity = exports.$Enums.Counter_entity = {
   users: 'users',
   tasks: 'tasks',
   clients: 'clients',
@@ -705,7 +709,7 @@ exports.EntityType = exports.$Enums.EntityType = {
   payments: 'payments',
   invoice: 'invoice',
   tax: 'tax',
-  portfolios: 'portfolios',
+  branches: 'branches',
   departments: 'departments',
   projects: 'projects',
   content_requests: 'content_requests',

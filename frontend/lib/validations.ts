@@ -136,8 +136,7 @@ const EditCreateUserFieldsSchema = z.object({
   salary: z
     .string()
     .trim()
-    .min(1, "Salary is required.")
-    .regex(/^\d+(\.\d{1,2})?$/, {
+    .regex(/^(|\d+(\.\d{1,2})?)$/, {
       message: "Salary must be a valid amount, e.g. 500 or 500.00",
     }),
   portfolioId: z.string().optional(),

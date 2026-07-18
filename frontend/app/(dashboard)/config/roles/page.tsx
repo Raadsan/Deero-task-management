@@ -88,6 +88,7 @@ export default function RolesConfigRoute() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [isActive, setIsActive] = useState(true);
+  const [canViewSalary, setCanViewSalary] = useState(false);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [isSaving, setIsSaving] = useState(false);
@@ -126,6 +127,7 @@ export default function RolesConfigRoute() {
     setName("");
     setDescription("");
     setIsActive(true);
+    setCanViewSalary(false);
     setFormOpen(true);
   }
 
@@ -140,6 +142,7 @@ export default function RolesConfigRoute() {
     setName(role.name);
     setDescription(role.description ?? "");
     setIsActive(role.isActive !== false);
+    setCanViewSalary(role.canViewSalary === true);
     setFormOpen(true);
   }
 
@@ -156,11 +159,13 @@ export default function RolesConfigRoute() {
               name: name.trim(),
               description: description.trim(),
               isActive,
+              canViewSalary,
             })
           : await updateConfigRole(selected!.id, {
               name: name.trim(),
               description: description.trim(),
               isActive,
+              canViewSalary,
             });
       if (result.success) {
         toast.success(mode === "create" ? "Role created" : "Role updated");
@@ -342,6 +347,10 @@ export default function RolesConfigRoute() {
                 label="Status"
                 value={<StatusBadge active={viewRole.isActive !== false} />}
               />
+              <ConfigInfoField
+                label="Salary access"
+                value={viewRole.canViewSalary ? "Can view salary" : "Hidden"}
+              />
             </div>
           ) : null}
           <div className={configDialogFooterClass}>
@@ -402,6 +411,18 @@ export default function RolesConfigRoute() {
                 <option value="inactive">Inactive</option>
               </select>
             </div>
+            <label className="flex items-center justify-between rounded-lg border border-zinc-200 px-3 py-3">
+              <span>
+                <span className="block text-sm font-medium text-zinc-700">View staff salary</span>
+                <span className="block text-xs text-zinc-400">Allow this role to see salary fields and values.</span>
+              </span>
+              <input
+                type="checkbox"
+                checked={canViewSalary}
+                onChange={(event) => setCanViewSalary(event.target.checked)}
+                className="size-4 accent-primary"
+              />
+            </label>
           </div>
           <div className={configDialogFooterClass}>
             <Button type="button" variant="outline" onClick={closeForm} disabled={isSaving}>

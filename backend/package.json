@@ -6,11 +6,22 @@
   "scripts": {
     "dev:server": "nodemon --config nodemon.json",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev --prefix ../frontend\"",
-    "start": "node dist/index.js",
+    "start": "node src/index.js",
+    "build": "prisma generate",
+    "postinstall": "prisma generate",
+    "server": "nodemon --config nodemon.json",
+    "client": "npm run dev --prefix ../frontend",
+    "frontend:start": "npm start --prefix ../frontend",
+    "prod": "concurrently npm:start npm:frontend:start",
+    "test": "node --test",
     "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
     "db:push": "prisma db push && prisma generate",
     "db:seed-services": "node src/scripts/seed-services.js",
-    "db:seed-workflows": "node src/scripts/seed-workflow-templates.js"
+    "db:seed-workflows": "node src/scripts/seed-workflow-templates.js",
+    "db:test": "node src/scripts/check-db.js",
+    "create-admin": "node src/scripts/create-admin.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1085.0",

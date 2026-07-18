@@ -13,10 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAllTasks } from "@/lib/actions/task.action";
-import { getAllUsers } from "@/lib/actions/user.action";
-import { authClient } from "@/lib/auth-client";
-import { isBranchScopedRole, normalizeRoleName } from "@/lib/portfolio-access";
+import { getAllTasksClient, getAllUsersClient } from "@/lib/client-read-api";
 import { ROUTES, SWR_CACH_KEYS } from "@/lib/constants";
 import {
   actionBtnDelete,
@@ -69,46 +66,21 @@ export default function TasksManagementPage() {
     setMounted(true);
   }, []);
 
-  const session = authClient.useSession();
-  const user = session.data?.user as
-    | { role?: string; portfolioId?: string | null }
-    | undefined;
-  const normalizedRole = normalizeRoleName(user?.role);
-  const isScopedUser = isBranchScopedRole(normalizedRole);
-  const tasksKey = [
-    SWR_CACH_KEYS.tasks.key,
-    normalizedRole || "guest",
-    user?.portfolioId ?? "all",
-  ].join(":");
-  const usersKey = [
-    "tasks-users-filter",
-    normalizedRole || "guest",
-    user?.portfolioId ?? "all",
-  ].join(":");
-
   const { data: tasksRes, isLoading } = useSWR(
-    session.isPending ? null : tasksKey,
-    getAllTasks,
+    SWR_CACH_KEYS.tasks.key,
+    getAllTasksClient,
   );
   const { data: usersRes } = useSWR(
-    session.isPending ? null : usersKey,
-    getAllUsers,
+    "tasks-users-filter",
+    getAllUsersClient,
   );
 
   const tasksRaw = (tasksRes?.data as Task[]) ?? [];
   const usersRaw = usersRes?.data ?? [];
-  const tasks = useMemo(() => {
-    if (!isScopedUser || !user?.portfolioId) return tasksRaw;
-    return tasksRaw.filter((task) => task.assignedTo?.portfolioId === user.portfolioId);
-  }, [tasksRaw, isScopedUser, user?.portfolioId]);
-  const users = useMemo(() => {
-    if (!isScopedUser || !user?.portfolioId) return usersRaw;
-    return usersRaw.filter(
-      (userItem: { portfolioId?: string | null }) => userItem.portfolioId === user.portfolioId,
-    );
-  }, [usersRaw, isScopedUser, user?.portfolioId]);
+  const tasks = tasksRaw;
+  const users = usersRaw;
 
-  const isTasksLoading = !mounted || session.isPending || isLoading;
+  const isTasksLoading = !mounted || isLoading;
 
   const filteredTasks = useMemo(() => {
     return tasks.filter((task) => {

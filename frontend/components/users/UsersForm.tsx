@@ -97,6 +97,10 @@ export default function UserForm({
 
   const session = authClient.useSession();
   const activeUserRole = session.data?.user.role;
+  const activeRoleId = (session.data?.user as { roleId?: string } | undefined)?.roleId;
+  const canViewSalary =
+    isSuperadminRole(activeUserRole) ||
+    configRoles.find((role) => role.id === activeRoleId)?.canViewSalary === true;
   const [canSetPassword, setCanSetPassword] = useState(false);
 
   useEffect(() => {
@@ -291,7 +295,7 @@ export default function UserForm({
           isModal ? "min-h-0 flex-1 gap-4 overflow-y-auto px-6 pt-5" : "gap-6",
         )}
       >
-        <TextInput
+        {canViewSalary ? <TextInput
           labelId="name"
           labelText="Name"
           type="text"
@@ -300,7 +304,7 @@ export default function UserForm({
           otherProps={{ ...register("name") }}
           errorMessage={errors.name?.message}
           compact={fieldCompact}
-        />
+        /> : null}
         <TextInput
           labelId="email"
           labelText="Email"

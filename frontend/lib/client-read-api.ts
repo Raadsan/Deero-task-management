@@ -1,7 +1,82 @@
-import type { ActionResponse, AllClients } from "./types";
+import type { ActionResponse, AllClients, Task, TaskNotification } from "./types";
 import { formatDate, formatPhoneNumber } from "./utils";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:7003";
+
+export async function getAllTasksClient(): Promise<ActionResponse<Task[]>> {
+  try {
+    const response = await fetch(`${API_URL}/api/tasks`, {
+      credentials: "include",
+      cache: "no-store",
+    });
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+      return { success: false, errors: { message: result.error || "Failed to fetch tasks" } };
+    }
+
+    return {
+      success: true,
+      data: result.data.map((task: any) => ({
+        ...task,
+        assignedTo: task.user?.id
+          ? {
+              id: task.user.id,
+              name: task.user.name ?? "Unassigned",
+              portfolioId: task.user.portfolioId ?? null,
+            }
+          : { id: "", name: "Unassigned", portfolioId: null },
+        isPersonal: Boolean(task.isPersonal),
+        institutions: (task.clientTask ?? []).map((item: any) => ({
+          ...item.Client,
+          services:
+            item.Client?.clientSubService
+              ?.map((entry: any) => entry.subService?.name)
+              .filter(Boolean) ?? [],
+        })),
+      })),
+    };
+  } catch {
+    return { success: false, errors: { message: "Failed to fetch tasks" } };
+  }
+}
+
+export async function getAllUsersClient(): Promise<ActionResponse<any[]>> {
+  try {
+    const response = await fetch(`${API_URL}/api/staffs`, {
+      credentials: "include",
+      cache: "no-store",
+    });
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+      return { success: false, errors: { message: result.error || "Failed to fetch users" } };
+    }
+    return {
+      success: true,
+      data: result.data.map((user: any) => ({
+        ...user,
+        createdAt: formatDate(user.createdAt),
+      })),
+    };
+  } catch {
+    return { success: false, errors: { message: "Failed to fetch users" } };
+  }
+}
+
+export async function getTaskNotificationsClient(
+  userId: string,
+): Promise<ActionResponse<TaskNotification[]>> {
+  try {
+    const response = await fetch(
+      `${API_URL}/api/notifications?userId=${encodeURIComponent(userId)}`,
+      { credentials: "include", cache: "no-store" },
+    );
+    const result = await response.json();
+    if (!response.ok || !result.success) return { success: false, data: [] };
+    return { success: true, data: result.data ?? [] };
+  } catch {
+    return { success: false, data: [] };
+  }
+}
 
 export async function getAllClientsClient(): Promise<ActionResponse<AllClients[]>> {
   try {

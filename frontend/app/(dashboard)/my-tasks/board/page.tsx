@@ -36,6 +36,8 @@ import { cn, resolveTaskDisplayStatus } from "@/lib/utils";
 import {
   BriefcaseBusiness,
   CalendarDays,
+  Check,
+  CheckCircle2,
   ChevronDown,
   Filter,
   Plus,
@@ -50,7 +52,6 @@ import useSWR, { useSWRConfig } from "swr";
 const LANE_NEW_PAGE: Partial<Record<TaskLane, boolean>> = {
   todo: true,
   processing: true,
-  review: true,
   completed: true,
 };
 
@@ -144,7 +145,7 @@ export default function MyTasksBoardRoutePage() {
   );
 
   const lanesDisplay = useMemo(() => {
-    const display: Record<TaskLane, Task[]> = { todo: [], processing: [], review: [], completed: [] };
+    const display: Record<TaskLane, Task[]> = { todo: [], processing: [], completed: [] };
     for (const lane of BOARD_LANES) {
       display[lane] = resolveLaneTasks(lane, normalizedOrder, taskMap);
     }
@@ -223,6 +224,42 @@ export default function MyTasksBoardRoutePage() {
   function onDragEnd() {
     setDragState(null);
     setDropHint(null);
+  }
+
+  function advanceTask(task: Task, fromLane: TaskLane) {
+    if (fromLane === "completed") return;
+    const toLane: TaskLane = fromLane === "todo" ? "processing" : "completed";
+    const progress = progressForLane(toLane, Number(task.progress ?? 0));
+    const status = statusForLane(toLane);
+    const taskId = String(task.id);
+    const snapshot = boardTasks;
+    const orderSnapshot = laneOrderRef.current;
+    const nextTasks = boardTasks.map((item) =>
+      String(item.id) === taskId
+        ? { ...item, progress, status: status as Task["status"] }
+        : item,
+    );
+    const nextTaskMap = new Map(nextTasks.map((item) => [String(item.id), item]));
+    const nextOrder = normalizeLaneOrder(
+      reorderLaneOrder(
+        laneOrderRef.current,
+        taskId,
+        fromLane,
+        toLane,
+        laneOrderRef.current[toLane].length,
+      ),
+      nextTaskMap,
+    );
+
+    setBoardTasks(nextTasks);
+    setLaneOrder(nextOrder);
+    cacheBoardState(nextTasks);
+    void patchMyTask(taskId, { progress, status }).catch(() => {
+      toast.error("Failed to update task");
+      setBoardTasks(snapshot);
+      setLaneOrder(orderSnapshot);
+      cacheBoardState(snapshot);
+    });
   }
 
   const isKanbanView = view === "company" || view === "own";
@@ -324,7 +361,7 @@ export default function MyTasksBoardRoutePage() {
 
       {isKanbanView ? (
         <div className="overflow-x-auto">
-          <div className="flex min-w-max gap-4 lg:grid lg:min-w-0 lg:w-full lg:grid-cols-4">
+          <div className="flex min-w-max gap-4 lg:grid lg:min-w-0 lg:w-full lg:grid-cols-3">
               {BOARD_LANES.map((lane) => {
                 const laneTasks = lanesDisplay[lane];
                 const showNewPage = view === "own" && LANE_NEW_PAGE[lane];
@@ -391,7 +428,6 @@ export default function MyTasksBoardRoutePage() {
                               </div>
                             ) : (
                               laneTasks.map((task, index) => {
-                                const orderNumber = index + 1;
                                 const isDragging = dragState?.taskId === String(task.id);
 
                                 return (
@@ -423,9 +459,27 @@ export default function MyTasksBoardRoutePage() {
                                       )}
                                     >
                                       <div className="flex items-start gap-2.5">
-                                        <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-zinc-100 text-[11px] font-bold text-zinc-600">
-                                          {orderNumber}
-                                        </span>
+                                        <button
+                                          type="button"
+                                          aria-label={lane === "completed" ? "Task completed" : "Advance task"}
+                                          title={lane === "todo" ? "Start task" : lane === "processing" ? "Complete task" : "Completed"}
+                                          onClick={(event) => {
+                                            event.stopPropagation();
+                                            advanceTask(task, lane);
+                                          }}
+                                          className={cn(
+                                            "flex size-6 shrink-0 items-center justify-center rounded-full border transition-colors",
+                                            lane === "completed"
+                                              ? "border-emerald-500 bg-emerald-500 text-white"
+                                              : "border-zinc-300 bg-white text-transparent hover:border-primary hover:text-primary",
+                                          )}
+                                        >
+                                          {lane === "completed" ? (
+                                            <CheckCircle2 className="size-4" />
+                                          ) : (
+                                            <Check className="size-3.5" />
+                                          )}
+                                        </button>
                                         <div className="flex min-w-0 flex-1 items-start justify-between gap-2">
                                           <p className="text-sm leading-snug text-zinc-800">
                                             {taskTitle(task)}
