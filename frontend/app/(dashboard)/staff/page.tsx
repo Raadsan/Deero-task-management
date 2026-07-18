@@ -1,6 +1,7 @@
 "use client";
 
 import ManagementPageShell from "@/components/Shared/ManagementPageShell";
+import ConfirmDialog from "@/components/Shared/ConfirmDialog";
 import UserFormModal from "@/components/users/UserFormModal";
 import UserViewModal from "@/components/users/UserViewModal";
 import UploadDocumentsModal from "@/components/upload/UploadDocumentsModal";
@@ -13,9 +14,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAllUsers } from "@/lib/actions/user.action";
+import { getAllUsers, deleteUserById } from "@/lib/actions/user.action";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {
+  actionBtnDelete,
   actionBtnEdit,
   actionBtnView,
   dashboardCardClass,
@@ -33,9 +35,10 @@ import {
 } from "@/lib/dashboard-ui";
 import { User } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Edit, Eye, FileUp, Plus, Search } from "lucide-react";
+import { Edit, Eye, FileUp, Plus, Search, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import useSWR from "swr";
+import toast from "react-hot-toast";
+import useSWR, { useSWRConfig } from "swr";
 
 const compactSelectClass =
   "h-9 cursor-pointer rounded-md border border-zinc-200 bg-white px-2 text-sm text-zinc-600 outline-none focus:border-primary";
@@ -53,6 +56,7 @@ export default function EmployeesPage() {
 
   const users = (usersRes?.data as UserRow[]) ?? [];
 
+  const { mutate } = useSWRConfig();
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -63,6 +67,24 @@ export default function EmployeesPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [documentsUserId, setDocumentsUserId] = useState<string | undefined>();
   const [documentsOpen, setDocumentsOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  async function handleDelete(userId: string) {
+    setIsDeleting(true);
+    try {
+      const result = await deleteUserById({ userId });
+      if (result.success) {
+        toast.success("Staff member deleted successfully");
+        setDeleteTarget(null);
+        await mutate(SWR_CACH_KEYS.users.key);
+      } else {
+        toast.error(result.errors?.message ?? "Failed to delete staff");
+      }
+    } finally {
+      setIsDeleting(false);
+    }
+  }
 
   const filteredUsers = useMemo(() => {
     const query = search.toLowerCase();
@@ -90,7 +112,7 @@ export default function EmployeesPage() {
   }, [search, pageSize]);
 
   return (
-    <ManagementPageShell title="Staff">
+    <ManagementPageShell title="Staff Management">
       <div className={dashboardCardClass}>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-50 px-6 py-3">
           <div className={cn("flex items-center gap-2", dashboardLabelClass)}>
@@ -258,6 +280,21 @@ export default function EmployeesPage() {
                           >
                             <Edit className="size-4" />
                           </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                              setDeleteTarget({
+                                id: String(user.id),
+                                name: user.name ?? user.email ?? String(user.id),
+                              })
+                            }
+                            className={actionBtnDelete}
+                            title="Delete"
+                          >
+                            <Trash2 className="size-4" />
+                          </Button>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -318,6 +355,16 @@ export default function EmployeesPage() {
         open={documentsOpen}
         onOpenChange={setDocumentsOpen}
         userId={documentsUserId}
+      />
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}
+        title="Delete Staff Member"
+        description={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
+        confirmLabel="Delete"
+        destructive={true}
+        loading={isDeleting}
+        onConfirm={() => deleteTarget && handleDelete(deleteTarget.id)}
       />
     </ManagementPageShell>
   );

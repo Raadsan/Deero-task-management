@@ -2,7 +2,7 @@ import type { ActionResponse } from "./types";
 import type { NavMenuItem } from "./actions/config.action";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:7003";
-const CACHE_MS = 24 * 60 * 60 * 1000;
+const CACHE_MS = 5 * 1000;
 
 export function clearNavMenuClientCache(roleId?: string) {
   if (roleId) {
