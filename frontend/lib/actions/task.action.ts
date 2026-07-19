@@ -4,14 +4,24 @@ import { revalidatePath } from "next/cache";
 import api from "../api";
 import { ROUTES } from "../constants";
 import { handleError } from "../error/handle-error";
-import { ActionResponse, ErrorResponse, Task, TaskNotification } from "../types";
+import {
+  ActionResponse,
+  ErrorResponse,
+  Task,
+  TaskNotification,
+} from "../types";
 import { getUserSession } from "./auth.action";
 
-function mapAssignedTo(user: {
-  id?: string;
-  name?: string;
-  portfolioId?: string | null;
-} | null | undefined) {
+function mapAssignedTo(
+  user:
+    | {
+        id?: string;
+        name?: string;
+        portfolioId?: string | null;
+      }
+    | null
+    | undefined,
+) {
   if (!user?.id) {
     return { id: "", name: "Unassigned", portfolioId: null };
   }
@@ -42,7 +52,9 @@ export async function createTask(task: any): Promise<ActionResponse> {
   }
 }
 
-export async function getTaskById(taskId: string): Promise<ActionResponse<Task>> {
+export async function getTaskById(
+  taskId: string,
+): Promise<ActionResponse<Task>> {
   try {
     const response = await api.get(`/api/tasks/${taskId}`);
     if (response.data.success) {
@@ -53,10 +65,13 @@ export async function getTaskById(taskId: string): Promise<ActionResponse<Task>>
           ...task,
           assignedTo: mapAssignedTo(task.user),
           institutions: task.clientTask.map((ct: any) => ({
-          ...ct.Client,
-          services: ct.Client?.clientSubService?.map((css: any) => css.subService?.name).filter(Boolean) || [],
-        })),
-        } as unknown as Task
+            ...ct.Client,
+            services:
+              ct.Client?.clientSubService
+                ?.map((css: any) => css.subService?.name)
+                .filter(Boolean) || [],
+          })),
+        } as unknown as Task,
       };
     }
     return { success: false, errors: { message: "Task not found" } };
@@ -92,7 +107,10 @@ export async function getAllTasks(): Promise<ActionResponse<Task[]>> {
         isPersonal: Boolean(task.isPersonal),
         institutions: task.clientTask.map((ct: any) => ({
           ...ct.Client,
-          services: ct.Client?.clientSubService?.map((css: any) => css.subService?.name).filter(Boolean) || [],
+          services:
+            ct.Client?.clientSubService
+              ?.map((css: any) => css.subService?.name)
+              .filter(Boolean) || [],
         })),
       }));
       return { success: true, data: tasks as unknown as Task[] };
@@ -118,7 +136,7 @@ export async function deleteTask(taskId: string): Promise<ActionResponse> {
 
 export async function getAssginedTasks(): Promise<ActionResponse<Task[]>> {
   try {
-    const response = await api.get("/api/tasks/assigned/me?scope=personal");
+    const response = await api.get("/api/tasks/assigned/me?scope=all");
     if (response.data.success) {
       const tasks = response.data.data.map((task: any) => ({
         ...task,
@@ -132,10 +150,23 @@ export async function getAssginedTasks(): Promise<ActionResponse<Task[]>> {
       }));
       return { success: true, data: tasks as unknown as Task[] };
     }
-    return { success: false, errors: { message: "Failed to fetch assigned tasks" } };
+    return {
+      success: false,
+      errors: { message: response.data.error ?? "Failed to fetch assigned tasks" },
+    };
   } catch (error) {
     return handleError({ errors: error, type: "server" }) as ErrorResponse;
   }
+}
+
+export async function getMyAssignedTasks(): Promise<Task[]> {
+  const result = await getAssginedTasks();
+  if (!result.success) {
+    // Return empty array but log error — don't throw so SWR shows fallback
+    console.error("[getMyAssignedTasks] Failed:", result.errors?.message);
+    return [];
+  }
+  return result.data ?? [];
 }
 
 export async function getMonthlyDashbaordGraphData({
@@ -149,8 +180,11 @@ export async function getMonthlyDashbaordGraphData({
     const params = new URLSearchParams();
     if (startDate) params.set("startDate", startDate.toISOString());
     if (endDate) params.set("endDate", endDate.toISOString());
-    const response = await api.get(`/api/tasks/graph/monthly?${params.toString()}`);
-    if (response.data.success) return { success: true, data: response.data.data };
+    const response = await api.get(
+      `/api/tasks/graph/monthly?${params.toString()}`,
+    );
+    if (response.data.success)
+      return { success: true, data: response.data.data };
     return { success: false, data: [] };
   } catch (error) {
     return handleError({ errors: error, type: "server" }) as ErrorResponse;
@@ -168,8 +202,11 @@ export async function getYearlyDashbaordGraph({
     const params = new URLSearchParams();
     if (startDate) params.set("startDate", startDate.toISOString());
     if (endDate) params.set("endDate", endDate.toISOString());
-    const response = await api.get(`/api/tasks/graph/yearly?${params.toString()}`);
-    if (response.data.success) return { success: true, data: response.data.data };
+    const response = await api.get(
+      `/api/tasks/graph/yearly?${params.toString()}`,
+    );
+    if (response.data.success)
+      return { success: true, data: response.data.data };
     return { success: false, data: [] };
   } catch (error) {
     return handleError({ errors: error, type: "server" }) as ErrorResponse;
@@ -188,7 +225,8 @@ export async function getDashboardMetricData({
     if (startDate) params.set("startDate", startDate.toISOString());
     if (endDate) params.set("endDate", endDate.toISOString());
     const response = await api.get(`/api/tasks/metrics?${params.toString()}`);
-    if (response.data.success) return { success: true, data: response.data.data };
+    if (response.data.success)
+      return { success: true, data: response.data.data };
     return { success: false, data: [] };
   } catch (error) {
     return handleError({ errors: error, type: "server" }) as ErrorResponse;
@@ -208,15 +246,20 @@ export async function getTasksReport({
     params.set("userIdForTaskReport", userIdForTaskReport);
     if (startDate) params.set("startDate", startDate.toISOString());
     if (endDate) params.set("endDate", endDate.toISOString());
-    
-    const response = await api.get(`/api/tasks/report/data?${params.toString()}`);
-    if (response.data.success) return { success: true, data: response.data.data };
+
+    const response = await api.get(
+      `/api/tasks/report/data?${params.toString()}`,
+    );
+    if (response.data.success)
+      return { success: true, data: response.data.data };
     return { success: false, data: { meta: {}, tasks: [] } };
   } catch (error) {
     return handleError({ errors: error, type: "server" }) as ErrorResponse;
   }
 }
-export async function getTaskNotifications(userId?: string): Promise<ActionResponse<TaskNotification[]>> {
+export async function getTaskNotifications(
+  userId?: string,
+): Promise<ActionResponse<TaskNotification[]>> {
   try {
     let effectiveUserId = userId;
     if (!effectiveUserId) {
@@ -224,8 +267,10 @@ export async function getTaskNotifications(userId?: string): Promise<ActionRespo
       effectiveUserId = session.data?.user.id;
     }
     if (!effectiveUserId) return { success: true, data: [] };
-    
-    const response = await api.get(`/api/notifications?userId=${effectiveUserId}`);
+
+    const response = await api.get(
+      `/api/notifications?userId=${effectiveUserId}`,
+    );
     if (response.data.success) {
       return { success: true, data: response.data.data };
     }
@@ -235,7 +280,9 @@ export async function getTaskNotifications(userId?: string): Promise<ActionRespo
   }
 }
 
-export async function markNotificationAsSeen(notificationId: string): Promise<ActionResponse> {
+export async function markNotificationAsSeen(
+  notificationId: string,
+): Promise<ActionResponse> {
   try {
     const response = await api.put(`/api/notifications/${notificationId}/seen`);
     if (response.data.success) {
@@ -247,7 +294,10 @@ export async function markNotificationAsSeen(notificationId: string): Promise<Ac
   }
 }
 
-export async function updateTaskProgress(taskId: string, progress: number): Promise<ActionResponse> {
+export async function updateTaskProgress(
+  taskId: string,
+  progress: number,
+): Promise<ActionResponse> {
   try {
     const response = await api.put(`/api/tasks/${taskId}`, { progress });
     if (response.data.success) {

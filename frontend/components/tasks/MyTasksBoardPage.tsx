@@ -53,7 +53,11 @@ const LANE_NEW_PAGE: Partial<Record<TaskLane, boolean>> = {
   completed: true,
 };
 
-const VIEW_TABS: { id: BoardView; label: string; icon: typeof BriefcaseBusiness }[] = [
+const VIEW_TABS: {
+  id: BoardView;
+  label: string;
+  icon: typeof BriefcaseBusiness;
+}[] = [
   { id: "company", label: "Company tasks", icon: BriefcaseBusiness },
   { id: "own", label: "My tasks", icon: UserRound },
   { id: "timeline", label: "Timeline", icon: CalendarDays },
@@ -105,7 +109,13 @@ export default function MyTasksBoardPage() {
 
   const filterTasks = useCallback(
     (list: Task[]) =>
-      filterBoardTasks(list, view, search, statusFilter, resolveTaskDisplayStatus),
+      filterBoardTasks(
+        list,
+        view,
+        search,
+        statusFilter,
+        resolveTaskDisplayStatus,
+      ),
     [view, search, statusFilter],
   );
 
@@ -143,7 +153,11 @@ export default function MyTasksBoardPage() {
   );
 
   const lanesDisplay = useMemo(() => {
-    const display: Record<TaskLane, Task[]> = { todo: [], processing: [], completed: [] };
+    const display: Record<TaskLane, Task[]> = {
+      todo: [],
+      processing: [],
+      completed: [],
+    };
     for (const lane of BOARD_LANES) {
       display[lane] = resolveLaneTasks(lane, normalizedOrder, taskMap);
     }
@@ -154,7 +168,9 @@ export default function MyTasksBoardPage() {
     void globalMutate(SWR_CACH_KEYS.myTasksBoard.key, nextTasks, {
       revalidate: false,
     });
-    void globalMutate(SWR_CACH_KEYS.myTasks.key, nextTasks, { revalidate: false });
+    void globalMutate(SWR_CACH_KEYS.myTasks.key, nextTasks, {
+      revalidate: false,
+    });
   }
 
   function handleDropAt(toLane: TaskLane, toIndex: number) {
@@ -168,7 +184,8 @@ export default function MyTasksBoardPage() {
     }
 
     const fromLane =
-      findLaneForTaskId(laneOrderRef.current, dragState.taskId) ?? dragState.fromLane;
+      findLaneForTaskId(laneOrderRef.current, dragState.taskId) ??
+      dragState.fromLane;
     const progress = progressForLane(toLane, Number(task.progress ?? 0));
     const status = statusForLane(toLane);
     const tasksSnapshot = boardTasks;
@@ -240,7 +257,7 @@ export default function MyTasksBoardPage() {
         </button>
         {filterOpen ? (
           <div className="absolute right-0 z-20 mt-1 w-44 rounded-lg border border-zinc-200 bg-white p-2 shadow-md">
-            <label className="mb-1 block text-[10px] font-semibold uppercase text-zinc-400">
+            <label className="mb-1 block text-[10px] font-semibold text-zinc-400 uppercase">
               Status
             </label>
             <select
@@ -267,7 +284,7 @@ export default function MyTasksBoardPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search..."
-          className="h-9 w-full min-w-[160px] rounded-lg border border-zinc-200 bg-white pl-9 pr-3 text-sm outline-none focus:border-primary sm:w-48"
+          className="focus:border-primary h-9 w-full min-w-[160px] rounded-lg border border-zinc-200 bg-white pr-3 pl-9 text-sm outline-none sm:w-48"
         />
       </div>
 
@@ -323,147 +340,159 @@ export default function MyTasksBoardPage() {
 
       {isKanbanView ? (
         <div className="overflow-x-auto">
-          <div className="flex min-w-max gap-4 lg:grid lg:min-w-0 lg:w-full lg:grid-cols-4">
-              {BOARD_LANES.map((lane) => {
-                const laneTasks = lanesDisplay[lane];
-                const showNewPage = view === "own" && LANE_NEW_PAGE[lane];
-                const isColumnActive = dropHint?.lane === lane;
+          <div className="flex min-w-max gap-4 lg:grid lg:w-full lg:min-w-0 lg:grid-cols-4">
+            {BOARD_LANES.map((lane) => {
+              const laneTasks = lanesDisplay[lane];
+              const showNewPage = view === "own" && LANE_NEW_PAGE[lane];
+              const isColumnActive = dropHint?.lane === lane;
 
-                return (
+              return (
+                <div
+                  key={lane}
+                  className={cn(
+                    "flex w-[300px] shrink-0 flex-col lg:w-full lg:shrink",
+                    isColumnActive &&
+                      "ring-primary/20 rounded-xl ring-2 ring-offset-2",
+                  )}
+                  onDragOver={(e) => e.preventDefault()}
+                >
+                  <div className="mb-2 flex items-center gap-2 px-1">
+                    <span
+                      className={cn(
+                        "size-2.5 rounded-full",
+                        laneDotClass(lane),
+                      )}
+                    />
+                    <span className="text-sm font-semibold text-zinc-800">
+                      {laneLabel(lane)}
+                    </span>
+                    <span className="text-sm text-zinc-400">
+                      {laneTasks.length} task{laneTasks.length === 1 ? "" : "s"}
+                    </span>
+                  </div>
+
                   <div
-                    key={lane}
-                    className={cn(
-                      "flex w-[300px] shrink-0 flex-col lg:w-full lg:shrink",
-                      isColumnActive && "rounded-xl ring-2 ring-primary/20 ring-offset-2",
-                    )}
-                    onDragOver={(e) => e.preventDefault()}
+                    className="flex min-h-[440px] flex-col rounded-xl border border-zinc-200 bg-white p-3 shadow-sm"
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      if (!dragState) return;
+                      if (dropHint?.lane !== lane) {
+                        setDropHint({ lane, index: laneTasks.length });
+                      }
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      const index =
+                        dropHint?.lane === lane
+                          ? dropHint.index
+                          : laneTasks.length;
+                      handleDropAt(lane, index);
+                    }}
                   >
-                    <div className="mb-2 flex items-center gap-2 px-1">
-                      <span className={cn("size-2.5 rounded-full", laneDotClass(lane))} />
-                      <span className="text-sm font-semibold text-zinc-800">
-                        {laneLabel(lane)}
-                      </span>
-                      <span className="text-sm text-zinc-400">
-                        {laneTasks.length} task{laneTasks.length === 1 ? "" : "s"}
-                      </span>
-                    </div>
+                    {showLoading ? (
+                      <div className="space-y-2">
+                        {[...Array(3)].map((_, i) => (
+                          <div
+                            key={i}
+                            className="h-12 animate-pulse rounded-lg border border-zinc-100 bg-zinc-50"
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex min-h-0 flex-1 flex-col">
+                          <DropSlot
+                            lane={lane}
+                            index={0}
+                            dropHint={dropHint}
+                            onHint={setDropHint}
+                            onDropAt={handleDropAt}
+                          />
 
-                    <div
-                      className="flex min-h-[440px] flex-col rounded-xl border border-zinc-200 bg-white p-3 shadow-sm"
-                      onDragOver={(e) => {
-                        e.preventDefault();
-                        if (!dragState) return;
-                        if (dropHint?.lane !== lane) {
-                          setDropHint({ lane, index: laneTasks.length });
-                        }
-                      }}
-                      onDrop={(e) => {
-                        e.preventDefault();
-                        const index =
-                          dropHint?.lane === lane ? dropHint.index : laneTasks.length;
-                        handleDropAt(lane, index);
-                      }}
-                    >
-                      {showLoading ? (
-                        <div className="space-y-2">
-                          {[...Array(3)].map((_, i) => (
-                            <div
-                              key={i}
-                              className="h-12 animate-pulse rounded-lg border border-zinc-100 bg-zinc-50"
-                            />
-                          ))}
-                        </div>
-                      ) : (
-                        <>
-                          <div className="flex min-h-0 flex-1 flex-col">
-                            <DropSlot
-                              lane={lane}
-                              index={0}
-                              dropHint={dropHint}
-                              onHint={setDropHint}
-                              onDropAt={handleDropAt}
-                            />
+                          {laneTasks.length === 0 ? (
+                            <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed border-zinc-200 px-3 py-10 text-center text-xs text-zinc-400">
+                              Drop tasks here — add as many as you need
+                            </div>
+                          ) : (
+                            laneTasks.map((task, index) => {
+                              const orderNumber = index + 1;
+                              const isDragging =
+                                dragState?.taskId === String(task.id);
 
-                            {laneTasks.length === 0 ? (
-                              <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed border-zinc-200 px-3 py-10 text-center text-xs text-zinc-400">
-                                Drop tasks here — add as many as you need
-                              </div>
-                            ) : (
-                              laneTasks.map((task, index) => {
-                                const orderNumber = index + 1;
-                                const isDragging = dragState?.taskId === String(task.id);
-
-                                return (
-                                  <div key={task.id}>
-                                    <div
-                                      draggable
-                                      onDragStart={(e) => {
-                                        onDragStart(task);
-                                        e.dataTransfer.effectAllowed = "move";
-                                        e.dataTransfer.setData("text/plain", String(task.id));
-                                      }}
-                                      onDragEnd={onDragEnd}
-                                      onDragOver={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        if (dragState) {
-                                          setDropHint({ lane, index: index + 1 });
-                                        }
-                                      }}
-                                      onDrop={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        handleDropAt(lane, index + 1);
-                                      }}
-                                      className={cn(
-                                        "cursor-grab rounded-lg border border-zinc-200 bg-white px-3 py-2.5 shadow-sm transition-[box-shadow,opacity,transform] duration-75 active:cursor-grabbing hover:border-zinc-300 hover:shadow-md",
-                                        isDragging &&
-                                          "border-primary/40 opacity-50 ring-2 ring-primary/20",
-                                      )}
-                                    >
-                                      <div className="flex items-start gap-2.5">
-                                        <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-zinc-100 text-[11px] font-bold text-zinc-600">
-                                          {orderNumber}
-                                        </span>
-                                        <div className="flex min-w-0 flex-1 items-start justify-between gap-2">
-                                          <p className="text-sm leading-snug text-zinc-800">
-                                            {taskTitle(task)}
-                                          </p>
-                                          {priorityBadge(task)}
-                                        </div>
+                              return (
+                                <div key={task.id}>
+                                  <div
+                                    draggable
+                                    onDragStart={(e) => {
+                                      onDragStart(task);
+                                      e.dataTransfer.effectAllowed = "move";
+                                      e.dataTransfer.setData(
+                                        "text/plain",
+                                        String(task.id),
+                                      );
+                                    }}
+                                    onDragEnd={onDragEnd}
+                                    onDragOver={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      if (dragState) {
+                                        setDropHint({ lane, index: index + 1 });
+                                      }
+                                    }}
+                                    onDrop={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      handleDropAt(lane, index + 1);
+                                    }}
+                                    className={cn(
+                                      "cursor-grab rounded-lg border border-zinc-200 bg-white px-3 py-2.5 shadow-sm transition-[box-shadow,opacity,transform] duration-75 hover:border-zinc-300 hover:shadow-md active:cursor-grabbing",
+                                      isDragging &&
+                                        "border-primary/40 ring-primary/20 opacity-50 ring-2",
+                                    )}
+                                  >
+                                    <div className="flex items-start gap-2.5">
+                                      <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-zinc-100 text-[11px] font-bold text-zinc-600">
+                                        {orderNumber}
+                                      </span>
+                                      <div className="flex min-w-0 flex-1 items-start justify-between gap-2">
+                                        <p className="text-sm leading-snug text-zinc-800">
+                                          {taskTitle(task)}
+                                        </p>
+                                        {priorityBadge(task)}
                                       </div>
                                     </div>
-
-                                    <DropSlot
-                                      lane={lane}
-                                      index={index + 1}
-                                      dropHint={dropHint}
-                                      onHint={setDropHint}
-                                      onDropAt={handleDropAt}
-                                    />
                                   </div>
-                                );
-                              })
-                            )}
-                          </div>
 
-                          {showNewPage ? (
-                            <button
-                              type="button"
-                              onClick={() => setCreateOpen(true)}
-                              className="mt-auto shrink-0 rounded-lg px-2 py-2 pt-3 text-left text-xs font-medium text-zinc-400 hover:bg-zinc-50 hover:text-zinc-600"
-                            >
-                              + New page
-                            </button>
-                          ) : null}
-                        </>
-                      )}
-                    </div>
+                                  <DropSlot
+                                    lane={lane}
+                                    index={index + 1}
+                                    dropHint={dropHint}
+                                    onHint={setDropHint}
+                                    onDropAt={handleDropAt}
+                                  />
+                                </div>
+                              );
+                            })
+                          )}
+                        </div>
+
+                        {showNewPage ? (
+                          <button
+                            type="button"
+                            onClick={() => setCreateOpen(true)}
+                            className="mt-auto shrink-0 rounded-lg px-2 py-2 pt-3 text-left text-xs font-medium text-zinc-400 hover:bg-zinc-50 hover:text-zinc-600"
+                          >
+                            + New page
+                          </button>
+                        ) : null}
+                      </>
+                    )}
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
           </div>
+        </div>
       ) : (
         <div className={dashboardCardClass}>
           <div className="flex flex-col gap-3 border-b border-zinc-50 px-6 py-3 sm:flex-row sm:items-center sm:justify-end">
@@ -471,14 +500,23 @@ export default function MyTasksBoardPage() {
           </div>
 
           {view === "timeline" ? (
-            <MyTasksBoardTimeline tasks={filteredTasks} assignableTasks={laneTasksList} />
+            <MyTasksBoardTimeline
+              tasks={filteredTasks}
+              assignableTasks={laneTasksList}
+            />
           ) : (
-            <MyTasksBoardOwnTable tasks={filteredTasks} isLoading={showLoading} />
+            <MyTasksBoardOwnTable
+              tasks={filteredTasks}
+              isLoading={showLoading}
+            />
           )}
         </div>
       )}
 
-      <PersonalTaskCreateDialog open={createOpen} onOpenChange={setCreateOpen} />
+      <PersonalTaskCreateDialog
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+      />
     </ManagementPageShell>
   );
 }
@@ -512,7 +550,7 @@ function DropSlot({
       }}
       className={cn(
         "my-0.5 shrink-0 rounded-full transition-all duration-75",
-        active ? "h-3 bg-primary" : "h-2 bg-transparent",
+        active ? "bg-primary h-3" : "h-2 bg-transparent",
       )}
     />
   );

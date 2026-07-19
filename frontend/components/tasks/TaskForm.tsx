@@ -12,7 +12,7 @@ import { cn, getTaskStatus } from "@/lib/utils";
 import { CreateTaskSchema, TaskSchema } from "@/lib/validations";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useRouter } from "next/navigation";
-import { startTransition, useEffect, useMemo, useState, useTransition } from "react";
+import { startTransition, useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import useSWR from "swr";
@@ -31,13 +31,12 @@ import {
 
 import { authClient } from "@/lib/auth-client";
 import { TaskPriority, TaskStatus } from "@/lib/schema";
-import { Client, Task } from "@/lib/types";
+import { Task } from "@/lib/types";
 import Loader from "../Shared/Loader";
 
 interface Props {
   formType: "edit" | "create" | "own:edit";
   currentTask?: Task;
-  institutions?: Pick<Client, "id" | "institution">[] | undefined;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
@@ -46,21 +45,17 @@ type TaskKind = "client" | "general";
 export default function TaskForm({
   formType,
   currentTask,
-  institutions,
   onSuccess,
   onCancel,
 }: Props) {
-  const instituionId = currentTask ? currentTask.institutions[0] : undefined;
-
-  const getDefaultInsitution = institutions?.find(
-    (each) => each.id === instituionId?.id,
-  );
-
   const isCreate = formType === "create";
   const formSchema = isCreate ? CreateTaskSchema : TaskSchema;
   type FormValues = z.infer<typeof formSchema>;
 
-  const [taskKind, setTaskKind] = useState<TaskKind | null>(null);
+  const hasClientInit = currentTask?.institutions && currentTask.institutions.length > 0;
+  const [taskKind, setTaskKind] = useState<TaskKind | null>(
+    currentTask ? (hasClientInit ? "client" : "general") : null
+  );
 
   const {
     handleSubmit,
@@ -69,16 +64,15 @@ export default function TaskForm({
     reset,
     getValues,
     watch,
-    setError,
     formState: { errors, touchedFields, submitCount },
   } = useForm<FormValues>({
     defaultValues: {
-      taskKind: undefined,
-      taskName: "",
+      taskKind: currentTask ? (hasClientInit ? "client" : "general") : undefined,
+      taskName: currentTask && !hasClientInit ? (currentTask.serviceInformation || "") : "",
       description: currentTask?.description ?? "",
       assigneeId: currentTask?.assignedTo.id ?? "",
       status: (currentTask?.status as TaskStatus) ?? TaskStatus.pending,
-      clientInstitutionId: String(getDefaultInsitution?.id ?? ""),
+      clientInstitutionId: String(currentTask?.institutions?.[0]?.id || ""),
       department: currentTask?.department ?? "",
       priority: currentTask?.priority
         ? (currentTask.priority.charAt(0).toUpperCase() +
@@ -127,7 +121,12 @@ export default function TaskForm({
   useEffect(() => {
     if (!showBranchFields) return;
 
-    if (editBranchId) {
+    const availablePortfolios = branchOptionsRes?.data?.portfolios ?? [];
+    const editBranchIsAvailable = availablePortfolios.some(
+      (portfolio) => String(portfolio.id) === editBranchId,
+    );
+
+    if (editBranchId && editBranchIsAvailable) {
       setSelectedBranchId(editBranchId);
       return;
     }
@@ -135,7 +134,7 @@ export default function TaskForm({
     if (branchOptionsRes?.data?.defaultBranchId) {
       setSelectedBranchId(branchOptionsRes.data.defaultBranchId);
     }
-  }, [showBranchFields, editBranchId, branchOptionsRes?.data?.defaultBranchId]);
+  }, [showBranchFields, editBranchId, branchOptionsRes?.data]);
 
   const { data: assigneesRes } = useSWR(
     selectedBranchId ? ["task-form-assignees", selectedBranchId, formType] : null,
@@ -213,7 +212,11 @@ export default function TaskForm({
 
   useEffect(() => {
     if (currentTask) {
+      const isClient = currentTask.institutions && currentTask.institutions.length > 0;
+      setTaskKind(isClient ? "client" : "general");
       reset({
+        taskKind: isClient ? "client" : "general",
+        taskName: !isClient ? (currentTask.serviceInformation || "") : "",
         description: currentTask.description,
         assigneeId: currentTask.assignedTo.id,
         status: currentTask.status.toLowerCase() as TaskStatus,
@@ -237,6 +240,12 @@ export default function TaskForm({
   }
 
   function handleSubmitForm(data: FormValues) {
+    const taskId = currentTask?.id;
+    if (!isCreate && !taskId) {
+      toast.error("Task data is not loaded yet");
+      return;
+    }
+
     if (showBranchFields && !selectedBranchId) {
       toast.error("Please select a portfolio first");
       return;
@@ -264,6 +273,22 @@ export default function TaskForm({
         if (result?.success) {
           toast.success("Successfully Created Task.");
           refreshTasksList();
+          // Reset form state so next creation starts clean
+          reset({
+            taskKind: undefined,
+            taskName: "",
+            description: "",
+            assigneeId: "",
+            status: TaskStatus.pending,
+            clientInstitutionId: "",
+            department: "",
+            priority: "Normal" as TaskPriority,
+            supervisor: "",
+            deadline: undefined,
+            progress: 0,
+            serviceInformation: "",
+          });
+          setTaskKind(null);
           if (onSuccess) return onSuccess();
           return router.push(ROUTES.tasks);
         }
@@ -272,7 +297,7 @@ export default function TaskForm({
     } else if (formType === "edit") {
       startTransition(async () => {
         const result = await editTask({
-          taskId: currentTask?.id!,
+          taskId,
           deadline: data.deadline,
           status: data.status,
           assgineeId: data.assigneeId,
@@ -295,7 +320,7 @@ export default function TaskForm({
       startTransition(async () => {
         const result = await editTask({
           ownEdit: true,
-          taskId: currentTask?.id!,
+          taskId,
           deadline: data.deadline,
           status: data.status,
           assgineeId: data.assigneeId,

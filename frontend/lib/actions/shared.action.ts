@@ -1,7 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { ROUTES } from "../constants";
 import { handleError } from "../error/handle-error";
 import api from "../api";
 import { ActionResponse, ErrorResponse, Client, User } from "../types";
@@ -235,7 +233,13 @@ export async function getAllAssignees({
       let users = response.data.data;
 
       if (portfolioId) {
-        users = users.filter((u: { portfolioId?: string | null }) => u.portfolioId === portfolioId);
+        const selectedBranch = await getBranchById(portfolioId);
+        const isRootBranch = selectedBranch.data?.usesRootLogin === true;
+        users = users.filter(
+          (u: { portfolioId?: string | null }) =>
+            u.portfolioId === portfolioId ||
+            (isRootBranch && !u.portfolioId),
+        );
       }
 
       if (currentUserRole === "admin") {

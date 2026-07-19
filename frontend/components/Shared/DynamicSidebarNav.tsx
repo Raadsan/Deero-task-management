@@ -27,8 +27,23 @@ type Props = {
 const DEFAULT_MY_TASK_SUBMENUS = [
   { id: "my-tasks-list", title: "My Tasks", url: "/my-tasks", order: 1 },
   { id: "my-tasks-board", title: "My Board", url: "/my-tasks/board", order: 2 },
-  { id: "my-tasks-today", title: "Today Tasks", url: "/my-tasks/today", order: 3 },
+  {
+    id: "my-tasks-today",
+    title: "Today Tasks",
+    url: "/my-tasks/today",
+    order: 3,
+  },
 ];
+
+const DEFAULT_MY_TASKS_MENU: NavMenuItem = {
+  id: "my-tasks-default",
+  title: "My Tasks",
+  url: "/my-tasks",
+  icon: "ShoppingBag",
+  order: 3,
+  isActive: true,
+  subMenus: DEFAULT_MY_TASK_SUBMENUS,
+};
 
 function myTaskSubIcon(url: string) {
   if (url.includes("/board")) {
@@ -41,7 +56,13 @@ function myTaskSubIcon(url: string) {
 }
 
 function usesMyTasksDropdown(role: string) {
-  return role === "superadmin" || role === "portfolio admin";
+  return [
+    "superadmin",
+    "admin",
+    "portfolio admin",
+    "manager",
+    "portfolio manager",
+  ].includes(role);
 }
 
 function menuPathActive(pathname: string, href: string) {
@@ -60,7 +81,11 @@ function dedupeMenus(menus: NavMenuItem[]) {
   });
 }
 
-export default function DynamicSidebarNav({ data, fallback, fallbackMenus = [] }: Props) {
+export default function DynamicSidebarNav({
+  data,
+  fallback,
+  fallbackMenus = [],
+}: Props) {
   const pathname = usePathname();
   const router = useRouter();
   const { setOpenId } = useSidebarAccordion();
@@ -69,7 +94,13 @@ export default function DynamicSidebarNav({ data, fallback, fallbackMenus = [] }
   const normalizedRole = normalizeRoleName(userRole);
 
   const sortedMenus = useMemo(() => {
-    return dedupeMenus([...menus]).sort(
+    const availableMenus = [...menus];
+    const hasMyTasks = availableMenus.some(
+      (menu) => menu.title.trim().toLowerCase() === "my tasks",
+    );
+    if (!hasMyTasks) availableMenus.push(DEFAULT_MY_TASKS_MENU);
+
+    return dedupeMenus(availableMenus).sort(
       (a, b) => (a.order ?? 0) - (b.order ?? 0),
     );
   }, [menus]);
@@ -87,7 +118,9 @@ export default function DynamicSidebarNav({ data, fallback, fallbackMenus = [] }
     const menuRefs = sortedMenus.length
       ? sortedMenus.map((menu) => {
           const sourceItems = menu.items || menu.subMenus || [];
-          const items = [...sourceItems].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+          const items = [...sourceItems].sort(
+            (a, b) => (a.order ?? 0) - (b.order ?? 0),
+          );
           return {
             id: menu.id,
             href: menu.url,
@@ -116,7 +149,6 @@ export default function DynamicSidebarNav({ data, fallback, fallbackMenus = [] }
     if (isLegacySidebarRole(userRole)) {
       return <>{fallback}</>;
     }
-    return null;
   }
 
   return (
@@ -128,12 +160,20 @@ export default function DynamicSidebarNav({ data, fallback, fallbackMenus = [] }
           (a, b) => (a.order ?? 0) - (b.order ?? 0),
         );
         const isMyTasksMenu = menu.title.toLowerCase() === "my tasks";
-        const dropdownMyTasks = isMyTasksMenu && usesMyTasksDropdown(normalizedRole);
+        const dropdownMyTasks =
+          isMyTasksMenu && usesMyTasksDropdown(normalizedRole);
 
         if (isMyTasksMenu && !dropdownMyTasks) {
           const flatItems = sortedSource.length
             ? sortedSource
-            : [{ id: menu.id, title: menu.title, url: menu.url, order: menu.order ?? 0 }];
+            : [
+                {
+                  id: menu.id,
+                  title: menu.title,
+                  url: menu.url,
+                  order: menu.order ?? 0,
+                },
+              ];
 
           return flatItems.map((sub) => (
             <SideBarItem

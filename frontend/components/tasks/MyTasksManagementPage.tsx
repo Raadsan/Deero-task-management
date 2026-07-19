@@ -2,6 +2,7 @@
 
 import ManagementPageShell from "@/components/Shared/ManagementPageShell";
 import ProcessTaskConfirmModal from "@/components/tasks/ProcessTaskConfirmModal";
+import TaskViewModal from "@/components/tasks/TaskViewModal";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -12,10 +13,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { editTask } from "@/lib/actions/task.action";
-import { fetchMyPersonalTasks, fetchMyTasks } from "@/lib/my-tasks-client";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import { normalizeMyTasksList } from "@/lib/my-task-filters";
+import { fetchMyTasks } from "@/lib/my-tasks-client";
 import {
+  actionBtnView,
   dashboardCardClass,
   dashboardLabelClass,
   dashboardPaginationClass,
@@ -34,7 +36,7 @@ import {
 } from "@/lib/dashboard-ui";
 import { Task } from "@/lib/types";
 import { cn, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
-import { Search } from "lucide-react";
+import { Gauge, Eye, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import useSWR from "swr";
@@ -48,11 +50,18 @@ const compactInputClass =
 
 export default function MyTasksManagementPage() {
   const { data: tasksRaw, isLoading } = useSWR(
-    SWR_CACH_KEYS.myTasks.key,
-    fetchMyPersonalTasks,
-    { fallbackData: [], revalidateOnFocus: false, dedupingInterval: 30_000 },
+    SWR_CACH_KEYS.myTasksList.key,
+    fetchMyTasks,
+    {
+      fallbackData: [],
+      revalidateOnMount: true,
+      revalidateOnFocus: false,
+      dedupingInterval: 0,
+    },
   );
   const { mutate } = useSWRConfig();
+
+  const [mounted, setMounted] = useState(false);
 
   const tasks = normalizeMyTasksList(tasksRaw);
   const [search, setSearch] = useState("");
@@ -60,6 +69,8 @@ export default function MyTasksManagementPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [processTarget, setProcessTarget] = useState<Task | null>(null);
+  const [viewOpen, setViewOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null);
 
   const filteredTasks = useMemo(() => {
@@ -94,6 +105,12 @@ export default function MyTasksManagementPage() {
     return filteredTasks.slice(start, start + pageSize);
   }, [filteredTasks, currentPage, pageSize]);
 
+  const showLoading = !mounted || isLoading;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     setCurrentPage(1);
   }, [search, pageSize, statusFilter]);
@@ -102,28 +119,31 @@ export default function MyTasksManagementPage() {
     setProcessTarget(task);
   }
 
-  async function confirmProcessTask() {
+  async function confirmProcessTask(nextProgress: number) {
     if (!processTarget) return;
+    const progress = Math.min(100, Math.max(0, Number(nextProgress)));
+    const isCompleted = progress >= 100;
+
     setUpdatingTaskId(String(processTarget.id));
     try {
       const result = await editTask({
         taskId: processTarget.id,
-        status: "pending",
-        progress: Math.max(20, Number(processTarget.progress ?? 0)),
+        status: isCompleted ? "completed" : "pending",
+        progress,
       });
       if (result.success) {
-        toast.success("Task moved to processing");
+        toast.success(isCompleted ? "Task completed" : "Task progress saved");
         await mutate(SWR_CACH_KEYS.myTasks.key);
+        await mutate(SWR_CACH_KEYS.myTasksBoard.key);
         await mutate(SWR_CACH_KEYS.tasks.key);
         setProcessTarget(null);
       } else {
-        toast.error(result.errors?.message ?? "Failed to process task");
+        toast.error(result.errors?.message ?? "Failed to update task");
       }
     } finally {
       setUpdatingTaskId(null);
     }
   }
-
   return (
     <ManagementPageShell title="My tasks">
       <div className={dashboardCardClass}>
@@ -175,28 +195,40 @@ export default function MyTasksManagementPage() {
             <Table className="w-full">
               <TableHeader className={dashboardTableHeaderClass}>
                 <TableRow className={dashboardTableHeadRowClass}>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
+                  <TableHead
+                    className={cn(dashboardTableHeadClass, "text-left")}
+                  >
                     No
                   </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
+                  <TableHead
+                    className={cn(dashboardTableHeadClass, "text-left")}
+                  >
                     Task
                   </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
+                  <TableHead
+                    className={cn(dashboardTableHeadClass, "text-left")}
+                  >
                     Progress
                   </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
+                  <TableHead
+                    className={cn(dashboardTableHeadClass, "text-left")}
+                  >
                     Deadline
                   </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-right")}>
+                  <TableHead
+                    className={cn(dashboardTableHeadClass, "text-right")}
+                  >
                     Status
                   </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-right")}>
+                  <TableHead
+                    className={cn(dashboardTableHeadClass, "text-right")}
+                  >
                     Action
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {isLoading ? (
+                {showLoading ? (
                   [...Array(5)].map((_, i) => (
                     <TableRow key={i} className="h-14 animate-pulse">
                       {[...Array(6)].map((_, j) => (
@@ -210,7 +242,7 @@ export default function MyTasksManagementPage() {
                   <TableRow>
                     <TableCell
                       colSpan={6}
-                      className="px-6 py-10 text-center text-muted-foreground"
+                      className="text-muted-foreground px-6 py-10 text-center"
                     >
                       No tasks found
                     </TableCell>
@@ -218,11 +250,13 @@ export default function MyTasksManagementPage() {
                 ) : (
                   paginatedTasks.map((task) => {
                     const displayStatus = resolveTaskDisplayStatus(task);
-                    const isPending = displayStatus === "pending";
                     const busy = updatingTaskId === String(task.id);
 
                     return (
-                      <TableRow key={task.id} className={dashboardTableBodyRowClass}>
+                      <TableRow
+                        key={task.id}
+                        className={dashboardTableBodyRowClass}
+                      >
                         <TableCell className={dashboardTableCellClass}>
                           <span className={dashboardTableIdClass}>
                             {String(task.id).slice(0, 8)}
@@ -261,18 +295,32 @@ export default function MyTasksManagementPage() {
                         <TableCell
                           className={cn(dashboardTableCellClass, "text-right")}
                         >
-                          {isPending ? (
+                          <div className="flex justify-end gap-2">
                             <Button
                               type="button"
+                              variant="ghost"
                               size="sm"
+                              className={actionBtnView}
+                              title="View"
+                              onClick={() => {
+                                setSelectedTask(task);
+                                setViewOpen(true);
+                              }}
+                            >
+                              <Eye className="size-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              title="Update progress"
                               disabled={busy}
                               onClick={() => openProcessDialog(task)}
+                              className={actionBtnView}
                             >
-                              Process
+                              <Gauge className="size-4" />
                             </Button>
-                          ) : (
-                            <span className="text-xs text-zinc-400">—</span>
-                          )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     );
@@ -313,6 +361,12 @@ export default function MyTasksManagementPage() {
           </div>
         </div>
       </div>
+
+      <TaskViewModal
+        open={viewOpen}
+        onOpenChange={setViewOpen}
+        task={selectedTask}
+      />
 
       <ProcessTaskConfirmModal
         open={Boolean(processTarget)}

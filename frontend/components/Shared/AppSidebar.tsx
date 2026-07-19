@@ -22,7 +22,6 @@ import {
   BarChart3,
   BriefcaseBusiness,
   Building2,
-  FolderTree,
   Handshake,
   LayoutDashboard,
   Layers,
@@ -58,7 +57,7 @@ const NAVIGATION_LINKS: SidebarItem[] = [
     name: "My Tasks",
     href: ROUTES["my-tasks"] || "/my-tasks",
     icon: <ShoppingBag className="size-[18px] shrink-0" strokeWidth={2} />,
-    role: [UserRole.user, UserRole.admin],
+    role: [UserRole.user, UserRole.admin, UserRole.superadmin],
   },
   {
     name: "Client Management",

@@ -1,5 +1,6 @@
 "use client";
 
+import { usePermissions } from "@/context/PermissionContext";
 import ManagementPageShell from "@/components/Shared/ManagementPageShell";
 import ConfirmDialog from "@/components/Shared/ConfirmDialog";
 import UserFormModal from "@/components/users/UserFormModal";
@@ -49,6 +50,11 @@ const compactInputClass =
 type UserRow = User & { id: string };
 
 export default function EmployeesPage() {
+  const { canView, canAdd, canEdit, canDelete } = usePermissions();
+  const mayView = canView("/staff");
+  const mayAdd = canAdd("/staff");
+  const mayEdit = canEdit("/staff");
+  const mayDelete = canDelete("/staff");
   const { data: usersRes, isLoading } = useSWR(
     SWR_CACH_KEYS.users.key,
     getAllUsers,
@@ -67,7 +73,10 @@ export default function EmployeesPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [documentsUserId, setDocumentsUserId] = useState<string | undefined>();
   const [documentsOpen, setDocumentsOpen] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   async function handleDelete(userId: string) {
@@ -131,8 +140,6 @@ export default function EmployeesPage() {
 
           <div className="min-w-4 flex-1" />
 
-          
-
           <div className="group relative w-52">
             <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-400" />
             <input
@@ -144,14 +151,16 @@ export default function EmployeesPage() {
             />
           </div>
 
-          <Button
-            type="button"
-            onClick={() => setCreateOpen(true)}
-            className="h-9 gap-2"
-          >
-            <Plus className="size-4" />
-            Add Staff
-          </Button>
+          {mayAdd ? (
+            <Button
+              type="button"
+              onClick={() => setCreateOpen(true)}
+              className="h-9 gap-2"
+            >
+              <Plus className="size-4" />
+              Add Staff
+            </Button>
+          ) : null}
         </div>
 
         <div className={dashboardTableWrapClass}>
@@ -241,60 +250,69 @@ export default function EmployeesPage() {
                         className={cn(dashboardTableCellClass, "text-right")}
                       >
                         <div className="flex justify-end gap-1">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setViewUserId(String(user.id));
-                              setViewOpen(true);
-                            }}
-                            className={actionBtnView}
-                            title="View"
-                          >
-                            <Eye className="size-4" />
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setDocumentsUserId(String(user.id));
-                              setDocumentsOpen(true);
-                            }}
-                            className={actionBtnView}
-                            title="Employee documents"
-                          >
-                            <FileUp className="size-4" />
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              setEditUserId(String(user.id));
-                              setEditOpen(true);
-                            }}
-                            className={actionBtnEdit}
-                            title="Edit"
-                          >
-                            <Edit className="size-4" />
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              setDeleteTarget({
-                                id: String(user.id),
-                                name: user.name ?? user.email ?? String(user.id),
-                              })
-                            }
-                            className={actionBtnDelete}
-                            title="Delete"
-                          >
-                            <Trash2 className="size-4" />
-                          </Button>
+                          {mayView ? (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setViewUserId(String(user.id));
+                                setViewOpen(true);
+                              }}
+                              className={actionBtnView}
+                              title="View"
+                            >
+                              <Eye className="size-4" />
+                            </Button>
+                          ) : null}
+                          {mayAdd ? (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setDocumentsUserId(String(user.id));
+                                setDocumentsOpen(true);
+                              }}
+                              className={actionBtnView}
+                              title="Employee documents"
+                            >
+                              <FileUp className="size-4" />
+                            </Button>
+                          ) : null}
+                          {mayEdit ? (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setEditUserId(String(user.id));
+                                setEditOpen(true);
+                              }}
+                              className={actionBtnEdit}
+                              title="Edit"
+                            >
+                              <Edit className="size-4" />
+                            </Button>
+                          ) : null}
+                          {mayDelete ? (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                setDeleteTarget({
+                                  id: String(user.id),
+                                  name:
+                                    user.name ?? user.email ?? String(user.id),
+                                })
+                              }
+                              className={actionBtnDelete}
+                              title="Delete"
+                            >
+                              <Trash2 className="size-4" />
+                            </Button>
+                          ) : null}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -358,7 +376,9 @@ export default function EmployeesPage() {
       />
       <ConfirmDialog
         open={!!deleteTarget}
-        onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
         title="Delete Staff Member"
         description={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
         confirmLabel="Delete"

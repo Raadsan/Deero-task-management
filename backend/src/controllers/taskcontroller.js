@@ -43,7 +43,8 @@ export const getAllTasks = async (req, res) => {
 export const getMyTasks = async (req, res) => {
   try {
     const scope = getScope(req);
-    const userId = scope.user?.id;
+    // Fallback: if scope.user is null (transient error), use raw session user
+    const userId = scope.user?.id ?? req.session?.user?.id;
     if (!userId) {
       return res.status(401).json({ success: false, error: "Unauthorized" });
     }

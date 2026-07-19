@@ -36,6 +36,8 @@ export const RegisterSchema = loginSchema.extend({
 });
 
 export const TaskSchema = z.object({
+  taskKind: z.enum(["client", "general"]).optional(),
+  taskName: z.string().optional(),
   description: z
     .string()
     .min(6, "Title is required.")

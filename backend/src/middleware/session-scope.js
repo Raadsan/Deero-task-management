@@ -34,9 +34,19 @@ async function resolveCachedScope(req) {
   return promise;
 }
 
+// Paths that are user-personal and must never be served from response cache
+const PERSONAL_ENDPOINTS = ["/assigned/", "/assigned/me", "/mine"];
+
+function isPersonalEndpoint(url) {
+  return PERSONAL_ENDPOINTS.some((p) => url.includes(p));
+}
+
 export async function attachSessionScope(req, res, next) {
   const isRead = req.method === "GET";
-  const cacheKey = isRead ? `${requestKey(req)}:${req.originalUrl}` : null;
+  // Never cache user-specific task endpoints — they must always be fresh
+  const cacheKey = (isRead && !isPersonalEndpoint(req.originalUrl))
+    ? `${requestKey(req)}:${req.originalUrl}`
+    : null;
   if (cacheKey) {
     const cached = responseCache.get(cacheKey);
     if (cached && Date.now() - cached.createdAt < RESPONSE_CACHE_MS) {

@@ -28,6 +28,9 @@ async function loadTaskFormData(
   }
 
   const taskResult = await getTaskById(taskId!);
+  if (!taskResult.success || !taskResult.data) {
+    throw new Error(taskResult.errors?.message ?? "Failed to load task");
+  }
   return {
     currentTask: taskResult.data,
   };
@@ -40,9 +43,13 @@ export default function TaskFormModal({
   taskId,
   variant = "default",
 }: Props) {
-  const { data, isLoading } = useSWR(
+  const { data, isLoading, error } = useSWR(
     open ? ["task-form-modal", mode, taskId ?? "new", variant] : null,
     () => loadTaskFormData(mode, taskId),
+    {
+      revalidateOnMount: true,
+      dedupingInterval: 0,
+    },
   );
 
   const formType =
@@ -75,8 +82,13 @@ export default function TaskFormModal({
                 <div key={i} className="h-10 rounded-lg bg-zinc-100" />
               ))}
             </div>
+          ) : error ? (
+            <div className="px-6 py-10 text-center text-sm text-red-600">
+              {error instanceof Error ? error.message : "Failed to load task"}
+            </div>
           ) : (
             <TaskForm
+              key={data?.currentTask?.id ?? `${mode}-new`}
               formType={formType}
               currentTask={data?.currentTask}
               onSuccess={() => onOpenChange(false)}

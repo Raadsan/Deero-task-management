@@ -236,7 +236,13 @@ export const SWR_CACH_KEYS = {
     key: "/tasks/data",
   },
   myTasks: {
-    key: "/mytasks/personal/data",
+    key: "/mytasks/all/data",
+  },
+  myTasksList: {
+    key: "/mytasks/list/data",
+  },
+  myTasksToday: {
+    key: "/mytasks/today/data",
   },
   myTasksCompany: {
     key: "/mytasks/company/data",

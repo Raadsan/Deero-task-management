@@ -1,14 +1,21 @@
 import { Task } from "@/lib/types";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:7003";
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:7003").replace(/['\"]/g, "");
 
-const MY_TASKS_BASE = `${API_URL}/api/tasks/assigned/me`;
+
 
 export type MyTasksScope = "personal" | "company" | "all";
 
 function mapMyTask(task: Record<string, unknown>): Task {
-  const user = task.user as { id?: string; name?: string; portfolioId?: string | null } | null;
-  const clientTask = (task.clientTask as Array<{ Client?: { id?: string; institution?: string } }>) ?? [];
+  const user = task.user as {
+    id?: string;
+    name?: string;
+    portfolioId?: string | null;
+  } | null;
+  const clientTask =
+    (task.clientTask as Array<{
+      Client?: { id?: string; institution?: string };
+    }>) ?? [];
 
   return {
     ...(task as unknown as Task),
@@ -28,13 +35,18 @@ function mapMyTask(task: Record<string, unknown>): Task {
 }
 
 async function fetchMyTasksByScope(scope: MyTasksScope): Promise<Task[]> {
-  const url =
-    scope === "all" ? MY_TASKS_BASE : `${MY_TASKS_BASE}?scope=${scope}`;
+  // Must use the full backend URL — /api/my-tasks does NOT exist in Next.js routes
+  const url = `${API_URL}/api/tasks/assigned/me?scope=${scope}`;
 
   const response = await fetch(url, {
     credentials: "include",
     cache: "no-store",
   });
+
+  if (!response.ok) {
+    const text = await response.text().catch(() => "");
+    throw new Error(`Failed to load tasks (${response.status}): ${text}`);
+  }
 
   const data = (await response.json()) as {
     success?: boolean;
@@ -43,7 +55,7 @@ async function fetchMyTasksByScope(scope: MyTasksScope): Promise<Task[]> {
     data?: Record<string, unknown>[];
   };
 
-  if (!response.ok || !data.success || !data.data) {
+  if (!data.success || !data.data) {
     throw new Error(data.error || data.message || "Failed to load tasks");
   }
 
@@ -64,6 +76,7 @@ export async function fetchMyCompanyTasks(): Promise<Task[]> {
 export async function fetchMyTasks(): Promise<Task[]> {
   return fetchMyTasksByScope("all");
 }
+
 
 export async function patchMyTask(
   taskId: string,

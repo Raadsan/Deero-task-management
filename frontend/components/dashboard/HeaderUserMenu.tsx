@@ -17,7 +17,7 @@ import { UserRole } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 import { ChevronDown, LogOut, Settings, User as UserIcon } from "lucide-react";
 import Link from "next/link";
-import { useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import toast from "react-hot-toast";
 
 interface Props {
@@ -30,7 +30,12 @@ interface Props {
 }
 
 export default function HeaderUserMenu({ className, user }: Props) {
+  const [mounted, setMounted] = useState(false);
   const [transition, startTransition] = useTransition();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   async function handleSignOut() {
     if (transition) return;
@@ -45,7 +50,7 @@ export default function HeaderUserMenu({ className, user }: Props) {
     });
   }
 
-  if (!user) {
+  if (!mounted || !user) {
     return (
       <div
         className={cn(
@@ -72,11 +77,11 @@ export default function HeaderUserMenu({ className, user }: Props) {
             className,
           )}
         >
-          <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
+          <div className="bg-primary flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white">
             {user.name?.charAt(0)?.toUpperCase() || "U"}
           </div>
           <div className="hidden min-w-0 text-left sm:block">
-            <p className="truncate text-[13px] font-bold leading-tight tracking-tight text-zinc-900">
+            <p className="truncate text-[13px] leading-tight font-bold tracking-tight text-zinc-900">
               {displayName}
             </p>
             <p className="truncate text-[10px] font-medium tracking-wide text-zinc-400 uppercase">
@@ -92,14 +97,14 @@ export default function HeaderUserMenu({ className, user }: Props) {
       >
         <DropdownMenuLabel className="p-0 font-normal">
           <div className="flex items-center gap-3 px-3 py-3">
-            <div className="flex size-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white">
+            <div className="bg-primary flex size-9 items-center justify-center rounded-full text-sm font-semibold text-white">
               {user.name?.charAt(0)?.toUpperCase() || "U"}
             </div>
             <div className="grid min-w-0 flex-1 text-left">
-              <span className="truncate text-sm font-semibold text-foreground">
+              <span className="text-foreground truncate text-sm font-semibold">
                 {user.name}
               </span>
-              <span className="truncate text-xs text-muted-foreground">
+              <span className="text-muted-foreground truncate text-xs">
                 {user.email}
               </span>
             </div>
@@ -132,7 +137,7 @@ export default function HeaderUserMenu({ className, user }: Props) {
         <DropdownMenuSeparator className="bg-zinc-200" />
         <DropdownMenuItem
           disabled={transition}
-          className="cursor-pointer rounded-md text-destructive focus:bg-red-50 focus:text-destructive"
+          className="text-destructive focus:text-destructive cursor-pointer rounded-md focus:bg-red-50"
           onClick={handleSignOut}
         >
           <LogOut className="size-4" />

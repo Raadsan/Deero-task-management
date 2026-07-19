@@ -45,27 +45,78 @@ export async function getAdminDashboardBundle(): Promise<
   ActionResponse<AdminDashboardBundle>
 > {
   try {
-    const [metricsRes, chartRes, sourcesRes, paymentRes, tasksRes] =
-      await Promise.all([
-        api.get("/api/tasks/metrics"),
-        api.get("/api/tasks/graph/monthly"),
-        api.get("/api/clients/sources/info"),
-        api.get("/api/transactions/monthly-data", {
-          params: { startDate: "", endDate: "" },
-        }),
-        api.get("/api/tasks"),
-      ]);
+    const [metricsRes, chartRes, tasksRes] = await Promise.all([
+      api.get("/api/tasks/metrics"),
+      api.get("/api/tasks/graph/monthly"),
+      api.get("/api/tasks"),
+    ]);
 
     return {
       success: true,
       data: {
         metrics: metricsRes.data?.success ? metricsRes.data.data : [],
         chart: chartRes.data?.success ? chartRes.data.data : [],
-        sources: sourcesRes.data?.success ? sourcesRes.data.data : [],
-        payment: paymentRes.data?.success ? paymentRes.data.data : [],
+        sources: [],
+        payment: [],
         tasks: tasksRes.data?.success
-          ? tasksRes.data.data.map((task: unknown) => mapTask(task as Parameters<typeof mapTask>[0]))
+          ? tasksRes.data.data.map((task: unknown) =>
+              mapTask(task as Parameters<typeof mapTask>[0]),
+            )
           : [],
+      },
+    };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}
+
+// --- Staff personal dashboard ---
+export type MyDashboardBundle = {
+  tasks: Task[];
+};
+
+export async function getMyDashboardBundle(): Promise<
+  ActionResponse<MyDashboardBundle>
+> {
+  try {
+    const res = await api.get("/api/tasks/assigned/me?scope=all");
+    const tasks: Task[] = res.data?.success
+      ? (res.data.data as Parameters<typeof mapTask>[0][]).map(mapTask)
+      : [];
+    return { success: true, data: { tasks } };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}
+
+// --- Manager dashboard ---
+export type ManagerDashboardBundle = {
+  myTasks: Task[];
+  allTasks: Task[];
+  chart: unknown[];
+};
+
+export async function getManagerDashboardBundle(): Promise<
+  ActionResponse<ManagerDashboardBundle>
+> {
+  try {
+    const [myRes, allRes, chartRes] = await Promise.all([
+      api.get("/api/tasks/assigned/me?scope=all"),
+      api.get("/api/tasks"),
+      api.get("/api/tasks/graph/monthly"),
+    ]);
+    const myTasks: Task[] = myRes.data?.success
+      ? (myRes.data.data as Parameters<typeof mapTask>[0][]).map(mapTask)
+      : [];
+    const allTasks: Task[] = allRes.data?.success
+      ? (allRes.data.data as Parameters<typeof mapTask>[0][]).map(mapTask)
+      : [];
+    return {
+      success: true,
+      data: {
+        myTasks,
+        allTasks,
+        chart: chartRes.data?.success ? chartRes.data.data : [],
       },
     };
   } catch (error) {
