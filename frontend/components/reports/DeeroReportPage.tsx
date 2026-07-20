@@ -49,6 +49,7 @@ import {
   CircleAlert,
   ClipboardCheck,
   Download,
+  Eye,
   FileText,
   Handshake,
   Printer,
@@ -57,6 +58,7 @@ import {
   Timer,
   Users,
   WalletCards,
+  X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
@@ -113,6 +115,65 @@ const reportMeta = {
 
 function formatMoney(amount?: number) {
   return `$${Number(amount || 0).toFixed(2)}`;
+}
+
+function formatDateTime(value?: string | Date | null) {
+  if (!value) return "N/A";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "N/A";
+  return date.toLocaleString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function taskDueDate(task: any) {
+  return task.deadline ?? task.dueDate ?? null;
+}
+
+function taskExtraMinutes(task: any) {
+  return Math.max(0, Number(task.extraTimeMinutes) || 0);
+}
+
+function taskFinalDueDate(task: any) {
+  const due = taskDueDate(task);
+  if (!due) return null;
+  const date = new Date(due);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Date(date.getTime() + taskExtraMinutes(task) * 60_000);
+}
+
+function formatExtraTime(task: any) {
+  const totalMinutes = taskExtraMinutes(task);
+  if (!totalMinutes) return "No extra time";
+  const days = Math.floor(totalMinutes / 1440);
+  const hours = Math.floor((totalMinutes % 1440) / 60);
+  const minutes = totalMinutes % 60;
+  return [days ? `${days}d` : "", hours ? `${hours}h` : "", minutes ? `${minutes}m` : ""]
+    .filter(Boolean)
+    .join(" ");
+}
+
+function taskRemaining(task: any) {
+  const due = taskFinalDueDate(task);
+  if (!due) return "N/A";
+  const dueTime = due.getTime();
+  const completedAt = task.status === "completed" ? (task.completedAt ?? task.updatedAt) : null;
+  const comparisonTime = completedAt ? new Date(completedAt).getTime() : Date.now();
+  if (Number.isNaN(dueTime) || Number.isNaN(comparisonTime)) return "—";
+
+  const difference = dueTime - comparisonTime;
+  const absoluteMinutes = Math.floor(Math.abs(difference) / 60_000);
+  const days = Math.floor(absoluteMinutes / 1440);
+  const hours = Math.floor((absoluteMinutes % 1440) / 60);
+  const minutes = absoluteMinutes % 60;
+  const duration = [days ? `${days}d` : "", hours ? `${hours}h` : "", `${minutes}m`]
+    .filter(Boolean)
+    .join(" ");
+  return difference >= 0 ? `${duration} early` : `${duration} late`;
 }
 
 function SummaryCards({ items }: { items: SummaryItem[] }) {
@@ -252,12 +313,14 @@ function ReportCharts({
   );
 }
 
-export default function DeeroReportPage({ type }: { type: DeeroReportType }) {
+export default function DeeroReportPage({ type, chartsOnly = false }: { type: DeeroReportType; chartsOnly?: boolean }) {
   const meta = reportMeta[type];
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [reportPeriod, setReportPeriod] = useState<"all" | "week" | "month" | "custom">("all");
+  const [taskUserFilter, setTaskUserFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -267,10 +330,11 @@ export default function DeeroReportPage({ type }: { type: DeeroReportType }) {
   const [clients, setClients] = useState<any[]>([]);
   const [tasks, setTasks] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
+  const [selectedTask, setSelectedTask] = useState<any | null>(null);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, startDate, endDate, statusFilter, pageSize, type]);
+  }, [search, startDate, endDate, statusFilter, taskUserFilter, reportPeriod, pageSize, type]);
 
   useEffect(() => {
     const load = async () => {
@@ -331,10 +395,11 @@ export default function DeeroReportPage({ type }: { type: DeeroReportType }) {
   const filteredTasks = useMemo(() => {
     return tasks.filter((t) => {
       if (statusFilter !== "all" && t.status !== statusFilter) return false;
-      const dateValue = t.dueDate ?? t.createdAt;
+      if (taskUserFilter !== "all" && String(t.assignedTo?.id) !== taskUserFilter) return false;
+      const dateValue = taskDueDate(t) ?? t.createdAt;
       return inDateRange(dateValue, startDate, endDate);
     });
-  }, [tasks, startDate, endDate, statusFilter]);
+  }, [tasks, startDate, endDate, statusFilter, taskUserFilter]);
 
   const filteredUsers = useMemo(() => {
     return users.filter((u) => {
@@ -590,29 +655,45 @@ export default function DeeroReportPage({ type }: { type: DeeroReportType }) {
       };
     }
 
-    const filtered = filteredTasks.filter((t) =>
-      [t.title, t.status, t.assignedTo?.name, t.institutions?.[0]?.institution]
-        .some((v) => String(v || "").toLowerCase().includes(s)),
+    const filtered = filteredTasks.filter((task) =>
+      [task.title, task.description, task.serviceInformation, task.status, task.assignedTo?.name]
+        .some((value) => String(value || "").toLowerCase().includes(s)),
     );
     return {
-      headers: ["Task", "Client", "Assignee", "Status", "Priority", "Due date"],
-      rows: filtered.map((t) => [
-        t.title,
-        t.institutions?.[0]?.institution ?? "—",
-        t.assignedTo?.name ?? "—",
-        t.status,
-        t.priority ?? "normal",
-        t.dueDate ? formatDate(t.dueDate) : "—",
+      headers: ["Task Name", "Assigned", "Priority", "Status", "Due Date", "Extra Time", "Completed Date", "Remained", "Action"],
+      rows: filtered.map((task) => [
+        task.title ?? task.serviceInformation ?? task.description ?? "N/A",
+        task.assignedTo?.name ?? "N/A",
+        task.priority ?? "normal",
+        task.status,
+        formatDateTime(taskDueDate(task)),
+        formatExtraTime(task),
+        task.status === "completed" ? formatDateTime(task.completedAt ?? task.updatedAt) : "N/A",
+        taskRemaining(task),
+        "View",
       ]),
       filteredCount: filtered.length,
     };
   }, [type, search, filteredPaymentRows, filteredClients, filteredUsers, filteredTasks]);
+
+  const searchedTasks = useMemo(() => {
+    if (type !== "tasks") return [];
+    const normalizedSearch = search.toLowerCase();
+    return filteredTasks.filter((task) =>
+      [task.title, task.description, task.serviceInformation, task.status, task.assignedTo?.name]
+        .some((value) => String(value || "").toLowerCase().includes(normalizedSearch)),
+    );
+  }, [type, search, filteredTasks]);
 
   const totalPages = Math.ceil(rows.length / pageSize) || 1;
   const paginatedRows = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
     return rows.slice(start, start + pageSize);
   }, [rows, currentPage, pageSize]);
+  const paginatedTasks = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return searchedTasks.slice(start, start + pageSize);
+  }, [searchedTasks, currentPage, pageSize]);
 
   const statusOptions = useMemo(() => {
     if (type === "payments") {
@@ -655,6 +736,40 @@ export default function DeeroReportPage({ type }: { type: DeeroReportType }) {
     return [{ value: "all", label: "All" }];
   }, [type]);
 
+  const taskAssigneeOptions = useMemo(() => {
+    const assignees = new Map<string, string>();
+    tasks.forEach((task) => {
+      const id = String(task.assignedTo?.id ?? "");
+      if (id) assignees.set(id, task.assignedTo?.name ?? "Unnamed user");
+    });
+    return Array.from(assignees, ([id, name]) => ({ id, name })).sort((a, b) =>
+      a.name.localeCompare(b.name),
+    );
+  }, [tasks]);
+
+  function inputDate(date: Date) {
+    const offset = date.getTimezoneOffset();
+    return new Date(date.getTime() - offset * 60_000).toISOString().slice(0, 10);
+  }
+
+  function handleReportPeriod(value: "all" | "week" | "month" | "custom") {
+    setReportPeriod(value);
+    if (value === "custom") {
+      setStartDate("");
+      setEndDate("");
+      return;
+    }
+    if (value === "all") {
+      setStartDate("");
+      setEndDate("");
+      return;
+    }
+    const end = new Date();
+    const start = new Date(end);
+    start.setDate(start.getDate() - (value === "week" ? 6 : 29));
+    setStartDate(inputDate(start));
+    setEndDate(inputDate(end));
+  }
   const handleExport = () => exportCsv(`${type}-report.csv`, headers, rows);
 
   const handlePrint = () => {
@@ -678,7 +793,7 @@ export default function DeeroReportPage({ type }: { type: DeeroReportType }) {
       <SummaryCards items={summaryItems} />
       <ReportCharts {...chartData} chartId={type} />
 
-      <div className={dashboardCardClass}>
+      {!chartsOnly && <div className={dashboardCardClass}>
         <div className={cn(dashboardControlsRowClass, "gap-x-3 gap-y-2 py-3")}>
           <div className={cn("flex items-center gap-2", dashboardLabelClass)}>
             <span>Show</span>
@@ -695,26 +810,44 @@ export default function DeeroReportPage({ type }: { type: DeeroReportType }) {
             <span>entries</span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          {type === "tasks" && (
             <label className={cn("flex flex-col gap-1", dashboardLabelClass)}>
-              <span>Start date</span>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className={cn(compactInputClass, "w-40")}
-              />
+              <span>Period</span>
+              <select
+                value={reportPeriod}
+                onChange={(event) => handleReportPeriod(event.target.value as "all" | "week" | "month" | "custom")}
+                className={cn(compactSelectClass, "min-w-[130px]")}
+              >
+                <option value="all">All time</option>
+                <option value="week">1 Week</option>
+                <option value="month">1 Month</option>
+                <option value="custom">Custom</option>
+              </select>
             </label>
+          )}
+
+          {(type !== "tasks" || reportPeriod === "custom") && (
+            <div className="flex flex-wrap items-center gap-2">
+              <label className={cn("flex flex-col gap-1", dashboardLabelClass)}>
+                <span>Start date</span>
+                <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={cn(compactInputClass, "w-40")} />
+              </label>
+              <label className={cn("flex flex-col gap-1", dashboardLabelClass)}>
+                <span>End date</span>
+                <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className={cn(compactInputClass, "w-40")} />
+              </label>
+            </div>
+          )}
+
+          {type === "tasks" && (
             <label className={cn("flex flex-col gap-1", dashboardLabelClass)}>
-              <span>End date</span>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className={cn(compactInputClass, "w-40")}
-              />
+              <span>User</span>
+              <select value={taskUserFilter} onChange={(event) => setTaskUserFilter(event.target.value)} className={cn(compactSelectClass, "min-w-[150px]")}>
+                <option value="all">All users</option>
+                {taskAssigneeOptions.map((user) => <option key={user.id} value={user.id}>{user.name}</option>)}
+              </select>
             </label>
-          </div>
+          )}
 
           <select
             value={statusFilter}
@@ -736,6 +869,7 @@ export default function DeeroReportPage({ type }: { type: DeeroReportType }) {
               onClick={() => {
                 setStartDate("");
                 setEndDate("");
+                if (type === "tasks") setReportPeriod("all");
               }}
             >
               Clear dates
@@ -805,7 +939,18 @@ export default function DeeroReportPage({ type }: { type: DeeroReportType }) {
                   <TableRow key={idx} className={dashboardTableBodyRowClass}>
                     {row.map((cell, cellIdx) => (
                       <TableCell key={cellIdx} className={dashboardTableCellClass}>
-                        {cell}
+                        {type === "tasks" && cellIdx === row.length - 1 ? (
+                          <button
+                            type="button"
+                            aria-label="View task details"
+                            onClick={() => setSelectedTask(paginatedTasks[idx])}
+                            className="inline-flex size-8 items-center justify-center rounded-lg border border-zinc-200 text-primary transition-colors hover:border-primary/30 hover:bg-primary/5"
+                          >
+                            <Eye className="size-4" />
+                          </button>
+                        ) : (
+                          cell
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>
@@ -843,7 +988,65 @@ export default function DeeroReportPage({ type }: { type: DeeroReportType }) {
             </button>
           </div>
         </div>
-      </div>
+      </div>}
+
+      {type === "tasks" && selectedTask && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Task details"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-[2px]"
+          onMouseDown={() => setSelectedTask(null)}
+        >
+          <div
+            className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-zinc-200 bg-white shadow-2xl"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-start justify-between border-b border-zinc-100 px-6 py-5">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Task details</p>
+                <h3 className="mt-1 text-lg font-bold text-slate-800">
+                  {selectedTask.title ?? selectedTask.serviceInformation ?? selectedTask.description ?? "Untitled task"}
+                </h3>
+              </div>
+              <button type="button" aria-label="Close task details" onClick={() => setSelectedTask(null)} className="rounded-lg p-2 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700">
+                <X className="size-5" />
+              </button>
+            </div>
+            <div className="grid grid-cols-1 gap-4 p-6 sm:grid-cols-2">
+              {[
+                ["Task ID", selectedTask.id ?? "N/A"],
+                ["Assigned", selectedTask.assignedTo?.name ?? "N/A"],
+                ["Client", selectedTask.institutions?.[0]?.institution ?? "N/A"],
+                ["Service / Task Name", selectedTask.serviceInformation ?? selectedTask.title ?? "N/A"],
+                ["Department", selectedTask.department ?? "N/A"],
+                ["Supervisor", selectedTask.supervisor || "N/A"],
+                ["Priority", selectedTask.priority ?? "normal"],
+                ["Status", selectedTask.status ?? "N/A"],
+                ["Progress", `${Number(selectedTask.progress ?? 0)}%`],
+                ["Created Date", formatDateTime(selectedTask.createdAt)],
+                ["Due Date", formatDateTime(taskDueDate(selectedTask))],
+                ["Extra Time", formatExtraTime(selectedTask)],
+                ["Final / Expired Date", formatDateTime(taskFinalDueDate(selectedTask))],
+                ["Completed Date", selectedTask.status === "completed" ? formatDateTime(selectedTask.completedAt ?? selectedTask.updatedAt) : "N/A"],
+                ["Remained", taskRemaining(selectedTask)],
+                ["Last Progress Change", selectedTask.progressUpdatedAt || selectedTask.updatedAt ? formatDateTime(selectedTask.progressUpdatedAt ?? selectedTask.updatedAt) : "N/A"],
+              ].map(([label, value]) => (
+                <div key={String(label)} className="rounded-xl border border-zinc-100 bg-zinc-50/70 p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">{label}</p>
+                  <p className="mt-1.5 text-sm font-semibold capitalize text-slate-700">{value}</p>
+                </div>
+              ))}
+              {selectedTask.description && (
+                <div className="rounded-xl border border-zinc-100 bg-zinc-50/70 p-4 sm:col-span-2">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Description</p>
+                  <p className="mt-1.5 whitespace-pre-wrap text-sm leading-6 text-slate-700">{selectedTask.description}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

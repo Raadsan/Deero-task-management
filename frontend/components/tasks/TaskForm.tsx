@@ -42,6 +42,30 @@ interface Props {
 }
 type TaskKind = "client" | "general";
 
+function defaultDueDate() {
+  const date = new Date();
+  date.setHours(23, 59, 0, 0);
+  return date;
+}
+
+function extraTimeDate(deadline?: Date, minutes = 0) {
+  if (!deadline || minutes <= 0) return undefined;
+  return new Date(deadline.getTime() + minutes * 60_000);
+}
+
+function formatExtraDuration(totalHours?: number) {
+  const totalMinutes = Math.max(0, Math.round(Number(totalHours || 0) * 60));
+  if (!totalMinutes) return "No extra time added";
+  const days = Math.floor(totalMinutes / 1440);
+  const hours = Math.floor((totalMinutes % 1440) / 60);
+  const minutes = totalMinutes % 60;
+  return [
+    days ? `${days} day${days === 1 ? "" : "s"}` : "",
+    hours ? `${hours} hour${hours === 1 ? "" : "s"}` : "",
+    minutes ? `${minutes} minute${minutes === 1 ? "" : "s"}` : "",
+  ].filter(Boolean).join(" ");
+}
+
 export default function TaskForm({
   formType,
   currentTask,
@@ -79,7 +103,8 @@ export default function TaskForm({
             currentTask.priority.slice(1)) as TaskPriority
         : "Normal",
       supervisor: currentTask?.supervisor ?? "",
-      deadline: currentTask?.deadline ? new Date(currentTask.deadline) : undefined,
+      deadline: currentTask?.deadline ? new Date(currentTask.deadline) : defaultDueDate(),
+      extraTimeHours: Number(currentTask?.extraTimeMinutes ?? 0) / 60,
       progress: currentTask?.progress || 0,
       serviceInformation: currentTask?.serviceInformation || "",
     },
@@ -116,7 +141,7 @@ export default function TaskForm({
       ? String(currentTask.assignedTo.portfolioId)
       : "";
 
-  const [selectedBranchId, setSelectedBranchId] = useState("");
+  const [selectedBranchId, setSelectedBranchId] = useState(editBranchId);
 
   useEffect(() => {
     if (!showBranchFields) return;
@@ -147,7 +172,7 @@ export default function TaskForm({
   const assignees = assigneesRes?.data ?? [];
 
   const selectedBranchName =
-    branchOptions.find((portfolio) => portfolio.id === selectedBranchId)?.name ?? "";
+    branchOptions.find((portfolio) => String(portfolio.id) === String(selectedBranchId))?.name ?? "";
 
   const { data: branchClientsRes } = useSWR(
     isCreate && selectedBranchId
@@ -158,6 +183,13 @@ export default function TaskForm({
   const branchClients = branchClientsRes?.data ?? [];
 
   const deadlineValue = watch("deadline");
+  const extraTimeHoursValue = watch("extraTimeHours");
+  const [extraTimeUntil, setExtraTimeUntil] = useState<Date | undefined>(() =>
+    extraTimeDate(
+      currentTask?.deadline ? new Date(currentTask.deadline) : undefined,
+      Number(currentTask?.extraTimeMinutes ?? 0),
+    ),
+  );
 
   const [transiton, setStartTransition] = useTransition();
   const router = useRouter();
@@ -212,6 +244,8 @@ export default function TaskForm({
 
   useEffect(() => {
     if (currentTask) {
+      const currentDeadline = currentTask.deadline ? new Date(currentTask.deadline) : defaultDueDate();
+      setExtraTimeUntil(extraTimeDate(currentDeadline, Number(currentTask.extraTimeMinutes ?? 0)));
       const isClient = currentTask.institutions && currentTask.institutions.length > 0;
       setTaskKind(isClient ? "client" : "general");
       reset({
@@ -227,7 +261,8 @@ export default function TaskForm({
         supervisor: currentTask.supervisor,
         deadline: currentTask.deadline
           ? new Date(currentTask.deadline)
-          : undefined,
+          : defaultDueDate(),
+        extraTimeHours: Number(currentTask.extraTimeMinutes ?? 0) / 60,
         progress: currentTask.progress || 0,
         serviceInformation: currentTask.serviceInformation || "",
       });
@@ -267,6 +302,7 @@ export default function TaskForm({
           priority: createData.priority,
           supervisor: createData.supervisor?.trim() || "",
           deadline: createData.deadline ?? null,
+          extraTimeMinutes: Math.round(Number(createData.extraTimeHours ?? 0) * 60),
           progress: 0,
           isPersonal: false,
         });
@@ -284,10 +320,12 @@ export default function TaskForm({
             department: "",
             priority: "Normal" as TaskPriority,
             supervisor: "",
-            deadline: undefined,
+            deadline: defaultDueDate(),
+            extraTimeHours: 0,
             progress: 0,
             serviceInformation: "",
           });
+          setExtraTimeUntil(undefined);
           setTaskKind(null);
           if (onSuccess) return onSuccess();
           return router.push(ROUTES.tasks);
@@ -299,6 +337,7 @@ export default function TaskForm({
         const result = await editTask({
           taskId,
           deadline: data.deadline,
+          extraTimeMinutes: Math.round(Number(data.extraTimeHours ?? 0) * 60),
           status: data.status,
           assgineeId: data.assigneeId,
           description: data.description,
@@ -322,6 +361,7 @@ export default function TaskForm({
           ownEdit: true,
           taskId,
           deadline: data.deadline,
+          extraTimeMinutes: Math.round(Number(data.extraTimeHours ?? 0) * 60),
           status: data.status,
           assgineeId: data.assigneeId,
           description: data.description,
@@ -373,14 +413,16 @@ export default function TaskForm({
           onChange={(value) => {
             const portfolio = branchOptions.find((item) => item.name === value);
             const nextBranchId = portfolio?.id ?? "";
+            if (String(nextBranchId) === String(selectedBranchId)) return;
             setSelectedBranchId(nextBranchId);
-            setTaskKind(null);
-            setValue("taskKind", undefined, { shouldValidate: false });
             setValue("assigneeId", "", { shouldValidate: false });
-            setValue("clientInstitutionId", "", { shouldValidate: false });
-            setValue("serviceInformation", "", { shouldValidate: false });
-            setValue("taskName", "", { shouldValidate: false });
-            setValue("description", "", { shouldValidate: false });
+            if (isCreate) {
+              setTaskKind(null);
+              setValue("taskKind", undefined, { shouldValidate: false });
+              setValue("clientInstitutionId", "", { shouldValidate: false });
+              setValue("serviceInformation", "", { shouldValidate: false });
+              setValue("taskName", "", { shouldValidate: false });
+            }
           }}
         />
       )}
@@ -608,18 +650,45 @@ export default function TaskForm({
       />
 
       <DatePicker
-        labelText={isCreate ? "Due Date (optional)" : "Select Deadline"}
+        labelText="Due Date"
         disbaled={transiton || session.data?.user.role === "user"}
         date={deadlineValue}
         showTimePicker
         compact={isModal}
         setDate={(date) => {
           setValue("deadline", date, { shouldValidate: true });
+          const extraMinutes = Math.round(Number(extraTimeHoursValue ?? 0) * 60);
+          setExtraTimeUntil(extraTimeDate(date, extraMinutes));
         }}
         errorMessage={fieldMessage("deadline")}
         invalid={fieldInvalid("deadline")}
       />
 
+      <DatePicker
+        labelText="Extra Time Until (optional)"
+        disbaled={transiton || formType === "own:edit" || session.data?.user.role === "user"}
+        date={extraTimeUntil}
+        showTimePicker
+        compact={isModal}
+        setDate={(date) => {
+          const dueDate = getValues("deadline") ?? defaultDueDate();
+          if (!getValues("deadline")) setValue("deadline", dueDate, { shouldValidate: true });
+          const minutes = Math.max(0, Math.round((date.getTime() - dueDate.getTime()) / 60_000));
+          setExtraTimeUntil(date.getTime() < dueDate.getTime() ? dueDate : date);
+          setValue("extraTimeHours", minutes / 60, { shouldValidate: true });
+        }}
+      />
+
+      <TextInput
+        labelId="calculatedExtraTime"
+        labelText="Calculated Extra Time"
+        placeholder="No extra time added"
+        type="text"
+        otherProps={{ value: formatExtraDuration(extraTimeHoursValue), readOnly: true }}
+        disbaled={false}
+        inputStyle="bg-zinc-50 font-semibold text-slate-700"
+        compact={isModal}
+      />
       {!isCreate && (
       <TextInput
         labelId="progress"

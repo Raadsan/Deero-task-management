@@ -17083,11 +17083,13 @@ export namespace Prisma {
   }
 
   export type TaskAvgAggregateOutputType = {
+    extraTimeMinutes: number | null
     progress: number | null
     sortOrder: number | null
   }
 
   export type TaskSumAggregateOutputType = {
+    extraTimeMinutes: number | null
     progress: number | null
     sortOrder: number | null
   }
@@ -17100,6 +17102,9 @@ export namespace Prisma {
     priority: $Enums.TaskPriority | null
     department: string | null
     deadline: Date | null
+    extraTimeMinutes: number | null
+    completedAt: Date | null
+    progressUpdatedAt: Date | null
     assgineeId: string | null
     progress: number | null
     supervisor: string | null
@@ -17124,6 +17129,9 @@ export namespace Prisma {
     priority: $Enums.TaskPriority | null
     department: string | null
     deadline: Date | null
+    extraTimeMinutes: number | null
+    completedAt: Date | null
+    progressUpdatedAt: Date | null
     assgineeId: string | null
     progress: number | null
     supervisor: string | null
@@ -17148,6 +17156,9 @@ export namespace Prisma {
     priority: number
     department: number
     deadline: number
+    extraTimeMinutes: number
+    completedAt: number
+    progressUpdatedAt: number
     assgineeId: number
     progress: number
     supervisor: number
@@ -17167,11 +17178,13 @@ export namespace Prisma {
 
 
   export type TaskAvgAggregateInputType = {
+    extraTimeMinutes?: true
     progress?: true
     sortOrder?: true
   }
 
   export type TaskSumAggregateInputType = {
+    extraTimeMinutes?: true
     progress?: true
     sortOrder?: true
   }
@@ -17184,6 +17197,9 @@ export namespace Prisma {
     priority?: true
     department?: true
     deadline?: true
+    extraTimeMinutes?: true
+    completedAt?: true
+    progressUpdatedAt?: true
     assgineeId?: true
     progress?: true
     supervisor?: true
@@ -17208,6 +17224,9 @@ export namespace Prisma {
     priority?: true
     department?: true
     deadline?: true
+    extraTimeMinutes?: true
+    completedAt?: true
+    progressUpdatedAt?: true
     assgineeId?: true
     progress?: true
     supervisor?: true
@@ -17232,6 +17251,9 @@ export namespace Prisma {
     priority?: true
     department?: true
     deadline?: true
+    extraTimeMinutes?: true
+    completedAt?: true
+    progressUpdatedAt?: true
     assgineeId?: true
     progress?: true
     supervisor?: true
@@ -17343,6 +17365,9 @@ export namespace Prisma {
     priority: $Enums.TaskPriority
     department: string
     deadline: Date | null
+    extraTimeMinutes: number
+    completedAt: Date | null
+    progressUpdatedAt: Date | null
     assgineeId: string
     progress: number
     supervisor: string
@@ -17386,6 +17411,9 @@ export namespace Prisma {
     priority?: boolean
     department?: boolean
     deadline?: boolean
+    extraTimeMinutes?: boolean
+    completedAt?: boolean
+    progressUpdatedAt?: boolean
     assgineeId?: boolean
     progress?: boolean
     supervisor?: boolean
@@ -17420,6 +17448,9 @@ export namespace Prisma {
     priority?: boolean
     department?: boolean
     deadline?: boolean
+    extraTimeMinutes?: boolean
+    completedAt?: boolean
+    progressUpdatedAt?: boolean
     assgineeId?: boolean
     progress?: boolean
     supervisor?: boolean
@@ -17468,6 +17499,9 @@ export namespace Prisma {
       priority: $Enums.TaskPriority
       department: string
       deadline: Date | null
+      extraTimeMinutes: number
+      completedAt: Date | null
+      progressUpdatedAt: Date | null
       assgineeId: string
       progress: number
       supervisor: string
@@ -17866,6 +17900,9 @@ export namespace Prisma {
     readonly priority: FieldRef<"Task", 'TaskPriority'>
     readonly department: FieldRef<"Task", 'String'>
     readonly deadline: FieldRef<"Task", 'DateTime'>
+    readonly extraTimeMinutes: FieldRef<"Task", 'Int'>
+    readonly completedAt: FieldRef<"Task", 'DateTime'>
+    readonly progressUpdatedAt: FieldRef<"Task", 'DateTime'>
     readonly assgineeId: FieldRef<"Task", 'String'>
     readonly progress: FieldRef<"Task", 'Int'>
     readonly supervisor: FieldRef<"Task", 'String'>
@@ -48615,6 +48652,9 @@ export namespace Prisma {
     priority: 'priority',
     department: 'department',
     deadline: 'deadline',
+    extraTimeMinutes: 'extraTimeMinutes',
+    completedAt: 'completedAt',
+    progressUpdatedAt: 'progressUpdatedAt',
     assgineeId: 'assgineeId',
     progress: 'progress',
     supervisor: 'supervisor',
@@ -50307,6 +50347,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFilter<"Task"> | $Enums.TaskPriority
     department?: StringFilter<"Task"> | string
     deadline?: DateTimeNullableFilter<"Task"> | Date | string | null
+    extraTimeMinutes?: IntFilter<"Task"> | number
+    completedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
+    progressUpdatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     assgineeId?: StringFilter<"Task"> | string
     progress?: IntFilter<"Task"> | number
     supervisor?: StringFilter<"Task"> | string
@@ -50339,6 +50382,9 @@ export namespace Prisma {
     priority?: SortOrder
     department?: SortOrder
     deadline?: SortOrderInput | SortOrder
+    extraTimeMinutes?: SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    progressUpdatedAt?: SortOrderInput | SortOrder
     assgineeId?: SortOrder
     progress?: SortOrder
     supervisor?: SortOrder
@@ -50374,6 +50420,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFilter<"Task"> | $Enums.TaskPriority
     department?: StringFilter<"Task"> | string
     deadline?: DateTimeNullableFilter<"Task"> | Date | string | null
+    extraTimeMinutes?: IntFilter<"Task"> | number
+    completedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
+    progressUpdatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     assgineeId?: StringFilter<"Task"> | string
     progress?: IntFilter<"Task"> | number
     supervisor?: StringFilter<"Task"> | string
@@ -50406,6 +50455,9 @@ export namespace Prisma {
     priority?: SortOrder
     department?: SortOrder
     deadline?: SortOrderInput | SortOrder
+    extraTimeMinutes?: SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    progressUpdatedAt?: SortOrderInput | SortOrder
     assgineeId?: SortOrder
     progress?: SortOrder
     supervisor?: SortOrder
@@ -50438,6 +50490,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityWithAggregatesFilter<"Task"> | $Enums.TaskPriority
     department?: StringWithAggregatesFilter<"Task"> | string
     deadline?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
+    extraTimeMinutes?: IntWithAggregatesFilter<"Task"> | number
+    completedAt?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
+    progressUpdatedAt?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
     assgineeId?: StringWithAggregatesFilter<"Task"> | string
     progress?: IntWithAggregatesFilter<"Task"> | number
     supervisor?: StringWithAggregatesFilter<"Task"> | string
@@ -54074,6 +54129,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
@@ -54100,6 +54158,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     assgineeId: string
     progress?: number
     supervisor?: string
@@ -54126,6 +54187,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -54152,6 +54216,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assgineeId?: StringFieldUpdateOperationsInput | string
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
@@ -54178,6 +54245,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     assgineeId: string
     progress?: number
     supervisor?: string
@@ -54202,6 +54272,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -54220,6 +54293,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assgineeId?: StringFieldUpdateOperationsInput | string
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
@@ -57935,6 +58011,9 @@ export namespace Prisma {
     priority?: SortOrder
     department?: SortOrder
     deadline?: SortOrder
+    extraTimeMinutes?: SortOrder
+    completedAt?: SortOrder
+    progressUpdatedAt?: SortOrder
     assgineeId?: SortOrder
     progress?: SortOrder
     supervisor?: SortOrder
@@ -57952,6 +58031,7 @@ export namespace Prisma {
   }
 
   export type TaskAvgOrderByAggregateInput = {
+    extraTimeMinutes?: SortOrder
     progress?: SortOrder
     sortOrder?: SortOrder
   }
@@ -57964,6 +58044,9 @@ export namespace Prisma {
     priority?: SortOrder
     department?: SortOrder
     deadline?: SortOrder
+    extraTimeMinutes?: SortOrder
+    completedAt?: SortOrder
+    progressUpdatedAt?: SortOrder
     assgineeId?: SortOrder
     progress?: SortOrder
     supervisor?: SortOrder
@@ -57988,6 +58071,9 @@ export namespace Prisma {
     priority?: SortOrder
     department?: SortOrder
     deadline?: SortOrder
+    extraTimeMinutes?: SortOrder
+    completedAt?: SortOrder
+    progressUpdatedAt?: SortOrder
     assgineeId?: SortOrder
     progress?: SortOrder
     supervisor?: SortOrder
@@ -58005,6 +58091,7 @@ export namespace Prisma {
   }
 
   export type TaskSumOrderByAggregateInput = {
+    extraTimeMinutes?: SortOrder
     progress?: SortOrder
     sortOrder?: SortOrder
   }
@@ -65237,6 +65324,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
@@ -65262,6 +65352,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
@@ -65894,6 +65987,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFilter<"Task"> | $Enums.TaskPriority
     department?: StringFilter<"Task"> | string
     deadline?: DateTimeNullableFilter<"Task"> | Date | string | null
+    extraTimeMinutes?: IntFilter<"Task"> | number
+    completedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
+    progressUpdatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     assgineeId?: StringFilter<"Task"> | string
     progress?: IntFilter<"Task"> | number
     supervisor?: StringFilter<"Task"> | string
@@ -69206,6 +69302,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
@@ -69231,6 +69330,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     assgineeId: string
     progress?: number
     supervisor?: string
@@ -69345,6 +69447,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -69370,6 +69475,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assgineeId?: StringFieldUpdateOperationsInput | string
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
@@ -70591,6 +70699,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
@@ -70616,6 +70727,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     assgineeId: string
     progress?: number
     supervisor?: string
@@ -72457,6 +72571,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
@@ -72482,6 +72599,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     assgineeId: string
     progress?: number
     supervisor?: string
@@ -74152,6 +74272,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
@@ -74177,6 +74300,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     assgineeId: string
     progress?: number
     supervisor?: string
@@ -75494,6 +75620,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
@@ -75519,6 +75648,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     assgineeId: string
     progress?: number
     supervisor?: string
@@ -75603,6 +75735,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -75628,6 +75763,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assgineeId?: StringFieldUpdateOperationsInput | string
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
@@ -75759,6 +75897,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
@@ -75784,6 +75925,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     assgineeId: string
     progress?: number
     supervisor?: string
@@ -76079,6 +76223,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
@@ -76104,6 +76251,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     assgineeId: string
     progress?: number
     supervisor?: string
@@ -76574,6 +76724,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
@@ -77246,6 +77399,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -77271,6 +77427,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -77296,6 +77455,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -78820,6 +78982,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     assgineeId: string
     progress?: number
     supervisor?: string
@@ -78896,6 +79061,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -78921,6 +79089,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assgineeId?: StringFieldUpdateOperationsInput | string
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
@@ -78946,6 +79117,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assgineeId?: StringFieldUpdateOperationsInput | string
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
@@ -79274,6 +79448,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     assgineeId: string
     progress?: number
     supervisor?: string
@@ -79462,6 +79639,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79487,6 +79667,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assgineeId?: StringFieldUpdateOperationsInput | string
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
@@ -79512,6 +79695,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assgineeId?: StringFieldUpdateOperationsInput | string
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
@@ -79646,6 +79832,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     assgineeId: string
     progress?: number
     supervisor?: string
@@ -79690,6 +79879,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79715,6 +79907,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assgineeId?: StringFieldUpdateOperationsInput | string
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
@@ -79740,6 +79935,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assgineeId?: StringFieldUpdateOperationsInput | string
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
@@ -79899,6 +80097,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     assgineeId: string
     progress?: number
     supervisor?: string
@@ -79922,6 +80123,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -79947,6 +80151,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assgineeId?: StringFieldUpdateOperationsInput | string
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
@@ -79972,6 +80179,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assgineeId?: StringFieldUpdateOperationsInput | string
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
@@ -80107,6 +80317,9 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
     assgineeId: string
     progress?: number
     supervisor?: string
@@ -80130,6 +80343,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
@@ -80155,6 +80371,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assgineeId?: StringFieldUpdateOperationsInput | string
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
@@ -80180,6 +80399,9 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     assgineeId?: StringFieldUpdateOperationsInput | string
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string

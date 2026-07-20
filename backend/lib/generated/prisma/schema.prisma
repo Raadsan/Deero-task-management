@@ -251,6 +251,9 @@ model Task {
   priority            TaskPriority             @default(normal)
   department          String
   deadline            DateTime?
+  extraTimeMinutes    Int                      @default(0)
+  completedAt         DateTime?
+  progressUpdatedAt   DateTime?
   assgineeId          String
   progress            Int                      @default(0)
   supervisor          String                   @default("")

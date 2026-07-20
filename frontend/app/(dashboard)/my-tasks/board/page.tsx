@@ -34,7 +34,6 @@ import { Task } from "@/lib/types";
 import { dashboardCardClass } from "@/lib/dashboard-ui";
 import { cn, resolveTaskDisplayStatus } from "@/lib/utils";
 import {
-  BriefcaseBusiness,
   CalendarDays,
   Check,
   CheckCircle2,
@@ -58,9 +57,8 @@ const LANE_NEW_PAGE: Partial<Record<TaskLane, boolean>> = {
 const VIEW_TABS: {
   id: BoardView;
   label: string;
-  icon: typeof BriefcaseBusiness;
+  icon: typeof UserRound;
 }[] = [
-  { id: "company", label: "Company tasks", icon: BriefcaseBusiness },
   { id: "own", label: "My tasks", icon: UserRound },
   { id: "timeline", label: "Timeline", icon: CalendarDays },
   { id: "table", label: "Table", icon: Table2 },
@@ -109,7 +107,7 @@ export default function MyTasksBoardRoutePage() {
 
   const [boardTasks, setBoardTasks] = useState<Task[]>([]);
   const [laneOrder, setLaneOrder] = useState(emptyLaneOrder);
-  const [view, setView] = useState<BoardView>("company");
+  const [view, setView] = useState<BoardView>("own");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [filterOpen, setFilterOpen] = useState(false);

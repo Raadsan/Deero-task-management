@@ -170,6 +170,9 @@ export const createTask = async (req, res) => {
       priority: data.priority?.toLowerCase(),
       department: data.department || "General",
       deadline: data.deadline ? new Date(data.deadline) : null,
+      extraTimeMinutes: Math.max(0, Number(data.extraTimeMinutes) || 0),
+      completedAt: normalized.status === "completed" ? new Date() : null,
+      progressUpdatedAt: normalized.progress > 0 ? new Date() : null,
       startDate: data.startDate ? new Date(data.startDate) : null,
       assgineeId: data.assgineeId,
       supervisor: data.supervisor || "",
@@ -238,7 +241,7 @@ async function notifyTaskAssignee(result) {
 
 export const updateTask = async (req, res) => {
   const { id } = req.params;
-  const { description, status, priority, department, deadline, startDate, assgineeId, supervisor, progress, serviceInformation } = req.body;
+  const { description, status, priority, department, deadline, extraTimeMinutes, startDate, assgineeId, supervisor, progress, serviceInformation } = req.body;
   try {
     const scope = getScope(req);
     const originalTask = await findAccessibleTask(scope, id, { user: true });
@@ -280,12 +283,21 @@ export const updateTask = async (req, res) => {
         ...(deadline !== undefined
           ? { deadline: deadline ? new Date(deadline) : null }
           : {}),
+        ...(extraTimeMinutes !== undefined
+          ? { extraTimeMinutes: Math.max(0, Number(extraTimeMinutes) || 0) }
+          : {}),
         ...(startDate !== undefined
           ? { startDate: startDate ? new Date(startDate) : null }
           : {}),
         ...(assgineeId !== undefined ? { assgineeId } : {}),
         ...(supervisor !== undefined ? { supervisor } : {}),
         progress: normalized.progress,
+        ...(originalTask.progress !== normalized.progress ? { progressUpdatedAt: new Date() } : {}),
+        ...(originalTask.status !== "completed" && normalized.status === "completed"
+          ? { completedAt: new Date() }
+          : originalTask.status === "completed" && normalized.status !== "completed"
+            ? { completedAt: null }
+            : {}),
         ...(serviceInformation !== undefined ? { serviceInformation } : {}),
       },
       include: { user: true }
@@ -304,7 +316,7 @@ export const updateTask = async (req, res) => {
           try {
             const notifId = Math.random().toString(36).substring(2, 15);
             await prisma.$executeRawUnsafe(
-              `INSERT INTO notifications (id, taskId, taskName, assigneeName, deadline, type, userId, isSeen) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+              `INSERT INTO notifications (id, taskId, taskName, assigneeName, deadline, type, userId, isSeen, progress) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
               notifId,
               task.id,
               task.description.substring(0, 50) + "...",
@@ -312,7 +324,8 @@ export const updateTask = async (req, res) => {
               task.deadline,
               "task-updated",
               admin.id,
-              0
+              0,
+              task.progress
             );
           } catch (err) {
             console.error("Failed to create notification for admin:", admin.id, err);

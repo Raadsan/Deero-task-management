@@ -43,7 +43,7 @@ export default function TaskFormModal({
   taskId,
   variant = "default",
 }: Props) {
-  const { data, isLoading, error } = useSWR(
+  const { data, isLoading, isValidating, error } = useSWR(
     open ? ["task-form-modal", mode, taskId ?? "new", variant] : null,
     () => loadTaskFormData(mode, taskId),
     {
@@ -76,7 +76,7 @@ export default function TaskFormModal({
         </DialogHeader>
 
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-          {isLoading ? (
+          {isLoading || isValidating ? (
             <div className="space-y-4 animate-pulse px-6 py-5">
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="h-10 rounded-lg bg-zinc-100" />

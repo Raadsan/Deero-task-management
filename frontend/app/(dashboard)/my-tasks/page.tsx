@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/table";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import { normalizeMyTasksList } from "@/lib/my-task-filters";
+import { exportPdf } from "@/lib/report-export";
 import { fetchMyTasks } from "@/lib/my-tasks-client";
 import {
   actionBtnView,
@@ -35,7 +36,7 @@ import {
 } from "@/lib/dashboard-ui";
 import { Task } from "@/lib/types";
 import { cn, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
-import { Gauge, Eye, Search } from "lucide-react";
+import { Download, Gauge, Eye, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 
@@ -62,6 +63,9 @@ export default function MyTasksPage() {
   const tasks = normalizeMyTasksList(tasksRaw);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("all");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [processTarget, setProcessTarget] = useState<Task | null>(null);
@@ -90,9 +94,38 @@ export default function MyTasksPage() {
         statusFilter === "all" ||
         displayStatus.toLowerCase() === statusFilter.toLowerCase();
 
-      return matchesSearch && matchesStatus;
+      const dueDate = task.deadline ? new Date(task.deadline) : null;
+      const now = new Date();
+      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const startOfTomorrow = new Date(startOfToday);
+      startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
+      let matchesDate = dateFilter === "all";
+
+      if (dueDate && !Number.isNaN(dueDate.getTime())) {
+        if (dateFilter === "today") {
+          matchesDate = dueDate >= startOfToday && dueDate < startOfTomorrow;
+        } else if (dateFilter === "yesterday") {
+          const yesterday = new Date(startOfToday);
+          yesterday.setDate(yesterday.getDate() - 1);
+          matchesDate = dueDate >= yesterday && dueDate < startOfToday;
+        } else if (dateFilter === "week") {
+          const weekStart = new Date(startOfToday);
+          weekStart.setDate(weekStart.getDate() - 7);
+          matchesDate = dueDate >= weekStart && dueDate < startOfTomorrow;
+        } else if (dateFilter === "month") {
+          const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+          const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+          matchesDate = dueDate >= monthStart && dueDate < nextMonth;
+        } else if (dateFilter === "custom") {
+          const customStart = startDate ? new Date(`${startDate}T00:00:00`) : null;
+          const customEnd = endDate ? new Date(`${endDate}T23:59:59.999`) : null;
+          matchesDate = (!customStart || dueDate >= customStart) && (!customEnd || dueDate <= customEnd);
+        }
+      }
+
+      return matchesSearch && matchesStatus && matchesDate;
     });
-  }, [tasks, search, statusFilter]);
+  }, [tasks, search, statusFilter, dateFilter, startDate, endDate]);
 
   const totalPages = Math.ceil(filteredTasks.length / pageSize) || 1;
   const paginatedTasks = useMemo(() => {
@@ -108,8 +141,26 @@ export default function MyTasksPage() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, pageSize, statusFilter]);
+  }, [search, pageSize, statusFilter, dateFilter, startDate, endDate]);
 
+  function taskExportRow(task: Task): Array<string | number> {
+    const status = resolveTaskDisplayStatus(task);
+    return [
+      String(task.id ?? "N/A"),
+      task.description || task.serviceInformation || "N/A",
+      `${task.progress ?? 0}%`,
+      task.deadline ? new Date(task.deadline).toLocaleString("en-GB") : "N/A",
+      formatStatusLabel(status),
+    ];
+  }
+
+  async function exportFilteredTasksPdf() {
+    await exportPdf("my-tasks-filtered.pdf", "My Tasks", ["Task ID", "Task", "Progress", "Due Date", "Status"], filteredTasks.map(taskExportRow));
+  }
+
+  async function exportSingleTaskPdf(task: Task) {
+    await exportPdf(`task-${String(task.id).slice(0, 8)}.pdf`, "Task Details", ["Task ID", "Task", "Progress", "Due Date", "Status"], [taskExportRow(task)]);
+  }
   return (
     <ManagementPageShell title="My tasks">
       <div className={dashboardCardClass}>

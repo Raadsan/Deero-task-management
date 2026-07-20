@@ -45,6 +45,10 @@ interface Task {
   priority: TaskPriority;
   status: TaskStatus;
   deadline: string | Date;
+  extraTimeMinutes?: number;
+  updatedAt?: string | Date;
+  completedAt?: string | Date | null;
+  progressUpdatedAt?: string | Date | null;
   supervisor: string;
   isAssignedToCurrentUser?: boolean;
   isPersonal?: boolean;
@@ -414,6 +418,7 @@ interface TaskNotification {
   type: TaskNotificationType;
   createdAt?: string;
   isSeen?: number | boolean;
+  progress?: number | null;
 }
 
 interface EmailVerification {

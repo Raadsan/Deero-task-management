@@ -39,16 +39,18 @@ export type AdminDashboardBundle = {
   sources: unknown[];
   payment: unknown[];
   tasks: unknown[];
+  clients: unknown[];
 };
 
 export async function getAdminDashboardBundle(): Promise<
   ActionResponse<AdminDashboardBundle>
 > {
   try {
-    const [metricsRes, chartRes, tasksRes] = await Promise.all([
+    const [metricsRes, chartRes, tasksRes, clientsRes] = await Promise.all([
       api.get("/api/tasks/metrics"),
       api.get("/api/tasks/graph/monthly"),
       api.get("/api/tasks"),
+      api.get("/api/clients"),
     ]);
 
     return {
@@ -63,6 +65,7 @@ export async function getAdminDashboardBundle(): Promise<
               mapTask(task as Parameters<typeof mapTask>[0]),
             )
           : [],
+        clients: clientsRes.data?.success ? clientsRes.data.data : [],
       },
     };
   } catch (error) {

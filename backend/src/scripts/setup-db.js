@@ -13,10 +13,15 @@ async function setup() {
         type VARCHAR(191) NOT NULL,
         userId VARCHAR(191) NOT NULL,
         isSeen TINYINT(1) NOT NULL DEFAULT 0,
+        progress INT NULL,
         PRIMARY KEY (id)
       ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
     `);
-    console.log('Table created or already exists.');
+    const progressColumns = await prisma.$queryRawUnsafe(`SHOW COLUMNS FROM notifications LIKE 'progress'`);
+    if (progressColumns.length === 0) {
+      await prisma.$executeRawUnsafe(`ALTER TABLE notifications ADD COLUMN progress INT NULL`);
+    }
+    console.log('Table created or updated successfully.');
   } catch (e) {
     console.error('Error creating table:', e);
   } finally {

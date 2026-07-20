@@ -18,10 +18,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { getTaskNotifications, markNotificationAsSeen } from "@/lib/actions/task.action";
+import { markNotificationAsSeen } from "@/lib/actions/task.action";
+import { authClient } from "@/lib/auth-client";
+import { getTaskNotificationsClient } from "@/lib/client-read-api";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import { TaskNotification } from "@/lib/types";
-import { formatTaskDeadline } from "@/lib/utils";
 import useSWR from "swr";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -36,10 +37,21 @@ function readableType(type: TaskNotification["type"]) {
 }
 
 function detailLine(notification: TaskNotification) {
+  if (notification.type === "task-updated" && notification.progress != null) {
+    return `Progress updated to ${notification.progress}%`;
+  }
   if (notification.type === "user-login") {
     return `Email: ${notification.assigneeName}`;
   }
   return notification.taskName || "No description";
+}
+
+function formatSentDateTime(value?: string) {
+  if (!value) return "N/A";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "N/A";
+  const pad = (part: number) => String(part).padStart(2, "0");
+  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 }
 
 export default function NotificationsPage() {
@@ -47,9 +59,11 @@ export default function NotificationsPage() {
   const [markingRead, setMarkingRead] = useState(false);
   const [activeNotification, setActiveNotification] = useState<TaskNotification | null>(null);
   const [openDetails, setOpenDetails] = useState(false);
+  const session = authClient.useSession();
+  const userId = session.data?.user.id;
   const { data, isLoading, mutate } = useSWR(
-    SWR_CACH_KEYS.taskNotifications.key,
-    getTaskNotifications,
+    userId ? [SWR_CACH_KEYS.taskNotifications.key, userId] : null,
+    () => getTaskNotificationsClient(userId!),
     { refreshInterval: 60_000 },
   );
 
@@ -75,9 +89,7 @@ export default function NotificationsPage() {
   }
 
   const selectedInitial = (activeNotification?.assigneeName || "U").charAt(0).toUpperCase();
-  const selectedDate = activeNotification
-    ? formatTaskDeadline(activeNotification.createdAt || activeNotification.deadline)
-    : "";
+  const selectedSentAt = formatSentDateTime(activeNotification?.createdAt);
 
   async function markActiveAsRead() {
     if (!activeNotification) return;
@@ -117,7 +129,7 @@ export default function NotificationsPage() {
       </div>
 
       <div className="space-y-3">
-        {isLoading ? (
+        {isLoading || session.isPending ? (
           [...Array(5)].map((_, i) => (
             <div key={i} className="h-24 animate-pulse rounded-xl border border-zinc-100 bg-zinc-50" />
           ))
@@ -146,7 +158,7 @@ export default function NotificationsPage() {
                         {notification.assigneeName || "Unknown user"}
                       </p>
                       <p className="shrink-0 text-[11px] font-medium text-zinc-500">
-                        {formatTaskDeadline(notification.createdAt || notification.deadline)}
+                        {formatSentDateTime(notification.createdAt)}
                       </p>
                     </div>
                     <p className="mt-0.5 text-xs font-semibold uppercase tracking-wide text-zinc-500">
@@ -188,7 +200,7 @@ export default function NotificationsPage() {
                     <p className="truncate text-sm font-semibold text-zinc-900">
                       {activeNotification.assigneeName || "Unknown user"}
                     </p>
-                    <p className="text-xs text-zinc-500">{selectedDate}</p>
+                    <p className="text-xs text-zinc-500">Notification sent at {selectedSentAt}</p>
                     {isActiveUnread ? (
                       <span className="mt-1 inline-flex rounded bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
                         Unread
@@ -207,8 +219,8 @@ export default function NotificationsPage() {
                 </div>
 
                 <div>
-                  <label className="mb-1 block text-xs font-semibold text-zinc-600">Date</label>
-                  <input readOnly value={selectedDate} className={configCompactInputClass} />
+                  <label className="mb-1 block text-xs font-semibold text-zinc-600">Notification sent at</label>
+                  <input readOnly value={selectedSentAt} className={configCompactInputClass} />
                 </div>
 
                 <div>

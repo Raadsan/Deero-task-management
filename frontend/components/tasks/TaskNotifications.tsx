@@ -54,6 +54,21 @@ function getNotificationDetails(notification: TaskNotification) {
   };
 }
 
+function formatNotificationTime(value?: string) {
+  if (!value) return "N/A";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "N/A";
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Africa/Nairobi",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).format(date).replace(",", "");
+}
 function readableType(type: TaskNotification["type"]) {
   if (type === "new-assignment") return "New Assignment";
   if (type === "deadline-soon") return "Deadline Reminder";
@@ -137,6 +152,10 @@ export default function TaskNotifications({ userId }: { userId?: string }) {
                   <p className="text-xs text-zinc-600">
                     {details.metaLabel}: {details.metaValue}
                   </p>
+                  {notification.type === "task-updated" && notification.progress != null ? (
+                    <p className="text-xs font-semibold text-primary">Progress: {notification.progress}%</p>
+                  ) : null}
+                  <p className="text-xs text-zinc-600">Updated at: {formatNotificationTime(notification.createdAt)}</p>
                 </div>
               );
             })}
