@@ -15,6 +15,7 @@ import { Task } from "@/lib/types";
 import {
   AlertCircle,
   Calendar,
+  Clock,
   GitBranch,
   Tag,
   User,
@@ -134,11 +135,42 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
             />
             <InfoItem
               icon={Calendar}
-              label="Deadline"
-              value={formatTaskDeadline(task.deadline, {
-                status: task.status,
-                progress: task.progress,
-              })}
+              label="Original Due Date"
+              value={
+                task.originalDeadline || task.deadline
+                  ? new Date(task.originalDeadline ?? task.deadline!).toLocaleString("en-US", {
+                      month: "short",
+                      day: "2-digit",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  : "N/A"
+              }
+            />
+            <InfoItem
+              icon={Clock}
+              label="Extra Time Added"
+              value={
+                Number(task.extraTimeMinutes) > 0
+                  ? `${Math.floor(Number(task.extraTimeMinutes) / 60)}h ${Number(task.extraTimeMinutes) % 60}m`
+                  : "No extra time"
+              }
+            />
+            <InfoItem
+              icon={Calendar}
+              label="Updated Ending Due Date"
+              value={
+                Number(task.extraTimeMinutes) > 0 && task.deadline
+                  ? new Date(new Date(task.deadline).getTime() + Number(task.extraTimeMinutes) * 60_000).toLocaleString("en-US", {
+                      month: "short",
+                      day: "2-digit",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  : "N/A"
+              }
             />
           </div>
 

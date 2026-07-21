@@ -99,7 +99,7 @@ function StaffDashboard({ userId }: { userId: string }) {
   const { data: bundleRes, isLoading } = useSWR(
     ["staff-dashboard", userId],
     getMyDashboardBundle,
-    { revalidateOnFocus: false, dedupingInterval: 30000 },
+    { revalidateOnFocus: true, revalidateOnMount: true, refreshInterval: 15000 },
   );
 
   const tasks = (bundleRes?.data?.tasks ?? []) as Task[];
@@ -334,7 +334,7 @@ function ManagerDashboard({ userId }: { userId: string }) {
   const { data: bundleRes, isLoading } = useSWR(
     ["manager-dashboard", userId],
     getManagerDashboardBundle,
-    { revalidateOnFocus: false, dedupingInterval: 30000 },
+    { revalidateOnFocus: true, revalidateOnMount: true, refreshInterval: 15000 },
   );
 
   const myTasks = (bundleRes?.data?.myTasks ?? []) as Task[];
@@ -640,7 +640,7 @@ function AdminDashboard({
   const { data: bundleRes, isLoading, isValidating, mutate } = useSWR(
     dashboardKey,
     getAdminDashboardBundle,
-    { revalidateOnFocus: false, dedupingInterval: 30000 },
+    { revalidateOnFocus: true, revalidateOnMount: true, refreshInterval: 15000 },
   );
   const [period, setPeriod] = useState<DashboardPeriod>("today");
   const todayValue = dateInputValue(new Date());
@@ -798,7 +798,25 @@ function AdminDashboard({
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <DashboardTable title="Recent Tasks" subtitle="Latest tasks in the selected period" empty="No tasks found" headers={["Task", "Staff", "Status"]} rows={filteredTasks.slice(0, 6).map((task) => [task.description?.slice(0, 34) || task.serviceInformation || "N/A", task.assignedTo?.name || "Unassigned", formatStatusLabel(resolveTaskDisplayStatus(task))])} />
+        <DashboardTable
+          title="Recent Tasks"
+          subtitle="Latest tasks in the selected period"
+          empty="No tasks found"
+          headers={["Task", "Staff", "Status"]}
+          rows={filteredTasks.slice(0, 6).map((task) => {
+            const displayStatus = resolveTaskDisplayStatus(task);
+            return [
+              task.description?.slice(0, 34) || task.serviceInformation || "N/A",
+              task.assignedTo?.name || "Unassigned",
+              <span
+                key={task.id}
+                className={cn(dashboardStatusBadgeClass, getTaskStatusBadgeClass(displayStatus))}
+              >
+                {formatStatusLabel(displayStatus)}
+              </span>,
+            ];
+          })}
+        />
         <DashboardTable title="Top Clients" subtitle="Clients ranked by task volume" empty="No client tasks found" headers={["Client", "Tasks", "Completed"]} rows={clientsByTasks.slice(0, 6).map((client) => [client.name, client.tasks, client.completed])} />
       </div>
     </div>
@@ -810,7 +828,7 @@ function ChartCard({ title, subtitle, children }: { title: string; subtitle: str
 }
 
 function DashboardTable({ title, subtitle, headers, rows, empty }: { title: string; subtitle: string; headers: string[]; rows: Array<Array<React.ReactNode>>; empty: string }) {
-  return <div className="trezo-card overflow-hidden"><div className="border-b border-border px-6 py-4"><h3 className="text-sm font-bold uppercase tracking-tight text-foreground">{title}</h3><p className="mt-0.5 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">{subtitle}</p></div><div className="overflow-x-auto"><Table><TableHeader className={dashboardTableHeaderClass}><TableRow className={dashboardTableHeadRowClass}>{headers.map((header) => <TableHead key={header} className={cn(dashboardTableHeadClass, "text-left")}>{header}</TableHead>)}</TableRow></TableHeader><TableBody className="bg-white">{rows.length ? rows.map((row, rowIndex) => <TableRow key={rowIndex} className={dashboardTableBodyRowClass}>{row.map((cell, cellIndex) => <TableCell key={cellIndex} className={dashboardTableCellClass}><span className="text-[12px] font-medium text-zinc-700">{cell}</span></TableCell>)}</TableRow>) : <TableRow><TableCell colSpan={headers.length} className="py-10 text-center text-sm text-zinc-500">{empty}</TableCell></TableRow>}</TableBody></Table></div></div>;
+  return <div className="trezo-card overflow-hidden"><div className="border-b border-border px-6 py-4"><h3 className="text-sm font-bold uppercase tracking-tight text-foreground">{title}</h3><p className="mt-0.5 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">{subtitle}</p></div><div className="overflow-x-auto"><Table><TableHeader className={dashboardTableHeaderClass}><TableRow className={dashboardTableHeadRowClass}>{headers.map((header) => <TableHead key={header} className={cn(dashboardTableHeadClass, "text-left")}>{header}</TableHead>)}</TableRow></TableHeader><TableBody className="bg-white">{rows.length ? rows.map((row, rowIndex) => <TableRow key={rowIndex} className={dashboardTableBodyRowClass}>{row.map((cell, cellIndex) => <TableCell key={cellIndex} className={dashboardTableCellClass}>{typeof cell === "string" || typeof cell === "number" ? <span className="text-[12px] font-medium text-zinc-700">{cell}</span> : cell}</TableCell>)}</TableRow>) : <TableRow><TableCell colSpan={headers.length} className="py-10 text-center text-sm text-zinc-500">{empty}</TableCell></TableRow>}</TableBody></Table></div></div>;
 }
 
 // ─────────────────────────────────────────────────────────────

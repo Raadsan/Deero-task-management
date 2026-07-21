@@ -74,6 +74,11 @@ export type ClientService = $Result.DefaultSelection<Prisma.$ClientServicePayloa
  */
 export type Task = $Result.DefaultSelection<Prisma.$TaskPayload>
 /**
+ * Model TaskTransferHistory
+ * 
+ */
+export type TaskTransferHistory = $Result.DefaultSelection<Prisma.$TaskTransferHistoryPayload>
+/**
  * Model ClientTask
  * 
  */
@@ -702,6 +707,16 @@ export class PrismaClient<
     * ```
     */
   get task(): Prisma.TaskDelegate<ExtArgs>;
+
+  /**
+   * `prisma.taskTransferHistory`: Exposes CRUD operations for the **TaskTransferHistory** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TaskTransferHistories
+    * const taskTransferHistories = await prisma.taskTransferHistory.findMany()
+    * ```
+    */
+  get taskTransferHistory(): Prisma.TaskTransferHistoryDelegate<ExtArgs>;
 
   /**
    * `prisma.clientTask`: Exposes CRUD operations for the **ClientTask** model.
@@ -1465,6 +1480,7 @@ export namespace Prisma {
     ClientSubService: 'ClientSubService',
     ClientService: 'ClientService',
     Task: 'Task',
+    TaskTransferHistory: 'TaskTransferHistory',
     ClientTask: 'ClientTask',
     Counter: 'Counter',
     Income: 'Income',
@@ -1511,7 +1527,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "role" | "staff" | "session" | "account" | "verification" | "client" | "service" | "subService" | "portfolio" | "clientSubService" | "clientService" | "task" | "clientTask" | "counter" | "income" | "expense" | "incomeTransaction" | "expenseTransaction" | "incomeTransactionDetails" | "userFiles" | "incomeServiceAgreement" | "expenseServiceAgreement" | "expenseTransactionDetails" | "userSalary" | "userSalaryDetails" | "notification" | "navMenu" | "navSubMenu" | "roleMenuAccess" | "roleSubMenuAccess" | "auditLog" | "project" | "contract" | "clientInstallment" | "contractDocument" | "contentRequest" | "contentRequestAssignee" | "recurringSchedule" | "recurringScheduleStep" | "recurringTaskOccurrence" | "contentCycle" | "workflowTemplate" | "workflowTemplateStep"
+      modelProps: "role" | "staff" | "session" | "account" | "verification" | "client" | "service" | "subService" | "portfolio" | "clientSubService" | "clientService" | "task" | "taskTransferHistory" | "clientTask" | "counter" | "income" | "expense" | "incomeTransaction" | "expenseTransaction" | "incomeTransactionDetails" | "userFiles" | "incomeServiceAgreement" | "expenseServiceAgreement" | "expenseTransactionDetails" | "userSalary" | "userSalaryDetails" | "notification" | "navMenu" | "navSubMenu" | "roleMenuAccess" | "roleSubMenuAccess" | "auditLog" | "project" | "contract" | "clientInstallment" | "contractDocument" | "contentRequest" | "contentRequestAssignee" | "recurringSchedule" | "recurringScheduleStep" | "recurringTaskOccurrence" | "contentCycle" | "workflowTemplate" | "workflowTemplateStep"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2304,6 +2320,72 @@ export namespace Prisma {
           count: {
             args: Prisma.TaskCountArgs<ExtArgs>
             result: $Utils.Optional<TaskCountAggregateOutputType> | number
+          }
+        }
+      }
+      TaskTransferHistory: {
+        payload: Prisma.$TaskTransferHistoryPayload<ExtArgs>
+        fields: Prisma.TaskTransferHistoryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TaskTransferHistoryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaskTransferHistoryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TaskTransferHistoryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaskTransferHistoryPayload>
+          }
+          findFirst: {
+            args: Prisma.TaskTransferHistoryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaskTransferHistoryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TaskTransferHistoryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaskTransferHistoryPayload>
+          }
+          findMany: {
+            args: Prisma.TaskTransferHistoryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaskTransferHistoryPayload>[]
+          }
+          create: {
+            args: Prisma.TaskTransferHistoryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaskTransferHistoryPayload>
+          }
+          createMany: {
+            args: Prisma.TaskTransferHistoryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.TaskTransferHistoryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaskTransferHistoryPayload>
+          }
+          update: {
+            args: Prisma.TaskTransferHistoryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaskTransferHistoryPayload>
+          }
+          deleteMany: {
+            args: Prisma.TaskTransferHistoryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TaskTransferHistoryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.TaskTransferHistoryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaskTransferHistoryPayload>
+          }
+          aggregate: {
+            args: Prisma.TaskTransferHistoryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTaskTransferHistory>
+          }
+          groupBy: {
+            args: Prisma.TaskTransferHistoryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TaskTransferHistoryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TaskTransferHistoryCountArgs<ExtArgs>
+            result: $Utils.Optional<TaskTransferHistoryCountAggregateOutputType> | number
           }
         }
       }
@@ -4570,6 +4652,9 @@ export namespace Prisma {
     assignedRecurringSteps: number
     sessions: number
     assignedTasks: number
+    transferredFromTasks: number
+    transferredToTasks: number
+    transferredByTasks: number
   }
 
   export type StaffCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4589,6 +4674,9 @@ export namespace Prisma {
     assignedRecurringSteps?: boolean | StaffCountOutputTypeCountAssignedRecurringStepsArgs
     sessions?: boolean | StaffCountOutputTypeCountSessionsArgs
     assignedTasks?: boolean | StaffCountOutputTypeCountAssignedTasksArgs
+    transferredFromTasks?: boolean | StaffCountOutputTypeCountTransferredFromTasksArgs
+    transferredToTasks?: boolean | StaffCountOutputTypeCountTransferredToTasksArgs
+    transferredByTasks?: boolean | StaffCountOutputTypeCountTransferredByTasksArgs
   }
 
   // Custom InputTypes
@@ -4712,6 +4800,27 @@ export namespace Prisma {
    */
   export type StaffCountOutputTypeCountAssignedTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TaskWhereInput
+  }
+
+  /**
+   * StaffCountOutputType without action
+   */
+  export type StaffCountOutputTypeCountTransferredFromTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaskTransferHistoryWhereInput
+  }
+
+  /**
+   * StaffCountOutputType without action
+   */
+  export type StaffCountOutputTypeCountTransferredToTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaskTransferHistoryWhereInput
+  }
+
+  /**
+   * StaffCountOutputType without action
+   */
+  export type StaffCountOutputTypeCountTransferredByTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaskTransferHistoryWhereInput
   }
 
 
@@ -5007,10 +5116,12 @@ export namespace Prisma {
 
   export type TaskCountOutputType = {
     clientTask: number
+    transferHistory: number
   }
 
   export type TaskCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     clientTask?: boolean | TaskCountOutputTypeCountClientTaskArgs
+    transferHistory?: boolean | TaskCountOutputTypeCountTransferHistoryArgs
   }
 
   // Custom InputTypes
@@ -5029,6 +5140,13 @@ export namespace Prisma {
    */
   export type TaskCountOutputTypeCountClientTaskArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ClientTaskWhereInput
+  }
+
+  /**
+   * TaskCountOutputType without action
+   */
+  export type TaskCountOutputTypeCountTransferHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaskTransferHistoryWhereInput
   }
 
 
@@ -6892,6 +7010,9 @@ export namespace Prisma {
     portfolio?: boolean | Staff$portfolioArgs<ExtArgs>
     dynamicRole?: boolean | Staff$dynamicRoleArgs<ExtArgs>
     assignedTasks?: boolean | Staff$assignedTasksArgs<ExtArgs>
+    transferredFromTasks?: boolean | Staff$transferredFromTasksArgs<ExtArgs>
+    transferredToTasks?: boolean | Staff$transferredToTasksArgs<ExtArgs>
+    transferredByTasks?: boolean | Staff$transferredByTasksArgs<ExtArgs>
     _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["staff"]>
 
@@ -6934,6 +7055,9 @@ export namespace Prisma {
     portfolio?: boolean | Staff$portfolioArgs<ExtArgs>
     dynamicRole?: boolean | Staff$dynamicRoleArgs<ExtArgs>
     assignedTasks?: boolean | Staff$assignedTasksArgs<ExtArgs>
+    transferredFromTasks?: boolean | Staff$transferredFromTasksArgs<ExtArgs>
+    transferredToTasks?: boolean | Staff$transferredToTasksArgs<ExtArgs>
+    transferredByTasks?: boolean | Staff$transferredByTasksArgs<ExtArgs>
     _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -6958,6 +7082,9 @@ export namespace Prisma {
       portfolio: Prisma.$PortfolioPayload<ExtArgs> | null
       dynamicRole: Prisma.$RolePayload<ExtArgs> | null
       assignedTasks: Prisma.$TaskPayload<ExtArgs>[]
+      transferredFromTasks: Prisma.$TaskTransferHistoryPayload<ExtArgs>[]
+      transferredToTasks: Prisma.$TaskTransferHistoryPayload<ExtArgs>[]
+      transferredByTasks: Prisma.$TaskTransferHistoryPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -7334,6 +7461,9 @@ export namespace Prisma {
     portfolio<T extends Staff$portfolioArgs<ExtArgs> = {}>(args?: Subset<T, Staff$portfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     dynamicRole<T extends Staff$dynamicRoleArgs<ExtArgs> = {}>(args?: Subset<T, Staff$dynamicRoleArgs<ExtArgs>>): Prisma__RoleClient<$Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     assignedTasks<T extends Staff$assignedTasksArgs<ExtArgs> = {}>(args?: Subset<T, Staff$assignedTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany"> | Null>
+    transferredFromTasks<T extends Staff$transferredFromTasksArgs<ExtArgs> = {}>(args?: Subset<T, Staff$transferredFromTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskTransferHistoryPayload<ExtArgs>, T, "findMany"> | Null>
+    transferredToTasks<T extends Staff$transferredToTasksArgs<ExtArgs> = {}>(args?: Subset<T, Staff$transferredToTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskTransferHistoryPayload<ExtArgs>, T, "findMany"> | Null>
+    transferredByTasks<T extends Staff$transferredByTasksArgs<ExtArgs> = {}>(args?: Subset<T, Staff$transferredByTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskTransferHistoryPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8025,6 +8155,66 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TaskScalarFieldEnum | TaskScalarFieldEnum[]
+  }
+
+  /**
+   * Staff.transferredFromTasks
+   */
+  export type Staff$transferredFromTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaskTransferHistory
+     */
+    select?: TaskTransferHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskTransferHistoryInclude<ExtArgs> | null
+    where?: TaskTransferHistoryWhereInput
+    orderBy?: TaskTransferHistoryOrderByWithRelationInput | TaskTransferHistoryOrderByWithRelationInput[]
+    cursor?: TaskTransferHistoryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TaskTransferHistoryScalarFieldEnum | TaskTransferHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * Staff.transferredToTasks
+   */
+  export type Staff$transferredToTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaskTransferHistory
+     */
+    select?: TaskTransferHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskTransferHistoryInclude<ExtArgs> | null
+    where?: TaskTransferHistoryWhereInput
+    orderBy?: TaskTransferHistoryOrderByWithRelationInput | TaskTransferHistoryOrderByWithRelationInput[]
+    cursor?: TaskTransferHistoryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TaskTransferHistoryScalarFieldEnum | TaskTransferHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * Staff.transferredByTasks
+   */
+  export type Staff$transferredByTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaskTransferHistory
+     */
+    select?: TaskTransferHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskTransferHistoryInclude<ExtArgs> | null
+    where?: TaskTransferHistoryWhereInput
+    orderBy?: TaskTransferHistoryOrderByWithRelationInput | TaskTransferHistoryOrderByWithRelationInput[]
+    cursor?: TaskTransferHistoryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TaskTransferHistoryScalarFieldEnum | TaskTransferHistoryScalarFieldEnum[]
   }
 
   /**
@@ -17086,12 +17276,14 @@ export namespace Prisma {
     extraTimeMinutes: number | null
     progress: number | null
     sortOrder: number | null
+    transferredFromProgress: number | null
   }
 
   export type TaskSumAggregateOutputType = {
     extraTimeMinutes: number | null
     progress: number | null
     sortOrder: number | null
+    transferredFromProgress: number | null
   }
 
   export type TaskMinAggregateOutputType = {
@@ -17119,7 +17311,7 @@ export namespace Prisma {
     updatedAt: Date | null
     workflowStage: $Enums.WorkflowStage | null
     workflowStepId: string | null
-    startDate: Date | null
+    transferredFromProgress: number | null
   }
 
   export type TaskMaxAggregateOutputType = {
@@ -17147,7 +17339,7 @@ export namespace Prisma {
     updatedAt: Date | null
     workflowStage: $Enums.WorkflowStage | null
     workflowStepId: string | null
-    startDate: Date | null
+    transferredFromProgress: number | null
   }
 
   export type TaskCountAggregateOutputType = {
@@ -17175,7 +17367,7 @@ export namespace Prisma {
     updatedAt: number
     workflowStage: number
     workflowStepId: number
-    startDate: number
+    transferredFromProgress: number
     _all: number
   }
 
@@ -17184,12 +17376,14 @@ export namespace Prisma {
     extraTimeMinutes?: true
     progress?: true
     sortOrder?: true
+    transferredFromProgress?: true
   }
 
   export type TaskSumAggregateInputType = {
     extraTimeMinutes?: true
     progress?: true
     sortOrder?: true
+    transferredFromProgress?: true
   }
 
   export type TaskMinAggregateInputType = {
@@ -17217,7 +17411,7 @@ export namespace Prisma {
     updatedAt?: true
     workflowStage?: true
     workflowStepId?: true
-    startDate?: true
+    transferredFromProgress?: true
   }
 
   export type TaskMaxAggregateInputType = {
@@ -17245,7 +17439,7 @@ export namespace Prisma {
     updatedAt?: true
     workflowStage?: true
     workflowStepId?: true
-    startDate?: true
+    transferredFromProgress?: true
   }
 
   export type TaskCountAggregateInputType = {
@@ -17273,7 +17467,7 @@ export namespace Prisma {
     updatedAt?: true
     workflowStage?: true
     workflowStepId?: true
-    startDate?: true
+    transferredFromProgress?: true
     _all?: true
   }
 
@@ -17388,7 +17582,7 @@ export namespace Prisma {
     updatedAt: Date | null
     workflowStage: $Enums.WorkflowStage
     workflowStepId: string | null
-    startDate: Date | null
+    transferredFromProgress: number
     _count: TaskCountAggregateOutputType | null
     _avg: TaskAvgAggregateOutputType | null
     _sum: TaskSumAggregateOutputType | null
@@ -17435,8 +17629,9 @@ export namespace Prisma {
     updatedAt?: boolean
     workflowStage?: boolean
     workflowStepId?: boolean
-    startDate?: boolean
+    transferredFromProgress?: boolean
     clientTask?: boolean | Task$clientTaskArgs<ExtArgs>
+    transferHistory?: boolean | Task$transferHistoryArgs<ExtArgs>
     recurringOccurrence?: boolean | Task$recurringOccurrenceArgs<ExtArgs>
     agreement?: boolean | Task$agreementArgs<ExtArgs>
     user?: boolean | StaffDefaultArgs<ExtArgs>
@@ -17473,11 +17668,12 @@ export namespace Prisma {
     updatedAt?: boolean
     workflowStage?: boolean
     workflowStepId?: boolean
-    startDate?: boolean
+    transferredFromProgress?: boolean
   }
 
   export type TaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     clientTask?: boolean | Task$clientTaskArgs<ExtArgs>
+    transferHistory?: boolean | Task$transferHistoryArgs<ExtArgs>
     recurringOccurrence?: boolean | Task$recurringOccurrenceArgs<ExtArgs>
     agreement?: boolean | Task$agreementArgs<ExtArgs>
     user?: boolean | StaffDefaultArgs<ExtArgs>
@@ -17492,6 +17688,7 @@ export namespace Prisma {
     name: "Task"
     objects: {
       clientTask: Prisma.$ClientTaskPayload<ExtArgs>[]
+      transferHistory: Prisma.$TaskTransferHistoryPayload<ExtArgs>[]
       recurringOccurrence: Prisma.$RecurringTaskOccurrencePayload<ExtArgs> | null
       agreement: Prisma.$IncomeServiceAgreementPayload<ExtArgs> | null
       user: Prisma.$StaffPayload<ExtArgs>
@@ -17525,7 +17722,7 @@ export namespace Prisma {
       updatedAt: Date | null
       workflowStage: $Enums.WorkflowStage
       workflowStepId: string | null
-      startDate: Date | null
+      transferredFromProgress: number
     }, ExtArgs["result"]["task"]>
     composites: {}
   }
@@ -17867,6 +18064,7 @@ export namespace Prisma {
   export interface Prisma__TaskClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     clientTask<T extends Task$clientTaskArgs<ExtArgs> = {}>(args?: Subset<T, Task$clientTaskArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientTaskPayload<ExtArgs>, T, "findMany"> | Null>
+    transferHistory<T extends Task$transferHistoryArgs<ExtArgs> = {}>(args?: Subset<T, Task$transferHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskTransferHistoryPayload<ExtArgs>, T, "findMany"> | Null>
     recurringOccurrence<T extends Task$recurringOccurrenceArgs<ExtArgs> = {}>(args?: Subset<T, Task$recurringOccurrenceArgs<ExtArgs>>): Prisma__RecurringTaskOccurrenceClient<$Result.GetResult<Prisma.$RecurringTaskOccurrencePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     agreement<T extends Task$agreementArgs<ExtArgs> = {}>(args?: Subset<T, Task$agreementArgs<ExtArgs>>): Prisma__IncomeServiceAgreementClient<$Result.GetResult<Prisma.$IncomeServiceAgreementPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     user<T extends StaffDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StaffDefaultArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
@@ -17927,7 +18125,7 @@ export namespace Prisma {
     readonly updatedAt: FieldRef<"Task", 'DateTime'>
     readonly workflowStage: FieldRef<"Task", 'WorkflowStage'>
     readonly workflowStepId: FieldRef<"Task", 'String'>
-    readonly startDate: FieldRef<"Task", 'DateTime'>
+    readonly transferredFromProgress: FieldRef<"Task", 'Int'>
   }
     
 
@@ -18247,6 +18445,26 @@ export namespace Prisma {
   }
 
   /**
+   * Task.transferHistory
+   */
+  export type Task$transferHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaskTransferHistory
+     */
+    select?: TaskTransferHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskTransferHistoryInclude<ExtArgs> | null
+    where?: TaskTransferHistoryWhereInput
+    orderBy?: TaskTransferHistoryOrderByWithRelationInput | TaskTransferHistoryOrderByWithRelationInput[]
+    cursor?: TaskTransferHistoryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TaskTransferHistoryScalarFieldEnum | TaskTransferHistoryScalarFieldEnum[]
+  }
+
+  /**
    * Task.recurringOccurrence
    */
   export type Task$recurringOccurrenceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -18348,6 +18566,979 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: TaskInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model TaskTransferHistory
+   */
+
+  export type AggregateTaskTransferHistory = {
+    _count: TaskTransferHistoryCountAggregateOutputType | null
+    _avg: TaskTransferHistoryAvgAggregateOutputType | null
+    _sum: TaskTransferHistorySumAggregateOutputType | null
+    _min: TaskTransferHistoryMinAggregateOutputType | null
+    _max: TaskTransferHistoryMaxAggregateOutputType | null
+  }
+
+  export type TaskTransferHistoryAvgAggregateOutputType = {
+    progressAtTransfer: number | null
+  }
+
+  export type TaskTransferHistorySumAggregateOutputType = {
+    progressAtTransfer: number | null
+  }
+
+  export type TaskTransferHistoryMinAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    taskId: string | null
+    fromAssigneeId: string | null
+    toAssigneeId: string | null
+    progressAtTransfer: number | null
+    deadlineAtTransfer: Date | null
+    transferredById: string | null
+  }
+
+  export type TaskTransferHistoryMaxAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    taskId: string | null
+    fromAssigneeId: string | null
+    toAssigneeId: string | null
+    progressAtTransfer: number | null
+    deadlineAtTransfer: Date | null
+    transferredById: string | null
+  }
+
+  export type TaskTransferHistoryCountAggregateOutputType = {
+    id: number
+    createdAt: number
+    taskId: number
+    fromAssigneeId: number
+    toAssigneeId: number
+    progressAtTransfer: number
+    deadlineAtTransfer: number
+    transferredById: number
+    _all: number
+  }
+
+
+  export type TaskTransferHistoryAvgAggregateInputType = {
+    progressAtTransfer?: true
+  }
+
+  export type TaskTransferHistorySumAggregateInputType = {
+    progressAtTransfer?: true
+  }
+
+  export type TaskTransferHistoryMinAggregateInputType = {
+    id?: true
+    createdAt?: true
+    taskId?: true
+    fromAssigneeId?: true
+    toAssigneeId?: true
+    progressAtTransfer?: true
+    deadlineAtTransfer?: true
+    transferredById?: true
+  }
+
+  export type TaskTransferHistoryMaxAggregateInputType = {
+    id?: true
+    createdAt?: true
+    taskId?: true
+    fromAssigneeId?: true
+    toAssigneeId?: true
+    progressAtTransfer?: true
+    deadlineAtTransfer?: true
+    transferredById?: true
+  }
+
+  export type TaskTransferHistoryCountAggregateInputType = {
+    id?: true
+    createdAt?: true
+    taskId?: true
+    fromAssigneeId?: true
+    toAssigneeId?: true
+    progressAtTransfer?: true
+    deadlineAtTransfer?: true
+    transferredById?: true
+    _all?: true
+  }
+
+  export type TaskTransferHistoryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TaskTransferHistory to aggregate.
+     */
+    where?: TaskTransferHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TaskTransferHistories to fetch.
+     */
+    orderBy?: TaskTransferHistoryOrderByWithRelationInput | TaskTransferHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TaskTransferHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TaskTransferHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TaskTransferHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TaskTransferHistories
+    **/
+    _count?: true | TaskTransferHistoryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TaskTransferHistoryAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TaskTransferHistorySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TaskTransferHistoryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TaskTransferHistoryMaxAggregateInputType
+  }
+
+  export type GetTaskTransferHistoryAggregateType<T extends TaskTransferHistoryAggregateArgs> = {
+        [P in keyof T & keyof AggregateTaskTransferHistory]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTaskTransferHistory[P]>
+      : GetScalarType<T[P], AggregateTaskTransferHistory[P]>
+  }
+
+
+
+
+  export type TaskTransferHistoryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaskTransferHistoryWhereInput
+    orderBy?: TaskTransferHistoryOrderByWithAggregationInput | TaskTransferHistoryOrderByWithAggregationInput[]
+    by: TaskTransferHistoryScalarFieldEnum[] | TaskTransferHistoryScalarFieldEnum
+    having?: TaskTransferHistoryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TaskTransferHistoryCountAggregateInputType | true
+    _avg?: TaskTransferHistoryAvgAggregateInputType
+    _sum?: TaskTransferHistorySumAggregateInputType
+    _min?: TaskTransferHistoryMinAggregateInputType
+    _max?: TaskTransferHistoryMaxAggregateInputType
+  }
+
+  export type TaskTransferHistoryGroupByOutputType = {
+    id: string
+    createdAt: Date
+    taskId: string
+    fromAssigneeId: string
+    toAssigneeId: string
+    progressAtTransfer: number
+    deadlineAtTransfer: Date | null
+    transferredById: string | null
+    _count: TaskTransferHistoryCountAggregateOutputType | null
+    _avg: TaskTransferHistoryAvgAggregateOutputType | null
+    _sum: TaskTransferHistorySumAggregateOutputType | null
+    _min: TaskTransferHistoryMinAggregateOutputType | null
+    _max: TaskTransferHistoryMaxAggregateOutputType | null
+  }
+
+  type GetTaskTransferHistoryGroupByPayload<T extends TaskTransferHistoryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TaskTransferHistoryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TaskTransferHistoryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TaskTransferHistoryGroupByOutputType[P]>
+            : GetScalarType<T[P], TaskTransferHistoryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TaskTransferHistorySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    createdAt?: boolean
+    taskId?: boolean
+    fromAssigneeId?: boolean
+    toAssigneeId?: boolean
+    progressAtTransfer?: boolean
+    deadlineAtTransfer?: boolean
+    transferredById?: boolean
+    task?: boolean | TaskDefaultArgs<ExtArgs>
+    fromAssignee?: boolean | StaffDefaultArgs<ExtArgs>
+    toAssignee?: boolean | StaffDefaultArgs<ExtArgs>
+    transferredBy?: boolean | TaskTransferHistory$transferredByArgs<ExtArgs>
+  }, ExtArgs["result"]["taskTransferHistory"]>
+
+
+  export type TaskTransferHistorySelectScalar = {
+    id?: boolean
+    createdAt?: boolean
+    taskId?: boolean
+    fromAssigneeId?: boolean
+    toAssigneeId?: boolean
+    progressAtTransfer?: boolean
+    deadlineAtTransfer?: boolean
+    transferredById?: boolean
+  }
+
+  export type TaskTransferHistoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    task?: boolean | TaskDefaultArgs<ExtArgs>
+    fromAssignee?: boolean | StaffDefaultArgs<ExtArgs>
+    toAssignee?: boolean | StaffDefaultArgs<ExtArgs>
+    transferredBy?: boolean | TaskTransferHistory$transferredByArgs<ExtArgs>
+  }
+
+  export type $TaskTransferHistoryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TaskTransferHistory"
+    objects: {
+      task: Prisma.$TaskPayload<ExtArgs>
+      fromAssignee: Prisma.$StaffPayload<ExtArgs>
+      toAssignee: Prisma.$StaffPayload<ExtArgs>
+      transferredBy: Prisma.$StaffPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      createdAt: Date
+      taskId: string
+      fromAssigneeId: string
+      toAssigneeId: string
+      progressAtTransfer: number
+      deadlineAtTransfer: Date | null
+      transferredById: string | null
+    }, ExtArgs["result"]["taskTransferHistory"]>
+    composites: {}
+  }
+
+  type TaskTransferHistoryGetPayload<S extends boolean | null | undefined | TaskTransferHistoryDefaultArgs> = $Result.GetResult<Prisma.$TaskTransferHistoryPayload, S>
+
+  type TaskTransferHistoryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<TaskTransferHistoryFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: TaskTransferHistoryCountAggregateInputType | true
+    }
+
+  export interface TaskTransferHistoryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TaskTransferHistory'], meta: { name: 'TaskTransferHistory' } }
+    /**
+     * Find zero or one TaskTransferHistory that matches the filter.
+     * @param {TaskTransferHistoryFindUniqueArgs} args - Arguments to find a TaskTransferHistory
+     * @example
+     * // Get one TaskTransferHistory
+     * const taskTransferHistory = await prisma.taskTransferHistory.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TaskTransferHistoryFindUniqueArgs>(args: SelectSubset<T, TaskTransferHistoryFindUniqueArgs<ExtArgs>>): Prisma__TaskTransferHistoryClient<$Result.GetResult<Prisma.$TaskTransferHistoryPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one TaskTransferHistory that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {TaskTransferHistoryFindUniqueOrThrowArgs} args - Arguments to find a TaskTransferHistory
+     * @example
+     * // Get one TaskTransferHistory
+     * const taskTransferHistory = await prisma.taskTransferHistory.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TaskTransferHistoryFindUniqueOrThrowArgs>(args: SelectSubset<T, TaskTransferHistoryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TaskTransferHistoryClient<$Result.GetResult<Prisma.$TaskTransferHistoryPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first TaskTransferHistory that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TaskTransferHistoryFindFirstArgs} args - Arguments to find a TaskTransferHistory
+     * @example
+     * // Get one TaskTransferHistory
+     * const taskTransferHistory = await prisma.taskTransferHistory.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TaskTransferHistoryFindFirstArgs>(args?: SelectSubset<T, TaskTransferHistoryFindFirstArgs<ExtArgs>>): Prisma__TaskTransferHistoryClient<$Result.GetResult<Prisma.$TaskTransferHistoryPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first TaskTransferHistory that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TaskTransferHistoryFindFirstOrThrowArgs} args - Arguments to find a TaskTransferHistory
+     * @example
+     * // Get one TaskTransferHistory
+     * const taskTransferHistory = await prisma.taskTransferHistory.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TaskTransferHistoryFindFirstOrThrowArgs>(args?: SelectSubset<T, TaskTransferHistoryFindFirstOrThrowArgs<ExtArgs>>): Prisma__TaskTransferHistoryClient<$Result.GetResult<Prisma.$TaskTransferHistoryPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more TaskTransferHistories that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TaskTransferHistoryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TaskTransferHistories
+     * const taskTransferHistories = await prisma.taskTransferHistory.findMany()
+     * 
+     * // Get first 10 TaskTransferHistories
+     * const taskTransferHistories = await prisma.taskTransferHistory.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const taskTransferHistoryWithIdOnly = await prisma.taskTransferHistory.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TaskTransferHistoryFindManyArgs>(args?: SelectSubset<T, TaskTransferHistoryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskTransferHistoryPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a TaskTransferHistory.
+     * @param {TaskTransferHistoryCreateArgs} args - Arguments to create a TaskTransferHistory.
+     * @example
+     * // Create one TaskTransferHistory
+     * const TaskTransferHistory = await prisma.taskTransferHistory.create({
+     *   data: {
+     *     // ... data to create a TaskTransferHistory
+     *   }
+     * })
+     * 
+     */
+    create<T extends TaskTransferHistoryCreateArgs>(args: SelectSubset<T, TaskTransferHistoryCreateArgs<ExtArgs>>): Prisma__TaskTransferHistoryClient<$Result.GetResult<Prisma.$TaskTransferHistoryPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many TaskTransferHistories.
+     * @param {TaskTransferHistoryCreateManyArgs} args - Arguments to create many TaskTransferHistories.
+     * @example
+     * // Create many TaskTransferHistories
+     * const taskTransferHistory = await prisma.taskTransferHistory.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TaskTransferHistoryCreateManyArgs>(args?: SelectSubset<T, TaskTransferHistoryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a TaskTransferHistory.
+     * @param {TaskTransferHistoryDeleteArgs} args - Arguments to delete one TaskTransferHistory.
+     * @example
+     * // Delete one TaskTransferHistory
+     * const TaskTransferHistory = await prisma.taskTransferHistory.delete({
+     *   where: {
+     *     // ... filter to delete one TaskTransferHistory
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TaskTransferHistoryDeleteArgs>(args: SelectSubset<T, TaskTransferHistoryDeleteArgs<ExtArgs>>): Prisma__TaskTransferHistoryClient<$Result.GetResult<Prisma.$TaskTransferHistoryPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one TaskTransferHistory.
+     * @param {TaskTransferHistoryUpdateArgs} args - Arguments to update one TaskTransferHistory.
+     * @example
+     * // Update one TaskTransferHistory
+     * const taskTransferHistory = await prisma.taskTransferHistory.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TaskTransferHistoryUpdateArgs>(args: SelectSubset<T, TaskTransferHistoryUpdateArgs<ExtArgs>>): Prisma__TaskTransferHistoryClient<$Result.GetResult<Prisma.$TaskTransferHistoryPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more TaskTransferHistories.
+     * @param {TaskTransferHistoryDeleteManyArgs} args - Arguments to filter TaskTransferHistories to delete.
+     * @example
+     * // Delete a few TaskTransferHistories
+     * const { count } = await prisma.taskTransferHistory.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TaskTransferHistoryDeleteManyArgs>(args?: SelectSubset<T, TaskTransferHistoryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TaskTransferHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TaskTransferHistoryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TaskTransferHistories
+     * const taskTransferHistory = await prisma.taskTransferHistory.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TaskTransferHistoryUpdateManyArgs>(args: SelectSubset<T, TaskTransferHistoryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one TaskTransferHistory.
+     * @param {TaskTransferHistoryUpsertArgs} args - Arguments to update or create a TaskTransferHistory.
+     * @example
+     * // Update or create a TaskTransferHistory
+     * const taskTransferHistory = await prisma.taskTransferHistory.upsert({
+     *   create: {
+     *     // ... data to create a TaskTransferHistory
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TaskTransferHistory we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TaskTransferHistoryUpsertArgs>(args: SelectSubset<T, TaskTransferHistoryUpsertArgs<ExtArgs>>): Prisma__TaskTransferHistoryClient<$Result.GetResult<Prisma.$TaskTransferHistoryPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of TaskTransferHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TaskTransferHistoryCountArgs} args - Arguments to filter TaskTransferHistories to count.
+     * @example
+     * // Count the number of TaskTransferHistories
+     * const count = await prisma.taskTransferHistory.count({
+     *   where: {
+     *     // ... the filter for the TaskTransferHistories we want to count
+     *   }
+     * })
+    **/
+    count<T extends TaskTransferHistoryCountArgs>(
+      args?: Subset<T, TaskTransferHistoryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TaskTransferHistoryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TaskTransferHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TaskTransferHistoryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TaskTransferHistoryAggregateArgs>(args: Subset<T, TaskTransferHistoryAggregateArgs>): Prisma.PrismaPromise<GetTaskTransferHistoryAggregateType<T>>
+
+    /**
+     * Group by TaskTransferHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TaskTransferHistoryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TaskTransferHistoryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TaskTransferHistoryGroupByArgs['orderBy'] }
+        : { orderBy?: TaskTransferHistoryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TaskTransferHistoryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTaskTransferHistoryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TaskTransferHistory model
+   */
+  readonly fields: TaskTransferHistoryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TaskTransferHistory.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TaskTransferHistoryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    task<T extends TaskDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TaskDefaultArgs<ExtArgs>>): Prisma__TaskClient<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    fromAssignee<T extends StaffDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StaffDefaultArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    toAssignee<T extends StaffDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StaffDefaultArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    transferredBy<T extends TaskTransferHistory$transferredByArgs<ExtArgs> = {}>(args?: Subset<T, TaskTransferHistory$transferredByArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TaskTransferHistory model
+   */ 
+  interface TaskTransferHistoryFieldRefs {
+    readonly id: FieldRef<"TaskTransferHistory", 'String'>
+    readonly createdAt: FieldRef<"TaskTransferHistory", 'DateTime'>
+    readonly taskId: FieldRef<"TaskTransferHistory", 'String'>
+    readonly fromAssigneeId: FieldRef<"TaskTransferHistory", 'String'>
+    readonly toAssigneeId: FieldRef<"TaskTransferHistory", 'String'>
+    readonly progressAtTransfer: FieldRef<"TaskTransferHistory", 'Int'>
+    readonly deadlineAtTransfer: FieldRef<"TaskTransferHistory", 'DateTime'>
+    readonly transferredById: FieldRef<"TaskTransferHistory", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TaskTransferHistory findUnique
+   */
+  export type TaskTransferHistoryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaskTransferHistory
+     */
+    select?: TaskTransferHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskTransferHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which TaskTransferHistory to fetch.
+     */
+    where: TaskTransferHistoryWhereUniqueInput
+  }
+
+  /**
+   * TaskTransferHistory findUniqueOrThrow
+   */
+  export type TaskTransferHistoryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaskTransferHistory
+     */
+    select?: TaskTransferHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskTransferHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which TaskTransferHistory to fetch.
+     */
+    where: TaskTransferHistoryWhereUniqueInput
+  }
+
+  /**
+   * TaskTransferHistory findFirst
+   */
+  export type TaskTransferHistoryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaskTransferHistory
+     */
+    select?: TaskTransferHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskTransferHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which TaskTransferHistory to fetch.
+     */
+    where?: TaskTransferHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TaskTransferHistories to fetch.
+     */
+    orderBy?: TaskTransferHistoryOrderByWithRelationInput | TaskTransferHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TaskTransferHistories.
+     */
+    cursor?: TaskTransferHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TaskTransferHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TaskTransferHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TaskTransferHistories.
+     */
+    distinct?: TaskTransferHistoryScalarFieldEnum | TaskTransferHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * TaskTransferHistory findFirstOrThrow
+   */
+  export type TaskTransferHistoryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaskTransferHistory
+     */
+    select?: TaskTransferHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskTransferHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which TaskTransferHistory to fetch.
+     */
+    where?: TaskTransferHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TaskTransferHistories to fetch.
+     */
+    orderBy?: TaskTransferHistoryOrderByWithRelationInput | TaskTransferHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TaskTransferHistories.
+     */
+    cursor?: TaskTransferHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TaskTransferHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TaskTransferHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TaskTransferHistories.
+     */
+    distinct?: TaskTransferHistoryScalarFieldEnum | TaskTransferHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * TaskTransferHistory findMany
+   */
+  export type TaskTransferHistoryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaskTransferHistory
+     */
+    select?: TaskTransferHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskTransferHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which TaskTransferHistories to fetch.
+     */
+    where?: TaskTransferHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TaskTransferHistories to fetch.
+     */
+    orderBy?: TaskTransferHistoryOrderByWithRelationInput | TaskTransferHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TaskTransferHistories.
+     */
+    cursor?: TaskTransferHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TaskTransferHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TaskTransferHistories.
+     */
+    skip?: number
+    distinct?: TaskTransferHistoryScalarFieldEnum | TaskTransferHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * TaskTransferHistory create
+   */
+  export type TaskTransferHistoryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaskTransferHistory
+     */
+    select?: TaskTransferHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskTransferHistoryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TaskTransferHistory.
+     */
+    data: XOR<TaskTransferHistoryCreateInput, TaskTransferHistoryUncheckedCreateInput>
+  }
+
+  /**
+   * TaskTransferHistory createMany
+   */
+  export type TaskTransferHistoryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TaskTransferHistories.
+     */
+    data: TaskTransferHistoryCreateManyInput | TaskTransferHistoryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TaskTransferHistory update
+   */
+  export type TaskTransferHistoryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaskTransferHistory
+     */
+    select?: TaskTransferHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskTransferHistoryInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TaskTransferHistory.
+     */
+    data: XOR<TaskTransferHistoryUpdateInput, TaskTransferHistoryUncheckedUpdateInput>
+    /**
+     * Choose, which TaskTransferHistory to update.
+     */
+    where: TaskTransferHistoryWhereUniqueInput
+  }
+
+  /**
+   * TaskTransferHistory updateMany
+   */
+  export type TaskTransferHistoryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TaskTransferHistories.
+     */
+    data: XOR<TaskTransferHistoryUpdateManyMutationInput, TaskTransferHistoryUncheckedUpdateManyInput>
+    /**
+     * Filter which TaskTransferHistories to update
+     */
+    where?: TaskTransferHistoryWhereInput
+  }
+
+  /**
+   * TaskTransferHistory upsert
+   */
+  export type TaskTransferHistoryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaskTransferHistory
+     */
+    select?: TaskTransferHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskTransferHistoryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TaskTransferHistory to update in case it exists.
+     */
+    where: TaskTransferHistoryWhereUniqueInput
+    /**
+     * In case the TaskTransferHistory found by the `where` argument doesn't exist, create a new TaskTransferHistory with this data.
+     */
+    create: XOR<TaskTransferHistoryCreateInput, TaskTransferHistoryUncheckedCreateInput>
+    /**
+     * In case the TaskTransferHistory was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TaskTransferHistoryUpdateInput, TaskTransferHistoryUncheckedUpdateInput>
+  }
+
+  /**
+   * TaskTransferHistory delete
+   */
+  export type TaskTransferHistoryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaskTransferHistory
+     */
+    select?: TaskTransferHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskTransferHistoryInclude<ExtArgs> | null
+    /**
+     * Filter which TaskTransferHistory to delete.
+     */
+    where: TaskTransferHistoryWhereUniqueInput
+  }
+
+  /**
+   * TaskTransferHistory deleteMany
+   */
+  export type TaskTransferHistoryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TaskTransferHistories to delete
+     */
+    where?: TaskTransferHistoryWhereInput
+  }
+
+  /**
+   * TaskTransferHistory.transferredBy
+   */
+  export type TaskTransferHistory$transferredByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Staff
+     */
+    select?: StaffSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
+  }
+
+  /**
+   * TaskTransferHistory without action
+   */
+  export type TaskTransferHistoryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaskTransferHistory
+     */
+    select?: TaskTransferHistorySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskTransferHistoryInclude<ExtArgs> | null
   }
 
 
@@ -48680,10 +49871,24 @@ export namespace Prisma {
     updatedAt: 'updatedAt',
     workflowStage: 'workflowStage',
     workflowStepId: 'workflowStepId',
-    startDate: 'startDate'
+    transferredFromProgress: 'transferredFromProgress'
   };
 
   export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof TaskScalarFieldEnum]
+
+
+  export const TaskTransferHistoryScalarFieldEnum: {
+    id: 'id',
+    createdAt: 'createdAt',
+    taskId: 'taskId',
+    fromAssigneeId: 'fromAssigneeId',
+    toAssigneeId: 'toAssigneeId',
+    progressAtTransfer: 'progressAtTransfer',
+    deadlineAtTransfer: 'deadlineAtTransfer',
+    transferredById: 'transferredById'
+  };
+
+  export type TaskTransferHistoryScalarFieldEnum = (typeof TaskTransferHistoryScalarFieldEnum)[keyof typeof TaskTransferHistoryScalarFieldEnum]
 
 
   export const ClientTaskScalarFieldEnum: {
@@ -49434,6 +50639,9 @@ export namespace Prisma {
     portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
     dynamicRole?: XOR<RoleNullableRelationFilter, RoleWhereInput> | null
     assignedTasks?: TaskListRelationFilter
+    transferredFromTasks?: TaskTransferHistoryListRelationFilter
+    transferredToTasks?: TaskTransferHistoryListRelationFilter
+    transferredByTasks?: TaskTransferHistoryListRelationFilter
   }
 
   export type StaffOrderByWithRelationInput = {
@@ -49471,6 +50679,9 @@ export namespace Prisma {
     portfolio?: PortfolioOrderByWithRelationInput
     dynamicRole?: RoleOrderByWithRelationInput
     assignedTasks?: TaskOrderByRelationAggregateInput
+    transferredFromTasks?: TaskTransferHistoryOrderByRelationAggregateInput
+    transferredToTasks?: TaskTransferHistoryOrderByRelationAggregateInput
+    transferredByTasks?: TaskTransferHistoryOrderByRelationAggregateInput
   }
 
   export type StaffWhereUniqueInput = Prisma.AtLeast<{
@@ -49511,6 +50722,9 @@ export namespace Prisma {
     portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
     dynamicRole?: XOR<RoleNullableRelationFilter, RoleWhereInput> | null
     assignedTasks?: TaskListRelationFilter
+    transferredFromTasks?: TaskTransferHistoryListRelationFilter
+    transferredToTasks?: TaskTransferHistoryListRelationFilter
+    transferredByTasks?: TaskTransferHistoryListRelationFilter
   }, "id" | "email">
 
   export type StaffOrderByWithAggregationInput = {
@@ -50376,8 +51590,9 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     workflowStage?: EnumWorkflowStageFilter<"Task"> | $Enums.WorkflowStage
     workflowStepId?: StringNullableFilter<"Task"> | string | null
-    startDate?: DateTimeNullableFilter<"Task"> | Date | string | null
+    transferredFromProgress?: IntFilter<"Task"> | number
     clientTask?: ClientTaskListRelationFilter
+    transferHistory?: TaskTransferHistoryListRelationFilter
     recurringOccurrence?: XOR<RecurringTaskOccurrenceNullableRelationFilter, RecurringTaskOccurrenceWhereInput> | null
     agreement?: XOR<IncomeServiceAgreementNullableRelationFilter, IncomeServiceAgreementWhereInput> | null
     user?: XOR<StaffRelationFilter, StaffWhereInput>
@@ -50412,8 +51627,9 @@ export namespace Prisma {
     updatedAt?: SortOrderInput | SortOrder
     workflowStage?: SortOrder
     workflowStepId?: SortOrderInput | SortOrder
-    startDate?: SortOrderInput | SortOrder
+    transferredFromProgress?: SortOrder
     clientTask?: ClientTaskOrderByRelationAggregateInput
+    transferHistory?: TaskTransferHistoryOrderByRelationAggregateInput
     recurringOccurrence?: RecurringTaskOccurrenceOrderByWithRelationInput
     agreement?: IncomeServiceAgreementOrderByWithRelationInput
     user?: StaffOrderByWithRelationInput
@@ -50451,8 +51667,9 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     workflowStage?: EnumWorkflowStageFilter<"Task"> | $Enums.WorkflowStage
     workflowStepId?: StringNullableFilter<"Task"> | string | null
-    startDate?: DateTimeNullableFilter<"Task"> | Date | string | null
+    transferredFromProgress?: IntFilter<"Task"> | number
     clientTask?: ClientTaskListRelationFilter
+    transferHistory?: TaskTransferHistoryListRelationFilter
     recurringOccurrence?: XOR<RecurringTaskOccurrenceNullableRelationFilter, RecurringTaskOccurrenceWhereInput> | null
     agreement?: XOR<IncomeServiceAgreementNullableRelationFilter, IncomeServiceAgreementWhereInput> | null
     user?: XOR<StaffRelationFilter, StaffWhereInput>
@@ -50487,7 +51704,7 @@ export namespace Prisma {
     updatedAt?: SortOrderInput | SortOrder
     workflowStage?: SortOrder
     workflowStepId?: SortOrderInput | SortOrder
-    startDate?: SortOrderInput | SortOrder
+    transferredFromProgress?: SortOrder
     _count?: TaskCountOrderByAggregateInput
     _avg?: TaskAvgOrderByAggregateInput
     _max?: TaskMaxOrderByAggregateInput
@@ -50523,7 +51740,88 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
     workflowStage?: EnumWorkflowStageWithAggregatesFilter<"Task"> | $Enums.WorkflowStage
     workflowStepId?: StringNullableWithAggregatesFilter<"Task"> | string | null
-    startDate?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
+    transferredFromProgress?: IntWithAggregatesFilter<"Task"> | number
+  }
+
+  export type TaskTransferHistoryWhereInput = {
+    AND?: TaskTransferHistoryWhereInput | TaskTransferHistoryWhereInput[]
+    OR?: TaskTransferHistoryWhereInput[]
+    NOT?: TaskTransferHistoryWhereInput | TaskTransferHistoryWhereInput[]
+    id?: StringFilter<"TaskTransferHistory"> | string
+    createdAt?: DateTimeFilter<"TaskTransferHistory"> | Date | string
+    taskId?: StringFilter<"TaskTransferHistory"> | string
+    fromAssigneeId?: StringFilter<"TaskTransferHistory"> | string
+    toAssigneeId?: StringFilter<"TaskTransferHistory"> | string
+    progressAtTransfer?: IntFilter<"TaskTransferHistory"> | number
+    deadlineAtTransfer?: DateTimeNullableFilter<"TaskTransferHistory"> | Date | string | null
+    transferredById?: StringNullableFilter<"TaskTransferHistory"> | string | null
+    task?: XOR<TaskRelationFilter, TaskWhereInput>
+    fromAssignee?: XOR<StaffRelationFilter, StaffWhereInput>
+    toAssignee?: XOR<StaffRelationFilter, StaffWhereInput>
+    transferredBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+  }
+
+  export type TaskTransferHistoryOrderByWithRelationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    taskId?: SortOrder
+    fromAssigneeId?: SortOrder
+    toAssigneeId?: SortOrder
+    progressAtTransfer?: SortOrder
+    deadlineAtTransfer?: SortOrderInput | SortOrder
+    transferredById?: SortOrderInput | SortOrder
+    task?: TaskOrderByWithRelationInput
+    fromAssignee?: StaffOrderByWithRelationInput
+    toAssignee?: StaffOrderByWithRelationInput
+    transferredBy?: StaffOrderByWithRelationInput
+  }
+
+  export type TaskTransferHistoryWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: TaskTransferHistoryWhereInput | TaskTransferHistoryWhereInput[]
+    OR?: TaskTransferHistoryWhereInput[]
+    NOT?: TaskTransferHistoryWhereInput | TaskTransferHistoryWhereInput[]
+    createdAt?: DateTimeFilter<"TaskTransferHistory"> | Date | string
+    taskId?: StringFilter<"TaskTransferHistory"> | string
+    fromAssigneeId?: StringFilter<"TaskTransferHistory"> | string
+    toAssigneeId?: StringFilter<"TaskTransferHistory"> | string
+    progressAtTransfer?: IntFilter<"TaskTransferHistory"> | number
+    deadlineAtTransfer?: DateTimeNullableFilter<"TaskTransferHistory"> | Date | string | null
+    transferredById?: StringNullableFilter<"TaskTransferHistory"> | string | null
+    task?: XOR<TaskRelationFilter, TaskWhereInput>
+    fromAssignee?: XOR<StaffRelationFilter, StaffWhereInput>
+    toAssignee?: XOR<StaffRelationFilter, StaffWhereInput>
+    transferredBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+  }, "id">
+
+  export type TaskTransferHistoryOrderByWithAggregationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    taskId?: SortOrder
+    fromAssigneeId?: SortOrder
+    toAssigneeId?: SortOrder
+    progressAtTransfer?: SortOrder
+    deadlineAtTransfer?: SortOrderInput | SortOrder
+    transferredById?: SortOrderInput | SortOrder
+    _count?: TaskTransferHistoryCountOrderByAggregateInput
+    _avg?: TaskTransferHistoryAvgOrderByAggregateInput
+    _max?: TaskTransferHistoryMaxOrderByAggregateInput
+    _min?: TaskTransferHistoryMinOrderByAggregateInput
+    _sum?: TaskTransferHistorySumOrderByAggregateInput
+  }
+
+  export type TaskTransferHistoryScalarWhereWithAggregatesInput = {
+    AND?: TaskTransferHistoryScalarWhereWithAggregatesInput | TaskTransferHistoryScalarWhereWithAggregatesInput[]
+    OR?: TaskTransferHistoryScalarWhereWithAggregatesInput[]
+    NOT?: TaskTransferHistoryScalarWhereWithAggregatesInput | TaskTransferHistoryScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TaskTransferHistory"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"TaskTransferHistory"> | Date | string
+    taskId?: StringWithAggregatesFilter<"TaskTransferHistory"> | string
+    fromAssigneeId?: StringWithAggregatesFilter<"TaskTransferHistory"> | string
+    toAssigneeId?: StringWithAggregatesFilter<"TaskTransferHistory"> | string
+    progressAtTransfer?: IntWithAggregatesFilter<"TaskTransferHistory"> | number
+    deadlineAtTransfer?: DateTimeNullableWithAggregatesFilter<"TaskTransferHistory"> | Date | string | null
+    transferredById?: StringNullableWithAggregatesFilter<"TaskTransferHistory"> | string | null
   }
 
   export type ClientTaskWhereInput = {
@@ -53093,6 +54391,9 @@ export namespace Prisma {
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffUncheckedCreateInput = {
@@ -53128,6 +54429,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffUpdateInput = {
@@ -53163,6 +54467,9 @@ export namespace Prisma {
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUncheckedUpdateInput = {
@@ -53198,6 +54505,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffCreateManyInput = {
@@ -54157,8 +55467,9 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
+    transferredFromProgress?: number
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
+    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
     user: StaffCreateNestedOneWithoutAssignedTasksInput
@@ -54193,8 +55504,9 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    transferredFromProgress?: number
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
+    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
   }
 
@@ -54217,8 +55529,9 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
     user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
@@ -54253,8 +55566,9 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
   }
 
@@ -54283,7 +55597,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    transferredFromProgress?: number
   }
 
   export type TaskUpdateManyMutationInput = {
@@ -54305,7 +55619,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
   }
 
   export type TaskUncheckedUpdateManyInput = {
@@ -54333,7 +55647,80 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type TaskTransferHistoryCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    progressAtTransfer?: number
+    deadlineAtTransfer?: Date | string | null
+    task: TaskCreateNestedOneWithoutTransferHistoryInput
+    fromAssignee: StaffCreateNestedOneWithoutTransferredFromTasksInput
+    toAssignee: StaffCreateNestedOneWithoutTransferredToTasksInput
+    transferredBy?: StaffCreateNestedOneWithoutTransferredByTasksInput
+  }
+
+  export type TaskTransferHistoryUncheckedCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    taskId: string
+    fromAssigneeId: string
+    toAssigneeId: string
+    progressAtTransfer?: number
+    deadlineAtTransfer?: Date | string | null
+    transferredById?: string | null
+  }
+
+  export type TaskTransferHistoryUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    progressAtTransfer?: IntFieldUpdateOperationsInput | number
+    deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    task?: TaskUpdateOneRequiredWithoutTransferHistoryNestedInput
+    fromAssignee?: StaffUpdateOneRequiredWithoutTransferredFromTasksNestedInput
+    toAssignee?: StaffUpdateOneRequiredWithoutTransferredToTasksNestedInput
+    transferredBy?: StaffUpdateOneWithoutTransferredByTasksNestedInput
+  }
+
+  export type TaskTransferHistoryUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    taskId?: StringFieldUpdateOperationsInput | string
+    fromAssigneeId?: StringFieldUpdateOperationsInput | string
+    toAssigneeId?: StringFieldUpdateOperationsInput | string
+    progressAtTransfer?: IntFieldUpdateOperationsInput | number
+    deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TaskTransferHistoryCreateManyInput = {
+    id?: string
+    createdAt?: Date | string
+    taskId: string
+    fromAssigneeId: string
+    toAssigneeId: string
+    progressAtTransfer?: number
+    deadlineAtTransfer?: Date | string | null
+    transferredById?: string | null
+  }
+
+  export type TaskTransferHistoryUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    progressAtTransfer?: IntFieldUpdateOperationsInput | number
+    deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type TaskTransferHistoryUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    taskId?: StringFieldUpdateOperationsInput | string
+    fromAssigneeId?: StringFieldUpdateOperationsInput | string
+    toAssigneeId?: StringFieldUpdateOperationsInput | string
+    progressAtTransfer?: IntFieldUpdateOperationsInput | number
+    deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ClientTaskCreateInput = {
@@ -57188,6 +58575,12 @@ export namespace Prisma {
     none?: TaskWhereInput
   }
 
+  export type TaskTransferHistoryListRelationFilter = {
+    every?: TaskTransferHistoryWhereInput
+    some?: TaskTransferHistoryWhereInput
+    none?: TaskTransferHistoryWhereInput
+  }
+
   export type ExpenseTransactionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -57245,6 +58638,10 @@ export namespace Prisma {
   }
 
   export type TaskOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TaskTransferHistoryOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -58052,13 +59449,14 @@ export namespace Prisma {
     updatedAt?: SortOrder
     workflowStage?: SortOrder
     workflowStepId?: SortOrder
-    startDate?: SortOrder
+    transferredFromProgress?: SortOrder
   }
 
   export type TaskAvgOrderByAggregateInput = {
     extraTimeMinutes?: SortOrder
     progress?: SortOrder
     sortOrder?: SortOrder
+    transferredFromProgress?: SortOrder
   }
 
   export type TaskMaxOrderByAggregateInput = {
@@ -58086,7 +59484,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     workflowStage?: SortOrder
     workflowStepId?: SortOrder
-    startDate?: SortOrder
+    transferredFromProgress?: SortOrder
   }
 
   export type TaskMinOrderByAggregateInput = {
@@ -58114,13 +59512,14 @@ export namespace Prisma {
     updatedAt?: SortOrder
     workflowStage?: SortOrder
     workflowStepId?: SortOrder
-    startDate?: SortOrder
+    transferredFromProgress?: SortOrder
   }
 
   export type TaskSumOrderByAggregateInput = {
     extraTimeMinutes?: SortOrder
     progress?: SortOrder
     sortOrder?: SortOrder
+    transferredFromProgress?: SortOrder
   }
 
   export type EnumTaskStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -58156,6 +59555,47 @@ export namespace Prisma {
   export type TaskRelationFilter = {
     is?: TaskWhereInput
     isNot?: TaskWhereInput
+  }
+
+  export type TaskTransferHistoryCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    taskId?: SortOrder
+    fromAssigneeId?: SortOrder
+    toAssigneeId?: SortOrder
+    progressAtTransfer?: SortOrder
+    deadlineAtTransfer?: SortOrder
+    transferredById?: SortOrder
+  }
+
+  export type TaskTransferHistoryAvgOrderByAggregateInput = {
+    progressAtTransfer?: SortOrder
+  }
+
+  export type TaskTransferHistoryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    taskId?: SortOrder
+    fromAssigneeId?: SortOrder
+    toAssigneeId?: SortOrder
+    progressAtTransfer?: SortOrder
+    deadlineAtTransfer?: SortOrder
+    transferredById?: SortOrder
+  }
+
+  export type TaskTransferHistoryMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    taskId?: SortOrder
+    fromAssigneeId?: SortOrder
+    toAssigneeId?: SortOrder
+    progressAtTransfer?: SortOrder
+    deadlineAtTransfer?: SortOrder
+    transferredById?: SortOrder
+  }
+
+  export type TaskTransferHistorySumOrderByAggregateInput = {
+    progressAtTransfer?: SortOrder
   }
 
   export type ClientTaskClientIdTaskIdCompoundUniqueInput = {
@@ -60117,6 +61557,27 @@ export namespace Prisma {
     connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
   }
 
+  export type TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput = {
+    create?: XOR<TaskTransferHistoryCreateWithoutFromAssigneeInput, TaskTransferHistoryUncheckedCreateWithoutFromAssigneeInput> | TaskTransferHistoryCreateWithoutFromAssigneeInput[] | TaskTransferHistoryUncheckedCreateWithoutFromAssigneeInput[]
+    connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutFromAssigneeInput | TaskTransferHistoryCreateOrConnectWithoutFromAssigneeInput[]
+    createMany?: TaskTransferHistoryCreateManyFromAssigneeInputEnvelope
+    connect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+  }
+
+  export type TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput = {
+    create?: XOR<TaskTransferHistoryCreateWithoutToAssigneeInput, TaskTransferHistoryUncheckedCreateWithoutToAssigneeInput> | TaskTransferHistoryCreateWithoutToAssigneeInput[] | TaskTransferHistoryUncheckedCreateWithoutToAssigneeInput[]
+    connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutToAssigneeInput | TaskTransferHistoryCreateOrConnectWithoutToAssigneeInput[]
+    createMany?: TaskTransferHistoryCreateManyToAssigneeInputEnvelope
+    connect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+  }
+
+  export type TaskTransferHistoryCreateNestedManyWithoutTransferredByInput = {
+    create?: XOR<TaskTransferHistoryCreateWithoutTransferredByInput, TaskTransferHistoryUncheckedCreateWithoutTransferredByInput> | TaskTransferHistoryCreateWithoutTransferredByInput[] | TaskTransferHistoryUncheckedCreateWithoutTransferredByInput[]
+    connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutTransferredByInput | TaskTransferHistoryCreateOrConnectWithoutTransferredByInput[]
+    createMany?: TaskTransferHistoryCreateManyTransferredByInputEnvelope
+    connect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+  }
+
   export type ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<ExpenseTransactionCreateWithoutUserInput, ExpenseTransactionUncheckedCreateWithoutUserInput> | ExpenseTransactionCreateWithoutUserInput[] | ExpenseTransactionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ExpenseTransactionCreateOrConnectWithoutUserInput | ExpenseTransactionCreateOrConnectWithoutUserInput[]
@@ -60227,6 +61688,27 @@ export namespace Prisma {
     connectOrCreate?: TaskCreateOrConnectWithoutUserInput | TaskCreateOrConnectWithoutUserInput[]
     createMany?: TaskCreateManyUserInputEnvelope
     connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+  }
+
+  export type TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput = {
+    create?: XOR<TaskTransferHistoryCreateWithoutFromAssigneeInput, TaskTransferHistoryUncheckedCreateWithoutFromAssigneeInput> | TaskTransferHistoryCreateWithoutFromAssigneeInput[] | TaskTransferHistoryUncheckedCreateWithoutFromAssigneeInput[]
+    connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutFromAssigneeInput | TaskTransferHistoryCreateOrConnectWithoutFromAssigneeInput[]
+    createMany?: TaskTransferHistoryCreateManyFromAssigneeInputEnvelope
+    connect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+  }
+
+  export type TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput = {
+    create?: XOR<TaskTransferHistoryCreateWithoutToAssigneeInput, TaskTransferHistoryUncheckedCreateWithoutToAssigneeInput> | TaskTransferHistoryCreateWithoutToAssigneeInput[] | TaskTransferHistoryUncheckedCreateWithoutToAssigneeInput[]
+    connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutToAssigneeInput | TaskTransferHistoryCreateOrConnectWithoutToAssigneeInput[]
+    createMany?: TaskTransferHistoryCreateManyToAssigneeInputEnvelope
+    connect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+  }
+
+  export type TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput = {
+    create?: XOR<TaskTransferHistoryCreateWithoutTransferredByInput, TaskTransferHistoryUncheckedCreateWithoutTransferredByInput> | TaskTransferHistoryCreateWithoutTransferredByInput[] | TaskTransferHistoryUncheckedCreateWithoutTransferredByInput[]
+    connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutTransferredByInput | TaskTransferHistoryCreateOrConnectWithoutTransferredByInput[]
+    createMany?: TaskTransferHistoryCreateManyTransferredByInputEnvelope
+    connect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
   }
 
   export type NullableBoolFieldUpdateOperationsInput = {
@@ -60481,6 +61963,48 @@ export namespace Prisma {
     deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
   }
 
+  export type TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput = {
+    create?: XOR<TaskTransferHistoryCreateWithoutFromAssigneeInput, TaskTransferHistoryUncheckedCreateWithoutFromAssigneeInput> | TaskTransferHistoryCreateWithoutFromAssigneeInput[] | TaskTransferHistoryUncheckedCreateWithoutFromAssigneeInput[]
+    connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutFromAssigneeInput | TaskTransferHistoryCreateOrConnectWithoutFromAssigneeInput[]
+    upsert?: TaskTransferHistoryUpsertWithWhereUniqueWithoutFromAssigneeInput | TaskTransferHistoryUpsertWithWhereUniqueWithoutFromAssigneeInput[]
+    createMany?: TaskTransferHistoryCreateManyFromAssigneeInputEnvelope
+    set?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    disconnect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    delete?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    connect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    update?: TaskTransferHistoryUpdateWithWhereUniqueWithoutFromAssigneeInput | TaskTransferHistoryUpdateWithWhereUniqueWithoutFromAssigneeInput[]
+    updateMany?: TaskTransferHistoryUpdateManyWithWhereWithoutFromAssigneeInput | TaskTransferHistoryUpdateManyWithWhereWithoutFromAssigneeInput[]
+    deleteMany?: TaskTransferHistoryScalarWhereInput | TaskTransferHistoryScalarWhereInput[]
+  }
+
+  export type TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput = {
+    create?: XOR<TaskTransferHistoryCreateWithoutToAssigneeInput, TaskTransferHistoryUncheckedCreateWithoutToAssigneeInput> | TaskTransferHistoryCreateWithoutToAssigneeInput[] | TaskTransferHistoryUncheckedCreateWithoutToAssigneeInput[]
+    connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutToAssigneeInput | TaskTransferHistoryCreateOrConnectWithoutToAssigneeInput[]
+    upsert?: TaskTransferHistoryUpsertWithWhereUniqueWithoutToAssigneeInput | TaskTransferHistoryUpsertWithWhereUniqueWithoutToAssigneeInput[]
+    createMany?: TaskTransferHistoryCreateManyToAssigneeInputEnvelope
+    set?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    disconnect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    delete?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    connect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    update?: TaskTransferHistoryUpdateWithWhereUniqueWithoutToAssigneeInput | TaskTransferHistoryUpdateWithWhereUniqueWithoutToAssigneeInput[]
+    updateMany?: TaskTransferHistoryUpdateManyWithWhereWithoutToAssigneeInput | TaskTransferHistoryUpdateManyWithWhereWithoutToAssigneeInput[]
+    deleteMany?: TaskTransferHistoryScalarWhereInput | TaskTransferHistoryScalarWhereInput[]
+  }
+
+  export type TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput = {
+    create?: XOR<TaskTransferHistoryCreateWithoutTransferredByInput, TaskTransferHistoryUncheckedCreateWithoutTransferredByInput> | TaskTransferHistoryCreateWithoutTransferredByInput[] | TaskTransferHistoryUncheckedCreateWithoutTransferredByInput[]
+    connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutTransferredByInput | TaskTransferHistoryCreateOrConnectWithoutTransferredByInput[]
+    upsert?: TaskTransferHistoryUpsertWithWhereUniqueWithoutTransferredByInput | TaskTransferHistoryUpsertWithWhereUniqueWithoutTransferredByInput[]
+    createMany?: TaskTransferHistoryCreateManyTransferredByInputEnvelope
+    set?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    disconnect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    delete?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    connect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    update?: TaskTransferHistoryUpdateWithWhereUniqueWithoutTransferredByInput | TaskTransferHistoryUpdateWithWhereUniqueWithoutTransferredByInput[]
+    updateMany?: TaskTransferHistoryUpdateManyWithWhereWithoutTransferredByInput | TaskTransferHistoryUpdateManyWithWhereWithoutTransferredByInput[]
+    deleteMany?: TaskTransferHistoryScalarWhereInput | TaskTransferHistoryScalarWhereInput[]
+  }
+
   export type ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<ExpenseTransactionCreateWithoutUserInput, ExpenseTransactionUncheckedCreateWithoutUserInput> | ExpenseTransactionCreateWithoutUserInput[] | ExpenseTransactionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ExpenseTransactionCreateOrConnectWithoutUserInput | ExpenseTransactionCreateOrConnectWithoutUserInput[]
@@ -60703,6 +62227,48 @@ export namespace Prisma {
     update?: TaskUpdateWithWhereUniqueWithoutUserInput | TaskUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: TaskUpdateManyWithWhereWithoutUserInput | TaskUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
+  }
+
+  export type TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput = {
+    create?: XOR<TaskTransferHistoryCreateWithoutFromAssigneeInput, TaskTransferHistoryUncheckedCreateWithoutFromAssigneeInput> | TaskTransferHistoryCreateWithoutFromAssigneeInput[] | TaskTransferHistoryUncheckedCreateWithoutFromAssigneeInput[]
+    connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutFromAssigneeInput | TaskTransferHistoryCreateOrConnectWithoutFromAssigneeInput[]
+    upsert?: TaskTransferHistoryUpsertWithWhereUniqueWithoutFromAssigneeInput | TaskTransferHistoryUpsertWithWhereUniqueWithoutFromAssigneeInput[]
+    createMany?: TaskTransferHistoryCreateManyFromAssigneeInputEnvelope
+    set?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    disconnect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    delete?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    connect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    update?: TaskTransferHistoryUpdateWithWhereUniqueWithoutFromAssigneeInput | TaskTransferHistoryUpdateWithWhereUniqueWithoutFromAssigneeInput[]
+    updateMany?: TaskTransferHistoryUpdateManyWithWhereWithoutFromAssigneeInput | TaskTransferHistoryUpdateManyWithWhereWithoutFromAssigneeInput[]
+    deleteMany?: TaskTransferHistoryScalarWhereInput | TaskTransferHistoryScalarWhereInput[]
+  }
+
+  export type TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput = {
+    create?: XOR<TaskTransferHistoryCreateWithoutToAssigneeInput, TaskTransferHistoryUncheckedCreateWithoutToAssigneeInput> | TaskTransferHistoryCreateWithoutToAssigneeInput[] | TaskTransferHistoryUncheckedCreateWithoutToAssigneeInput[]
+    connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutToAssigneeInput | TaskTransferHistoryCreateOrConnectWithoutToAssigneeInput[]
+    upsert?: TaskTransferHistoryUpsertWithWhereUniqueWithoutToAssigneeInput | TaskTransferHistoryUpsertWithWhereUniqueWithoutToAssigneeInput[]
+    createMany?: TaskTransferHistoryCreateManyToAssigneeInputEnvelope
+    set?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    disconnect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    delete?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    connect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    update?: TaskTransferHistoryUpdateWithWhereUniqueWithoutToAssigneeInput | TaskTransferHistoryUpdateWithWhereUniqueWithoutToAssigneeInput[]
+    updateMany?: TaskTransferHistoryUpdateManyWithWhereWithoutToAssigneeInput | TaskTransferHistoryUpdateManyWithWhereWithoutToAssigneeInput[]
+    deleteMany?: TaskTransferHistoryScalarWhereInput | TaskTransferHistoryScalarWhereInput[]
+  }
+
+  export type TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput = {
+    create?: XOR<TaskTransferHistoryCreateWithoutTransferredByInput, TaskTransferHistoryUncheckedCreateWithoutTransferredByInput> | TaskTransferHistoryCreateWithoutTransferredByInput[] | TaskTransferHistoryUncheckedCreateWithoutTransferredByInput[]
+    connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutTransferredByInput | TaskTransferHistoryCreateOrConnectWithoutTransferredByInput[]
+    upsert?: TaskTransferHistoryUpsertWithWhereUniqueWithoutTransferredByInput | TaskTransferHistoryUpsertWithWhereUniqueWithoutTransferredByInput[]
+    createMany?: TaskTransferHistoryCreateManyTransferredByInputEnvelope
+    set?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    disconnect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    delete?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    connect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    update?: TaskTransferHistoryUpdateWithWhereUniqueWithoutTransferredByInput | TaskTransferHistoryUpdateWithWhereUniqueWithoutTransferredByInput[]
+    updateMany?: TaskTransferHistoryUpdateManyWithWhereWithoutTransferredByInput | TaskTransferHistoryUpdateManyWithWhereWithoutTransferredByInput[]
+    deleteMany?: TaskTransferHistoryScalarWhereInput | TaskTransferHistoryScalarWhereInput[]
   }
 
   export type StaffCreateNestedOneWithoutSessionsInput = {
@@ -61806,6 +63372,13 @@ export namespace Prisma {
     connect?: ClientTaskWhereUniqueInput | ClientTaskWhereUniqueInput[]
   }
 
+  export type TaskTransferHistoryCreateNestedManyWithoutTaskInput = {
+    create?: XOR<TaskTransferHistoryCreateWithoutTaskInput, TaskTransferHistoryUncheckedCreateWithoutTaskInput> | TaskTransferHistoryCreateWithoutTaskInput[] | TaskTransferHistoryUncheckedCreateWithoutTaskInput[]
+    connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutTaskInput | TaskTransferHistoryCreateOrConnectWithoutTaskInput[]
+    createMany?: TaskTransferHistoryCreateManyTaskInputEnvelope
+    connect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+  }
+
   export type RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput = {
     create?: XOR<RecurringTaskOccurrenceCreateWithoutTaskInput, RecurringTaskOccurrenceUncheckedCreateWithoutTaskInput>
     connectOrCreate?: RecurringTaskOccurrenceCreateOrConnectWithoutTaskInput
@@ -61855,6 +63428,13 @@ export namespace Prisma {
     connect?: ClientTaskWhereUniqueInput | ClientTaskWhereUniqueInput[]
   }
 
+  export type TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput = {
+    create?: XOR<TaskTransferHistoryCreateWithoutTaskInput, TaskTransferHistoryUncheckedCreateWithoutTaskInput> | TaskTransferHistoryCreateWithoutTaskInput[] | TaskTransferHistoryUncheckedCreateWithoutTaskInput[]
+    connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutTaskInput | TaskTransferHistoryCreateOrConnectWithoutTaskInput[]
+    createMany?: TaskTransferHistoryCreateManyTaskInputEnvelope
+    connect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+  }
+
   export type RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput = {
     create?: XOR<RecurringTaskOccurrenceCreateWithoutTaskInput, RecurringTaskOccurrenceUncheckedCreateWithoutTaskInput>
     connectOrCreate?: RecurringTaskOccurrenceCreateOrConnectWithoutTaskInput
@@ -61885,6 +63465,20 @@ export namespace Prisma {
     update?: ClientTaskUpdateWithWhereUniqueWithoutTaskInput | ClientTaskUpdateWithWhereUniqueWithoutTaskInput[]
     updateMany?: ClientTaskUpdateManyWithWhereWithoutTaskInput | ClientTaskUpdateManyWithWhereWithoutTaskInput[]
     deleteMany?: ClientTaskScalarWhereInput | ClientTaskScalarWhereInput[]
+  }
+
+  export type TaskTransferHistoryUpdateManyWithoutTaskNestedInput = {
+    create?: XOR<TaskTransferHistoryCreateWithoutTaskInput, TaskTransferHistoryUncheckedCreateWithoutTaskInput> | TaskTransferHistoryCreateWithoutTaskInput[] | TaskTransferHistoryUncheckedCreateWithoutTaskInput[]
+    connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutTaskInput | TaskTransferHistoryCreateOrConnectWithoutTaskInput[]
+    upsert?: TaskTransferHistoryUpsertWithWhereUniqueWithoutTaskInput | TaskTransferHistoryUpsertWithWhereUniqueWithoutTaskInput[]
+    createMany?: TaskTransferHistoryCreateManyTaskInputEnvelope
+    set?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    disconnect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    delete?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    connect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    update?: TaskTransferHistoryUpdateWithWhereUniqueWithoutTaskInput | TaskTransferHistoryUpdateWithWhereUniqueWithoutTaskInput[]
+    updateMany?: TaskTransferHistoryUpdateManyWithWhereWithoutTaskInput | TaskTransferHistoryUpdateManyWithWhereWithoutTaskInput[]
+    deleteMany?: TaskTransferHistoryScalarWhereInput | TaskTransferHistoryScalarWhereInput[]
   }
 
   export type RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput = {
@@ -61969,6 +63563,20 @@ export namespace Prisma {
     deleteMany?: ClientTaskScalarWhereInput | ClientTaskScalarWhereInput[]
   }
 
+  export type TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput = {
+    create?: XOR<TaskTransferHistoryCreateWithoutTaskInput, TaskTransferHistoryUncheckedCreateWithoutTaskInput> | TaskTransferHistoryCreateWithoutTaskInput[] | TaskTransferHistoryUncheckedCreateWithoutTaskInput[]
+    connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutTaskInput | TaskTransferHistoryCreateOrConnectWithoutTaskInput[]
+    upsert?: TaskTransferHistoryUpsertWithWhereUniqueWithoutTaskInput | TaskTransferHistoryUpsertWithWhereUniqueWithoutTaskInput[]
+    createMany?: TaskTransferHistoryCreateManyTaskInputEnvelope
+    set?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    disconnect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    delete?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    connect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+    update?: TaskTransferHistoryUpdateWithWhereUniqueWithoutTaskInput | TaskTransferHistoryUpdateWithWhereUniqueWithoutTaskInput[]
+    updateMany?: TaskTransferHistoryUpdateManyWithWhereWithoutTaskInput | TaskTransferHistoryUpdateManyWithWhereWithoutTaskInput[]
+    deleteMany?: TaskTransferHistoryScalarWhereInput | TaskTransferHistoryScalarWhereInput[]
+  }
+
   export type RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput = {
     create?: XOR<RecurringTaskOccurrenceCreateWithoutTaskInput, RecurringTaskOccurrenceUncheckedCreateWithoutTaskInput>
     connectOrCreate?: RecurringTaskOccurrenceCreateOrConnectWithoutTaskInput
@@ -61977,6 +63585,64 @@ export namespace Prisma {
     delete?: RecurringTaskOccurrenceWhereInput | boolean
     connect?: RecurringTaskOccurrenceWhereUniqueInput
     update?: XOR<XOR<RecurringTaskOccurrenceUpdateToOneWithWhereWithoutTaskInput, RecurringTaskOccurrenceUpdateWithoutTaskInput>, RecurringTaskOccurrenceUncheckedUpdateWithoutTaskInput>
+  }
+
+  export type TaskCreateNestedOneWithoutTransferHistoryInput = {
+    create?: XOR<TaskCreateWithoutTransferHistoryInput, TaskUncheckedCreateWithoutTransferHistoryInput>
+    connectOrCreate?: TaskCreateOrConnectWithoutTransferHistoryInput
+    connect?: TaskWhereUniqueInput
+  }
+
+  export type StaffCreateNestedOneWithoutTransferredFromTasksInput = {
+    create?: XOR<StaffCreateWithoutTransferredFromTasksInput, StaffUncheckedCreateWithoutTransferredFromTasksInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutTransferredFromTasksInput
+    connect?: StaffWhereUniqueInput
+  }
+
+  export type StaffCreateNestedOneWithoutTransferredToTasksInput = {
+    create?: XOR<StaffCreateWithoutTransferredToTasksInput, StaffUncheckedCreateWithoutTransferredToTasksInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutTransferredToTasksInput
+    connect?: StaffWhereUniqueInput
+  }
+
+  export type StaffCreateNestedOneWithoutTransferredByTasksInput = {
+    create?: XOR<StaffCreateWithoutTransferredByTasksInput, StaffUncheckedCreateWithoutTransferredByTasksInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutTransferredByTasksInput
+    connect?: StaffWhereUniqueInput
+  }
+
+  export type TaskUpdateOneRequiredWithoutTransferHistoryNestedInput = {
+    create?: XOR<TaskCreateWithoutTransferHistoryInput, TaskUncheckedCreateWithoutTransferHistoryInput>
+    connectOrCreate?: TaskCreateOrConnectWithoutTransferHistoryInput
+    upsert?: TaskUpsertWithoutTransferHistoryInput
+    connect?: TaskWhereUniqueInput
+    update?: XOR<XOR<TaskUpdateToOneWithWhereWithoutTransferHistoryInput, TaskUpdateWithoutTransferHistoryInput>, TaskUncheckedUpdateWithoutTransferHistoryInput>
+  }
+
+  export type StaffUpdateOneRequiredWithoutTransferredFromTasksNestedInput = {
+    create?: XOR<StaffCreateWithoutTransferredFromTasksInput, StaffUncheckedCreateWithoutTransferredFromTasksInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutTransferredFromTasksInput
+    upsert?: StaffUpsertWithoutTransferredFromTasksInput
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutTransferredFromTasksInput, StaffUpdateWithoutTransferredFromTasksInput>, StaffUncheckedUpdateWithoutTransferredFromTasksInput>
+  }
+
+  export type StaffUpdateOneRequiredWithoutTransferredToTasksNestedInput = {
+    create?: XOR<StaffCreateWithoutTransferredToTasksInput, StaffUncheckedCreateWithoutTransferredToTasksInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutTransferredToTasksInput
+    upsert?: StaffUpsertWithoutTransferredToTasksInput
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutTransferredToTasksInput, StaffUpdateWithoutTransferredToTasksInput>, StaffUncheckedUpdateWithoutTransferredToTasksInput>
+  }
+
+  export type StaffUpdateOneWithoutTransferredByTasksNestedInput = {
+    create?: XOR<StaffCreateWithoutTransferredByTasksInput, StaffUncheckedCreateWithoutTransferredByTasksInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutTransferredByTasksInput
+    upsert?: StaffUpsertWithoutTransferredByTasksInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutTransferredByTasksInput, StaffUpdateWithoutTransferredByTasksInput>, StaffUncheckedUpdateWithoutTransferredByTasksInput>
   }
 
   export type ClientCreateNestedOneWithoutClientTaskInput = {
@@ -64548,6 +66214,9 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffUncheckedCreateWithoutDynamicRoleInput = {
@@ -64582,6 +66251,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffCreateOrConnectWithoutDynamicRoleInput = {
@@ -65362,8 +67034,9 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
+    transferredFromProgress?: number
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
+    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
     contentCycle?: ContentCycleCreateNestedOneWithoutTasksInput
@@ -65396,8 +67069,9 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    transferredFromProgress?: number
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
+    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
   }
 
@@ -65408,6 +67082,96 @@ export namespace Prisma {
 
   export type TaskCreateManyUserInputEnvelope = {
     data: TaskCreateManyUserInput | TaskCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TaskTransferHistoryCreateWithoutFromAssigneeInput = {
+    id?: string
+    createdAt?: Date | string
+    progressAtTransfer?: number
+    deadlineAtTransfer?: Date | string | null
+    task: TaskCreateNestedOneWithoutTransferHistoryInput
+    toAssignee: StaffCreateNestedOneWithoutTransferredToTasksInput
+    transferredBy?: StaffCreateNestedOneWithoutTransferredByTasksInput
+  }
+
+  export type TaskTransferHistoryUncheckedCreateWithoutFromAssigneeInput = {
+    id?: string
+    createdAt?: Date | string
+    taskId: string
+    toAssigneeId: string
+    progressAtTransfer?: number
+    deadlineAtTransfer?: Date | string | null
+    transferredById?: string | null
+  }
+
+  export type TaskTransferHistoryCreateOrConnectWithoutFromAssigneeInput = {
+    where: TaskTransferHistoryWhereUniqueInput
+    create: XOR<TaskTransferHistoryCreateWithoutFromAssigneeInput, TaskTransferHistoryUncheckedCreateWithoutFromAssigneeInput>
+  }
+
+  export type TaskTransferHistoryCreateManyFromAssigneeInputEnvelope = {
+    data: TaskTransferHistoryCreateManyFromAssigneeInput | TaskTransferHistoryCreateManyFromAssigneeInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TaskTransferHistoryCreateWithoutToAssigneeInput = {
+    id?: string
+    createdAt?: Date | string
+    progressAtTransfer?: number
+    deadlineAtTransfer?: Date | string | null
+    task: TaskCreateNestedOneWithoutTransferHistoryInput
+    fromAssignee: StaffCreateNestedOneWithoutTransferredFromTasksInput
+    transferredBy?: StaffCreateNestedOneWithoutTransferredByTasksInput
+  }
+
+  export type TaskTransferHistoryUncheckedCreateWithoutToAssigneeInput = {
+    id?: string
+    createdAt?: Date | string
+    taskId: string
+    fromAssigneeId: string
+    progressAtTransfer?: number
+    deadlineAtTransfer?: Date | string | null
+    transferredById?: string | null
+  }
+
+  export type TaskTransferHistoryCreateOrConnectWithoutToAssigneeInput = {
+    where: TaskTransferHistoryWhereUniqueInput
+    create: XOR<TaskTransferHistoryCreateWithoutToAssigneeInput, TaskTransferHistoryUncheckedCreateWithoutToAssigneeInput>
+  }
+
+  export type TaskTransferHistoryCreateManyToAssigneeInputEnvelope = {
+    data: TaskTransferHistoryCreateManyToAssigneeInput | TaskTransferHistoryCreateManyToAssigneeInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TaskTransferHistoryCreateWithoutTransferredByInput = {
+    id?: string
+    createdAt?: Date | string
+    progressAtTransfer?: number
+    deadlineAtTransfer?: Date | string | null
+    task: TaskCreateNestedOneWithoutTransferHistoryInput
+    fromAssignee: StaffCreateNestedOneWithoutTransferredFromTasksInput
+    toAssignee: StaffCreateNestedOneWithoutTransferredToTasksInput
+  }
+
+  export type TaskTransferHistoryUncheckedCreateWithoutTransferredByInput = {
+    id?: string
+    createdAt?: Date | string
+    taskId: string
+    fromAssigneeId: string
+    toAssigneeId: string
+    progressAtTransfer?: number
+    deadlineAtTransfer?: Date | string | null
+  }
+
+  export type TaskTransferHistoryCreateOrConnectWithoutTransferredByInput = {
+    where: TaskTransferHistoryWhereUniqueInput
+    create: XOR<TaskTransferHistoryCreateWithoutTransferredByInput, TaskTransferHistoryUncheckedCreateWithoutTransferredByInput>
+  }
+
+  export type TaskTransferHistoryCreateManyTransferredByInputEnvelope = {
+    data: TaskTransferHistoryCreateManyTransferredByInput | TaskTransferHistoryCreateManyTransferredByInput[]
     skipDuplicates?: boolean
   }
 
@@ -66033,7 +67797,69 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     workflowStage?: EnumWorkflowStageFilter<"Task"> | $Enums.WorkflowStage
     workflowStepId?: StringNullableFilter<"Task"> | string | null
-    startDate?: DateTimeNullableFilter<"Task"> | Date | string | null
+    transferredFromProgress?: IntFilter<"Task"> | number
+  }
+
+  export type TaskTransferHistoryUpsertWithWhereUniqueWithoutFromAssigneeInput = {
+    where: TaskTransferHistoryWhereUniqueInput
+    update: XOR<TaskTransferHistoryUpdateWithoutFromAssigneeInput, TaskTransferHistoryUncheckedUpdateWithoutFromAssigneeInput>
+    create: XOR<TaskTransferHistoryCreateWithoutFromAssigneeInput, TaskTransferHistoryUncheckedCreateWithoutFromAssigneeInput>
+  }
+
+  export type TaskTransferHistoryUpdateWithWhereUniqueWithoutFromAssigneeInput = {
+    where: TaskTransferHistoryWhereUniqueInput
+    data: XOR<TaskTransferHistoryUpdateWithoutFromAssigneeInput, TaskTransferHistoryUncheckedUpdateWithoutFromAssigneeInput>
+  }
+
+  export type TaskTransferHistoryUpdateManyWithWhereWithoutFromAssigneeInput = {
+    where: TaskTransferHistoryScalarWhereInput
+    data: XOR<TaskTransferHistoryUpdateManyMutationInput, TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeInput>
+  }
+
+  export type TaskTransferHistoryScalarWhereInput = {
+    AND?: TaskTransferHistoryScalarWhereInput | TaskTransferHistoryScalarWhereInput[]
+    OR?: TaskTransferHistoryScalarWhereInput[]
+    NOT?: TaskTransferHistoryScalarWhereInput | TaskTransferHistoryScalarWhereInput[]
+    id?: StringFilter<"TaskTransferHistory"> | string
+    createdAt?: DateTimeFilter<"TaskTransferHistory"> | Date | string
+    taskId?: StringFilter<"TaskTransferHistory"> | string
+    fromAssigneeId?: StringFilter<"TaskTransferHistory"> | string
+    toAssigneeId?: StringFilter<"TaskTransferHistory"> | string
+    progressAtTransfer?: IntFilter<"TaskTransferHistory"> | number
+    deadlineAtTransfer?: DateTimeNullableFilter<"TaskTransferHistory"> | Date | string | null
+    transferredById?: StringNullableFilter<"TaskTransferHistory"> | string | null
+  }
+
+  export type TaskTransferHistoryUpsertWithWhereUniqueWithoutToAssigneeInput = {
+    where: TaskTransferHistoryWhereUniqueInput
+    update: XOR<TaskTransferHistoryUpdateWithoutToAssigneeInput, TaskTransferHistoryUncheckedUpdateWithoutToAssigneeInput>
+    create: XOR<TaskTransferHistoryCreateWithoutToAssigneeInput, TaskTransferHistoryUncheckedCreateWithoutToAssigneeInput>
+  }
+
+  export type TaskTransferHistoryUpdateWithWhereUniqueWithoutToAssigneeInput = {
+    where: TaskTransferHistoryWhereUniqueInput
+    data: XOR<TaskTransferHistoryUpdateWithoutToAssigneeInput, TaskTransferHistoryUncheckedUpdateWithoutToAssigneeInput>
+  }
+
+  export type TaskTransferHistoryUpdateManyWithWhereWithoutToAssigneeInput = {
+    where: TaskTransferHistoryScalarWhereInput
+    data: XOR<TaskTransferHistoryUpdateManyMutationInput, TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeInput>
+  }
+
+  export type TaskTransferHistoryUpsertWithWhereUniqueWithoutTransferredByInput = {
+    where: TaskTransferHistoryWhereUniqueInput
+    update: XOR<TaskTransferHistoryUpdateWithoutTransferredByInput, TaskTransferHistoryUncheckedUpdateWithoutTransferredByInput>
+    create: XOR<TaskTransferHistoryCreateWithoutTransferredByInput, TaskTransferHistoryUncheckedCreateWithoutTransferredByInput>
+  }
+
+  export type TaskTransferHistoryUpdateWithWhereUniqueWithoutTransferredByInput = {
+    where: TaskTransferHistoryWhereUniqueInput
+    data: XOR<TaskTransferHistoryUpdateWithoutTransferredByInput, TaskTransferHistoryUncheckedUpdateWithoutTransferredByInput>
+  }
+
+  export type TaskTransferHistoryUpdateManyWithWhereWithoutTransferredByInput = {
+    where: TaskTransferHistoryScalarWhereInput
+    data: XOR<TaskTransferHistoryUpdateManyMutationInput, TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByInput>
   }
 
   export type StaffCreateWithoutSessionsInput = {
@@ -66068,6 +67894,9 @@ export namespace Prisma {
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffUncheckedCreateWithoutSessionsInput = {
@@ -66102,6 +67931,9 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffCreateOrConnectWithoutSessionsInput = {
@@ -66152,6 +67984,9 @@ export namespace Prisma {
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutSessionsInput = {
@@ -66186,6 +68021,9 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffCreateWithoutAccountsInput = {
@@ -66220,6 +68058,9 @@ export namespace Prisma {
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffUncheckedCreateWithoutAccountsInput = {
@@ -66254,6 +68095,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffCreateOrConnectWithoutAccountsInput = {
@@ -66304,6 +68148,9 @@ export namespace Prisma {
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutAccountsInput = {
@@ -66338,6 +68185,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
   }
 
   export type ClientSubServiceCreateWithoutClientInput = {
@@ -66504,6 +68354,9 @@ export namespace Prisma {
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffUncheckedCreateWithoutManagedClientsInput = {
@@ -66538,6 +68391,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffCreateOrConnectWithoutManagedClientsInput = {
@@ -67007,6 +68863,9 @@ export namespace Prisma {
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutManagedClientsInput = {
@@ -67041,6 +68900,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
   }
 
   export type PortfolioUpsertWithoutClientsInput = {
@@ -68032,6 +69894,9 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffUncheckedCreateWithoutPortfolioInput = {
@@ -68066,6 +69931,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffCreateOrConnectWithoutPortfolioInput = {
@@ -68645,6 +70513,36 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type TaskTransferHistoryCreateWithoutTaskInput = {
+    id?: string
+    createdAt?: Date | string
+    progressAtTransfer?: number
+    deadlineAtTransfer?: Date | string | null
+    fromAssignee: StaffCreateNestedOneWithoutTransferredFromTasksInput
+    toAssignee: StaffCreateNestedOneWithoutTransferredToTasksInput
+    transferredBy?: StaffCreateNestedOneWithoutTransferredByTasksInput
+  }
+
+  export type TaskTransferHistoryUncheckedCreateWithoutTaskInput = {
+    id?: string
+    createdAt?: Date | string
+    fromAssigneeId: string
+    toAssigneeId: string
+    progressAtTransfer?: number
+    deadlineAtTransfer?: Date | string | null
+    transferredById?: string | null
+  }
+
+  export type TaskTransferHistoryCreateOrConnectWithoutTaskInput = {
+    where: TaskTransferHistoryWhereUniqueInput
+    create: XOR<TaskTransferHistoryCreateWithoutTaskInput, TaskTransferHistoryUncheckedCreateWithoutTaskInput>
+  }
+
+  export type TaskTransferHistoryCreateManyTaskInputEnvelope = {
+    data: TaskTransferHistoryCreateManyTaskInput | TaskTransferHistoryCreateManyTaskInput[]
+    skipDuplicates?: boolean
+  }
+
   export type RecurringTaskOccurrenceCreateWithoutTaskInput = {
     id?: string
     createdAt?: Date | string
@@ -68741,6 +70639,9 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffUncheckedCreateWithoutAssignedTasksInput = {
@@ -68775,6 +70676,9 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffCreateOrConnectWithoutAssignedTasksInput = {
@@ -68938,6 +70842,22 @@ export namespace Prisma {
     data: XOR<ClientTaskUpdateManyMutationInput, ClientTaskUncheckedUpdateManyWithoutTaskInput>
   }
 
+  export type TaskTransferHistoryUpsertWithWhereUniqueWithoutTaskInput = {
+    where: TaskTransferHistoryWhereUniqueInput
+    update: XOR<TaskTransferHistoryUpdateWithoutTaskInput, TaskTransferHistoryUncheckedUpdateWithoutTaskInput>
+    create: XOR<TaskTransferHistoryCreateWithoutTaskInput, TaskTransferHistoryUncheckedCreateWithoutTaskInput>
+  }
+
+  export type TaskTransferHistoryUpdateWithWhereUniqueWithoutTaskInput = {
+    where: TaskTransferHistoryWhereUniqueInput
+    data: XOR<TaskTransferHistoryUpdateWithoutTaskInput, TaskTransferHistoryUncheckedUpdateWithoutTaskInput>
+  }
+
+  export type TaskTransferHistoryUpdateManyWithWhereWithoutTaskInput = {
+    where: TaskTransferHistoryScalarWhereInput
+    data: XOR<TaskTransferHistoryUpdateManyMutationInput, TaskTransferHistoryUncheckedUpdateManyWithoutTaskInput>
+  }
+
   export type RecurringTaskOccurrenceUpsertWithoutTaskInput = {
     update: XOR<RecurringTaskOccurrenceUpdateWithoutTaskInput, RecurringTaskOccurrenceUncheckedUpdateWithoutTaskInput>
     create: XOR<RecurringTaskOccurrenceCreateWithoutTaskInput, RecurringTaskOccurrenceUncheckedCreateWithoutTaskInput>
@@ -69057,6 +70977,9 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutAssignedTasksInput = {
@@ -69091,6 +71014,9 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
   }
 
   export type ContentCycleUpsertWithoutTasksInput = {
@@ -69257,6 +71183,634 @@ export namespace Prisma {
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
   }
 
+  export type TaskCreateWithoutTransferHistoryInput = {
+    id: string
+    createdAt?: Date | string | null
+    description: string
+    status: $Enums.TaskStatus
+    priority?: $Enums.TaskPriority
+    department: string
+    deadline?: Date | string | null
+    originalDeadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
+    progress?: number
+    supervisor?: string
+    serviceInformation?: string | null
+    isPersonal?: boolean
+    sortOrder?: number
+    updatedAt?: Date | string | null
+    workflowStage?: $Enums.WorkflowStage
+    transferredFromProgress?: number
+    clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
+    recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
+    agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
+    user: StaffCreateNestedOneWithoutAssignedTasksInput
+    contentCycle?: ContentCycleCreateNestedOneWithoutTasksInput
+    contentRequest?: ContentRequestCreateNestedOneWithoutTasksInput
+    project?: ProjectCreateNestedOneWithoutTasksInput
+    workflowStep?: WorkflowTemplateStepCreateNestedOneWithoutGeneratedTasksInput
+  }
+
+  export type TaskUncheckedCreateWithoutTransferHistoryInput = {
+    id: string
+    createdAt?: Date | string | null
+    description: string
+    status: $Enums.TaskStatus
+    priority?: $Enums.TaskPriority
+    department: string
+    deadline?: Date | string | null
+    originalDeadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
+    assgineeId: string
+    progress?: number
+    supervisor?: string
+    serviceInformation?: string | null
+    isPersonal?: boolean
+    agreementId?: string | null
+    contentCycleId?: string | null
+    contentRequestId?: string | null
+    projectId?: string | null
+    sortOrder?: number
+    updatedAt?: Date | string | null
+    workflowStage?: $Enums.WorkflowStage
+    workflowStepId?: string | null
+    transferredFromProgress?: number
+    clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
+    recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
+  }
+
+  export type TaskCreateOrConnectWithoutTransferHistoryInput = {
+    where: TaskWhereUniqueInput
+    create: XOR<TaskCreateWithoutTransferHistoryInput, TaskUncheckedCreateWithoutTransferHistoryInput>
+  }
+
+  export type StaffCreateWithoutTransferredFromTasksInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    gender?: string | null
+    salary?: string | null
+    department?: string | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
+    incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
+    userFiles?: UserFilesCreateNestedManyWithoutUserInput
+    reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
+    registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
+    contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
+    uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
+    createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
+    createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
+    dynamicRole?: RoleCreateNestedOneWithoutUsersInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+  }
+
+  export type StaffUncheckedCreateWithoutTransferredFromTasksInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    gender?: string | null
+    salary?: string | null
+    department?: string | null
+    roleId?: string | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    portfolioId?: string | null
+    expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
+    incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
+    userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
+    reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
+    registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
+    contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
+    uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
+    createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
+    createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+  }
+
+  export type StaffCreateOrConnectWithoutTransferredFromTasksInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutTransferredFromTasksInput, StaffUncheckedCreateWithoutTransferredFromTasksInput>
+  }
+
+  export type StaffCreateWithoutTransferredToTasksInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    gender?: string | null
+    salary?: string | null
+    department?: string | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
+    incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
+    userFiles?: UserFilesCreateNestedManyWithoutUserInput
+    reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
+    registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
+    contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
+    uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
+    createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
+    createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
+    dynamicRole?: RoleCreateNestedOneWithoutUsersInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+  }
+
+  export type StaffUncheckedCreateWithoutTransferredToTasksInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    gender?: string | null
+    salary?: string | null
+    department?: string | null
+    roleId?: string | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    portfolioId?: string | null
+    expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
+    incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
+    userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
+    reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
+    registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
+    contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
+    uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
+    createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
+    createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+  }
+
+  export type StaffCreateOrConnectWithoutTransferredToTasksInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutTransferredToTasksInput, StaffUncheckedCreateWithoutTransferredToTasksInput>
+  }
+
+  export type StaffCreateWithoutTransferredByTasksInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    gender?: string | null
+    salary?: string | null
+    department?: string | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
+    incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
+    userFiles?: UserFilesCreateNestedManyWithoutUserInput
+    reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
+    registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
+    contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
+    uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
+    createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
+    createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
+    dynamicRole?: RoleCreateNestedOneWithoutUsersInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+  }
+
+  export type StaffUncheckedCreateWithoutTransferredByTasksInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    gender?: string | null
+    salary?: string | null
+    department?: string | null
+    roleId?: string | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    portfolioId?: string | null
+    expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
+    incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
+    userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
+    reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
+    registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
+    contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
+    uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
+    createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
+    createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+  }
+
+  export type StaffCreateOrConnectWithoutTransferredByTasksInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutTransferredByTasksInput, StaffUncheckedCreateWithoutTransferredByTasksInput>
+  }
+
+  export type TaskUpsertWithoutTransferHistoryInput = {
+    update: XOR<TaskUpdateWithoutTransferHistoryInput, TaskUncheckedUpdateWithoutTransferHistoryInput>
+    create: XOR<TaskCreateWithoutTransferHistoryInput, TaskUncheckedCreateWithoutTransferHistoryInput>
+    where?: TaskWhereInput
+  }
+
+  export type TaskUpdateToOneWithWhereWithoutTransferHistoryInput = {
+    where?: TaskWhereInput
+    data: XOR<TaskUpdateWithoutTransferHistoryInput, TaskUncheckedUpdateWithoutTransferHistoryInput>
+  }
+
+  export type TaskUpdateWithoutTransferHistoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    description?: StringFieldUpdateOperationsInput | string
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
+    department?: StringFieldUpdateOperationsInput | string
+    deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progress?: IntFieldUpdateOperationsInput | number
+    supervisor?: StringFieldUpdateOperationsInput | string
+    serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
+    isPersonal?: BoolFieldUpdateOperationsInput | boolean
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
+    recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
+    agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
+    user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
+    contentCycle?: ContentCycleUpdateOneWithoutTasksNestedInput
+    contentRequest?: ContentRequestUpdateOneWithoutTasksNestedInput
+    project?: ProjectUpdateOneWithoutTasksNestedInput
+    workflowStep?: WorkflowTemplateStepUpdateOneWithoutGeneratedTasksNestedInput
+  }
+
+  export type TaskUncheckedUpdateWithoutTransferHistoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    description?: StringFieldUpdateOperationsInput | string
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
+    department?: StringFieldUpdateOperationsInput | string
+    deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assgineeId?: StringFieldUpdateOperationsInput | string
+    progress?: IntFieldUpdateOperationsInput | number
+    supervisor?: StringFieldUpdateOperationsInput | string
+    serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
+    isPersonal?: BoolFieldUpdateOperationsInput | boolean
+    agreementId?: NullableStringFieldUpdateOperationsInput | string | null
+    contentCycleId?: NullableStringFieldUpdateOperationsInput | string | null
+    contentRequestId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
+    recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
+  }
+
+  export type StaffUpsertWithoutTransferredFromTasksInput = {
+    update: XOR<StaffUpdateWithoutTransferredFromTasksInput, StaffUncheckedUpdateWithoutTransferredFromTasksInput>
+    create: XOR<StaffCreateWithoutTransferredFromTasksInput, StaffUncheckedCreateWithoutTransferredFromTasksInput>
+    where?: StaffWhereInput
+  }
+
+  export type StaffUpdateToOneWithWhereWithoutTransferredFromTasksInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutTransferredFromTasksInput, StaffUncheckedUpdateWithoutTransferredFromTasksInput>
+  }
+
+  export type StaffUpdateWithoutTransferredFromTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    salary?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
+    incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
+    userFiles?: UserFilesUpdateManyWithoutUserNestedInput
+    reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
+    registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
+    contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
+    uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
+    createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
+    createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
+    dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+  }
+
+  export type StaffUncheckedUpdateWithoutTransferredFromTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    salary?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
+    incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
+    userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
+    reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
+    registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
+    contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+    uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+    createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
+    createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+  }
+
+  export type StaffUpsertWithoutTransferredToTasksInput = {
+    update: XOR<StaffUpdateWithoutTransferredToTasksInput, StaffUncheckedUpdateWithoutTransferredToTasksInput>
+    create: XOR<StaffCreateWithoutTransferredToTasksInput, StaffUncheckedCreateWithoutTransferredToTasksInput>
+    where?: StaffWhereInput
+  }
+
+  export type StaffUpdateToOneWithWhereWithoutTransferredToTasksInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutTransferredToTasksInput, StaffUncheckedUpdateWithoutTransferredToTasksInput>
+  }
+
+  export type StaffUpdateWithoutTransferredToTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    salary?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
+    incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
+    userFiles?: UserFilesUpdateManyWithoutUserNestedInput
+    reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
+    registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
+    contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
+    uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
+    createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
+    createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
+    dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+  }
+
+  export type StaffUncheckedUpdateWithoutTransferredToTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    salary?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
+    incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
+    userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
+    reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
+    registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
+    contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+    uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+    createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
+    createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+  }
+
+  export type StaffUpsertWithoutTransferredByTasksInput = {
+    update: XOR<StaffUpdateWithoutTransferredByTasksInput, StaffUncheckedUpdateWithoutTransferredByTasksInput>
+    create: XOR<StaffCreateWithoutTransferredByTasksInput, StaffUncheckedCreateWithoutTransferredByTasksInput>
+    where?: StaffWhereInput
+  }
+
+  export type StaffUpdateToOneWithWhereWithoutTransferredByTasksInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutTransferredByTasksInput, StaffUncheckedUpdateWithoutTransferredByTasksInput>
+  }
+
+  export type StaffUpdateWithoutTransferredByTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    salary?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
+    incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
+    userFiles?: UserFilesUpdateManyWithoutUserNestedInput
+    reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
+    registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
+    contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
+    uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
+    createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
+    createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
+    dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+  }
+
+  export type StaffUncheckedUpdateWithoutTransferredByTasksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    salary?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
+    incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
+    userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
+    reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
+    registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
+    contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+    uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+    createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
+    createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+  }
+
   export type ClientCreateWithoutClientTaskInput = {
     id: string
     createdAt?: Date | string | null
@@ -69343,7 +71897,8 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
+    transferredFromProgress?: number
+    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
     user: StaffCreateNestedOneWithoutAssignedTasksInput
@@ -69378,7 +71933,8 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    transferredFromProgress?: number
+    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
   }
 
@@ -69490,7 +72046,8 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
     user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
@@ -69525,7 +72082,8 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
   }
 
@@ -69761,6 +72319,9 @@ export namespace Prisma {
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffUncheckedCreateWithoutIncomeTransactionInput = {
@@ -69795,6 +72356,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffCreateOrConnectWithoutIncomeTransactionInput = {
@@ -69945,6 +72509,9 @@ export namespace Prisma {
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutIncomeTransactionInput = {
@@ -69979,6 +72546,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
   }
 
   export type ExpenseTransactionDetailsCreateWithoutExpenseTransactionInput = {
@@ -70071,6 +72641,9 @@ export namespace Prisma {
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffUncheckedCreateWithoutExpenseTransactionInput = {
@@ -70105,6 +72678,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffCreateOrConnectWithoutExpenseTransactionInput = {
@@ -70229,6 +72805,9 @@ export namespace Prisma {
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutExpenseTransactionInput = {
@@ -70263,6 +72842,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
   }
 
   export type IncomeTransactionCreateWithoutTransactionDetailsInput = {
@@ -70385,6 +72967,9 @@ export namespace Prisma {
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffUncheckedCreateWithoutUserFilesInput = {
@@ -70419,6 +73004,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffCreateOrConnectWithoutUserFilesInput = {
@@ -70469,6 +73057,9 @@ export namespace Prisma {
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutUserFilesInput = {
@@ -70503,6 +73094,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
   }
 
   export type ClientCreateWithoutServiceAgreementsInput = {
@@ -70744,8 +73338,9 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
+    transferredFromProgress?: number
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
+    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
     user: StaffCreateNestedOneWithoutAssignedTasksInput
     contentCycle?: ContentCycleCreateNestedOneWithoutTasksInput
@@ -70778,8 +73373,9 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    transferredFromProgress?: number
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
+    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
   }
 
@@ -71181,6 +73777,9 @@ export namespace Prisma {
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffUncheckedCreateWithoutRecieverInput = {
@@ -71215,6 +73814,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffCreateOrConnectWithoutRecieverInput = {
@@ -71254,6 +73856,9 @@ export namespace Prisma {
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffUncheckedCreateWithoutRegistererInput = {
@@ -71288,6 +73893,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffCreateOrConnectWithoutRegistererInput = {
@@ -71360,6 +73968,9 @@ export namespace Prisma {
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutRecieverInput = {
@@ -71394,6 +74005,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUpsertWithoutRegistererInput = {
@@ -71439,6 +74053,9 @@ export namespace Prisma {
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutRegistererInput = {
@@ -71473,6 +74090,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
   }
 
   export type UserSalaryDetailsUpsertWithWhereUniqueWithoutUserSalaryInput = {
@@ -72140,6 +74760,9 @@ export namespace Prisma {
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffUncheckedCreateWithoutAuditLogsInput = {
@@ -72174,6 +74797,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffCreateOrConnectWithoutAuditLogsInput = {
@@ -72224,6 +74850,9 @@ export namespace Prisma {
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutAuditLogsInput = {
@@ -72258,6 +74887,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
   }
 
   export type IncomeServiceAgreementCreateWithoutProjectInput = {
@@ -72558,6 +75190,9 @@ export namespace Prisma {
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedProjectsInput = {
@@ -72592,6 +75227,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedProjectsInput = {
@@ -72618,8 +75256,9 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
+    transferredFromProgress?: number
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
+    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
     user: StaffCreateNestedOneWithoutAssignedTasksInput
@@ -72652,8 +75291,9 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    transferredFromProgress?: number
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
+    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
   }
 
@@ -72892,6 +75532,9 @@ export namespace Prisma {
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedProjectsInput = {
@@ -72926,6 +75569,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
   }
 
   export type TaskUpsertWithWhereUniqueWithoutProjectInput = {
@@ -73170,6 +75816,9 @@ export namespace Prisma {
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedContractsInput = {
@@ -73204,6 +75853,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedContractsInput = {
@@ -73463,6 +76115,9 @@ export namespace Prisma {
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedContractsInput = {
@@ -73497,6 +76152,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
   }
 
   export type ProjectUpsertWithoutContractsInput = {
@@ -73867,6 +76525,9 @@ export namespace Prisma {
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffUncheckedCreateWithoutUploadedContractDocumentsInput = {
@@ -73901,6 +76562,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffCreateOrConnectWithoutUploadedContractDocumentsInput = {
@@ -74004,6 +76668,9 @@ export namespace Prisma {
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutUploadedContractDocumentsInput = {
@@ -74038,6 +76705,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
   }
 
   export type ContentRequestAssigneeCreateWithoutContentRequestInput = {
@@ -74218,6 +76888,9 @@ export namespace Prisma {
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffUncheckedCreateWithoutContentRequestsCreatedInput = {
@@ -74252,6 +76925,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffCreateOrConnectWithoutContentRequestsCreatedInput = {
@@ -74321,8 +76997,9 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
+    transferredFromProgress?: number
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
+    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
     user: StaffCreateNestedOneWithoutAssignedTasksInput
@@ -74355,8 +77032,9 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    transferredFromProgress?: number
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
+    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
   }
 
@@ -74563,6 +77241,9 @@ export namespace Prisma {
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutContentRequestsCreatedInput = {
@@ -74597,6 +77278,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
   }
 
   export type ProjectUpsertWithoutContentRequestsInput = {
@@ -74733,6 +77417,9 @@ export namespace Prisma {
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffUncheckedCreateWithoutContentRequestAssignmentsInput = {
@@ -74767,6 +77454,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffCreateOrConnectWithoutContentRequestAssignmentsInput = {
@@ -74860,6 +77550,9 @@ export namespace Prisma {
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutContentRequestAssignmentsInput = {
@@ -74894,6 +77587,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
   }
 
   export type ContentCycleCreateWithoutScheduleInput = {
@@ -75292,6 +77988,9 @@ export namespace Prisma {
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffUncheckedCreateWithoutAssignedRecurringStepsInput = {
@@ -75326,6 +78025,9 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
   }
 
   export type StaffCreateOrConnectWithoutAssignedRecurringStepsInput = {
@@ -75470,6 +78172,9 @@ export namespace Prisma {
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutAssignedRecurringStepsInput = {
@@ -75504,6 +78209,9 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
   }
 
   export type RecurringScheduleUpsertWithoutStepsInput = {
@@ -75671,8 +78379,9 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
+    transferredFromProgress?: number
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
+    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
     user: StaffCreateNestedOneWithoutAssignedTasksInput
     contentCycle?: ContentCycleCreateNestedOneWithoutTasksInput
@@ -75706,8 +78415,9 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    transferredFromProgress?: number
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
+    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
   }
 
   export type TaskCreateOrConnectWithoutRecurringOccurrenceInput = {
@@ -75788,8 +78498,9 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
     user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
     contentCycle?: ContentCycleUpdateOneWithoutTasksNestedInput
@@ -75823,8 +78534,9 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
   }
 
   export type ClientCreateWithoutContentCyclesInput = {
@@ -75952,8 +78664,9 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
+    transferredFromProgress?: number
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
+    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
     user: StaffCreateNestedOneWithoutAssignedTasksInput
@@ -75986,8 +78699,9 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    transferredFromProgress?: number
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
+    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
   }
 
@@ -76280,8 +78994,9 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
+    transferredFromProgress?: number
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
+    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
     user: StaffCreateNestedOneWithoutAssignedTasksInput
@@ -76314,8 +79029,9 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
+    transferredFromProgress?: number
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
+    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
   }
 
@@ -76509,6 +79225,9 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutDynamicRoleInput = {
@@ -76543,6 +79262,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUncheckedUpdateManyWithoutDynamicRoleInput = {
@@ -76788,7 +79510,37 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    transferredFromProgress?: number
+  }
+
+  export type TaskTransferHistoryCreateManyFromAssigneeInput = {
+    id?: string
+    createdAt?: Date | string
+    taskId: string
+    toAssigneeId: string
+    progressAtTransfer?: number
+    deadlineAtTransfer?: Date | string | null
+    transferredById?: string | null
+  }
+
+  export type TaskTransferHistoryCreateManyToAssigneeInput = {
+    id?: string
+    createdAt?: Date | string
+    taskId: string
+    fromAssigneeId: string
+    progressAtTransfer?: number
+    deadlineAtTransfer?: Date | string | null
+    transferredById?: string | null
+  }
+
+  export type TaskTransferHistoryCreateManyTransferredByInput = {
+    id?: string
+    createdAt?: Date | string
+    taskId: string
+    fromAssigneeId: string
+    toAssigneeId: string
+    progressAtTransfer?: number
+    deadlineAtTransfer?: Date | string | null
   }
 
   export type ExpenseTransactionUpdateWithoutUserInput = {
@@ -77459,8 +80211,9 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
     contentCycle?: ContentCycleUpdateOneWithoutTasksNestedInput
@@ -77493,8 +80246,9 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
   }
 
@@ -77522,7 +80276,97 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type TaskTransferHistoryUpdateWithoutFromAssigneeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    progressAtTransfer?: IntFieldUpdateOperationsInput | number
+    deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    task?: TaskUpdateOneRequiredWithoutTransferHistoryNestedInput
+    toAssignee?: StaffUpdateOneRequiredWithoutTransferredToTasksNestedInput
+    transferredBy?: StaffUpdateOneWithoutTransferredByTasksNestedInput
+  }
+
+  export type TaskTransferHistoryUncheckedUpdateWithoutFromAssigneeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    taskId?: StringFieldUpdateOperationsInput | string
+    toAssigneeId?: StringFieldUpdateOperationsInput | string
+    progressAtTransfer?: IntFieldUpdateOperationsInput | number
+    deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    taskId?: StringFieldUpdateOperationsInput | string
+    toAssigneeId?: StringFieldUpdateOperationsInput | string
+    progressAtTransfer?: IntFieldUpdateOperationsInput | number
+    deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TaskTransferHistoryUpdateWithoutToAssigneeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    progressAtTransfer?: IntFieldUpdateOperationsInput | number
+    deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    task?: TaskUpdateOneRequiredWithoutTransferHistoryNestedInput
+    fromAssignee?: StaffUpdateOneRequiredWithoutTransferredFromTasksNestedInput
+    transferredBy?: StaffUpdateOneWithoutTransferredByTasksNestedInput
+  }
+
+  export type TaskTransferHistoryUncheckedUpdateWithoutToAssigneeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    taskId?: StringFieldUpdateOperationsInput | string
+    fromAssigneeId?: StringFieldUpdateOperationsInput | string
+    progressAtTransfer?: IntFieldUpdateOperationsInput | number
+    deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    taskId?: StringFieldUpdateOperationsInput | string
+    fromAssigneeId?: StringFieldUpdateOperationsInput | string
+    progressAtTransfer?: IntFieldUpdateOperationsInput | number
+    deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TaskTransferHistoryUpdateWithoutTransferredByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    progressAtTransfer?: IntFieldUpdateOperationsInput | number
+    deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    task?: TaskUpdateOneRequiredWithoutTransferHistoryNestedInput
+    fromAssignee?: StaffUpdateOneRequiredWithoutTransferredFromTasksNestedInput
+    toAssignee?: StaffUpdateOneRequiredWithoutTransferredToTasksNestedInput
+  }
+
+  export type TaskTransferHistoryUncheckedUpdateWithoutTransferredByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    taskId?: StringFieldUpdateOperationsInput | string
+    fromAssigneeId?: StringFieldUpdateOperationsInput | string
+    toAssigneeId?: StringFieldUpdateOperationsInput | string
+    progressAtTransfer?: IntFieldUpdateOperationsInput | number
+    deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    taskId?: StringFieldUpdateOperationsInput | string
+    fromAssigneeId?: StringFieldUpdateOperationsInput | string
+    toAssigneeId?: StringFieldUpdateOperationsInput | string
+    progressAtTransfer?: IntFieldUpdateOperationsInput | number
+    deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ClientSubServiceCreateManyClientInput = {
@@ -78763,6 +81607,9 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutPortfolioInput = {
@@ -78797,6 +81644,9 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
   }
 
   export type StaffUncheckedUpdateManyWithoutPortfolioInput = {
@@ -78822,6 +81672,16 @@ export namespace Prisma {
     clientId: string
   }
 
+  export type TaskTransferHistoryCreateManyTaskInput = {
+    id?: string
+    createdAt?: Date | string
+    fromAssigneeId: string
+    toAssigneeId: string
+    progressAtTransfer?: number
+    deadlineAtTransfer?: Date | string | null
+    transferredById?: string | null
+  }
+
   export type ClientTaskUpdateWithoutTaskInput = {
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     Client?: ClientUpdateOneRequiredWithoutClientTaskNestedInput
@@ -78835,6 +81695,36 @@ export namespace Prisma {
   export type ClientTaskUncheckedUpdateManyWithoutTaskInput = {
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TaskTransferHistoryUpdateWithoutTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    progressAtTransfer?: IntFieldUpdateOperationsInput | number
+    deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    fromAssignee?: StaffUpdateOneRequiredWithoutTransferredFromTasksNestedInput
+    toAssignee?: StaffUpdateOneRequiredWithoutTransferredToTasksNestedInput
+    transferredBy?: StaffUpdateOneWithoutTransferredByTasksNestedInput
+  }
+
+  export type TaskTransferHistoryUncheckedUpdateWithoutTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fromAssigneeId?: StringFieldUpdateOperationsInput | string
+    toAssigneeId?: StringFieldUpdateOperationsInput | string
+    progressAtTransfer?: IntFieldUpdateOperationsInput | number
+    deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type TaskTransferHistoryUncheckedUpdateManyWithoutTaskInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    fromAssigneeId?: StringFieldUpdateOperationsInput | string
+    toAssigneeId?: StringFieldUpdateOperationsInput | string
+    progressAtTransfer?: IntFieldUpdateOperationsInput | number
+    deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredById?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type IncomeTransactionCreateManyIncomeInput = {
@@ -79050,7 +81940,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    transferredFromProgress?: number
   }
 
   export type IncomeTransactionUpdateWithoutServiceAgreementInput = {
@@ -79125,8 +82015,9 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
     user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
     contentCycle?: ContentCycleUpdateOneWithoutTasksNestedInput
@@ -79159,8 +82050,9 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
   }
 
@@ -79188,7 +82080,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
   }
 
   export type ExpenseTransactionCreateManyExpenseServiceAgreementInput = {
@@ -79520,7 +82412,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    transferredFromProgress?: number
   }
 
   export type IncomeServiceAgreementUpdateWithoutProjectInput = {
@@ -79707,8 +82599,9 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
     user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
@@ -79741,8 +82634,9 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
   }
 
@@ -79770,7 +82664,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
   }
 
   export type ClientInstallmentCreateManyContractInput = {
@@ -79908,7 +82802,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    transferredFromProgress?: number
   }
 
   export type ContentRequestAssigneeUpdateWithoutContentRequestInput = {
@@ -79951,8 +82845,9 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
     user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
@@ -79985,8 +82880,9 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
   }
 
@@ -80014,7 +82910,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
   }
 
   export type ContentCycleCreateManyScheduleInput = {
@@ -80177,7 +83073,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    transferredFromProgress?: number
   }
 
   export type TaskUpdateWithoutContentCycleInput = {
@@ -80199,8 +83095,9 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
     user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
@@ -80233,8 +83130,9 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
   }
 
@@ -80262,7 +83160,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
   }
 
   export type RecurringScheduleStepCreateManyTemplateInput = {
@@ -80401,7 +83299,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
+    transferredFromProgress?: number
   }
 
   export type TaskUpdateWithoutWorkflowStepInput = {
@@ -80423,8 +83321,9 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
     user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
@@ -80457,8 +83356,9 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
   }
 
@@ -80486,7 +83386,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
   }
 
 
@@ -80642,6 +83542,10 @@ export namespace Prisma {
      * @deprecated Use TaskDefaultArgs instead
      */
     export type TaskArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = TaskDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use TaskTransferHistoryDefaultArgs instead
+     */
+    export type TaskTransferHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = TaskTransferHistoryDefaultArgs<ExtArgs>
     /**
      * @deprecated Use ClientTaskDefaultArgs instead
      */

@@ -33,7 +33,7 @@ import {
 } from "@/lib/dashboard-ui";
 import { Task } from "@/lib/types";
 import { cn, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
-import { Edit, Eye, Trash2 } from "lucide-react";
+import { Edit, Eye, Lock, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 type Props = {
@@ -171,14 +171,18 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
                               type="button"
                               variant="ghost"
                               size="sm"
-                              className={actionBtnEdit}
-                              title="Edit"
+                              className={cn(actionBtnEdit, displayStatus === "overdue" && "border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700")}
+                              title={displayStatus === "overdue" ? "Task overdue — progress locked until extra time added" : "Edit progress"}
                               onClick={() => {
                                 setSelectedTask(task);
                                 setEditOpen(true);
                               }}
                             >
-                              <Edit className="size-4" />
+                              {displayStatus === "overdue" ? (
+                                <Lock className="size-4 text-red-500" />
+                              ) : (
+                                <Edit className="size-4" />
+                              )}
                             </Button>
                             {task.id ? (
                               <DeleteAction

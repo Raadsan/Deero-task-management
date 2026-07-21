@@ -22,6 +22,7 @@ import { formatStatusLabel } from "@/lib/dashboard-ui";
 import { taskTitle } from "@/lib/my-task-filters";
 import { Task } from "@/lib/types";
 import { cn, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
+import { Clock, Lock } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSWRConfig } from "swr";
@@ -72,6 +73,13 @@ export default function MyTaskQuickEditModal({
         await mutate(SWR_CACH_KEYS.myTasksToday.key);
         await mutate(SWR_CACH_KEYS.myTasksBoard.key);
         await mutate(SWR_CACH_KEYS.tasks.key);
+        await mutate(
+          (key) =>
+            (typeof key === "string" && (key.includes("dashboard") || key.includes("task"))) ||
+            (Array.isArray(key) && (String(key[0]).includes("dashboard") || String(key[0]).includes("task"))),
+          undefined,
+          { revalidate: true },
+        );
         onOpenChange(false);
       } else {
         toast.error(result.errors?.message ?? "Failed to update task");
@@ -168,6 +176,18 @@ export default function MyTaskQuickEditModal({
               ) : null}
             </div>
 
+            {resolveTaskDisplayStatus(task) === "overdue" ? (
+              <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-800">
+                <Lock className="size-4 shrink-0 text-red-600" />
+                <span>Task is overdue and deadline has ended. Progress updates are locked until extra time is added by your manager.</span>
+              </div>
+            ) : Number(task.extraTimeMinutes) > 0 ? (
+              <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs font-semibold text-emerald-800">
+                <Clock className="size-4 shrink-0 text-emerald-600" />
+                <span>Extra time has been added to this task! Updated deadline: {task.deadline ? new Date(new Date(task.deadline).getTime() + Number(task.extraTimeMinutes) * 60_000).toLocaleString("en-US", { month: "short", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "N/A"}</span>
+              </div>
+            ) : null}
+
             <div className="rounded-lg border border-zinc-100 bg-white p-4">
               <div className="mb-2 flex items-center justify-between">
                 <label className="text-xs font-bold tracking-wide text-zinc-600 uppercase">
@@ -186,8 +206,8 @@ export default function MyTaskQuickEditModal({
                   onChange={(event) =>
                     setProgress(clampProgress(Number(event.target.value)))
                   }
-                  className="accent-primary h-2 w-full cursor-pointer appearance-none rounded-lg bg-zinc-200"
-                  disabled={saving}
+                  className="accent-primary h-2 w-full cursor-pointer appearance-none rounded-lg bg-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed"
+                  disabled={saving || resolveTaskDisplayStatus(task) === "overdue"}
                 />
                 <input
                   type="number"
@@ -197,8 +217,8 @@ export default function MyTaskQuickEditModal({
                   onChange={(event) =>
                     setProgress(clampProgress(Number(event.target.value)))
                   }
-                  className={cn(configCompactInputClass, "w-20 text-center")}
-                  disabled={saving}
+                  className={cn(configCompactInputClass, "w-20 text-center disabled:opacity-40")}
+                  disabled={saving || resolveTaskDisplayStatus(task) === "overdue"}
                 />
               </div>
             </div>
@@ -217,7 +237,7 @@ export default function MyTaskQuickEditModal({
           <Button
             type="button"
             onClick={() => void handleSave()}
-            disabled={saving || !task}
+            disabled={saving || !task || resolveTaskDisplayStatus(task) === "overdue"}
             className={cn(
               isCompleted && "bg-emerald-600 text-white hover:bg-emerald-700",
             )}

@@ -8,7 +8,8 @@ import {
 } from "@/lib/actions/shared.action";
 import { ROUTES, SWR_CACH_KEYS, TASK_PRIORITIES } from "@/lib/constants";
 import { btnFormCancel, btnFormSubmit } from "@/lib/dashboard-ui";
-import { cn, getTaskStatus } from "@/lib/utils";
+import { cn, getTaskStatus, resolveTaskDisplayStatus } from "@/lib/utils";
+import { ArrowRightLeft, Clock, Lock } from "lucide-react";
 import { CreateTaskSchema, TaskSchema } from "@/lib/validations";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useRouter } from "next/navigation";
@@ -141,12 +142,16 @@ export default function TaskForm({
       ? String(currentTask.assignedTo.portfolioId)
       : "";
 
-  const [selectedBranchId, setSelectedBranchId] = useState(editBranchId);
+  const defaultBranchId = branchOptionsRes?.data?.defaultBranchId ?? "";
+  const [selectedBranchId, setSelectedBranchId] = useState(() => editBranchId || (isCreate ? defaultBranchId : ""));
 
+  // Auto-select the user's portfolio as soon as branch options are available
   useEffect(() => {
     if (!showBranchFields) return;
 
     const availablePortfolios = branchOptionsRes?.data?.portfolios ?? [];
+    if (!availablePortfolios.length) return;
+
     const editBranchIsAvailable = availablePortfolios.some(
       (portfolio) => String(portfolio.id) === editBranchId,
     );
@@ -156,10 +161,16 @@ export default function TaskForm({
       return;
     }
 
-    if (branchOptionsRes?.data?.defaultBranchId) {
-      setSelectedBranchId(branchOptionsRes.data.defaultBranchId);
+    const defaultId = branchOptionsRes?.data?.defaultBranchId;
+    if (defaultId) {
+      const isCurrentValid = availablePortfolios.some(
+        (portfolio) => String(portfolio.id) === String(selectedBranchId),
+      );
+      if (!selectedBranchId || !isCurrentValid) {
+        setSelectedBranchId(defaultId);
+      }
     }
-  }, [showBranchFields, editBranchId, branchOptionsRes?.data]);
+  }, [showBranchFields, editBranchId, branchOptionsRes?.data, selectedBranchId]);
 
   const { data: assigneesRes } = useSWR(
     selectedBranchId ? ["task-form-assignees", selectedBranchId, formType] : null,
@@ -272,6 +283,16 @@ export default function TaskForm({
   function refreshTasksList() {
     mutate(SWR_CACH_KEYS.tasks.key);
     mutate(SWR_CACH_KEYS.myTasks.key);
+    mutate(SWR_CACH_KEYS.myTasksList.key);
+    mutate(SWR_CACH_KEYS.myTasksToday.key);
+    mutate(SWR_CACH_KEYS.myTasksBoard.key);
+    mutate(
+      (key) =>
+        (typeof key === "string" && (key.includes("dashboard") || key.includes("task"))) ||
+        (Array.isArray(key) && (String(key[0]).includes("dashboard") || String(key[0]).includes("task"))),
+      undefined,
+      { revalidate: true },
+    );
   }
 
   function handleSubmitForm(data: FormValues) {
@@ -327,6 +348,9 @@ export default function TaskForm({
           });
           setExtraTimeUntil(undefined);
           setTaskKind(null);
+          // Re-apply the user's default portfolio so next creation is pre-selected
+          const defaultId = branchOptionsRes?.data?.defaultBranchId;
+          if (defaultId) setSelectedBranchId(defaultId);
           if (onSuccess) return onSuccess();
           return router.push(ROUTES.tasks);
         }
@@ -664,44 +688,81 @@ export default function TaskForm({
         invalid={fieldInvalid("deadline")}
       />
 
-      <DatePicker
-        labelText="Extra Time Until (optional)"
-        disbaled={transiton || formType === "own:edit" || session.data?.user.role === "user"}
-        date={extraTimeUntil}
-        showTimePicker
-        compact={isModal}
-        setDate={(date) => {
-          const dueDate = getValues("deadline") ?? defaultDueDate();
-          if (!getValues("deadline")) setValue("deadline", dueDate, { shouldValidate: true });
-          const minutes = Math.max(0, Math.round((date.getTime() - dueDate.getTime()) / 60_000));
-          setExtraTimeUntil(date.getTime() < dueDate.getTime() ? dueDate : date);
-          setValue("extraTimeHours", minutes / 60, { shouldValidate: true });
-        }}
-      />
-
-      <TextInput
-        labelId="calculatedExtraTime"
-        labelText="Calculated Extra Time"
-        placeholder="No extra time added"
-        type="text"
-        otherProps={{ value: formatExtraDuration(extraTimeHoursValue), readOnly: true }}
-        disbaled={false}
-        inputStyle="bg-zinc-50 font-semibold text-slate-700"
-        compact={isModal}
-      />
       {!isCreate && (
-      <TextInput
-        labelId="progress"
-        labelText="Completion Percentage (%)"
-        placeholder="Enter percentage (0-100)"
-        type="number"
-        defaultValue={String(getValues("progress"))}
-        otherProps={{ ...register("progress", { valueAsNumber: true }) }}
-        disbaled={!isAssignee || transiton}
-        errorMessage={fieldMessage("progress")}
-        invalid={fieldInvalid("progress")}
-        compact={isModal}
-      />
+        <>
+          <DatePicker
+            labelText="Extra Time Until (optional)"
+            disbaled={transiton || formType === "own:edit" || session.data?.user.role === "user"}
+            date={extraTimeUntil}
+            showTimePicker
+            compact={isModal}
+            setDate={(date) => {
+              const dueDate = getValues("deadline") ?? defaultDueDate();
+              if (!getValues("deadline")) setValue("deadline", dueDate, { shouldValidate: true });
+              const minutes = Math.max(0, Math.round((date.getTime() - dueDate.getTime()) / 60_000));
+              setExtraTimeUntil(date.getTime() < dueDate.getTime() ? dueDate : date);
+              setValue("extraTimeHours", minutes / 60, { shouldValidate: true });
+            }}
+          />
+
+          <TextInput
+            labelId="calculatedExtraTime"
+            labelText="Calculated Extra Time"
+            placeholder="No extra time added"
+            type="text"
+            otherProps={{ value: formatExtraDuration(extraTimeHoursValue), readOnly: true }}
+            disbaled={false}
+            inputStyle="bg-zinc-50 font-semibold text-slate-700"
+            compact={isModal}
+          />
+        </>
+      )}
+      {!isCreate && (
+        <>
+          {resolveTaskDisplayStatus(currentTask) === "overdue" ? (
+            <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-800">
+              <Lock className="size-4 shrink-0 text-red-600" />
+              <span>Task is overdue and expired. Progress updates are locked until extra time is added.</span>
+            </div>
+          ) : Number(currentTask?.extraTimeMinutes) > 0 ? (
+            <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs font-semibold text-emerald-800">
+              <Clock className="size-4 shrink-0 text-emerald-600" />
+              <span>Extra time has been added! Updated deadline: {currentTask?.deadline ? new Date(new Date(currentTask.deadline).getTime() + Number(currentTask.extraTimeMinutes) * 60_000).toLocaleString("en-US", { month: "short", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "N/A"}</span>
+            </div>
+          ) : null}
+
+          {Number(currentTask?.transferredFromProgress) > 0 && (
+            <div className="flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 p-3 text-xs font-semibold text-indigo-900">
+              <ArrowRightLeft className="size-4 shrink-0 text-indigo-600" />
+              <span>Task was transferred! Work completed before transfer: {currentTask?.transferredFromProgress}%. Minimal progress rate: {currentTask?.transferredFromProgress}%.</span>
+            </div>
+          )}
+
+          <TextInput
+            labelId="progress"
+            labelText={`Completion Percentage (%) ${Number(currentTask?.transferredFromProgress) > 0 ? `(Min: ${currentTask?.transferredFromProgress}%)` : ""}`}
+            placeholder={`Enter percentage (${Number(currentTask?.transferredFromProgress) || 0}-100)`}
+            type="number"
+            defaultValue={String(getValues("progress"))}
+            otherProps={{
+              ...register("progress", {
+                valueAsNumber: true,
+                onChange: (e) => {
+                  const val = Number(e.target.value);
+                  const minVal = Number(currentTask?.transferredFromProgress) || 0;
+                  const isAdmin = session.data?.user?.role === "admin" || session.data?.user?.role === "superadmin";
+                  if (!isAdmin && val < minVal) {
+                    setValue("progress", minVal, { shouldValidate: true });
+                  }
+                },
+              }),
+            }}
+            disbaled={!isAssignee || resolveTaskDisplayStatus(currentTask) === "overdue" || transiton}
+            errorMessage={fieldMessage("progress")}
+            invalid={fieldInvalid("progress")}
+            compact={isModal}
+          />
+        </>
       )}
       {!isCreate && !isAssignee && session.data?.user.role !== "user" && (
         <p className="text-xs font-medium text-zinc-400">

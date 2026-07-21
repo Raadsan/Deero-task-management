@@ -28,6 +28,20 @@ interface ClientSourceInfo {
   source: string;
   numberOfClients: number;
 }
+interface TaskTransferHistoryItem {
+  id: string;
+  createdAt: string | Date;
+  taskId: string;
+  fromAssigneeId: string;
+  toAssigneeId: string;
+  progressAtTransfer: number;
+  deadlineAtTransfer?: string | Date | null;
+  transferredById?: string | null;
+  fromAssignee?: { id: string; name: string; portfolioId?: string | null };
+  toAssignee?: { id: string; name: string; portfolioId?: string | null };
+  transferredBy?: { id: string; name: string };
+}
+
 interface Task {
   id: string | undefined;
   institutions: {
@@ -45,7 +59,10 @@ interface Task {
   priority: TaskPriority;
   status: TaskStatus;
   deadline: string | Date;
+  originalDeadline?: string | Date | null;
   extraTimeMinutes?: number;
+  transferredFromProgress?: number;
+  transferHistory?: TaskTransferHistoryItem[];
   updatedAt?: string | Date;
   completedAt?: string | Date | null;
   progressUpdatedAt?: string | Date | null;

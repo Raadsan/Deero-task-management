@@ -76,24 +76,26 @@ export default function TaskFormModal({
         </DialogHeader>
 
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-          {isLoading || isValidating ? (
-            <div className="space-y-4 animate-pulse px-6 py-5">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-10 rounded-lg bg-zinc-100" />
-              ))}
-            </div>
-          ) : error ? (
-            <div className="px-6 py-10 text-center text-sm text-red-600">
-              {error instanceof Error ? error.message : "Failed to load task"}
-            </div>
-          ) : (
-            <TaskForm
-              key={data?.currentTask?.id ?? `${mode}-new`}
-              formType={formType}
-              currentTask={data?.currentTask}
-              onSuccess={() => onOpenChange(false)}
-              onCancel={() => onOpenChange(false)}
-            />
+          {open && (
+            isLoading || isValidating ? (
+              <div className="space-y-4 animate-pulse px-6 py-5">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="h-10 rounded-lg bg-zinc-100" />
+                ))}
+              </div>
+            ) : error ? (
+              <div className="px-6 py-10 text-center text-sm text-red-600">
+                {error instanceof Error ? error.message : "Failed to load task"}
+              </div>
+            ) : (
+              <TaskForm
+                key={mode === "create" ? "create-task-form" : (data?.currentTask?.id ?? `edit-${taskId}`)}
+                formType={formType}
+                currentTask={data?.currentTask}
+                onSuccess={() => onOpenChange(false)}
+                onCancel={() => onOpenChange(false)}
+              />
+            )
           )}
         </div>
       </DialogContent>

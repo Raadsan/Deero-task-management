@@ -166,14 +166,17 @@ export default function StaffTasksSummaryReport() {
     })();
   }, [selectedStaff, rows, periodTasks]);
 
-  const detailHeaders = ["Task Name", "Assigned", "Priority", "Status", "Due Date", "Extra Time", "Completed Date", "Remained", "Action"];
+  const detailHeaders = ["Task Name", "Assigned", "Priority", "Status", "Original Due Date", "Extra Time", "Updated Due Date", "Completed Date", "Remained", "Action"];
   const detailRows = selected?.tasks.map((task: any) => [
     valueOrNA(task.title ?? task.serviceInformation ?? task.description),
     valueOrNA(selected.staff.name),
     valueOrNA(task.priority),
     valueOrNA(resolveTaskDisplayStatus(task)),
-    dateTime(task.deadline),
+    // Original Due Date: use originalDeadline if extra time was added, else deadline
+    dateTime(task.originalDeadline ?? task.deadline),
     taskExtraLabel(task),
+    // Updated Due Date: deadline + extraTimeMinutes (only shown if extra time > 0)
+    Number(task.extraTimeMinutes) > 0 ? dateTime(taskFinalDue(task)) : "N/A",
     resolveTaskDisplayStatus(task) === "completed" ? dateTime(task.completedAt ?? task.updatedAt) : "N/A",
     taskRemained(task),
     "View",
@@ -309,8 +312,11 @@ export default function StaffTasksSummaryReport() {
                 ["Client", selectedDetailTask.institutions?.[0]?.institution], ["Department", selectedDetailTask.department],
                 ["Supervisor", selectedDetailTask.supervisor], ["Priority", selectedDetailTask.priority],
                 ["Status", resolveTaskDisplayStatus(selectedDetailTask)], ["Progress", `${Number(selectedDetailTask.progress ?? 0)}%`],
-                ["Created Date", dateTime(selectedDetailTask.createdAt)], ["Due Date", dateTime(selectedDetailTask.deadline)],
-                ["Extra Time", taskExtraLabel(selectedDetailTask)], ["Final / Expired Date", dateTime(taskFinalDue(selectedDetailTask))],
+                ["Created Date", dateTime(selectedDetailTask.createdAt)],
+                // Deadline breakdown: original → extra time → updated
+                ["Original Due Date", dateTime(selectedDetailTask.originalDeadline ?? selectedDetailTask.deadline)],
+                ["Extra Time Added", taskExtraLabel(selectedDetailTask)],
+                ["Updated Due Date", Number(selectedDetailTask.extraTimeMinutes) > 0 ? dateTime(taskFinalDue(selectedDetailTask)) : "N/A"],
                 ["Completed Date", resolveTaskDisplayStatus(selectedDetailTask) === "completed" ? dateTime(selectedDetailTask.completedAt ?? selectedDetailTask.updatedAt) : "N/A"],
                 ["Remained", taskRemained(selectedDetailTask)], ["Last Progress Change", dateTime(selectedDetailTask.progressUpdatedAt ?? selectedDetailTask.updatedAt)],
               ].map(([label, value]) => <div key={String(label)} className="rounded-xl border border-zinc-100 bg-zinc-50 p-4"><p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">{label}</p><p className="mt-1.5 text-sm font-semibold capitalize text-slate-800">{valueOrNA(value)}</p></div>)}

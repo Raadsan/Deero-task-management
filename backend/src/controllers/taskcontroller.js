@@ -31,6 +31,14 @@ export const getAllTasks = async (req, res) => {
             },
           },
         },
+        transferHistory: {
+          include: {
+            fromAssignee: { select: { id: true, name: true, portfolioId: true } },
+            toAssignee: { select: { id: true, name: true, portfolioId: true } },
+            transferredBy: { select: { id: true, name: true } },
+          },
+          orderBy: { createdAt: "asc" },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -57,7 +65,6 @@ export const getMyTasks = async (req, res) => {
     } else if (taskScope === "company") {
       where.isPersonal = false;
     }
-    // scope=all → every task assigned to this user
 
     const tasks = await prisma.task.findMany({
       where,
@@ -67,6 +74,14 @@ export const getMyTasks = async (req, res) => {
           include: {
             Client: { select: { id: true, institution: true } },
           },
+        },
+        transferHistory: {
+          include: {
+            fromAssignee: { select: { id: true, name: true, portfolioId: true } },
+            toAssignee: { select: { id: true, name: true, portfolioId: true } },
+            transferredBy: { select: { id: true, name: true } },
+          },
+          orderBy: { createdAt: "asc" },
         },
       },
       orderBy: { createdAt: "desc" },
@@ -84,14 +99,34 @@ async function findAccessibleTask(scope, taskId, include = { user: true }) {
   if (userId) {
     const ownTask = await prisma.task.findFirst({
       where: { id: taskId, assgineeId: userId },
-      include,
+      include: {
+        ...include,
+        transferHistory: {
+          include: {
+            fromAssignee: { select: { id: true, name: true, portfolioId: true } },
+            toAssignee: { select: { id: true, name: true, portfolioId: true } },
+            transferredBy: { select: { id: true, name: true } },
+          },
+          orderBy: { createdAt: "asc" },
+        },
+      },
     });
     if (ownTask) return ownTask;
   }
 
   return prisma.task.findFirst({
     where: mergeWhere({ id: taskId }, taskBranchWhere(scope)),
-    include,
+    include: {
+      ...include,
+      transferHistory: {
+        include: {
+          fromAssignee: { select: { id: true, name: true, portfolioId: true } },
+          toAssignee: { select: { id: true, name: true, portfolioId: true } },
+          transferredBy: { select: { id: true, name: true } },
+        },
+        orderBy: { createdAt: "asc" },
+      },
+    },
   });
 }
 
@@ -278,6 +313,11 @@ export const updateTask = async (req, res) => {
       Math.max(0, Number(extraTimeMinutes) || 0) > 0 &&
       !originalTask.originalDeadline;
 
+    const isReassignment = Boolean(assgineeId && assgineeId !== originalTask.assgineeId);
+    const newTransferredFrom = isReassignment
+      ? Math.max(originalTask.transferredFromProgress || 0, originalTask.progress || 0)
+      : (originalTask.transferredFromProgress || 0);
+
     const task = await prisma.task.update({
       where: { id },
       data: {
@@ -299,6 +339,7 @@ export const updateTask = async (req, res) => {
           ? { startDate: startDate ? new Date(startDate) : null }
           : {}),
         ...(assgineeId !== undefined ? { assgineeId } : {}),
+        ...(isReassignment ? { transferredFromProgress: newTransferredFrom } : {}),
         ...(supervisor !== undefined ? { supervisor } : {}),
         progress: normalized.progress,
         ...(originalTask.progress !== normalized.progress ? { progressUpdatedAt: new Date() } : {}),
@@ -309,8 +350,31 @@ export const updateTask = async (req, res) => {
             : {}),
         ...(serviceInformation !== undefined ? { serviceInformation } : {}),
       },
-      include: { user: true }
+      include: {
+        user: true,
+        transferHistory: {
+          include: {
+            fromAssignee: { select: { id: true, name: true, portfolioId: true } },
+            toAssignee: { select: { id: true, name: true, portfolioId: true } },
+            transferredBy: { select: { id: true, name: true } },
+          },
+          orderBy: { createdAt: "asc" },
+        },
+      },
     });
+
+    if (isReassignment) {
+      await prisma.taskTransferHistory.create({
+        data: {
+          taskId: id,
+          fromAssigneeId: originalTask.assgineeId,
+          toAssigneeId: assgineeId,
+          progressAtTransfer: originalTask.progress || 0,
+          deadlineAtTransfer: originalTask.deadline || null,
+          transferredById: req.user?.id || null,
+        },
+      });
+    }
 
     // Create notifications if progress or status changed
     if (originalTask && (originalTask.status !== task.status || originalTask.progress !== task.progress)) {

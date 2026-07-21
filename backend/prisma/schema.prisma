@@ -57,6 +57,9 @@ model Staff {
   portfolio                 Portfolio?               @relation(fields: [portfolioId], references: [id], map: "Users_branchId_fkey")
   dynamicRole               Role?                    @relation(fields: [roleId], references: [id], map: "Users_roleId_fkey")
   assignedTasks             Task[]                   @relation("TaskAssignee")
+  transferredFromTasks      TaskTransferHistory[]    @relation("TaskTransferFrom")
+  transferredToTasks        TaskTransferHistory[]    @relation("TaskTransferTo")
+  transferredByTasks        TaskTransferHistory[]    @relation("TaskTransferredBy")
 
   @@index([portfolioId], map: "Users_branchId_fkey")
   @@index([roleId], map: "Users_roleId_fkey")
@@ -268,8 +271,9 @@ model Task {
   updatedAt           DateTime?                @updatedAt
   workflowStage       WorkflowStage            @default(pending)
   workflowStepId      String?
-  startDate           DateTime?
+  transferredFromProgress Int                    @default(0)
   clientTask          ClientTask[]
+  transferHistory     TaskTransferHistory[]
   recurringOccurrence RecurringTaskOccurrence?
   agreement           IncomeServiceAgreement?  @relation(fields: [agreementId], references: [id])
   user                Staff                    @relation("TaskAssignee", fields: [assgineeId], references: [id], onDelete: Cascade)
@@ -285,6 +289,27 @@ model Task {
   @@index([assgineeId], map: "tasks_assgineeId_fkey")
   @@index([workflowStepId], map: "tasks_workflowStepId_fkey")
   @@map("tasks")
+}
+
+model TaskTransferHistory {
+  id                 String    @id @default(uuid())
+  createdAt          DateTime  @default(now())
+  taskId             String
+  fromAssigneeId     String
+  toAssigneeId       String
+  progressAtTransfer Int       @default(0)
+  deadlineAtTransfer DateTime?
+  transferredById    String?
+
+  task          Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  fromAssignee  Staff  @relation("TaskTransferFrom", fields: [fromAssigneeId], references: [id], onDelete: Cascade)
+  toAssignee    Staff  @relation("TaskTransferTo", fields: [toAssigneeId], references: [id], onDelete: Cascade)
+  transferredBy Staff? @relation("TaskTransferredBy", fields: [transferredById], references: [id])
+
+  @@index([taskId])
+  @@index([fromAssigneeId])
+  @@index([toAssigneeId])
+  @@map("task_transfer_history")
 }
 
 model ClientTask {

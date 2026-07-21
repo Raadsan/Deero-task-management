@@ -291,7 +291,18 @@ exports.Prisma.TaskScalarFieldEnum = {
   updatedAt: 'updatedAt',
   workflowStage: 'workflowStage',
   workflowStepId: 'workflowStepId',
-  startDate: 'startDate'
+  transferredFromProgress: 'transferredFromProgress'
+};
+
+exports.Prisma.TaskTransferHistoryScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  taskId: 'taskId',
+  fromAssigneeId: 'fromAssigneeId',
+  toAssigneeId: 'toAssigneeId',
+  progressAtTransfer: 'progressAtTransfer',
+  deadlineAtTransfer: 'deadlineAtTransfer',
+  transferredById: 'transferredById'
 };
 
 exports.Prisma.ClientTaskScalarFieldEnum = {
@@ -809,6 +820,7 @@ exports.Prisma.ModelName = {
   ClientSubService: 'ClientSubService',
   ClientService: 'ClientService',
   Task: 'Task',
+  TaskTransferHistory: 'TaskTransferHistory',
   ClientTask: 'ClientTask',
   Counter: 'Counter',
   Income: 'Income',

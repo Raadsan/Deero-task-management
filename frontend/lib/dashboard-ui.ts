@@ -91,6 +91,9 @@ export function getTaskStatusBadgeClass(status: string): string {
       return "bg-blue-600 text-white";
     case "overdue":
       return "bg-rose-600 text-white";
+    case "transferred":
+    case "reassigned":
+      return "bg-indigo-600 text-white";
     default:
       return "bg-zinc-500 text-white";
   }

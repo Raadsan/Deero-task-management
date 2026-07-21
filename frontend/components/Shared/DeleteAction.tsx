@@ -126,6 +126,13 @@ export default function DeleteAction({
         mutate(SWR_CACH_KEYS.tasks.key);
         mutate(SWR_CACH_KEYS.myTasks.key);
         mutate(SWR_CACH_KEYS.myTasksBoard.key);
+        mutate(
+          (key) =>
+            (typeof key === "string" && (key.includes("dashboard") || key.includes("task"))) ||
+            (Array.isArray(key) && (String(key[0]).includes("dashboard") || String(key[0]).includes("task"))),
+          undefined,
+          { revalidate: true },
+        );
       } else {
         toast.error(
           result.errors?.message ||

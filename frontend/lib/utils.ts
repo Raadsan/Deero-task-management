@@ -97,11 +97,29 @@ export function isTaskPastDeadline(deadline: Date | string) {
   return new Date(deadline).getTime() < Date.now();
 }
 
-export function resolveTaskDisplayStatus(task: {
-  status?: string;
-  deadline?: Date | string;
-  progress?: number;
-}) {
+export function resolveTaskDisplayStatus(
+  task: {
+    status?: string;
+    deadline?: Date | string | null;
+    progress?: number;
+    assgineeId?: string;
+    assignedToId?: string;
+    assignedTo?: { id: string };
+    transferHistory?: Array<{ fromAssigneeId?: string }>;
+  },
+  currentUserId?: string,
+) {
+  const currentAssigneeId = task.assgineeId ?? task.assignedToId ?? task.assignedTo?.id;
+  if (
+    currentUserId &&
+    currentAssigneeId &&
+    currentAssigneeId !== currentUserId &&
+    task.transferHistory?.some((h) => h.fromAssigneeId === currentUserId)
+  ) {
+    return "transferred";
+  }
+
+  if (task.status === "transferred") return "transferred";
   const progress = Number(task.progress ?? 0);
   if (task.status === "completed" || progress >= 100) return "completed";
   if (task.deadline && isTaskPastDeadline(task.deadline)) return "overdue";
