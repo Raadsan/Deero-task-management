@@ -14,6 +14,7 @@ import { btnFormSubmit } from "@/lib/dashboard-ui";
 import { Task } from "@/lib/types";
 import {
   AlertCircle,
+  ArrowRightLeft,
   Calendar,
   Clock,
   GitBranch,
@@ -206,6 +207,59 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
                   >
                     {institution}
                   </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {(task as any).transferHistory?.length > 0 && (
+            <div className="rounded-lg border border-indigo-100 bg-indigo-50/50 p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <ArrowRightLeft className="size-4 text-indigo-600" />
+                <p className="text-xs font-bold uppercase tracking-wide text-indigo-700">
+                  Transfer History
+                </p>
+              </div>
+              <div className="space-y-3">
+                {(task as any).transferHistory.map((transfer: any, idx: number) => (
+                  <div
+                    key={transfer.id ?? idx}
+                    className="relative flex items-start gap-3 rounded-lg border border-indigo-200/60 bg-white p-3"
+                  >
+                    <div className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-[10px] font-bold text-indigo-700">
+                      {idx + 1}
+                    </div>
+                    <div className="min-w-0 flex-1 space-y-1">
+                      <p className="text-xs font-semibold text-slate-800">
+                        <span className="text-indigo-700">{transfer.fromAssignee?.name ?? "Unknown"}</span>
+                        {" → "}
+                        <span className="text-indigo-700">{transfer.toAssignee?.name ?? "Unknown"}</span>
+                      </p>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-zinc-500">
+                        <span>
+                          Progress at transfer:{" "}
+                          <strong className="text-slate-700">{transfer.progressAtTransfer ?? 0}%</strong>
+                        </span>
+                        <span>
+                          Date:{" "}
+                          <strong className="text-slate-700">
+                            {new Date(transfer.createdAt).toLocaleString("en-US", {
+                              month: "short",
+                              day: "2-digit",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </strong>
+                        </span>
+                        {transfer.transferredBy?.name && (
+                          <span>
+                            By: <strong className="text-slate-700">{transfer.transferredBy.name}</strong>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>

@@ -291,6 +291,7 @@ exports.Prisma.TaskScalarFieldEnum = {
   updatedAt: 'updatedAt',
   workflowStage: 'workflowStage',
   workflowStepId: 'workflowStepId',
+  startDate: 'startDate',
   transferredFromProgress: 'transferredFromProgress'
 };
 

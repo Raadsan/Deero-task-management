@@ -32,8 +32,9 @@ import {
   getTaskStatusBadgeClass,
 } from "@/lib/dashboard-ui";
 import { Task } from "@/lib/types";
+import { authClient } from "@/lib/auth-client";
 import { cn, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
-import { Edit, Eye, Lock, Trash2 } from "lucide-react";
+import { ArrowRightLeft, Edit, Eye, Lock, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 type Props = {
@@ -42,6 +43,8 @@ type Props = {
 };
 
 export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
+  const session = authClient.useSession();
+  const currentUserId = session.data?.user?.id;
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const [viewOpen, setViewOpen] = useState(false);
@@ -113,7 +116,7 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
                   </TableRow>
                 ) : (
                   paginatedTasks.map((task) => {
-                    const displayStatus = resolveTaskDisplayStatus(task);
+                    const displayStatus = resolveTaskDisplayStatus(task, currentUserId);
 
                     return (
                       <TableRow key={task.id} className={dashboardTableBodyRowClass}>
@@ -167,18 +170,32 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
                             >
                               <Eye className="size-4" />
                             </Button>
-                            <Button
+                             <Button
                               type="button"
                               variant="ghost"
                               size="sm"
-                              className={cn(actionBtnEdit, displayStatus === "overdue" && "border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700")}
-                              title={displayStatus === "overdue" ? "Task overdue — progress locked until extra time added" : "Edit progress"}
+                              className={cn(
+                                actionBtnEdit,
+                                (displayStatus === "overdue" || displayStatus === "transferred") && "border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700",
+                                displayStatus === "transferred" && "opacity-40 backdrop-blur-sm pointer-events-none select-none cursor-not-allowed"
+                              )}
+                              title={
+                                displayStatus === "transferred"
+                                  ? "Task transferred to another user — progress action disabled"
+                                  : displayStatus === "overdue"
+                                  ? "Task overdue — progress locked until extra time added"
+                                  : "Edit progress"
+                              }
                               onClick={() => {
+                                if (displayStatus === "transferred") return;
                                 setSelectedTask(task);
                                 setEditOpen(true);
                               }}
+                              disabled={displayStatus === "transferred"}
                             >
-                              {displayStatus === "overdue" ? (
+                              {displayStatus === "transferred" ? (
+                                <ArrowRightLeft className="size-4 text-indigo-500 animate-pulse" />
+                              ) : displayStatus === "overdue" ? (
                                 <Lock className="size-4 text-red-500" />
                               ) : (
                                 <Edit className="size-4" />

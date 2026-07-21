@@ -17311,6 +17311,7 @@ export namespace Prisma {
     updatedAt: Date | null
     workflowStage: $Enums.WorkflowStage | null
     workflowStepId: string | null
+    startDate: Date | null
     transferredFromProgress: number | null
   }
 
@@ -17339,6 +17340,7 @@ export namespace Prisma {
     updatedAt: Date | null
     workflowStage: $Enums.WorkflowStage | null
     workflowStepId: string | null
+    startDate: Date | null
     transferredFromProgress: number | null
   }
 
@@ -17367,6 +17369,7 @@ export namespace Prisma {
     updatedAt: number
     workflowStage: number
     workflowStepId: number
+    startDate: number
     transferredFromProgress: number
     _all: number
   }
@@ -17411,6 +17414,7 @@ export namespace Prisma {
     updatedAt?: true
     workflowStage?: true
     workflowStepId?: true
+    startDate?: true
     transferredFromProgress?: true
   }
 
@@ -17439,6 +17443,7 @@ export namespace Prisma {
     updatedAt?: true
     workflowStage?: true
     workflowStepId?: true
+    startDate?: true
     transferredFromProgress?: true
   }
 
@@ -17467,6 +17472,7 @@ export namespace Prisma {
     updatedAt?: true
     workflowStage?: true
     workflowStepId?: true
+    startDate?: true
     transferredFromProgress?: true
     _all?: true
   }
@@ -17582,6 +17588,7 @@ export namespace Prisma {
     updatedAt: Date | null
     workflowStage: $Enums.WorkflowStage
     workflowStepId: string | null
+    startDate: Date | null
     transferredFromProgress: number
     _count: TaskCountAggregateOutputType | null
     _avg: TaskAvgAggregateOutputType | null
@@ -17629,6 +17636,7 @@ export namespace Prisma {
     updatedAt?: boolean
     workflowStage?: boolean
     workflowStepId?: boolean
+    startDate?: boolean
     transferredFromProgress?: boolean
     clientTask?: boolean | Task$clientTaskArgs<ExtArgs>
     transferHistory?: boolean | Task$transferHistoryArgs<ExtArgs>
@@ -17668,6 +17676,7 @@ export namespace Prisma {
     updatedAt?: boolean
     workflowStage?: boolean
     workflowStepId?: boolean
+    startDate?: boolean
     transferredFromProgress?: boolean
   }
 
@@ -17722,6 +17731,7 @@ export namespace Prisma {
       updatedAt: Date | null
       workflowStage: $Enums.WorkflowStage
       workflowStepId: string | null
+      startDate: Date | null
       transferredFromProgress: number
     }, ExtArgs["result"]["task"]>
     composites: {}
@@ -18125,6 +18135,7 @@ export namespace Prisma {
     readonly updatedAt: FieldRef<"Task", 'DateTime'>
     readonly workflowStage: FieldRef<"Task", 'WorkflowStage'>
     readonly workflowStepId: FieldRef<"Task", 'String'>
+    readonly startDate: FieldRef<"Task", 'DateTime'>
     readonly transferredFromProgress: FieldRef<"Task", 'Int'>
   }
     
@@ -49871,6 +49882,7 @@ export namespace Prisma {
     updatedAt: 'updatedAt',
     workflowStage: 'workflowStage',
     workflowStepId: 'workflowStepId',
+    startDate: 'startDate',
     transferredFromProgress: 'transferredFromProgress'
   };
 
@@ -51590,6 +51602,7 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     workflowStage?: EnumWorkflowStageFilter<"Task"> | $Enums.WorkflowStage
     workflowStepId?: StringNullableFilter<"Task"> | string | null
+    startDate?: DateTimeNullableFilter<"Task"> | Date | string | null
     transferredFromProgress?: IntFilter<"Task"> | number
     clientTask?: ClientTaskListRelationFilter
     transferHistory?: TaskTransferHistoryListRelationFilter
@@ -51627,6 +51640,7 @@ export namespace Prisma {
     updatedAt?: SortOrderInput | SortOrder
     workflowStage?: SortOrder
     workflowStepId?: SortOrderInput | SortOrder
+    startDate?: SortOrderInput | SortOrder
     transferredFromProgress?: SortOrder
     clientTask?: ClientTaskOrderByRelationAggregateInput
     transferHistory?: TaskTransferHistoryOrderByRelationAggregateInput
@@ -51667,6 +51681,7 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     workflowStage?: EnumWorkflowStageFilter<"Task"> | $Enums.WorkflowStage
     workflowStepId?: StringNullableFilter<"Task"> | string | null
+    startDate?: DateTimeNullableFilter<"Task"> | Date | string | null
     transferredFromProgress?: IntFilter<"Task"> | number
     clientTask?: ClientTaskListRelationFilter
     transferHistory?: TaskTransferHistoryListRelationFilter
@@ -51704,6 +51719,7 @@ export namespace Prisma {
     updatedAt?: SortOrderInput | SortOrder
     workflowStage?: SortOrder
     workflowStepId?: SortOrderInput | SortOrder
+    startDate?: SortOrderInput | SortOrder
     transferredFromProgress?: SortOrder
     _count?: TaskCountOrderByAggregateInput
     _avg?: TaskAvgOrderByAggregateInput
@@ -51740,6 +51756,7 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
     workflowStage?: EnumWorkflowStageWithAggregatesFilter<"Task"> | $Enums.WorkflowStage
     workflowStepId?: StringNullableWithAggregatesFilter<"Task"> | string | null
+    startDate?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
     transferredFromProgress?: IntWithAggregatesFilter<"Task"> | number
   }
 
@@ -55467,6 +55484,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     transferredFromProgress?: number
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
     transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
@@ -55504,6 +55522,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     transferredFromProgress?: number
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
     transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
@@ -55529,6 +55548,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
     transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
@@ -55566,6 +55586,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
     transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
@@ -55597,6 +55618,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     transferredFromProgress?: number
   }
 
@@ -55619,6 +55641,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
   }
 
@@ -55647,6 +55670,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
   }
 
@@ -59449,6 +59473,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     workflowStage?: SortOrder
     workflowStepId?: SortOrder
+    startDate?: SortOrder
     transferredFromProgress?: SortOrder
   }
 
@@ -59484,6 +59509,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     workflowStage?: SortOrder
     workflowStepId?: SortOrder
+    startDate?: SortOrder
     transferredFromProgress?: SortOrder
   }
 
@@ -59512,6 +59538,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     workflowStage?: SortOrder
     workflowStepId?: SortOrder
+    startDate?: SortOrder
     transferredFromProgress?: SortOrder
   }
 
@@ -67034,6 +67061,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     transferredFromProgress?: number
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
     transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
@@ -67069,6 +67097,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     transferredFromProgress?: number
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
     transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
@@ -67797,6 +67826,7 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     workflowStage?: EnumWorkflowStageFilter<"Task"> | $Enums.WorkflowStage
     workflowStepId?: StringNullableFilter<"Task"> | string | null
+    startDate?: DateTimeNullableFilter<"Task"> | Date | string | null
     transferredFromProgress?: IntFilter<"Task"> | number
   }
 
@@ -71202,6 +71232,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     transferredFromProgress?: number
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
@@ -71238,6 +71269,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     transferredFromProgress?: number
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
@@ -71515,6 +71547,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
@@ -71551,6 +71584,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
@@ -71897,6 +71931,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     transferredFromProgress?: number
     transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
@@ -71933,6 +71968,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     transferredFromProgress?: number
     transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
@@ -72046,6 +72082,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
     transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
@@ -72082,6 +72119,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
     transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
@@ -73338,6 +73376,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     transferredFromProgress?: number
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
     transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
@@ -73373,6 +73412,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     transferredFromProgress?: number
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
     transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
@@ -75256,6 +75296,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     transferredFromProgress?: number
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
     transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
@@ -75291,6 +75332,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     transferredFromProgress?: number
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
     transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
@@ -76997,6 +77039,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     transferredFromProgress?: number
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
     transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
@@ -77032,6 +77075,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     transferredFromProgress?: number
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
     transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
@@ -78379,6 +78423,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     transferredFromProgress?: number
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
     transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
@@ -78415,6 +78460,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     transferredFromProgress?: number
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
     transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
@@ -78498,6 +78544,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
     transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
@@ -78534,6 +78581,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
     transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
@@ -78664,6 +78712,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     transferredFromProgress?: number
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
     transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
@@ -78699,6 +78748,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     transferredFromProgress?: number
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
     transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
@@ -78994,6 +79044,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     transferredFromProgress?: number
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
     transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
@@ -79029,6 +79080,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     transferredFromProgress?: number
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
     transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
@@ -79510,6 +79562,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     transferredFromProgress?: number
   }
 
@@ -80211,6 +80264,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
     transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
@@ -80246,6 +80300,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
     transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
@@ -80276,6 +80331,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
   }
 
@@ -81940,6 +81996,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     transferredFromProgress?: number
   }
 
@@ -82015,6 +82072,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
     transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
@@ -82050,6 +82108,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
     transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
@@ -82080,6 +82139,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
   }
 
@@ -82412,6 +82472,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     transferredFromProgress?: number
   }
 
@@ -82599,6 +82660,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
     transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
@@ -82634,6 +82696,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
     transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
@@ -82664,6 +82727,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
   }
 
@@ -82802,6 +82866,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     transferredFromProgress?: number
   }
 
@@ -82845,6 +82910,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
     transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
@@ -82880,6 +82946,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
     transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
@@ -82910,6 +82977,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
   }
 
@@ -83073,6 +83141,7 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
+    startDate?: Date | string | null
     transferredFromProgress?: number
   }
 
@@ -83095,6 +83164,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
     transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
@@ -83130,6 +83200,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
     transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
@@ -83160,6 +83231,7 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
   }
 
@@ -83299,6 +83371,7 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
+    startDate?: Date | string | null
     transferredFromProgress?: number
   }
 
@@ -83321,6 +83394,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
     transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
@@ -83356,6 +83430,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
     transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
@@ -83386,6 +83461,7 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
   }
 

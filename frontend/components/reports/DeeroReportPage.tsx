@@ -949,6 +949,10 @@ export default function DeeroReportPage({ type, chartsOnly = false }: { type: De
                           >
                             <Eye className="size-4" />
                           </button>
+                        ) : type === "tasks" && cellIdx === 3 ? (
+                          <span className={cn("inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-semibold capitalize", getTaskStatusBadgeClass(String(cell)))}>
+                            {cell}
+                          </span>
                         ) : (
                           cell
                         )}

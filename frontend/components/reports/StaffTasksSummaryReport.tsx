@@ -16,6 +16,7 @@ import {
   dashboardTableHeadRowClass,
   dashboardTableHeaderClass,
   dashboardTableWrapClass,
+  getTaskStatusBadgeClass,
 } from "@/lib/dashboard-ui";
 import { exportCsv, exportPdf, printReport } from "@/lib/report-export";
 import { cn, resolveTaskDisplayStatus } from "@/lib/utils";
@@ -286,7 +287,7 @@ export default function StaffTasksSummaryReport() {
               <div className="overflow-x-auto rounded-xl border border-zinc-200">
                 <Table className="min-w-[1380px]">
                   <TableHeader className={dashboardTableHeaderClass}><TableRow className={dashboardTableHeadRowClass}>{detailHeaders.map((header) => <TableHead key={header} className={dashboardTableHeadClass}>{header}</TableHead>)}</TableRow></TableHeader>
-                  <TableBody>{detailRows.length ? detailRows.map((row, index) => <TableRow key={index} className={dashboardTableBodyRowClass}>{row.map((cell, cellIndex) => <TableCell key={cellIndex} className={dashboardTableCellClass}>{cellIndex === row.length - 1 ? <button type="button" aria-label="View task information" onClick={() => setSelectedDetailTask(selected.tasks[index])} className="inline-flex size-8 items-center justify-center rounded-lg border border-zinc-200 text-primary hover:bg-primary/5"><Eye className="size-4" /></button> : cell}</TableCell>)}</TableRow>) : <TableRow><TableCell colSpan={detailHeaders.length} className="py-10 text-center text-zinc-500">No tasks assigned</TableCell></TableRow>}</TableBody>
+                  <TableBody>{detailRows.length ? detailRows.map((row, index) => <TableRow key={index} className={dashboardTableBodyRowClass}>{row.map((cell, cellIndex) => <TableCell key={cellIndex} className={dashboardTableCellClass}>{cellIndex === row.length - 1 ? <button type="button" aria-label="View task information" onClick={() => setSelectedDetailTask(selected.tasks[index])} className="inline-flex size-8 items-center justify-center rounded-lg border border-zinc-200 text-primary hover:bg-primary/5"><Eye className="size-4" /></button> : cellIndex === 3 ? <span className={cn("inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-semibold capitalize", getTaskStatusBadgeClass(String(cell)))}>{cell}</span> : cell}</TableCell>)}</TableRow>) : <TableRow><TableCell colSpan={detailHeaders.length} className="py-10 text-center text-zinc-500">No tasks assigned</TableCell></TableRow>}</TableBody>
                 </Table>
               </div>
             </div>

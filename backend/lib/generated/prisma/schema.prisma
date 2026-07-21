@@ -271,6 +271,7 @@ model Task {
   updatedAt               DateTime?                @updatedAt
   workflowStage           WorkflowStage            @default(pending)
   workflowStepId          String?
+  startDate               DateTime?
   transferredFromProgress Int                      @default(0)
   clientTask              ClientTask[]
   transferHistory         TaskTransferHistory[]
