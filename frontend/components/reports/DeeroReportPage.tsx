@@ -41,6 +41,7 @@ import {
   dashboardTableHeaderClass,
   dashboardTableHeadRowClass,
   dashboardTableWrapClass,
+  getTaskStatusBadgeClass,
 } from "@/lib/dashboard-ui";
 import { cn, formatDate } from "@/lib/utils";
 import {
