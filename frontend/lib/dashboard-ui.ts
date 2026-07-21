@@ -101,6 +101,8 @@ export function getTaskStatusBadgeClass(status: string): string {
 
 export function formatStatusLabel(status: string): string {
   if (!status) return "—";
+  const lower = status.toLowerCase();
+  if (lower === "pending") return "Processing";
   return status.charAt(0).toUpperCase() + status.slice(1);
 }
 

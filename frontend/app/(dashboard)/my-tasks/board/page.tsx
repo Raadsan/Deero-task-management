@@ -320,7 +320,7 @@ export default function MyTasksBoardRoutePage() {
               className="h-9 w-full rounded-md border border-zinc-200 px-2 text-sm"
             >
               <option value="all">All</option>
-              <option value="pending">Pending</option>
+              <option value="pending">Processing</option>
               <option value="completed">Completed</option>
               <option value="overdue">Overdue</option>
             </select>

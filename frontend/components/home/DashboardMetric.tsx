@@ -10,14 +10,14 @@ import { ClipboardList, CheckCircle, Clock, Users } from "lucide-react";
 const iconMap: Record<string, any> = {
   "Total Tasks": ClipboardList,
   "Completed Tasks": CheckCircle,
-  "Pending Tasks": Clock,
+  "Processing Tasks": Clock,
   "Total Clients": Users,
 };
 
 const colorMap: Record<string, string> = {
   "Total Tasks": "text-blue-600 bg-blue-50",
   "Completed Tasks": "text-green-600 bg-green-50",
-  "Pending Tasks": "text-orange-600 bg-orange-50",
+  "Processing Tasks": "text-orange-600 bg-orange-50",
   "Total Clients": "text-purple-600 bg-purple-50",
 };
 

@@ -187,7 +187,7 @@ export default function MyTasksPage() {
               className={cn("w-32 px-2", compactSelectClass)}
             >
               <option value="all">All Status</option>
-              <option value="pending">Pending</option>
+              <option value="pending">Processing</option>
               <option value="completed">Completed</option>
               <option value="overdue">Overdue</option>
             </select>

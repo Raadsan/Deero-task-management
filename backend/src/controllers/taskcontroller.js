@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma.js";
+import { sendTaskAssignmentEmail } from "../lib/email.js";
 import { generateCustomId } from "../lib/id-generator.js";
 import {
   clientBranchWhere,
@@ -221,7 +222,7 @@ export const createTask = async (req, res) => {
       const result = await prisma.task.create({ data: taskData });
       res.status(201).json({ success: true, data: result });
       if (!data.isPersonal) {
-        void notifyTaskAssignee(result).catch((err) => {
+        void notifyTaskAssignee(result, req.user?.name || req.session?.user?.name || "Management").catch((err) => {
           console.error("Failed to create assignee notification:", err);
         });
       }
@@ -243,7 +244,7 @@ export const createTask = async (req, res) => {
     );
 
     res.status(201).json({ success: true, data: result });
-    void notifyTaskAssignee(result).catch((err) => {
+    void notifyTaskAssignee(result, req.user?.name || req.session?.user?.name || "Management").catch((err) => {
       console.error("Failed to create assignee notification:", err);
     });
   } catch (error) {
@@ -254,7 +255,7 @@ export const createTask = async (req, res) => {
   }
 };
 
-async function notifyTaskAssignee(result) {
+async function notifyTaskAssignee(result, creatorName) {
   const taskWithUser = await prisma.task.findUnique({
     where: { id: result.id },
     include: { user: true },
@@ -272,6 +273,20 @@ async function notifyTaskAssignee(result) {
     result.assgineeId,
     0,
   );
+
+  // Send assignment email notification to user's email
+  if (taskWithUser?.user?.email) {
+    void sendTaskAssignmentEmail({
+      toEmail: taskWithUser.user.email,
+      assigneeName: taskWithUser.user.name,
+      taskTitle: result.serviceInformation || result.description.substring(0, 60),
+      taskDescription: result.description,
+      deadline: result.deadline,
+      creatorName,
+    }).catch((err) => {
+      console.error("Failed to send task assignment email:", err);
+    });
+  }
 }
 
 export const updateTask = async (req, res) => {
@@ -369,7 +384,7 @@ export const updateTask = async (req, res) => {
           taskId: id,
           fromAssigneeId: originalTask.assgineeId,
           toAssigneeId: assgineeId,
-          progressAtTransfer: originalTask.progress || 0,
+      progressAtTransfer: originalTask.progress || 0,
           deadlineAtTransfer: originalTask.deadline || null,
           transferredById: req.user?.id || null,
         },
@@ -389,7 +404,7 @@ export const updateTask = async (req, res) => {
           try {
             const notifId = Math.random().toString(36).substring(2, 15);
             await prisma.$executeRawUnsafe(
-              `INSERT INTO notifications (id, taskId, taskName, assigneeName, deadline, type, userId, isSeen, progress) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+              `INSERT INTO notifications (id, taskId, taskName, assigneeName, deadline, type, userId, isSeen) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
               notifId,
               task.id,
               task.description.substring(0, 50) + "...",
@@ -397,8 +412,7 @@ export const updateTask = async (req, res) => {
               task.deadline,
               "task-updated",
               admin.id,
-              0,
-              task.progress
+              0
             );
           } catch (err) {
             console.error("Failed to create notification for admin:", admin.id, err);
@@ -423,6 +437,21 @@ export const updateTask = async (req, res) => {
           0
         );
         console.log("New assignee notification created");
+
+        // Send task assignment email to the new assignee
+        const newAssigneeUser = await prisma.staff.findUnique({ where: { id: task.assgineeId } });
+        if (newAssigneeUser?.email) {
+          void sendTaskAssignmentEmail({
+            toEmail: newAssigneeUser.email,
+            assigneeName: newAssigneeUser.name,
+            taskTitle: task.serviceInformation || task.description.substring(0, 60),
+            taskDescription: task.description,
+            deadline: task.deadline,
+            creatorName: req.user?.name || req.session?.user?.name || "Management",
+          }).catch((err) => {
+            console.error("Failed to send task reassignment email:", err);
+          });
+        }
       } catch (err) {
         console.error("Failed to create new assignee notification:", err);
       }

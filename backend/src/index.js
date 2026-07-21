@@ -211,4 +211,22 @@ app.listen(port, "0.0.0.0", async () => {
   } catch (error) {
     console.error("Failed to start monthly billing scheduler:", error);
   }
+
+  try {
+    const { checkAndNotifyOverdueTasks } = await import(
+      "./lib/overdue-checker.js"
+    );
+    const runOverdueJob = async () => {
+      try {
+        await checkAndNotifyOverdueTasks();
+      } catch (err) {
+        console.error("[overdue-job] Failed:", err.message);
+      }
+    };
+    await runOverdueJob();
+    // Run every 10 minutes
+    setInterval(runOverdueJob, 10 * 60 * 1000);
+  } catch (error) {
+    console.error("Failed to start overdue task checker:", error);
+  }
 });

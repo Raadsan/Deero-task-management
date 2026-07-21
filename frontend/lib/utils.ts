@@ -376,7 +376,7 @@ export function fitlerDashboardMetric(
       };
     case "pending":
       return {
-        title: "Pending Tasks",
+        title: "Processing Tasks",
         totalTasks: 88,
       };
     case "completed":
