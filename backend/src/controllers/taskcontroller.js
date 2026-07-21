@@ -273,6 +273,11 @@ export const updateTask = async (req, res) => {
       if (denyIfOutOfScope(res, scope, assignee.portfolioId)) return;
     }
 
+    const shouldCaptureOriginalDeadline =
+      extraTimeMinutes !== undefined &&
+      Math.max(0, Number(extraTimeMinutes) || 0) > 0 &&
+      !originalTask.originalDeadline;
+
     const task = await prisma.task.update({
       where: { id },
       data: {
@@ -285,6 +290,10 @@ export const updateTask = async (req, res) => {
           : {}),
         ...(extraTimeMinutes !== undefined
           ? { extraTimeMinutes: Math.max(0, Number(extraTimeMinutes) || 0) }
+          : {}),
+        // Snapshot original deadline the first time extra time is added
+        ...(shouldCaptureOriginalDeadline
+          ? { originalDeadline: originalTask.deadline }
           : {}),
         ...(startDate !== undefined
           ? { startDate: startDate ? new Date(startDate) : null }

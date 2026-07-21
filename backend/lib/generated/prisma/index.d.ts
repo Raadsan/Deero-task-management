@@ -17102,6 +17102,7 @@ export namespace Prisma {
     priority: $Enums.TaskPriority | null
     department: string | null
     deadline: Date | null
+    originalDeadline: Date | null
     extraTimeMinutes: number | null
     completedAt: Date | null
     progressUpdatedAt: Date | null
@@ -17129,6 +17130,7 @@ export namespace Prisma {
     priority: $Enums.TaskPriority | null
     department: string | null
     deadline: Date | null
+    originalDeadline: Date | null
     extraTimeMinutes: number | null
     completedAt: Date | null
     progressUpdatedAt: Date | null
@@ -17156,6 +17158,7 @@ export namespace Prisma {
     priority: number
     department: number
     deadline: number
+    originalDeadline: number
     extraTimeMinutes: number
     completedAt: number
     progressUpdatedAt: number
@@ -17197,6 +17200,7 @@ export namespace Prisma {
     priority?: true
     department?: true
     deadline?: true
+    originalDeadline?: true
     extraTimeMinutes?: true
     completedAt?: true
     progressUpdatedAt?: true
@@ -17224,6 +17228,7 @@ export namespace Prisma {
     priority?: true
     department?: true
     deadline?: true
+    originalDeadline?: true
     extraTimeMinutes?: true
     completedAt?: true
     progressUpdatedAt?: true
@@ -17251,6 +17256,7 @@ export namespace Prisma {
     priority?: true
     department?: true
     deadline?: true
+    originalDeadline?: true
     extraTimeMinutes?: true
     completedAt?: true
     progressUpdatedAt?: true
@@ -17365,6 +17371,7 @@ export namespace Prisma {
     priority: $Enums.TaskPriority
     department: string
     deadline: Date | null
+    originalDeadline: Date | null
     extraTimeMinutes: number
     completedAt: Date | null
     progressUpdatedAt: Date | null
@@ -17411,6 +17418,7 @@ export namespace Prisma {
     priority?: boolean
     department?: boolean
     deadline?: boolean
+    originalDeadline?: boolean
     extraTimeMinutes?: boolean
     completedAt?: boolean
     progressUpdatedAt?: boolean
@@ -17448,6 +17456,7 @@ export namespace Prisma {
     priority?: boolean
     department?: boolean
     deadline?: boolean
+    originalDeadline?: boolean
     extraTimeMinutes?: boolean
     completedAt?: boolean
     progressUpdatedAt?: boolean
@@ -17499,6 +17508,7 @@ export namespace Prisma {
       priority: $Enums.TaskPriority
       department: string
       deadline: Date | null
+      originalDeadline: Date | null
       extraTimeMinutes: number
       completedAt: Date | null
       progressUpdatedAt: Date | null
@@ -17900,6 +17910,7 @@ export namespace Prisma {
     readonly priority: FieldRef<"Task", 'TaskPriority'>
     readonly department: FieldRef<"Task", 'String'>
     readonly deadline: FieldRef<"Task", 'DateTime'>
+    readonly originalDeadline: FieldRef<"Task", 'DateTime'>
     readonly extraTimeMinutes: FieldRef<"Task", 'Int'>
     readonly completedAt: FieldRef<"Task", 'DateTime'>
     readonly progressUpdatedAt: FieldRef<"Task", 'DateTime'>
@@ -48652,6 +48663,7 @@ export namespace Prisma {
     priority: 'priority',
     department: 'department',
     deadline: 'deadline',
+    originalDeadline: 'originalDeadline',
     extraTimeMinutes: 'extraTimeMinutes',
     completedAt: 'completedAt',
     progressUpdatedAt: 'progressUpdatedAt',
@@ -50347,6 +50359,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFilter<"Task"> | $Enums.TaskPriority
     department?: StringFilter<"Task"> | string
     deadline?: DateTimeNullableFilter<"Task"> | Date | string | null
+    originalDeadline?: DateTimeNullableFilter<"Task"> | Date | string | null
     extraTimeMinutes?: IntFilter<"Task"> | number
     completedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     progressUpdatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
@@ -50382,6 +50395,7 @@ export namespace Prisma {
     priority?: SortOrder
     department?: SortOrder
     deadline?: SortOrderInput | SortOrder
+    originalDeadline?: SortOrderInput | SortOrder
     extraTimeMinutes?: SortOrder
     completedAt?: SortOrderInput | SortOrder
     progressUpdatedAt?: SortOrderInput | SortOrder
@@ -50420,6 +50434,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFilter<"Task"> | $Enums.TaskPriority
     department?: StringFilter<"Task"> | string
     deadline?: DateTimeNullableFilter<"Task"> | Date | string | null
+    originalDeadline?: DateTimeNullableFilter<"Task"> | Date | string | null
     extraTimeMinutes?: IntFilter<"Task"> | number
     completedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     progressUpdatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
@@ -50455,6 +50470,7 @@ export namespace Prisma {
     priority?: SortOrder
     department?: SortOrder
     deadline?: SortOrderInput | SortOrder
+    originalDeadline?: SortOrderInput | SortOrder
     extraTimeMinutes?: SortOrder
     completedAt?: SortOrderInput | SortOrder
     progressUpdatedAt?: SortOrderInput | SortOrder
@@ -50490,6 +50506,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityWithAggregatesFilter<"Task"> | $Enums.TaskPriority
     department?: StringWithAggregatesFilter<"Task"> | string
     deadline?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
+    originalDeadline?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
     extraTimeMinutes?: IntWithAggregatesFilter<"Task"> | number
     completedAt?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
     progressUpdatedAt?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
@@ -54129,6 +54146,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -54158,6 +54176,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -54187,6 +54206,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -54216,6 +54236,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -54245,6 +54266,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -54272,6 +54294,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -54293,6 +54316,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -58011,6 +58035,7 @@ export namespace Prisma {
     priority?: SortOrder
     department?: SortOrder
     deadline?: SortOrder
+    originalDeadline?: SortOrder
     extraTimeMinutes?: SortOrder
     completedAt?: SortOrder
     progressUpdatedAt?: SortOrder
@@ -58044,6 +58069,7 @@ export namespace Prisma {
     priority?: SortOrder
     department?: SortOrder
     deadline?: SortOrder
+    originalDeadline?: SortOrder
     extraTimeMinutes?: SortOrder
     completedAt?: SortOrder
     progressUpdatedAt?: SortOrder
@@ -58071,6 +58097,7 @@ export namespace Prisma {
     priority?: SortOrder
     department?: SortOrder
     deadline?: SortOrder
+    originalDeadline?: SortOrder
     extraTimeMinutes?: SortOrder
     completedAt?: SortOrder
     progressUpdatedAt?: SortOrder
@@ -65324,6 +65351,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -65352,6 +65380,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -65987,6 +66016,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFilter<"Task"> | $Enums.TaskPriority
     department?: StringFilter<"Task"> | string
     deadline?: DateTimeNullableFilter<"Task"> | Date | string | null
+    originalDeadline?: DateTimeNullableFilter<"Task"> | Date | string | null
     extraTimeMinutes?: IntFilter<"Task"> | number
     completedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     progressUpdatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
@@ -69302,6 +69332,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -69330,6 +69361,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -69447,6 +69479,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -69475,6 +69508,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -70699,6 +70733,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -70727,6 +70762,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -72571,6 +72607,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -72599,6 +72636,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -74272,6 +74310,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -74300,6 +74339,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -75620,6 +75660,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -75648,6 +75689,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -75735,6 +75777,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -75763,6 +75806,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -75897,6 +75941,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -75925,6 +75970,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -76223,6 +76269,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -76251,6 +76298,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -76724,6 +76772,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -77399,6 +77448,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -77427,6 +77477,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -77455,6 +77506,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -78982,6 +79034,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -79061,6 +79114,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -79089,6 +79143,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -79117,6 +79172,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -79448,6 +79504,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -79639,6 +79696,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -79667,6 +79725,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -79695,6 +79754,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -79832,6 +79892,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -79879,6 +79940,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -79907,6 +79969,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -79935,6 +79998,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -80097,6 +80161,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -80123,6 +80188,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -80151,6 +80217,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -80179,6 +80246,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -80317,6 +80385,7 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
+    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -80343,6 +80412,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -80371,6 +80441,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -80399,6 +80470,7 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

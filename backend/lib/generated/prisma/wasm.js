@@ -274,6 +274,7 @@ exports.Prisma.TaskScalarFieldEnum = {
   priority: 'priority',
   department: 'department',
   deadline: 'deadline',
+  originalDeadline: 'originalDeadline',
   extraTimeMinutes: 'extraTimeMinutes',
   completedAt: 'completedAt',
   progressUpdatedAt: 'progressUpdatedAt',
