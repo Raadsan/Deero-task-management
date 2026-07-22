@@ -46,10 +46,17 @@ export default function SideBarItem({
   currentRole?: UserRole;
 }) {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
   const [pendingHref, setPendingHref] = useState<string | null>(null);
-  const isActive = pendingHref !== null
+
+  // Only compute active state client-side to avoid SSR/CSR mismatch
+  const isActive = mounted && pendingHref !== null
     ? normalizePath(pendingHref) === normalizePath(href)
     : isNavActive(pathname, href);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     setPendingHref(null);

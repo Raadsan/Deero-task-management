@@ -29,7 +29,7 @@ export default function UploadDocumentsModal({
           </DialogTitle>
           <DialogDescription className="text-sm text-zinc-500">
             Add or replace staff documents: Certificate, Transcription, CV,
-            and CID.
+            CID, and NIRA.
           </DialogDescription>
         </DialogHeader>
 

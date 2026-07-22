@@ -93,14 +93,18 @@ export function formatDate(date: Date | string, longform?: boolean) {
   });
 }
 
-export function isTaskPastDeadline(deadline: Date | string) {
-  return new Date(deadline).getTime() < Date.now();
+export function isTaskPastDeadline(deadline: Date | string, extraTimeMinutes: number = 0) {
+  const deadlineMs = new Date(deadline).getTime();
+  const extraMs = Math.max(0, Number(extraTimeMinutes || 0)) * 60_000;
+  return (deadlineMs + extraMs) < Date.now();
 }
 
 export function resolveTaskDisplayStatus(
   task: {
     status?: string;
     deadline?: Date | string | null;
+    extraTimeMinutes?: number | null;
+    extraTimeHours?: number | null;
     progress?: number;
     assgineeId?: string;
     assignedToId?: string;
@@ -122,7 +126,8 @@ export function resolveTaskDisplayStatus(
   if (task.status === "transferred") return "transferred";
   const progress = Number(task.progress ?? 0);
   if (task.status === "completed" || progress >= 100) return "completed";
-  if (task.deadline && isTaskPastDeadline(task.deadline)) return "overdue";
+  const extraMinutes = Number(task.extraTimeMinutes ?? (Number(task.extraTimeHours ?? 0) * 60));
+  if (task.deadline && isTaskPastDeadline(task.deadline, extraMinutes)) return "overdue";
   return task.status || "pending";
 }
 

@@ -7,7 +7,7 @@ import { getLucideIcon } from "@/lib/lucide-icons";
 import { isLegacySidebarRole } from "@/lib/role-options";
 import { AuthSession } from "@/lib/types";
 import { CalendarDays, LayoutGrid, ShoppingBag } from "lucide-react";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import SideBarItem from "./SidebarItem";
 import SidebarCollapsibleNavItem from "./SidebarCollapsibleNavItem";
@@ -92,6 +92,11 @@ export default function DynamicSidebarNav({
   const { menus, loading } = usePermissions();
   const userRole = data?.user?.role ?? "";
   const normalizedRole = normalizeRoleName(userRole);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const sortedMenus = useMemo(() => {
     const availableMenus = [...menus];
@@ -141,7 +146,8 @@ export default function DynamicSidebarNav({
     setOpenId(null);
   }, [pathname, sortedMenus, fallbackMenus, setOpenId]);
 
-  if (loading) {
+  // Prevent hydration mismatch: don't render dynamic menu content during SSR
+  if (!mounted || loading) {
     return null;
   }
 

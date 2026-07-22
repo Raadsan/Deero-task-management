@@ -20,11 +20,14 @@ import { cn, formatDate } from "@/lib/utils";
 import {
   Building2,
   Calendar,
+  CheckSquare,
   GitBranch,
+  ListTodo,
   Mail,
   Percent,
   Phone,
   Tag,
+  User,
 } from "lucide-react";
 import { useMemo } from "react";
 import useSWR from "swr";
@@ -45,6 +48,7 @@ type ClientAgreementView = {
   base?: number;
   description?: string;
   createdAt?: string;
+  features?: any[];
 };
 
 export default function ClientViewModal({ open, onOpenChange, clientId }: Props) {
@@ -66,6 +70,7 @@ export default function ClientViewModal({ open, onOpenChange, clientId }: Props)
   const agreements =
     (client as { serviceAgreements?: ClientAgreementView[] } | undefined)
       ?.serviceAgreements ?? [];
+  const clientTasks = (client as any)?.clientTask ?? (client as any)?.tasks ?? [];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -163,11 +168,129 @@ export default function ClientViewModal({ open, onOpenChange, clientId }: Props)
                             {agreement.description}
                           </p>
                         ) : null}
+                        {Array.isArray(agreement.features) && agreement.features.length > 0 && (
+                          <div className="mt-3 border-t border-zinc-100 pt-2 space-y-1.5">
+                            <p className="text-[11px] font-semibold uppercase tracking-wider text-indigo-900 flex items-center gap-1">
+                              <CheckSquare className="size-3 text-indigo-600" />
+                              Service Features & Deliverables ({agreement.features.length})
+                            </p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {agreement.features.map((feat: any, idx: number) => {
+                                const featName =
+                                  typeof feat === "string"
+                                    ? feat
+                                    : feat?.name ?? feat?.title ?? String(feat);
+                                return (
+                                  <span
+                                    key={idx}
+                                    className="inline-flex items-center gap-1.5 rounded-md border border-indigo-100 bg-indigo-50/60 px-2.5 py-1 text-xs font-medium text-indigo-900"
+                                  >
+                                    <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
+                                    {featName}
+                                  </span>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
                 ) : (
                   <p className="text-sm text-zinc-500">No services registered.</p>
+                )}
+              </div>
+
+              {/* Tasks & Deliverables Status Section */}
+              <div className="rounded-lg border border-zinc-100 bg-zinc-50 p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-zinc-400">
+                    Tasks & Deliverables Status
+                  </p>
+                  <span className="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md">
+                    {clientTasks.length} Task(s)
+                  </span>
+                </div>
+
+                {clientTasks.length > 0 ? (
+                  <div className="space-y-3">
+                    {clientTasks.map((item: any, idx: number) => {
+                      const t = item.task ?? item;
+                      const features = Array.isArray(t.features) ? t.features : [];
+                      const doneCount = features.filter((f: any) => f.done || f.completed).length;
+
+                      return (
+                        <div
+                          key={t.id || idx}
+                          className="rounded-lg border border-zinc-200 bg-white p-3.5 space-y-2.5"
+                        >
+                          <div className="flex flex-wrap items-start justify-between gap-2">
+                            <div>
+                              <p className="text-sm font-semibold text-zinc-800">
+                                {t.serviceInformation || t.description || "General Task"}
+                              </p>
+                              {t.description && (
+                                <p className="text-xs text-zinc-500 line-clamp-1">{t.description}</p>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className={cn(dashboardStatusBadgeClass, getTaskStatusBadgeClass(t.status))}>
+                                {formatStatusLabel(t.status)}
+                              </span>
+                              <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                                {t.progress || 0}%
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Progress Bar */}
+                          <div className="h-1.5 w-full rounded-full bg-zinc-100 overflow-hidden">
+                            <div
+                              className="h-1.5 rounded-full bg-primary transition-all duration-300"
+                              style={{ width: `${t.progress || 0}%` }}
+                            />
+                          </div>
+
+                          <div className="flex items-center justify-between text-xs text-zinc-500">
+                            <span>Assigned: <strong>{t.user?.name ?? t.assignedTo?.name ?? "—"}</strong></span>
+                            {features.length > 0 && (
+                              <span>Deliverables: <strong>{doneCount}/{features.length} Done</strong></span>
+                            )}
+                          </div>
+
+                          {/* Features Deliverables List */}
+                          {features.length > 0 && (
+                            <div className="mt-2 space-y-1.5 border-t border-zinc-100 pt-2">
+                              <p className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">Features Checklist:</p>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                                {features.map((feat: any, fIdx: number) => {
+                                  const isDone = Boolean(feat.done || feat.completed);
+                                  return (
+                                    <div
+                                      key={fIdx}
+                                      className={cn(
+                                        "flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs border",
+                                        isDone
+                                          ? "bg-emerald-50 border-emerald-200 text-emerald-900"
+                                          : "bg-zinc-50 border-zinc-200 text-zinc-600",
+                                      )}
+                                    >
+                                      <span className="truncate">{feat.name ?? String(feat)}</span>
+                                      {isDone && (
+                                        <span className="text-[10px] font-bold text-emerald-700">✓ Done</span>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-sm text-zinc-500">No tasks generated yet for this client.</p>
                 )}
               </div>
             </div>

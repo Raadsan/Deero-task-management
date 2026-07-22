@@ -183,21 +183,28 @@ export default function ContractViewModal({ open, onOpenChange, contractId }: Pr
                           type="button"
                           onClick={() => setPreviewVersion(doc.version)}
                           className={cn(
-                            "flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left text-sm transition",
+                            "flex w-full items-center justify-between rounded-lg border px-3 py-2.5 text-left text-sm transition",
                             previewVersion === doc.version
-                              ? "border-primary bg-primary/5"
+                              ? "border-primary bg-primary/5 shadow-2xs"
                               : "border-zinc-200 hover:bg-zinc-50",
                           )}
                         >
-                          <span className="flex items-center gap-2">
-                            <FileText className="h-4 w-4 text-zinc-400" />
-                            v{doc.version} · {doc.fileName}
-                          </span>
+                          <div className="flex flex-col gap-0.5">
+                            <span className="flex items-center gap-2 font-medium text-zinc-800">
+                              <FileText className="h-4 w-4 text-primary" />
+                              Version {doc.version} · {doc.fileName}
+                            </span>
+                            <span className="text-[11px] text-zinc-500 pl-6">
+                              {doc.uploadedBy?.name ? `Uploaded by ${doc.uploadedBy.name}` : "Uploaded"}{" "}
+                              {doc.createdAt ? `on ${formatDate(String(doc.createdAt))}` : ""}
+                            </span>
+                          </div>
                           <a
                             href={resolveApiUploadUrl(doc.fileUrl)}
                             target="_blank"
                             rel="noreferrer"
-                            className="text-primary"
+                            className="rounded-md p-1.5 text-primary hover:bg-primary/10 transition-colors"
+                            title="Download version"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <Download className="h-4 w-4" />

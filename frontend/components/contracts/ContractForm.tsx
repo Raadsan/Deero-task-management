@@ -21,7 +21,8 @@ import { CONTRACT_STATUS_OPTIONS } from "@/lib/client-types";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import { btnFormCancel, btnFormSubmit } from "@/lib/dashboard-ui";
 import { cn } from "@/lib/utils";
-import { useEffect, useState, useTransition } from "react";
+import { Paperclip, Upload, X } from "lucide-react";
+import React, { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import toast from "react-hot-toast";
 import useSWR, { useSWRConfig } from "swr";
 
@@ -75,18 +76,31 @@ export default function ContractForm({
   const [status, setStatus] = useState("ACTIVE");
   const [notes, setNotes] = useState("");
   const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [filterUncoveredOnly, setFilterUncoveredOnly] = useState(formType === "create");
 
   const { data: clients = [] } = useSWR("contracts/clients", async () => {
     const result = await getClientsForForm();
     return result.data ?? [];
   });
+
   const { data: existingContracts = [] } = useSWR("contracts/client-coverage", async () => {
     const result = await getAllContracts();
     return result.data ?? [];
   });
-  const selectableClients = formType === "create"
-    ? clients.filter((client) => !existingContracts.some((item) => item.clientId === client.id))
-    : clients;
+
+  const selectableClients = useMemo(() => {
+    if (formType !== "create" || !filterUncoveredOnly) return clients;
+    return clients.filter(
+      (client) => !existingContracts.some((item) => item.clientId === client.id),
+    );
+  }, [clients, existingContracts, filterUncoveredOnly, formType]);
+
+  const selectedClient = useMemo(
+    () => clients.find((c) => c.id === clientId) ?? null,
+    [clients, clientId],
+  );
 
   const { data: projects = [] } = useSWR(
     clientId ? `contracts/projects/${clientId}` : null,
@@ -183,6 +197,7 @@ export default function ContractForm({
   return (
     <>
       <div className={configDialogBodyClass}>
+        {/* Client selector */}
         <div>
           <FieldLabel>Client *</FieldLabel>
           <select
@@ -203,6 +218,48 @@ export default function ContractForm({
           </select>
         </div>
 
+        {/* Auto-fill client info card shown after selection */}
+        {selectedClient && formType === "create" && (
+          <div className="rounded-lg border border-zinc-100 bg-zinc-50 px-4 py-3 text-sm">
+            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-zinc-400">
+              Client info
+            </p>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-zinc-600">
+              {(selectedClient as any).phone && (
+                <span>
+                  <span className="text-zinc-400">Phone: </span>
+                  {(selectedClient as any).phone}
+                </span>
+              )}
+              {(selectedClient as any).email && (
+                <span>
+                  <span className="text-zinc-400">Email: </span>
+                  {(selectedClient as any).email}
+                </span>
+              )}
+              {(selectedClient as any).clientType && (
+                <span>
+                  <span className="text-zinc-400">Type: </span>
+                  {(selectedClient as any).clientType}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Filter toggle - only show on create */}
+        {formType === "create" && (
+          <label className="flex cursor-pointer items-center gap-2 text-sm text-zinc-600">
+            <input
+              type="checkbox"
+              checked={filterUncoveredOnly}
+              onChange={(e) => setFilterUncoveredOnly(e.target.checked)}
+              className="h-4 w-4 rounded border-zinc-300 accent-primary"
+            />
+            Show only clients without a contract
+          </label>
+        )}
+
         <div>
           <FieldLabel>Project</FieldLabel>
           <select
@@ -220,14 +277,16 @@ export default function ContractForm({
           </select>
         </div>
 
-        <div className={formType === "create" ? "hidden" : ""}>
-          <FieldLabel>Contract number</FieldLabel>
-          <input
-            className={configCompactInputClass}
-            value={contractNumber}
-            readOnly
-          />
-        </div>
+        {formType === "edit" && (
+          <div>
+            <FieldLabel>Contract number</FieldLabel>
+            <input
+              className={configCompactInputClass}
+              value={contractNumber}
+              readOnly
+            />
+          </div>
+        )}
 
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -295,15 +354,6 @@ export default function ContractForm({
           </div>
         </div>
 
-        <div className="hidden">
-          <FieldLabel>Payment terms</FieldLabel>
-          <textarea
-            className={configTextareaClass}
-            value={paymentTerms}
-            onChange={(e) => setPaymentTerms(e.target.value)}
-          />
-        </div>
-
         <div>
           <FieldLabel>Status</FieldLabel>
           <select
@@ -328,17 +378,39 @@ export default function ContractForm({
           />
         </div>
 
+        {/* Styled file upload button */}
         <div>
           <FieldLabel>Signed contract (PDF)</FieldLabel>
           <input
+            ref={fileInputRef}
             type="file"
             accept="application/pdf,image/*"
-            className="mt-1 block w-full text-sm text-zinc-600"
+            className="hidden"
             onChange={(e) => setPendingFile(e.target.files?.[0] ?? null)}
           />
-          {pendingFile && (
-            <p className="mt-1 text-xs text-zinc-500">{pendingFile.name}</p>
-          )}
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="inline-flex items-center gap-2 rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 shadow-sm transition hover:bg-zinc-50 hover:border-zinc-300 active:scale-95"
+            >
+              <Paperclip className="h-4 w-4 text-zinc-500" />
+              {pendingFile ? "Change file" : "Attach contract"}
+            </button>
+            {pendingFile && (
+              <div className="flex items-center gap-1.5 rounded-md bg-zinc-100 px-3 py-1.5 text-xs text-zinc-600">
+                <Upload className="h-3.5 w-3.5 text-primary" />
+                <span className="max-w-[180px] truncate">{pendingFile.name}</span>
+                <button
+                  type="button"
+                  onClick={() => setPendingFile(null)}
+                  className="ml-1 text-zinc-400 hover:text-zinc-700"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

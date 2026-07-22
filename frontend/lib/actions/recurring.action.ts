@@ -130,3 +130,77 @@ export async function runRecurringDailyGeneration(
     return handleError({ errors: error, type: "server" }) as any;
   }
 }
+
+export type CreateRecurringScheduleInput = {
+  name: string;
+  clientId: string;
+  recurrenceType: RecurrenceType;
+  contentType?: string;
+  startDate: string;
+  endDate?: string;
+  isActive?: boolean;
+  autoGenerateTasks?: boolean;
+  steps?: {
+    dayOfWeek?: number | null;
+    stepOrder?: number;
+    label: string;
+    department?: string;
+    assigneeId?: string;
+  }[];
+};
+
+export async function createRecurringSchedule(
+  input: CreateRecurringScheduleInput,
+): Promise<ActionResponse<RecurringScheduleRecord>> {
+  try {
+    const response = await api.post("/api/recurring-schedules", input);
+    if (response.data.success) {
+      revalidatePath(ROUTES.recurringSchedules);
+      return { success: true, data: response.data.data?.schedule ?? response.data.data };
+    }
+    return {
+      success: false,
+      errors: { message: response.data.error ?? "Failed to create schedule" },
+    };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as any;
+  }
+}
+
+export async function updateRecurringSchedule(
+  id: string,
+  input: Partial<CreateRecurringScheduleInput>,
+): Promise<ActionResponse<RecurringScheduleRecord>> {
+  try {
+    const response = await api.put(`/api/recurring-schedules/${id}`, input);
+    if (response.data.success) {
+      revalidatePath(ROUTES.recurringSchedules);
+      return { success: true, data: response.data.data };
+    }
+    return {
+      success: false,
+      errors: { message: response.data.error ?? "Failed to update schedule" },
+    };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as any;
+  }
+}
+
+export async function deleteRecurringSchedule(
+  id: string,
+): Promise<ActionResponse<void>> {
+  try {
+    const response = await api.delete(`/api/recurring-schedules/${id}`);
+    if (response.data.success) {
+      revalidatePath(ROUTES.recurringSchedules);
+      return { success: true };
+    }
+    return {
+      success: false,
+      errors: { message: response.data.error ?? "Failed to delete schedule" },
+    };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as any;
+  }
+}
+

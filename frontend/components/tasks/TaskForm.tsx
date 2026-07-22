@@ -9,7 +9,7 @@ import {
 import { ROUTES, SWR_CACH_KEYS, TASK_PRIORITIES } from "@/lib/constants";
 import { btnFormCancel, btnFormSubmit } from "@/lib/dashboard-ui";
 import { cn, getTaskStatus, resolveTaskDisplayStatus } from "@/lib/utils";
-import { ArrowRightLeft, Clock, Lock } from "lucide-react";
+import { ArrowRightLeft, CheckSquare, Clock, Lock } from "lucide-react";
 import { CreateTaskSchema, TaskSchema } from "@/lib/validations";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useRouter } from "next/navigation";
@@ -38,6 +38,7 @@ import Loader from "../Shared/Loader";
 interface Props {
   formType: "edit" | "create" | "own:edit";
   currentTask?: Task;
+  initialData?: any;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
@@ -70,6 +71,7 @@ function formatExtraDuration(totalHours?: number) {
 export default function TaskForm({
   formType,
   currentTask,
+  initialData,
   onSuccess,
   onCancel,
 }: Props) {
@@ -78,9 +80,12 @@ export default function TaskForm({
   type FormValues = z.infer<typeof formSchema>;
 
   const hasClientInit = currentTask?.institutions && currentTask.institutions.length > 0;
-  const [taskKind, setTaskKind] = useState<TaskKind | null>(
-    currentTask ? (hasClientInit ? "client" : "general") : null
-  );
+  const initialKind =
+    initialData?.taskKind ??
+    (currentTask ? (hasClientInit ? "client" : "general") : (initialData?.clientInstitutionId ? "client" : null));
+
+  const [taskKind, setTaskKind] = useState<TaskKind | null>(initialKind);
+  const [taskFeatures, setTaskFeatures] = useState<Array<{ id: string; name: string; done: boolean }>>([]);
 
   const {
     handleSubmit,
@@ -92,22 +97,26 @@ export default function TaskForm({
     formState: { errors, touchedFields, submitCount },
   } = useForm<FormValues>({
     defaultValues: {
-      taskKind: currentTask ? (hasClientInit ? "client" : "general") : undefined,
+      taskKind: initialKind ?? undefined,
       taskName: currentTask && !hasClientInit ? (currentTask.serviceInformation || "") : "",
-      description: currentTask?.description ?? "",
-      assigneeId: currentTask?.assignedTo.id ?? "",
+      description: initialData?.description ?? currentTask?.description ?? "",
+      assigneeId: initialData?.assigneeId ?? currentTask?.assignedTo?.id ?? "",
       status: (currentTask?.status as TaskStatus) ?? TaskStatus.pending,
-      clientInstitutionId: String(currentTask?.institutions?.[0]?.id || ""),
-      department: currentTask?.department ?? "",
+      clientInstitutionId: String(initialData?.clientInstitutionId ?? currentTask?.institutions?.[0]?.id ?? ""),
+      department: initialData?.department ?? currentTask?.department ?? "",
       priority: currentTask?.priority
         ? (currentTask.priority.charAt(0).toUpperCase() +
-            currentTask.priority.slice(1)) as TaskPriority
+          currentTask.priority.slice(1)) as TaskPriority
         : "Normal",
       supervisor: currentTask?.supervisor ?? "",
-      deadline: currentTask?.deadline ? new Date(currentTask.deadline) : defaultDueDate(),
+      deadline: initialData?.deadline
+        ? new Date(initialData.deadline)
+        : currentTask?.deadline
+          ? new Date(currentTask.deadline)
+          : defaultDueDate(),
       extraTimeHours: Number(currentTask?.extraTimeMinutes ?? 0) / 60,
       progress: currentTask?.progress || 0,
-      serviceInformation: currentTask?.serviceInformation || "",
+      serviceInformation: initialData?.serviceInformation ?? currentTask?.serviceInformation ?? "",
     },
     resolver: standardSchemaResolver(formSchema),
     mode: isCreate ? "onSubmit" : "onTouched",
@@ -140,7 +149,11 @@ export default function TaskForm({
   const editBranchId =
     currentTask?.assignedTo?.portfolioId != null
       ? String(currentTask.assignedTo.portfolioId)
-      : "";
+      : (currentTask as any)?.user?.portfolioId != null
+        ? String((currentTask as any).user.portfolioId)
+        : (currentTask as any)?.portfolioId != null
+          ? String((currentTask as any).portfolioId)
+          : "";
 
   const defaultBranchId = branchOptionsRes?.data?.defaultBranchId ?? "";
   const [selectedBranchId, setSelectedBranchId] = useState(() => editBranchId || (isCreate ? defaultBranchId : ""));
@@ -254,18 +267,99 @@ export default function TaskForm({
   }, [formType, watchedProgress, setValue]);
 
   useEffect(() => {
+    if (!isCreate) return;
+    if (!watchInstitutionId || !pendingServiceOptions.length) return;
+
+    const currentVal = getValues("serviceInformation");
+    const exactMatch = pendingServiceOptions.find((s) => s.label === currentVal);
+
+    if (!currentVal || !exactMatch) {
+      const searchTarget = (initialData?.serviceInformation || "").toLowerCase();
+      const partialMatch = pendingServiceOptions.find(
+        (s) =>
+          (searchTarget && s.label.toLowerCase().includes(searchTarget)) ||
+          (searchTarget && s.serviceName.toLowerCase().includes(searchTarget)) ||
+          (searchTarget && searchTarget.includes(s.serviceName.toLowerCase())),
+      );
+
+      const autoSelected = partialMatch ? partialMatch.label : pendingServiceOptions[0].label;
+      setValue("serviceInformation", autoSelected, {
+        shouldValidate: true,
+        shouldTouch: true,
+      });
+    }
+  }, [isCreate, watchInstitutionId, pendingServiceOptions, initialData, getValues, setValue]);
+
+  useEffect(() => {
+    if (!isCreate) return;
+    if (!watchServiceInformation || !pendingServiceOptions.length) {
+      setTaskFeatures([]);
+      return;
+    }
+    const matchedService = pendingServiceOptions.find(
+      (s) => s.label === watchServiceInformation,
+    );
+    if (matchedService?.features?.length) {
+      setTaskFeatures(
+        matchedService.features.map((f, i) => ({
+          id: String(i),
+          name: f,
+          done: false,
+        })),
+      );
+    } else {
+      setTaskFeatures([]);
+    }
+  }, [isCreate, watchServiceInformation, pendingServiceOptions]);
+
+  useEffect(() => {
+    if (currentTask?.features && Array.isArray(currentTask.features)) {
+      setTaskFeatures(
+        currentTask.features.map((f: any, i: number) => ({
+          id: String(f.id ?? i),
+          name: f.name ?? String(f),
+          done: Boolean(f.done || f.completed),
+        })),
+      );
+    }
+  }, [currentTask]);
+
+  function toggleFeatureDone(index: number, isDone: boolean) {
+    const updated = [...taskFeatures];
+    updated[index] = { ...updated[index], done: isDone };
+    setTaskFeatures(updated);
+
+    if (updated.length > 0) {
+      const doneCount = updated.filter((f) => f.done).length;
+      const newProgress = Math.round((doneCount / updated.length) * 100);
+      setValue("progress", newProgress, { shouldValidate: true });
+      if (newProgress === 100) {
+        setValue("status", TaskStatus.completed, { shouldValidate: true });
+      } else if (newProgress > 0 && watchedStatus !== TaskStatus.completed) {
+        setValue("status", TaskStatus.pending, { shouldValidate: true });
+      }
+    }
+  }
+
+  useEffect(() => {
     if (currentTask) {
       const currentDeadline = currentTask.deadline ? new Date(currentTask.deadline) : defaultDueDate();
       setExtraTimeUntil(extraTimeDate(currentDeadline, Number(currentTask.extraTimeMinutes ?? 0)));
       const isClient = currentTask.institutions && currentTask.institutions.length > 0;
+      const targetAssigneeId = String(
+        currentTask.assignedTo?.id ??
+        (currentTask as any)?.assgineeId ??
+        (currentTask as any)?.user?.id ??
+        "",
+      );
       setTaskKind(isClient ? "client" : "general");
       reset({
         taskKind: isClient ? "client" : "general",
         taskName: !isClient ? (currentTask.serviceInformation || "") : "",
         description: currentTask.description,
-        assigneeId: currentTask.assignedTo.id,
+        assigneeId: targetAssigneeId,
         status: currentTask.status.toLowerCase() as TaskStatus,
-        clientInstitutionId: String(currentTask.institutions[0]?.id || ""),
+        clientInstitutionId: String(currentTask.institutions?.[0]?.id || ""),
         department: currentTask.department,
         priority: (currentTask.priority.charAt(0).toUpperCase() +
           currentTask.priority.slice(1)) as TaskPriority,
@@ -279,6 +373,20 @@ export default function TaskForm({
       });
     }
   }, [currentTask, reset]);
+
+  useEffect(() => {
+    if (!isCreate && currentTask) {
+      const targetAssigneeId = String(
+        currentTask.assignedTo?.id ??
+        (currentTask as any)?.assgineeId ??
+        (currentTask as any)?.user?.id ??
+        "",
+      );
+      if (targetAssigneeId && getValues("assigneeId") !== targetAssigneeId) {
+        setValue("assigneeId", targetAssigneeId, { shouldValidate: true });
+      }
+    }
+  }, [isCreate, currentTask, assignees, getValues, setValue]);
 
   function refreshTasksList() {
     mutate(SWR_CACH_KEYS.tasks.key);
@@ -326,6 +434,7 @@ export default function TaskForm({
           extraTimeMinutes: Math.round(Number(createData.extraTimeHours ?? 0) * 60),
           progress: 0,
           isPersonal: false,
+          features: taskFeatures,
         });
         if (result?.success) {
           toast.success("Successfully Created Task.");
@@ -348,6 +457,7 @@ export default function TaskForm({
           });
           setExtraTimeUntil(undefined);
           setTaskKind(null);
+          setTaskFeatures([]);
           // Re-apply the user's default portfolio so next creation is pre-selected
           const defaultId = branchOptionsRes?.data?.defaultBranchId;
           if (defaultId) setSelectedBranchId(defaultId);
@@ -370,6 +480,7 @@ export default function TaskForm({
           supervisor: data.supervisor,
           progress: data.progress,
           serviceInformation: data.serviceInformation,
+          features: taskFeatures,
         });
         if (result.success) {
           toast.success("Successfully Edited Task");
@@ -422,355 +533,412 @@ export default function TaskForm({
             : "flex-wrap gap-[20px]",
         )}
       >
-      {showBranchFields && (
-        <SelectElement
-          labelText="Select Portfolio"
-          placeholder="Select portfolio first"
-          value={selectedBranchName}
-          disbaleSelect={transiton || singleBranch}
-          compact={isModal}
-          elementRenderer={() =>
-            branchOptions.map((portfolio) => (
-              <GetSelectItem key={portfolio.id} value={portfolio.name} label={portfolio.name} />
-            ))
-          }
-          onChange={(value) => {
-            const portfolio = branchOptions.find((item) => item.name === value);
-            const nextBranchId = portfolio?.id ?? "";
-            if (String(nextBranchId) === String(selectedBranchId)) return;
-            setSelectedBranchId(nextBranchId);
-            setValue("assigneeId", "", { shouldValidate: false });
-            if (isCreate) {
-              setTaskKind(null);
-              setValue("taskKind", undefined, { shouldValidate: false });
-              setValue("clientInstitutionId", "", { shouldValidate: false });
-              setValue("serviceInformation", "", { shouldValidate: false });
-              setValue("taskName", "", { shouldValidate: false });
-            }
-          }}
-        />
-      )}
-
-      {isCreate && selectedBranchId && (
-        <div className="w-full max-w-[min(800px,100%)] space-y-3">
-          <p className="text-sm font-medium text-zinc-700">Task type</p>
-          <div
-            className={cn(
-              "flex flex-wrap gap-2 rounded-md",
-              fieldInvalid("taskKind") && "ring-2 ring-red-500",
-            )}
-          >
-            <Button
-              type="button"
-              variant={taskKind === "client" ? "default" : "outline"}
-              className="h-9"
-              onClick={() => handleTaskKindChange("client")}
-            >
-              Client task
-            </Button>
-            <Button
-              type="button"
-              variant={taskKind === "general" ? "default" : "outline"}
-              className="h-9"
-              onClick={() => handleTaskKindChange("general")}
-            >
-              General task
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {isCreate && taskKind === "client" && (
-        <>
+        {showBranchFields && (
           <SelectElement
-            labelText="Select Client"
-            placeholder={
-              branchClients.length
-                ? "Select client"
-                : "No clients with pending services"
-            }
-            defaultValue={watchInstitutionId}
-            disbaleSelect={transiton || !branchClients.length}
-            errorMessage={fieldMessage("clientInstitutionId")}
-            invalid={fieldInvalid("clientInstitutionId")}
+            labelText="Select Portfolio"
+            placeholder="Select portfolio first"
+            value={selectedBranchName}
+            disbaleSelect={transiton || singleBranch}
             compact={isModal}
             elementRenderer={() =>
-              branchClients.map(({ institution, id }) => (
-                <GetSelectItem
-                  key={id}
-                  value={String(id)}
-                  label={institution}
-                />
+              branchOptions.map((portfolio) => (
+                <GetSelectItem key={portfolio.id} value={portfolio.name} label={portfolio.name} />
               ))
             }
             onChange={(value) => {
-              setValue("clientInstitutionId", value, {
-                shouldValidate: true,
-                shouldTouch: true,
-              });
-              setValue("serviceInformation", "", { shouldValidate: false });
+              const portfolio = branchOptions.find((item) => item.name === value);
+              const nextBranchId = portfolio?.id ?? "";
+              if (String(nextBranchId) === String(selectedBranchId)) return;
+              setSelectedBranchId(nextBranchId);
+              setValue("assigneeId", "", { shouldValidate: false });
+              if (isCreate) {
+                setTaskKind(null);
+                setValue("taskKind", undefined, { shouldValidate: false });
+                setValue("clientInstitutionId", "", { shouldValidate: false });
+                setValue("serviceInformation", "", { shouldValidate: false });
+                setValue("taskName", "", { shouldValidate: false });
+              }
             }}
           />
-          <SelectElement
-            labelText="Select Service"
-            placeholder={
-              watchInstitutionId
-                ? pendingServiceOptions.length
-                  ? "Select pending service"
-                  : "No pending services"
-                : "Select client first"
-            }
-            value={watchServiceInformation}
-            defaultValue={watchServiceInformation}
-            disbaleSelect={
-              transiton || !watchInstitutionId || !pendingServiceOptions.length
-            }
+        )}
+
+        {isCreate && selectedBranchId && (
+          <div className="w-full max-w-[min(800px,100%)] space-y-3">
+            <p className="text-sm font-medium text-zinc-700">Task type</p>
+            <div
+              className={cn(
+                "flex flex-wrap gap-2 rounded-md",
+                fieldInvalid("taskKind") && "ring-2 ring-red-500",
+              )}
+            >
+              <Button
+                type="button"
+                variant={taskKind === "client" ? "default" : "outline"}
+                className="h-9"
+                onClick={() => handleTaskKindChange("client")}
+              >
+                Client task
+              </Button>
+              <Button
+                type="button"
+                variant={taskKind === "general" ? "default" : "outline"}
+                className="h-9"
+                onClick={() => handleTaskKindChange("general")}
+              >
+                General task
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {isCreate && taskKind === "client" && (
+          <>
+            <SelectElement
+              labelText="Select Client"
+              placeholder={
+                branchClients.length
+                  ? "Select client"
+                  : "No clients with pending services"
+              }
+              defaultValue={watchInstitutionId}
+              disbaleSelect={transiton || !branchClients.length}
+              errorMessage={fieldMessage("clientInstitutionId")}
+              invalid={fieldInvalid("clientInstitutionId")}
+              compact={isModal}
+              elementRenderer={() =>
+                branchClients.map(({ institution, id }) => (
+                  <GetSelectItem
+                    key={id}
+                    value={String(id)}
+                    label={institution}
+                  />
+                ))
+              }
+              onChange={(value) => {
+                setValue("clientInstitutionId", value, {
+                  shouldValidate: true,
+                  shouldTouch: true,
+                });
+                setValue("serviceInformation", "", { shouldValidate: false });
+              }}
+            />
+            <SelectElement
+              labelText="Select Service"
+              placeholder={
+                watchInstitutionId
+                  ? pendingServiceOptions.length
+                    ? "Select pending service"
+                    : "No pending services"
+                  : "Select client first"
+              }
+              value={watchServiceInformation}
+              defaultValue={watchServiceInformation}
+              disbaleSelect={
+                transiton || !watchInstitutionId || !pendingServiceOptions.length
+              }
+              errorMessage={fieldMessage("serviceInformation")}
+              invalid={fieldInvalid("serviceInformation")}
+              compact={isModal}
+              elementRenderer={() =>
+                pendingServiceOptions.map((service) => (
+                  <GetSelectItem
+                    key={service.agreementId}
+                    value={service.label}
+                    label={service.label}
+                  />
+                ))
+              }
+              onChange={(value) => {
+                setValue("serviceInformation", value, {
+                  shouldValidate: true,
+                  shouldTouch: true,
+                });
+              }}
+            />
+          </>
+        )}
+
+        {taskFeatures.length > 0 && (
+          <div className="w-full rounded-xl border border-indigo-100 bg-indigo-50/40 p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <CheckSquare className="size-4 text-indigo-600" />
+                <p className="text-xs font-bold uppercase tracking-wider text-indigo-900">
+                  Service Deliverables & Features
+                </p>
+              </div>
+              <span className="text-xs font-semibold text-indigo-700">
+                {taskFeatures.filter((f) => f.done).length} / {taskFeatures.length} Done ({taskFeatures.length ? Math.round((taskFeatures.filter((f) => f.done).length / taskFeatures.length) * 100) : 0}%)
+              </span>
+            </div>
+
+            <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+              {taskFeatures.map((feat, idx) => (
+                <label
+                  key={feat.id || idx}
+                  className={cn(
+                    "flex items-center justify-between p-2.5 rounded-lg border text-xs cursor-pointer transition-all",
+                    feat.done
+                      ? "bg-emerald-50 border-emerald-200 text-emerald-900 font-medium"
+                      : "bg-white border-zinc-200 text-zinc-700 hover:border-indigo-300",
+                  )}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(feat.done)}
+                      onChange={(e) => toggleFeatureDone(idx, e.target.checked)}
+                      className="size-4 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    <span>{feat.name}</span>
+                  </div>
+                  {feat.done && (
+                    <span className="text-[10px] font-bold text-emerald-700 uppercase bg-emerald-100 px-2 py-0.5 rounded-full">
+                      Done ✓
+                    </span>
+                  )}
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {isCreate && taskKind === "general" && (
+          <TextInput
+            labelId="taskName"
+            labelText="Task Name"
+            placeholder="Enter task name"
+            defaultValue={watchTaskName}
+            otherProps={{ ...register("taskName") }}
+            disbaled={transiton}
+            errorMessage={fieldMessage("taskName")}
+            invalid={fieldInvalid("taskName")}
+            compact={isModal}
+          />
+        )}
+
+        {!isCreate && (
+          <TextInput
+            labelId="serviceInformation"
+            labelText="Service Information"
+            placeholder="Enter service information"
+            defaultValue={currentTask?.serviceInformation}
+            otherProps={{ ...register("serviceInformation") }}
+            disbaled={transiton || formType === "own:edit"}
             errorMessage={fieldMessage("serviceInformation")}
             invalid={fieldInvalid("serviceInformation")}
             compact={isModal}
-            elementRenderer={() =>
-              pendingServiceOptions.map((service) => (
-                <GetSelectItem
-                  key={service.agreementId}
-                  value={service.label}
-                  label={service.label}
-                />
-              ))
-            }
-            onChange={(value) => {
-              setValue("serviceInformation", value, {
-                shouldValidate: true,
-                shouldTouch: true,
-              });
-            }}
           />
-        </>
-      )}
+        )}
 
-      {isCreate && taskKind === "general" && (
-        <TextInput
-          labelId="taskName"
-          labelText="Task Name"
-          placeholder="Enter task name"
-          defaultValue={watchTaskName}
-          otherProps={{ ...register("taskName") }}
-          disbaled={transiton}
-          errorMessage={fieldMessage("taskName")}
-          invalid={fieldInvalid("taskName")}
-          compact={isModal}
-        />
-      )}
-
-      {!isCreate && (
-        <TextInput
-          labelId="serviceInformation"
-          labelText="Service Information"
-          placeholder="Enter service information"
-          defaultValue={currentTask?.serviceInformation}
-          otherProps={{ ...register("serviceInformation") }}
-          disbaled={transiton || formType === "own:edit"}
-          errorMessage={fieldMessage("serviceInformation")}
-          invalid={fieldInvalid("serviceInformation")}
-          compact={isModal}
-        />
-      )}
-
-      {(!isCreate || taskKind) && (
-        <>
-      <SelectElement
-        labelText="Select Assignee"
-        placeholder={selectedBranchId ? "Select assignee" : "Select portfolio first"}
-        defaultValue={watchAssingneeId}
-        disbaleSelect={transiton || formType === "own:edit" || !selectedBranchId}
-        errorMessage={fieldMessage("assigneeId")}
-        invalid={fieldInvalid("assigneeId")}
-        compact={isModal}
-        elementRenderer={() => {
-          return assignees.map(({ name, id, role }) => {
-            const label = role ? `${name} (${role})` : name;
-            return (
-              <GetSelectItem key={id} value={String(id)} label={label} />
-            );
-          });
-        }}
-        onChange={(value) => {
-          setValue("assigneeId", value, {
-            shouldValidate: true,
-            shouldTouch: true,
-          });
-        }}
-      />
-      <SelectElement
-        labelText="Priority"
-        placeholder="Select priority"
-        value={watchedPriority}
-        defaultValue={watchedPriority}
-        disbaleSelect={transiton || formType === "own:edit"}
-        errorMessage={fieldMessage("priority")}
-        invalid={fieldInvalid("priority")}
-        compact={isModal}
-        elementRenderer={() => {
-          return TASK_PRIORITIES.map((priority, index) => {
-            return (
-              <GetSelectItem
-                key={index}
-                value={priority}
-                label={priority.charAt(0).toUpperCase() + priority.slice(1)}
+        {(!isCreate || taskKind) && (
+          <>
+            <SelectElement
+              labelText="Select Assignee"
+              placeholder={selectedBranchId ? "Select assignee" : "Select portfolio first"}
+              value={watchAssingneeId}
+              defaultValue={watchAssingneeId}
+              disbaleSelect={transiton || formType === "own:edit" || !selectedBranchId}
+              errorMessage={fieldMessage("assigneeId")}
+              invalid={fieldInvalid("assigneeId")}
+              compact={isModal}
+              elementRenderer={() => {
+                return assignees.map(({ name, id, role }) => {
+                  const label = role ? `${name} (${role})` : name;
+                  return (
+                    <GetSelectItem key={id} value={String(id)} label={label} />
+                  );
+                });
+              }}
+              onChange={(value) => {
+                setValue("assigneeId", value, {
+                  shouldValidate: true,
+                  shouldTouch: true,
+                });
+              }}
+            />
+            <SelectElement
+              labelText="Priority"
+              placeholder="Select priority"
+              value={watchedPriority}
+              defaultValue={watchedPriority}
+              disbaleSelect={transiton || formType === "own:edit"}
+              errorMessage={fieldMessage("priority")}
+              invalid={fieldInvalid("priority")}
+              compact={isModal}
+              elementRenderer={() => {
+                return TASK_PRIORITIES.map((priority, index) => {
+                  return (
+                    <GetSelectItem
+                      key={index}
+                      value={priority}
+                      label={priority.charAt(0).toUpperCase() + priority.slice(1)}
+                    />
+                  );
+                });
+              }}
+              onChange={(value) => {
+                setValue("priority", value as TaskPriority, {
+                  shouldValidate: true,
+                  shouldTouch: true,
+                });
+              }}
+            />
+            <TextInput
+              labelId="supervisor"
+              labelText="Supervisor (optional)"
+              placeholder="Enter supervisor name"
+              defaultValue={getValues("supervisor")}
+              otherProps={{ ...register("supervisor") }}
+              disbaled={transiton || formType === "own:edit"}
+              errorMessage={fieldMessage("supervisor")}
+              invalid={fieldInvalid("supervisor")}
+              compact={isModal}
+            />
+            {!isCreate && (
+              <SelectElement
+                disbaleSelect={transiton || formType === "own:edit"}
+                labelText="Select Task Status"
+                placeholder="Select Status"
+                value={watchedStatus}
+                defaultValue={watchedStatus}
+                errorMessage={fieldMessage("status")}
+                invalid={fieldInvalid("status")}
+                elements={taskStatus}
+                compact={isModal}
+                onChange={(value) => {
+                  setValue("status", value as TaskStatus, { shouldValidate: true });
+                }}
               />
-            );
-          });
-        }}
-        onChange={(value) => {
-          setValue("priority", value as TaskPriority, {
-            shouldValidate: true,
-            shouldTouch: true,
-          });
-        }}
-      />
-      <TextInput
-        labelId="supervisor"
-        labelText="Supervisor (optional)"
-        placeholder="Enter supervisor name"
-        defaultValue={getValues("supervisor")}
-        otherProps={{ ...register("supervisor") }}
-        disbaled={transiton || formType === "own:edit"}
-        errorMessage={fieldMessage("supervisor")}
-        invalid={fieldInvalid("supervisor")}
-        compact={isModal}
-      />
-      {!isCreate && (
-      <SelectElement
-        disbaleSelect={transiton || formType === "own:edit"}
-        labelText="Select Task Status"
-        placeholder="Select Status"
-        value={watchedStatus}
-        defaultValue={watchedStatus}
-        errorMessage={fieldMessage("status")}
-        invalid={fieldInvalid("status")}
-        elements={taskStatus}
-        compact={isModal}
-        onChange={(value) => {
-          setValue("status", value as TaskStatus, { shouldValidate: true });
-        }}
-      />
-      )}
-      <TextInputWithTaxtArea
-        labelId="title"
-        labelText="Description"
-        placeholder={
-          isCreate && taskKind === "general"
-            ? "Write the full task details here"
-            : "Write the task description here"
-        }
-        defaultValue={currentTask?.description}
-        otherProps={{ ...register("description") }}
-        disbaled={transiton || formType === "own:edit"}
-        errorMessage={fieldMessage("description")}
-        invalid={fieldInvalid("description")}
-        wrapperStyle={
-          isCreate && taskKind === "general" ? "min-h-[160px]" : "h-fit"
-        }
-        compact={isModal}
-      />
+            )}
+            <TextInputWithTaxtArea
+              labelId="title"
+              labelText="Description"
+              placeholder={
+                isCreate && taskKind === "general"
+                  ? "Write the full task details here"
+                  : "Write the task description here"
+              }
+              defaultValue={currentTask?.description}
+              otherProps={{ ...register("description") }}
+              disbaled={transiton || formType === "own:edit"}
+              errorMessage={fieldMessage("description")}
+              invalid={fieldInvalid("description")}
+              wrapperStyle={
+                isCreate && taskKind === "general" ? "min-h-[160px]" : "h-fit"
+              }
+              compact={isModal}
+            />
 
-      <DatePicker
-        labelText="Due Date"
-        disbaled={transiton || session.data?.user.role === "user"}
-        date={deadlineValue}
-        showTimePicker
-        compact={isModal}
-        setDate={(date) => {
-          setValue("deadline", date, { shouldValidate: true });
-          const extraMinutes = Math.round(Number(extraTimeHoursValue ?? 0) * 60);
-          setExtraTimeUntil(extraTimeDate(date, extraMinutes));
-        }}
-        errorMessage={fieldMessage("deadline")}
-        invalid={fieldInvalid("deadline")}
-      />
+            <DatePicker
+              labelText="Due Date"
+              disbaled={transiton || session.data?.user.role === "user"}
+              date={deadlineValue}
+              showTimePicker
+              compact={isModal}
+              setDate={(date) => {
+                setValue("deadline", date, { shouldValidate: true });
+                const extraMinutes = Math.round(Number(extraTimeHoursValue ?? 0) * 60);
+                setExtraTimeUntil(extraTimeDate(date, extraMinutes));
+              }}
+              errorMessage={fieldMessage("deadline")}
+              invalid={fieldInvalid("deadline")}
+            />
 
-      {!isCreate && (
-        <>
-          <DatePicker
-            labelText="Extra Time Until (optional)"
-            disbaled={transiton || formType === "own:edit" || session.data?.user.role === "user"}
-            date={extraTimeUntil}
-            showTimePicker
-            compact={isModal}
-            setDate={(date) => {
-              const dueDate = getValues("deadline") ?? defaultDueDate();
-              if (!getValues("deadline")) setValue("deadline", dueDate, { shouldValidate: true });
-              const minutes = Math.max(0, Math.round((date.getTime() - dueDate.getTime()) / 60_000));
-              setExtraTimeUntil(date.getTime() < dueDate.getTime() ? dueDate : date);
-              setValue("extraTimeHours", minutes / 60, { shouldValidate: true });
-            }}
-          />
+            {!isCreate && (
+              <>
+                <DatePicker
+                  labelText="Extra Time Until (optional)"
+                  disbaled={transiton || formType === "own:edit" || session.data?.user.role === "user"}
+                  date={extraTimeUntil ?? deadlineValue}
+                  showTimePicker
+                  compact={isModal}
+                  setDate={(date) => {
+                    const dueDate = getValues("deadline") ?? defaultDueDate();
+                    if (!getValues("deadline")) setValue("deadline", dueDate, { shouldValidate: true });
 
-          <TextInput
-            labelId="calculatedExtraTime"
-            labelText="Calculated Extra Time"
-            placeholder="No extra time added"
-            type="text"
-            otherProps={{ value: formatExtraDuration(extraTimeHoursValue), readOnly: true }}
-            disbaled={false}
-            inputStyle="bg-zinc-50 font-semibold text-slate-700"
-            compact={isModal}
-          />
-        </>
-      )}
-      {!isCreate && (
-        <>
-          {resolveTaskDisplayStatus(currentTask) === "overdue" ? (
-            <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-800">
-              <Lock className="size-4 shrink-0 text-red-600" />
-              <span>Task is overdue and expired. Progress updates are locked until extra time is added.</span>
-            </div>
-          ) : Number(currentTask?.extraTimeMinutes) > 0 ? (
-            <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs font-semibold text-emerald-800">
-              <Clock className="size-4 shrink-0 text-emerald-600" />
-              <span>Extra time has been added! Updated deadline: {currentTask?.deadline ? new Date(new Date(currentTask.deadline).getTime() + Number(currentTask.extraTimeMinutes) * 60_000).toLocaleString("en-US", { month: "short", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "N/A"}</span>
-            </div>
-          ) : null}
+                    // Enforce: extra time must be after the original due date
+                    const effectiveDate = date.getTime() < dueDate.getTime() ? dueDate : date;
+                    const minutes = Math.max(0, Math.round((effectiveDate.getTime() - dueDate.getTime()) / 60_000));
 
-          {Number(currentTask?.transferredFromProgress) > 0 && (
-            <div className="flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 p-3 text-xs font-semibold text-indigo-900">
-              <ArrowRightLeft className="size-4 shrink-0 text-indigo-600" />
-              <span>Task was transferred! Work completed before transfer: {currentTask?.transferredFromProgress}%. Minimal progress rate: {currentTask?.transferredFromProgress}%.</span>
-            </div>
-          )}
+                    setExtraTimeUntil(effectiveDate);
+                    setValue("extraTimeHours", minutes / 60, { shouldValidate: true });
 
-          <TextInput
-            labelId="progress"
-            labelText={`Completion Percentage (%) ${Number(currentTask?.transferredFromProgress) > 0 ? `(Min: ${currentTask?.transferredFromProgress}%)` : ""}`}
-            placeholder={`Enter percentage (${Number(currentTask?.transferredFromProgress) || 0}-100)`}
-            type="number"
-            defaultValue={String(getValues("progress"))}
-            otherProps={{
-              ...register("progress", {
-                valueAsNumber: true,
-                onChange: (e) => {
-                  const val = Number(e.target.value);
-                  const minVal = Number(currentTask?.transferredFromProgress) || 0;
-                  const isAdmin = session.data?.user?.role === "admin" || session.data?.user?.role === "superadmin";
-                  if (!isAdmin && val < minVal) {
-                    setValue("progress", minVal, { shouldValidate: true });
-                  }
-                },
-              }),
-            }}
-            disbaled={!isAssignee || resolveTaskDisplayStatus(currentTask) === "overdue" || transiton}
-            errorMessage={fieldMessage("progress")}
-            invalid={fieldInvalid("progress")}
-            compact={isModal}
-          />
-        </>
-      )}
-      {!isCreate && !isAssignee && session.data?.user.role !== "user" && (
-        <p className="text-xs font-medium text-zinc-400">
-          Only the assigned user can update the progress.
-        </p>
-      )}
-        </>
-      )}
+                    // Auto-set status from overdue → pending when extra time is granted
+                    if (minutes > 0 && watchedStatus === TaskStatus.overdue) {
+                      setValue("status", TaskStatus.pending, { shouldValidate: true });
+                    }
+                  }}
+                />
+
+                <TextInput
+                  labelId="calculatedExtraTime"
+                  labelText="Calculated Extra Time"
+                  placeholder="No extra time added"
+                  type="text"
+                  otherProps={{ value: formatExtraDuration(extraTimeHoursValue), readOnly: true }}
+                  disbaled={false}
+                  inputStyle="bg-zinc-50 font-semibold text-slate-700"
+                  compact={isModal}
+                />
+              </>
+            )}
+
+            {!isCreate && (
+              <>
+                {/* Show overdue banner only when task is overdue AND no extra time has been entered in the form yet */}
+                {resolveTaskDisplayStatus(currentTask) === "overdue" && !(Number(extraTimeHoursValue) > 0) ? (
+                  <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-800">
+                    <Lock className="size-4 shrink-0 text-red-600" />
+                    <span>Task is overdue and expired. Progress updates are locked until extra time is added.</span>
+                  </div>
+                ) : Number(extraTimeHoursValue) > 0 ? (
+                  <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-xs font-semibold text-emerald-800">
+                    <Clock className="size-4 shrink-0 text-emerald-600" />
+                    <span>Extra time added! New deadline: {extraTimeUntil ? extraTimeUntil.toLocaleString("en-US", { month: "short", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "N/A"}</span>
+                  </div>
+                ) : null}
+
+                {Number(currentTask?.transferredFromProgress) > 0 && (
+                  <div className="flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 p-3 text-xs font-semibold text-indigo-900">
+                    <ArrowRightLeft className="size-4 shrink-0 text-indigo-600" />
+                    <span>Task was transferred! Work completed before transfer: {currentTask?.transferredFromProgress}%. Minimal progress rate: {currentTask?.transferredFromProgress}%.</span>
+                  </div>
+                )}
+
+                <TextInput
+                  labelId="progress"
+                  labelText={`Completion Percentage (%) ${Number(currentTask?.transferredFromProgress) > 0 ? `(Min: ${currentTask?.transferredFromProgress}%)` : ""}`}
+                  placeholder={`Enter percentage (${Number(currentTask?.transferredFromProgress) || 0}-100)`}
+                  type="number"
+                  defaultValue={String(getValues("progress"))}
+                  otherProps={{
+                    ...register("progress", {
+                      valueAsNumber: true,
+                      onChange: (e) => {
+                        const val = Number(e.target.value);
+                        const minVal = Number(currentTask?.transferredFromProgress) || 0;
+                        const isAdmin = session.data?.user?.role === "admin" || session.data?.user?.role === "superadmin";
+                        if (!isAdmin && val < minVal) {
+                          setValue("progress", minVal, { shouldValidate: true });
+                        }
+                      },
+                    }),
+                  }}
+                  disbaled={!isAssignee || (resolveTaskDisplayStatus(currentTask) === "overdue" && !(Number(extraTimeHoursValue) > 0)) || transiton}
+                  errorMessage={fieldMessage("progress")}
+                  invalid={fieldInvalid("progress")}
+                  compact={isModal}
+                />
+              </>
+            )}
+            {!isCreate && !isAssignee && session.data?.user.role !== "user" && (
+              <p className="text-xs font-medium text-zinc-400">
+                Only the assigned user can update the progress.
+              </p>
+            )}
+          </>
+        )}
 
       </div>
 

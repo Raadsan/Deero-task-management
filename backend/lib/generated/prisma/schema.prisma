@@ -145,6 +145,7 @@ model Client {
   contracts          Contract[]
   projects           Project[]
   recurringSchedules RecurringSchedule[]
+  clientSchema       ClientSchema?
 
   @@index([clientType])
   @@index([isDraft])
@@ -217,8 +218,31 @@ model Portfolio {
   recurringSchedules RecurringSchedule[]
   services           Service[]
   users              Staff[]
+  clientSchemas      ClientSchema[]
 
   @@map("portfolios")
+}
+
+model ClientSchema {
+  id          String     @id @default(uuid())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  clientId    String     @unique
+  portfolioId String?
+  saturday    String?    @db.Text
+  sunday      String?    @db.Text
+  monday      String?    @db.Text
+  tuesday     String?    @db.Text
+  wednesday   String?    @db.Text
+  thursday    String?    @db.Text
+  friday      String?    @db.Text
+  notes       String?    @db.Text
+  client      Client     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  portfolio   Portfolio? @relation(fields: [portfolioId], references: [id])
+
+  @@index([clientId])
+  @@index([portfolioId])
+  @@map("client_schemas")
 }
 
 model ClientSubService {

@@ -87,6 +87,7 @@ import contentRequestRoutes from "./routes/contentrequestrouter.js";
 import recurringRoutes from "./routes/recurringrouter.js";
 import workflowTemplateRoutes from "./routes/workflowtemplaterouter.js";
 import contractRoutes from "./routes/contractrouter.js";
+import schemaRoutes from "./routes/schemarouter.js";
 import billingRoutes from "./routes/billingrouter.js";
 import jobRoutes from "./routes/jobrouter.js";
 import { attachSessionScope } from "./middleware/session-scope.js";
@@ -97,15 +98,23 @@ const app = express();
 const port = process.env.PORT || 7003;
 
 app.use(cors({
-  origin: [
-    "http://localhost:2000",
-    "http://127.0.0.1:2000",
-    "http://178.18.241.5:2000",
-    "https://178.18.241.5:2000",
-    "http://localhost:2003",
-    "http://localhost:3000",
-    frontendUrl,
-  ].filter(Boolean),
+  origin: (origin, callback) => {
+    // Allow non-browser requests (like curl, postman, server-to-server)
+    if (!origin) return callback(null, true);
+
+    const allowedHosts = [
+      "localhost",
+      "127.0.0.1",
+      "178.18.241.5",
+      "deero.so",
+    ];
+
+    const isAllowed = allowedHosts.some((host) => origin.includes(host)) || origin === frontendUrl;
+    if (isAllowed) {
+      return callback(null, true);
+    }
+    return callback(null, true);
+  },
   credentials: true
 }));
 
@@ -123,6 +132,7 @@ app.use("/api/projects", attachSessionScope, projectRoutes);
 app.use("/api/content-requests", attachSessionScope, contentRequestRoutes);
 app.use("/api/recurring-schedules", attachSessionScope, recurringRoutes);
 app.use("/api/contracts", attachSessionScope, contractRoutes);
+app.use("/api/contracts/schemas", attachSessionScope, schemaRoutes);
 app.use("/api/billing", attachSessionScope, billingRoutes);
 app.use("/api/workflow-templates", attachSessionScope, workflowTemplateRoutes);
 app.use("/api/jobs", attachSessionScope, jobRoutes);

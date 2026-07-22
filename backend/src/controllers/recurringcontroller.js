@@ -82,6 +82,15 @@ export const getRecurringScheduleById = async (req, res) => {
   }
 };
 
+const VALID_CONTENT_TYPES = [
+  "VIDEO",
+  "GRAPHIC_DESIGN",
+  "PHOTOGRAPHY",
+  "SOCIAL_MEDIA_POST",
+  "MARKETING_CAMPAIGN",
+  "OTHER",
+];
+
 export const createRecurringSchedule = async (req, res) => {
   const data = req.body;
   try {
@@ -95,6 +104,10 @@ export const createRecurringSchedule = async (req, res) => {
       return res.status(404).json({ success: false, error: "Client not found" });
     }
 
+    const contentType = VALID_CONTENT_TYPES.includes(data.contentType)
+      ? data.contentType
+      : "OTHER";
+
     const result = await prisma.$transaction(async (tx) => {
       const id = await generateCustomId({ entityTybe: "recurring_schedules", prisma: tx });
       const schedule = await tx.recurringSchedule.create({
@@ -103,7 +116,7 @@ export const createRecurringSchedule = async (req, res) => {
           name: String(data.name ?? "").trim(),
           recurrenceType: data.recurrenceType ?? "WEEKLY",
           customRule: data.customRule ?? null,
-          contentType: data.contentType ?? "OTHER",
+          contentType,
           startDate: new Date(data.startDate ?? Date.now()),
           endDate: data.endDate ? new Date(data.endDate) : null,
           isActive: data.isActive !== false,
@@ -111,18 +124,23 @@ export const createRecurringSchedule = async (req, res) => {
           clientId: client.id,
           portfolioId: portfolioId ?? client.portfolioId ?? null,
           steps: {
-            create: (data.steps ?? []).map((step, index) => ({
-              dayOfWeek: step.dayOfWeek ?? null,
-              dayOfMonth: step.dayOfMonth ?? null,
-              intervalDays: step.intervalDays ?? null,
-              stepOrder: step.stepOrder ?? index + 1,
-              label: step.label ?? `Step ${index + 1}`,
-              contentType: step.contentType ?? null,
-              department: step.department ?? null,
-              supervisor: step.supervisor ?? "",
-              assigneeId: step.assigneeId ?? data.assigneeId ?? null,
-              templateId: step.templateId ?? null,
-            })),
+            create: (data.steps ?? []).map((step, index) => {
+              const stepCt = VALID_CONTENT_TYPES.includes(step.contentType)
+                ? step.contentType
+                : null;
+              return {
+                dayOfWeek: step.dayOfWeek != null ? Number(step.dayOfWeek) : null,
+                dayOfMonth: step.dayOfMonth != null ? Number(step.dayOfMonth) : null,
+                intervalDays: step.intervalDays != null ? Number(step.intervalDays) : null,
+                stepOrder: step.stepOrder ?? index + 1,
+                label: step.label ?? `Step ${index + 1}`,
+                contentType: stepCt,
+                department: step.department ?? null,
+                supervisor: step.supervisor ?? "",
+                assigneeId: step.assigneeId ?? data.assigneeId ?? null,
+                templateId: step.templateId ?? null,
+              };
+            }),
           },
         },
         include: { steps: true },
@@ -130,11 +148,15 @@ export const createRecurringSchedule = async (req, res) => {
 
       let dailyGeneration = null;
       if (data.autoGenerateTasks !== false) {
-        dailyGeneration = await generateDailyRecurringTasks({
-          runDate: new Date(),
-          scheduleId: schedule.id,
-          tx,
-        });
+        try {
+          dailyGeneration = await generateDailyRecurringTasks({
+            runDate: new Date(),
+            scheduleId: schedule.id,
+            tx,
+          });
+        } catch (genErr) {
+          console.error("Auto task generation on schedule create warning:", genErr.message);
+        }
       }
 
       return { schedule, dailyGeneration };
@@ -142,6 +164,7 @@ export const createRecurringSchedule = async (req, res) => {
 
     res.status(201).json({ success: true, data: result });
   } catch (error) {
+    console.error("createRecurringSchedule error:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 };
@@ -346,6 +369,93 @@ export const runRecurringDailyGeneration = async (req, res) => {
 
     res.json({ success: true, data: result });
   } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const updateRecurringSchedule = async (req, res) => {
+  const { id } = req.params;
+  const data = req.body;
+  try {
+    const scope = getScope(req);
+    const existing = await findAccessibleSchedule(scope, id);
+    if (!existing) {
+      return res.status(404).json({ success: false, error: "Schedule not found" });
+    }
+
+    const contentType = data.contentType && VALID_CONTENT_TYPES.includes(data.contentType)
+      ? data.contentType
+      : existing.contentType;
+
+    const result = await prisma.$transaction(async (tx) => {
+      if (Array.isArray(data.steps)) {
+        await tx.recurringScheduleStep.deleteMany({
+          where: { scheduleId: id },
+        });
+      }
+
+      const schedule = await tx.recurringSchedule.update({
+        where: { id },
+        data: {
+          name: data.name !== undefined ? String(data.name).trim() : existing.name,
+          recurrenceType: data.recurrenceType ?? existing.recurrenceType,
+          contentType,
+          startDate: data.startDate ? new Date(data.startDate) : existing.startDate,
+          endDate: data.endDate !== undefined ? (data.endDate ? new Date(data.endDate) : null) : existing.endDate,
+          isActive: data.isActive !== undefined ? Boolean(data.isActive) : existing.isActive,
+          autoGenerateTasks: data.autoGenerateTasks !== undefined ? Boolean(data.autoGenerateTasks) : existing.autoGenerateTasks,
+          ...(Array.isArray(data.steps)
+            ? {
+                steps: {
+                  create: data.steps.map((step, index) => {
+                    const stepCt = VALID_CONTENT_TYPES.includes(step.contentType)
+                      ? step.contentType
+                      : null;
+                    return {
+                      dayOfWeek: step.dayOfWeek != null ? Number(step.dayOfWeek) : null,
+                      dayOfMonth: step.dayOfMonth != null ? Number(step.dayOfMonth) : null,
+                      intervalDays: step.intervalDays != null ? Number(step.intervalDays) : null,
+                      stepOrder: step.stepOrder ?? index + 1,
+                      label: step.label ?? `Step ${index + 1}`,
+                      contentType: stepCt,
+                      department: step.department ?? null,
+                      supervisor: step.supervisor ?? "",
+                      assigneeId: step.assigneeId ?? null,
+                    };
+                  }),
+                },
+              }
+            : {}),
+        },
+        include: scheduleInclude,
+      });
+
+      return schedule;
+    });
+
+    res.json({ success: true, data: result });
+  } catch (error) {
+    console.error("updateRecurringSchedule error:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const deleteRecurringSchedule = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const scope = getScope(req);
+    const existing = await findAccessibleSchedule(scope, id);
+    if (!existing) {
+      return res.status(404).json({ success: false, error: "Schedule not found" });
+    }
+
+    await prisma.recurringSchedule.delete({
+      where: { id },
+    });
+
+    res.json({ success: true, message: "Schedule deleted" });
+  } catch (error) {
+    console.error("deleteRecurringSchedule error:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 };

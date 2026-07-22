@@ -15,6 +15,7 @@ export type TaskFormClientOption = {
     label: string;
     serviceName: string;
     subServiceName: string;
+    features: string[];
   }>;
 };
 
@@ -70,11 +71,29 @@ export async function getTaskFormClientsByBranch(
               ? `${serviceName} — ${subServiceName}`
               : serviceName;
 
+            let featuresList: string[] = [];
+            const rawFeatures = agreement.contractFeatures ?? subService?.features ?? [];
+            if (Array.isArray(rawFeatures)) {
+              featuresList = rawFeatures.map((f: any) =>
+                typeof f === "string" ? f : f?.name ?? f?.title ?? String(f),
+              );
+            } else if (typeof rawFeatures === "string") {
+              try {
+                const parsed = JSON.parse(rawFeatures);
+                if (Array.isArray(parsed)) {
+                  featuresList = parsed.map((f: any) =>
+                    typeof f === "string" ? f : f?.name ?? f?.title ?? String(f),
+                  );
+                }
+              } catch {}
+            }
+
             return {
               agreementId: agreement.id,
               label,
               serviceName,
               subServiceName,
+              features: featuresList,
             };
           })
           .filter(Boolean) as TaskFormClientOption["pendingServices"];

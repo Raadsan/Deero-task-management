@@ -158,6 +158,13 @@ export default function MyTasksTodayPage() {
         await mutate(SWR_CACH_KEYS.myTasksToday.key);
         await mutate(SWR_CACH_KEYS.myTasksBoard.key);
         await mutate(SWR_CACH_KEYS.tasks.key);
+        await mutate(
+          (key) =>
+            (typeof key === "string" && (key.includes("dashboard") || key.includes("task"))) ||
+            (Array.isArray(key) && (String(key[0]).includes("dashboard") || String(key[0]).includes("task"))),
+          undefined,
+          { revalidate: true },
+        );
         setProcessTarget(null);
       } else {
         toast.error(result.errors?.message ?? "Failed to update task");

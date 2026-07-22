@@ -253,6 +253,22 @@ exports.Prisma.PortfolioScalarFieldEnum = {
   usesRootLogin: 'usesRootLogin'
 };
 
+exports.Prisma.ClientSchemaScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  clientId: 'clientId',
+  portfolioId: 'portfolioId',
+  saturday: 'saturday',
+  sunday: 'sunday',
+  monday: 'monday',
+  tuesday: 'tuesday',
+  wednesday: 'wednesday',
+  thursday: 'thursday',
+  friday: 'friday',
+  notes: 'notes'
+};
+
 exports.Prisma.ClientSubServiceScalarFieldEnum = {
   subServiceId: 'subServiceId',
   count: 'count',
@@ -282,6 +298,7 @@ exports.Prisma.TaskScalarFieldEnum = {
   progress: 'progress',
   supervisor: 'supervisor',
   serviceInformation: 'serviceInformation',
+  features: 'features',
   isPersonal: 'isPersonal',
   agreementId: 'agreementId',
   contentCycleId: 'contentCycleId',
@@ -818,6 +835,7 @@ exports.Prisma.ModelName = {
   Service: 'Service',
   SubService: 'SubService',
   Portfolio: 'Portfolio',
+  ClientSchema: 'ClientSchema',
   ClientSubService: 'ClientSubService',
   ClientService: 'ClientService',
   Task: 'Task',

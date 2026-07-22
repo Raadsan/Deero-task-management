@@ -72,6 +72,7 @@ interface Task {
   createdAt?: string | Date;
   progress: number;
   serviceInformation?: string;
+  features?: Array<{ id?: string; name: string; done?: boolean; completed?: boolean; doneAt?: string }>;
 }
 
 type StatusColorConfig = {

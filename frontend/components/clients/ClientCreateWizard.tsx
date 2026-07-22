@@ -46,6 +46,8 @@ type Props = {
   onSuccess?: () => void;
   onCancel?: () => void;
   draftClientId?: string;
+  editClientId?: string;
+  initialClient?: any;
 };
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
@@ -67,11 +69,19 @@ function fileToContractPayload(file: File): Promise<ContractFilePayload> {
   });
 }
 
-export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId: initialDraftId }: Props) {
+export default function ClientCreateWizard({
+  onSuccess,
+  onCancel,
+  draftClientId: initialDraftId,
+  editClientId,
+  initialClient,
+}: Props) {
   const { mutate } = useSWRConfig();
   const [pending, startTransition] = useTransition();
 
-  const [flowMode, setFlowMode] = useState<FlowMode | null>(initialDraftId ? "new" : null);
+  const [flowMode, setFlowMode] = useState<FlowMode | null>(
+    initialDraftId || editClientId ? "new" : null
+  );
   const [step, setStep] = useState(1);
   const [draftClientId, setDraftClientId] = useState<string | undefined>(initialDraftId);
 
@@ -201,6 +211,34 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
   );
 
   useEffect(() => {
+    if (!editClientId || !initialClient) return;
+    const c = initialClient;
+    setFlowMode("new");
+    setStep(1);
+    setClientType((c.clientType as ClientType) ?? "ONE_TIME");
+    setInstitution(String(c.institution ?? ""));
+    setPhone(String(c.phone ?? ""));
+    setEmail(String(c.email ?? ""));
+    setSource(String(c.source ?? ""));
+    setBranchId(String(c.portfolioId ?? ""));
+    if (c.contractStartDate || c.contractEndDate || c.monthlyBudget) {
+      setIncludeContract(true);
+      if (c.contractStartDate) setContractStartDate(String(c.contractStartDate).slice(0, 10));
+      if (c.contractEndDate) setContractEndDate(String(c.contractEndDate).slice(0, 10));
+      if (c.monthlyBudget) setMonthlyBudget(String(c.monthlyBudget));
+    }
+    const sAgreements = c.serviceAgreements;
+    if (sAgreements && sAgreements.length > 0) {
+      setIncludeService(true);
+      if (sAgreements[0].serviceName) setServiceName(sAgreements[0].serviceName);
+      if (sAgreements[0].subServiceName) setSubServiceName(sAgreements[0].subServiceName);
+      if (sAgreements[0].base != null) setBase(String(sAgreements[0].base));
+      if (sAgreements[0].discount != null) setDiscount(String(sAgreements[0].discount));
+      if (sAgreements[0].description) setServiceDescription(sAgreements[0].description);
+    }
+  }, [editClientId, initialClient]);
+
+  useEffect(() => {
     if (!draftClientId || !draftClientRes?.data) return;
     const c = draftClientRes.data as unknown as Record<string, unknown>;
     setClientType((c.clientType as ClientType) ?? "ONE_TIME");
@@ -224,7 +262,7 @@ export default function ClientCreateWizard({ onSuccess, onCancel, draftClientId:
   }, [draftClientId, draftClientRes?.data]);
 
   useEffect(() => {
-    if (localDraftLoaded || initialDraftId || flowMode !== null) return;
+    if (localDraftLoaded || initialDraftId || flowMode !== null || editClientId) return;
     const saved = readClientCreateDraft();
     if (!saved) {
       setLocalDraftLoaded(true);

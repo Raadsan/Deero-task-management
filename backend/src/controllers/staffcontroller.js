@@ -269,8 +269,8 @@ export const uploadStaffFiles = async (req, res) => {
       return res.status(400).json({ success: false, error: "No files provided" });
     }
 
-    if (files.length > 5) {
-      return res.status(400).json({ success: false, error: "You can upload up to 5 files at a time" });
+    if (files.length > 6) {
+      return res.status(400).json({ success: false, error: "You can upload up to 6 files at a time" });
     }
 
     const saved = [];

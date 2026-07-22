@@ -64,7 +64,11 @@ function statusBadgeClass(status: string) {
   }
 }
 
+import SchemasManagementPage from "@/components/contracts/SchemasManagementPage";
+import { Calendar } from "lucide-react";
+
 export default function ContractsPage() {
+  const [activeTab, setActiveTab] = useState<"contracts" | "schemas">("contracts");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -130,7 +134,39 @@ export default function ContractsPage() {
   }
 
   return (
-    <ManagementPageShell title="Contracts management">
+    <ManagementPageShell title="Contracts & Schemas management">
+      <div className="mb-4 flex border-b border-zinc-200 bg-white px-6 pt-2 rounded-t-xl">
+        <button
+          type="button"
+          onClick={() => setActiveTab("contracts")}
+          className={cn(
+            "flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-bold transition-all",
+            activeTab === "contracts"
+              ? "border-primary text-primary"
+              : "border-transparent text-zinc-500 hover:text-zinc-800"
+          )}
+        >
+          <FileText className="size-4" />
+          Contracts List
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("schemas")}
+          className={cn(
+            "flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-bold transition-all",
+            activeTab === "schemas"
+              ? "border-primary text-primary"
+              : "border-transparent text-zinc-500 hover:text-zinc-800"
+          )}
+        >
+          <Calendar className="size-4" />
+          Client Content Schemas
+        </button>
+      </div>
+
+      {activeTab === "schemas" ? (
+        <SchemasManagementPage />
+      ) : (
       <div className={dashboardCardClass}>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-50 px-6 py-3">
           <div className={cn("flex items-center gap-2", dashboardLabelClass)}>
@@ -346,6 +382,7 @@ export default function ContractsPage() {
           </div>
         </div>
       </div>
+      )}
 
       <ContractViewModal
         open={viewOpen}

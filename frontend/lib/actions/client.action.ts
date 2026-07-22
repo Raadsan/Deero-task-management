@@ -35,6 +35,17 @@ function mapServiceAgreements(client: any) {
     client.serviceAgreements?.map((agreement: any) => {
       const service = resolveAgreementService(client, agreement);
       const subService = resolveAgreementSubService(client, agreement);
+
+      let features: any[] = [];
+      const rawFeatures = agreement.contractFeatures ?? subService?.features ?? [];
+      if (Array.isArray(rawFeatures)) {
+        features = rawFeatures;
+      } else if (typeof rawFeatures === "string") {
+        try {
+          features = JSON.parse(rawFeatures);
+        } catch {}
+      }
+
       return {
         agreementId: agreement.id,
         serviceName: service?.serviceName ?? "",
@@ -47,6 +58,7 @@ function mapServiceAgreements(client: any) {
         discount: agreement.discount,
         createdAt: formatDate(agreement.createdAt ?? ""),
         rawCreatedAt: agreement.createdAt,
+        features,
       };
     }) ?? []
   );

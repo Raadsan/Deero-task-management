@@ -59,13 +59,9 @@ export const TaskSchema = z.object({
   assigneeId: z.string(),
   supervisor: z.string().optional(),
   status: z.nativeEnum(TaskStatus),
-  deadline: z
-    .date({
-      error: "Deadline is required.",
-    })
-    .refine((date) => {
-      return date.getTime() >= Date.now();
-    }, "deadline must be now or a future date"),
+  deadline: z.date({
+    error: "Deadline is required.",
+  }),
   extraTimeHours: z.number().min(0).max(8760).optional().default(0),
   startDate: z.date().optional(),
   progress: z.number().min(0).max(100).optional().default(0),

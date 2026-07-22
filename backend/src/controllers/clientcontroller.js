@@ -288,7 +288,7 @@ export const getClientById = async (req, res) => {
       where: mergeWhere({ id }, clientBranchWhere(scope)),
       include: {
         ...clientListInclude,
-        clientTask: { include: { task: true } },
+        clientTask: { include: { task: { include: { user: true } } } },
       },
     });
     if (!client) return res.status(404).json({ success: false, message: "Client not found" });

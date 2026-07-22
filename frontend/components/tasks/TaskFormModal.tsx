@@ -17,6 +17,7 @@ interface Props {
   mode: "create" | "edit";
   taskId?: string;
   variant?: "default" | "own";
+  initialData?: any;
 }
 
 async function loadTaskFormData(
@@ -42,6 +43,7 @@ export default function TaskFormModal({
   mode,
   taskId,
   variant = "default",
+  initialData,
 }: Props) {
   const { data, isLoading, isValidating, error } = useSWR(
     open ? ["task-form-modal", mode, taskId ?? "new", variant] : null,
@@ -92,6 +94,7 @@ export default function TaskFormModal({
                 key={mode === "create" ? "create-task-form" : (data?.currentTask?.id ?? `edit-${taskId}`)}
                 formType={formType}
                 currentTask={data?.currentTask}
+                initialData={initialData}
                 onSuccess={() => onOpenChange(false)}
                 onCancel={() => onOpenChange(false)}
               />

@@ -19,6 +19,9 @@ export const auth = betterAuth({
   }),
   trustedOrigins: [
     "https://task.deero.so",
+    "http://task.deero.so",
+    "https://deero.so",
+    "http://deero.so",
     "http://localhost:3000",
     "http://localhost:5000",
     "http://localhost:2000",
@@ -26,7 +29,8 @@ export const auth = betterAuth({
     "http://localhost:2003",
     "http://178.18.241.5:2000",
     "https://178.18.241.5:2000",
-    process.env.FRONTEND_URL
+    process.env.FRONTEND_URL,
+    process.env.FRONTEND_URL_PROD,
   ].filter(Boolean),
   advanced: {
     useSecureCookies: process.env.BETTER_AUTH_URL?.startsWith("https") === true,

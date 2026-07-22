@@ -62,16 +62,11 @@ export default function ClientFormModal({
                 <div key={i} className="h-10 rounded-lg bg-zinc-100" />
               ))}
             </div>
-          ) : mode === "create" && open ? (
+          ) : open ? (
             <ClientCreateWizard
-              draftClientId={draftClientId}
-              onSuccess={() => onOpenChange(false)}
-              onCancel={() => onOpenChange(false)}
-            />
-          ) : mode === "edit" ? (
-            <ClientForm
-              formType="edit"
-              currentClient={data?.currentClient as Client | undefined}
+              draftClientId={mode === "create" ? draftClientId : undefined}
+              editClientId={mode === "edit" ? clientId : undefined}
+              initialClient={mode === "edit" ? (data?.currentClient as Client | undefined) : undefined}
               onSuccess={() => onOpenChange(false)}
               onCancel={() => onOpenChange(false)}
             />

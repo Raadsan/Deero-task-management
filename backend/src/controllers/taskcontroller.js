@@ -215,6 +215,7 @@ export const createTask = async (req, res) => {
       progress: normalized.progress,
       serviceInformation: data.serviceInformation || "",
       isPersonal: Boolean(data.isPersonal),
+      features: Array.isArray(data.features) ? data.features : null,
     };
 
     // Personal / simple tasks: single insert (no transaction — avoids remote DB timeouts)
@@ -291,7 +292,7 @@ async function notifyTaskAssignee(result, creatorName) {
 
 export const updateTask = async (req, res) => {
   const { id } = req.params;
-  const { description, status, priority, department, deadline, extraTimeMinutes, startDate, assgineeId, supervisor, progress, serviceInformation } = req.body;
+  const { description, status, priority, department, deadline, extraTimeMinutes, startDate, assgineeId, supervisor, progress, serviceInformation, features } = req.body;
   try {
     const scope = getScope(req);
     const originalTask = await findAccessibleTask(scope, id, { user: true });
@@ -300,10 +301,24 @@ export const updateTask = async (req, res) => {
       return res.status(404).json({ success: false, error: "Task not found" });
     }
 
+    let calculatedProgress = progress;
+    let calculatedStatus = status;
+
+    if (Array.isArray(features) && features.length > 0) {
+      const doneCount = features.filter((f) => Boolean(f.done || f.completed)).length;
+      calculatedProgress = Math.round((doneCount / features.length) * 100);
+      if (calculatedProgress === 100) {
+        calculatedStatus = "completed";
+      } else if (calculatedProgress > 0 && status !== "completed") {
+        calculatedStatus = "in_progress";
+      }
+    }
+
     const normalized = normalizeTaskWriteStatus({
-      status,
-      progress,
+      status: calculatedStatus ?? status,
+      progress: calculatedProgress ?? progress,
       deadline,
+      extraTimeMinutes,
       currentStatus: originalTask.status,
       currentProgress: originalTask.progress,
     });
@@ -364,6 +379,7 @@ export const updateTask = async (req, res) => {
             ? { completedAt: null }
             : {}),
         ...(serviceInformation !== undefined ? { serviceInformation } : {}),
+        ...(features !== undefined ? { features } : {}),
       },
       include: {
         user: true,

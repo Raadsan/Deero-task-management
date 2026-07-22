@@ -25,6 +25,7 @@ import {
 import { taskTitle } from "@/lib/my-task-filters";
 import { Task } from "@/lib/types";
 import { cn, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
+import { Lock } from "lucide-react";
 import { useEffect, useState } from "react";
 
 type Props = {
@@ -134,6 +135,13 @@ export default function ProcessTaskConfirmModal({
               />
             </div>
 
+            {resolveTaskDisplayStatus(task) === "overdue" ? (
+              <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-800">
+                <Lock className="size-4 shrink-0 text-red-600" />
+                <span>Task is overdue and deadline has ended. Progress updates are locked until extra time is added by your manager.</span>
+              </div>
+            ) : null}
+
             <div className="rounded-lg border border-zinc-100 bg-white p-4">
               <div className="mb-2 flex items-center justify-between gap-3">
                 <label className="text-xs font-bold tracking-wide text-zinc-600 uppercase">
@@ -152,7 +160,7 @@ export default function ProcessTaskConfirmModal({
                   onChange={(event) =>
                     setProgress(clampProgress(Number(event.target.value)))
                   }
-                  disabled={loading}
+                  disabled={loading || resolveTaskDisplayStatus(task) === "overdue"}
                   className="accent-primary h-2 w-full cursor-pointer appearance-none rounded-lg bg-zinc-200"
                 />
                 <input
@@ -163,7 +171,7 @@ export default function ProcessTaskConfirmModal({
                   onChange={(event) =>
                     setProgress(clampProgress(Number(event.target.value)))
                   }
-                  disabled={loading}
+                  disabled={loading || resolveTaskDisplayStatus(task) === "overdue"}
                   className={cn(configCompactInputClass, "w-20 text-center")}
                 />
               </div>
@@ -184,7 +192,7 @@ export default function ProcessTaskConfirmModal({
           <Button
             type="button"
             onClick={() => void onConfirm(progress)}
-            disabled={loading || !task}
+            disabled={loading || !task || resolveTaskDisplayStatus(task) === "overdue"}
             className={cn(
               btnFormSubmit,
               isCompleted && "bg-emerald-600 text-white hover:bg-emerald-700",

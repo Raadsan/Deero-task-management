@@ -406,4 +406,5 @@ export const USER_DOCUMENT_TYPES = [
   { id: "transcription", label: "Transcription" },
   { id: "cv", label: "CV" },
   { id: "cid", label: "CID" },
+  { id: "nira", label: "NIRA" },
 ] as const;
