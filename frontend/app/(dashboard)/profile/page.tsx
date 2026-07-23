@@ -7,6 +7,7 @@ import {
   deleteUserFileById,
   updateUserData,
 } from "@/lib/actions/user.action";
+import ConfirmDialog from "@/components/Shared/ConfirmDialog";
 import { getTaskFormBranchOptions } from "@/lib/actions/shared.action";
 import { USER_DOCUMENT_TYPES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -105,6 +106,7 @@ export default function ProfilePage() {
 
   const [isPending, startTransition] = useTransition();
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [removeImageDialogOpen, setRemoveImageDialogOpen] = useState(false);
   const avatarInputRef = useRef<HTMLInputElement>(null);
 
   const [docSelections, setDocSelections] = useState<Record<string, File>>({});
@@ -184,6 +186,31 @@ export default function ProfilePage() {
     } finally {
       setUploadingImage(false);
       if (avatarInputRef.current) avatarInputRef.current.value = "";
+    }
+  }
+
+  async function handleAvatarRemove() {
+    if (!user.image || uploadingImage) return;
+
+    try {
+      setUploadingImage(true);
+      const res = await updateUserData({ id: user.id, image: null });
+
+      if (res.success) {
+        toast.success("Profile picture removed successfully!");
+        setRemoveImageDialogOpen(false);
+        if (session.refetch) {
+          await session.refetch();
+        }
+        mutate(["user-session"]);
+        window.dispatchEvent(new Event("user-profile-updated"));
+      } else {
+        toast.error("Failed to remove profile picture. Try again.");
+      }
+    } catch {
+      toast.error("An error occurred while removing the profile picture.");
+    } finally {
+      setUploadingImage(false);
     }
   }
 
@@ -411,6 +438,18 @@ export default function ProfilePage() {
                   >
                     <Camera className="size-4" />
                   </button>
+                  {user.image && (
+                    <button
+                      type="button"
+                      onClick={() => setRemoveImageDialogOpen(true)}
+                      title="Remove Profile Picture"
+                      aria-label="Remove profile picture"
+                      disabled={uploadingImage}
+                      className="absolute bottom-0 left-0 flex size-9 items-center justify-center rounded-full bg-red-600 text-white shadow-xl transition-all hover:scale-110 hover:bg-red-700 active:scale-95 disabled:opacity-50"
+                    >
+                      <Trash2 className="size-4" />
+                    </button>
+                  )}
                 </>
               )}
             </div>
@@ -1000,6 +1039,17 @@ export default function ProfilePage() {
           )}
         </div>
       </div>
+      <ConfirmDialog
+        open={removeImageDialogOpen}
+        onOpenChange={setRemoveImageDialogOpen}
+        title="Remove profile picture?"
+        description="Your current profile picture will be removed and replaced with your initials."
+        confirmLabel="Remove picture"
+        cancelLabel="Keep picture"
+        onConfirm={handleAvatarRemove}
+        loading={uploadingImage}
+        destructive
+      />
     </div>
   );
 }
