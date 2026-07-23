@@ -86,7 +86,6 @@ export function getTaskStatusBadgeClass(status: string): string {
       return "bg-emerald-600 text-white";
     case "pending":
       return "bg-amber-500 text-white";
-    case "active":
     case "inprogres":
       return "bg-blue-600 text-white";
     case "overdue":
@@ -102,7 +101,7 @@ export function getTaskStatusBadgeClass(status: string): string {
 export function formatStatusLabel(status: string): string {
   if (!status) return "—";
   const lower = status.toLowerCase();
-  if (lower === "pending") return "Processing";
+  if (lower === "pending") return "In Process";
   return status.charAt(0).toUpperCase() + status.slice(1);
 }
 

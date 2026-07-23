@@ -72,7 +72,7 @@ import {
 const metricIcons: Record<string, typeof Briefcase> = {
   "Total Tasks": Briefcase,
   "Completed Tasks": CheckCircle,
-  "Pending Tasks": Clock,
+  "In Process Tasks": Clock,
   "Total Clients": Users,
 };
 
@@ -256,7 +256,7 @@ export default function AdminDashboard() {
   const statusBreakdown = useMemo(
     () => [
       { name: "Completed", value: personalMetrics.completed },
-      { name: "Pending", value: personalMetrics.pending },
+      { name: "In Process", value: personalMetrics.pending },
       { name: "Overdue", value: personalMetrics.overdue },
     ],
     [personalMetrics],
@@ -313,7 +313,7 @@ export default function AdminDashboard() {
           {[
             { label: "Assigned Tasks", value: personalMetrics.assigned, Icon: Briefcase },
             { label: "Completed", value: personalMetrics.completed, Icon: CheckCircle },
-            { label: "Pending", value: personalMetrics.pending, Icon: Clock },
+            { label: "In Process", value: personalMetrics.pending, Icon: Clock },
             { label: "Overdue", value: personalMetrics.overdue, Icon: AlertCircle },
           ].map(({ label, value, Icon }, index) => (
             <div key={label} className="trezo-card flex min-h-[92px] flex-col gap-3 p-5">
@@ -379,9 +379,13 @@ export default function AdminDashboard() {
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie data={statusBreakdown} dataKey="value" nameKey="name" innerRadius={50} outerRadius={85}>
-                    {statusBreakdown.map((_, idx) => (
-                      <Cell key={`status-${idx}`} fill={chartPrimaryVariants[idx % chartPrimaryVariants.length]} />
-                    ))}
+                    {statusBreakdown.map((entry, idx) => {
+                      const fill = entry.name.toLowerCase() === "completed" ? "#059669" :
+                                   entry.name.toLowerCase() === "in process" ? "#f59e0b" :
+                                   entry.name.toLowerCase() === "overdue" ? "#e11d48" :
+                                   chartPrimaryVariants[idx % chartPrimaryVariants.length];
+                      return <Cell key={`status-${idx}`} fill={fill} />;
+                    })}
                   </Pie>
                   <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: "#ffffff" }} />
                 </PieChart>

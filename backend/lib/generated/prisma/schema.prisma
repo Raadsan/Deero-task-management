@@ -286,6 +286,7 @@ model Task {
   progress                Int                      @default(0)
   supervisor              String                   @default("")
   serviceInformation      String?
+  features                Json?
   isPersonal              Boolean                  @default(false)
   agreementId             String?
   contentCycleId          String?
@@ -535,16 +536,17 @@ model UserSalaryDetails {
 }
 
 model Notification {
-  id           String   @id @default(uuid())
-  createdAt    DateTime @default(now())
-  taskId       String
-  taskName     String
-  assigneeName String
-  deadline     DateTime
-  type         String
+  id           String    @id @default(uuid())
+  createdAt    DateTime  @default(now())
+  taskId       String?
+  taskName     String?
+  assigneeName String?
+  deadline     DateTime?
+  type         String?
   userId       String
-  isSeen       Boolean  @default(false)
+  isSeen       Boolean   @default(false)
 
+  @@index([userId])
   @@map("notifications")
 }
 

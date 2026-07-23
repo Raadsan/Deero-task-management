@@ -40,8 +40,8 @@ export const TaskSchema = z.object({
   taskName: z.string().optional(),
   description: z
     .string()
-    .min(6, "Title is required.")
-    .max(150, "Title must not exceed 150 characters."),
+    .min(1, "Description is required.")
+    .max(150, "Description must not exceed 150 characters."),
 
   category: z
     .string()

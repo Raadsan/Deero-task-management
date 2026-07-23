@@ -13,7 +13,7 @@ import { ArrowRightLeft, CheckSquare, Clock, Lock } from "lucide-react";
 import { CreateTaskSchema, TaskSchema } from "@/lib/validations";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useRouter } from "next/navigation";
-import { startTransition, useEffect, useState, useTransition } from "react";
+import { startTransition, useEffect, useState, useTransition, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import useSWR from "swr";
@@ -45,9 +45,7 @@ interface Props {
 type TaskKind = "client" | "general";
 
 function defaultDueDate() {
-  const date = new Date();
-  date.setHours(23, 59, 0, 0);
-  return date;
+  return new Date(); // defaults to right now (current time)
 }
 
 function extraTimeDate(deadline?: Date, minutes = 0) {
@@ -193,7 +191,8 @@ export default function TaskForm({
         ownAssigned: formType === "own:edit",
       }),
   );
-  const assignees = assigneesRes?.data ?? [];
+  const EMPTY_ASSIGNEES = useMemo(() => [], []);
+  const assignees = assigneesRes?.data ?? EMPTY_ASSIGNEES;
 
   const selectedBranchName =
     branchOptions.find((portfolio) => String(portfolio.id) === String(selectedBranchId))?.name ?? "";
@@ -205,6 +204,8 @@ export default function TaskForm({
     () => getTaskFormClientsByBranch(selectedBranchId),
   );
   const branchClients = branchClientsRes?.data ?? [];
+  const EMPTY_PENDING_SERVICES = useMemo(() => [], []);
+
 
   const deadlineValue = watch("deadline");
   const extraTimeHoursValue = watch("extraTimeHours");
@@ -237,7 +238,7 @@ export default function TaskForm({
   const selectedClient = branchClients.find(
     (client) => client.id === watchInstitutionId,
   );
-  const pendingServiceOptions = selectedClient?.pendingServices ?? [];
+  const pendingServiceOptions = selectedClient?.pendingServices ?? EMPTY_PENDING_SERVICES;
   const watchAssingneeId = watch("assigneeId");
   const currentUserId = session.data?.user.id;
   const isAssignee = String(currentUserId) === String(watchAssingneeId);
@@ -255,16 +256,20 @@ export default function TaskForm({
   useEffect(() => {
     if (formType === "create") return;
     if (watchedStatus === TaskStatus.completed) {
-      setValue("progress", 100, { shouldValidate: true });
+      if (getValues("progress") !== 100) {
+        setValue("progress", 100, { shouldValidate: true });
+      }
     }
-  }, [formType, watchedStatus, setValue]);
+  }, [formType, watchedStatus, setValue, getValues]);
 
   useEffect(() => {
     if (formType === "create") return;
     if (Number(watchedProgress) >= 100) {
-      setValue("status", TaskStatus.completed, { shouldValidate: true });
+      if (getValues("status") !== TaskStatus.completed) {
+        setValue("status", TaskStatus.completed, { shouldValidate: true });
+      }
     }
-  }, [formType, watchedProgress, setValue]);
+  }, [formType, watchedProgress, setValue, getValues]);
 
   useEffect(() => {
     if (!isCreate) return;
@@ -293,7 +298,9 @@ export default function TaskForm({
   useEffect(() => {
     if (!isCreate) return;
     if (!watchServiceInformation || !pendingServiceOptions.length) {
-      setTaskFeatures([]);
+      if (taskFeatures.length > 0) {
+        setTaskFeatures([]);
+      }
       return;
     }
     const matchedService = pendingServiceOptions.find(
@@ -308,7 +315,9 @@ export default function TaskForm({
         })),
       );
     } else {
-      setTaskFeatures([]);
+      if (taskFeatures.length > 0) {
+        setTaskFeatures([]);
+      }
     }
   }, [isCreate, watchServiceInformation, pendingServiceOptions]);
 

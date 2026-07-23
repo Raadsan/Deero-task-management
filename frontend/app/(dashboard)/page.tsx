@@ -686,7 +686,7 @@ function AdminDashboard({
   const filteredClients = allClients.filter((client) => inRange(client.createdAt));
 
   const statusData = useMemo(() => {
-    const statuses = ["completed", "pending", "overdue", "active"];
+    const statuses = ["completed", "pending", "overdue"];
     return statuses.map((status) => ({
       name: formatStatusLabel(status),
       value: filteredTasks.filter((task) => resolveTaskDisplayStatus(task) === status).length,
@@ -740,7 +740,7 @@ function AdminDashboard({
   const metricCards = [
     { label: "Total Tasks", value: filteredTasks.length, Icon: Briefcase },
     { label: "Completed Tasks", value: statusData[0]?.value ?? 0, Icon: CheckCircle },
-    { label: "Pending Tasks", value: (statusData[1]?.value ?? 0) + (statusData[2]?.value ?? 0), Icon: Clock },
+    { label: "In Process Tasks", value: (statusData[1]?.value ?? 0) + (statusData[2]?.value ?? 0), Icon: Clock },
     { label: "New Clients", value: filteredClients.length, Icon: Users },
   ];
 
@@ -790,7 +790,21 @@ function AdminDashboard({
           <ResponsiveContainer width="100%" height="100%"><BarChart data={staffPerformance}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" /><XAxis dataKey="name" axisLine={false} tickLine={false} tick={chartAxisTick} /><YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={chartAxisTick} /><Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: "#fff" }} /><Legend /><Bar dataKey="assigned" name="Assigned" fill={chartPrimary} radius={[4,4,0,0]} /><Bar dataKey="completed" name="Completed" fill={chartSecondary} radius={[4,4,0,0]} /></BarChart></ResponsiveContainer>
         </ChartCard>
         <ChartCard title="Task Statuses" subtitle="Current status distribution">
-          <ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={statusData} dataKey="value" nameKey="name" innerRadius={60} outerRadius={95} paddingAngle={3}>{statusData.map((_, index) => <Cell key={index} fill={chartPrimaryVariants[index % chartPrimaryVariants.length]} />)}</Pie><Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: "#fff" }} /><Legend /></PieChart></ResponsiveContainer>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie data={statusData} dataKey="value" nameKey="name" innerRadius={60} outerRadius={95} paddingAngle={3}>
+                {statusData.map((entry, index) => {
+                  const fill = entry.name.toLowerCase() === "completed" ? "#059669" :
+                               entry.name.toLowerCase() === "in process" ? "#f59e0b" :
+                               entry.name.toLowerCase() === "overdue" ? "#e11d48" :
+                               chartPrimaryVariants[index % chartPrimaryVariants.length];
+                  return <Cell key={index} fill={fill} />;
+                })}
+              </Pie>
+              <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: "#fff" }} />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
         </ChartCard>
         <ChartCard title="Clients by Tasks" subtitle="Clients with the most tasks">
           <ResponsiveContainer width="100%" height="100%"><BarChart data={clientsByTasks} layout="vertical" margin={{ left: 20 }}><CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" /><XAxis type="number" allowDecimals={false} axisLine={false} tickLine={false} tick={chartAxisTick} /><YAxis type="category" dataKey="name" width={110} axisLine={false} tickLine={false} tick={chartAxisTick} /><Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: "#fff" }} /><Bar dataKey="tasks" name="Tasks" fill={chartPrimary} radius={[0,4,4,0]} /></BarChart></ResponsiveContainer>

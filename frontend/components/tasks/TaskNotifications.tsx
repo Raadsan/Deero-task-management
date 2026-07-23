@@ -58,7 +58,7 @@ function formatNotificationTime(value?: string) {
   if (!value) return "N/A";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "N/A";
-  return new Intl.DateTimeFormat("en-GB", {
+  return new Intl.DateTimeFormat("en-US", {
     timeZone: "Africa/Nairobi",
     day: "2-digit",
     month: "2-digit",
@@ -66,8 +66,8 @@ function formatNotificationTime(value?: string) {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
-    hour12: false,
-  }).format(date).replace(",", "");
+    hour12: true,
+  }).format(date);
 }
 function readableType(type: TaskNotification["type"]) {
   if (type === "new-assignment") return "New Assignment";

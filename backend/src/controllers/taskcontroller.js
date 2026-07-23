@@ -611,7 +611,7 @@ export const getDashboardMetrics = async (req, res) => {
       data: [
         { title: "Total Tasks", totalTasks },
         { title: "Completed Tasks", totalTasks: completedTasks },
-        { title: "Pending Tasks", totallPending: pendingTasks },
+        { title: "In Process Tasks", totallPending: pendingTasks },
         { title: "Overdue Tasks", totalTasks: overdueTasks },
         { title: "Total Clients", totalEarning: totalClients },
       ],
