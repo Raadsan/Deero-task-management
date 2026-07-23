@@ -146,7 +146,7 @@ export const createStaff = async (req, res) => {
 
 export const updateStaff = async (req, res) => {
   const { id } = req.params;
-  const { name, email, role, gender, salary, portfolioId, banned, roleId } =
+  const { name, email, role, gender, salary, portfolioId, banned, roleId, image } =
     req.body;
   try {
     if (
@@ -192,6 +192,7 @@ export const updateStaff = async (req, res) => {
         gender,
         salary: salary === undefined ? undefined : salary ? String(salary) : null,
         portfolioId: resolvedBranchId,
+        ...(image !== undefined ? { image } : {}),
         ...(banned !== undefined ? { banned: !!banned } : {}),
         ...(role !== undefined ? { roleId: resolvedRoleId } : {}),
       },

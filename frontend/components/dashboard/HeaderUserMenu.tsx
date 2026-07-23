@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element */
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -20,12 +22,48 @@ import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
 import toast from "react-hot-toast";
 
+function UserAvatar({
+  image,
+  name,
+  sizeClass,
+}: {
+  image?: string | null;
+  name?: string | null;
+  sizeClass: string;
+}) {
+  const [imageFailed, setImageFailed] = useState(false);
+
+  useEffect(() => {
+    setImageFailed(false);
+  }, [image]);
+
+  return (
+    <div
+      className={cn(
+        "bg-primary flex shrink-0 items-center justify-center overflow-hidden rounded-full font-bold text-white",
+        sizeClass,
+      )}
+    >
+      {image && !imageFailed ? (
+        <img
+          src={image}
+          alt={`${name || "User"} profile`}
+          className="h-full w-full object-cover"
+          onError={() => setImageFailed(true)}
+        />
+      ) : (
+        name?.charAt(0)?.toUpperCase() || "U"
+      )}
+    </div>
+  );
+}
 interface Props {
   className?: string;
   user: {
     name?: string | null;
     email?: string | null;
     role?: string | null;
+    image?: string | null;
   } | null;
 }
 
@@ -77,9 +115,11 @@ export default function HeaderUserMenu({ className, user }: Props) {
             className,
           )}
         >
-          <div className="bg-primary flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white">
-            {user.name?.charAt(0)?.toUpperCase() || "U"}
-          </div>
+          <UserAvatar
+            image={user.image}
+            name={user.name}
+            sizeClass="size-7 text-xs"
+          />
           <div className="hidden min-w-0 text-left sm:block">
             <p className="truncate text-[13px] leading-tight font-bold tracking-tight text-zinc-900">
               {displayName}
@@ -97,9 +137,11 @@ export default function HeaderUserMenu({ className, user }: Props) {
       >
         <DropdownMenuLabel className="p-0 font-normal">
           <div className="flex items-center gap-3 px-3 py-3">
-            <div className="bg-primary flex size-9 items-center justify-center rounded-full text-sm font-semibold text-white">
-              {user.name?.charAt(0)?.toUpperCase() || "U"}
-            </div>
+            <UserAvatar
+              image={user.image}
+              name={user.name}
+              sizeClass="size-9 text-sm"
+            />
             <div className="grid min-w-0 flex-1 text-left">
               <span className="text-foreground truncate text-sm font-semibold">
                 {user.name}

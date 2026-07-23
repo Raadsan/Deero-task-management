@@ -19,6 +19,7 @@ type DashboardUser = {
   name?: string | null;
   email?: string | null;
   role?: string | null;
+  image?: string | null;
 };
 
 export default function DashboardTopBar({ user }: { user: DashboardUser | null }) {

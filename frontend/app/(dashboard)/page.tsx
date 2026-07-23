@@ -646,13 +646,22 @@ function AdminDashboard({
   const todayValue = dateInputValue(new Date());
   const [customFrom, setCustomFrom] = useState(todayValue);
   const [customTo, setCustomTo] = useState(todayValue);
+  const [portfolioFilter, setPortfolioFilter] = useState<string | null>(null);
+
+  const { data: portfolioRes } = useSWR("dashboard-all-portfolios", getTaskFormBranchOptions);
+  const allPortfolios = portfolioRes?.data?.portfolios ?? [];
 
   const allTasks = useMemo(() => {
     const tasks = (bundleRes?.data?.tasks ?? []) as Task[];
-    return isBranchDashboard && portfolioId
+    const byBranch = isBranchDashboard && portfolioId
       ? tasks.filter((task) => task.assignedTo?.portfolioId === portfolioId)
       : tasks;
-  }, [bundleRes?.data?.tasks, isBranchDashboard, portfolioId]);
+    // Apply portfolio filter button
+    if (portfolioFilter) {
+      return byBranch.filter((task) => String(task.assignedTo?.portfolioId) === portfolioFilter);
+    }
+    return byBranch;
+  }, [bundleRes?.data?.tasks, isBranchDashboard, portfolioId, portfolioFilter]);
   const allClients = (bundleRes?.data?.clients ?? []) as DashboardClient[];
 
   const range = useMemo(() => {
@@ -737,12 +746,42 @@ function AdminDashboard({
     });
   }, [filteredTasks, range.start, range.end]);
 
+  const overdueTasks = statusData[2]?.value ?? 0;
+  const myTasksCount = useMemo(() => {
+    if (!userId) return 0;
+    const targetId = String(userId).toLowerCase();
+    return filteredTasks.filter((t: any) => {
+      const taskAssigneeId = String(
+        t.assignedTo?.id ?? t.assigneeId ?? t.assgineeId ?? t.userId ?? "",
+      ).toLowerCase();
+      return taskAssigneeId === targetId;
+    }).length;
+  }, [filteredTasks, userId]);
+
+  const allStaff = useMemo(() => {
+    const ids = new Set<string>();
+    allTasks.forEach((t: any) => {
+      const id = t.assignedTo?.id ?? t.assigneeId ?? t.assgineeId ?? t.userId;
+      if (id) ids.add(String(id));
+    });
+    return ids.size;
+  }, [allTasks]);
+
   const metricCards = [
-    { label: "Total Tasks", value: filteredTasks.length, Icon: Briefcase },
-    { label: "Completed Tasks", value: statusData[0]?.value ?? 0, Icon: CheckCircle },
-    { label: "In Process Tasks", value: (statusData[1]?.value ?? 0) + (statusData[2]?.value ?? 0), Icon: Clock },
-    { label: "New Clients", value: filteredClients.length, Icon: Users },
+    { label: "Total Tasks", value: filteredTasks.length, Icon: Briefcase, color: "primary" },
+    { label: "My Tasks", value: myTasksCount, Icon: Users, color: "secondary" },
+    { label: "In Progress", value: statusData[1]?.value ?? 0, Icon: Clock, color: "amber" },
+    { label: "Overdue Tasks", value: overdueTasks, Icon: AlertCircle, color: "red" },
+    { label: "Staffs", value: allStaff, Icon: Users, color: "green" },
   ];
+
+  const metricCardStyle = (color: string) => {
+    if (color === "green") return "bg-emerald-500";
+    if (color === "amber") return "bg-amber-500";
+    if (color === "red") return "bg-rose-600";
+    if (color === "secondary") return "bg-secondary";
+    return "bg-primary";
+  };
 
   if (isLoading) {
     return <div className="space-y-8 animate-pulse"><div className="h-20 rounded-xl bg-muted/20" /><div className="grid grid-cols-1 gap-6 md:grid-cols-4">{[1,2,3,4].map((i) => <div key={i} className="h-28 rounded-xl bg-muted/20" />)}</div></div>;
@@ -755,7 +794,31 @@ function AdminDashboard({
           <h1 className={pageHeaderTitleClass}>{isBranchDashboard ? "Portfolio Dashboard" : "Superadmin Dashboard"}</h1>
           <p className="mt-1 text-sm text-zinc-500">{isBranchDashboard && branchName ? `Showing data for ${branchName}` : "Tasks, staff and client performance overview"}</p>
         </div>
-        <div className="flex flex-wrap items-center gap-1.5 rounded-2xl border border-zinc-200 bg-white p-2 shadow-sm">
+        <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:gap-2">
+          {/* Portfolio filter buttons */}
+          {!isBranchDashboard && allPortfolios.length > 0 && (
+            <div className="flex flex-wrap items-center gap-1.5 rounded-2xl border border-zinc-200 bg-white p-2 shadow-sm">
+              <button
+                type="button"
+                onClick={() => setPortfolioFilter(null)}
+                className={cn("rounded-xl px-3 py-2 text-[11px] font-bold transition-colors", portfolioFilter === null ? "bg-[#651210] text-white" : "text-zinc-500 hover:bg-zinc-100")}
+              >
+                All
+              </button>
+              {allPortfolios.map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => setPortfolioFilter(portfolioFilter === p.id ? null : p.id)}
+                  className={cn("rounded-xl px-3 py-2 text-[11px] font-bold transition-colors", portfolioFilter === p.id ? "bg-[#651210] text-white" : "text-zinc-500 hover:bg-zinc-100")}
+                >
+                  {p.name}
+                </button>
+              ))}
+            </div>
+          )}
+          {/* Date filter */}
+          <div className="flex flex-wrap items-center gap-1.5 rounded-2xl border border-zinc-200 bg-white p-2 shadow-sm">
           {([
             ["today", "Today"], ["yesterday", "Yesterday"], ["week", "1 Week"], ["month", "Last Month"], ["custom", "Custom"],
           ] as Array<[DashboardPeriod, string]>).map(([value, label]) => (
@@ -770,14 +833,20 @@ function AdminDashboard({
             </div>
           )}
           <button type="button" onClick={() => mutate()} disabled={isValidating} className="ml-1 flex items-center gap-1.5 rounded-xl border border-zinc-200 px-3 py-2 text-[11px] font-bold text-slate-700 hover:bg-zinc-50 disabled:opacity-60"><RefreshCw className={cn("size-3.5", isValidating && "animate-spin")} />Refresh</button>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        {metricCards.map(({ label, value, Icon }, index) => (
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-5">
+        {metricCards.map(({ label, value, Icon, color }) => (
           <div key={label} className="trezo-card flex min-h-[100px] items-center justify-between p-5">
-            <div><p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">{label}</p><h3 className="mt-2 text-3xl font-bold text-slate-800">{value}</h3></div>
-            <div className={cn(dashboardStatIconClass(index), "p-3")}><Icon className="size-5 text-white" /></div>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">{label}</p>
+              <h3 className="mt-2 text-3xl font-bold text-slate-800">{value}</h3>
+            </div>
+            <div className={cn("w-fit shrink-0 self-start p-3 rounded-xl text-white shadow-md", metricCardStyle(color))}>
+              <Icon className="size-5 text-white" />
+            </div>
           </div>
         ))}
       </div>
@@ -794,10 +863,13 @@ function AdminDashboard({
             <PieChart>
               <Pie data={statusData} dataKey="value" nameKey="name" innerRadius={60} outerRadius={95} paddingAngle={3}>
                 {statusData.map((entry, index) => {
-                  const fill = entry.name.toLowerCase() === "completed" ? "#059669" :
-                               entry.name.toLowerCase() === "in process" ? "#f59e0b" :
-                               entry.name.toLowerCase() === "overdue" ? "#e11d48" :
-                               chartPrimaryVariants[index % chartPrimaryVariants.length];
+                  const fill = entry.name.toLowerCase() === "completed"
+                    ? chartPrimary
+                    : entry.name.toLowerCase() === "in process"
+                    ? chartSecondary
+                    : entry.name.toLowerCase() === "overdue"
+                    ? "#e11d48"
+                    : chartPrimaryVariants[index % chartPrimaryVariants.length];
                   return <Cell key={index} fill={fill} />;
                 })}
               </Pie>

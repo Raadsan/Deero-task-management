@@ -4,18 +4,33 @@ import * as React from "react";
 import { Search, Bell, Settings, LogOut, ChevronDown } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { AuthSession } from "@/lib/types";
+import { authClient } from "@/lib/auth-client";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { ROUTES } from "@/lib/constants";
 
-export default function Header({ session }: { session: AuthSession | null }) {
+export default function Header({ session: serverSession }: { session: AuthSession | null }) {
   const pathname = usePathname();
   const paths = pathname.split("/").filter(Boolean);
   const title = paths.length > 0
     ? paths[paths.length - 1].charAt(0).toUpperCase() + paths[paths.length - 1].slice(1).replace(/-/g, " ")
     : "Dashboard";
 
-  const userInitial = session?.user.name?.charAt(0).toUpperCase() || "A";
+  const session = authClient.useSession();
+  const liveUser = session.data?.user as any;
+  const userInitial = (liveUser?.name || serverSession?.user.name)?.charAt(0).toUpperCase() || "A";
+  const userName = liveUser?.name || serverSession?.user.name || "Administrator";
+  const userRole = liveUser?.role || serverSession?.user.role || "SUPERADMIN";
+  const userEmail = liveUser?.email || serverSession?.user.email || "";
+  const userImage = liveUser?.image as string | null | undefined;
+
+  React.useEffect(() => {
+    const handler = () => {
+      if (session.refetch) session.refetch();
+    };
+    window.addEventListener("user-profile-updated", handler);
+    return () => window.removeEventListener("user-profile-updated", handler);
+  }, [session]);
 
   return (
     <header className="sticky top-0 z-30 flex h-20 shrink-0 items-center justify-between gap-4 border-b border-gray-100 bg-white px-8 transition-all">
@@ -46,16 +61,20 @@ export default function Header({ session }: { session: AuthSession | null }) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <div className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
-                <div className="h-9 w-9 rounded-full bg-[#5D0B0B] flex items-center justify-center text-white text-xs font-black shadow-md">
-                  {userInitial}
+                <div className="h-9 w-9 rounded-full bg-[#5D0B0B] flex items-center justify-center text-white text-xs font-black shadow-md overflow-hidden">
+                  {userImage ? (
+                    <img src={userImage} alt={userName} className="h-full w-full object-cover" />
+                  ) : (
+                    userInitial
+                  )}
                 </div>
                 <div className="flex flex-col items-start hidden sm:flex">
                   <span className="text-sm font-bold text-gray-900 leading-none">
-                    {session?.user.name || "Administrator"}
+                    {userName}
                   </span>
                   <div className="flex items-center gap-1 mt-1">
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
-                      {session?.user.role || "SUPERADMIN"}
+                      {userRole}
                     </span>
                     <ChevronDown className="h-3 w-3 text-gray-400" />
                   </div>
@@ -65,10 +84,10 @@ export default function Header({ session }: { session: AuthSession | null }) {
             <DropdownMenuContent align="end" className="w-64 mt-2 rounded-xl shadow-xl border-gray-100 p-2">
               <div className="flex flex-col space-y-1 p-3 mb-1 bg-gray-50 rounded-lg">
                 <p className="text-sm font-bold text-gray-900 leading-none">
-                  {session?.user.name || "Administrator"}
+                  {userName}
                 </p>
                 <p className="text-xs font-medium text-gray-500 truncate">
-                  {session?.user.email || "admin@deero.com"}
+                  {userEmail}
                 </p>
               </div>
               <DropdownMenuSeparator className="bg-gray-100 my-1" />

@@ -29,7 +29,7 @@ model Staff {
   name                      String
   email                     String                   @unique(map: "Users_email_key")
   emailVerified             Boolean
-  image                     String?
+  image                     String?                  @db.LongText
   gender                    String?
   salary                    String?
   department                String?
