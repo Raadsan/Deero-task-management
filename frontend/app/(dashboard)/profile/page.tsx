@@ -227,7 +227,7 @@ export default function ProfilePage() {
       }
 
       // 2. Profile Details Update
-      const payload: Record<string, any> = { id: user.id };
+      const payload: { id: string; [key: string]: any } = { id: user.id };
       if (nameVal.trim() && nameVal.trim() !== user.name) {
         payload.name = nameVal.trim();
       }
@@ -308,10 +308,10 @@ export default function ProfilePage() {
   }
 
   function handleDocUpload() {
-    const entries = USER_DOCUMENT_TYPES.map(({ label }) => ({
-      label,
-      file: docSelections[label],
-    })).filter((item): item is { label: string; file: File } => Boolean(item.file));
+    const entries = USER_DOCUMENT_TYPES.flatMap(({ label }) => {
+      const file = docSelections[label];
+      return file ? [{ label, file }] : [];
+    });
 
     if (!entries.length) {
       toast.error("Select at least one PDF document to upload.");
