@@ -35,11 +35,8 @@ function mapMyTask(task: Record<string, unknown>): Task {
 }
 
 async function fetchMyTasksByScope(scope: MyTasksScope): Promise<Task[]> {
-  // Browser requests go through the same-origin Next.js proxy so the session cookie is always forwarded.
-  const url =
-    typeof window === "undefined"
-      ? `${API_URL}/api/tasks/assigned/me?scope=${scope}`
-      : `/api/my-tasks?scope=${scope}`;
+  // API_URL may be the same public domain; Nginx routes /api to the backend.
+  const url = `${API_URL}/api/tasks/assigned/me?scope=${scope}`;
 
   const response = await fetch(url, {
     credentials: "include",
