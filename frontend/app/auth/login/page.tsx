@@ -64,14 +64,16 @@ export default function LoginPage() {
     <div className="flex min-h-screen w-full items-center justify-center bg-[#f6f4f1] px-4 py-8">
       <div className="w-full max-w-md rounded-lg border border-zinc-100 bg-white px-8 pt-8 pb-6 shadow-[0_18px_50px_rgba(15,23,42,0.08)] sm:px-10 sm:pt-9 sm:pb-7">
         <div className="mb-6 flex flex-col items-center text-center">
-          <Image
-            src="/logo-02.png"
-            width={320}
-            height={100}
-            alt="Deero logo"
-            className="mb-6 h-20 w-auto max-w-[280px] object-contain sm:h-24"
-            priority
-          />
+          <div className="mb-6 flex h-28 w-full items-center justify-center overflow-hidden sm:h-32">
+            <Image
+              src="/logo-02.png"
+              width={320}
+              height={100}
+              alt="Deero logo"
+              className="h-24 w-auto max-w-none scale-[2.1] object-contain sm:h-28 "
+              priority
+            />
+          </div>
           <p className="text-sm text-zinc-500">Sign in to manage your Deero system</p>
         </div>
 
