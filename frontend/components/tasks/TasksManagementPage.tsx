@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAllTasksClient, getAllUsersClient } from "@/lib/client-read-api";
+import { getAllTasksClient, getAllUsersClient } from "@/lib/apis/readApi";
 import { ROUTES, SWR_CACH_KEYS } from "@/lib/constants";
 import {
   actionBtnDelete,

@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ContractRecord, getAllContracts } from "@/lib/actions/contract.action";
+import { ContractRecord, getAllContracts } from "@/lib/apis/contractApi";
 import { CONTRACT_STATUS_OPTIONS } from "@/lib/client-types";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {

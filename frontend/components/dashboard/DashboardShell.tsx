@@ -5,7 +5,7 @@ import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
 import { SidebarSkeletonLoader } from "@/components/Shared/Loader";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { PermissionProvider } from "@/context/PermissionContext";
-import { getDashboardSession } from "@/lib/actions/portfolio.action";
+import { getDashboardSession } from "@/lib/apis/portfolioApi";
 import { Suspense } from "react";
 import DashboardDataProvider from "@/components/providers/DashboardDataProvider";
 import { cookies } from "next/headers";

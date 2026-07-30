@@ -1,8 +1,8 @@
 "use server";
 
-import api from "../api";
-import { handleError } from "../error/handle-error";
-import { ActionResponse, ErrorResponse } from "../types";
+import api from "@/lib/apis/axios";
+import { handleError } from "@/lib/error/handle-error";
+import { ActionResponse, ErrorResponse } from "@/lib/types";
 
 export type DepartmentRecord = {
   id: string;

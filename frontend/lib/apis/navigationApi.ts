@@ -1,7 +1,7 @@
-import type { ActionResponse } from "./types";
-import type { NavMenuItem } from "./actions/config.action";
+import type { ActionResponse } from "@/lib/types";
+import type { NavMenuItem } from "@/lib/apis/configApi";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:7003";
+import { API_URL } from "./config";
 const CACHE_MS = 5 * 1000;
 
 export function clearNavMenuClientCache(roleId?: string) {

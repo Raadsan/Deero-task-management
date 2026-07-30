@@ -1,6 +1,6 @@
 "use client";
 
-import { getAssginedTasks } from "@/lib/actions/task.action";
+import { getAssginedTasks } from "@/lib/apis/taskApi";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import { Task } from "@/lib/types";
 import useSWR from "swr";

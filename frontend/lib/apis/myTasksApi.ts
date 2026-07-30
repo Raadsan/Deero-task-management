@@ -1,6 +1,6 @@
 import { Task } from "@/lib/types";
 
-const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:7003").replace(/['\"]/g, "");
+import { API_URL } from "./config";
 
 
 
@@ -35,8 +35,11 @@ function mapMyTask(task: Record<string, unknown>): Task {
 }
 
 async function fetchMyTasksByScope(scope: MyTasksScope): Promise<Task[]> {
-  // Must use the full backend URL — /api/my-tasks does NOT exist in Next.js routes
-  const url = `${API_URL}/api/tasks/assigned/me?scope=${scope}`;
+  // Browser requests go through the same-origin Next.js proxy so the session cookie is always forwarded.
+  const url =
+    typeof window === "undefined"
+      ? `${API_URL}/api/tasks/assigned/me?scope=${scope}`
+      : `/api/my-tasks?scope=${scope}`;
 
   const response = await fetch(url, {
     credentials: "include",
@@ -86,6 +89,8 @@ export async function patchMyTask(
     deadline?: string | null;
     description?: string;
     serviceInformation?: string;
+    priority?: string;
+    extraTimeMinutes?: number;
   },
 ): Promise<void> {
   const response = await fetch(`${API_URL}/api/tasks/${taskId}`, {
@@ -104,4 +109,33 @@ export async function patchMyTask(
   if (!response.ok || !data.success) {
     throw new Error(data.error || data.message || "Failed to update task");
   }
+}
+export type CreatePersonalTaskInput = {
+  assgineeId: string;
+  description: string;
+  serviceInformation: string;
+  priority: string;
+  deadline: string | null;
+};
+
+export async function createPersonalTask(input: CreatePersonalTaskInput) {
+  const response = await fetch(`${API_URL}/api/tasks`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...input, status: "pending", department: "General", supervisor: "", progress: 0, isPersonal: true, features: [{ name: "__board_only__", done: false }] }),
+  });
+  const data = (await response.json()) as { success?: boolean; error?: string; message?: string };
+  if (!response.ok || !data.success) throw new Error(data.error || data.message || "Failed to create task");
+  return data;
+}
+export async function proxyAssignedTasks(scope: MyTasksScope, cookie: string) {
+  const response = await fetch(
+    `${API_URL}/api/tasks/assigned/me?scope=${scope}`,
+    { headers: { cookie }, cache: "no-store" },
+  );
+  return {
+    body: await response.json(),
+    status: response.status,
+  };
 }

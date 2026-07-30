@@ -5,7 +5,7 @@ import ManagementPageShell from "@/components/Shared/ManagementPageShell";
 import { DatePicker } from "@/components/Shared/FormElements";
 import PageBreadcrumb from "@/components/Shared/PageBreadcrumb";
 import { Button } from "@/components/ui/button";
-import { getTasksReport } from "@/lib/actions/task.action";
+import { getTasksReport } from "@/lib/apis/taskApi";
 import { ROUTES } from "@/lib/constants";
 import { useParams } from "next/navigation";
 import { useState } from "react";

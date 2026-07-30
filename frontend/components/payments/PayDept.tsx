@@ -1,6 +1,6 @@
 "use client";
 
-import { payIncomeExpenseDept } from "@/lib/actions/payment.action";
+import { payIncomeExpenseDept } from "@/lib/apis/paymentApi";
 import { useParams } from "next/navigation";
 import { FormEvent, useState, useTransition } from "react";
 import toast from "react-hot-toast";

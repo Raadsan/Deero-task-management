@@ -1,6 +1,6 @@
 "use client";
 
-import { getAllUsers } from "@/lib/actions/user.action";
+import { getAllUsers } from "@/lib/apis/userApi";
 import { ROUTES, SWR_CACH_KEYS } from "@/lib/constants";
 import { btnCreatePage } from "@/lib/dashboard-ui";
 import Link from "next/link";

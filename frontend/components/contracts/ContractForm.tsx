@@ -8,7 +8,7 @@ import {
   configTextareaClass,
 } from "@/components/config/config-dialog-styles";
 import { Button } from "@/components/ui/button";
-import { getClientsForForm } from "@/lib/actions/client.action";
+import { getClientsForForm } from "@/lib/apis/clientApi";
 import {
   ContractRecord,
   createContract,
@@ -16,7 +16,7 @@ import {
   getProjectsForClient,
   updateContract,
   uploadContractDocument,
-} from "@/lib/actions/contract.action";
+} from "@/lib/apis/contractApi";
 import { CONTRACT_STATUS_OPTIONS } from "@/lib/client-types";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import { btnFormCancel, btnFormSubmit } from "@/lib/dashboard-ui";

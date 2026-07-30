@@ -1,8 +1,8 @@
 "use server";
 
-import api from "../api";
-import { ActionResponse, ErrorResponse } from "../types";
-import { handleError } from "../error/handle-error";
+import api from "@/lib/apis/axios";
+import { ActionResponse, ErrorResponse } from "@/lib/types";
+import { handleError } from "@/lib/error/handle-error";
 
 export type ConfigRole = {
   id: string;

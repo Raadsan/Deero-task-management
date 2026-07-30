@@ -1,16 +1,16 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import api from "../api";
-import { ROUTES } from "../constants";
-import { handleError } from "../error/handle-error";
+import api from "@/lib/apis/axios";
+import { ROUTES } from "@/lib/constants";
+import { handleError } from "@/lib/error/handle-error";
 import {
   ActionResponse,
   ErrorResponse,
   Task,
   TaskNotification,
-} from "../types";
-import { getUserSession } from "./auth.action";
+} from "@/lib/types";
+import { getUserSession } from "./authApi";
 
 function mapAssignedTo(
   user:

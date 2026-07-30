@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
-import { clearLoginBranchCookie } from "@/lib/actions/portfolio.action";
+import { clearLoginBranchCookie } from "@/lib/apis/portfolioApi";
 import { ROUTES } from "@/lib/constants";
 import { UserRole } from "@/lib/schema";
 import { cn } from "@/lib/utils";

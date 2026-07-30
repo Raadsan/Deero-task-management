@@ -1,11 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { ROUTES } from "../constants";
-import { handleError } from "../error/handle-error";
-import api from "../api";
-import { ActionResponse, ErrorResponse, User } from "../types";
-import { formatDate } from "../utils";
+import { ROUTES } from "@/lib/constants";
+import { handleError } from "@/lib/error/handle-error";
+import api from "@/lib/apis/axios";
+import { ActionResponse, ErrorResponse, User } from "@/lib/types";
+import { formatDate } from "@/lib/utils";
 
 export async function getAllUsers(): Promise<ActionResponse<any[]>> {
   try {

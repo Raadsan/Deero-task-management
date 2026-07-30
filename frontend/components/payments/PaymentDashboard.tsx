@@ -4,7 +4,7 @@ import {
   getExpensesIncomesBySource,
   getExpenseTableData,
   getIncomeTableData,
-} from "@/lib/actions/payment.action";
+} from "@/lib/apis/paymentApi";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import { cn, updateUrlWithQueryParams } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";

@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteClientAgreement, editClientService } from "@/lib/actions/client.action";
+import { deleteClientAgreement, editClientService } from "@/lib/apis/clientApi";
 import { useParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import toast from "react-hot-toast";

@@ -1,7 +1,7 @@
 import ManagementPageShell from "@/components/Shared/ManagementPageShell";
 import PageBreadcrumb from "@/components/Shared/PageBreadcrumb";
 import UserForm from "@/components/users/UsersForm";
-import { getUserById } from "@/lib/actions/user.action";
+import { getUserById } from "@/lib/apis/userApi";
 import { ROUTES } from "@/lib/constants";
 import { User } from "@/lib/schema";
 import { PageParams } from "@/lib/types";

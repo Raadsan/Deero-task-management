@@ -1,8 +1,8 @@
 "use client";
 
-import { getConfigRoles, NavMenuItem } from "@/lib/actions/config.action";
-import { clearNavMenuClientCache, getNavMenusByRoleClient } from "@/lib/client-nav-api";
-import { getUserSession } from "@/lib/actions/auth.action";
+import { getConfigRoles, NavMenuItem } from "@/lib/apis/configApi";
+import { clearNavMenuClientCache, getNavMenusByRoleClient } from "@/lib/apis/navigationApi";
+import { getUserSession } from "@/lib/apis/authApi";
 import { resolveConfigRoleId } from "@/lib/role-options";
 import { createContext, useContext, useEffect, useState } from "react";
 

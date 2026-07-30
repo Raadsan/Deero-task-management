@@ -22,7 +22,7 @@ import {
   getRecurringOccurrences,
   runRecurringDailyGeneration,
   toggleRecurringSchedule,
-} from "@/lib/actions/recurring.action";
+} from "@/lib/apis/recurringApi";
 import { RECURRENCE_TYPE_OPTIONS, WEEKDAY_OPTIONS } from "@/lib/client-types";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {

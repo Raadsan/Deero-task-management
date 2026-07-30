@@ -1,7 +1,7 @@
-import type { ActionResponse, AllClients, Task, TaskNotification } from "./types";
-import { formatDate, formatPhoneNumber } from "./utils";
+import type { ActionResponse, AllClients, Task, TaskNotification } from "@/lib/types";
+import { formatDate, formatPhoneNumber } from "@/lib/utils";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:7003";
+import { API_URL } from "./config";
 
 export async function getAllTasksClient(): Promise<ActionResponse<Task[]>> {
   try {

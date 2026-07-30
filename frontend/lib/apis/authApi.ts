@@ -1,8 +1,8 @@
 "use server";
 
-import api from "../api";
-import { ActionResponse, AuthSession, ErrorResponse } from "../types";
-import { handleError } from "../error/handle-error";
+import api from "@/lib/apis/axios";
+import { ActionResponse, AuthSession, ErrorResponse } from "@/lib/types";
+import { handleError } from "@/lib/error/handle-error";
 import { cache } from "react";
 import { headers } from "next/headers";
 

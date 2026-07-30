@@ -1,13 +1,13 @@
 "use server";
 
-import { MONTH_NAMES, ROUTES } from "../constants";
+import { MONTH_NAMES, ROUTES } from "@/lib/constants";
 
 import {
   Expense as ExpenseModel,
   Income as IncomeModel,
   IncomeTransaction,
   TaskStatus,
-} from "../schema";
+} from "@/lib/schema";
 
 import {
   ActionResponse,
@@ -27,18 +27,18 @@ import {
   TableIncome,
   UserSalaryDetailsType,
   UserSalaryReport,
-} from "../types";
-import { formatDate, getFromToDateDescription, validateDate } from "../utils";
+} from "@/lib/types";
+import { formatDate, getFromToDateDescription, validateDate } from "@/lib/utils";
 
 // Direct prisma access removed from frontend
 // import { prisma } from "@/prisma/prisma";
 import { revalidatePath } from "next/cache";
 import z from "zod";
-import { handleError } from "../error/handle-error";
-import { SalarySchema } from "../validations";
-import { getUserSession } from "./auth.action";
-import { generateCustomId } from "./shared.action";
-import api from "../api";
+import { handleError } from "@/lib/error/handle-error";
+import { SalarySchema } from "@/lib/validations";
+import { getUserSession } from "./authApi";
+import { generateCustomId } from "./sharedApi";
+import api from "@/lib/apis/axios";
 
 export async function createIncomeTransaction(params: any): Promise<ActionResponse> {
   try {
@@ -302,11 +302,11 @@ export async function getExpenseTransactionDetials({
         },
         0,
       );
-    const totaldept = agreement?.base! - sumSubTransactions!;
+    const totaldept = Number(agreement?.base ?? 0) - (sumSubTransactions ?? 0);
     const transformed: ExpenseTransactionDetialsTye = {
       paidAt: formatDate(agreement?.createdAt ?? ""),
       base: agreement?.base,
-      id: agreement?.expenseTransaction[0].id!,
+      id: agreement?.expenseTransaction[0]?.id ?? "",
       expenseType: agreement?.expenseTransaction[0].expense.expenseType ?? "",
       registeredBy: agreement?.expenseTransaction[0].user.name ?? "",
       description: agreement?.description ?? "",

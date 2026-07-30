@@ -1,9 +1,11 @@
 "use client";
 
+import { resolveApiAssetUrl } from "@/lib/apis/config";
+
 import {
   deleteUserFileById,
   getUserUploadedFiles,
-} from "@/lib/actions/user.action";
+} from "@/lib/apis/userApi";
 import { Trash } from "lucide-react";
 
 import { UserFiles } from "@/lib/schema";
@@ -15,12 +17,6 @@ import { Button } from "../ui/button";
 
 interface Props {
   userId: string;
-}
-
-function resolveUserFileUrl(url: string) {
-  if (url.startsWith("http://") || url.startsWith("https://")) return url;
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:7003";
-  return `${apiUrl}${url.startsWith("/") ? url : `/${url}`}`;
 }
 
 export default function ManageUserFiles({ userId }: Props) {
@@ -57,7 +53,7 @@ export default function ManageUserFiles({ userId }: Props) {
               className="flex flex-col justify-between border-b border-black/10 pb-[10px] sm:flex-row sm:items-center"
             >
               <a
-                href={resolveUserFileUrl(file.url)}
+                href={resolveApiAssetUrl(file.url)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 underline transition hover:text-blue-800"

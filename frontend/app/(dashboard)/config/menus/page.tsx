@@ -29,7 +29,7 @@ import {
   seedNavMenus,
   updateNavMenu,
   updateNavSubMenu,
-} from "@/lib/actions/config.action";
+} from "@/lib/apis/configApi";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {
   actionBtnDelete,

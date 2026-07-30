@@ -24,7 +24,7 @@ import {
   deleteConfigRole,
   getConfigRoles,
   updateConfigRole,
-} from "@/lib/actions/config.action";
+} from "@/lib/apis/configApi";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {
   actionBtnDelete,

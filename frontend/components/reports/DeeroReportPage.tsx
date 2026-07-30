@@ -9,16 +9,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAllClients } from "@/lib/actions/client.action";
-import { getBillingReportData } from "@/lib/actions/billing.action";
-import { getAllTasks } from "@/lib/actions/task.action";
-import { getAllUsers } from "@/lib/actions/user.action";
+import { getAllClients } from "@/lib/apis/clientApi";
+import { getBillingReportData } from "@/lib/apis/billingApi";
+import { getDashboardSession } from "@/lib/apis/portfolioApi";
+import { getAllTasks } from "@/lib/apis/taskApi";
+import { getAllUsers } from "@/lib/apis/userApi";
 import { clientTypeLabel } from "@/lib/client-types";
+import { resolveBranchLogoUrl } from "@/lib/portfolio-branding";
 import {
   exportCsv,
   exportPdf,
   inDateRange,
   printReport,
+  reportDateRangeLabel,
 } from "@/lib/report-export";
 import {
   chartAxisTick,
@@ -63,6 +66,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import useSWR from "swr";
 import {
   Area,
   AreaChart,
@@ -210,12 +214,14 @@ function ReportCharts({
   pieData,
   lineData,
   chartId,
+  comparisonLabels,
 }: {
   areaData: Array<{ name: string; value: number }>;
   barData: Array<{ name: string; value: number }>;
   pieData: Array<{ name: string; value: number }>;
-  lineData: Array<{ name: string; paid: number; balance: number }>;
+  lineData: Array<{ name: string; paid: number; balance: number; overdue?: number }>;
   chartId: string;
+  comparisonLabels: { primary: string; secondary?: string; tertiary?: string };
 }) {
   const gradientId = `${chartId}-area-gradient`;
 
@@ -304,8 +310,13 @@ function ReportCharts({
               <YAxis axisLine={false} tickLine={false} tick={chartAxisTick} allowDecimals={false} />
               <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: "#ffffff" }} />
               <Legend />
-              <Bar dataKey="paid" fill={chartPrimary} radius={[4, 4, 0, 0]} />
-              <Bar dataKey="balance" fill={chartSecondary} radius={[4, 4, 0, 0]} />
+              <Bar dataKey="paid" name={comparisonLabels.primary} fill={chartPrimary} radius={[4, 4, 0, 0]} />
+              {comparisonLabels.secondary && (
+                <Bar dataKey="balance" name={comparisonLabels.secondary} fill="#f59e0b" radius={[4, 4, 0, 0]} />
+              )}
+              {comparisonLabels.tertiary && (
+                <Bar dataKey="overdue" name={comparisonLabels.tertiary} fill="#dc2626" radius={[4, 4, 0, 0]} />
+              )}
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -316,6 +327,7 @@ function ReportCharts({
 
 export default function DeeroReportPage({ type, chartsOnly = false }: { type: DeeroReportType; chartsOnly?: boolean }) {
   const meta = reportMeta[type];
+  const { data: dashboardSession } = useSWR("deero-report-branding", getDashboardSession, { revalidateOnFocus: false });
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -550,6 +562,7 @@ export default function DeeroReportPage({ type, chartsOnly = false }: { type: De
           paid: m.paid,
           balance: m.balance,
         })),
+        comparisonLabels: { primary: "Paid", secondary: "Balance" },
       };
     }
     if (type === "clients") {
@@ -563,6 +576,7 @@ export default function DeeroReportPage({ type, chartsOnly = false }: { type: De
         barData: byType,
         pieData: byType.filter((b) => b.value > 0),
         lineData: byType.map((b) => ({ name: b.name, paid: b.value, balance: 0 })),
+        comparisonLabels: { primary: "Clients" },
       };
     }
     if (type === "users") {
@@ -580,18 +594,29 @@ export default function DeeroReportPage({ type, chartsOnly = false }: { type: De
         barData: byRole,
         pieData: byStatus.filter((b) => b.value > 0),
         lineData: byRole.map((b) => ({ name: b.name, paid: b.value, balance: 0 })),
+        comparisonLabels: { primary: "Users" },
       };
     }
     const byStatus = [
       { name: "Completed", value: filteredTasks.filter((t) => t.status === "completed").length },
-      { name: "Pending", value: filteredTasks.filter((t) => t.status === "pending").length },
+      { name: "Processing", value: filteredTasks.filter((t) => t.status === "pending").length },
       { name: "Overdue", value: filteredTasks.filter((t) => t.status === "overdue").length },
     ];
+    const byStaff = new Map<string, { name: string; paid: number; balance: number; overdue: number }>();
+    for (const task of filteredTasks) {
+      const name = task.assignedTo?.name || "Unassigned";
+      const current = byStaff.get(name) ?? { name, paid: 0, balance: 0, overdue: 0 };
+      if (task.status === "completed") current.paid += 1;
+      if (task.status === "pending") current.balance += 1;
+      if (task.status === "overdue") current.overdue += 1;
+      byStaff.set(name, current);
+    }
     return {
       areaData: byStatus,
       barData: byStatus,
       pieData: byStatus.filter((b) => b.value > 0),
-      lineData: byStatus.map((b) => ({ name: b.name, paid: b.value, balance: 0 })),
+      lineData: Array.from(byStaff.values()).slice(0, 10),
+      comparisonLabels: { primary: "Completed", secondary: "Processing", tertiary: "Overdue" },
     };
   }, [type, filteredPaymentRows, filteredClients, filteredUsers, filteredTasks]);
 
@@ -772,7 +797,17 @@ export default function DeeroReportPage({ type, chartsOnly = false }: { type: De
     setStartDate(inputDate(start));
     setEndDate(inputDate(end));
   }
-  const handleExport = () => exportCsv(`${type}-report.csv`, headers, rows);
+  const reportDateValues = type === "payments"
+    ? paymentRows.map((row) => row.dueDate)
+    : type === "clients"
+      ? clients.map((client) => client.createdAt)
+      : type === "users"
+        ? users.map((user) => user.createdAt)
+        : tasks.map((task) => taskDueDate(task) ?? task.createdAt);
+  const reportPeriodLabel = reportDateRangeLabel(reportDateValues, startDate, endDate);
+  const dateSuffix = startDate || endDate ? `-${startDate || "beginning"}-to-${endDate || "today"}` : "-all-time";
+  const branding = dashboardSession?.branding;
+  const handleExport = () => exportCsv(`${type}-report${dateSuffix}.csv`, headers, rows, [["Period", reportPeriodLabel]]);
 
   const handlePrint = () => {
     try {
@@ -784,7 +819,11 @@ export default function DeeroReportPage({ type, chartsOnly = false }: { type: De
 
   const handlePdf = async () => {
     try {
-      await exportPdf(`${type}-report.pdf`, meta.title, headers, rows);
+      await exportPdf(`${type}-report${dateSuffix}.pdf`, meta.title, headers, rows, {
+        subtitle: reportPeriodLabel,
+        logoUrl: resolveBranchLogoUrl(branding?.logoUrl) || "/logo.png",
+        primaryColor: branding?.primaryColor ?? "#651210",
+      });
     } catch {
       toast.error("Failed to export PDF");
     }

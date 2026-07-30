@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAllClients } from "@/lib/actions/client.action";
+import { getAllClients } from "@/lib/apis/clientApi";
 import { clientTypeLabel } from "@/lib/client-types";
 import { ROUTES, SWR_CACH_KEYS } from "@/lib/constants";
 import {

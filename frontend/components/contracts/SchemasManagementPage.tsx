@@ -16,7 +16,7 @@ import {
   ClientSchemaRecord,
   deleteSchema,
   getAllSchemas,
-} from "@/lib/actions/schema.action";
+} from "@/lib/apis/schemaApi";
 import {
   actionBtnDelete,
   actionBtnEdit,

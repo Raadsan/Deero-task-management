@@ -14,9 +14,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { deleteClientById, updateClientServiceStatus } from "@/lib/actions/client.action";
-import { getAllClientsClient } from "@/lib/client-read-api";
-import { getTaskFormBranchOptions } from "@/lib/actions/shared.action";
+import { deleteClientById, updateClientServiceStatus } from "@/lib/apis/clientApi";
+import { getAllClientsClient } from "@/lib/apis/readApi";
+import { getTaskFormBranchOptions } from "@/lib/apis/sharedApi";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {
   actionBtnDelete,

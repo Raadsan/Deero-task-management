@@ -1,6 +1,6 @@
 "use client";
 
-import type { NavMenuItem } from "@/lib/actions/config.action";
+import type { NavMenuItem } from "@/lib/apis/configApi";
 import { usePermissions } from "@/context/PermissionContext";
 import { normalizeRoleName } from "@/lib/portfolio-access";
 import { getLucideIcon } from "@/lib/lucide-icons";

@@ -12,7 +12,7 @@ import {
 import {
   getMonthlyDashbaordGraphData,
   getYearlyDashbaordGraph,
-} from "@/lib/actions/task.action";
+} from "@/lib/apis/taskApi";
 import { cn, formatDate } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";

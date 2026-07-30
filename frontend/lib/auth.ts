@@ -4,7 +4,7 @@ import { betterAuth } from "better-auth";
 // import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { admin } from "better-auth/plugins/admin";
-import { generateCustomId } from "./actions/shared.action";
+import { generateCustomId } from "@/lib/apis/sharedApi";
 import {
   accessControl,
   adminRole,

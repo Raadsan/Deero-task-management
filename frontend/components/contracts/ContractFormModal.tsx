@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { getContractById } from "@/lib/actions/contract.action";
+import { getContractById } from "@/lib/apis/contractApi";
 import useSWR from "swr";
 import ContractForm from "./ContractForm";
 

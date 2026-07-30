@@ -12,10 +12,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { editTask } from "@/lib/actions/task.action";
+import { editTask } from "@/lib/apis/taskApi";
 import { SWR_CACH_KEYS } from "@/lib/constants";
-import { normalizeMyTasksList } from "@/lib/my-task-filters";
-import { fetchMyTasks } from "@/lib/my-tasks-client";
+import { isBoardOnlyTask, normalizeMyTasksList } from "@/lib/my-task-filters";
+import { fetchMyCompanyTasks } from "@/lib/apis/myTasksApi";
 import {
   actionBtnView,
   dashboardCardClass,
@@ -51,7 +51,7 @@ const compactInputClass =
 export default function MyTasksManagementPage() {
   const { data: tasksRaw, isLoading } = useSWR(
     SWR_CACH_KEYS.myTasksList.key,
-    fetchMyTasks,
+    fetchMyCompanyTasks,
     {
       fallbackData: [],
       revalidateOnMount: true,
@@ -63,7 +63,7 @@ export default function MyTasksManagementPage() {
 
   const [mounted, setMounted] = useState(false);
 
-  const tasks = normalizeMyTasksList(tasksRaw);
+  const tasks = normalizeMyTasksList(tasksRaw).filter((task) => !isBoardOnlyTask(task));
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);

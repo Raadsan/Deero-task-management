@@ -1,4 +1,4 @@
-import { getTaskById } from "@/lib/actions/task.action";
+import { getTaskById } from "@/lib/apis/taskApi";
 import TaskForm from "./TaskForm";
 
 interface Props {

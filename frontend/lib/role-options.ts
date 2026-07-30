@@ -1,4 +1,4 @@
-import type { ConfigRole } from "./actions/config.action";
+import type { ConfigRole } from "@/lib/apis/configApi";
 
 export function formatRoleLabel(roleName: string) {
   const trimmed = String(roleName ?? "").trim();

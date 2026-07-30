@@ -3,7 +3,7 @@ import ManagementPageShell from "@/components/Shared/ManagementPageShell";
 import { ClientFormSkeleton } from "@/components/Shared/Loader";
 import PageBreadcrumb from "@/components/Shared/PageBreadcrumb";
 import { ROUTES } from "@/lib/constants";
-import { getClientById } from "@/lib/actions/client.action";
+import { getClientById } from "@/lib/apis/clientApi";
 import { PageParams } from "@/lib/types";
 import { Suspense } from "react";
 

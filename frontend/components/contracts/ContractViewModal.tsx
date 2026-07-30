@@ -15,11 +15,12 @@ import {
 import {
   getContractById,
   uploadContractDocument,
-} from "@/lib/actions/contract.action";
+} from "@/lib/apis/contractApi";
 import { CONTRACT_STATUS_OPTIONS } from "@/lib/client-types";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import { btnFormSubmit } from "@/lib/dashboard-ui";
-import { cn, formatDate, resolveApiUploadUrl } from "@/lib/utils";
+import { resolveApiAssetUrl } from "@/lib/apis/config";
+import { cn, formatDate } from "@/lib/utils";
 import {
   Calendar,
   DollarSign,
@@ -200,7 +201,7 @@ export default function ContractViewModal({ open, onOpenChange, contractId }: Pr
                             </span>
                           </div>
                           <a
-                            href={resolveApiUploadUrl(doc.fileUrl)}
+                            href={resolveApiAssetUrl(doc.fileUrl)}
                             target="_blank"
                             rel="noreferrer"
                             className="rounded-md p-1.5 text-primary hover:bg-primary/10 transition-colors"
@@ -236,14 +237,14 @@ export default function ContractViewModal({ open, onOpenChange, contractId }: Pr
                   previewDoc.mimeType?.startsWith("image/") ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={resolveApiUploadUrl(previewDoc.fileUrl)}
+                      src={resolveApiAssetUrl(previewDoc.fileUrl)}
                       alt={previewDoc.fileName}
                       className="h-full max-h-[55vh] w-full object-contain"
                     />
                   ) : (
                     <iframe
                       title="Contract preview"
-                      src={resolveApiUploadUrl(previewDoc.fileUrl)}
+                      src={resolveApiAssetUrl(previewDoc.fileUrl)}
                       className="h-[55vh] w-full"
                     />
                   )

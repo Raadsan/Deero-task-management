@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { getClientById } from "@/lib/actions/client.action";
+import { getClientById } from "@/lib/apis/clientApi";
 import { Client } from "@/lib/types";
 import useSWR from "swr";
 import ClientCreateWizard from "./ClientCreateWizard";

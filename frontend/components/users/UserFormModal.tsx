@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { getUserById } from "@/lib/actions/user.action";
+import { getUserById } from "@/lib/apis/userApi";
 import { User } from "@/lib/schema";
 import useSWR from "swr";
 import UserForm from "./UsersForm";

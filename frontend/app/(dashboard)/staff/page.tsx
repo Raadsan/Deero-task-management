@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAllUsers, deleteUserById } from "@/lib/actions/user.action";
+import { getAllUsers, deleteUserById } from "@/lib/apis/userApi";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {
   actionBtnDelete,

@@ -8,8 +8,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { getClientsForForm } from "@/lib/actions/client.action";
-import { ClientSchemaRecord, createOrUpdateSchema } from "@/lib/actions/schema.action";
+import { getClientsForForm } from "@/lib/apis/clientApi";
+import { ClientSchemaRecord, createOrUpdateSchema } from "@/lib/apis/schemaApi";
 import { btnFormCancel, btnFormSubmit } from "@/lib/dashboard-ui";
 import { cn } from "@/lib/utils";
 import { Calendar, Check, X } from "lucide-react";

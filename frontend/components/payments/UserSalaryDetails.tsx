@@ -1,6 +1,6 @@
 "use client";
 
-import { getUserSalaryDetails } from "@/lib/actions/payment.action";
+import { getUserSalaryDetails } from "@/lib/apis/paymentApi";
 import { RefreshCw } from "lucide-react";
 
 import useSWR, { useSWRConfig } from "swr";

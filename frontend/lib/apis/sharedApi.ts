@@ -1,11 +1,11 @@
 "use server";
 
-import { handleError } from "../error/handle-error";
-import api from "../api";
-import { ActionResponse, ErrorResponse, Client, User } from "../types";
-import { getUserSession } from "./auth.action";
-import { getAllBranches, getBranchById, BranchRecord } from "./portfolio.action";
-import { seesAllBranchesForUser } from "../portfolio-access";
+import { handleError } from "@/lib/error/handle-error";
+import api from "@/lib/apis/axios";
+import { ActionResponse, ErrorResponse, Client, User } from "@/lib/types";
+import { getUserSession } from "./authApi";
+import { getAllBranches, getBranchById, BranchRecord } from "./portfolioApi";
+import { seesAllBranchesForUser } from "@/lib/portfolio-access";
 
 export type TaskFormClientOption = {
   id: string;

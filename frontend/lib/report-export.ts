@@ -1,3 +1,27 @@
+export function formatReportDate(value: string | Date | null | undefined) {
+  if (!value) return "N/A";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "N/A";
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = date.toLocaleString("en-US", { month: "short" }).toLowerCase();
+  return `${day}-${month}-${date.getFullYear()}`;
+}
+
+export function reportDateRangeLabel(
+  values: Array<string | Date | null | undefined>,
+  selectedStart = "",
+  selectedEnd = "",
+) {
+  const times = values
+    .filter(Boolean)
+    .map((value) => new Date(value as string | Date).getTime())
+    .filter((time) => !Number.isNaN(time));
+  const earliest = times.length ? new Date(Math.min(...times)) : null;
+  const from = selectedStart || earliest;
+  const to = selectedEnd || new Date();
+  if (!from && !to) return "Period: No dated records";
+  return `Period: ${formatReportDate(from)} to ${formatReportDate(to)}`;
+}
 export function escapeCsv(value: string | number) {
   const text = String(value ?? "");
   return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
@@ -7,8 +31,12 @@ export function exportCsv(
   filename: string,
   headers: string[],
   rows: Array<Array<string | number>>,
+  metadata: Array<[string, string]> = [],
 ) {
-  const csv = [headers, ...rows].map((row) => row.map(escapeCsv).join(",")).join("\n");
+  const metadataRows = metadata.map(([label, value]) => [label, value]);
+  const csv = [...metadataRows, ...(metadataRows.length ? [[]] : []), headers, ...rows]
+    .map((row) => row.map(escapeCsv).join(","))
+    .join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -56,35 +84,86 @@ export function printReport(
   win.document.close();
 }
 
+export type PdfReportOptions = {
+  subtitle?: string;
+  logoUrl?: string | null;
+  primaryColor?: string;
+};
+
+function hexToRgb(value?: string): [number, number, number] {
+  const hex = String(value || "#651210").replace("#", "");
+  const normalized = hex.length === 3 ? hex.split("").map((part) => part + part).join("") : hex;
+  const number = Number.parseInt(normalized, 16);
+  if (Number.isNaN(number)) return [101, 18, 16];
+  return [(number >> 16) & 255, (number >> 8) & 255, number & 255];
+}
+
+async function imageDataUrl(url?: string | null) {
+  if (!url) return null;
+  try {
+    const response = await fetch(url, { credentials: "include" });
+    if (!response.ok) return null;
+    const blob = await response.blob();
+    return await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return null;
+  }
+}
+
 export async function exportPdf(
   filename: string,
   title: string,
   headers: string[],
   rows: Array<Array<string | number>>,
+  options: PdfReportOptions = {},
 ) {
-  const [{ jsPDF }, autoTableModule] = await Promise.all([
+  const [{ jsPDF }, autoTableModule, logo] = await Promise.all([
     import("jspdf"),
     import("jspdf-autotable"),
+    imageDataUrl(options.logoUrl).then((value) => value ?? imageDataUrl("/logo.png")),
   ]);
   const autoTable = autoTableModule.default;
-
   const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
-  doc.setFontSize(16);
-  doc.text(title, 40, 40);
-  doc.setFontSize(10);
+  const primary = hexToRgb(options.primaryColor);
+  let textX = 40;
+
+  if (logo) {
+    try {
+      const properties = doc.getImageProperties(logo);
+      const maxWidth = 110;
+      const maxHeight = 54;
+      const ratio = Math.min(maxWidth / properties.width, maxHeight / properties.height);
+      const width = properties.width * ratio;
+      const height = properties.height * ratio;
+      doc.addImage(logo, properties.fileType || "PNG", 40, 24, width, height);
+      textX = 40 + width + 18;
+    } catch {
+      // Continue without a logo if its format cannot be embedded.
+    }
+  }
+
+  doc.setTextColor(30, 41, 59);
+  doc.setFontSize(17);
+  doc.text(title, textX, 42);
+  doc.setFontSize(9);
   doc.setTextColor(100);
-  doc.text(
-    `Deero Advert · Generated ${new Date().toLocaleString()} · ${rows.length} rows`,
-    40,
-    58,
-  );
+  doc.text(options.subtitle || "All time", textX, 58);
+  doc.text(`Generated ${new Date().toLocaleString()}`, textX, 72);
+  doc.setDrawColor(...primary);
+  doc.setLineWidth(2);
+  doc.line(40, 88, 802, 88);
 
   autoTable(doc, {
-    startY: 72,
+    startY: 102,
     head: [headers],
     body: rows.map((row) => row.map((cell) => String(cell ?? "—"))),
     styles: { fontSize: 8, cellPadding: 4 },
-    headStyles: { fillColor: [10, 39, 68], textColor: 255 },
+    headStyles: { fillColor: primary, textColor: 255 },
     alternateRowStyles: { fillColor: [248, 250, 252] },
   });
 

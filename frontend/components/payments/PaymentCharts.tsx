@@ -18,7 +18,7 @@ import {
 import {
   getMonthlyPaymentData,
   getYearlyPaymentData,
-} from "@/lib/actions/payment.action";
+} from "@/lib/apis/paymentApi";
 import { cn, formatDate } from "@/lib/utils";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";

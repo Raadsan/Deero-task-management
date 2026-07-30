@@ -1,5 +1,5 @@
-import { getPaymentClients } from "@/lib/actions/client.action";
-import { getAllExpenses, getAllIncomes } from "@/lib/actions/payment.action";
+import { getPaymentClients } from "@/lib/apis/clientApi";
+import { getAllExpenses, getAllIncomes } from "@/lib/apis/paymentApi";
 
 import ExpenseForm from "./ExpenseForm";
 import IncomeForm from "./IncomeForm";

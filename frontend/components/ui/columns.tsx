@@ -3,7 +3,7 @@
 import { AllClients, TableExpense, TableIncome, Task, User } from "@/lib/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
-import { updateTaskProgress } from "@/lib/actions/task.action";
+import { updateTaskProgress } from "@/lib/apis/taskApi";
 import { authClient } from "@/lib/auth-client";
 
 export const taskColumns: ColumnDef<Task>[] = [

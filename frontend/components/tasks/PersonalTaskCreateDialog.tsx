@@ -20,11 +20,10 @@ import {
   preventConfigDialogClose,
 } from "@/components/config/config-dialog-styles";
 import { authClient } from "@/lib/auth-client";
+import { createPersonalTask } from "@/lib/apis/myTasksApi";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useSWRConfig } from "swr";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:7003";
 
 type Props = {
   open: boolean;
@@ -54,33 +53,13 @@ export default function PersonalTaskCreateDialog({ open, onOpenChange }: Props) 
 
     setSaving(true);
     try {
-      const response = await fetch(`${API_URL}/api/tasks`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          assgineeId: userId,
-          description: description.trim() || name.trim(),
-          serviceInformation: name.trim(),
-          status: "pending",
-          department: "General",
-          priority,
-          supervisor: "",
-          deadline: dueAt ? new Date(dueAt).toISOString() : null,
-          progress: 0,
-          isPersonal: true,
-        }),
+      await createPersonalTask({
+        assgineeId: userId,
+        description: description.trim() || name.trim(),
+        serviceInformation: name.trim(),
+        priority,
+        deadline: dueAt ? new Date(dueAt).toISOString() : null,
       });
-
-      const data = (await response.json()) as {
-        success?: boolean;
-        error?: string;
-      };
-
-      if (!response.ok || !data.success) {
-        toast.error(data.error ?? "Failed to create task");
-        return;
-      }
 
       toast.success("Task created");
       setName("");

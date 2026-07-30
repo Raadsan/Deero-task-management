@@ -1,8 +1,8 @@
 "use server";
 
-import api from "../api";
-import { ActionResponse, ErrorResponse, Task } from "../types";
-import { handleError } from "../error/handle-error";
+import api from "@/lib/apis/axios";
+import { ActionResponse, ErrorResponse, Task } from "@/lib/types";
+import { handleError } from "@/lib/error/handle-error";
 
 function mapAssignedTo(user: {
   id?: string;

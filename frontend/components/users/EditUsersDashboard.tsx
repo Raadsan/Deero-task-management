@@ -1,6 +1,6 @@
 "use client";
 
-import { getUserById } from "@/lib/actions/user.action";
+import { getUserById } from "@/lib/apis/userApi";
 import { getRandomUUID } from "@/lib/utils";
 import { useParams } from "next/navigation";
 import { useState } from "react";

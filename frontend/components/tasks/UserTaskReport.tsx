@@ -1,7 +1,7 @@
 "use client";
 
-import { getAllTasks } from "@/lib/actions/task.action";
-import { getAllUsers } from "@/lib/actions/user.action";
+import { getAllTasks } from "@/lib/apis/taskApi";
+import { getAllUsers } from "@/lib/apis/userApi";
 import { ROUTES } from "@/lib/constants";
 import { updateUrlWithQueryParams } from "@/lib/utils";
 import Link from "next/link";

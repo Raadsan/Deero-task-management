@@ -1,6 +1,6 @@
 import { capitalizeName, computeFontSize } from "@/lib/utils";
 
-import { getUserSession } from "@/lib/actions/auth.action";
+import { getUserSession } from "@/lib/apis/authApi";
 import { Bell } from "lucide-react";
 
 export default async function UserAvator() {

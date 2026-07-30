@@ -25,7 +25,7 @@ import {
   getAllBranches,
   getBranchById,
   updateBranch,
-} from "@/lib/actions/portfolio.action";
+} from "@/lib/apis/portfolioApi";
 import {
   resolveBranchLogoUrl,
   formatBranchLoginPath,

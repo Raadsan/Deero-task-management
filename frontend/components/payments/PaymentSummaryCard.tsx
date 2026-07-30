@@ -1,5 +1,5 @@
 "use client";
-import { getPaymentOverviews } from "@/lib/actions/payment.action";
+import { getPaymentOverviews } from "@/lib/apis/paymentApi";
 import { PaymentSummaryType } from "@/lib/types";
 import {
   CreditCard,

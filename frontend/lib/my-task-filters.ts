@@ -2,6 +2,12 @@ import { Task } from "@/lib/types";
 
 export type BoardView = "company" | "own" | "timeline" | "table";
 
+export const BOARD_ONLY_FEATURE_NAME = "__board_only__";
+
+export function isBoardOnlyTask(task: Task): boolean {
+  return Array.isArray(task.features) && task.features.some((feature) => feature?.name === BOARD_ONLY_FEATURE_NAME);
+}
+
 export function isOwnTask(task: Task): boolean {
   return Boolean(task.isPersonal);
 }

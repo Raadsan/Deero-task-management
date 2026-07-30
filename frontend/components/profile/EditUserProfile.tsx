@@ -1,6 +1,6 @@
 "use client";
 
-import { updateUserData } from "@/lib/actions/user.action";
+import { updateUserData } from "@/lib/apis/userApi";
 import { authClient } from "@/lib/auth-client";
 import { DEPARTMENTS } from "@/lib/constants";
 import { formatDate, getRandomUUID } from "@/lib/utils";

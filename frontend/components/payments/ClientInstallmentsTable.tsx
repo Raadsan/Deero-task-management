@@ -20,7 +20,7 @@ import {
 import {
   ClientInstallmentRow,
   recordInstallmentPayment,
-} from "@/lib/actions/billing.action";
+} from "@/lib/apis/billingApi";
 import {
   dashboardCardClass,
   dashboardStatusBadgeClass,

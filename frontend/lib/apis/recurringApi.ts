@@ -1,11 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { ROUTES } from "../constants";
-import { handleError } from "../error/handle-error";
-import api from "../api";
-import { ActionResponse } from "../types";
-import type { RecurrenceType } from "../client-types";
+import { ROUTES } from "@/lib/constants";
+import { handleError } from "@/lib/error/handle-error";
+import api from "@/lib/apis/axios";
+import { ActionResponse } from "@/lib/types";
+import type { RecurrenceType } from "@/lib/client-types";
 
 export type RecurringScheduleStep = {
   id: string;

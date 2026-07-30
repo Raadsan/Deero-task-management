@@ -1,11 +1,11 @@
 "use client";
 
-import { createTask, editTask } from "@/lib/actions/task.action";
+import { createTask, editTask } from "@/lib/apis/taskApi";
 import {
   getAllAssignees,
   getTaskFormBranchOptions,
   getTaskFormClientsByBranch,
-} from "@/lib/actions/shared.action";
+} from "@/lib/apis/sharedApi";
 import { ROUTES, SWR_CACH_KEYS, TASK_PRIORITIES } from "@/lib/constants";
 import { btnFormCancel, btnFormSubmit } from "@/lib/dashboard-ui";
 import { cn, getTaskStatus, resolveTaskDisplayStatus } from "@/lib/utils";

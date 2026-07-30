@@ -1,4 +1,4 @@
-import { getInvoiceInfo } from "@/lib/actions/payment.action";
+import { getInvoiceInfo } from "@/lib/apis/paymentApi";
 import { use } from "react";
 import PrintInvoice from "./PrintInvoice";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { getAllClients } from "@/lib/actions/client.action";
+import { getAllClients } from "@/lib/apis/clientApi";
 import { ROUTES, SWR_CACH_KEYS } from "@/lib/constants";
 import { btnCreatePage } from "@/lib/dashboard-ui";
 import { AllClients } from "@/lib/types";

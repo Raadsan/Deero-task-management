@@ -1,555 +1,253 @@
 "use client";
 
 import ManagementPageShell from "@/components/Shared/ManagementPageShell";
-import { Button } from "@/components/ui/button";
+import PersonalTaskCreateDialog from "@/components/tasks/PersonalTaskCreateDialog";
 import MyTasksBoardOwnTable from "@/components/tasks/MyTasksBoardOwnTable";
 import MyTasksBoardTimeline from "@/components/tasks/MyTasksBoardTimeline";
-import PersonalTaskCreateDialog from "@/components/tasks/PersonalTaskCreateDialog";
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { fetchMyTasks, patchMyTask } from "@/lib/apis/myTasksApi";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {
-  BoardView,
-  filterBoardTasks,
-  filterBoardTasksForLanes,
-  taskTitle,
-} from "@/lib/my-task-filters";
-import {
-  BOARD_LANES,
-  emptyLaneOrder,
-  findLaneForTaskId,
-  laneOrderFromTasks,
-  normalizeLaneOrder,
-  reorderLaneOrder,
-  resolveLaneTasks,
-} from "@/lib/my-task-board-dnd";
-import { fetchMyTasks, patchMyTask } from "@/lib/my-tasks-client";
-import {
-  getTaskLane,
-  laneDotClass,
-  laneLabel,
-  progressForLane,
-  statusForLane,
-  TaskLane,
-} from "@/lib/my-task-workflow";
+  dashboardCardClass,
+  dashboardTableBodyRowClass,
+  dashboardTableCellClass,
+  dashboardTableHeadClass,
+  dashboardTableHeaderClass,
+  dashboardTableHeadRowClass,
+  dashboardTableWrapClass,
+  getTaskStatusBadgeClass,
+} from "@/lib/dashboard-ui";
+import { taskTitle } from "@/lib/my-task-filters";
 import { Task } from "@/lib/types";
-import { dashboardCardClass } from "@/lib/dashboard-ui";
 import { cn, resolveTaskDisplayStatus } from "@/lib/utils";
-import {
-  CalendarDays,
-  ChevronDown,
-  Filter,
-  Plus,
-  Search,
-  Table2,
-  UserRound,
-} from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AlertTriangle, CalendarDays, CheckCircle2, Circle, Clock3, LayoutGrid, Plus, Search, Table2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import useSWR, { useSWRConfig } from "swr";
 
-const LANE_NEW_PAGE: Partial<Record<TaskLane, boolean>> = {
-  todo: true,
-  processing: true,
-  completed: true,
-};
+type BoardLane = "todo" | "overdue" | "completed";
 
-const VIEW_TABS: {
-  id: BoardView;
+const LANES: Array<{
+  id: BoardLane;
   label: string;
-  icon: typeof UserRound;
-}[] = [
-  { id: "own", label: "My tasks", icon: UserRound },
-  { id: "timeline", label: "Timeline", icon: CalendarDays },
-  { id: "table", label: "Table", icon: Table2 },
+  dot: string;
+  empty: string;
+}> = [
+  { id: "todo", label: "To Do List", dot: "bg-violet-500", empty: "No tasks to do" },
+  { id: "overdue", label: "Overdue", dot: "bg-red-500", empty: "No overdue tasks" },
+  { id: "completed", label: "Complete", dot: "bg-emerald-500", empty: "No completed tasks" },
 ];
 
-function priorityBadge(task: Task) {
-  const p = String(task.priority ?? "normal").toLowerCase();
-  if (p === "urgent") {
-    return (
-      <span className="shrink-0 rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold text-red-600">
-        Urgent
-      </span>
-    );
-  }
-  return null;
+function boardLane(task: Task): BoardLane {
+  const status = resolveTaskDisplayStatus(task);
+  if (status === "completed" || Number(task.progress ?? 0) >= 100) return "completed";
+  if (status === "overdue") return "overdue";
+  return "todo";
 }
 
-type DragState = { taskId: string; fromLane: TaskLane };
-type DropHint = { lane: TaskLane; index: number };
+function dateLabel(value?: string | Date | null) {
+  if (!value) return "No due date";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "No due date";
+  return date.toLocaleString("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 export default function MyTasksBoardPage() {
   const { mutate: globalMutate } = useSWRConfig();
-  const { data: remoteTasks, isLoading } = useSWR(
+  const { data: remoteTasks, error: tasksError, isLoading, mutate } = useSWR(
     SWR_CACH_KEYS.myTasksBoard.key,
     fetchMyTasks,
     {
       fallbackData: [],
-      revalidateOnFocus: false,
-      dedupingInterval: 120_000,
-      keepPreviousData: true,
+      revalidateOnMount: true,
+      revalidateIfStale: true,
+      revalidateOnFocus: true,
+      dedupingInterval: 0,
     },
   );
-
-  const [boardTasks, setBoardTasks] = useState<Task[]>([]);
-  const [laneOrder, setLaneOrder] = useState(emptyLaneOrder);
-  const [view, setView] = useState<BoardView>("own");
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [filterOpen, setFilterOpen] = useState(false);
+  const [view, setView] = useState<"board" | "table" | "calendar">("board");
   const [createOpen, setCreateOpen] = useState(false);
-  const [dragState, setDragState] = useState<DragState | null>(null);
-  const [dropHint, setDropHint] = useState<DropHint | null>(null);
-  const pendingSyncRef = useRef(0);
-  const laneOrderRef = useRef(laneOrder);
-  laneOrderRef.current = laneOrder;
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  const showLoading = isLoading && boardTasks.length === 0;
-
-  const filterTasks = useCallback(
-    (list: Task[]) =>
-      filterBoardTasks(
-        list,
-        view,
-        search,
-        statusFilter,
-        resolveTaskDisplayStatus,
-      ),
-    [view, search, statusFilter],
-  );
-
-  const filterLaneTasks = useCallback(
-    (list: Task[]) => filterBoardTasksForLanes(list, view, search),
-    [view, search],
-  );
-
-  // Only pull from server when remote data changes — never wipe optimistic drag updates
   useEffect(() => {
-    if (pendingSyncRef.current > 0) return;
-    const list = remoteTasks ?? [];
-    setBoardTasks(list);
-    setLaneOrder(laneOrderFromTasks(filterLaneTasks(list)));
-  }, [remoteTasks, filterLaneTasks]);
+    setTasks((remoteTasks ?? []).filter((task) => task.isPersonal));
+  }, [remoteTasks]);
 
-  const filteredTasks = useMemo(
-    () => filterTasks(boardTasks),
-    [boardTasks, filterTasks],
-  );
-
-  const laneTasksList = useMemo(
-    () => filterLaneTasks(boardTasks),
-    [boardTasks, filterLaneTasks],
-  );
-
-  const taskMap = useMemo(
-    () => new Map(laneTasksList.map((task) => [String(task.id), task])),
-    [laneTasksList],
-  );
-
-  const normalizedOrder = useMemo(
-    () => normalizeLaneOrder(laneOrder, taskMap),
-    [laneOrder, taskMap],
-  );
-
-  const lanesDisplay = useMemo(() => {
-    const display: Record<TaskLane, Task[]> = {
-      todo: [],
-      processing: [],
-      completed: [],
-    };
-    for (const lane of BOARD_LANES) {
-      display[lane] = resolveLaneTasks(lane, normalizedOrder, taskMap);
-    }
-    return display;
-  }, [normalizedOrder, taskMap]);
-
-  function cacheBoardState(nextTasks: Task[]) {
-    void globalMutate(SWR_CACH_KEYS.myTasksBoard.key, nextTasks, {
-      revalidate: false,
-    });
-    void globalMutate(SWR_CACH_KEYS.myTasks.key, nextTasks, {
-      revalidate: false,
-    });
-  }
-
-  function handleDropAt(toLane: TaskLane, toIndex: number) {
-    if (!dragState) return;
-
-    const task = boardTasks.find((t) => String(t.id) === dragState.taskId);
-    if (!task) {
-      setDragState(null);
-      setDropHint(null);
-      return;
-    }
-
-    const fromLane =
-      findLaneForTaskId(laneOrderRef.current, dragState.taskId) ??
-      dragState.fromLane;
-    const progress = progressForLane(toLane, Number(task.progress ?? 0));
-    const status = statusForLane(toLane);
-    const tasksSnapshot = boardTasks;
-    const orderSnapshot = laneOrderRef.current;
-
-    const nextTasks = boardTasks.map((t) =>
-      String(t.id) === dragState.taskId
-        ? { ...t, progress, status: status as Task["status"] }
-        : t,
+  const visibleTasks = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return tasks;
+    return tasks.filter((task) =>
+      [task.id, taskTitle(task), task.description, task.priority]
+        .some((value) => String(value ?? "").toLowerCase().includes(query)),
     );
-    const nextTaskMap = new Map(nextTasks.map((t) => [String(t.id), t]));
-    const nextOrder = normalizeLaneOrder(
-      reorderLaneOrder(
-        laneOrderRef.current,
-        dragState.taskId,
-        fromLane,
-        toLane,
-        toIndex,
-      ),
-      nextTaskMap,
+  }, [tasks, search]);
+
+  const laneTasks = useMemo(() => ({
+    todo: visibleTasks.filter((task) => boardLane(task) === "todo"),
+    overdue: visibleTasks.filter((task) => boardLane(task) === "overdue"),
+    completed: visibleTasks.filter((task) => boardLane(task) === "completed"),
+  }), [visibleTasks]);
+
+  const historyTasks = useMemo(() => [...visibleTasks].sort((a, b) => {
+    const aTime = new Date(a.updatedAt ?? a.createdAt ?? 0).getTime();
+    const bTime = new Date(b.updatedAt ?? b.createdAt ?? 0).getTime();
+    return bTime - aTime;
+  }), [visibleTasks]);
+
+  async function toggleCompleted(task: Task) {
+    const id = String(task.id);
+    const wasCompleted = boardLane(task) === "completed";
+    const nextStatus = wasCompleted ? "pending" : "completed";
+    const nextProgress = wasCompleted ? 0 : 100;
+    const snapshot = tasks;
+    const nextTasks = tasks.map((item) =>
+      String(item.id) === id
+        ? { ...item, status: nextStatus as Task["status"], progress: nextProgress }
+        : item,
     );
 
-    setBoardTasks(nextTasks);
-    setLaneOrder(nextOrder);
-    setDragState(null);
-    setDropHint(null);
-    cacheBoardState(nextTasks);
-
-    if (fromLane !== toLane) {
-      pendingSyncRef.current += 1;
-      void patchMyTask(String(task.id), { progress, status })
-        .catch(() => {
-          toast.error("Failed to move task");
-          setBoardTasks(tasksSnapshot);
-          setLaneOrder(orderSnapshot);
-          cacheBoardState(tasksSnapshot);
-        })
-        .finally(() => {
-          pendingSyncRef.current = Math.max(0, pendingSyncRef.current - 1);
-        });
+    setUpdatingId(id);
+    setTasks(nextTasks);
+    try {
+      await patchMyTask(id, { status: nextStatus, progress: nextProgress });
+      await mutate();
+      void globalMutate(SWR_CACH_KEYS.myTasksList.key);
+      void globalMutate(SWR_CACH_KEYS.myTasksToday.key);
+      toast.success(wasCompleted ? "Task returned to To Do" : "Task completed");
+    } catch {
+      setTasks(snapshot);
+      toast.error("Failed to update task");
+    } finally {
+      setUpdatingId(null);
     }
   }
 
-  function onDragStart(task: Task) {
-    const taskId = String(task.id);
-    const fromLane =
-      findLaneForTaskId(laneOrderRef.current, taskId) ?? getTaskLane(task);
-    setDragState({ taskId, fromLane });
-  }
-
-  function onDragEnd() {
-    setDragState(null);
-    setDropHint(null);
-  }
-
-  const isKanbanView = view === "company" || view === "own";
-
-  const boardToolbar = (
-    <div className="flex flex-wrap items-center gap-2">
-      <div className="relative">
-        <button
-          type="button"
-          onClick={() => setFilterOpen((v) => !v)}
-          className="flex items-center gap-1 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-600 hover:bg-zinc-50"
-        >
-          <Filter className="size-4" />
-          Filter
-          <ChevronDown className="size-3.5" />
-        </button>
-        {filterOpen ? (
-          <div className="absolute right-0 z-20 mt-1 w-44 rounded-lg border border-zinc-200 bg-white p-2 shadow-md">
-            <label className="mb-1 block text-[10px] font-semibold text-zinc-400 uppercase">
-              Status
-            </label>
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
-                setFilterOpen(false);
-              }}
-              className="h-9 w-full rounded-md border border-zinc-200 px-2 text-sm"
-            >
-              <option value="all">All</option>
-              <option value="pending">Processing</option>
-              <option value="completed">Completed</option>
-              <option value="overdue">Overdue</option>
-            </select>
+  return (
+    <ManagementPageShell title="My board">
+      <div className="mb-4 flex flex-col gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-1 rounded-lg bg-zinc-100 p-1">
+            {[
+              { id: "board", label: "Board", icon: LayoutGrid },
+              { id: "table", label: "Table", icon: Table2 },
+              { id: "calendar", label: "Calendar", icon: CalendarDays },
+            ].map((item) => {
+              const Icon = item.icon;
+              return <button key={item.id} type="button" onClick={() => setView(item.id as "board" | "table" | "calendar")} className={cn("inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium", view === item.id ? "bg-white text-slate-900 shadow-sm" : "text-zinc-500 hover:text-zinc-800")}><Icon className="size-4" />{item.label}</button>;
+            })}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-400" />
+              <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search tasks..." className="h-10 w-full rounded-lg border border-zinc-200 bg-white pl-9 pr-3 text-sm outline-none focus:border-primary" />
+            </div>
+            <Button type="button" onClick={() => setCreateOpen(true)} className="h-10"><Plus className="mr-2 size-4" />New Task</Button>
+          </div>
+        </div>
+        {view === "board" && <p className="text-sm text-zinc-500">Personal board tasks stay here and do not appear in My Tasks or Today.</p>}
+        {tasksError ? (
+          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            Could not load your board tasks. Please refresh or sign in again.
           </div>
         ) : null}
       </div>
 
-      <div className="relative">
-        <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-400" />
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search..."
-          className="focus:border-primary h-9 w-full min-w-[160px] rounded-lg border border-zinc-200 bg-white pr-3 pl-9 text-sm outline-none sm:w-48"
-        />
-      </div>
-
-      <Button
-        type="button"
-        size="sm"
-        className="h-9 gap-1 px-4 text-sm"
-        onClick={() => setCreateOpen(true)}
-      >
-        <Plus className="size-4" />
-        New
-        <ChevronDown className="size-3.5" />
-      </Button>
-    </div>
-  );
-
-  const viewTabs = (
-    <div className="flex flex-wrap items-center gap-1">
-      {VIEW_TABS.map((tab) => {
-        const Icon = tab.icon;
-        const active = view === tab.id;
-        return (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => setView(tab.id)}
-            className={cn(
-              "flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-              active
-                ? "bg-zinc-100 text-zinc-900"
-                : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-700",
-            )}
-          >
-            <Icon className="size-4" />
-            {tab.label}
-          </button>
-        );
-      })}
-    </div>
-  );
-
-  return (
-    <ManagementPageShell title="My board">
-      <div
-        className={cn(
-          "mb-4 flex flex-col gap-3 px-1 sm:flex-row sm:items-center sm:justify-between",
-          !isKanbanView && "sm:mb-3",
-        )}
-      >
-        {viewTabs}
-        {isKanbanView ? boardToolbar : null}
-      </div>
-
-      {isKanbanView ? (
-        <div className="overflow-x-auto">
-          <div className="flex min-w-max gap-4 lg:grid lg:w-full lg:min-w-0 lg:grid-cols-4">
-            {BOARD_LANES.map((lane) => {
-              const laneTasks = lanesDisplay[lane];
-              const showNewPage = view === "own" && LANE_NEW_PAGE[lane];
-              const isColumnActive = dropHint?.lane === lane;
-
-              return (
-                <div
-                  key={lane}
-                  className={cn(
-                    "flex w-[300px] shrink-0 flex-col lg:w-full lg:shrink",
-                    isColumnActive &&
-                      "ring-primary/20 rounded-xl ring-2 ring-offset-2",
-                  )}
-                  onDragOver={(e) => e.preventDefault()}
-                >
-                  <div className="mb-2 flex items-center gap-2 px-1">
-                    <span
-                      className={cn(
-                        "size-2.5 rounded-full",
-                        laneDotClass(lane),
-                      )}
-                    />
-                    <span className="text-sm font-semibold text-zinc-800">
-                      {laneLabel(lane)}
-                    </span>
-                    <span className="text-sm text-zinc-400">
-                      {laneTasks.length} task{laneTasks.length === 1 ? "" : "s"}
-                    </span>
-                  </div>
-
-                  <div
-                    className="flex min-h-[440px] flex-col rounded-xl border border-zinc-200 bg-white p-3 shadow-sm"
-                    onDragOver={(e) => {
-                      e.preventDefault();
-                      if (!dragState) return;
-                      if (dropHint?.lane !== lane) {
-                        setDropHint({ lane, index: laneTasks.length });
-                      }
-                    }}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      const index =
-                        dropHint?.lane === lane
-                          ? dropHint.index
-                          : laneTasks.length;
-                      handleDropAt(lane, index);
-                    }}
-                  >
-                    {showLoading ? (
-                      <div className="space-y-2">
-                        {[...Array(3)].map((_, i) => (
-                          <div
-                            key={i}
-                            className="h-12 animate-pulse rounded-lg border border-zinc-100 bg-zinc-50"
-                          />
-                        ))}
-                      </div>
-                    ) : (
-                      <>
-                        <div className="flex min-h-0 flex-1 flex-col">
-                          <DropSlot
-                            lane={lane}
-                            index={0}
-                            dropHint={dropHint}
-                            onHint={setDropHint}
-                            onDropAt={handleDropAt}
-                          />
-
-                          {laneTasks.length === 0 ? (
-                            <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed border-zinc-200 px-3 py-10 text-center text-xs text-zinc-400">
-                              Drop tasks here — add as many as you need
-                            </div>
-                          ) : (
-                            laneTasks.map((task, index) => {
-                              const orderNumber = index + 1;
-                              const isDragging =
-                                dragState?.taskId === String(task.id);
-
-                              return (
-                                <div key={task.id}>
-                                  <div
-                                    draggable
-                                    onDragStart={(e) => {
-                                      onDragStart(task);
-                                      e.dataTransfer.effectAllowed = "move";
-                                      e.dataTransfer.setData(
-                                        "text/plain",
-                                        String(task.id),
-                                      );
-                                    }}
-                                    onDragEnd={onDragEnd}
-                                    onDragOver={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      if (dragState) {
-                                        setDropHint({ lane, index: index + 1 });
-                                      }
-                                    }}
-                                    onDrop={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      handleDropAt(lane, index + 1);
-                                    }}
-                                    className={cn(
-                                      "cursor-grab rounded-lg border border-zinc-200 bg-white px-3 py-2.5 shadow-sm transition-[box-shadow,opacity,transform] duration-75 hover:border-zinc-300 hover:shadow-md active:cursor-grabbing",
-                                      isDragging &&
-                                        "border-primary/40 ring-primary/20 opacity-50 ring-2",
-                                    )}
-                                  >
-                                    <div className="flex items-start gap-2.5">
-                                      <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-zinc-100 text-[11px] font-bold text-zinc-600">
-                                        {orderNumber}
-                                      </span>
-                                      <div className="flex min-w-0 flex-1 items-start justify-between gap-2">
-                                        <p className="text-sm leading-snug text-zinc-800">
-                                          {taskTitle(task)}
-                                        </p>
-                                        {priorityBadge(task)}
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  <DropSlot
-                                    lane={lane}
-                                    index={index + 1}
-                                    dropHint={dropHint}
-                                    onHint={setDropHint}
-                                    onDropAt={handleDropAt}
-                                  />
-                                </div>
-                              );
-                            })
-                          )}
+      {view === "board" ? <>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        {LANES.map((lane) => {
+          const items = laneTasks[lane.id];
+          return (
+            <section key={lane.id} className="min-w-0">
+              <div className="mb-2 flex items-center gap-2 px-1">
+                <span className={cn("size-2.5 rounded-full", lane.dot)} />
+                <h2 className="text-sm font-semibold text-zinc-800">{lane.label}</h2>
+                <span className="text-sm text-zinc-400">{items.length}</span>
+              </div>
+              <div className="min-h-[360px] space-y-2 rounded-xl border border-zinc-200 bg-white p-3 shadow-sm">
+                {isLoading && tasks.length === 0 ? (
+                  [...Array(3)].map((_, index) => <div key={index} className="h-20 animate-pulse rounded-lg bg-zinc-100" />)
+                ) : items.length === 0 ? (
+                  <div className="flex min-h-[330px] items-center justify-center rounded-lg border border-dashed border-zinc-200 px-4 text-center text-sm text-zinc-400">{lane.empty}</div>
+                ) : items.map((task) => {
+                  const completed = lane.id === "completed";
+                  const disabled = updatingId === String(task.id);
+                  return (
+                    <article key={task.id} className="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm">
+                      <div className="flex items-start gap-3">
+                        <button type="button" disabled={disabled} onClick={() => void toggleCompleted(task)} aria-label={completed ? "Mark task incomplete" : "Mark task complete"} className={cn("mt-0.5 shrink-0 rounded-full disabled:opacity-50", completed ? "text-emerald-600" : lane.id === "overdue" ? "text-red-500" : "text-zinc-400 hover:text-primary")}>
+                          {completed ? <CheckCircle2 className="size-5" /> : <Circle className="size-5" />}
+                        </button>
+                        <div className="min-w-0 flex-1">
+                          <p className={cn("text-sm font-semibold leading-5 text-zinc-800", completed && "text-zinc-500 line-through")}>{taskTitle(task)}</p>
+                          <p className="mt-1 line-clamp-2 text-xs leading-5 text-zinc-500">{task.description}</p>
+                          <div className="mt-2 flex items-center gap-1.5 text-[11px] text-zinc-400">
+                            {lane.id === "overdue" ? <AlertTriangle className="size-3.5 text-red-500" /> : <Clock3 className="size-3.5" />}
+                            <span>{dateLabel(task.deadline)}</span>
+                          </div>
                         </div>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </section>
+          );
+        })}
+      </div>
 
-                        {showNewPage ? (
-                          <button
-                            type="button"
-                            onClick={() => setCreateOpen(true)}
-                            className="mt-auto shrink-0 rounded-lg px-2 py-2 pt-3 text-left text-xs font-medium text-zinc-400 hover:bg-zinc-50 hover:text-zinc-600"
-                          >
-                            + New page
-                          </button>
-                        ) : null}
-                      </>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+      <section className={cn(dashboardCardClass, "mt-6 overflow-hidden p-0")}>
+        <div className="flex items-center justify-between border-b border-zinc-100 px-6 py-4">
+          <div><h2 className="font-bold text-slate-900">Task History</h2><p className="mt-1 text-xs text-zinc-500">All personal board tasks and their latest state.</p></div>
+          <span className="text-sm text-zinc-400">{historyTasks.length} tasks</span>
         </div>
+        <div className={cn(dashboardTableWrapClass, "border-0")}>
+          <Table>
+            <TableHeader className={dashboardTableHeaderClass}>
+              <TableRow className={dashboardTableHeadRowClass}>
+                <TableHead className={dashboardTableHeadClass}>Task</TableHead>
+                <TableHead className={dashboardTableHeadClass}>Priority</TableHead>
+                <TableHead className={dashboardTableHeadClass}>Due Date</TableHead>
+                <TableHead className={dashboardTableHeadClass}>Status</TableHead>
+                <TableHead className={dashboardTableHeadClass}>Completed</TableHead>
+                <TableHead className={dashboardTableHeadClass}>Last Updated</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {historyTasks.length ? historyTasks.map((task) => {
+                const status = resolveTaskDisplayStatus(task);
+                return (
+                  <TableRow key={task.id} className={dashboardTableBodyRowClass}>
+                    <TableCell className={dashboardTableCellClass}><span className="font-semibold text-slate-800">{taskTitle(task)}</span><span className="mt-1 block text-xs text-zinc-400">#{task.id}</span></TableCell>
+                    <TableCell className={cn(dashboardTableCellClass, "capitalize")}>{task.priority ?? "Normal"}</TableCell>
+                    <TableCell className={dashboardTableCellClass}>{dateLabel(task.deadline)}</TableCell>
+                    <TableCell className={dashboardTableCellClass}><span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-semibold capitalize", getTaskStatusBadgeClass(status))}>{status === "pending" ? "To Do" : status}</span></TableCell>
+                    <TableCell className={dashboardTableCellClass}>{task.completedAt ? dateLabel(task.completedAt) : "â€”"}</TableCell>
+                    <TableCell className={dashboardTableCellClass}>{dateLabel(task.updatedAt ?? task.createdAt)}</TableCell>
+                  </TableRow>
+                );
+              }) : <TableRow><TableCell colSpan={6} className="py-12 text-center text-zinc-500">No task history found</TableCell></TableRow>}
+            </TableBody>
+          </Table>
+        </div>
+      </section>
+
+      </> : view === "table" ? (
+        <div className={dashboardCardClass}><MyTasksBoardOwnTable tasks={visibleTasks} isLoading={isLoading} /></div>
       ) : (
-        <div className={dashboardCardClass}>
-          <div className="flex flex-col gap-3 border-b border-zinc-50 px-6 py-3 sm:flex-row sm:items-center sm:justify-end">
-            {boardToolbar}
-          </div>
-
-          {view === "timeline" ? (
-            <MyTasksBoardTimeline
-              tasks={filteredTasks}
-              assignableTasks={laneTasksList}
-            />
-          ) : (
-            <MyTasksBoardOwnTable
-              tasks={filteredTasks}
-              isLoading={showLoading}
-            />
-          )}
-        </div>
+        <div className={dashboardCardClass}><MyTasksBoardTimeline tasks={visibleTasks} assignableTasks={tasks} /></div>
       )}
 
-      <PersonalTaskCreateDialog
-        open={createOpen}
-        onOpenChange={setCreateOpen}
-      />
+      <PersonalTaskCreateDialog open={createOpen} onOpenChange={setCreateOpen} />
     </ManagementPageShell>
   );
 }
 
-function DropSlot({
-  lane,
-  index,
-  dropHint,
-  onHint,
-  onDropAt,
-}: {
-  lane: TaskLane;
-  index: number;
-  dropHint: DropHint | null;
-  onHint: (hint: DropHint | null) => void;
-  onDropAt: (lane: TaskLane, index: number) => void;
-}) {
-  const active = dropHint?.lane === lane && dropHint.index === index;
-
-  return (
-    <div
-      onDragOver={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onHint({ lane, index });
-      }}
-      onDrop={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onDropAt(lane, index);
-      }}
-      className={cn(
-        "my-0.5 shrink-0 rounded-full transition-all duration-75",
-        active ? "bg-primary h-3" : "h-2 bg-transparent",
-      )}
-    />
-  );
-}

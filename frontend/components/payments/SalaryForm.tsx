@@ -1,6 +1,6 @@
 "use client";
 
-import { payUserSalary } from "@/lib/actions/payment.action";
+import { payUserSalary } from "@/lib/apis/paymentApi";
 import { authClient } from "@/lib/auth-client";
 import { EXPENSE_STATUS, PAYMENT_METHODS, Taxs } from "@/lib/constants";
 import { User } from "@/lib/schema";

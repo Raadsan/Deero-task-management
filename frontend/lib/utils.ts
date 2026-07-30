@@ -423,11 +423,3 @@ export function getFromToDateDescription({
   return dateDescription;
 }
 
-export function resolveApiUploadUrl(fileUrl: string) {
-  if (!fileUrl) return "";
-  if (fileUrl.startsWith("http://") || fileUrl.startsWith("https://")) {
-    return fileUrl;
-  }
-  const base = process.env.NEXT_PUBLIC_API_URL || "http://localhost:7003";
-  return `${base}${fileUrl}`;
-}

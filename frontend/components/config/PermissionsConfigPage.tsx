@@ -17,7 +17,7 @@ import {
   NavMenuItem,
   seedNavMenus,
   updateRolePermissions,
-} from "@/lib/actions/config.action";
+} from "@/lib/apis/configApi";
 import { authClient } from "@/lib/auth-client";
 import {
   BRANCH_ADMIN_MANAGEABLE_ROLE_NAMES,

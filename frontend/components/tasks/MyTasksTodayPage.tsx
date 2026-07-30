@@ -12,9 +12,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import TaskViewModal from "@/components/tasks/TaskViewModal";
-import { editTask } from "@/lib/actions/task.action";
-import { normalizeMyTasksList } from "@/lib/my-task-filters";
-import { fetchMyTasks } from "@/lib/my-tasks-client";
+import { editTask } from "@/lib/apis/taskApi";
+import { isBoardOnlyTask, normalizeMyTasksList } from "@/lib/my-task-filters";
+import { fetchMyCompanyTasks } from "@/lib/apis/myTasksApi";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {
   actionBtnView,
@@ -63,7 +63,7 @@ function isToday(value?: string | Date) {
 export default function MyTasksTodayPage() {
   const { data: tasksRaw, isLoading } = useSWR(
     SWR_CACH_KEYS.myTasksToday.key,
-    fetchMyTasks,
+    fetchMyCompanyTasks,
     {
       fallbackData: [],
       revalidateOnMount: true,
@@ -74,7 +74,7 @@ export default function MyTasksTodayPage() {
   const { mutate } = useSWRConfig();
 
   const [mounted, setMounted] = useState(false);
-  const allTasks = normalizeMyTasksList(tasksRaw);
+  const allTasks = normalizeMyTasksList(tasksRaw).filter((task) => !isBoardOnlyTask(task));
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");

@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ClientSchemaRecord } from "@/lib/actions/schema.action";
+import { ClientSchemaRecord } from "@/lib/apis/schemaApi";
 import { cn } from "@/lib/utils";
 import { Calendar, Download, Printer, X } from "lucide-react";
 import { useRef } from "react";

@@ -18,9 +18,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { markNotificationAsSeen } from "@/lib/actions/task.action";
+import { markNotificationAsSeen } from "@/lib/apis/taskApi";
 import { authClient } from "@/lib/auth-client";
-import { getTaskNotificationsClient } from "@/lib/client-read-api";
+import { getTaskNotificationsClient } from "@/lib/apis/readApi";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import { TaskNotification } from "@/lib/types";
 import useSWR from "swr";

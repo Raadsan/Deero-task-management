@@ -22,7 +22,7 @@ import {
   TextInputWithTaxtArea,
 } from "../Shared/FormElements";
 
-import { createExpenseTransaction } from "@/lib/actions/payment.action";
+import { createExpenseTransaction } from "@/lib/apis/paymentApi";
 import { getRandomUUID } from "@/lib/utils";
 import ButtonBuilder from "../Shared/ButtonBuilder";
 import Loader from "../Shared/Loader";

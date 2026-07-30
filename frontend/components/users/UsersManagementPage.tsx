@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAllUsers } from "@/lib/actions/user.action";
+import { getAllUsers } from "@/lib/apis/userApi";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {
   actionBtnEdit,

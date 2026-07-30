@@ -1,8 +1,8 @@
 "use client";
 
-import { createUser, updateUserData } from "@/lib/actions/user.action";
-import { getConfigRoles } from "@/lib/actions/config.action";
-import { getTaskFormBranchOptions } from "@/lib/actions/shared.action";
+import { createUser, updateUserData } from "@/lib/apis/userApi";
+import { getConfigRoles } from "@/lib/apis/configApi";
+import { getTaskFormBranchOptions } from "@/lib/apis/sharedApi";
 import { authClient } from "@/lib/auth-client";
 import { ROUTES, SWR_CACH_KEYS } from "@/lib/constants";
 import { User } from "@/lib/schema";

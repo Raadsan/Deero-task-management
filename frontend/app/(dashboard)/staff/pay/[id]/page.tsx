@@ -4,7 +4,7 @@ import { ClientFormSkeleton } from "@/components/Shared/Loader";
 import PageBreadcrumb from "@/components/Shared/PageBreadcrumb";
 import { ROUTES } from "@/lib/constants";
 import { PageParams } from "@/lib/types";
-import { getUserById } from "@/lib/actions/user.action";
+import { getUserById } from "@/lib/apis/userApi";
 import { Suspense } from "react";
 
 export default function EmployeeSalaryPage({ params }: PageParams) {

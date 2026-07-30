@@ -21,7 +21,7 @@ import {
   ClientInstallmentRow,
   getInstallments,
   recordInstallmentPayment,
-} from "@/lib/actions/billing.action";
+} from "@/lib/apis/billingApi";
 import {
   dashboardCardClass,
   dashboardLabelClass,

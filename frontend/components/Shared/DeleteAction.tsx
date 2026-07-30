@@ -1,9 +1,9 @@
 "use client";
-import { deleteClientById } from "@/lib/actions/client.action";
-import { deleteContractById } from "@/lib/actions/contract.action";
-import { deleteTransaction } from "@/lib/actions/payment.action";
-import { deleteTask } from "@/lib/actions/task.action";
-import { deleteUserById } from "@/lib/actions/user.action";
+import { deleteClientById } from "@/lib/apis/clientApi";
+import { deleteContractById } from "@/lib/apis/contractApi";
+import { deleteTransaction } from "@/lib/apis/paymentApi";
+import { deleteTask } from "@/lib/apis/taskApi";
+import { deleteUserById } from "@/lib/apis/userApi";
 import { authClient } from "@/lib/auth-client";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import { StateType, TableType } from "@/lib/types";

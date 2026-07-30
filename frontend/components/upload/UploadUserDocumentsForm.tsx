@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { getUserUploadedFiles, saveUserFiles } from "@/lib/actions/user.action";
+import { getUserUploadedFiles, saveUserFiles } from "@/lib/apis/userApi";
 import { USER_DOCUMENT_TYPES } from "@/lib/constants";
 import { btnFormCancel, btnFormSubmit } from "@/lib/dashboard-ui";
 import { cn } from "@/lib/utils";

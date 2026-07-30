@@ -13,8 +13,8 @@ import {
   getAdminDashboardBundle,
   getManagerDashboardBundle,
   getMyDashboardBundle,
-} from "@/lib/actions/dashboard.action";
-import { getTaskFormBranchOptions } from "@/lib/actions/shared.action";
+} from "@/lib/apis/dashboardApi";
+import { getTaskFormBranchOptions } from "@/lib/apis/sharedApi";
 import { authClient } from "@/lib/auth-client";
 import { isBranchScopedRole, normalizeRoleName } from "@/lib/portfolio-access";
 import { Task } from "@/lib/types";

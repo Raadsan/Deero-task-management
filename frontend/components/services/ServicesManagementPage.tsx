@@ -18,8 +18,8 @@ import {
   SubServiceInput,
   syncAdvertServices,
   updateService,
-} from "@/lib/actions/service.action";
-import { getTaskFormBranchOptions } from "@/lib/actions/shared.action";
+} from "@/lib/apis/serviceApi";
+import { getTaskFormBranchOptions } from "@/lib/apis/sharedApi";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {
   actionBtnDelete,

@@ -21,14 +21,12 @@ import {
 import { authClient } from "@/lib/auth-client";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import { taskTitle } from "@/lib/my-task-filters";
-import { patchMyTask } from "@/lib/my-tasks-client";
+import { createPersonalTask, patchMyTask } from "@/lib/apis/myTasksApi";
 import { Task } from "@/lib/types";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSWRConfig } from "swr";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:7003";
 
 type Props = {
   open: boolean;
@@ -91,29 +89,13 @@ export default function TimelineDayDialog({ open, onOpenChange, date, tasks }: P
           return;
         }
 
-        const response = await fetch(`${API_URL}/api/tasks`, {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            assgineeId: userId,
-            description: notes.trim() || title.trim(),
-            serviceInformation: title.trim() || notes.trim().slice(0, 80),
-            status: "pending",
-            department: "General",
-            priority: "Normal",
-            supervisor: "",
-            deadline: deadlineIso,
-            progress: 0,
-            isPersonal: true,
-          }),
+        await createPersonalTask({
+          assgineeId: userId,
+          description: notes.trim() || title.trim(),
+          serviceInformation: title.trim() || notes.trim().slice(0, 80),
+          priority: "Normal",
+          deadline: deadlineIso,
         });
-
-        const data = (await response.json()) as { success?: boolean; error?: string };
-        if (!response.ok || !data.success) {
-          toast.error(data.error ?? "Failed to create task");
-          return;
-        }
         toast.success("Task added for this date");
       }
 

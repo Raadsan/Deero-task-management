@@ -1,6 +1,6 @@
 "use client";
 
-import { getPayables } from "@/lib/actions/payment.action";
+import { getPayables } from "@/lib/apis/paymentApi";
 import { DateFilter } from "@/lib/types";
 import { cn, formatDate } from "@/lib/utils";
 import useSWR from "swr";

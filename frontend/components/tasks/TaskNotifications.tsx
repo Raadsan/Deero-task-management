@@ -1,6 +1,6 @@
 "use client";
 
-import { getTaskNotificationsClient } from "@/lib/client-read-api";
+import { getTaskNotificationsClient } from "@/lib/apis/readApi";
 import { ROUTES, SWR_CACH_KEYS } from "@/lib/constants";
 import { TaskNotification } from "@/lib/types";
 import { cn, formatTaskDeadline } from "@/lib/utils";

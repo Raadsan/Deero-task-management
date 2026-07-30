@@ -1,5 +1,7 @@
 "use client";
 
+import { resolveApiAssetUrl } from "@/lib/apis/config";
+
 import {
   Dialog,
   DialogContent,
@@ -8,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { getUserById } from "@/lib/actions/user.action";
+import { getUserById } from "@/lib/apis/userApi";
 import { btnFormSubmit } from "@/lib/dashboard-ui";
 import { UserFiles } from "@/lib/schema";
 import { formatDate } from "@/lib/utils";
@@ -29,12 +31,6 @@ interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   userId?: string;
-}
-
-function resolveUserFileUrl(url: string) {
-  if (url.startsWith("http://") || url.startsWith("https://")) return url;
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:7003";
-  return `${apiUrl}${url.startsWith("/") ? url : `/${url}`}`;
 }
 
 export default function UserViewModal({ open, onOpenChange, userId }: Props) {
@@ -156,7 +152,7 @@ export default function UserViewModal({ open, onOpenChange, userId }: Props) {
                           </p>
                         </div>
                         <a
-                          href={resolveUserFileUrl(file.url)}
+                          href={resolveApiAssetUrl(file.url)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-primary inline-flex shrink-0 items-center gap-1 text-sm font-medium hover:underline"

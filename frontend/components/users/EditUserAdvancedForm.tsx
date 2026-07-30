@@ -1,5 +1,5 @@
-import { listCurrentUserSessions, updateUserData } from "@/lib/actions/user.action";
-import { getConfigRoles } from "@/lib/actions/config.action";
+import { listCurrentUserSessions, updateUserData } from "@/lib/apis/userApi";
+import { getConfigRoles } from "@/lib/apis/configApi";
 import { authClient } from "@/lib/auth-client";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import { User } from "@/lib/schema";

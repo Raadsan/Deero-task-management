@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { getTaskFormBranchOptions } from "@/lib/actions/shared.action";
+import { getTaskFormBranchOptions } from "@/lib/apis/sharedApi";
 import { formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
 import { btnFormSubmit } from "@/lib/dashboard-ui";
 import { Task } from "@/lib/types";

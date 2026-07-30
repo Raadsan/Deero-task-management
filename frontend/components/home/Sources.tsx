@@ -1,6 +1,6 @@
 "use client";
 
-import { getClientSourcesInfo } from "@/lib/actions/client.action";
+import { getClientSourcesInfo } from "@/lib/apis/clientApi";
 import {
   CalendarArrowUp,
   Globe2,

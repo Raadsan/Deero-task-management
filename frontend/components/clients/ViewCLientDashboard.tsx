@@ -1,4 +1,4 @@
-import { getClientById } from "@/lib/actions/client.action";
+import { getClientById } from "@/lib/apis/clientApi";
 import ClientForm from "./ClientForm";
 import EditClientCategory from "./EditClientCategory";
 

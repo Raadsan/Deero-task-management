@@ -9,8 +9,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAdminDashboardBundle } from "@/lib/actions/dashboard.action";
-import { getTaskFormBranchOptions } from "@/lib/actions/shared.action";
+import { getAdminDashboardBundle } from "@/lib/apis/dashboardApi";
+import { getTaskFormBranchOptions } from "@/lib/apis/sharedApi";
 import { authClient } from "@/lib/auth-client";
 import { isBranchScopedRole, normalizeRoleName } from "@/lib/portfolio-access";
 import { Task } from "@/lib/types";

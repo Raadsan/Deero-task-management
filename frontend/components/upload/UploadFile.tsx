@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { saveUserFiles } from "@/lib/actions/user.action";
+import { saveUserFiles } from "@/lib/apis/userApi";
 import { Check, Upload, X } from "lucide-react";
 import { useRef, useState, useTransition } from "react";
 import toast from "react-hot-toast";

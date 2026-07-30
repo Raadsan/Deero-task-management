@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getUserById, updateUserData } from "@/lib/actions/user.action";
+import { getUserById, updateUserData } from "@/lib/apis/userApi";
 import { authClient } from "@/lib/auth-client";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import { btnFormSubmit } from "@/lib/dashboard-ui";

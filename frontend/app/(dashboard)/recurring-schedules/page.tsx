@@ -19,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getClientsForForm, getClientById } from "@/lib/actions/client.action";
+import { getClientsForForm, getClientById } from "@/lib/apis/clientApi";
 import {
   createRecurringSchedule,
   CreateRecurringScheduleInput,
@@ -30,7 +30,7 @@ import {
   runRecurringDailyGeneration,
   toggleRecurringSchedule,
   updateRecurringSchedule,
-} from "@/lib/actions/recurring.action";
+} from "@/lib/apis/recurringApi";
 import { RECURRENCE_TYPE_OPTIONS, WEEKDAY_OPTIONS } from "@/lib/client-types";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {

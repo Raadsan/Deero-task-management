@@ -1,7 +1,7 @@
-import { getClientReport } from "@/lib/actions/client.action";
+import { getClientReport } from "@/lib/apis/clientApi";
 
-import { getTasksReport } from "@/lib/actions/task.action";
-import { getUsersSalariesReport } from "@/lib/actions/user.action";
+import { getTasksReport } from "@/lib/apis/taskApi";
+import { getUsersSalariesReport } from "@/lib/apis/userApi";
 import PrintInvoice from "../invoice/PrintInvoice";
 
 interface Props {

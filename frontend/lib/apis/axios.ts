@@ -1,7 +1,7 @@
 import axios from "axios";
 import { headers } from "next/headers";
+import { API_URL } from "./config";
 
-const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:7003").replace(/['\"]/g, "");
 
 const api = axios.create({
   baseURL: API_URL,

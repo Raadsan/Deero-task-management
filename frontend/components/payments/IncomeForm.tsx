@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import {
   createIncomeTransaction,
   getServiceAgreements,
-} from "@/lib/actions/payment.action";
+} from "@/lib/apis/paymentApi";
 import {
   INCOME_STATUS,
   INCOME_TYEPS,
@@ -31,7 +31,7 @@ import {
   TextInputWithTaxtArea,
 } from "../Shared/FormElements";
 
-import { getInsitutionsbyId } from "@/lib/actions/client.action";
+import { getInsitutionsbyId } from "@/lib/apis/clientApi";
 import useSWR from "swr";
 import Loader from "../Shared/Loader";
 

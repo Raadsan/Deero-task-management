@@ -1,4 +1,6 @@
-import { apiRequest } from "../api-client";
+"use server";
+
+import api from "./axios";
 
 export interface ClientSchemaRecord {
   id: string;
@@ -32,8 +34,8 @@ export interface ClientSchemaRecord {
 
 export async function getAllSchemas(): Promise<{ success: boolean; data?: ClientSchemaRecord[]; errors?: { message: string } }> {
   try {
-    const res = await apiRequest("/api/contracts/schemas");
-    return res;
+    const response = await api.get("/api/contracts/schemas");
+    return response.data;
   } catch (err: any) {
     return { success: false, errors: { message: err.message || "Failed to fetch schemas" } };
   }
@@ -52,11 +54,8 @@ export async function createOrUpdateSchema(payload: {
   notes?: string;
 }): Promise<{ success: boolean; data?: ClientSchemaRecord; errors?: { message: string } }> {
   try {
-    const res = await apiRequest("/api/contracts/schemas", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
-    return res;
+    const response = await api.post("/api/contracts/schemas", payload);
+    return response.data;
   } catch (err: any) {
     return { success: false, errors: { message: err.message || "Failed to save schema" } };
   }
@@ -64,10 +63,8 @@ export async function createOrUpdateSchema(payload: {
 
 export async function deleteSchema(id: string): Promise<{ success: boolean; message?: string; errors?: { message: string } }> {
   try {
-    const res = await apiRequest(`/api/contracts/schemas/${id}`, {
-      method: "DELETE",
-    });
-    return res;
+    const response = await api.delete(`/api/contracts/schemas/${id}`);
+    return response.data;
   } catch (err: any) {
     return { success: false, errors: { message: err.message || "Failed to delete schema" } };
   }

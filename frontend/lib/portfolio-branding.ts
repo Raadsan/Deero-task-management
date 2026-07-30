@@ -1,3 +1,4 @@
+import { resolveApiAssetUrl } from "@/lib/apis/config";
 import type { CSSProperties } from "react";
 
 export type BranchBranding = {
@@ -82,15 +83,7 @@ export function getBranchSlugFromPath(pathname: string) {
 }
 
 export function resolveBranchLogoUrl(logoUrl?: string | null) {
-  if (!logoUrl) return null;
-  if (logoUrl.startsWith("http://") || logoUrl.startsWith("https://")) {
-    return logoUrl;
-  }
-  if (logoUrl.startsWith("/uploads")) {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:7003";
-    return `${apiUrl}${logoUrl}`;
-  }
-  return logoUrl;
+  return logoUrl ? resolveApiAssetUrl(logoUrl) : null;
 }
 
 export function buildBranchThemeVariables(

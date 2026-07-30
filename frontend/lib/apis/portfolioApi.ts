@@ -1,10 +1,10 @@
 "use server";
 
-import api from "../api";
-import { ActionResponse, ErrorResponse } from "../types";
-import { handleError } from "../error/handle-error";
-import { BranchBranding } from "../portfolio-branding";
-import { getUserSession } from "./auth.action";
+import api from "@/lib/apis/axios";
+import { ActionResponse, ErrorResponse } from "@/lib/types";
+import { handleError } from "@/lib/error/handle-error";
+import { BranchBranding } from "@/lib/portfolio-branding";
+import { getUserSession } from "./authApi";
 import { cache } from "react";
 
 export type BranchRecord = BranchBranding & {

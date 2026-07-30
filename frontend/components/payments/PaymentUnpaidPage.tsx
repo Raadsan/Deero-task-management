@@ -4,7 +4,7 @@ import ClientInstallmentsTable, {
   InstallmentSummaryCards,
 } from "@/components/payments/ClientInstallmentsTable";
 import PageDatePicker from "@/components/Shared/PageDatePicker";
-import { getInstallments } from "@/lib/actions/billing.action";
+import { getInstallments } from "@/lib/apis/billingApi";
 import { cn } from "@/lib/utils";
 import { Suspense, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";

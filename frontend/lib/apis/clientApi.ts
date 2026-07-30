@@ -1,16 +1,16 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { ROUTES } from "../constants";
-import { handleError } from "../error/handle-error";
-import api from "../api";
+import { ROUTES } from "@/lib/constants";
+import { handleError } from "@/lib/error/handle-error";
+import api from "@/lib/apis/axios";
 import {
   ActionResponse,
   AllClients,
   Client,
   ErrorResponse,
-} from "../types";
-import { formatDate, formatPhoneNumber, normalizeClientPhone } from "../utils";
+} from "@/lib/types";
+import { formatDate, formatPhoneNumber, normalizeClientPhone } from "@/lib/utils";
 
 function resolveAgreementService(client: any, agreement: any) {
   return (

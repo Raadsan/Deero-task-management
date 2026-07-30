@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { getTaskById } from "@/lib/actions/task.action";
+import { getTaskById } from "@/lib/apis/taskApi";
 import TaskForm from "./TaskForm";
 import useSWR from "swr";
 

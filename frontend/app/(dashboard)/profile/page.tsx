@@ -6,9 +6,9 @@ import {
   saveUserFiles,
   deleteUserFileById,
   updateUserData,
-} from "@/lib/actions/user.action";
+} from "@/lib/apis/userApi";
 import ConfirmDialog from "@/components/Shared/ConfirmDialog";
-import { getTaskFormBranchOptions } from "@/lib/actions/shared.action";
+import { getTaskFormBranchOptions } from "@/lib/apis/sharedApi";
 import { USER_DOCUMENT_TYPES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import {

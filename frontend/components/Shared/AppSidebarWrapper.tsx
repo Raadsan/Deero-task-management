@@ -1,5 +1,5 @@
-import { getUserSession } from "@/lib/actions/auth.action";
-import { resolveSessionBranding } from "@/lib/actions/portfolio.action";
+import { getUserSession } from "@/lib/apis/authApi";
+import { resolveSessionBranding } from "@/lib/apis/portfolioApi";
 import { BranchBranding } from "@/lib/portfolio-branding";
 import { AuthSession } from "@/lib/types";
 import { AppSidebar } from "./AppSidebar";

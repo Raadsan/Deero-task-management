@@ -1,4 +1,4 @@
-import { getUserById } from "@/lib/actions/user.action";
+import { getUserById } from "@/lib/apis/userApi";
 import SalaryDetailsAndForm from "./SalaryDetailsAndForm";
 
 interface Props {

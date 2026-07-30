@@ -2,6 +2,7 @@
 
 import DeleteAction from "@/components/Shared/DeleteAction";
 import MyTaskQuickEditModal from "@/components/tasks/MyTaskQuickEditModal";
+import PersonalTaskEditModal from "@/components/tasks/PersonalTaskEditModal";
 import TaskViewModal from "@/components/tasks/TaskViewModal";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,7 +35,7 @@ import {
 import { Task } from "@/lib/types";
 import { authClient } from "@/lib/auth-client";
 import { cn, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
-import { ArrowRightLeft, Edit, Eye, Lock, Trash2 } from "lucide-react";
+import { ArrowRightLeft, Edit, Eye, Gauge, Lock, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 type Props = {
@@ -49,6 +50,7 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
   const [pageSize] = useState(10);
   const [viewOpen, setViewOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [progressOpen, setProgressOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   const totalPages = Math.ceil(tasks.length / pageSize) || 1;
@@ -169,37 +171,41 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
                               }}
                             >
                               <Eye className="size-4" />
+                            </Button>                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className={actionBtnEdit}
+                              title="Edit task details"
+                              onClick={() => {
+                                setSelectedTask(task);
+                                setEditOpen(true);
+                              }}
+                            >
+                              <Edit className="size-4" />
                             </Button>
-                             <Button
+                            <Button
                               type="button"
                               variant="ghost"
                               size="sm"
                               className={cn(
                                 actionBtnEdit,
                                 (displayStatus === "overdue" || displayStatus === "transferred") && "border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700",
-                                displayStatus === "transferred" && "opacity-40 backdrop-blur-sm pointer-events-none select-none cursor-not-allowed"
                               )}
                               title={
                                 displayStatus === "transferred"
-                                  ? "Task transferred to another user — progress action disabled"
+                                  ? "Task transferred — progress disabled"
                                   : displayStatus === "overdue"
-                                  ? "Task overdue — progress locked until extra time added"
-                                  : "Edit progress"
+                                    ? "Progress locked — edit the task and add extra time"
+                                    : "Update progress"
                               }
+                              disabled={displayStatus === "overdue" || displayStatus === "transferred"}
                               onClick={() => {
-                                if (displayStatus === "transferred") return;
                                 setSelectedTask(task);
-                                setEditOpen(true);
+                                setProgressOpen(true);
                               }}
-                              disabled={displayStatus === "transferred"}
                             >
-                              {displayStatus === "transferred" ? (
-                                <ArrowRightLeft className="size-4 text-indigo-500 animate-pulse" />
-                              ) : displayStatus === "overdue" ? (
-                                <Lock className="size-4 text-red-500" />
-                              ) : (
-                                <Edit className="size-4" />
-                              )}
+                              {displayStatus === "transferred" ? <ArrowRightLeft className="size-4" /> : displayStatus === "overdue" ? <Lock className="size-4" /> : <Gauge className="size-4" />}
                             </Button>
                             {task.id ? (
                               <DeleteAction
@@ -253,7 +259,8 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
         </div>
 
       <TaskViewModal open={viewOpen} onOpenChange={setViewOpen} task={selectedTask} />
-      <MyTaskQuickEditModal open={editOpen} onOpenChange={setEditOpen} task={selectedTask} />
+      <PersonalTaskEditModal open={editOpen} onOpenChange={setEditOpen} task={selectedTask} />
+      <MyTaskQuickEditModal open={progressOpen} onOpenChange={setProgressOpen} task={selectedTask} />
     </>
   );
 }

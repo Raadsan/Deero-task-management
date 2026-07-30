@@ -29,7 +29,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getTaskFormBranchOptions } from "@/lib/actions/shared.action";
+import { getTaskFormBranchOptions } from "@/lib/apis/sharedApi";
 import {
   createDepartment,
   deleteDepartment,
@@ -37,7 +37,7 @@ import {
   getAllDepartments,
   getDepartmentById,
   updateDepartment,
-} from "@/lib/actions/department.action";
+} from "@/lib/apis/departmentApi";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {
   actionBtnDelete,

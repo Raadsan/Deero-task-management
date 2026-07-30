@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { editTask } from "@/lib/actions/task.action";
+import { editTask } from "@/lib/apis/taskApi";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {
   configCompactInputClass,

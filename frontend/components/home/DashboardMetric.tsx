@@ -1,6 +1,6 @@
 "use client";
 
-import { getDashboardMetricData } from "@/lib/actions/task.action";
+import { getDashboardMetricData } from "@/lib/apis/taskApi";
 import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import { SummarySkeltonLoader } from "../Shared/Loader";

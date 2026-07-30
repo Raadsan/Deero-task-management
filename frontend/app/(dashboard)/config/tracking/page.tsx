@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { AuditLogRecord, getAuditLogs } from "@/lib/actions/config.action";
+import { AuditLogRecord, getAuditLogs } from "@/lib/apis/configApi";
 import { authClient } from "@/lib/auth-client";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {

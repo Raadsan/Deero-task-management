@@ -2,7 +2,7 @@ import PayDept from "@/components/payments/PayDept";
 import ManagementPageShell from "@/components/Shared/ManagementPageShell";
 import { ClientFormSkeleton } from "@/components/Shared/Loader";
 import PageBreadcrumb from "@/components/Shared/PageBreadcrumb";
-import { getIncomeTransactonDetails } from "@/lib/actions/payment.action";
+import { getIncomeTransactonDetails } from "@/lib/apis/paymentApi";
 import { ROUTES } from "@/lib/constants";
 import { PageParams } from "@/lib/types";
 import Link from "next/link";
