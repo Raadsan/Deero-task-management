@@ -1,6 +1,6 @@
 "use client";
 
-import { createUser, updateUserData } from "@/lib/apis/userApi";
+import { createUser, getAllUsers, updateUserData } from "@/lib/apis/userApi";
 import { getConfigRoles } from "@/lib/apis/configApi";
 import { getTaskFormBranchOptions } from "@/lib/apis/sharedApi";
 import { authClient } from "@/lib/auth-client";
@@ -52,6 +52,9 @@ export default function UserForm({
   } = useForm<z.infer<typeof EditCreateUserSchema>>({
     defaultValues: {
       name: data?.name ?? "",
+      staffCode: data?.staffCode ?? "",
+      jobTitle: data?.jobTitle ?? "",
+      employmentType: data?.employmentType ?? "FULL_TIME",
       email: data?.email ?? "",
       role: data?.role ?? "",
       password: "",
@@ -72,6 +75,7 @@ export default function UserForm({
     "";
 
   const [selectedBranchId, setSelectedBranchId] = useState(defaultBranchId);
+  const [staffCodeManuallyEdited, setStaffCodeManuallyEdited] = useState(false);
 
   const { data: rolesRes, isLoading: rolesLoading } = useSWR(
     SWR_CACH_KEYS.configRoles.key,
@@ -84,10 +88,16 @@ export default function UserForm({
     getTaskFormBranchOptions,
   );
   const scopedBranches = branchOptionsRes?.data?.portfolios ?? [];
+  const { data: allStaffRes } = useSWR(
+    formType === "create" ? SWR_CACH_KEYS.users.key : null,
+    getAllUsers,
+  );
   const singleBranch = branchOptionsRes?.data?.singleBranch ?? false;
   const branchOptions = scopedBranches.map((portfolio) => portfolio.name);
 
   const portfolioIdValue = watch("portfolioId");
+  const staffCodeValue = watch("staffCode");
+  const employmentTypeValue = watch("employmentType");
   const roleValue = watch("role");
   const isSuperadmin = isSuperadminRole(roleValue);
 
@@ -164,6 +174,26 @@ export default function UserForm({
     setValue,
   ]);
 
+  useEffect(() => {
+    if (formType !== "create" || staffCodeManuallyEdited) return;
+    const branchName =
+      scopedBranches.find((portfolio) => portfolio.id === portfolioIdValue)?.name ??
+      "Deero Advert";
+    const prefix = /raadsan/i.test(branchName) ? "RT" : "DAA";
+    const year = String(new Date().getFullYear()).slice(-2);
+    const stem = `${prefix}${year}#`;
+    const max = ((allStaffRes?.data ?? []) as Array<{ staffCode?: string | null }>).reduce(
+      (value, staff) => {
+        if (!String(staff.staffCode ?? "").startsWith(prefix)) return value;
+        const sequence = Number(String(staff.staffCode).split("#").pop());
+        return Number.isFinite(sequence) ? Math.max(value, sequence) : value;
+      },
+      0,
+    );
+    setValue("staffCode", `${stem}${String(max + 1).padStart(2, "0")}`, {
+      shouldValidate: true,
+    });
+  }, [formType, staffCodeManuallyEdited, portfolioIdValue, scopedBranches, allStaffRes?.data, setValue]);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
   const { mutate } = useSWRConfig();
@@ -189,6 +219,9 @@ export default function UserForm({
         const roleId = resolveConfigRoleId(configRoles, formData.role);
         const result = await createUser({
           name: formData.name,
+          staffCode: formData.staffCode,
+          jobTitle: formData.jobTitle?.trim() || undefined,
+          employmentType: formData.employmentType,
           email: formData.email,
           password: formData.password,
           role: formData.role,
@@ -230,6 +263,9 @@ export default function UserForm({
         const updateResult = await updateUserData({
           id: data?.id as string,
           name: formData.name,
+          staffCode: formData.staffCode,
+          jobTitle: formData.jobTitle?.trim() || undefined,
+          employmentType: formData.employmentType,
           email: formData.email,
           role: formData.role,
           roleId,
@@ -295,6 +331,22 @@ export default function UserForm({
           isModal ? "min-h-0 flex-1 gap-4 overflow-y-auto px-6 pt-5" : "gap-6",
         )}
       >
+        <TextInput
+          labelId="staffCode"
+          labelText="Staff ID"
+          type="text"
+          placeholder="DAA26#01"
+          disbaled={pending}
+          otherProps={{
+            ...register("staffCode"),
+            onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
+              setStaffCodeManuallyEdited(true);
+              setValue("staffCode", event.target.value, { shouldValidate: true });
+            },
+          }}
+          errorMessage={errors.staffCode?.message}
+          compact={fieldCompact}
+        />
         {canViewSalary ? <TextInput
           labelId="name"
           labelText="Name"
@@ -304,7 +356,34 @@ export default function UserForm({
           otherProps={{ ...register("name") }}
           errorMessage={errors.name?.message}
           compact={fieldCompact}
-        /> : null}
+/> : null}
+        <TextInput
+          labelId="jobTitle"
+          labelText="Job Title"
+          type="text"
+          placeholder="Enter job title"
+          disbaled={pending}
+          otherProps={{ ...register("jobTitle") }}
+          errorMessage={errors.jobTitle?.message}
+          compact={fieldCompact}
+        />
+        <SelectElement
+          disbaleSelect={pending}
+          labelText="Type"
+          placeholder="Select employment type"
+          wrapperStyle="max-w-full"
+          value={employmentTypeValue}
+          options={[
+            { value: "FULL_TIME", label: "Full-Time" },
+            { value: "PART_TIME", label: "Part-Time" },
+          ]}
+          compact={fieldCompact}
+          onChange={(value) => {
+            setValue("employmentType", value as "FULL_TIME" | "PART_TIME", {
+              shouldValidate: true,
+            });
+          }}
+        />
         <TextInput
           labelId="email"
           labelText="Email"

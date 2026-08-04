@@ -48,6 +48,11 @@ export interface User {
   gender?: string | null;
   salary?: string | null;
   department?: string | null;
+  staffCode?: string | null;
+  jobTitle?: string | null;
+  employmentType?: "FULL_TIME" | "PART_TIME" | null;
+  portfolioId?: string | null;
+  portfolio?: { id: string; name: string } | null;
   banned?: boolean | null;
   banReason?: string | null;
   banExpires?: Date | string | null;

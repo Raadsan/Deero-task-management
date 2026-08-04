@@ -94,7 +94,15 @@ export async function getAllClientsClient(): Promise<ActionResponse<AllClients[]
       clientType: client.clientType ?? "ONE_TIME",
       isDraft: client.isDraft === true,
       createdAt: formatDate(client.createdAt),
-      phone: formatPhoneNumber(client.phone, "addCountryKey"),
+      email: (() => {
+        const email = String(client.email ?? "").trim();
+        return !email || email.includes("@deero.internal") || /^client-\d+@deero\.so$/i.test(email)
+          ? ""
+          : email;
+      })(),
+      phone: String(client.phone ?? "").startsWith("NO_PHONE_")
+        ? ""
+        : formatPhoneNumber(client.phone, "addCountryKey"),
       serviceAgreements: (client.serviceAgreements ?? []).map((agreement: any) => {
         const service = agreement.service ??
           client.clientService?.find((item: any) => item.serviceId === agreement.serviceId)?.service;
@@ -108,6 +116,11 @@ export async function getAllClientsClient(): Promise<ActionResponse<AllClients[]
           base: agreement.base,
           description: agreement.description,
           discount: agreement.discount,
+          finalAmount:
+            Number(agreement.finalAmount) > 0
+              ? Number(agreement.finalAmount)
+              : Number(agreement.base ?? 0) * (1 - Number(agreement.discount ?? 0)),
+          vatAmount: Number(agreement.packageSnapshot?.vatAmount ?? 0),
           createdAt: formatDate(agreement.createdAt ?? ""),
           rawCreatedAt: agreement.createdAt,
         };

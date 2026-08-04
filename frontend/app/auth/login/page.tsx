@@ -21,6 +21,8 @@ import { DefaultValues, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import z from "zod";
 
+const LOGIN_LOGO_SRC = "/logo-02.png";
+
 export default function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -66,11 +68,11 @@ export default function LoginPage() {
         <div className="mb-6 flex flex-col items-center text-center">
           <div className="mb-6 flex h-28 w-full items-center justify-center overflow-hidden sm:h-32">
             <Image
-              src="/logo-02.png"
-              width={320}
-              height={100}
+              src={LOGIN_LOGO_SRC}
+              width={334}
+              height={128}
               alt="Deero logo"
-              className="h-24 w-auto max-w-none scale-[2.1] object-contain sm:h-28 "
+              className="h-auto max-h-28 w-auto max-w-full object-contain"
               priority
             />
           </div>

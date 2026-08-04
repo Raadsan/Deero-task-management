@@ -3,6 +3,8 @@ const STORAGE_KEY = "deero-client-create-draft";
 export type ClientCreateDraftState = {
   clientType: string;
   institution: string;
+  companyName?: string;
+  contactPerson?: string;
   phone: string;
   email: string;
   source: string;
@@ -13,6 +15,8 @@ export type ClientCreateDraftState = {
   customSubService: string;
   base: string;
   discount: string;
+  chargedAmount?: string;
+  vatPercentage?: string;
   serviceDescription: string;
   includeContract: boolean;
   contractStartDate: string;

@@ -12,6 +12,19 @@ import {
 } from "@/lib/types";
 import { formatDate, formatPhoneNumber, normalizeClientPhone } from "@/lib/utils";
 
+function visibleClientPhone(phone: unknown) {
+  const value = String(phone ?? "").trim();
+  return value.startsWith("NO_PHONE_") || value.startsWith("DRAFT") ? "" : value;
+}
+
+function visibleClientEmail(email: unknown) {
+  const value = String(email ?? "").trim();
+  if (!value || value.includes("@deero.internal") || /^client-\d+@deero\.so$/i.test(value)) {
+    return "";
+  }
+  return value;
+}
+
 function resolveAgreementService(client: any, agreement: any) {
   return (
     agreement.service ??
@@ -56,6 +69,12 @@ function mapServiceAgreements(client: any) {
         base: agreement.base,
         description: agreement.description,
         discount: agreement.discount,
+        finalAmount:
+          Number(agreement.finalAmount) > 0
+            ? Number(agreement.finalAmount)
+            : Number(agreement.base ?? 0) * (1 - Number(agreement.discount ?? 0)),
+        vatPercentage: agreement.packageSnapshot?.vatPercentage ?? 0,
+        vatAmount: agreement.packageSnapshot?.vatAmount ?? 0,
         createdAt: formatDate(agreement.createdAt ?? ""),
         rawCreatedAt: agreement.createdAt,
         features,
@@ -73,8 +92,8 @@ export async function getClientsForForm(): Promise<
       const clients = response.data.data.map((client: any) => ({
         id: client.id,
         institution: client.institution,
-        phone: client.phone,
-        email: client.email,
+        phone: visibleClientPhone(client.phone),
+        email: visibleClientEmail(client.email),
       }));
       return { success: true, data: clients };
     }
@@ -106,6 +125,8 @@ export async function createClient(data: {
   description?: string;
   discount?: number;
   discountType?: "PERCENTAGE" | "FIXED";
+  finalAmount?: number;
+  vatPercentage?: number;
   contractFeatures?: Array<{ name: string; quantity: number; frequency: string; description: string }>;
   createdAt?: Date;
   serviceStatus?: "pending" | "completed";
@@ -159,7 +180,10 @@ export async function getAllClients(): Promise<ActionResponse<AllClients[]>> {
         clientType: client.clientType ?? "ONE_TIME",
         isDraft: client.isDraft === true,
         createdAt: formatDate(client.createdAt),
-        phone: formatPhoneNumber(client.phone, "addCountryKey"),
+        email: visibleClientEmail(client.email),
+        phone: visibleClientPhone(client.phone)
+          ? formatPhoneNumber(client.phone, "addCountryKey")
+          : "",
         serviceAgreements: mapServiceAgreements(client),
         service: {
           service: client.clientService?.map((each: any) => each.service) || [],
@@ -187,7 +211,10 @@ export async function getClientById(id: string): Promise<ActionResponse<Client>>
       const client = result.data;
       const transformed = {
         ...client,
-        phone: normalizeClientPhone(client.phone ?? ""),
+        phone: visibleClientPhone(client.phone)
+          ? normalizeClientPhone(client.phone)
+          : "",
+        email: visibleClientEmail(client.email),
         discount: client.serviceAgreements?.[0]?.discount ?? 0,
         service:
           client.clientService?.map((each: any) => ({
@@ -288,6 +315,8 @@ export async function addAnotherService(params: {
   description?: string;
   discount?: number;
   discountType?: "PERCENTAGE" | "FIXED";
+  finalAmount?: number;
+  vatPercentage?: number;
   contractFeatures?: Array<{ name: string; quantity: number; frequency: string; description: string }>;
   portfolioId?: string;
   createdAt?: Date;
@@ -301,6 +330,8 @@ export async function addAnotherService(params: {
       base: rest.base,
       description: rest.description,
       discount: rest.discount,
+      finalAmount: rest.finalAmount,
+      vatPercentage: rest.vatPercentage,
       discountType: rest.discountType,
       contractFeatures: rest.contractFeatures,
       portfolioId: rest.portfolioId,
@@ -343,6 +374,9 @@ export async function editClientService(params: {
   base: number;
   description?: string;
   discount?: number;
+  finalAmount?: number;
+  vatPercentage?: number;
+  contractFeatures?: Array<{ name: string; quantity: number; frequency: string; description: string }>;
   serviceStatus?: "pending" | "completed";
   createdAt?: Date;
 }): Promise<ActionResponse> {

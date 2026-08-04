@@ -51,6 +51,14 @@ const compactSelectClass =
 const compactInputClass =
   "h-9 w-full rounded-md border border-zinc-200 bg-zinc-50 pl-9 pr-3 text-sm text-zinc-600 outline-none focus:border-primary focus:ring-1 focus:ring-primary/10";
 
+function formatClientId(id: unknown) {
+  const rawId = String(id ?? "");
+  if (/^SUB-\d+$/i.test(rawId)) return rawId.toUpperCase();
+  const sequence = rawId.match(/(\d{5})$/)?.[1];
+  if (!sequence) return rawId || "N/A";
+  return `SUB-${String(Number(sequence)).padStart(3, "0")}`;
+}
+
 type ClientAgreementStatus = {
   agreementId: string;
   serviceName: string;
@@ -58,6 +66,9 @@ type ClientAgreementStatus = {
   serviceStatus: "pending" | "completed";
   portfolioId?: string | null;
   branchName?: string;
+  base?: number;
+  finalAmount?: number;
+  vatAmount?: number;
 };
 
 function filterAgreements(
@@ -396,33 +407,21 @@ export default function ClientsManagementPage() {
             <Table className="w-full">
               <TableHeader className={dashboardTableHeaderClass}>
                 <TableRow className={dashboardTableHeadRowClass}>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    ID
-                  </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Client Name
-                  </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Service
-                  </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Sub Service
-                  </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Email
-                  </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Phone
-                  </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Created At
-                  </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Status
-                  </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-right")}>
-                    Actions
-                  </TableHead>
+                  {[
+                    "Client ID",
+                    "Contact Person",
+                    "Contact Number",
+                    "Company Name",
+                    "Email",
+                    "Services",
+                    "Sub-services",
+                    "Amount",
+                  ].map((heading) => (
+                    <TableHead key={heading} className={cn(dashboardTableHeadClass, "text-left")}>
+                      {heading}
+                    </TableHead>
+                  ))}
+                  <TableHead className={cn(dashboardTableHeadClass, "text-right")}>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -456,82 +455,37 @@ export default function ClientsManagementPage() {
                     );
 
                     const isDraft = Boolean((client as AllClients).isDraft);
-                    const displayEmail =
-                      client.email?.includes("@deero.internal") ? "—" : client.email;
-                    const displayPhone =
-                      client.phone?.startsWith("DRAFT") ? "—" : client.phone;
-
+                    const displayPhone = client.phone?.startsWith("DRAFT") ? "N/A" : client.phone || "N/A";
+                    const displayEmail = client.email || "N/A";
+                    const totalAmount = serviceAgreements.reduce(
+                      (sum, agreement) => sum + Number(agreement.finalAmount ?? agreement.base ?? 0) + Number(agreement.vatAmount ?? 0),
+                      0,
+                    );
                     return (
                       <TableRow key={client.id} className={dashboardTableBodyRowClass}>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTableIdClass}>
-                            {String(client.id).slice(0, 8)}
-                          </span>
+                          <span className={cn(dashboardTableIdClass, "whitespace-nowrap")}>{formatClientId(client.id)}</span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <div>
-                            <span className={dashboardTextPrimary}>
-                              {client.institution}
-                            </span>
-                            {(client as AllClients).clientType ? (
-                              <span className="mt-0.5 block text-[11px] font-medium uppercase tracking-wide text-zinc-400">
-                                {String((client as AllClients).clientType).replace(/_/g, " ")}
-                              </span>
-                            ) : null}
-                          </div>
-                        </TableCell>
-                        <TableCell className={dashboardTableCellClass}>
-                          <AgreementStack
-                            agreements={serviceAgreements}
-                            renderItem={(agreement) => (
-                              <span className={dashboardTextPrimary}>
-                                {agreement.serviceName || "—"}
-                              </span>
-                            )}
-                          />
-                        </TableCell>
-                        <TableCell className={dashboardTableCellClass}>
-                          <AgreementStack
-                            agreements={serviceAgreements}
-                            renderItem={(agreement) => (
-                              <span className={dashboardTextSecondary}>
-                                {agreement.subServiceName || "—"}
-                              </span>
-                            )}
-                          />
-                        </TableCell>
-                        <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextSecondary}>{displayEmail}</span>
+                          <span className={dashboardTextPrimary}>{(client as AllClients).contactPerson || "N/A"}</span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
                           <span className={dashboardTextSecondary}>{displayPhone}</span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextSecondary}>
-                            {client.createdAt ?? "—"}
-                          </span>
+                          <span className={dashboardTextPrimary}>{(client as AllClients).companyName || client.institution || "N/A"}</span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          {isDraft ? (
-                            <span
-                              className={cn(
-                                dashboardStatusBadgeClass,
-                                "bg-zinc-100 text-zinc-600",
-                              )}
-                            >
-                              Draft
-                            </span>
-                          ) : (
-                            <ClientServiceStatusCell
-                              agreements={serviceAgreements}
-                              updatingId={
-                                isUpdatingStatus ? updatingAgreementId : undefined
-                              }
-                              onMarkComplete={(agreement) =>
-                                openCompleteModal(client.institution, agreement)
-                              }
-                            />
-                          )}
+                          <span className={dashboardTextSecondary}>{displayEmail}</span>
+                        </TableCell>
+                        <TableCell className={dashboardTableCellClass}>
+                          <AgreementStack agreements={serviceAgreements} renderItem={(agreement) => <span className={dashboardTextPrimary}>{agreement.serviceName || "N/A"}</span>} />
+                        </TableCell>
+                        <TableCell className={dashboardTableCellClass}>
+                          <AgreementStack agreements={serviceAgreements} renderItem={(agreement) => <span className={dashboardTextSecondary}>{agreement.subServiceName || "N/A"}</span>} />
+                        </TableCell>
+                        <TableCell className={dashboardTableCellClass}>
+                          <span className={dashboardTextPrimary}>${totalAmount.toFixed(2)}</span>
                         </TableCell>
                         <TableCell
                           className={cn(dashboardTableCellClass, "text-right")}

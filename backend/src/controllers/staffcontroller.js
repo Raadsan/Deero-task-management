@@ -11,6 +11,42 @@ import {
 const staffListCache = new Map();
 const STAFF_LIST_CACHE_MS = 5 * 60 * 1000;
 
+function portfolioStaffPrefix(name) {
+  return /raadsan/i.test(String(name ?? "")) ? "RT" : "DAA";
+}
+
+function staffCodeYear(value = new Date()) {
+  return String(new Date(value).getFullYear()).slice(-2);
+}
+
+async function nextStaffCode(portfolioId, createdAt = new Date(), excludeId) {
+  const portfolio = portfolioId
+    ? await prisma.portfolio.findUnique({ where: { id: portfolioId }, select: { name: true } })
+    : null;
+  const stem = `${portfolioStaffPrefix(portfolio?.name)}${staffCodeYear(createdAt)}#`;
+  const existing = await prisma.staff.findMany({
+    where: {
+      staffCode: { startsWith: portfolioStaffPrefix(portfolio?.name) },
+      ...(excludeId ? { id: { not: excludeId } } : {}),
+    },
+    select: { staffCode: true },
+  });
+  const max = existing.reduce((value, row) => {
+    const sequence = Number(String(row.staffCode ?? "").split("#").pop());
+    return Number.isFinite(sequence) ? Math.max(value, sequence) : value;
+  }, 0);
+  return `${stem}${String(max + 1).padStart(2, "0")}`;
+}
+
+async function ensureStaffCodes(users) {
+  for (const user of [...users].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))) {
+    if (user.staffCode) continue;
+    const staffCode = await nextStaffCode(user.portfolioId, user.createdAt, user.id);
+    await prisma.staff.update({ where: { id: user.id }, data: { staffCode } });
+    user.staffCode = staffCode;
+  }
+  return users;
+}
 function clearStaffListCache() {
   staffListCache.clear();
 }
@@ -53,6 +89,7 @@ export const getAllStaff = async (req, res) => {
         },
       },
     });
+    await ensureStaffCodes(users);
     staffListCache.set(cacheKey, { createdAt: Date.now(), data: users });
     res.json({ success: true, data: hideSalary(users, canViewSalary) });
   } catch (error) {
@@ -87,7 +124,7 @@ export const getStaffById = async (req, res) => {
 };
 
 export const createStaff = async (req, res) => {
-  const { name, email, password, role, gender, salary, portfolioId, banned } = req.body;
+  const { name, email, password, role, gender, salary, portfolioId, banned, staffCode, jobTitle, employmentType } = req.body;
   try {
     if (salary !== undefined && salary !== null && salary !== "" && !/^\d+(\.\d{1,2})?$/.test(String(salary))) {
       return res.status(400).json({
@@ -125,6 +162,16 @@ export const createStaff = async (req, res) => {
       resolvedRoleId = dynamicRole?.id ?? null;
     }
 
+    const resolvedStaffCode = String(staffCode ?? "").trim() ||
+      await nextStaffCode(resolvedBranchId);
+    const duplicateCode = await prisma.staff.findFirst({
+      where: { staffCode: resolvedStaffCode },
+      select: { id: true },
+    });
+    if (duplicateCode) {
+      return res.status(400).json({ success: false, message: "Staff ID already exists" });
+    }
+
     const updatedUser = await prisma.staff.update({
       where: { id: result.user.id },
       data: {
@@ -146,7 +193,7 @@ export const createStaff = async (req, res) => {
 
 export const updateStaff = async (req, res) => {
   const { id } = req.params;
-  const { name, email, role, gender, salary, portfolioId, banned, roleId, image } =
+  const { name, email, role, gender, salary, portfolioId, banned, roleId, image, staffCode, jobTitle, employmentType } =
     req.body;
   try {
     if (
@@ -183,6 +230,15 @@ export const updateStaff = async (req, res) => {
       resolvedRoleId = dynamicRole?.id ?? null;
     }
 
+if (staffCode !== undefined && String(staffCode).trim()) {
+      const duplicateCode = await prisma.staff.findFirst({
+        where: { staffCode: String(staffCode).trim(), id: { not: id } },
+        select: { id: true },
+      });
+      if (duplicateCode) {
+        return res.status(400).json({ success: false, message: "Staff ID already exists" });
+      }
+    }
     const user = await prisma.staff.update({
       where: { id },
       data: {
@@ -193,6 +249,9 @@ export const updateStaff = async (req, res) => {
         salary: salary === undefined ? undefined : salary ? String(salary) : null,
         portfolioId: resolvedBranchId,
         ...(image !== undefined ? { image } : {}),
+        ...(staffCode !== undefined ? { staffCode: String(staffCode).trim() || null } : {}),
+        ...(jobTitle !== undefined ? { jobTitle: String(jobTitle).trim() || null } : {}),
+        ...(employmentType !== undefined ? { employmentType: employmentType === "PART_TIME" ? "PART_TIME" : "FULL_TIME" } : {}),
         ...(banned !== undefined ? { banned: !!banned } : {}),
         ...(role !== undefined ? { roleId: resolvedRoleId } : {}),
       },

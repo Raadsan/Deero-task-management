@@ -148,7 +148,10 @@ exports.Prisma.StaffScalarFieldEnum = {
   banned: 'banned',
   banReason: 'banReason',
   banExpires: 'banExpires',
-  portfolioId: 'portfolioId'
+  portfolioId: 'portfolioId',
+  staffCode: 'staffCode',
+  jobTitle: 'jobTitle',
+  employmentType: 'employmentType'
 };
 
 exports.Prisma.SessionScalarFieldEnum = {

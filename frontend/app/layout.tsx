@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
 import AppToaster from "@/components/Shared/AppToaster";
 import "./globals.css";
+
+// Keep a version in the URL because browsers cache favicons aggressively.
+const FAVICON_SRC = "/favicon-01.svg?v=20260804-2";
 const popins = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   variable: "--poppinsFont",
@@ -15,10 +18,12 @@ const interfont = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Deero Management System",
+  title: "Task Management",
   description: "Centralized management system for Deero Company",
   icons: {
-    icon: "/logo1.png",
+    icon: FAVICON_SRC,
+    shortcut: FAVICON_SRC,
+    apple: FAVICON_SRC,
   },
 };
 
@@ -29,6 +34,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full w-full" suppressHydrationWarning>
+      <head>
+        <link rel="icon" type="image/svg+xml" href={FAVICON_SRC} />
+        <link rel="shortcut icon" type="image/svg+xml" href={FAVICON_SRC} />
+      </head>
       <body
         suppressHydrationWarning
         className={` ${popins.className} ${interfont.className} h-full bg-[#F8F9FA] text-foreground antialiased`}

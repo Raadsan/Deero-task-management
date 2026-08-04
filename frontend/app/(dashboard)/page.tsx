@@ -758,21 +758,26 @@ function AdminDashboard({
     }).length;
   }, [filteredTasks, userId]);
 
-  const allStaff = useMemo(() => {
+  const staffAssignedInPeriod = useMemo(() => {
     const ids = new Set<string>();
-    allTasks.forEach((t: any) => {
-      const id = t.assignedTo?.id ?? t.assigneeId ?? t.assgineeId ?? t.userId;
+    filteredTasks.forEach((task: any) => {
+      const id =
+        task.assignedTo?.id ??
+        task.assigneeId ??
+        task.assgineeId ??
+        task.userId;
       if (id) ids.add(String(id));
     });
     return ids.size;
-  }, [allTasks]);
+  }, [filteredTasks]);
 
   const metricCards = [
     { label: "Total Tasks", value: filteredTasks.length, Icon: Briefcase, color: "primary" },
     { label: "My Tasks", value: myTasksCount, Icon: Users, color: "secondary" },
     { label: "In Progress", value: statusData[1]?.value ?? 0, Icon: Clock, color: "amber" },
+    { label: "Completed", value: statusData[0]?.value ?? 0, Icon: CheckCircle, color: "green" },
     { label: "Overdue Tasks", value: overdueTasks, Icon: AlertCircle, color: "red" },
-    { label: "Staffs", value: allStaff, Icon: Users, color: "green" },
+    { label: "Staffs", value: staffAssignedInPeriod, Icon: Users, color: "green" },
   ];
 
   const metricCardStyle = (color: string) => {
@@ -784,7 +789,7 @@ function AdminDashboard({
   };
 
   if (isLoading) {
-    return <div className="space-y-8 animate-pulse"><div className="h-20 rounded-xl bg-muted/20" /><div className="grid grid-cols-1 gap-6 md:grid-cols-4">{[1,2,3,4].map((i) => <div key={i} className="h-28 rounded-xl bg-muted/20" />)}</div></div>;
+    return <div className="space-y-8 animate-pulse"><div className="h-20 rounded-xl bg-muted/20" /><div className="grid grid-cols-1 gap-6 md:grid-cols-3 xl:grid-cols-6">{[1,2,3,4,5,6].map((i) => <div key={i} className="h-28 rounded-xl bg-muted/20" />)}</div></div>;
   }
 
   return (
@@ -837,7 +842,7 @@ function AdminDashboard({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {metricCards.map(({ label, value, Icon, color }) => (
           <div key={label} className="trezo-card flex min-h-[100px] items-center justify-between p-5">
             <div>

@@ -11,6 +11,7 @@ import {
   addAnotherService,
   createClient,
   editBasicClientInfo,
+  editClientService,
   getClientById,
   getClientsForForm,
   getCustomSubServices,
@@ -32,7 +33,7 @@ import {
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import { btnFormCancel, btnFormSubmit } from "@/lib/dashboard-ui";
 import { cn } from "@/lib/utils";
-import { Check, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, GripVertical, Search, X } from "lucide-react";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import toast from "react-hot-toast";
 import useSWR, { useSWRConfig } from "swr";
@@ -87,6 +88,8 @@ export default function ClientCreateWizard({
 
   const [clientType, setClientType] = useState<ClientType>("ONE_TIME");
   const [institution, setInstitution] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [contactPerson, setContactPerson] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [source, setSource] = useState("");
@@ -98,6 +101,8 @@ export default function ClientCreateWizard({
   const [customSubService, setCustomSubService] = useState("");
   const [base, setBase] = useState("0");
   const [discount, setDiscount] = useState("0");
+  const [chargedAmount, setChargedAmount] = useState("0");
+  const [vatPercentage, setVatPercentage] = useState("0");
   const [serviceDescription, setServiceDescription] = useState("");
   const [contractFeatures, setContractFeatures] = useState<Array<{
     name: string; quantity: number; frequency: string; description: string;
@@ -185,7 +190,14 @@ export default function ClientCreateWizard({
       (item) => item.name === subServiceName,
     );
     if (!selectedPackage) return;
+    const existingAgreement = initialClient?.serviceAgreements?.[0];
+    const isLoadedEditPackage =
+      Boolean(editClientId) &&
+      existingAgreement?.serviceName === serviceName &&
+      existingAgreement?.subServiceName === subServiceName;
+    if (isLoadedEditPackage) return;
     setBase(String(selectedPackage.price ?? 0));
+    setChargedAmount(String(selectedPackage.price ?? 0));
     setContractFeatures((selectedPackage.features ?? []).map((feature) => ({
       name: feature, quantity: 1, frequency: "", description: "",
     })));
@@ -217,6 +229,8 @@ export default function ClientCreateWizard({
     setStep(1);
     setClientType((c.clientType as ClientType) ?? "ONE_TIME");
     setInstitution(String(c.institution ?? ""));
+    setCompanyName(String(c.companyName ?? c.institution ?? ""));
+    setContactPerson(String(c.contactPerson ?? ""));
     setPhone(String(c.phone ?? ""));
     setEmail(String(c.email ?? ""));
     setSource(String(c.source ?? ""));
@@ -233,7 +247,10 @@ export default function ClientCreateWizard({
       if (sAgreements[0].serviceName) setServiceName(sAgreements[0].serviceName);
       if (sAgreements[0].subServiceName) setSubServiceName(sAgreements[0].subServiceName);
       if (sAgreements[0].base != null) setBase(String(sAgreements[0].base));
-      if (sAgreements[0].discount != null) setDiscount(String(sAgreements[0].discount));
+      if (sAgreements[0].discount != null) setDiscount(String(Number(sAgreements[0].discount) * 100));
+      setChargedAmount(String(sAgreements[0].finalAmount ?? sAgreements[0].base ?? 0));
+      setVatPercentage(String(sAgreements[0].vatPercentage ?? 0));
+      if (Array.isArray(sAgreements[0].features)) setContractFeatures(sAgreements[0].features);
       if (sAgreements[0].description) setServiceDescription(sAgreements[0].description);
     }
   }, [editClientId, initialClient]);
@@ -243,6 +260,8 @@ export default function ClientCreateWizard({
     const c = draftClientRes.data as unknown as Record<string, unknown>;
     setClientType((c.clientType as ClientType) ?? "ONE_TIME");
     setInstitution(String(c.institution ?? ""));
+    setCompanyName(String(c.companyName ?? c.institution ?? ""));
+    setContactPerson(String(c.contactPerson ?? ""));
     const rawPhone = String(c.phone ?? "");
     setPhone(rawPhone.startsWith("DRAFT") ? "" : rawPhone);
     const rawEmail = String(c.email ?? "");
@@ -270,6 +289,8 @@ export default function ClientCreateWizard({
     }
     setClientType((saved.clientType as ClientType) ?? "ONE_TIME");
     setInstitution(saved.institution ?? "");
+    setCompanyName(saved.companyName ?? saved.institution ?? "");
+    setContactPerson(saved.contactPerson ?? "");
     setPhone(saved.phone ?? "");
     setEmail(saved.email ?? "");
     setSource(saved.source ?? "");
@@ -280,6 +301,8 @@ export default function ClientCreateWizard({
     setCustomSubService(saved.customSubService ?? "");
     setBase(saved.base ?? "0");
     setDiscount(saved.discount ?? "0");
+    setChargedAmount(saved.chargedAmount ?? saved.base ?? "0");
+    setVatPercentage(saved.vatPercentage ?? "0");
     setServiceDescription(saved.serviceDescription ?? "");
     setIncludeContract(saved.includeContract ?? false);
     setContractStartDate(saved.contractStartDate ?? "");
@@ -305,6 +328,8 @@ export default function ClientCreateWizard({
     writeClientCreateDraft({
       clientType,
       institution,
+      companyName,
+      contactPerson,
       phone,
       email,
       source,
@@ -315,6 +340,8 @@ export default function ClientCreateWizard({
       customSubService,
       base,
       discount,
+      chargedAmount,
+      vatPercentage,
       serviceDescription,
       includeContract,
       contractStartDate,
@@ -364,20 +391,12 @@ export default function ClientCreateWizard({
       return false;
     }
     if (step === 2) {
+      if (!companyName.trim()) {
+        toast.error("Company name is required");
+        return false;
+      }
       if (!institution.trim()) {
         toast.error("Client name is required");
-        return false;
-      }
-      if (!phone.trim() || phone.length < 9) {
-        toast.error("Valid phone is required");
-        return false;
-      }
-      if (!source.trim()) {
-        toast.error("Source is required");
-        return false;
-      }
-      if (!portfolioId) {
-        toast.error("Select a portfolio");
         return false;
       }
     }
@@ -428,6 +447,8 @@ export default function ClientCreateWizard({
         base: parseFloat(base) || 0,
         description: serviceDescription,
         discount: (parseFloat(discount) || 0) / 100,
+        finalAmount: parseFloat(chargedAmount) || 0,
+        vatPercentage: parseFloat(vatPercentage) || 0,
         contractFeatures,
         portfolioId,
         serviceStatus: "pending",
@@ -459,7 +480,9 @@ export default function ClientCreateWizard({
 
   function buildPayload(isDraft: boolean): Parameters<typeof createClient>[0] {
     const payload: Parameters<typeof createClient>[0] = {
-      institution: institution.trim() || (isDraft ? "Draft client" : ""),
+      institution: institution.trim() || companyName.trim() || (isDraft ? "Draft client" : ""),
+      companyName: companyName.trim() || institution.trim() || undefined,
+      contactPerson: contactPerson.trim() || undefined,
       phone: phone.trim() || undefined,
       email: email.trim() || undefined,
       source: source.trim() || (isDraft ? "Draft" : ""),
@@ -481,6 +504,8 @@ export default function ClientCreateWizard({
       payload.subServiceName = sub;
       payload.base = parseFloat(base) || 0;
       payload.discount = (parseFloat(discount) || 0) / 100;
+      payload.finalAmount = parseFloat(chargedAmount) || 0;
+      payload.vatPercentage = parseFloat(vatPercentage) || 0;
       payload.contractFeatures = contractFeatures;
       payload.description = serviceDescription;
     }
@@ -509,6 +534,8 @@ export default function ClientCreateWizard({
         base: parseFloat(base) || 0,
         description: serviceDescription,
         discount: (parseFloat(discount) || 0) / 100,
+        finalAmount: parseFloat(chargedAmount) || 0,
+        vatPercentage: parseFloat(vatPercentage) || 0,
         contractFeatures,
         portfolioId,
         serviceStatus: "pending",
@@ -526,6 +553,8 @@ export default function ClientCreateWizard({
           clientId: draftClientId,
           newData: {
             institution: payload.institution,
+            companyName: payload.companyName,
+            contactPerson: payload.contactPerson,
             phone: payload.phone,
             email: payload.email,
             source: payload.source,
@@ -585,11 +614,61 @@ export default function ClientCreateWizard({
     startTransition(async () => {
       const payload = buildPayload(false);
 
+      if (editClientId) {
+        const basicResult = await editBasicClientInfo({
+          clientId: editClientId,
+          newData: {
+            institution: payload.institution,
+            companyName: payload.companyName,
+            contactPerson: payload.contactPerson,
+            phone: payload.phone,
+            email: payload.email,
+            source: payload.source,
+            clientType: payload.clientType,
+            portfolioId: payload.portfolioId,
+            contractStartDate: payload.contractStartDate,
+            contractEndDate: payload.contractEndDate,
+            monthlyBudget: payload.monthlyBudget,
+          },
+        });
+        if (!basicResult.success) {
+          toast.error(basicResult.errors?.message ?? "Failed to update client");
+          return;
+        }
+        const agreementId = initialClient?.serviceAgreements?.[0]?.agreementId;
+        if (includeService && agreementId) {
+          const sub = serviceName === CUSTOM_SERVICE ? customSubService : subServiceName;
+          const agreementResult = await editClientService({
+            agreementId,
+            clientId: editClientId,
+            serviceName,
+            subServiceName: sub,
+            portfolioId,
+            base: parseFloat(base) || 0,
+            description: serviceDescription,
+            discount: (parseFloat(discount) || 0) / 100,
+            finalAmount: parseFloat(chargedAmount) || 0,
+            vatPercentage: parseFloat(vatPercentage) || 0,
+            contractFeatures,
+          });
+          if (!agreementResult.success) {
+            toast.error(agreementResult.errors?.message ?? "Client saved, but agreement update failed");
+            return;
+          }
+        }
+        toast.success("Client updated successfully");
+        await mutate(SWR_CACH_KEYS.clients.key);
+        onSuccess?.();
+        return;
+      }
+
       if (draftClientId) {
         const result = await editBasicClientInfo({
           clientId: draftClientId,
           newData: {
             institution: payload.institution,
+            companyName: payload.companyName,
+            contactPerson: payload.contactPerson,
             phone: payload.phone,
             email: payload.email,
             source: payload.source,
@@ -722,17 +801,29 @@ export default function ClientCreateWizard({
               Fill in the basics now. Address, contract, and schedule can be added later when you edit the client.
             </p>
             <div className="grid gap-4 sm:grid-cols-2">
-            <div className="sm:col-span-2">
-              <FieldLabel>Client name *</FieldLabel>
+            <div>
+              <FieldLabel>Company name *</FieldLabel>
               <input
                 className={configCompactInputClass}
-                value={institution ?? ""}
-                onChange={(e) => setInstitution(e.target.value)}
-                placeholder="Client / institution name"
+                value={companyName ?? ""}
+                onChange={(e) => {
+                  setCompanyName(e.target.value);
+                  setInstitution(e.target.value);
+                }}
+                placeholder="Company name"
               />
             </div>
             <div>
-              <FieldLabel>Phone *</FieldLabel>
+              <FieldLabel>Contact person</FieldLabel>
+              <input
+                className={configCompactInputClass}
+                value={contactPerson ?? ""}
+                onChange={(e) => setContactPerson(e.target.value)}
+                placeholder="Contact person name"
+              />
+            </div>
+            <div>
+              <FieldLabel>Phone</FieldLabel>
               <input
                 className={configCompactInputClass}
                 value={phone ?? ""}
@@ -750,7 +841,7 @@ export default function ClientCreateWizard({
               />
             </div>
             <div>
-              <FieldLabel>Source *</FieldLabel>
+              <FieldLabel>Source</FieldLabel>
               <select
                 className={configCompactSelectClass}
                 value={source ?? ""}
@@ -765,7 +856,7 @@ export default function ClientCreateWizard({
               </select>
             </div>
             <div>
-              <FieldLabel>Portfolio *</FieldLabel>
+              <FieldLabel>Portfolio</FieldLabel>
               <select
                 className={configCompactSelectClass}
                 value={portfolioId ?? ""}
@@ -815,6 +906,10 @@ export default function ClientCreateWizard({
               setBase={setBase}
               discount={discount}
               setDiscount={setDiscount}
+              chargedAmount={chargedAmount}
+              setChargedAmount={setChargedAmount}
+              vatPercentage={vatPercentage}
+              setVatPercentage={setVatPercentage}
               serviceDescription={serviceDescription}
               setServiceDescription={setServiceDescription}
               branchServices={availableServices}
@@ -982,7 +1077,7 @@ export default function ClientCreateWizard({
               </button>
             </div>
             <div>
-              <FieldLabel>Portfolio *</FieldLabel>
+              <FieldLabel>Portfolio</FieldLabel>
               <select
                 className={configCompactSelectClass}
                 value={portfolioId ?? ""}
@@ -1011,6 +1106,10 @@ export default function ClientCreateWizard({
               setBase={setBase}
               discount={discount}
               setDiscount={setDiscount}
+              chargedAmount={chargedAmount}
+              setChargedAmount={setChargedAmount}
+              vatPercentage={vatPercentage}
+              setVatPercentage={setVatPercentage}
               serviceDescription={serviceDescription}
               setServiceDescription={setServiceDescription}
               branchServices={availableServices}
@@ -1060,14 +1159,16 @@ export default function ClientCreateWizard({
           <div className="space-y-4">
             <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-5">
               <h3 className="mb-3 text-lg font-semibold text-zinc-900">Review client &amp; service</h3>
-              <div className="grid gap-2 text-sm sm:grid-cols-2">
+              <div className="grid gap-2 text-sm sm:grid-cols-5 xl:grid-cols-10">
                 <p><span className="text-zinc-500">Client:</span> {flowMode === "new" ? institution : filteredClients.find((client) => String(client.id) === existingClientId)?.institution}</p>
                 <p><span className="text-zinc-500">Job type:</span> {clientType === "MANAGED_RECURRING" ? "Subscription" : "Single Job"}</p>
                 <p><span className="text-zinc-500">Service:</span> {serviceName}</p>
                 <p><span className="text-zinc-500">Package:</span> {subServiceName || customSubService}</p>
-                <p><span className="text-zinc-500">Original amount:</span> ${(Number(base) || 0).toFixed(2)}</p>
-                <p><span className="text-zinc-500">Discount:</span> {Number(discount) || 0}%</p>
-                <p className="font-semibold text-primary"><span className="text-zinc-500">Final amount:</span> ${((Number(base) || 0) * (1 - (Number(discount) || 0) / 100)).toFixed(2)}</p>
+                <p><span className="text-zinc-500">Original:</span> ${(Number(base) || 0).toFixed(2)}</p>
+                <p><span className="text-zinc-500">Amount charged:</span> ${(Number(chargedAmount) || 0).toFixed(2)}</p>
+                <p><span className="text-zinc-500">Discount:</span> {(Number(discount) || 0).toFixed(1)}%</p>
+                <p><span className="text-zinc-500">VAT ({(Number(vatPercentage) || 0).toFixed(1)}%):</span> ${((Number(chargedAmount) || 0) * (Number(vatPercentage) || 0) / 100).toFixed(2)}</p>
+                <p className="font-semibold text-primary"><span className="text-zinc-500">Final total:</span> ${((Number(chargedAmount) || 0) * (1 + (Number(vatPercentage) || 0) / 100)).toFixed(2)}</p>
                 <p><span className="text-zinc-500">Features:</span> {contractFeatures.length}</p>
               </div>
             </div>
@@ -1154,20 +1255,35 @@ function PackageFeatureEditor({
   editing: boolean;
   setEditing: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const moveFeature = (targetIndex: number) => {
+    if (!editing || dragIndex === null || dragIndex === targetIndex) return;
+    setFeatures((items) => {
+      const next = [...items];
+      const [moved] = next.splice(dragIndex, 1);
+      next.splice(targetIndex, 0, moved);
+      return next;
+    });
+    setDragIndex(targetIndex);
+  };
+
   if (!features.length && !editing) return null;
   return (
     <div className="border-t border-zinc-200 pt-4">
       <div className="mb-3 flex items-center justify-between">
-        <div><p className="font-semibold text-zinc-900">Package features</p><p className="text-xs text-zinc-500">Editable copy for this client only.</p></div>
+        <div><p className="font-semibold text-zinc-900">Package features</p><p className="text-xs text-zinc-500">Editable copy for this client only. Drag items to reorder them.</p></div>
         <Button type="button" variant="outline" size="sm" onClick={() => setEditing((value) => !value)}>{editing ? "Done" : "Edit features"}</Button>
       </div>
       <div className="space-y-2">
         {features.map((feature, index) => editing ? (
-          <div key={index} className="flex items-center gap-2">
+          <div key={index} onDragEnter={() => moveFeature(index)} onDragOver={(e) => e.preventDefault()} className={`flex items-center gap-2 rounded border p-1 transition-all duration-150 ${dragIndex === index ? "border-primary/40 bg-primary/5" : "border-transparent"}`}>
+            <span draggable onDragStart={() => setDragIndex(index)} onDragEnd={() => setDragIndex(null)} className="cursor-grab p-1 active:cursor-grabbing" title="Drag to reorder">
+              <GripVertical className="size-4 text-zinc-400" />
+            </span>
             <input className={configCompactInputClass} value={feature.name ?? ""} onChange={(e) => setFeatures((items) => items.map((item, i) => i === index ? { ...item, name: e.target.value } : item))} />
             <button type="button" className="rounded p-2 text-red-500 hover:bg-red-50" aria-label="Remove feature" onClick={() => setFeatures((items) => items.filter((_, i) => i !== index))}><X className="size-4" /></button>
           </div>
-        ) : <p key={index} className="flex items-start gap-2 text-sm text-zinc-600"><Check className="mt-0.5 size-4 shrink-0 text-emerald-500" /><span>{feature.name}</span></p>)}
+         ) : <p key={index} className="flex items-start gap-2 rounded p-1 text-sm text-zinc-600"><Check className="mt-0.5 size-4 shrink-0 text-emerald-500" /><span>{feature.name}</span></p>)}
         {editing ? <Button type="button" variant="outline" size="sm" onClick={() => setFeatures((items) => [...items, { name: "", quantity: 1, frequency: "", description: "" }])}>+ Add Feature</Button> : null}
       </div>
     </div>
@@ -1188,6 +1304,10 @@ function ServiceFields({
   setBase,
   discount,
   setDiscount,
+  chargedAmount,
+  setChargedAmount,
+  vatPercentage,
+  setVatPercentage,
   serviceDescription,
   setServiceDescription,
   branchServices,
@@ -1208,6 +1328,10 @@ function ServiceFields({
   setBase: (v: string) => void;
   discount: string;
   setDiscount: (v: string) => void;
+  chargedAmount: string;
+  setChargedAmount: (v: string) => void;
+  vatPercentage: string;
+  setVatPercentage: (v: string) => void;
   serviceDescription: string;
   setServiceDescription: (v: string) => void;
   branchServices: Array<{ serviceName: string; subService?: Array<{ name: string }> }>;
@@ -1245,6 +1369,10 @@ function ServiceFields({
             setBase={setBase}
             discount={discount}
             setDiscount={setDiscount}
+            chargedAmount={chargedAmount}
+            setChargedAmount={setChargedAmount}
+            vatPercentage={vatPercentage}
+            setVatPercentage={setVatPercentage}
             serviceDescription={serviceDescription}
             setServiceDescription={setServiceDescription}
             serviceOptions={serviceOptions}
@@ -1271,6 +1399,10 @@ function ServiceFields({
       setBase={setBase}
       discount={discount}
       setDiscount={setDiscount}
+      chargedAmount={chargedAmount}
+      setChargedAmount={setChargedAmount}
+      vatPercentage={vatPercentage}
+      setVatPercentage={setVatPercentage}
       serviceDescription={serviceDescription}
       setServiceDescription={setServiceDescription}
       serviceOptions={serviceOptions}
@@ -1293,6 +1425,10 @@ function ServiceFieldsInner({
   setBase,
   discount,
   setDiscount,
+  chargedAmount,
+  setChargedAmount,
+  vatPercentage,
+  setVatPercentage,
   serviceDescription,
   setServiceDescription,
   serviceOptions,
@@ -1309,6 +1445,10 @@ function ServiceFieldsInner({
   setBase: (v: string) => void;
   discount: string;
   setDiscount: (v: string) => void;
+  chargedAmount: string;
+  setChargedAmount: (v: string) => void;
+  vatPercentage: string;
+  setVatPercentage: (v: string) => void;
   serviceDescription: string;
   setServiceDescription: (v: string) => void;
   serviceOptions: string[];
@@ -1316,9 +1456,16 @@ function ServiceFieldsInner({
   customSubs: Array<{ name: string }>;
 }) {
   const originalAmount = Number(base) || 0;
-  const discountValue = Math.min(Math.max(Number(discount) || 0, 0), 100);
-  const discountAmount = originalAmount * (discountValue / 100);
-  const finalAmount = originalAmount - discountAmount;
+  const amountCharged = Math.max(Number(chargedAmount) || 0, 0);
+  const discountAmount = Math.max(originalAmount - amountCharged, 0);
+  const discountValue = originalAmount > 0 ? (discountAmount / originalAmount) * 100 : 0;
+  const vatValue = Math.min(Math.max(Number(vatPercentage) || 0, 0), 100);
+  const vatAmount = amountCharged * (vatValue / 100);
+  const finalAmount = amountCharged + vatAmount;
+
+  useEffect(() => {
+    setDiscount(discountValue.toFixed(4));
+  }, [discountValue, setDiscount]);
 
   return (
     <div className="grid gap-3 sm:grid-cols-2">
@@ -1374,30 +1521,25 @@ function ServiceFieldsInner({
           </datalist>
         </div>
       ) : null}
-      <div>
-        <FieldLabel>Amount ($)</FieldLabel>
-        <input
-          className={configCompactInputClass}
-          value={base ?? ""}
-          onChange={(e) => setBase(e.target.value)}
-        />
+      <div className="grid gap-3 sm:col-span-2 sm:grid-cols-3">
+        <div>
+          <FieldLabel>Amount ($)</FieldLabel>
+          <input className={configCompactInputClass} value={base ?? ""} onChange={(e) => setBase(e.target.value)} />
+        </div>
+        <div>
+          <FieldLabel>Amount we charge ($)</FieldLabel>
+          <input type="number" min="0" step="0.01" className={configCompactInputClass} value={chargedAmount ?? ""} onChange={(e) => setChargedAmount(e.target.value)} />
+        </div>
+        <div>
+          <FieldLabel>VAT (%)</FieldLabel>
+          <input type="number" min="0" max="100" step="0.01" className={configCompactInputClass} value={vatPercentage ?? ""} onChange={(e) => setVatPercentage(e.target.value)} />
+        </div>
       </div>
-      <div>
-        <FieldLabel>Discount (%)</FieldLabel>
-        <input
-          type="number"
-          min="0"
-          max="100"
-          placeholder="e.g. 10"
-          className={configCompactInputClass}
-          value={discount ?? ""}
-          onChange={(e) => setDiscount(e.target.value)}
-        />
-      </div>
-      <div className="grid grid-cols-2 gap-2 rounded-lg bg-zinc-50 p-3 text-sm sm:col-span-2 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 rounded-lg bg-zinc-50 p-3 text-sm sm:col-span-2 sm:grid-cols-5">
         <p><span className="block text-xs text-zinc-500">Original</span><strong>${originalAmount.toFixed(2)}</strong></p>
+        <p><span className="block text-xs text-zinc-500">Amount charged</span><strong>${amountCharged.toFixed(2)}</strong></p>
         <p><span className="block text-xs text-zinc-500">Discount</span><strong>{discountValue.toFixed(1)}%</strong></p>
-        <p><span className="block text-xs text-zinc-500">Discount amount</span><strong>${discountAmount.toFixed(2)}</strong></p>
+        <p><span className="block text-xs text-zinc-500">VAT ({vatValue.toFixed(1)}%)</span><strong>${vatAmount.toFixed(2)}</strong></p>
         <p><span className="block text-xs text-zinc-500">Final total</span><strong className="text-primary">${finalAmount.toFixed(2)}</strong></p>
       </div>
       <div className="sm:col-span-2">

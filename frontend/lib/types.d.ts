@@ -56,6 +56,12 @@ interface Task {
   assignedToId: string;
   description: string;
   department: string;
+  staffCode?: string | null;
+  jobTitle?: string | null;
+  employmentType?: "FULL_TIME" | "PART_TIME" | null;
+  portfolioId?: string | null;
+  portfolio?: { id: string; name: string } | null;
+  banned?: boolean | null;
   priority: TaskPriority;
   status: TaskStatus;
   deadline: string | Date;
@@ -102,6 +108,12 @@ interface User {
   password?: string;
   gender: string;
   department: string;
+  staffCode?: string | null;
+  jobTitle?: string | null;
+  employmentType?: "FULL_TIME" | "PART_TIME" | null;
+  portfolioId?: string | null;
+  portfolio?: { id: string; name: string } | null;
+  banned?: boolean | null;
   salary: string;
 }
 

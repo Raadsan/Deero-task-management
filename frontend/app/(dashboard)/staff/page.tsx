@@ -101,11 +101,15 @@ export default function EmployeesPage() {
       const name = user.name?.toLowerCase() ?? "";
       const email = user.email?.toLowerCase() ?? "";
       const userId = String(user.id ?? "").toLowerCase();
+      const staffCode = String(user.staffCode ?? "").toLowerCase();
+      const jobTitle = String(user.jobTitle ?? "").toLowerCase();
       return (
         !query ||
         name.includes(query) ||
         email.includes(query) ||
-        userId.includes(query)
+        userId.includes(query) ||
+        staffCode.includes(query) ||
+        jobTitle.includes(query)
       );
     });
   }, [users, search]);
@@ -168,33 +172,25 @@ export default function EmployeesPage() {
             <Table className="w-full">
               <TableHeader className={dashboardTableHeaderClass}>
                 <TableRow className={dashboardTableHeadRowClass}>
-                  <TableHead className={dashboardTableHeadClass}>
-                    Staff ID
-                  </TableHead>
-                  <TableHead className={dashboardTableHeadClass}>
-                    Name
-                  </TableHead>
-                  <TableHead className={dashboardTableHeadClass}>
-                    Email
-                  </TableHead>
-                  <TableHead className={dashboardTableHeadClass}>
-                    Role
-                  </TableHead>
-                  <TableHead className={dashboardTableHeadClass}>
-                    Status
-                  </TableHead>
-                  <TableHead
-                    className={cn(dashboardTableHeadClass, "text-right")}
-                  >
-                    Actions
-                  </TableHead>
+                  {[
+                    "Staff ID",
+                    "Full Name",
+                    "Email",
+                    "Job Title",
+                    "Type",
+                    "Role",
+                    "Status",
+                  ].map((heading) => (
+                    <TableHead key={heading} className={dashboardTableHeadClass}>{heading}</TableHead>
+                  ))}
+                  <TableHead className={cn(dashboardTableHeadClass, "text-right")}>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   [...Array(5)].map((_, i) => (
                     <TableRow key={i} className="h-14 animate-pulse">
-                      {[...Array(6)].map((_, j) => (
+                      {[...Array(8)].map((_, j) => (
                         <TableCell key={j} className="px-6 py-4">
                           <div className="h-4 w-full rounded bg-zinc-100" />
                         </TableCell>
@@ -204,7 +200,7 @@ export default function EmployeesPage() {
                 ) : paginatedUsers.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={6}
+                      colSpan={8}
                       className="text-muted-foreground px-6 py-10 text-center"
                     >
                       No staff found
@@ -217,17 +213,23 @@ export default function EmployeesPage() {
                       className={dashboardTableBodyRowClass}
                     >
                       <TableCell className={dashboardTableCellClass}>
-                        <span className={dashboardTableIdClass}>{user.id}</span>
+                        <span className={dashboardTableIdClass}>{user.staffCode || "N/A"}</span>
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
                         <span className={dashboardTextPrimary}>
                           {user.name}
                         </span>
                       </TableCell>
-                      <TableCell className={dashboardTableCellClass}>
+                                            <TableCell className={dashboardTableCellClass}>
                         <span className={dashboardTextSecondary}>
                           {user.email}
                         </span>
+                      </TableCell>
+                      <TableCell className={dashboardTableCellClass}>
+                        <span className={dashboardTextSecondary}>{user.jobTitle || "N/A"}</span>
+                      </TableCell>
+                      <TableCell className={dashboardTableCellClass}>
+                        <span className={dashboardTextSecondary}>{user.employmentType === "PART_TIME" ? "Part-Time" : "Full-Time"}</span>
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
                         {user.role || "N/A"}

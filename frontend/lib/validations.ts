@@ -21,7 +21,7 @@ export const loginSchema = z.object({
 });
 
 export const RegisterSchema = loginSchema.extend({
-  gender: z.string().min(1, "Gender is Required"),
+  gender: z.string(),
   department: z.string().min(1, "Department is Required"),
   salary: z
     .string()
@@ -134,13 +134,16 @@ const EditCreateUserFieldsSchema = z.object({
       /^[a-zA-Z0-9\s]+$/,
       "Name must contain only letters, numbers, and spaces.",
     ),
-  gender: z.string().min(1, "Gender is Required"),
+  gender: z.string(),
   salary: z
     .string()
     .trim()
     .regex(/^(|\d+(\.\d{1,2})?)$/, {
       message: "Salary must be a valid amount, e.g. 500 or 500.00",
     }),
+  staffCode: z.string().trim().min(1, "Staff ID is required").max(30, "Staff ID is too long"),
+  jobTitle: z.string().trim().max(120, "Job title is too long").optional(),
+  employmentType: z.enum(["FULL_TIME", "PART_TIME"]),
   portfolioId: z.string().optional(),
   status: z.enum(["active", "inactive"]).optional(),
   email: z
@@ -148,7 +151,7 @@ const EditCreateUserFieldsSchema = z.object({
     .min(5, "Email is required.")
     .max(50, "Email must not exceed 50 characters."),
 
-  role: z.string().min(1, "Role is required."),
+  role: z.string(),
 
   password: z
     .string()
@@ -179,9 +182,7 @@ function refineUserBranchRequired(
   }
 }
 
-export const EditCreateUserSchema = EditCreateUserFieldsSchema.superRefine(
-  refineUserBranchRequired,
-);
+export const EditCreateUserSchema = EditCreateUserFieldsSchema;
 
 export const AdvancedEditUserSchema = EditCreateUserFieldsSchema.pick({
   role: true,

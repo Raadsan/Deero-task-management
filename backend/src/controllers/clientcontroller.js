@@ -47,6 +47,8 @@ async function attachClientServiceAgreement(tx, {
   serviceStatus,
   contractFeatures,
   discountType = "PERCENTAGE",
+  finalAmount,
+  vatPercentage = 0,
 }) {
   const serviceWhere = { serviceName };
   if (portfolioId) {
@@ -127,13 +129,6 @@ async function attachClientServiceAgreement(tx, {
       base: Number(base),
       description: description || "",
       discount: Number(discount) || 0,
-      packageSnapshot: {
-        externalId: subService.externalId,
-        name: subService.name,
-        price: subService.price,
-        currency: subService.currency,
-        features: subService.features || [],
-      },
       contractFeatures: Array.isArray(contractFeatures)
         ? contractFeatures
         : Array.isArray(subService.features)
@@ -148,7 +143,18 @@ async function attachClientServiceAgreement(tx, {
       ...(discountType ? { discountType } : {}),
       discountValue: Number(discount) || 0,
       discountAmount: Number(base) * (Number(discount) || 0),
-      finalAmount: Number(base) - Number(base) * (Number(discount) || 0),
+      finalAmount: finalAmount !== undefined
+        ? Number(finalAmount)
+        : Number(base) - Number(base) * (Number(discount) || 0),
+      packageSnapshot: {
+        externalId: subService.externalId,
+        name: subService.name,
+        price: subService.price,
+        currency: subService.currency,
+        features: subService.features || [],
+        vatPercentage: Number(vatPercentage) || 0,
+        vatAmount: (Number(finalAmount) || 0) * ((Number(vatPercentage) || 0) / 100),
+      },
       serviceStatus: serviceStatus === "completed" ? "completed" : "pending",
       ...(createdAt ? { createdAt: new Date(createdAt) } : {}),
     },
@@ -313,16 +319,10 @@ export const createClient = async (req, res) => {
     }
 
     const phone =
-      String(data.phone ?? "").trim() || (isDraft ? `DRAFT${draftToken}` : "");
-    if (!phone) {
-      return res.status(400).json({ success: false, error: "Phone is required" });
-    }
+      String(data.phone ?? "").trim() || `NO_PHONE_${draftToken}`;
 
     const email =
-      String(data.email ?? "").trim() ||
-      (isDraft && !data.phone?.trim()
-        ? `draft-${draftToken}@deero.internal`
-        : `client-${phone.replace(/\D/g, "")}@deero.so`);
+      String(data.email ?? "").trim() || `client-${draftToken}@deero.internal`;
 
     if (!isDraft) {
       const duplicateEmail = await prisma.client.findFirst({
@@ -398,6 +398,8 @@ export const createClient = async (req, res) => {
           serviceStatus: data.serviceStatus,
           contractFeatures: data.contractFeatures,
           discountType: data.discountType,
+          finalAmount: data.finalAmount,
+          vatPercentage: data.vatPercentage,
         });
         agreement = attached.agreement;
       }
@@ -564,6 +566,8 @@ export const addClientService = async (req, res) => {
         serviceStatus: data.serviceStatus,
         contractFeatures: data.contractFeatures,
         discountType: data.discountType,
+        finalAmount: data.finalAmount,
+        vatPercentage: data.vatPercentage,
       });
     }, { timeout: 10000 });
 
@@ -697,6 +701,8 @@ export const updateClientAgreement = async (req, res) => {
     portfolioId,
     discount,
     createdAt,
+    finalAmount,
+    vatPercentage,
   } = req.body;
 
   try {
@@ -798,6 +804,14 @@ export const updateClientAgreement = async (req, res) => {
           ...(description !== undefined ? { description } : {}),
           ...(contractFeatures !== undefined ? { contractFeatures } : {}),
           ...(discount !== undefined ? { discount: Number(discount) } : {}),
+          ...(finalAmount !== undefined ? { finalAmount: Number(finalAmount) } : {}),
+          ...(vatPercentage !== undefined ? {
+            packageSnapshot: {
+              ...((existing.packageSnapshot && typeof existing.packageSnapshot === "object") ? existing.packageSnapshot : {}),
+              vatPercentage: Number(vatPercentage) || 0,
+              vatAmount: (Number(finalAmount ?? existing.finalAmount) || 0) * ((Number(vatPercentage) || 0) / 100),
+            },
+          } : {}),
           ...(serviceStatus !== undefined
             ? {
                 serviceStatus:

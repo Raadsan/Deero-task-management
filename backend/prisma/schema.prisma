@@ -39,6 +39,9 @@ model Staff {
   banReason                 String?
   banExpires                DateTime?
   portfolioId               String?
+  staffCode                 String?
+  jobTitle                  String?
+  employmentType            String?                  @default("FULL_TIME")
   expenseTransaction        ExpenseTransaction[]
   incomeTransaction         IncomeTransaction[]
   userFiles                 UserFiles[]

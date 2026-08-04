@@ -20,11 +20,12 @@ import { cn, formatDate } from "@/lib/utils";
 import {
   Building2,
   Calendar,
+  CircleDot,
   CheckSquare,
   GitBranch,
   ListTodo,
   Mail,
-  Percent,
+  DollarSign,
   Phone,
   Tag,
   User,
@@ -46,6 +47,10 @@ type ClientAgreementView = {
   portfolioId?: string | null;
   branchName?: string;
   base?: number;
+  discount?: number;
+  finalAmount?: number;
+  vatPercentage?: number;
+  vatAmount?: number;
   description?: string;
   createdAt?: string;
   features?: any[];
@@ -71,6 +76,17 @@ export default function ClientViewModal({ open, onOpenChange, clientId }: Props)
     (client as { serviceAgreements?: ClientAgreementView[] } | undefined)
       ?.serviceAgreements ?? [];
   const clientTasks = (client as any)?.clientTask ?? (client as any)?.tasks ?? [];
+  const totalAmount = agreements.reduce(
+    (sum, agreement) =>
+      sum +
+      Number(agreement.finalAmount ?? agreement.base ?? 0) +
+      Number(agreement.vatAmount ?? 0),
+    0,
+  );
+  const isGeneratedEmail = (email?: string | null) =>
+    !email ||
+    email.includes("@deero.internal") ||
+    /^client-\d+@deero\.so$/i.test(email);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -100,18 +116,27 @@ export default function ClientViewModal({ open, onOpenChange, clientId }: Props)
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <InfoItem
                   icon={Building2}
-                  label="Client Name"
-                  value={client.institution}
+                  label="Company Name"
+                  value={client.companyName || client.institution || "N/A"}
                 />
-                <InfoItem icon={Mail} label="Email" value={client.email} />
+                <InfoItem
+                  icon={User}
+                  label="Contact Person"
+                  value={client.contactPerson || "N/A"}
+                />
+                <InfoItem icon={Mail} label="Email" value={isGeneratedEmail(client.email) ? "N/A" : client.email} />
                 <InfoItem icon={Phone} label="Phone" value={client.phone} />
                 <InfoItem icon={Tag} label="Source" value={client.source ?? "—"} />
                 <InfoItem
-                  icon={Percent}
-                  label="Discount"
-                  value={`${client.discount ?? 0}%`}
+                  icon={DollarSign}
+                  label="Total amount"
+                  value={`$${totalAmount.toFixed(2)}`}
                 />
-                <InfoItem
+<InfoItem
+                  icon={User}
+                  label="Status"
+                  value={client.isDraft ? "Draft" : client.isActive === false ? "Inactive" : "Active"}
+                />                <InfoItem
                   icon={Calendar}
                   label="Created"
                   value={formatDate(client.createdAt ?? "") || "—"}
@@ -156,12 +181,16 @@ export default function ClientViewModal({ open, onOpenChange, clientId }: Props)
                                 : "") ||
                               "No portfolio"}
                           </span>
-                          {agreement.base != null && (
-                            <span>Amount: ${agreement.base}</span>
-                          )}
                           {agreement.createdAt && (
                             <span>Date: {agreement.createdAt}</span>
                           )}
+</div>
+                        <div className="mt-3 grid grid-cols-2 gap-2 rounded-lg bg-zinc-50 p-3 text-xs sm:grid-cols-5">
+                          <p><span className="block text-zinc-500">Original</span><strong className="text-zinc-900">${Number(agreement.base ?? 0).toFixed(2)}</strong></p>
+                          <p><span className="block text-zinc-500">Amount charged</span><strong className="text-zinc-900">${Number(agreement.finalAmount ?? agreement.base ?? 0).toFixed(2)}</strong></p>
+                          <p><span className="block text-zinc-500">Discount</span><strong className="text-zinc-900">{(Number(agreement.discount ?? 0) * 100).toFixed(1)}%</strong></p>
+                          <p><span className="block text-zinc-500">VAT ({Number(agreement.vatPercentage ?? 0).toFixed(1)}%)</span><strong className="text-zinc-900">${Number(agreement.vatAmount ?? 0).toFixed(2)}</strong></p>
+                          <p><span className="block text-zinc-500">Final total</span><strong className="text-primary">${(Number(agreement.finalAmount ?? agreement.base ?? 0) + Number(agreement.vatAmount ?? 0)).toFixed(2)}</strong></p>
                         </div>
                         {agreement.description ? (
                           <p className="mt-2 text-sm text-zinc-600">

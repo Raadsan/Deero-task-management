@@ -42,6 +42,9 @@ export default function UserViewModal({ open, onOpenChange, userId }: Props) {
   const user = data?.data as
     | {
         name?: string;
+        staffCode?: string | null;
+        jobTitle?: string | null;
+        employmentType?: "FULL_TIME" | "PART_TIME" | null;
         email?: string;
         role?: string;
         gender?: string;
@@ -83,11 +86,18 @@ export default function UserViewModal({ open, onOpenChange, userId }: Props) {
             <div className="space-y-5">
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <InfoItem
+                  icon={Shield}
+                  label="Staff ID"
+                  value={user.staffCode ?? "N/A"}
+                />
+                <InfoItem
                   icon={UserIcon}
                   label="Name"
                   value={user.name ?? "—"}
                 />
                 <InfoItem icon={Mail} label="Email" value={user.email ?? "—"} />
+                <InfoItem icon={Building2} label="Job Title" value={user.jobTitle ?? "N/A"} />
+                <InfoItem icon={Users} label="Type" value={user.employmentType === "PART_TIME" ? "Part-Time" : "Full-Time"} />
                 <InfoItem icon={Shield} label="Role" value={user.role ?? "—"} />
                 <InfoItem
                   icon={Users}

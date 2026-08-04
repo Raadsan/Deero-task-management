@@ -6858,6 +6858,9 @@ export namespace Prisma {
     banReason: string | null
     banExpires: Date | null
     portfolioId: string | null
+    staffCode: string | null
+    jobTitle: string | null
+    employmentType: string | null
   }
 
   export type StaffMaxAggregateOutputType = {
@@ -6877,6 +6880,9 @@ export namespace Prisma {
     banReason: string | null
     banExpires: Date | null
     portfolioId: string | null
+    staffCode: string | null
+    jobTitle: string | null
+    employmentType: string | null
   }
 
   export type StaffCountAggregateOutputType = {
@@ -6896,6 +6902,9 @@ export namespace Prisma {
     banReason: number
     banExpires: number
     portfolioId: number
+    staffCode: number
+    jobTitle: number
+    employmentType: number
     _all: number
   }
 
@@ -6917,6 +6926,9 @@ export namespace Prisma {
     banReason?: true
     banExpires?: true
     portfolioId?: true
+    staffCode?: true
+    jobTitle?: true
+    employmentType?: true
   }
 
   export type StaffMaxAggregateInputType = {
@@ -6936,6 +6948,9 @@ export namespace Prisma {
     banReason?: true
     banExpires?: true
     portfolioId?: true
+    staffCode?: true
+    jobTitle?: true
+    employmentType?: true
   }
 
   export type StaffCountAggregateInputType = {
@@ -6955,6 +6970,9 @@ export namespace Prisma {
     banReason?: true
     banExpires?: true
     portfolioId?: true
+    staffCode?: true
+    jobTitle?: true
+    employmentType?: true
     _all?: true
   }
 
@@ -7047,6 +7065,9 @@ export namespace Prisma {
     banReason: string | null
     banExpires: Date | null
     portfolioId: string | null
+    staffCode: string | null
+    jobTitle: string | null
+    employmentType: string | null
     _count: StaffCountAggregateOutputType | null
     _min: StaffMinAggregateOutputType | null
     _max: StaffMaxAggregateOutputType | null
@@ -7083,6 +7104,9 @@ export namespace Prisma {
     banReason?: boolean
     banExpires?: boolean
     portfolioId?: boolean
+    staffCode?: boolean
+    jobTitle?: boolean
+    employmentType?: boolean
     expenseTransaction?: boolean | Staff$expenseTransactionArgs<ExtArgs>
     incomeTransaction?: boolean | Staff$incomeTransactionArgs<ExtArgs>
     userFiles?: boolean | Staff$userFilesArgs<ExtArgs>
@@ -7125,6 +7149,9 @@ export namespace Prisma {
     banReason?: boolean
     banExpires?: boolean
     portfolioId?: boolean
+    staffCode?: boolean
+    jobTitle?: boolean
+    employmentType?: boolean
   }
 
   export type StaffInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7194,6 +7221,9 @@ export namespace Prisma {
       banReason: string | null
       banExpires: Date | null
       portfolioId: string | null
+      staffCode: string | null
+      jobTitle: string | null
+      employmentType: string | null
     }, ExtArgs["result"]["staff"]>
     composites: {}
   }
@@ -7600,6 +7630,9 @@ export namespace Prisma {
     readonly banReason: FieldRef<"Staff", 'String'>
     readonly banExpires: FieldRef<"Staff", 'DateTime'>
     readonly portfolioId: FieldRef<"Staff", 'String'>
+    readonly staffCode: FieldRef<"Staff", 'String'>
+    readonly jobTitle: FieldRef<"Staff", 'String'>
+    readonly employmentType: FieldRef<"Staff", 'String'>
   }
     
 
@@ -50836,7 +50869,10 @@ export namespace Prisma {
     banned: 'banned',
     banReason: 'banReason',
     banExpires: 'banExpires',
-    portfolioId: 'portfolioId'
+    portfolioId: 'portfolioId',
+    staffCode: 'staffCode',
+    jobTitle: 'jobTitle',
+    employmentType: 'employmentType'
   };
 
   export type StaffScalarFieldEnum = (typeof StaffScalarFieldEnum)[keyof typeof StaffScalarFieldEnum]
@@ -51780,6 +51816,9 @@ export namespace Prisma {
     banReason?: StringNullableFilter<"Staff"> | string | null
     banExpires?: DateTimeNullableFilter<"Staff"> | Date | string | null
     portfolioId?: StringNullableFilter<"Staff"> | string | null
+    staffCode?: StringNullableFilter<"Staff"> | string | null
+    jobTitle?: StringNullableFilter<"Staff"> | string | null
+    employmentType?: StringNullableFilter<"Staff"> | string | null
     expenseTransaction?: ExpenseTransactionListRelationFilter
     incomeTransaction?: IncomeTransactionListRelationFilter
     userFiles?: UserFilesListRelationFilter
@@ -51820,6 +51859,9 @@ export namespace Prisma {
     banReason?: SortOrderInput | SortOrder
     banExpires?: SortOrderInput | SortOrder
     portfolioId?: SortOrderInput | SortOrder
+    staffCode?: SortOrderInput | SortOrder
+    jobTitle?: SortOrderInput | SortOrder
+    employmentType?: SortOrderInput | SortOrder
     expenseTransaction?: ExpenseTransactionOrderByRelationAggregateInput
     incomeTransaction?: IncomeTransactionOrderByRelationAggregateInput
     userFiles?: UserFilesOrderByRelationAggregateInput
@@ -51863,6 +51905,9 @@ export namespace Prisma {
     banReason?: StringNullableFilter<"Staff"> | string | null
     banExpires?: DateTimeNullableFilter<"Staff"> | Date | string | null
     portfolioId?: StringNullableFilter<"Staff"> | string | null
+    staffCode?: StringNullableFilter<"Staff"> | string | null
+    jobTitle?: StringNullableFilter<"Staff"> | string | null
+    employmentType?: StringNullableFilter<"Staff"> | string | null
     expenseTransaction?: ExpenseTransactionListRelationFilter
     incomeTransaction?: IncomeTransactionListRelationFilter
     userFiles?: UserFilesListRelationFilter
@@ -51903,6 +51948,9 @@ export namespace Prisma {
     banReason?: SortOrderInput | SortOrder
     banExpires?: SortOrderInput | SortOrder
     portfolioId?: SortOrderInput | SortOrder
+    staffCode?: SortOrderInput | SortOrder
+    jobTitle?: SortOrderInput | SortOrder
+    employmentType?: SortOrderInput | SortOrder
     _count?: StaffCountOrderByAggregateInput
     _max?: StaffMaxOrderByAggregateInput
     _min?: StaffMinOrderByAggregateInput
@@ -51928,6 +51976,9 @@ export namespace Prisma {
     banReason?: StringNullableWithAggregatesFilter<"Staff"> | string | null
     banExpires?: DateTimeNullableWithAggregatesFilter<"Staff"> | Date | string | null
     portfolioId?: StringNullableWithAggregatesFilter<"Staff"> | string | null
+    staffCode?: StringNullableWithAggregatesFilter<"Staff"> | string | null
+    jobTitle?: StringNullableWithAggregatesFilter<"Staff"> | string | null
+    employmentType?: StringNullableWithAggregatesFilter<"Staff"> | string | null
   }
 
   export type SessionWhereInput = {
@@ -55646,6 +55697,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -55686,6 +55740,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -55722,6 +55779,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -55762,6 +55822,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -55800,6 +55863,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
   }
 
   export type StaffUpdateManyMutationInput = {
@@ -55817,6 +55883,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type StaffUncheckedUpdateManyInput = {
@@ -55836,6 +55905,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SessionCreateInput = {
@@ -60067,6 +60139,9 @@ export namespace Prisma {
     banReason?: SortOrder
     banExpires?: SortOrder
     portfolioId?: SortOrder
+    staffCode?: SortOrder
+    jobTitle?: SortOrder
+    employmentType?: SortOrder
   }
 
   export type StaffMaxOrderByAggregateInput = {
@@ -60086,6 +60161,9 @@ export namespace Prisma {
     banReason?: SortOrder
     banExpires?: SortOrder
     portfolioId?: SortOrder
+    staffCode?: SortOrder
+    jobTitle?: SortOrder
+    employmentType?: SortOrder
   }
 
   export type StaffMinOrderByAggregateInput = {
@@ -60105,6 +60183,9 @@ export namespace Prisma {
     banReason?: SortOrder
     banExpires?: SortOrder
     portfolioId?: SortOrder
+    staffCode?: SortOrder
+    jobTitle?: SortOrder
+    employmentType?: SortOrder
   }
 
   export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -67773,6 +67854,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -67811,6 +67895,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -67909,6 +67996,9 @@ export namespace Prisma {
     banReason?: StringNullableFilter<"Staff"> | string | null
     banExpires?: DateTimeNullableFilter<"Staff"> | Date | string | null
     portfolioId?: StringNullableFilter<"Staff"> | string | null
+    staffCode?: StringNullableFilter<"Staff"> | string | null
+    jobTitle?: StringNullableFilter<"Staff"> | string | null
+    employmentType?: StringNullableFilter<"Staff"> | string | null
   }
 
   export type ExpenseTransactionCreateWithoutUserInput = {
@@ -69465,6 +69555,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -69504,6 +69597,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -69555,6 +69651,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -69594,6 +69693,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -69629,6 +69731,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -69668,6 +69773,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -69719,6 +69827,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -69758,6 +69869,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -69925,6 +70039,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -69964,6 +70081,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -70471,6 +70591,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -70510,6 +70633,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -71551,6 +71677,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -71589,6 +71718,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -72643,6 +72775,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -72682,6 +72817,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -72981,6 +73119,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -73020,6 +73161,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -73288,6 +73432,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -73327,6 +73474,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -73367,6 +73517,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -73406,6 +73559,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -73446,6 +73602,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -73485,6 +73644,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -73611,6 +73773,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -73650,6 +73815,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -73696,6 +73864,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -73735,6 +73906,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -73781,6 +73955,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -73820,6 +73997,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -74343,6 +74523,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
     reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
@@ -74382,6 +74565,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
     reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
@@ -74533,6 +74719,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
@@ -74572,6 +74761,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
@@ -74665,6 +74857,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
     reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
@@ -74704,6 +74899,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
     reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
@@ -74829,6 +75027,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
@@ -74868,6 +75069,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
@@ -74991,6 +75195,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
@@ -75030,6 +75237,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
@@ -75081,6 +75291,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
@@ -75120,6 +75333,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
@@ -75809,6 +76025,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -75848,6 +76067,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -75888,6 +76110,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -75927,6 +76152,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -76000,6 +76228,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -76039,6 +76270,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -76085,6 +76319,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -76124,6 +76361,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -76792,6 +77032,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -76831,6 +77074,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -76882,6 +77128,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -76921,6 +77170,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -77226,6 +77478,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -77265,6 +77520,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -77576,6 +77834,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -77615,6 +77876,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -77864,6 +78128,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -77903,6 +78170,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -78167,6 +78437,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -78206,6 +78479,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -78581,6 +78857,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -78620,6 +78899,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -78724,6 +79006,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -78763,6 +79048,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -78948,6 +79236,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -78987,6 +79278,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -79309,6 +79603,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -79348,6 +79645,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -79485,6 +79785,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -79524,6 +79827,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -79618,6 +79924,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -79657,6 +79966,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -80064,6 +80376,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -80103,6 +80418,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -80248,6 +80566,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -80287,6 +80608,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -81269,6 +81593,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
   }
 
   export type RoleMenuAccessUpdateWithoutRoleInput = {
@@ -81321,6 +81648,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -81359,6 +81689,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -81396,6 +81729,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ExpenseTransactionCreateManyUserInput = {
@@ -83365,6 +83701,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
+    staffCode?: string | null
+    jobTitle?: string | null
+    employmentType?: string | null
   }
 
   export type ClientSchemaCreateManyPortfolioInput = {
@@ -83730,6 +84069,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -83768,6 +84110,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -83805,6 +84150,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ClientSchemaUpdateWithoutPortfolioInput = {
