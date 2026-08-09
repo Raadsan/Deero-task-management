@@ -65,6 +65,7 @@ interface Task {
   priority: TaskPriority;
   status: TaskStatus;
   deadline: string | Date;
+  startDate?: string | Date | null;
   originalDeadline?: string | Date | null;
   extraTimeMinutes?: number;
   transferredFromProgress?: number;
