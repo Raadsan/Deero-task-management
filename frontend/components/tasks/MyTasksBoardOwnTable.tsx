@@ -18,6 +18,7 @@ import {
   actionBtnDelete,
   actionBtnEdit,
   actionBtnView,
+  dashboardCardClass,
   dashboardPaginationClass,
   dashboardStatusBadgeClass,
   dashboardTableBodyRowClass,
@@ -35,7 +36,7 @@ import {
 import { Task } from "@/lib/types";
 import { authClient } from "@/lib/auth-client";
 import { cn, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
-import { ArrowRightLeft, Edit, Eye, Gauge, Lock, Trash2 } from "lucide-react";
+import { ArrowRightLeft, Edit, Eye, Gauge, Lock } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 type Props = {
@@ -71,7 +72,8 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
 
   return (
     <>
-      <div className={dashboardTableWrapClass}>
+      <div className={dashboardCardClass}>
+        <div className={dashboardTableWrapClass}>
           <div className="overflow-x-auto">
             <Table className="w-full">
               <TableHeader className={dashboardTableHeaderClass}>
@@ -171,7 +173,8 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
                               }}
                             >
                               <Eye className="size-4" />
-                            </Button>                            <Button
+                            </Button>
+                            <Button
                               type="button"
                               variant="ghost"
                               size="sm"
@@ -225,6 +228,7 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
         </div>
 
         <div className={dashboardPaginationClass}>
+          <div>
             {tasks.length === 0
               ? "0 of 0"
               : `${Math.min(tasks.length, (currentPage - 1) * pageSize + 1)}-${Math.min(tasks.length, currentPage * pageSize)} of ${tasks.length}`}
@@ -252,6 +256,7 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
             </button>
           </div>
         </div>
+      </div>
 
       <TaskViewModal open={viewOpen} onOpenChange={setViewOpen} task={selectedTask} />
       <PersonalTaskEditModal open={editOpen} onOpenChange={setEditOpen} task={selectedTask} />
