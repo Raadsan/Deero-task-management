@@ -82,26 +82,35 @@ export function dashboardStatIconClass(index = 0): string {
 export function getTaskStatusBadgeClass(status: string): string {
   switch (status?.toLowerCase()) {
     case "completed":
+    case "complete":
     case "done":
-      return "bg-emerald-600 text-white";
-    case "pending":
-      return "bg-amber-500 text-white";
+      return "bg-[#009966] text-white font-bold";
+    case "in_progress":
+    case "in progress":
+    case "inprocess":
     case "inprogres":
-      return "bg-blue-600 text-white";
+      return "bg-[#f59e0b] text-white font-bold";
+    case "pending":
+    case "todo":
+    case "to do":
+      return "bg-primary text-white font-bold";
     case "overdue":
-      return "bg-rose-600 text-white";
+      return "bg-[#e6005c] text-white font-bold";
     case "transferred":
     case "reassigned":
-      return "bg-indigo-600 text-white";
+      return "bg-[#6366f1] text-white font-bold";
     default:
-      return "bg-zinc-500 text-white";
+      return "bg-zinc-600 text-white font-bold";
   }
 }
 
 export function formatStatusLabel(status: string): string {
   if (!status) return "—";
   const lower = status.toLowerCase();
-  if (lower === "pending") return "In Process";
+  if (lower === "pending") return "Pending";
+  if (lower === "in_progress" || lower === "in process" || lower === "inprogres" || lower === "inprocess") return "In Process";
+  if (lower === "completed" || lower === "complete" || lower === "done") return "Complete";
+  if (lower === "overdue") return "Overdue";
   return status.charAt(0).toUpperCase() + status.slice(1);
 }
 

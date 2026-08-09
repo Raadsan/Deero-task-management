@@ -1,5 +1,27 @@
 import nodemailer from "nodemailer";
 
+export async function sendPasswordResetEmail({ toEmail, userName, resetUrl }) {
+  const user = process.env.SMTP_USER || process.env.EMAIL_USER;
+  const pass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
+  if (!user || !pass) {
+    throw new Error("SMTP is not configured. Set SMTP_USER and SMTP_PASS.");
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST || "smtp.gmail.com",
+    port: Number(process.env.SMTP_PORT) || 587,
+    secure: process.env.SMTP_SECURE === "true",
+    auth: { user, pass },
+  });
+
+  await transporter.sendMail({
+    from: `"Deero Task Management" <${user}>`,
+    to: toEmail,
+    subject: "Reset your Deero password",
+    html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:24px;color:#1e293b"><h2 style="color:#651210">Deero Task Management</h2><p>Hello ${userName || "there"},</p><p>We received a request to reset your password.</p><p style="margin:28px 0"><a href="${resetUrl}" style="display:inline-block;background:#651210;color:#fff;text-decoration:none;padding:12px 20px;border-radius:6px;font-weight:bold">Reset password</a></p><p style="font-size:13px;color:#64748b">This link expires in one hour. If you did not request it, ignore this email.</p></div>`,
+  });
+}
+
 export async function sendTaskAssignmentEmail({
   toEmail,
   assigneeName,

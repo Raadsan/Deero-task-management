@@ -1,7 +1,7 @@
 "use client";
 
-import DeleteAction from "@/components/Shared/DeleteAction";
 import ManagementPageShell from "@/components/Shared/ManagementPageShell";
+import TaskDeleteDialog from "@/components/tasks/TaskDeleteDialog";
 import TaskFormModal from "@/components/tasks/TaskFormModal";
 import TaskViewModal from "@/components/tasks/TaskViewModal";
 import { Button } from "@/components/ui/button";
@@ -37,8 +37,8 @@ import {
   getTaskStatusBadgeClass,
 } from "@/lib/dashboard-ui";
 import { Task } from "@/lib/types";
-import { cn, formatTaskDeadline, formatTexts, resolveTaskDisplayStatus } from "@/lib/utils";
-import { Edit, Eye, Plus, Search, Trash2 } from "lucide-react";
+import { cn, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
+import { Edit, Eye, Plus, Search } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
@@ -125,14 +125,6 @@ export default function TasksManagementPage() {
     setCurrentPage(1);
   }, [search, pageSize, statusFilter, userFilter]);
 
-  const deleteDescription = formatTexts({
-    type: "tasks",
-    formatType: "description",
-  });
-  const deleteDialogTitle = formatTexts({
-    type: "tasks",
-    formatType: "diaglog",
-  });
 
   function openViewModal(task: Task) {
     setViewingTask(task);
@@ -350,13 +342,9 @@ export default function TasksManagementPage() {
                               <Edit className="size-4" />
                             </Button>
                             {task.id && (
-                              <DeleteAction
-                                typeOfDataToDelete="tasks"
-                                idToDelete={String(task.id)}
-                                description={deleteDescription ?? ""}
-                                dialogTitle={deleteDialogTitle ?? "Delete Task"}
+                              <TaskDeleteDialog
+                                task={task}
                                 triggerClassNames={actionBtnDelete}
-                                trigger={<Trash2 className="size-4" />}
                               />
                             )}
                           </div>

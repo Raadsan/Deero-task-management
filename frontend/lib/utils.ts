@@ -110,6 +110,7 @@ export function resolveTaskDisplayStatus(
     assignedToId?: string;
     assignedTo?: { id: string };
     transferHistory?: Array<{ fromAssigneeId?: string }>;
+    startDate?: Date | string | null;
   },
   currentUserId?: string,
 ) {
@@ -128,6 +129,12 @@ export function resolveTaskDisplayStatus(
   if (task.status === "completed" || progress >= 100) return "completed";
   const extraMinutes = Number(task.extraTimeMinutes ?? (Number(task.extraTimeHours ?? 0) * 60));
   if (task.deadline && isTaskPastDeadline(task.deadline, extraMinutes)) return "overdue";
+
+  // If start date is reached, display as in_progress
+  if (task.startDate && new Date(task.startDate).getTime() <= Date.now()) {
+    return "in_progress";
+  }
+
   return task.status || "pending";
 }
 
@@ -136,6 +143,13 @@ export function formatTaskDeadline(
   context?: {
     status?: string;
     progress?: number;
+    startDate?: Date | string | null;
+    extraTimeMinutes?: number | null;
+    extraTimeHours?: number | null;
+    assgineeId?: string;
+    assignedToId?: string;
+    assignedTo?: { id: string };
+    transferHistory?: Array<{ fromAssigneeId?: string }>;
   },
 ) {
   if (!deadline) return "No due date";

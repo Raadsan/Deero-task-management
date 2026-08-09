@@ -9,7 +9,7 @@ import {
 import { ROUTES, SWR_CACH_KEYS, TASK_PRIORITIES } from "@/lib/constants";
 import { btnFormCancel, btnFormSubmit } from "@/lib/dashboard-ui";
 import { cn, getTaskStatus, resolveTaskDisplayStatus } from "@/lib/utils";
-import { ArrowRightLeft, CheckSquare, Clock, Lock } from "lucide-react";
+import { ArrowRightLeft, CheckSquare, Clock, Lock, Plus, UserCheck, Users, X } from "lucide-react";
 import { CreateTaskSchema, TaskSchema } from "@/lib/validations";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useRouter } from "next/navigation";
@@ -107,6 +107,11 @@ export default function TaskForm({
           currentTask.priority.slice(1)) as TaskPriority
         : "Normal",
       supervisor: currentTask?.supervisor ?? "",
+      startDate: initialData?.startDate
+        ? new Date(initialData.startDate)
+        : currentTask?.startDate
+          ? new Date(currentTask.startDate)
+          : defaultDueDate(),
       deadline: initialData?.deadline
         ? new Date(initialData.deadline)
         : currentTask?.deadline
@@ -206,7 +211,15 @@ export default function TaskForm({
   const branchClients = branchClientsRes?.data ?? [];
   const EMPTY_PENDING_SERVICES = useMemo(() => [], []);
 
+  const currentUserId = session.data?.user?.id;
 
+  const [selectedAssigneeIds, setSelectedAssigneeIds] = useState<string[]>(() => {
+    if (currentTask?.assignedTo?.id) return [String(currentTask.assignedTo.id)];
+    if (initialData?.assigneeId) return [String(initialData.assigneeId)];
+    return [];
+  });
+
+  const startDateValue = watch("startDate");
   const deadlineValue = watch("deadline");
   const extraTimeHoursValue = watch("extraTimeHours");
   const [extraTimeUntil, setExtraTimeUntil] = useState<Date | undefined>(() =>
@@ -215,6 +228,20 @@ export default function TaskForm({
       Number(currentTask?.extraTimeMinutes ?? 0),
     ),
   );
+
+  function toggleAssignee(id: string) {
+    const targetId = String(id);
+    setSelectedAssigneeIds((prev) => {
+      let next: string[];
+      if (prev.includes(targetId)) {
+        next = prev.filter((i) => i !== targetId);
+      } else {
+        next = [...prev, targetId];
+      }
+      setValue("assigneeId", next[0] || "", { shouldValidate: true });
+      return next;
+    });
+  }
 
   const [transiton, setStartTransition] = useTransition();
   const router = useRouter();
@@ -240,7 +267,6 @@ export default function TaskForm({
   );
   const pendingServiceOptions = selectedClient?.pendingServices ?? EMPTY_PENDING_SERVICES;
   const watchAssingneeId = watch("assigneeId");
-  const currentUserId = session.data?.user.id;
   const isAssignee = String(currentUserId) === String(watchAssingneeId);
 
   const watchedPriority = watch("priority");
@@ -361,6 +387,10 @@ export default function TaskForm({
         (currentTask as any)?.user?.id ??
         "",
       );
+      
+      const siblingIds = (currentTask as any).siblings?.map((s: any) => String(s.assgineeId)) || [targetAssigneeId];
+      setSelectedAssigneeIds(siblingIds);
+
       setTaskKind(isClient ? "client" : "general");
       reset({
         taskKind: isClient ? "client" : "general",
@@ -373,6 +403,7 @@ export default function TaskForm({
         priority: (currentTask.priority.charAt(0).toUpperCase() +
           currentTask.priority.slice(1)) as TaskPriority,
         supervisor: currentTask.supervisor,
+        startDate: currentTask.startDate ? new Date(currentTask.startDate) : defaultDueDate(),
         deadline: currentTask.deadline
           ? new Date(currentTask.deadline)
           : defaultDueDate(),
@@ -427,18 +458,23 @@ export default function TaskForm({
     if (formType === "create") {
       const createData = data as z.infer<typeof CreateTaskSchema>;
       const isGeneral = createData.taskKind === "general";
+      const targetAssignees = selectedAssigneeIds.length > 0 ? selectedAssigneeIds : [createData.assigneeId];
       setStartTransition(async () => {
         const result = await createTask({
           clientId: isGeneral ? undefined : createData.clientInstitutionId,
           serviceInformation: isGeneral
             ? createData.taskName
-            : createData.serviceInformation,
-          assgineeId: createData.assigneeId,
+            : (createData.taskName
+                ? `${createData.serviceInformation} — ${createData.taskName}`
+                : createData.serviceInformation),
+          assgineeId: targetAssignees[0],
+          assigneeIds: targetAssignees,
           description: createData.description,
           status: TaskStatus.pending,
           department: createData.department,
           priority: createData.priority,
           supervisor: createData.supervisor?.trim() || "",
+          startDate: createData.startDate ?? null,
           deadline: createData.deadline ?? null,
           extraTimeMinutes: Math.round(Number(createData.extraTimeHours ?? 0) * 60),
           progress: 0,
@@ -459,6 +495,7 @@ export default function TaskForm({
             department: "",
             priority: "Normal" as TaskPriority,
             supervisor: "",
+            startDate: defaultDueDate(),
             deadline: defaultDueDate(),
             extraTimeHours: 0,
             progress: 0,
@@ -467,6 +504,7 @@ export default function TaskForm({
           setExtraTimeUntil(undefined);
           setTaskKind(null);
           setTaskFeatures([]);
+          setSelectedAssigneeIds([]);
           // Re-apply the user's default portfolio so next creation is pre-selected
           const defaultId = branchOptionsRes?.data?.defaultBranchId;
           if (defaultId) setSelectedBranchId(defaultId);
@@ -479,10 +517,12 @@ export default function TaskForm({
       startTransition(async () => {
         const result = await editTask({
           taskId,
+          startDate: data.startDate,
           deadline: data.deadline,
           extraTimeMinutes: Math.round(Number(data.extraTimeHours ?? 0) * 60),
           status: data.status,
-          assgineeId: data.assigneeId,
+          assgineeId: selectedAssigneeIds[0] || data.assigneeId,
+          assigneeIds: selectedAssigneeIds,
           description: data.description,
           department: data.department,
           priority: data.priority,
@@ -538,7 +578,7 @@ export default function TaskForm({
         className={cn(
           "flex w-full flex-col",
           isModal
-            ? "min-h-0 flex-1 gap-4 overflow-y-auto px-6 pt-5"
+            ? "min-h-0 flex-1 gap-5 overflow-y-auto px-6 pt-5 pb-6"
             : "flex-wrap gap-[20px]",
         )}
       >
@@ -712,11 +752,11 @@ export default function TaskForm({
           </div>
         )}
 
-        {isCreate && taskKind === "general" && (
+        {isCreate && (
           <TextInput
             labelId="taskName"
             labelText="Task Name"
-            placeholder="Enter task name"
+            placeholder={taskKind === "client" ? "Enter task name for this client work" : "Enter task name"}
             defaultValue={watchTaskName}
             otherProps={{ ...register("taskName") }}
             disbaled={transiton}
@@ -742,30 +782,87 @@ export default function TaskForm({
 
         {(!isCreate || taskKind) && (
           <>
-            <SelectElement
-              labelText="Select Assignee"
-              placeholder={selectedBranchId ? "Select assignee" : "Select portfolio first"}
-              value={watchAssingneeId}
-              defaultValue={watchAssingneeId}
-              disbaleSelect={transiton || formType === "own:edit" || !selectedBranchId}
-              errorMessage={fieldMessage("assigneeId")}
-              invalid={fieldInvalid("assigneeId")}
-              compact={isModal}
-              elementRenderer={() => {
-                return assignees.map(({ name, id, role }) => {
-                  const label = role ? `${name} (${role})` : name;
-                  return (
-                    <GetSelectItem key={id} value={String(id)} label={label} />
-                  );
-                });
-              }}
-              onChange={(value) => {
-                setValue("assigneeId", value, {
-                  shouldValidate: true,
-                  shouldTouch: true,
-                });
-              }}
-            />
+            {/* Multi-Assignee Selection */}
+            <div className="w-full space-y-2 rounded-xl border border-zinc-200 bg-zinc-50/60 p-3.5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Users className="size-4 text-[#651210]" />
+                  <label className="text-xs font-bold uppercase tracking-wider text-zinc-700">
+                    Assigned Staff
+                  </label>
+                </div>
+                <span className="text-xs font-semibold text-[#651210] bg-red-50 border border-red-100 px-2.5 py-0.5 rounded-full">
+                  {selectedAssigneeIds.length} Selected
+                </span>
+              </div>
+
+              {/* Selected Assignees Chips */}
+              <div className="flex flex-wrap gap-1.5 min-h-[36px] items-center p-1.5 rounded-lg border border-zinc-200 bg-white shadow-inner">
+                {selectedAssigneeIds.length === 0 ? (
+                  <span className="text-xs text-zinc-400 italic px-1">No staff selected yet</span>
+                ) : (
+                  selectedAssigneeIds.map((id) => {
+                    const staffMember = assignees.find((a) => String(a.id) === String(id));
+                    const name = staffMember?.name || id;
+                    return (
+                      <span
+                        key={id}
+                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#651210] text-white text-xs font-medium shadow-sm transition-all"
+                      >
+                        <UserCheck className="size-3 text-red-200" />
+                        {name}
+                        {(isCreate || formType === "edit") && (
+                          <button
+                            type="button"
+                            onClick={() => toggleAssignee(id)}
+                            className="hover:text-red-300 font-bold ml-1 text-xs"
+                            title="Remove staff member"
+                          >
+                            <X className="size-3" />
+                          </button>
+                        )}
+                      </span>
+                    );
+                  })
+                )}
+              </div>
+
+              {/* Staff List Multi-Select */}
+              {(isCreate || formType === "edit") && assignees.length > 0 && (
+                <div className="mt-2 space-y-1.5">
+                  <p className="text-[11px] font-semibold text-zinc-500">
+                    Click to add/remove staff members:
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-36 overflow-y-auto pr-1">
+                    {assignees.map((staff) => {
+                      const isSelected = selectedAssigneeIds.includes(String(staff.id));
+                      return (
+                        <button
+                          key={staff.id}
+                          type="button"
+                          disabled={transiton}
+                          onClick={() => toggleAssignee(String(staff.id))}
+                          className={cn(
+                            "flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-left transition-all border",
+                            isSelected
+                              ? "bg-amber-50 border-amber-300 text-amber-900 font-semibold shadow-xs"
+                              : "bg-white border-zinc-200 text-zinc-700 hover:border-zinc-300 hover:bg-zinc-100",
+                          )}
+                        >
+                          <span className="truncate">{staff.name}</span>
+                          {isSelected ? (
+                            <span className="text-amber-700 font-bold text-xs shrink-0 ml-1">✓</span>
+                          ) : (
+                            <Plus className="size-3.5 text-zinc-400 shrink-0 ml-1" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
             <SelectElement
               labelText="Priority"
               placeholder="Select priority"
@@ -804,6 +901,57 @@ export default function TaskForm({
               invalid={fieldInvalid("supervisor")}
               compact={isModal}
             />
+
+            <TextInputWithTaxtArea
+              labelId="title"
+              labelText="Description"
+              placeholder={
+                isCreate && taskKind === "general"
+                  ? "Write the full task details here"
+                  : "Write the task description here"
+              }
+              defaultValue={currentTask?.description}
+              otherProps={{ ...register("description") }}
+              disbaled={transiton || formType === "own:edit"}
+              errorMessage={fieldMessage("description")}
+              invalid={fieldInvalid("description")}
+              wrapperStyle={
+                isCreate && taskKind === "general" ? "min-h-[140px]" : "h-fit"
+              }
+              compact={isModal}
+            />
+
+            {/* Start Date & Due Date (Garab yaalo / Side-by-Side - Below Description) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-1">
+              <DatePicker
+                labelText="Start Date (optional)"
+                disbaled={transiton || session.data?.user.role === "user"}
+                date={startDateValue ?? new Date()}
+                showTimePicker
+                compact={isModal}
+                setDate={(date) => {
+                  setValue("startDate", date, { shouldValidate: true });
+                }}
+                errorMessage={fieldMessage("startDate")}
+                invalid={fieldInvalid("startDate")}
+              />
+
+              <DatePicker
+                labelText="Due Date"
+                disbaled={transiton || session.data?.user.role === "user"}
+                date={deadlineValue}
+                showTimePicker
+                compact={isModal}
+                setDate={(date) => {
+                  setValue("deadline", date, { shouldValidate: true });
+                  const extraMinutes = Math.round(Number(extraTimeHoursValue ?? 0) * 60);
+                  setExtraTimeUntil(extraTimeDate(date, extraMinutes));
+                }}
+                errorMessage={fieldMessage("deadline")}
+                invalid={fieldInvalid("deadline")}
+              />
+            </div>
+
             {!isCreate && (
               <SelectElement
                 disbaleSelect={transiton || formType === "own:edit"}
@@ -820,39 +968,6 @@ export default function TaskForm({
                 }}
               />
             )}
-            <TextInputWithTaxtArea
-              labelId="title"
-              labelText="Description"
-              placeholder={
-                isCreate && taskKind === "general"
-                  ? "Write the full task details here"
-                  : "Write the task description here"
-              }
-              defaultValue={currentTask?.description}
-              otherProps={{ ...register("description") }}
-              disbaled={transiton || formType === "own:edit"}
-              errorMessage={fieldMessage("description")}
-              invalid={fieldInvalid("description")}
-              wrapperStyle={
-                isCreate && taskKind === "general" ? "min-h-[160px]" : "h-fit"
-              }
-              compact={isModal}
-            />
-
-            <DatePicker
-              labelText="Due Date"
-              disbaled={transiton || session.data?.user.role === "user"}
-              date={deadlineValue}
-              showTimePicker
-              compact={isModal}
-              setDate={(date) => {
-                setValue("deadline", date, { shouldValidate: true });
-                const extraMinutes = Math.round(Number(extraTimeHoursValue ?? 0) * 60);
-                setExtraTimeUntil(extraTimeDate(date, extraMinutes));
-              }}
-              errorMessage={fieldMessage("deadline")}
-              invalid={fieldInvalid("deadline")}
-            />
 
             {!isCreate && (
               <>

@@ -1,6 +1,6 @@
 "use client";
 
-import DeleteAction from "@/components/Shared/DeleteAction";
+import TaskDeleteDialog from "@/components/tasks/TaskDeleteDialog";
 import MyTaskQuickEditModal from "@/components/tasks/MyTaskQuickEditModal";
 import PersonalTaskEditModal from "@/components/tasks/PersonalTaskEditModal";
 import TaskViewModal from "@/components/tasks/TaskViewModal";
@@ -208,13 +208,9 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
                               {displayStatus === "transferred" ? <ArrowRightLeft className="size-4" /> : displayStatus === "overdue" ? <Lock className="size-4" /> : <Gauge className="size-4" />}
                             </Button>
                             {task.id ? (
-                              <DeleteAction
-                                typeOfDataToDelete="tasks"
-                                idToDelete={String(task.id)}
-                                description={`Delete "${taskTitle(task)}"?`}
-                                dialogTitle="Delete task"
+                              <TaskDeleteDialog
+                                task={task}
                                 triggerClassNames={actionBtnDelete}
-                                trigger={<Trash2 className="size-4" />}
                               />
                             ) : null}
                           </div>
@@ -222,7 +218,6 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
                       </TableRow>
                     );
                   })
-                )}
               </TableBody>
             </Table>
           </div>

@@ -9,6 +9,7 @@ import {
   superAdminRole,
   userRole,
 } from "./permissions.js";
+import { sendPasswordResetEmail } from "./email.js";
 import { createNotificationForAdmins } from "./notifications.js";
 
 export const auth = betterAuth({
@@ -41,6 +42,10 @@ export const auth = betterAuth({
 
   emailAndPassword: {
     enabled: true,
+    revokeSessionsOnPasswordReset: true,
+    sendResetPassword: async ({ user, url }) => {
+      await sendPasswordResetEmail({ toEmail: user.email, userName: user.name, resetUrl: url });
+    },
     minPasswordLength: 6,
   },
 

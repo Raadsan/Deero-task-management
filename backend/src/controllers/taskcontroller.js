@@ -43,7 +43,32 @@ export const getAllTasks = async (req, res) => {
       },
       orderBy: { createdAt: "desc" },
     });
-    res.json({ success: true, data: tasks });
+
+    // Attach siblings to each task for batch-delete awareness
+    const enriched = await Promise.all(
+      tasks.map(async (task) => {
+        if (!task.createdAt) return { ...task, siblings: [] };
+        const window = 5 * 60 * 1000;
+        const siblings = await prisma.task.findMany({
+          where: {
+            description: task.description,
+            serviceInformation: task.serviceInformation,
+            createdAt: {
+              gte: new Date(task.createdAt.getTime() - window),
+              lte: new Date(task.createdAt.getTime() + window),
+            },
+          },
+          select: {
+            id: true,
+            assgineeId: true,
+            user: { select: { id: true, name: true } },
+          },
+        });
+        return { ...task, siblings };
+      })
+    );
+
+    res.json({ success: true, data: enriched });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -59,7 +84,18 @@ export const getMyTasks = async (req, res) => {
     }
 
     const taskScope = String(req.query.scope ?? "personal").toLowerCase();
-    const where = { assgineeId: userId };
+    const now = new Date();
+    const where = {
+      assgineeId: userId,
+      AND: [
+        {
+          OR: [
+            { startDate: null },
+            { startDate: { lte: now } },
+          ],
+        },
+      ],
+    };
 
     if (taskScope === "personal") {
       where.isPersonal = true;
@@ -151,7 +187,30 @@ export const getTaskById = async (req, res) => {
     });
 
     if (!task) return res.status(404).json({ success: false, message: "Task not found" });
-    res.json({ success: true, data: task });
+
+    // Find siblings (tasks created at the same time with same details)
+    let siblings = [];
+    if (task.createdAt) {
+      const fiveMinutesAgo = new Date(task.createdAt.getTime() - 5 * 60 * 1000);
+      const fiveMinutesLater = new Date(task.createdAt.getTime() + 5 * 60 * 1000);
+      siblings = await prisma.task.findMany({
+        where: {
+          description: task.description,
+          serviceInformation: task.serviceInformation,
+          createdAt: {
+            gte: fiveMinutesAgo,
+            lte: fiveMinutesLater,
+          },
+        },
+        select: {
+          id: true,
+          assgineeId: true,
+          user: { select: { id: true, name: true } },
+        },
+      });
+    }
+
+    res.json({ success: true, data: { ...task, siblings } });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -161,14 +220,22 @@ export const createTask = async (req, res) => {
   const data = req.body;
   try {
     const scope = getScope(req);
-    const assignee = await prisma.staff.findUnique({
-      where: { id: data.assgineeId },
-      select: { id: true, portfolioId: true },
-    });
-    if (!assignee) {
+    
+    // Normalize target assignee IDs into an array
+    let targetAssigneeIds = [];
+    if (Array.isArray(data.assigneeIds) && data.assigneeIds.length > 0) {
+      targetAssigneeIds = data.assigneeIds.filter(Boolean);
+    } else if (Array.isArray(data.assgineeId) && data.assgineeId.length > 0) {
+      targetAssigneeIds = data.assgineeId.filter(Boolean);
+    } else if (data.assgineeId) {
+      targetAssigneeIds = [data.assgineeId];
+    } else if (data.assigneeId) {
+      targetAssigneeIds = [data.assigneeId];
+    }
+
+    if (!targetAssigneeIds.length) {
       return res.status(400).json({ success: false, error: "Assignee not found" });
     }
-    if (denyIfOutOfScope(res, scope, assignee.portfolioId)) return;
 
     if (data.clientId) {
       const scopedClient = await prisma.client.findFirst({
@@ -183,71 +250,83 @@ export const createTask = async (req, res) => {
       }
     }
 
-    let taskId = data.id;
-    if (!taskId) {
-      taskId = await generateCustomId({ entityTybe: "tasks" });
-    }
+    const createdTasks = [];
 
-    const normalized = normalizeTaskWriteStatus({
-      status: data.status,
-      progress: data.progress,
-      deadline: data.deadline,
-      currentStatus: "pending",
-      currentProgress: data.progress ?? 0,
-    });
-    if (normalized.error) {
-      return res.status(400).json({ success: false, error: normalized.error });
-    }
+    for (let i = 0; i < targetAssigneeIds.length; i++) {
+      const targetAssigneeId = targetAssigneeIds[i];
+      const assignee = await prisma.staff.findUnique({
+        where: { id: targetAssigneeId },
+        select: { id: true, portfolioId: true },
+      });
+      if (!assignee) continue;
+      if (denyIfOutOfScope(res, scope, assignee.portfolioId)) continue;
 
-    const taskData = {
-      id: taskId,
-      description: data.description,
-      status: normalized.status,
-      priority: data.priority?.toLowerCase(),
-      department: data.department || "General",
-      deadline: data.deadline ? new Date(data.deadline) : null,
-      extraTimeMinutes: Math.max(0, Number(data.extraTimeMinutes) || 0),
-      completedAt: normalized.status === "completed" ? new Date() : null,
-      progressUpdatedAt: normalized.progress > 0 ? new Date() : null,
-      startDate: data.startDate ? new Date(data.startDate) : null,
-      assgineeId: data.assgineeId,
-      supervisor: data.supervisor || "",
-      progress: normalized.progress,
-      serviceInformation: data.serviceInformation || "",
-      isPersonal: Boolean(data.isPersonal),
-      features: Array.isArray(data.features) ? data.features : null,
-    };
+      let taskId = (i === 0 && data.id) ? data.id : await generateCustomId({ entityTybe: "tasks" });
 
-    // Personal / simple tasks: single insert (no transaction — avoids remote DB timeouts)
-    if (!data.clientId) {
-      const result = await prisma.task.create({ data: taskData });
-      res.status(201).json({ success: true, data: result });
-      if (!data.isPersonal) {
+      const normalized = normalizeTaskWriteStatus({
+        status: data.status,
+        progress: data.progress,
+        deadline: data.deadline,
+        currentStatus: "pending",
+        currentProgress: data.progress ?? 0,
+      });
+      if (normalized.error) {
+        return res.status(400).json({ success: false, error: normalized.error });
+      }
+
+      const taskData = {
+        id: taskId,
+        description: data.description,
+        status: normalized.status,
+        priority: data.priority?.toLowerCase(),
+        department: data.department || "General",
+        deadline: data.deadline ? new Date(data.deadline) : null,
+        extraTimeMinutes: Math.max(0, Number(data.extraTimeMinutes) || 0),
+        completedAt: normalized.status === "completed" ? new Date() : null,
+        progressUpdatedAt: normalized.progress > 0 ? new Date() : null,
+        startDate: data.startDate ? new Date(data.startDate) : null,
+        assgineeId: targetAssigneeId,
+        supervisor: data.supervisor || "",
+        progress: normalized.progress,
+        serviceInformation: data.serviceInformation || "",
+        isPersonal: Boolean(data.isPersonal),
+        features: Array.isArray(data.features) ? data.features : null,
+      };
+
+      if (!data.clientId) {
+        const result = await prisma.task.create({ data: taskData });
+        createdTasks.push(result);
+        if (!data.isPersonal) {
+          void notifyTaskAssignee(result, req.user?.name || req.session?.user?.name || "Management").catch((err) => {
+            console.error("Failed to create assignee notification:", err);
+          });
+        }
+      } else {
+        const result = await prisma.$transaction(
+          async (tx) => {
+            const task = await tx.task.create({ data: taskData });
+            await tx.clientTask.create({
+              data: {
+                clientId: data.clientId,
+                taskId: task.id,
+              },
+            });
+            return task;
+          },
+          { maxWait: 10000, timeout: 20000 },
+        );
+        createdTasks.push(result);
         void notifyTaskAssignee(result, req.user?.name || req.session?.user?.name || "Management").catch((err) => {
           console.error("Failed to create assignee notification:", err);
         });
       }
-      return;
     }
 
-    const result = await prisma.$transaction(
-      async (tx) => {
-        const task = await tx.task.create({ data: taskData });
-        await tx.clientTask.create({
-          data: {
-            clientId: data.clientId,
-            taskId: task.id,
-          },
-        });
-        return task;
-      },
-      { maxWait: 10000, timeout: 20000 },
-    );
+    if (!createdTasks.length) {
+      return res.status(400).json({ success: false, error: "Failed to create task for any assignee" });
+    }
 
-    res.status(201).json({ success: true, data: result });
-    void notifyTaskAssignee(result, req.user?.name || req.session?.user?.name || "Management").catch((err) => {
-      console.error("Failed to create assignee notification:", err);
-    });
+    res.status(201).json({ success: true, data: createdTasks[0], createdTasks });
   } catch (error) {
     console.error("Create Task Error:", error);
     const message = error.message || "Internal Server Error";
@@ -292,7 +371,7 @@ async function notifyTaskAssignee(result, creatorName) {
 
 export const updateTask = async (req, res) => {
   const { id } = req.params;
-  const { description, status, priority, department, deadline, extraTimeMinutes, startDate, assgineeId, supervisor, progress, serviceInformation, features } = req.body;
+  const { description, status, priority, department, deadline, extraTimeMinutes, startDate, assgineeId, assigneeIds, supervisor, progress, serviceInformation, features } = req.body;
   try {
     const scope = getScope(req);
     const originalTask = await findAccessibleTask(scope, id, { user: true });
@@ -327,157 +406,155 @@ export const updateTask = async (req, res) => {
       return res.status(400).json({ success: false, error: normalized.error });
     }
 
-    if (assgineeId) {
-      const assignee = await prisma.staff.findUnique({
-        where: { id: assgineeId },
-        select: { id: true, portfolioId: true },
+    // Find siblings (tasks created at the same time with same details)
+    let siblings = [];
+    if (originalTask.createdAt) {
+      const fiveMinutesAgo = new Date(originalTask.createdAt.getTime() - 5 * 60 * 1000);
+      const fiveMinutesLater = new Date(originalTask.createdAt.getTime() + 5 * 60 * 1000);
+      siblings = await prisma.task.findMany({
+        where: {
+          description: originalTask.description,
+          serviceInformation: originalTask.serviceInformation,
+          createdAt: {
+            gte: fiveMinutesAgo,
+            lte: fiveMinutesLater,
+          },
+        },
       });
-      if (!assignee) {
-        return res.status(400).json({ success: false, error: "Assignee not found" });
-      }
-      if (denyIfOutOfScope(res, scope, assignee.portfolioId)) return;
     }
 
-    const shouldCaptureOriginalDeadline =
-      extraTimeMinutes !== undefined &&
-      Math.max(0, Number(extraTimeMinutes) || 0) > 0 &&
-      !originalTask.originalDeadline;
+    const targetAssigneeIds = Array.isArray(assigneeIds) && assigneeIds.length > 0
+      ? assigneeIds.filter(Boolean)
+      : [assgineeId || originalTask.assgineeId].filter(Boolean);
 
-    const isReassignment = Boolean(assgineeId && assgineeId !== originalTask.assgineeId);
-    const newTransferredFrom = isReassignment
-      ? Math.max(originalTask.transferredFromProgress || 0, originalTask.progress || 0)
-      : (originalTask.transferredFromProgress || 0);
+    if (!targetAssigneeIds.length) {
+      return res.status(400).json({ success: false, error: "At least one assignee is required" });
+    }
 
-    const task = await prisma.task.update({
-      where: { id },
-      data: {
-        ...(description !== undefined ? { description } : {}),
-        status: normalized.status,
-        ...(priority !== undefined ? { priority: priority?.toLowerCase() } : {}),
-        ...(department !== undefined ? { department } : {}),
-        ...(deadline !== undefined
-          ? { deadline: deadline ? new Date(deadline) : null }
-          : {}),
-        ...(extraTimeMinutes !== undefined
-          ? { extraTimeMinutes: Math.max(0, Number(extraTimeMinutes) || 0) }
-          : {}),
-        // Snapshot original deadline the first time extra time is added
-        ...(shouldCaptureOriginalDeadline
-          ? { originalDeadline: originalTask.deadline }
-          : {}),
-        ...(startDate !== undefined
-          ? { startDate: startDate ? new Date(startDate) : null }
-          : {}),
-        ...(assgineeId !== undefined ? { assgineeId } : {}),
-        ...(isReassignment ? { transferredFromProgress: newTransferredFrom } : {}),
-        ...(supervisor !== undefined ? { supervisor } : {}),
-        progress: normalized.progress,
-        ...(originalTask.progress !== normalized.progress ? { progressUpdatedAt: new Date() } : {}),
-        ...(originalTask.status !== "completed" && normalized.status === "completed"
-          ? { completedAt: new Date() }
-          : originalTask.status === "completed" && normalized.status !== "completed"
-            ? { completedAt: null }
-            : {}),
-        ...(serviceInformation !== undefined ? { serviceInformation } : {}),
-        ...(features !== undefined ? { features } : {}),
-      },
-      include: {
-        user: true,
-        transferHistory: {
-          include: {
-            fromAssignee: { select: { id: true, name: true, portfolioId: true } },
-            toAssignee: { select: { id: true, name: true, portfolioId: true } },
-            transferredBy: { select: { id: true, name: true } },
-          },
-          orderBy: { createdAt: "asc" },
-        },
-      },
+    // Delete tasks for assignees that were deselected
+    const tasksToDelete = siblings.filter(s => !targetAssigneeIds.includes(s.assgineeId));
+    for (const t of tasksToDelete) {
+      await prisma.task.delete({ where: { id: t.id } });
+    }
+
+    const existingAssigneeIds = siblings.filter(s => targetAssigneeIds.includes(s.assgineeId)).map(s => s.assgineeId);
+    const newAssigneesToAdd = targetAssigneeIds.filter(id => !existingAssigneeIds.includes(id));
+
+    // Get client task details if associated
+    const clientTask = await prisma.clientTask.findFirst({
+      where: { taskId: id },
     });
 
-    if (isReassignment) {
-      await prisma.taskTransferHistory.create({
+    // Create tasks for newly added assignees
+    for (const newAssigneeId of newAssigneesToAdd) {
+      const newTaskId = await generateCustomId({ entityTybe: "tasks" });
+      const taskData = {
+        id: newTaskId,
+        description: description ?? originalTask.description,
+        status: normalized.status,
+        priority: (priority ?? originalTask.priority)?.toLowerCase(),
+        department: department ?? originalTask.department ?? "General",
+        deadline: deadline !== undefined ? (deadline ? new Date(deadline) : null) : originalTask.deadline,
+        extraTimeMinutes: extraTimeMinutes !== undefined ? Math.max(0, Number(extraTimeMinutes) || 0) : originalTask.extraTimeMinutes,
+        completedAt: normalized.status === "completed" ? new Date() : null,
+        progressUpdatedAt: normalized.progress > 0 ? new Date() : null,
+        startDate: startDate !== undefined ? (startDate ? new Date(startDate) : null) : originalTask.startDate,
+        assgineeId: newAssigneeId,
+        supervisor: supervisor ?? originalTask.supervisor ?? "",
+        progress: normalized.progress,
+        serviceInformation: serviceInformation ?? originalTask.serviceInformation ?? "",
+        isPersonal: originalTask.isPersonal,
+        features: features ?? originalTask.features,
+      };
+
+      if (!clientTask?.clientId) {
+        const result = await prisma.task.create({ data: taskData });
+        void notifyTaskAssignee(result, req.user?.name || req.session?.user?.name || "Management").catch(console.error);
+      } else {
+        const result = await prisma.$transaction(async (tx) => {
+          const task = await tx.task.create({ data: taskData });
+          await tx.clientTask.create({
+            data: {
+              clientId: clientTask.clientId,
+              taskId: newTaskId,
+            },
+          });
+          return task;
+        });
+        void notifyTaskAssignee(result, req.user?.name || req.session?.user?.name || "Management").catch(console.error);
+      }
+    }
+
+    // Update remaining sibling tasks
+    const tasksToUpdate = siblings.filter(s => targetAssigneeIds.includes(s.assgineeId));
+    let mainUpdatedTask = null;
+
+    for (const t of tasksToUpdate) {
+      const shouldCaptureOriginalDeadline =
+        extraTimeMinutes !== undefined &&
+        Math.max(0, Number(extraTimeMinutes) || 0) > 0 &&
+        !t.originalDeadline;
+
+      const updated = await prisma.task.update({
+        where: { id: t.id },
         data: {
-          taskId: id,
-          fromAssigneeId: originalTask.assgineeId,
-          toAssigneeId: assgineeId,
-      progressAtTransfer: originalTask.progress || 0,
-          deadlineAtTransfer: originalTask.deadline || null,
-          transferredById: req.user?.id || null,
+          ...(description !== undefined ? { description } : {}),
+          status: normalized.status,
+          ...(priority !== undefined ? { priority: priority?.toLowerCase() } : {}),
+          ...(department !== undefined ? { department } : {}),
+          ...(deadline !== undefined
+            ? { deadline: deadline ? new Date(deadline) : null }
+            : {}),
+          ...(extraTimeMinutes !== undefined
+            ? { extraTimeMinutes: Math.max(0, Number(extraTimeMinutes) || 0) }
+            : {}),
+          ...(shouldCaptureOriginalDeadline
+            ? { originalDeadline: t.deadline }
+            : {}),
+          ...(startDate !== undefined
+            ? { startDate: startDate ? new Date(startDate) : null }
+            : {}),
+          ...(supervisor !== undefined ? { supervisor } : {}),
+          progress: normalized.progress,
+          ...(t.progress !== normalized.progress ? { progressUpdatedAt: new Date() } : {}),
+          ...(t.status !== "completed" && normalized.status === "completed"
+            ? { completedAt: new Date() }
+            : t.status === "completed" && normalized.status !== "completed"
+              ? { completedAt: null }
+              : {}),
+          ...(serviceInformation !== undefined ? { serviceInformation } : {}),
+          ...(features !== undefined ? { features } : {}),
+        },
+        include: {
+          user: true,
+          transferHistory: {
+            include: {
+              fromAssignee: { select: { id: true, name: true, portfolioId: true } },
+              toAssignee: { select: { id: true, name: true, portfolioId: true } },
+              transferredBy: { select: { id: true, name: true } },
+            },
+            orderBy: { createdAt: "asc" },
+          },
         },
       });
-    }
 
-    // Create notifications if progress or status changed
-    if (originalTask && (originalTask.status !== task.status || originalTask.progress !== task.progress)) {
-      const admins = await prisma.staff.findMany({
-        where: {
-          role: { in: ["admin", "superadmin"] }
-        }
-      });
-
-      if (admins.length > 0) {
-        for (const admin of admins) {
-          try {
-            const notifId = Math.random().toString(36).substring(2, 15);
-            await prisma.$executeRawUnsafe(
-              `INSERT INTO notifications (id, taskId, taskName, assigneeName, deadline, type, userId, isSeen) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-              notifId,
-              task.id,
-              task.description.substring(0, 50) + "...",
-              task.user?.name || "Unknown",
-              task.deadline,
-              "task-updated",
-              admin.id,
-              0
-            );
-          } catch (err) {
-            console.error("Failed to create notification for admin:", admin.id, err);
-          }
-        }
+      if (t.id === id) {
+        mainUpdatedTask = updated;
       }
     }
 
-    // Notify New Assignee if changed
-    if (originalTask && originalTask.assgineeId !== task.assgineeId) {
-      try {
-        const notifId = Math.random().toString(36).substring(2, 15);
-        await prisma.$executeRawUnsafe(
-          `INSERT INTO notifications (id, taskId, taskName, assigneeName, deadline, type, userId, isSeen) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-          notifId,
-          task.id,
-          task.description.substring(0, 50) + "...",
-          task.user?.name || "User",
-          task.deadline,
-          "new-assignment",
-          task.assgineeId,
-          0
-        );
-        console.log("New assignee notification created");
-
-        // Send task assignment email to the new assignee
-        const newAssigneeUser = await prisma.staff.findUnique({ where: { id: task.assgineeId } });
-        if (newAssigneeUser?.email) {
-          void sendTaskAssignmentEmail({
-            toEmail: newAssigneeUser.email,
-            assigneeName: newAssigneeUser.name,
-            taskTitle: task.serviceInformation || task.description.substring(0, 60),
-            taskDescription: task.description,
-            deadline: task.deadline,
-            creatorName: req.user?.name || req.session?.user?.name || "Management",
-          }).catch((err) => {
-            console.error("Failed to send task reassignment email:", err);
-          });
-        }
-      } catch (err) {
-        console.error("Failed to create new assignee notification:", err);
-      }
+    if (!mainUpdatedTask && tasksToUpdate.length > 0) {
+      mainUpdatedTask = tasksToUpdate[0];
     }
 
-    res.json({ success: true, data: task });
+    res.json({ success: true, data: mainUpdatedTask });
   } catch (error) {
+    console.error("Update Task Error:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+
 
 export const deleteTask = async (req, res) => {
   const { id } = req.params;
