@@ -218,13 +218,13 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
                       </TableRow>
                     );
                   })
+                )}
               </TableBody>
             </Table>
           </div>
         </div>
 
-      <div className={dashboardPaginationClass}>
-          <div>
+        <div className={dashboardPaginationClass}>
             {tasks.length === 0
               ? "0 of 0"
               : `${Math.min(tasks.length, (currentPage - 1) * pageSize + 1)}-${Math.min(tasks.length, currentPage * pageSize)} of ${tasks.length}`}
