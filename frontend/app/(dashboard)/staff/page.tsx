@@ -35,7 +35,7 @@ import {
   dashboardTextSecondary,
 } from "@/lib/dashboard-ui";
 import { User } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { cn, sortStaffByCode } from "@/lib/utils";
 import { Edit, Eye, FileUp, Plus, Search, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
@@ -60,7 +60,10 @@ export default function EmployeesPage() {
     getAllUsers,
   );
 
-  const users = (usersRes?.data as UserRow[]) ?? [];
+  const users = useMemo(() => {
+    const rawUsers = (usersRes?.data as UserRow[]) ?? [];
+    return [...rawUsers].sort(sortStaffByCode);
+  }, [usersRes?.data]);
 
   const { mutate } = useSWRConfig();
   const [search, setSearch] = useState("");
@@ -87,6 +90,7 @@ export default function EmployeesPage() {
         toast.success("Staff member deleted successfully");
         setDeleteTarget(null);
         await mutate(SWR_CACH_KEYS.users.key);
+        await mutate((key) => true, undefined, { revalidate: true });
       } else {
         toast.error(result.errors?.message ?? "Failed to delete staff");
       }
@@ -172,17 +176,18 @@ export default function EmployeesPage() {
             <Table className="w-full">
               <TableHeader className={dashboardTableHeaderClass}>
                 <TableRow className={dashboardTableHeadRowClass}>
+                  <TableHead className={cn(dashboardTableHeadClass, "w-12 text-center")}>No.</TableHead>
                   {[
                     "Staff ID",
                     "Full Name",
                     "Email",
                     "Job Title",
                     "Type",
-                    "Role",
-                    "Status",
+                    // "Role",
                   ].map((heading) => (
                     <TableHead key={heading} className={dashboardTableHeadClass}>{heading}</TableHead>
                   ))}
+                  <TableHead className={cn(dashboardTableHeadClass, "min-w-[140px]")}>Status</TableHead>
                   <TableHead className={cn(dashboardTableHeadClass, "text-right")}>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -207,11 +212,14 @@ export default function EmployeesPage() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  paginatedUsers.map((user) => (
+                  paginatedUsers.map((user, index) => (
                     <TableRow
                       key={user.id}
                       className={dashboardTableBodyRowClass}
                     >
+                      <TableCell className={cn(dashboardTableCellClass, "w-12 text-center text-xs font-semibold text-zinc-400")}>
+                        {(currentPage - 1) * pageSize + index + 1}
+                      </TableCell>
                       <TableCell className={dashboardTableCellClass}>
                         <span className={dashboardTableIdClass}>{user.staffCode || "N/A"}</span>
                       </TableCell>
@@ -231,10 +239,10 @@ export default function EmployeesPage() {
                       <TableCell className={dashboardTableCellClass}>
                         <span className={dashboardTextSecondary}>{user.employmentType === "PART_TIME" ? "Part-Time" : "Full-Time"}</span>
                       </TableCell>
-                      <TableCell className={dashboardTableCellClass}>
+                      {/* <TableCell className={dashboardTableCellClass}>
                         {user.role || "N/A"}
-                      </TableCell>
-                      <TableCell className={dashboardTableCellClass}>
+                      </TableCell> */}
+                      <TableCell className={cn(dashboardTableCellClass, "min-w-[140px]")}>
                         <span
                           className={cn(
                             "rounded-full px-2 py-1 text-xs font-medium",

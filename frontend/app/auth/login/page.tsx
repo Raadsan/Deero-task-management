@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { authClient } from "@/lib/auth-client";
 import { APP_SYSTEM_NAME, APP_VERSION, ROUTES } from "@/lib/constants";
 import { loginSchema } from "@/lib/validations";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
@@ -15,7 +14,6 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { DefaultValues, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -27,7 +25,6 @@ export default function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const router = useRouter();
 
   const {
     register,
@@ -41,22 +38,31 @@ export default function LoginPage() {
   async function submitForm(data: z.infer<typeof loginSchema>) {
     setSubmitting(true);
     try {
-      const { error } = await authClient.signIn.email({
-        email: data.email,
-        password: data.password,
-        rememberMe,
+      const apiUrl = process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:7003";
+      const response = await fetch(`${apiUrl}/api/auth/sign-in/email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+          rememberMe,
+        }),
       });
+      const result = await response.json().catch(() => null);
 
-      if (error) {
-        if (error.code === "EMAIL_NOT_VERIFIED") {
-          router.replace(ROUTES.verify);
+      if (!response.ok) {
+        if (result?.code === "EMAIL_NOT_VERIFIED") {
+          window.location.replace(ROUTES.verify);
           return;
         }
-        toast.error(error.message || "Login failed. Please try again.");
+        toast.error(result?.message || "Login failed. Please try again.");
         return;
       }
 
-      router.replace(ROUTES.dashboard);
+      window.location.replace(ROUTES.dashboard);
+    } catch {
+      toast.error("Could not reach the login server. Please try again.");
     } finally {
       setSubmitting(false);
     }

@@ -51,20 +51,14 @@ export async function middleware(request: NextRequest) {
     (route) => pathName === route || pathName.startsWith(`${route}`),
   );
 
-  if (!hasSessionCookie(request)) {
-    if (isAuthPage) {
-      return NextResponse.next();
-    }
-
-    return NextResponse.redirect(new URL(LOGIN_PATH, request.url));
-  }
-
-  if (pathName === AUTH_ROUTES.login) {
-    return NextResponse.redirect(new URL(AUTH_ROUTES.dashboard, request.url));
-  }
-
+  // A cookie can outlive its server-side session. Always let the login page
+  // load so an expired cookie cannot cause a dashboard/login redirect loop.
   if (isAuthPage) {
-    return NextResponse.redirect(new URL(AUTH_ROUTES.dashboard, request.url));
+    return NextResponse.next();
+  }
+
+  if (!hasSessionCookie(request)) {
+    return NextResponse.redirect(new URL(LOGIN_PATH, request.url));
   }
 
   return forwardWithPathname(request, pathName);

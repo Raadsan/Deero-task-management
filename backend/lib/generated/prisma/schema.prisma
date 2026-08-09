@@ -39,6 +39,9 @@ model Staff {
   banReason                 String?
   banExpires                DateTime?
   portfolioId               String?
+  employmentType            String?                  @default("FULL_TIME")
+  jobTitle                  String?
+  staffCode                 String?
   expenseTransaction        ExpenseTransaction[]
   incomeTransaction         IncomeTransaction[]
   userFiles                 UserFiles[]
@@ -56,10 +59,10 @@ model Staff {
   sessions                  Session[]
   portfolio                 Portfolio?               @relation(fields: [portfolioId], references: [id], map: "Users_branchId_fkey")
   dynamicRole               Role?                    @relation(fields: [roleId], references: [id], map: "Users_roleId_fkey")
-  assignedTasks             Task[]                   @relation("TaskAssignee")
   transferredFromTasks      TaskTransferHistory[]    @relation("TaskTransferFrom")
   transferredToTasks        TaskTransferHistory[]    @relation("TaskTransferTo")
   transferredByTasks        TaskTransferHistory[]    @relation("TaskTransferredBy")
+  assignedTasks             Task[]                   @relation("TaskAssignee")
 
   @@index([portfolioId], map: "Users_branchId_fkey")
   @@index([roleId], map: "Users_roleId_fkey")
@@ -137,6 +140,7 @@ model Client {
   serviceAgreements  IncomeServiceAgreement[]
   clientService      ClientService[]
   installments       ClientInstallment[]
+  clientSchema       ClientSchema?
   accountManager     Staff?                   @relation("ClientAccountManager", fields: [accountManagerId], references: [id])
   portfolio          Portfolio?               @relation(fields: [portfolioId], references: [id], map: "clients_branchId_fkey")
   clientTask         ClientTask[]
@@ -145,7 +149,6 @@ model Client {
   contracts          Contract[]
   projects           Project[]
   recurringSchedules RecurringSchedule[]
-  clientSchema       ClientSchema?
 
   @@index([clientType])
   @@index([isDraft])
@@ -211,6 +214,7 @@ model Portfolio {
   iconLogoUrl        String?
   slugClearedOnce    Boolean             @default(false)
   usesRootLogin      Boolean             @default(false)
+  clientSchemas      ClientSchema[]
   clients            Client[]
   contentRequests    ContentRequest[]
   contracts          Contract[]
@@ -218,7 +222,6 @@ model Portfolio {
   recurringSchedules RecurringSchedule[]
   services           Service[]
   users              Staff[]
-  clientSchemas      ClientSchema[]
 
   @@map("portfolios")
 }
@@ -278,7 +281,6 @@ model Task {
   priority                TaskPriority             @default(normal)
   department              String
   deadline                DateTime?
-  originalDeadline        DateTime?
   extraTimeMinutes        Int                      @default(0)
   completedAt             DateTime?
   progressUpdatedAt       DateTime?
@@ -286,7 +288,6 @@ model Task {
   progress                Int                      @default(0)
   supervisor              String                   @default("")
   serviceInformation      String?
-  features                Json?
   isPersonal              Boolean                  @default(false)
   agreementId             String?
   contentCycleId          String?
@@ -296,11 +297,13 @@ model Task {
   updatedAt               DateTime?                @updatedAt
   workflowStage           WorkflowStage            @default(pending)
   workflowStepId          String?
-  startDate               DateTime?
+  originalDeadline        DateTime?
   transferredFromProgress Int                      @default(0)
+  startDate               DateTime?
+  features                Json?
   clientTask              ClientTask[]
-  transferHistory         TaskTransferHistory[]
   recurringOccurrence     RecurringTaskOccurrence?
+  transferHistory         TaskTransferHistory[]
   agreement               IncomeServiceAgreement?  @relation(fields: [agreementId], references: [id])
   user                    Staff                    @relation("TaskAssignee", fields: [assgineeId], references: [id], onDelete: Cascade)
   contentCycle            ContentCycle?            @relation(fields: [contentCycleId], references: [id])
@@ -326,15 +329,15 @@ model TaskTransferHistory {
   progressAtTransfer Int       @default(0)
   deadlineAtTransfer DateTime?
   transferredById    String?
-
-  task          Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  fromAssignee  Staff  @relation("TaskTransferFrom", fields: [fromAssigneeId], references: [id], onDelete: Cascade)
-  toAssignee    Staff  @relation("TaskTransferTo", fields: [toAssigneeId], references: [id], onDelete: Cascade)
-  transferredBy Staff? @relation("TaskTransferredBy", fields: [transferredById], references: [id])
+  fromAssignee       Staff     @relation("TaskTransferFrom", fields: [fromAssigneeId], references: [id], onDelete: Cascade)
+  task               Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  toAssignee         Staff     @relation("TaskTransferTo", fields: [toAssigneeId], references: [id], onDelete: Cascade)
+  transferredBy      Staff?    @relation("TaskTransferredBy", fields: [transferredById], references: [id])
 
   @@index([taskId])
   @@index([fromAssigneeId])
   @@index([toAssigneeId])
+  @@index([transferredById], map: "task_transfer_history_transferredById_fkey")
   @@map("task_transfer_history")
 }
 

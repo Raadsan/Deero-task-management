@@ -423,3 +423,49 @@ export function getFromToDateDescription({
   return dateDescription;
 }
 
+export function sortStaffByCode<T extends { staffCode?: string | null; createdAt?: string | Date | null }>(
+  a: T,
+  b: T,
+): number {
+  const codeA = String(a?.staffCode ?? "").trim();
+  const codeB = String(b?.staffCode ?? "").trim();
+
+  if (!codeA && !codeB) {
+    const timeA = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const timeB = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
+    return timeA - timeB;
+  }
+  if (!codeA) return 1;
+  if (!codeB) return -1;
+
+  const regex = /^([A-Za-z]+)(\d{2})[#\-\s]?(\d+)$/;
+  const matchA = codeA.match(regex);
+  const matchB = codeB.match(regex);
+
+  if (matchA && matchB) {
+    const prefixA = matchA[1].toUpperCase();
+    const prefixB = matchB[1].toUpperCase();
+
+    // 1. Sort by Prefix alphabetically (e.g. DAA before RT -> D before R)
+    if (prefixA !== prefixB) {
+      return prefixA.localeCompare(prefixB);
+    }
+
+    // 2. Sort by Year ascending (e.g. 19 before 20 before 24)
+    const yearA = parseInt(matchA[2], 10);
+    const yearB = parseInt(matchB[2], 10);
+    if (yearA !== yearB) {
+      return yearA - yearB;
+    }
+
+    // 3. Sort by Number ascending (e.g. 01 before 02 before 03)
+    const numA = parseInt(matchA[3], 10);
+    const numB = parseInt(matchB[3], 10);
+    if (numA !== numB) {
+      return numA - numB;
+    }
+  }
+
+  return codeA.localeCompare(codeB, undefined, { numeric: true, sensitivity: "base" });
+}
+

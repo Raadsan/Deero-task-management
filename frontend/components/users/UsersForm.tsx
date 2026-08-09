@@ -105,6 +105,32 @@ export default function UserForm({
     setSelectedBranchId(defaultBranchId);
   }, [defaultBranchId]);
 
+  useEffect(() => {
+    if (data && formType === "edit") {
+      reset({
+        name: data.name ?? "",
+        staffCode: data.staffCode ?? "",
+        jobTitle: data.jobTitle ?? "",
+        employmentType: data.employmentType ?? "FULL_TIME",
+        email: data.email ?? "",
+        role: data.role ?? "",
+        password: "",
+        gender: data.gender ?? "",
+        salary: data.salary ?? "",
+        portfolioId:
+          (data as { portfolioId?: string; portfolio?: { id: string } })?.portfolioId ??
+          (data as { portfolio?: { id: string } })?.portfolio?.id ??
+          "",
+        status: data.banned ? "inactive" : "active",
+      });
+      setSelectedBranchId(
+        (data as { portfolioId?: string; portfolio?: { id: string } })?.portfolioId ??
+          (data as { portfolio?: { id: string } })?.portfolio?.id ??
+          "",
+      );
+    }
+  }, [data, formType, reset]);
+
   const session = authClient.useSession();
   const activeUserRole = session.data?.user.role;
   const activeRoleId = (session.data?.user as { roleId?: string } | undefined)?.roleId;
@@ -234,6 +260,7 @@ export default function UserForm({
         if (result.success) {
           toast.success("Staff created successfully.");
           await mutate(SWR_CACH_KEYS.users.key);
+          await mutate((key) => true, undefined, { revalidate: true });
           reset();
           if (onSuccess) {
             onSuccess();
@@ -307,6 +334,7 @@ export default function UserForm({
             : "Updated User Data successfully!",
         );
         await mutate(SWR_CACH_KEYS.users.key);
+        await mutate((key) => true, undefined, { revalidate: true });
         if (onSuccess) {
           onSuccess();
           return;

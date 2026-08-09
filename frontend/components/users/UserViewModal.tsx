@@ -37,6 +37,11 @@ export default function UserViewModal({ open, onOpenChange, userId }: Props) {
   const { data, isLoading } = useSWR(
     open && userId ? ["user-view-modal", userId] : null,
     () => getUserById(userId!),
+    {
+      revalidateOnFocus: true,
+      revalidateOnMount: true,
+      dedupingInterval: 0,
+    },
   );
 
   const user = data?.data as

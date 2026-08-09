@@ -16,12 +16,16 @@ export default function DashboardAccessGuard({
 
   useEffect(() => {
     if (!session) {
-      router.replace(ROUTES.login);
+      window.location.replace(ROUTES.login);
     }
-  }, [session, router]);
+  }, [session]);
 
   if (!session) {
-    return null;
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-slate-50 text-sm font-medium text-zinc-500">
+        Redirecting to login...
+      </div>
+    );
   }
 
   return <>{children}</>;

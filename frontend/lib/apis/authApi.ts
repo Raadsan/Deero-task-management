@@ -43,8 +43,8 @@ export const getUserSession = cache(
         data: response.data,
         success: true,
       };
-    } catch (error) {
-      return handleError({ errors: error, type: "server" }) as ErrorResponse;
+    } catch {
+      return { data: null, success: false };
     }
   },
 );

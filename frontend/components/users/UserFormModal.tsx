@@ -36,6 +36,11 @@ export default function UserFormModal({
   const { data, isLoading } = useSWR(
     open ? ["user-form-modal", mode, userId ?? "new"] : null,
     () => loadUserFormData(mode, userId),
+    {
+      revalidateOnFocus: true,
+      revalidateOnMount: true,
+      dedupingInterval: 0,
+    },
   );
 
   return (

@@ -4,7 +4,7 @@ import AppToaster from "@/components/Shared/AppToaster";
 import "./globals.css";
 
 // Keep a version in the URL because browsers cache favicons aggressively.
-const FAVICON_SRC = "/favicon-01.svg?v=20260804-2";
+const FAVICON_SRC = "/fav.png";
 const popins = Poppins({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   variable: "--poppinsFont",

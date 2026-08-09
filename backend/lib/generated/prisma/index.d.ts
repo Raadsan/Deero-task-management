@@ -4733,10 +4733,10 @@ export namespace Prisma {
     createdProjects: number
     assignedRecurringSteps: number
     sessions: number
-    assignedTasks: number
     transferredFromTasks: number
     transferredToTasks: number
     transferredByTasks: number
+    assignedTasks: number
   }
 
   export type StaffCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4755,10 +4755,10 @@ export namespace Prisma {
     createdProjects?: boolean | StaffCountOutputTypeCountCreatedProjectsArgs
     assignedRecurringSteps?: boolean | StaffCountOutputTypeCountAssignedRecurringStepsArgs
     sessions?: boolean | StaffCountOutputTypeCountSessionsArgs
-    assignedTasks?: boolean | StaffCountOutputTypeCountAssignedTasksArgs
     transferredFromTasks?: boolean | StaffCountOutputTypeCountTransferredFromTasksArgs
     transferredToTasks?: boolean | StaffCountOutputTypeCountTransferredToTasksArgs
     transferredByTasks?: boolean | StaffCountOutputTypeCountTransferredByTasksArgs
+    assignedTasks?: boolean | StaffCountOutputTypeCountAssignedTasksArgs
   }
 
   // Custom InputTypes
@@ -4880,13 +4880,6 @@ export namespace Prisma {
   /**
    * StaffCountOutputType without action
    */
-  export type StaffCountOutputTypeCountAssignedTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: TaskWhereInput
-  }
-
-  /**
-   * StaffCountOutputType without action
-   */
   export type StaffCountOutputTypeCountTransferredFromTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TaskTransferHistoryWhereInput
   }
@@ -4903,6 +4896,13 @@ export namespace Prisma {
    */
   export type StaffCountOutputTypeCountTransferredByTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TaskTransferHistoryWhereInput
+  }
+
+  /**
+   * StaffCountOutputType without action
+   */
+  export type StaffCountOutputTypeCountAssignedTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaskWhereInput
   }
 
 
@@ -5112,6 +5112,7 @@ export namespace Prisma {
    */
 
   export type PortfolioCountOutputType = {
+    clientSchemas: number
     clients: number
     contentRequests: number
     contracts: number
@@ -5119,10 +5120,10 @@ export namespace Prisma {
     recurringSchedules: number
     services: number
     users: number
-    clientSchemas: number
   }
 
   export type PortfolioCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    clientSchemas?: boolean | PortfolioCountOutputTypeCountClientSchemasArgs
     clients?: boolean | PortfolioCountOutputTypeCountClientsArgs
     contentRequests?: boolean | PortfolioCountOutputTypeCountContentRequestsArgs
     contracts?: boolean | PortfolioCountOutputTypeCountContractsArgs
@@ -5130,7 +5131,6 @@ export namespace Prisma {
     recurringSchedules?: boolean | PortfolioCountOutputTypeCountRecurringSchedulesArgs
     services?: boolean | PortfolioCountOutputTypeCountServicesArgs
     users?: boolean | PortfolioCountOutputTypeCountUsersArgs
-    clientSchemas?: boolean | PortfolioCountOutputTypeCountClientSchemasArgs
   }
 
   // Custom InputTypes
@@ -5142,6 +5142,13 @@ export namespace Prisma {
      * Select specific fields to fetch from the PortfolioCountOutputType
      */
     select?: PortfolioCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * PortfolioCountOutputType without action
+   */
+  export type PortfolioCountOutputTypeCountClientSchemasArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ClientSchemaWhereInput
   }
 
   /**
@@ -5191,13 +5198,6 @@ export namespace Prisma {
    */
   export type PortfolioCountOutputTypeCountUsersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: StaffWhereInput
-  }
-
-  /**
-   * PortfolioCountOutputType without action
-   */
-  export type PortfolioCountOutputTypeCountClientSchemasArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ClientSchemaWhereInput
   }
 
 
@@ -6858,9 +6858,9 @@ export namespace Prisma {
     banReason: string | null
     banExpires: Date | null
     portfolioId: string | null
-    staffCode: string | null
-    jobTitle: string | null
     employmentType: string | null
+    jobTitle: string | null
+    staffCode: string | null
   }
 
   export type StaffMaxAggregateOutputType = {
@@ -6880,9 +6880,9 @@ export namespace Prisma {
     banReason: string | null
     banExpires: Date | null
     portfolioId: string | null
-    staffCode: string | null
-    jobTitle: string | null
     employmentType: string | null
+    jobTitle: string | null
+    staffCode: string | null
   }
 
   export type StaffCountAggregateOutputType = {
@@ -6902,9 +6902,9 @@ export namespace Prisma {
     banReason: number
     banExpires: number
     portfolioId: number
-    staffCode: number
-    jobTitle: number
     employmentType: number
+    jobTitle: number
+    staffCode: number
     _all: number
   }
 
@@ -6926,9 +6926,9 @@ export namespace Prisma {
     banReason?: true
     banExpires?: true
     portfolioId?: true
-    staffCode?: true
-    jobTitle?: true
     employmentType?: true
+    jobTitle?: true
+    staffCode?: true
   }
 
   export type StaffMaxAggregateInputType = {
@@ -6948,9 +6948,9 @@ export namespace Prisma {
     banReason?: true
     banExpires?: true
     portfolioId?: true
-    staffCode?: true
-    jobTitle?: true
     employmentType?: true
+    jobTitle?: true
+    staffCode?: true
   }
 
   export type StaffCountAggregateInputType = {
@@ -6970,9 +6970,9 @@ export namespace Prisma {
     banReason?: true
     banExpires?: true
     portfolioId?: true
-    staffCode?: true
-    jobTitle?: true
     employmentType?: true
+    jobTitle?: true
+    staffCode?: true
     _all?: true
   }
 
@@ -7065,9 +7065,9 @@ export namespace Prisma {
     banReason: string | null
     banExpires: Date | null
     portfolioId: string | null
-    staffCode: string | null
-    jobTitle: string | null
     employmentType: string | null
+    jobTitle: string | null
+    staffCode: string | null
     _count: StaffCountAggregateOutputType | null
     _min: StaffMinAggregateOutputType | null
     _max: StaffMaxAggregateOutputType | null
@@ -7104,9 +7104,9 @@ export namespace Prisma {
     banReason?: boolean
     banExpires?: boolean
     portfolioId?: boolean
-    staffCode?: boolean
-    jobTitle?: boolean
     employmentType?: boolean
+    jobTitle?: boolean
+    staffCode?: boolean
     expenseTransaction?: boolean | Staff$expenseTransactionArgs<ExtArgs>
     incomeTransaction?: boolean | Staff$incomeTransactionArgs<ExtArgs>
     userFiles?: boolean | Staff$userFilesArgs<ExtArgs>
@@ -7124,10 +7124,10 @@ export namespace Prisma {
     sessions?: boolean | Staff$sessionsArgs<ExtArgs>
     portfolio?: boolean | Staff$portfolioArgs<ExtArgs>
     dynamicRole?: boolean | Staff$dynamicRoleArgs<ExtArgs>
-    assignedTasks?: boolean | Staff$assignedTasksArgs<ExtArgs>
     transferredFromTasks?: boolean | Staff$transferredFromTasksArgs<ExtArgs>
     transferredToTasks?: boolean | Staff$transferredToTasksArgs<ExtArgs>
     transferredByTasks?: boolean | Staff$transferredByTasksArgs<ExtArgs>
+    assignedTasks?: boolean | Staff$assignedTasksArgs<ExtArgs>
     _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["staff"]>
 
@@ -7149,9 +7149,9 @@ export namespace Prisma {
     banReason?: boolean
     banExpires?: boolean
     portfolioId?: boolean
-    staffCode?: boolean
-    jobTitle?: boolean
     employmentType?: boolean
+    jobTitle?: boolean
+    staffCode?: boolean
   }
 
   export type StaffInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7172,10 +7172,10 @@ export namespace Prisma {
     sessions?: boolean | Staff$sessionsArgs<ExtArgs>
     portfolio?: boolean | Staff$portfolioArgs<ExtArgs>
     dynamicRole?: boolean | Staff$dynamicRoleArgs<ExtArgs>
-    assignedTasks?: boolean | Staff$assignedTasksArgs<ExtArgs>
     transferredFromTasks?: boolean | Staff$transferredFromTasksArgs<ExtArgs>
     transferredToTasks?: boolean | Staff$transferredToTasksArgs<ExtArgs>
     transferredByTasks?: boolean | Staff$transferredByTasksArgs<ExtArgs>
+    assignedTasks?: boolean | Staff$assignedTasksArgs<ExtArgs>
     _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -7199,10 +7199,10 @@ export namespace Prisma {
       sessions: Prisma.$SessionPayload<ExtArgs>[]
       portfolio: Prisma.$PortfolioPayload<ExtArgs> | null
       dynamicRole: Prisma.$RolePayload<ExtArgs> | null
-      assignedTasks: Prisma.$TaskPayload<ExtArgs>[]
       transferredFromTasks: Prisma.$TaskTransferHistoryPayload<ExtArgs>[]
       transferredToTasks: Prisma.$TaskTransferHistoryPayload<ExtArgs>[]
       transferredByTasks: Prisma.$TaskTransferHistoryPayload<ExtArgs>[]
+      assignedTasks: Prisma.$TaskPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -7221,9 +7221,9 @@ export namespace Prisma {
       banReason: string | null
       banExpires: Date | null
       portfolioId: string | null
-      staffCode: string | null
-      jobTitle: string | null
       employmentType: string | null
+      jobTitle: string | null
+      staffCode: string | null
     }, ExtArgs["result"]["staff"]>
     composites: {}
   }
@@ -7581,10 +7581,10 @@ export namespace Prisma {
     sessions<T extends Staff$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany"> | Null>
     portfolio<T extends Staff$portfolioArgs<ExtArgs> = {}>(args?: Subset<T, Staff$portfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     dynamicRole<T extends Staff$dynamicRoleArgs<ExtArgs> = {}>(args?: Subset<T, Staff$dynamicRoleArgs<ExtArgs>>): Prisma__RoleClient<$Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
-    assignedTasks<T extends Staff$assignedTasksArgs<ExtArgs> = {}>(args?: Subset<T, Staff$assignedTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany"> | Null>
     transferredFromTasks<T extends Staff$transferredFromTasksArgs<ExtArgs> = {}>(args?: Subset<T, Staff$transferredFromTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskTransferHistoryPayload<ExtArgs>, T, "findMany"> | Null>
     transferredToTasks<T extends Staff$transferredToTasksArgs<ExtArgs> = {}>(args?: Subset<T, Staff$transferredToTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskTransferHistoryPayload<ExtArgs>, T, "findMany"> | Null>
     transferredByTasks<T extends Staff$transferredByTasksArgs<ExtArgs> = {}>(args?: Subset<T, Staff$transferredByTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskTransferHistoryPayload<ExtArgs>, T, "findMany"> | Null>
+    assignedTasks<T extends Staff$assignedTasksArgs<ExtArgs> = {}>(args?: Subset<T, Staff$assignedTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7630,9 +7630,9 @@ export namespace Prisma {
     readonly banReason: FieldRef<"Staff", 'String'>
     readonly banExpires: FieldRef<"Staff", 'DateTime'>
     readonly portfolioId: FieldRef<"Staff", 'String'>
-    readonly staffCode: FieldRef<"Staff", 'String'>
-    readonly jobTitle: FieldRef<"Staff", 'String'>
     readonly employmentType: FieldRef<"Staff", 'String'>
+    readonly jobTitle: FieldRef<"Staff", 'String'>
+    readonly staffCode: FieldRef<"Staff", 'String'>
   }
     
 
@@ -8262,26 +8262,6 @@ export namespace Prisma {
   }
 
   /**
-   * Staff.assignedTasks
-   */
-  export type Staff$assignedTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Task
-     */
-    select?: TaskSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: TaskInclude<ExtArgs> | null
-    where?: TaskWhereInput
-    orderBy?: TaskOrderByWithRelationInput | TaskOrderByWithRelationInput[]
-    cursor?: TaskWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: TaskScalarFieldEnum | TaskScalarFieldEnum[]
-  }
-
-  /**
    * Staff.transferredFromTasks
    */
   export type Staff$transferredFromTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8339,6 +8319,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TaskTransferHistoryScalarFieldEnum | TaskTransferHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * Staff.assignedTasks
+   */
+  export type Staff$assignedTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Task
+     */
+    select?: TaskSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaskInclude<ExtArgs> | null
+    where?: TaskWhereInput
+    orderBy?: TaskOrderByWithRelationInput | TaskOrderByWithRelationInput[]
+    cursor?: TaskWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TaskScalarFieldEnum | TaskScalarFieldEnum[]
   }
 
   /**
@@ -11403,6 +11403,7 @@ export namespace Prisma {
     serviceAgreements?: boolean | Client$serviceAgreementsArgs<ExtArgs>
     clientService?: boolean | Client$clientServiceArgs<ExtArgs>
     installments?: boolean | Client$installmentsArgs<ExtArgs>
+    clientSchema?: boolean | Client$clientSchemaArgs<ExtArgs>
     accountManager?: boolean | Client$accountManagerArgs<ExtArgs>
     portfolio?: boolean | Client$portfolioArgs<ExtArgs>
     clientTask?: boolean | Client$clientTaskArgs<ExtArgs>
@@ -11411,7 +11412,6 @@ export namespace Prisma {
     contracts?: boolean | Client$contractsArgs<ExtArgs>
     projects?: boolean | Client$projectsArgs<ExtArgs>
     recurringSchedules?: boolean | Client$recurringSchedulesArgs<ExtArgs>
-    clientSchema?: boolean | Client$clientSchemaArgs<ExtArgs>
     _count?: boolean | ClientCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["client"]>
 
@@ -11443,6 +11443,7 @@ export namespace Prisma {
     serviceAgreements?: boolean | Client$serviceAgreementsArgs<ExtArgs>
     clientService?: boolean | Client$clientServiceArgs<ExtArgs>
     installments?: boolean | Client$installmentsArgs<ExtArgs>
+    clientSchema?: boolean | Client$clientSchemaArgs<ExtArgs>
     accountManager?: boolean | Client$accountManagerArgs<ExtArgs>
     portfolio?: boolean | Client$portfolioArgs<ExtArgs>
     clientTask?: boolean | Client$clientTaskArgs<ExtArgs>
@@ -11451,7 +11452,6 @@ export namespace Prisma {
     contracts?: boolean | Client$contractsArgs<ExtArgs>
     projects?: boolean | Client$projectsArgs<ExtArgs>
     recurringSchedules?: boolean | Client$recurringSchedulesArgs<ExtArgs>
-    clientSchema?: boolean | Client$clientSchemaArgs<ExtArgs>
     _count?: boolean | ClientCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -11462,6 +11462,7 @@ export namespace Prisma {
       serviceAgreements: Prisma.$IncomeServiceAgreementPayload<ExtArgs>[]
       clientService: Prisma.$ClientServicePayload<ExtArgs>[]
       installments: Prisma.$ClientInstallmentPayload<ExtArgs>[]
+      clientSchema: Prisma.$ClientSchemaPayload<ExtArgs> | null
       accountManager: Prisma.$StaffPayload<ExtArgs> | null
       portfolio: Prisma.$PortfolioPayload<ExtArgs> | null
       clientTask: Prisma.$ClientTaskPayload<ExtArgs>[]
@@ -11470,7 +11471,6 @@ export namespace Prisma {
       contracts: Prisma.$ContractPayload<ExtArgs>[]
       projects: Prisma.$ProjectPayload<ExtArgs>[]
       recurringSchedules: Prisma.$RecurringSchedulePayload<ExtArgs>[]
-      clientSchema: Prisma.$ClientSchemaPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -11836,6 +11836,7 @@ export namespace Prisma {
     serviceAgreements<T extends Client$serviceAgreementsArgs<ExtArgs> = {}>(args?: Subset<T, Client$serviceAgreementsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IncomeServiceAgreementPayload<ExtArgs>, T, "findMany"> | Null>
     clientService<T extends Client$clientServiceArgs<ExtArgs> = {}>(args?: Subset<T, Client$clientServiceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientServicePayload<ExtArgs>, T, "findMany"> | Null>
     installments<T extends Client$installmentsArgs<ExtArgs> = {}>(args?: Subset<T, Client$installmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientInstallmentPayload<ExtArgs>, T, "findMany"> | Null>
+    clientSchema<T extends Client$clientSchemaArgs<ExtArgs> = {}>(args?: Subset<T, Client$clientSchemaArgs<ExtArgs>>): Prisma__ClientSchemaClient<$Result.GetResult<Prisma.$ClientSchemaPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     accountManager<T extends Client$accountManagerArgs<ExtArgs> = {}>(args?: Subset<T, Client$accountManagerArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     portfolio<T extends Client$portfolioArgs<ExtArgs> = {}>(args?: Subset<T, Client$portfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     clientTask<T extends Client$clientTaskArgs<ExtArgs> = {}>(args?: Subset<T, Client$clientTaskArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientTaskPayload<ExtArgs>, T, "findMany"> | Null>
@@ -11844,7 +11845,6 @@ export namespace Prisma {
     contracts<T extends Client$contractsArgs<ExtArgs> = {}>(args?: Subset<T, Client$contractsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContractPayload<ExtArgs>, T, "findMany"> | Null>
     projects<T extends Client$projectsArgs<ExtArgs> = {}>(args?: Subset<T, Client$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany"> | Null>
     recurringSchedules<T extends Client$recurringSchedulesArgs<ExtArgs> = {}>(args?: Subset<T, Client$recurringSchedulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecurringSchedulePayload<ExtArgs>, T, "findMany"> | Null>
-    clientSchema<T extends Client$clientSchemaArgs<ExtArgs> = {}>(args?: Subset<T, Client$clientSchemaArgs<ExtArgs>>): Prisma__ClientSchemaClient<$Result.GetResult<Prisma.$ClientSchemaPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -12272,6 +12272,21 @@ export namespace Prisma {
   }
 
   /**
+   * Client.clientSchema
+   */
+  export type Client$clientSchemaArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientSchema
+     */
+    select?: ClientSchemaSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientSchemaInclude<ExtArgs> | null
+    where?: ClientSchemaWhereInput
+  }
+
+  /**
    * Client.accountManager
    */
   export type Client$accountManagerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -12419,21 +12434,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: RecurringScheduleScalarFieldEnum | RecurringScheduleScalarFieldEnum[]
-  }
-
-  /**
-   * Client.clientSchema
-   */
-  export type Client$clientSchemaArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ClientSchema
-     */
-    select?: ClientSchemaSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ClientSchemaInclude<ExtArgs> | null
-    where?: ClientSchemaWhereInput
   }
 
   /**
@@ -14722,6 +14722,7 @@ export namespace Prisma {
     iconLogoUrl?: boolean
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
+    clientSchemas?: boolean | Portfolio$clientSchemasArgs<ExtArgs>
     clients?: boolean | Portfolio$clientsArgs<ExtArgs>
     contentRequests?: boolean | Portfolio$contentRequestsArgs<ExtArgs>
     contracts?: boolean | Portfolio$contractsArgs<ExtArgs>
@@ -14729,7 +14730,6 @@ export namespace Prisma {
     recurringSchedules?: boolean | Portfolio$recurringSchedulesArgs<ExtArgs>
     services?: boolean | Portfolio$servicesArgs<ExtArgs>
     users?: boolean | Portfolio$usersArgs<ExtArgs>
-    clientSchemas?: boolean | Portfolio$clientSchemasArgs<ExtArgs>
     _count?: boolean | PortfolioCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["portfolio"]>
 
@@ -14754,6 +14754,7 @@ export namespace Prisma {
   }
 
   export type PortfolioInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    clientSchemas?: boolean | Portfolio$clientSchemasArgs<ExtArgs>
     clients?: boolean | Portfolio$clientsArgs<ExtArgs>
     contentRequests?: boolean | Portfolio$contentRequestsArgs<ExtArgs>
     contracts?: boolean | Portfolio$contractsArgs<ExtArgs>
@@ -14761,13 +14762,13 @@ export namespace Prisma {
     recurringSchedules?: boolean | Portfolio$recurringSchedulesArgs<ExtArgs>
     services?: boolean | Portfolio$servicesArgs<ExtArgs>
     users?: boolean | Portfolio$usersArgs<ExtArgs>
-    clientSchemas?: boolean | Portfolio$clientSchemasArgs<ExtArgs>
     _count?: boolean | PortfolioCountOutputTypeDefaultArgs<ExtArgs>
   }
 
   export type $PortfolioPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Portfolio"
     objects: {
+      clientSchemas: Prisma.$ClientSchemaPayload<ExtArgs>[]
       clients: Prisma.$ClientPayload<ExtArgs>[]
       contentRequests: Prisma.$ContentRequestPayload<ExtArgs>[]
       contracts: Prisma.$ContractPayload<ExtArgs>[]
@@ -14775,7 +14776,6 @@ export namespace Prisma {
       recurringSchedules: Prisma.$RecurringSchedulePayload<ExtArgs>[]
       services: Prisma.$ServicePayload<ExtArgs>[]
       users: Prisma.$StaffPayload<ExtArgs>[]
-      clientSchemas: Prisma.$ClientSchemaPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -15134,6 +15134,7 @@ export namespace Prisma {
    */
   export interface Prisma__PortfolioClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    clientSchemas<T extends Portfolio$clientSchemasArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$clientSchemasArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientSchemaPayload<ExtArgs>, T, "findMany"> | Null>
     clients<T extends Portfolio$clientsArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$clientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findMany"> | Null>
     contentRequests<T extends Portfolio$contentRequestsArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$contentRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentRequestPayload<ExtArgs>, T, "findMany"> | Null>
     contracts<T extends Portfolio$contractsArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$contractsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContractPayload<ExtArgs>, T, "findMany"> | Null>
@@ -15141,7 +15142,6 @@ export namespace Prisma {
     recurringSchedules<T extends Portfolio$recurringSchedulesArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$recurringSchedulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecurringSchedulePayload<ExtArgs>, T, "findMany"> | Null>
     services<T extends Portfolio$servicesArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$servicesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findMany"> | Null>
     users<T extends Portfolio$usersArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findMany"> | Null>
-    clientSchemas<T extends Portfolio$clientSchemasArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$clientSchemasArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientSchemaPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -15486,6 +15486,26 @@ export namespace Prisma {
   }
 
   /**
+   * Portfolio.clientSchemas
+   */
+  export type Portfolio$clientSchemasArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientSchema
+     */
+    select?: ClientSchemaSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientSchemaInclude<ExtArgs> | null
+    where?: ClientSchemaWhereInput
+    orderBy?: ClientSchemaOrderByWithRelationInput | ClientSchemaOrderByWithRelationInput[]
+    cursor?: ClientSchemaWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ClientSchemaScalarFieldEnum | ClientSchemaScalarFieldEnum[]
+  }
+
+  /**
    * Portfolio.clients
    */
   export type Portfolio$clientsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -15623,26 +15643,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: StaffScalarFieldEnum | StaffScalarFieldEnum[]
-  }
-
-  /**
-   * Portfolio.clientSchemas
-   */
-  export type Portfolio$clientSchemasArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ClientSchema
-     */
-    select?: ClientSchemaSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ClientSchemaInclude<ExtArgs> | null
-    where?: ClientSchemaWhereInput
-    orderBy?: ClientSchemaOrderByWithRelationInput | ClientSchemaOrderByWithRelationInput[]
-    cursor?: ClientSchemaWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: ClientSchemaScalarFieldEnum | ClientSchemaScalarFieldEnum[]
   }
 
   /**
@@ -18447,7 +18447,6 @@ export namespace Prisma {
     priority: $Enums.TaskPriority | null
     department: string | null
     deadline: Date | null
-    originalDeadline: Date | null
     extraTimeMinutes: number | null
     completedAt: Date | null
     progressUpdatedAt: Date | null
@@ -18464,8 +18463,9 @@ export namespace Prisma {
     updatedAt: Date | null
     workflowStage: $Enums.WorkflowStage | null
     workflowStepId: string | null
-    startDate: Date | null
+    originalDeadline: Date | null
     transferredFromProgress: number | null
+    startDate: Date | null
   }
 
   export type TaskMaxAggregateOutputType = {
@@ -18476,7 +18476,6 @@ export namespace Prisma {
     priority: $Enums.TaskPriority | null
     department: string | null
     deadline: Date | null
-    originalDeadline: Date | null
     extraTimeMinutes: number | null
     completedAt: Date | null
     progressUpdatedAt: Date | null
@@ -18493,8 +18492,9 @@ export namespace Prisma {
     updatedAt: Date | null
     workflowStage: $Enums.WorkflowStage | null
     workflowStepId: string | null
-    startDate: Date | null
+    originalDeadline: Date | null
     transferredFromProgress: number | null
+    startDate: Date | null
   }
 
   export type TaskCountAggregateOutputType = {
@@ -18505,7 +18505,6 @@ export namespace Prisma {
     priority: number
     department: number
     deadline: number
-    originalDeadline: number
     extraTimeMinutes: number
     completedAt: number
     progressUpdatedAt: number
@@ -18513,7 +18512,6 @@ export namespace Prisma {
     progress: number
     supervisor: number
     serviceInformation: number
-    features: number
     isPersonal: number
     agreementId: number
     contentCycleId: number
@@ -18523,8 +18521,10 @@ export namespace Prisma {
     updatedAt: number
     workflowStage: number
     workflowStepId: number
-    startDate: number
+    originalDeadline: number
     transferredFromProgress: number
+    startDate: number
+    features: number
     _all: number
   }
 
@@ -18551,7 +18551,6 @@ export namespace Prisma {
     priority?: true
     department?: true
     deadline?: true
-    originalDeadline?: true
     extraTimeMinutes?: true
     completedAt?: true
     progressUpdatedAt?: true
@@ -18568,8 +18567,9 @@ export namespace Prisma {
     updatedAt?: true
     workflowStage?: true
     workflowStepId?: true
-    startDate?: true
+    originalDeadline?: true
     transferredFromProgress?: true
+    startDate?: true
   }
 
   export type TaskMaxAggregateInputType = {
@@ -18580,7 +18580,6 @@ export namespace Prisma {
     priority?: true
     department?: true
     deadline?: true
-    originalDeadline?: true
     extraTimeMinutes?: true
     completedAt?: true
     progressUpdatedAt?: true
@@ -18597,8 +18596,9 @@ export namespace Prisma {
     updatedAt?: true
     workflowStage?: true
     workflowStepId?: true
-    startDate?: true
+    originalDeadline?: true
     transferredFromProgress?: true
+    startDate?: true
   }
 
   export type TaskCountAggregateInputType = {
@@ -18609,7 +18609,6 @@ export namespace Prisma {
     priority?: true
     department?: true
     deadline?: true
-    originalDeadline?: true
     extraTimeMinutes?: true
     completedAt?: true
     progressUpdatedAt?: true
@@ -18617,7 +18616,6 @@ export namespace Prisma {
     progress?: true
     supervisor?: true
     serviceInformation?: true
-    features?: true
     isPersonal?: true
     agreementId?: true
     contentCycleId?: true
@@ -18627,8 +18625,10 @@ export namespace Prisma {
     updatedAt?: true
     workflowStage?: true
     workflowStepId?: true
-    startDate?: true
+    originalDeadline?: true
     transferredFromProgress?: true
+    startDate?: true
+    features?: true
     _all?: true
   }
 
@@ -18726,7 +18726,6 @@ export namespace Prisma {
     priority: $Enums.TaskPriority
     department: string
     deadline: Date | null
-    originalDeadline: Date | null
     extraTimeMinutes: number
     completedAt: Date | null
     progressUpdatedAt: Date | null
@@ -18734,7 +18733,6 @@ export namespace Prisma {
     progress: number
     supervisor: string
     serviceInformation: string | null
-    features: JsonValue | null
     isPersonal: boolean
     agreementId: string | null
     contentCycleId: string | null
@@ -18744,8 +18742,10 @@ export namespace Prisma {
     updatedAt: Date | null
     workflowStage: $Enums.WorkflowStage
     workflowStepId: string | null
-    startDate: Date | null
+    originalDeadline: Date | null
     transferredFromProgress: number
+    startDate: Date | null
+    features: JsonValue | null
     _count: TaskCountAggregateOutputType | null
     _avg: TaskAvgAggregateOutputType | null
     _sum: TaskSumAggregateOutputType | null
@@ -18775,7 +18775,6 @@ export namespace Prisma {
     priority?: boolean
     department?: boolean
     deadline?: boolean
-    originalDeadline?: boolean
     extraTimeMinutes?: boolean
     completedAt?: boolean
     progressUpdatedAt?: boolean
@@ -18783,7 +18782,6 @@ export namespace Prisma {
     progress?: boolean
     supervisor?: boolean
     serviceInformation?: boolean
-    features?: boolean
     isPersonal?: boolean
     agreementId?: boolean
     contentCycleId?: boolean
@@ -18793,11 +18791,13 @@ export namespace Prisma {
     updatedAt?: boolean
     workflowStage?: boolean
     workflowStepId?: boolean
-    startDate?: boolean
+    originalDeadline?: boolean
     transferredFromProgress?: boolean
+    startDate?: boolean
+    features?: boolean
     clientTask?: boolean | Task$clientTaskArgs<ExtArgs>
-    transferHistory?: boolean | Task$transferHistoryArgs<ExtArgs>
     recurringOccurrence?: boolean | Task$recurringOccurrenceArgs<ExtArgs>
+    transferHistory?: boolean | Task$transferHistoryArgs<ExtArgs>
     agreement?: boolean | Task$agreementArgs<ExtArgs>
     user?: boolean | StaffDefaultArgs<ExtArgs>
     contentCycle?: boolean | Task$contentCycleArgs<ExtArgs>
@@ -18816,7 +18816,6 @@ export namespace Prisma {
     priority?: boolean
     department?: boolean
     deadline?: boolean
-    originalDeadline?: boolean
     extraTimeMinutes?: boolean
     completedAt?: boolean
     progressUpdatedAt?: boolean
@@ -18824,7 +18823,6 @@ export namespace Prisma {
     progress?: boolean
     supervisor?: boolean
     serviceInformation?: boolean
-    features?: boolean
     isPersonal?: boolean
     agreementId?: boolean
     contentCycleId?: boolean
@@ -18834,14 +18832,16 @@ export namespace Prisma {
     updatedAt?: boolean
     workflowStage?: boolean
     workflowStepId?: boolean
-    startDate?: boolean
+    originalDeadline?: boolean
     transferredFromProgress?: boolean
+    startDate?: boolean
+    features?: boolean
   }
 
   export type TaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     clientTask?: boolean | Task$clientTaskArgs<ExtArgs>
-    transferHistory?: boolean | Task$transferHistoryArgs<ExtArgs>
     recurringOccurrence?: boolean | Task$recurringOccurrenceArgs<ExtArgs>
+    transferHistory?: boolean | Task$transferHistoryArgs<ExtArgs>
     agreement?: boolean | Task$agreementArgs<ExtArgs>
     user?: boolean | StaffDefaultArgs<ExtArgs>
     contentCycle?: boolean | Task$contentCycleArgs<ExtArgs>
@@ -18855,8 +18855,8 @@ export namespace Prisma {
     name: "Task"
     objects: {
       clientTask: Prisma.$ClientTaskPayload<ExtArgs>[]
-      transferHistory: Prisma.$TaskTransferHistoryPayload<ExtArgs>[]
       recurringOccurrence: Prisma.$RecurringTaskOccurrencePayload<ExtArgs> | null
+      transferHistory: Prisma.$TaskTransferHistoryPayload<ExtArgs>[]
       agreement: Prisma.$IncomeServiceAgreementPayload<ExtArgs> | null
       user: Prisma.$StaffPayload<ExtArgs>
       contentCycle: Prisma.$ContentCyclePayload<ExtArgs> | null
@@ -18872,7 +18872,6 @@ export namespace Prisma {
       priority: $Enums.TaskPriority
       department: string
       deadline: Date | null
-      originalDeadline: Date | null
       extraTimeMinutes: number
       completedAt: Date | null
       progressUpdatedAt: Date | null
@@ -18880,7 +18879,6 @@ export namespace Prisma {
       progress: number
       supervisor: string
       serviceInformation: string | null
-      features: Prisma.JsonValue | null
       isPersonal: boolean
       agreementId: string | null
       contentCycleId: string | null
@@ -18890,8 +18888,10 @@ export namespace Prisma {
       updatedAt: Date | null
       workflowStage: $Enums.WorkflowStage
       workflowStepId: string | null
-      startDate: Date | null
+      originalDeadline: Date | null
       transferredFromProgress: number
+      startDate: Date | null
+      features: Prisma.JsonValue | null
     }, ExtArgs["result"]["task"]>
     composites: {}
   }
@@ -19233,8 +19233,8 @@ export namespace Prisma {
   export interface Prisma__TaskClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     clientTask<T extends Task$clientTaskArgs<ExtArgs> = {}>(args?: Subset<T, Task$clientTaskArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientTaskPayload<ExtArgs>, T, "findMany"> | Null>
-    transferHistory<T extends Task$transferHistoryArgs<ExtArgs> = {}>(args?: Subset<T, Task$transferHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskTransferHistoryPayload<ExtArgs>, T, "findMany"> | Null>
     recurringOccurrence<T extends Task$recurringOccurrenceArgs<ExtArgs> = {}>(args?: Subset<T, Task$recurringOccurrenceArgs<ExtArgs>>): Prisma__RecurringTaskOccurrenceClient<$Result.GetResult<Prisma.$RecurringTaskOccurrencePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    transferHistory<T extends Task$transferHistoryArgs<ExtArgs> = {}>(args?: Subset<T, Task$transferHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskTransferHistoryPayload<ExtArgs>, T, "findMany"> | Null>
     agreement<T extends Task$agreementArgs<ExtArgs> = {}>(args?: Subset<T, Task$agreementArgs<ExtArgs>>): Prisma__IncomeServiceAgreementClient<$Result.GetResult<Prisma.$IncomeServiceAgreementPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     user<T extends StaffDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StaffDefaultArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     contentCycle<T extends Task$contentCycleArgs<ExtArgs> = {}>(args?: Subset<T, Task$contentCycleArgs<ExtArgs>>): Prisma__ContentCycleClient<$Result.GetResult<Prisma.$ContentCyclePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
@@ -19277,7 +19277,6 @@ export namespace Prisma {
     readonly priority: FieldRef<"Task", 'TaskPriority'>
     readonly department: FieldRef<"Task", 'String'>
     readonly deadline: FieldRef<"Task", 'DateTime'>
-    readonly originalDeadline: FieldRef<"Task", 'DateTime'>
     readonly extraTimeMinutes: FieldRef<"Task", 'Int'>
     readonly completedAt: FieldRef<"Task", 'DateTime'>
     readonly progressUpdatedAt: FieldRef<"Task", 'DateTime'>
@@ -19285,7 +19284,6 @@ export namespace Prisma {
     readonly progress: FieldRef<"Task", 'Int'>
     readonly supervisor: FieldRef<"Task", 'String'>
     readonly serviceInformation: FieldRef<"Task", 'String'>
-    readonly features: FieldRef<"Task", 'Json'>
     readonly isPersonal: FieldRef<"Task", 'Boolean'>
     readonly agreementId: FieldRef<"Task", 'String'>
     readonly contentCycleId: FieldRef<"Task", 'String'>
@@ -19295,8 +19293,10 @@ export namespace Prisma {
     readonly updatedAt: FieldRef<"Task", 'DateTime'>
     readonly workflowStage: FieldRef<"Task", 'WorkflowStage'>
     readonly workflowStepId: FieldRef<"Task", 'String'>
-    readonly startDate: FieldRef<"Task", 'DateTime'>
+    readonly originalDeadline: FieldRef<"Task", 'DateTime'>
     readonly transferredFromProgress: FieldRef<"Task", 'Int'>
+    readonly startDate: FieldRef<"Task", 'DateTime'>
+    readonly features: FieldRef<"Task", 'Json'>
   }
     
 
@@ -19616,6 +19616,21 @@ export namespace Prisma {
   }
 
   /**
+   * Task.recurringOccurrence
+   */
+  export type Task$recurringOccurrenceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RecurringTaskOccurrence
+     */
+    select?: RecurringTaskOccurrenceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RecurringTaskOccurrenceInclude<ExtArgs> | null
+    where?: RecurringTaskOccurrenceWhereInput
+  }
+
+  /**
    * Task.transferHistory
    */
   export type Task$transferHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -19633,21 +19648,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TaskTransferHistoryScalarFieldEnum | TaskTransferHistoryScalarFieldEnum[]
-  }
-
-  /**
-   * Task.recurringOccurrence
-   */
-  export type Task$recurringOccurrenceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the RecurringTaskOccurrence
-     */
-    select?: RecurringTaskOccurrenceSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: RecurringTaskOccurrenceInclude<ExtArgs> | null
-    where?: RecurringTaskOccurrenceWhereInput
   }
 
   /**
@@ -19962,8 +19962,8 @@ export namespace Prisma {
     progressAtTransfer?: boolean
     deadlineAtTransfer?: boolean
     transferredById?: boolean
-    task?: boolean | TaskDefaultArgs<ExtArgs>
     fromAssignee?: boolean | StaffDefaultArgs<ExtArgs>
+    task?: boolean | TaskDefaultArgs<ExtArgs>
     toAssignee?: boolean | StaffDefaultArgs<ExtArgs>
     transferredBy?: boolean | TaskTransferHistory$transferredByArgs<ExtArgs>
   }, ExtArgs["result"]["taskTransferHistory"]>
@@ -19981,8 +19981,8 @@ export namespace Prisma {
   }
 
   export type TaskTransferHistoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    task?: boolean | TaskDefaultArgs<ExtArgs>
     fromAssignee?: boolean | StaffDefaultArgs<ExtArgs>
+    task?: boolean | TaskDefaultArgs<ExtArgs>
     toAssignee?: boolean | StaffDefaultArgs<ExtArgs>
     transferredBy?: boolean | TaskTransferHistory$transferredByArgs<ExtArgs>
   }
@@ -19990,8 +19990,8 @@ export namespace Prisma {
   export type $TaskTransferHistoryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "TaskTransferHistory"
     objects: {
-      task: Prisma.$TaskPayload<ExtArgs>
       fromAssignee: Prisma.$StaffPayload<ExtArgs>
+      task: Prisma.$TaskPayload<ExtArgs>
       toAssignee: Prisma.$StaffPayload<ExtArgs>
       transferredBy: Prisma.$StaffPayload<ExtArgs> | null
     }
@@ -20344,8 +20344,8 @@ export namespace Prisma {
    */
   export interface Prisma__TaskTransferHistoryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    task<T extends TaskDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TaskDefaultArgs<ExtArgs>>): Prisma__TaskClient<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     fromAssignee<T extends StaffDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StaffDefaultArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    task<T extends TaskDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TaskDefaultArgs<ExtArgs>>): Prisma__TaskClient<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     toAssignee<T extends StaffDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StaffDefaultArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     transferredBy<T extends TaskTransferHistory$transferredByArgs<ExtArgs> = {}>(args?: Subset<T, TaskTransferHistory$transferredByArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
@@ -50870,9 +50870,9 @@ export namespace Prisma {
     banReason: 'banReason',
     banExpires: 'banExpires',
     portfolioId: 'portfolioId',
-    staffCode: 'staffCode',
+    employmentType: 'employmentType',
     jobTitle: 'jobTitle',
-    employmentType: 'employmentType'
+    staffCode: 'staffCode'
   };
 
   export type StaffScalarFieldEnum = (typeof StaffScalarFieldEnum)[keyof typeof StaffScalarFieldEnum]
@@ -51047,7 +51047,6 @@ export namespace Prisma {
     priority: 'priority',
     department: 'department',
     deadline: 'deadline',
-    originalDeadline: 'originalDeadline',
     extraTimeMinutes: 'extraTimeMinutes',
     completedAt: 'completedAt',
     progressUpdatedAt: 'progressUpdatedAt',
@@ -51055,7 +51054,6 @@ export namespace Prisma {
     progress: 'progress',
     supervisor: 'supervisor',
     serviceInformation: 'serviceInformation',
-    features: 'features',
     isPersonal: 'isPersonal',
     agreementId: 'agreementId',
     contentCycleId: 'contentCycleId',
@@ -51065,8 +51063,10 @@ export namespace Prisma {
     updatedAt: 'updatedAt',
     workflowStage: 'workflowStage',
     workflowStepId: 'workflowStepId',
+    originalDeadline: 'originalDeadline',
+    transferredFromProgress: 'transferredFromProgress',
     startDate: 'startDate',
-    transferredFromProgress: 'transferredFromProgress'
+    features: 'features'
   };
 
   export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof TaskScalarFieldEnum]
@@ -51816,9 +51816,9 @@ export namespace Prisma {
     banReason?: StringNullableFilter<"Staff"> | string | null
     banExpires?: DateTimeNullableFilter<"Staff"> | Date | string | null
     portfolioId?: StringNullableFilter<"Staff"> | string | null
-    staffCode?: StringNullableFilter<"Staff"> | string | null
-    jobTitle?: StringNullableFilter<"Staff"> | string | null
     employmentType?: StringNullableFilter<"Staff"> | string | null
+    jobTitle?: StringNullableFilter<"Staff"> | string | null
+    staffCode?: StringNullableFilter<"Staff"> | string | null
     expenseTransaction?: ExpenseTransactionListRelationFilter
     incomeTransaction?: IncomeTransactionListRelationFilter
     userFiles?: UserFilesListRelationFilter
@@ -51836,10 +51836,10 @@ export namespace Prisma {
     sessions?: SessionListRelationFilter
     portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
     dynamicRole?: XOR<RoleNullableRelationFilter, RoleWhereInput> | null
-    assignedTasks?: TaskListRelationFilter
     transferredFromTasks?: TaskTransferHistoryListRelationFilter
     transferredToTasks?: TaskTransferHistoryListRelationFilter
     transferredByTasks?: TaskTransferHistoryListRelationFilter
+    assignedTasks?: TaskListRelationFilter
   }
 
   export type StaffOrderByWithRelationInput = {
@@ -51859,9 +51859,9 @@ export namespace Prisma {
     banReason?: SortOrderInput | SortOrder
     banExpires?: SortOrderInput | SortOrder
     portfolioId?: SortOrderInput | SortOrder
-    staffCode?: SortOrderInput | SortOrder
-    jobTitle?: SortOrderInput | SortOrder
     employmentType?: SortOrderInput | SortOrder
+    jobTitle?: SortOrderInput | SortOrder
+    staffCode?: SortOrderInput | SortOrder
     expenseTransaction?: ExpenseTransactionOrderByRelationAggregateInput
     incomeTransaction?: IncomeTransactionOrderByRelationAggregateInput
     userFiles?: UserFilesOrderByRelationAggregateInput
@@ -51879,10 +51879,10 @@ export namespace Prisma {
     sessions?: SessionOrderByRelationAggregateInput
     portfolio?: PortfolioOrderByWithRelationInput
     dynamicRole?: RoleOrderByWithRelationInput
-    assignedTasks?: TaskOrderByRelationAggregateInput
     transferredFromTasks?: TaskTransferHistoryOrderByRelationAggregateInput
     transferredToTasks?: TaskTransferHistoryOrderByRelationAggregateInput
     transferredByTasks?: TaskTransferHistoryOrderByRelationAggregateInput
+    assignedTasks?: TaskOrderByRelationAggregateInput
   }
 
   export type StaffWhereUniqueInput = Prisma.AtLeast<{
@@ -51905,9 +51905,9 @@ export namespace Prisma {
     banReason?: StringNullableFilter<"Staff"> | string | null
     banExpires?: DateTimeNullableFilter<"Staff"> | Date | string | null
     portfolioId?: StringNullableFilter<"Staff"> | string | null
-    staffCode?: StringNullableFilter<"Staff"> | string | null
-    jobTitle?: StringNullableFilter<"Staff"> | string | null
     employmentType?: StringNullableFilter<"Staff"> | string | null
+    jobTitle?: StringNullableFilter<"Staff"> | string | null
+    staffCode?: StringNullableFilter<"Staff"> | string | null
     expenseTransaction?: ExpenseTransactionListRelationFilter
     incomeTransaction?: IncomeTransactionListRelationFilter
     userFiles?: UserFilesListRelationFilter
@@ -51925,10 +51925,10 @@ export namespace Prisma {
     sessions?: SessionListRelationFilter
     portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
     dynamicRole?: XOR<RoleNullableRelationFilter, RoleWhereInput> | null
-    assignedTasks?: TaskListRelationFilter
     transferredFromTasks?: TaskTransferHistoryListRelationFilter
     transferredToTasks?: TaskTransferHistoryListRelationFilter
     transferredByTasks?: TaskTransferHistoryListRelationFilter
+    assignedTasks?: TaskListRelationFilter
   }, "id" | "email">
 
   export type StaffOrderByWithAggregationInput = {
@@ -51948,9 +51948,9 @@ export namespace Prisma {
     banReason?: SortOrderInput | SortOrder
     banExpires?: SortOrderInput | SortOrder
     portfolioId?: SortOrderInput | SortOrder
-    staffCode?: SortOrderInput | SortOrder
-    jobTitle?: SortOrderInput | SortOrder
     employmentType?: SortOrderInput | SortOrder
+    jobTitle?: SortOrderInput | SortOrder
+    staffCode?: SortOrderInput | SortOrder
     _count?: StaffCountOrderByAggregateInput
     _max?: StaffMaxOrderByAggregateInput
     _min?: StaffMinOrderByAggregateInput
@@ -51976,9 +51976,9 @@ export namespace Prisma {
     banReason?: StringNullableWithAggregatesFilter<"Staff"> | string | null
     banExpires?: DateTimeNullableWithAggregatesFilter<"Staff"> | Date | string | null
     portfolioId?: StringNullableWithAggregatesFilter<"Staff"> | string | null
-    staffCode?: StringNullableWithAggregatesFilter<"Staff"> | string | null
-    jobTitle?: StringNullableWithAggregatesFilter<"Staff"> | string | null
     employmentType?: StringNullableWithAggregatesFilter<"Staff"> | string | null
+    jobTitle?: StringNullableWithAggregatesFilter<"Staff"> | string | null
+    staffCode?: StringNullableWithAggregatesFilter<"Staff"> | string | null
   }
 
   export type SessionWhereInput = {
@@ -52235,6 +52235,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementListRelationFilter
     clientService?: ClientServiceListRelationFilter
     installments?: ClientInstallmentListRelationFilter
+    clientSchema?: XOR<ClientSchemaNullableRelationFilter, ClientSchemaWhereInput> | null
     accountManager?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
     clientTask?: ClientTaskListRelationFilter
@@ -52243,7 +52244,6 @@ export namespace Prisma {
     contracts?: ContractListRelationFilter
     projects?: ProjectListRelationFilter
     recurringSchedules?: RecurringScheduleListRelationFilter
-    clientSchema?: XOR<ClientSchemaNullableRelationFilter, ClientSchemaWhereInput> | null
   }
 
   export type ClientOrderByWithRelationInput = {
@@ -52270,6 +52270,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementOrderByRelationAggregateInput
     clientService?: ClientServiceOrderByRelationAggregateInput
     installments?: ClientInstallmentOrderByRelationAggregateInput
+    clientSchema?: ClientSchemaOrderByWithRelationInput
     accountManager?: StaffOrderByWithRelationInput
     portfolio?: PortfolioOrderByWithRelationInput
     clientTask?: ClientTaskOrderByRelationAggregateInput
@@ -52278,7 +52279,6 @@ export namespace Prisma {
     contracts?: ContractOrderByRelationAggregateInput
     projects?: ProjectOrderByRelationAggregateInput
     recurringSchedules?: RecurringScheduleOrderByRelationAggregateInput
-    clientSchema?: ClientSchemaOrderByWithRelationInput
   }
 
   export type ClientWhereUniqueInput = Prisma.AtLeast<{
@@ -52308,6 +52308,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementListRelationFilter
     clientService?: ClientServiceListRelationFilter
     installments?: ClientInstallmentListRelationFilter
+    clientSchema?: XOR<ClientSchemaNullableRelationFilter, ClientSchemaWhereInput> | null
     accountManager?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
     clientTask?: ClientTaskListRelationFilter
@@ -52316,7 +52317,6 @@ export namespace Prisma {
     contracts?: ContractListRelationFilter
     projects?: ProjectListRelationFilter
     recurringSchedules?: RecurringScheduleListRelationFilter
-    clientSchema?: XOR<ClientSchemaNullableRelationFilter, ClientSchemaWhereInput> | null
   }, "id" | "email" | "phone">
 
   export type ClientOrderByWithAggregationInput = {
@@ -52562,6 +52562,7 @@ export namespace Prisma {
     iconLogoUrl?: StringNullableFilter<"Portfolio"> | string | null
     slugClearedOnce?: BoolFilter<"Portfolio"> | boolean
     usesRootLogin?: BoolFilter<"Portfolio"> | boolean
+    clientSchemas?: ClientSchemaListRelationFilter
     clients?: ClientListRelationFilter
     contentRequests?: ContentRequestListRelationFilter
     contracts?: ContractListRelationFilter
@@ -52569,7 +52570,6 @@ export namespace Prisma {
     recurringSchedules?: RecurringScheduleListRelationFilter
     services?: ServiceListRelationFilter
     users?: StaffListRelationFilter
-    clientSchemas?: ClientSchemaListRelationFilter
   }
 
   export type PortfolioOrderByWithRelationInput = {
@@ -52589,6 +52589,7 @@ export namespace Prisma {
     iconLogoUrl?: SortOrderInput | SortOrder
     slugClearedOnce?: SortOrder
     usesRootLogin?: SortOrder
+    clientSchemas?: ClientSchemaOrderByRelationAggregateInput
     clients?: ClientOrderByRelationAggregateInput
     contentRequests?: ContentRequestOrderByRelationAggregateInput
     contracts?: ContractOrderByRelationAggregateInput
@@ -52596,7 +52597,6 @@ export namespace Prisma {
     recurringSchedules?: RecurringScheduleOrderByRelationAggregateInput
     services?: ServiceOrderByRelationAggregateInput
     users?: StaffOrderByRelationAggregateInput
-    clientSchemas?: ClientSchemaOrderByRelationAggregateInput
   }
 
   export type PortfolioWhereUniqueInput = Prisma.AtLeast<{
@@ -52619,6 +52619,7 @@ export namespace Prisma {
     iconLogoUrl?: StringNullableFilter<"Portfolio"> | string | null
     slugClearedOnce?: BoolFilter<"Portfolio"> | boolean
     usesRootLogin?: BoolFilter<"Portfolio"> | boolean
+    clientSchemas?: ClientSchemaListRelationFilter
     clients?: ClientListRelationFilter
     contentRequests?: ContentRequestListRelationFilter
     contracts?: ContractListRelationFilter
@@ -52626,7 +52627,6 @@ export namespace Prisma {
     recurringSchedules?: RecurringScheduleListRelationFilter
     services?: ServiceListRelationFilter
     users?: StaffListRelationFilter
-    clientSchemas?: ClientSchemaListRelationFilter
   }, "id" | "name" | "customDomain" | "slug">
 
   export type PortfolioOrderByWithAggregationInput = {
@@ -52887,7 +52887,6 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFilter<"Task"> | $Enums.TaskPriority
     department?: StringFilter<"Task"> | string
     deadline?: DateTimeNullableFilter<"Task"> | Date | string | null
-    originalDeadline?: DateTimeNullableFilter<"Task"> | Date | string | null
     extraTimeMinutes?: IntFilter<"Task"> | number
     completedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     progressUpdatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
@@ -52895,7 +52894,6 @@ export namespace Prisma {
     progress?: IntFilter<"Task"> | number
     supervisor?: StringFilter<"Task"> | string
     serviceInformation?: StringNullableFilter<"Task"> | string | null
-    features?: JsonNullableFilter<"Task">
     isPersonal?: BoolFilter<"Task"> | boolean
     agreementId?: StringNullableFilter<"Task"> | string | null
     contentCycleId?: StringNullableFilter<"Task"> | string | null
@@ -52905,11 +52903,13 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     workflowStage?: EnumWorkflowStageFilter<"Task"> | $Enums.WorkflowStage
     workflowStepId?: StringNullableFilter<"Task"> | string | null
-    startDate?: DateTimeNullableFilter<"Task"> | Date | string | null
+    originalDeadline?: DateTimeNullableFilter<"Task"> | Date | string | null
     transferredFromProgress?: IntFilter<"Task"> | number
+    startDate?: DateTimeNullableFilter<"Task"> | Date | string | null
+    features?: JsonNullableFilter<"Task">
     clientTask?: ClientTaskListRelationFilter
-    transferHistory?: TaskTransferHistoryListRelationFilter
     recurringOccurrence?: XOR<RecurringTaskOccurrenceNullableRelationFilter, RecurringTaskOccurrenceWhereInput> | null
+    transferHistory?: TaskTransferHistoryListRelationFilter
     agreement?: XOR<IncomeServiceAgreementNullableRelationFilter, IncomeServiceAgreementWhereInput> | null
     user?: XOR<StaffRelationFilter, StaffWhereInput>
     contentCycle?: XOR<ContentCycleNullableRelationFilter, ContentCycleWhereInput> | null
@@ -52926,7 +52926,6 @@ export namespace Prisma {
     priority?: SortOrder
     department?: SortOrder
     deadline?: SortOrderInput | SortOrder
-    originalDeadline?: SortOrderInput | SortOrder
     extraTimeMinutes?: SortOrder
     completedAt?: SortOrderInput | SortOrder
     progressUpdatedAt?: SortOrderInput | SortOrder
@@ -52934,7 +52933,6 @@ export namespace Prisma {
     progress?: SortOrder
     supervisor?: SortOrder
     serviceInformation?: SortOrderInput | SortOrder
-    features?: SortOrderInput | SortOrder
     isPersonal?: SortOrder
     agreementId?: SortOrderInput | SortOrder
     contentCycleId?: SortOrderInput | SortOrder
@@ -52944,11 +52942,13 @@ export namespace Prisma {
     updatedAt?: SortOrderInput | SortOrder
     workflowStage?: SortOrder
     workflowStepId?: SortOrderInput | SortOrder
-    startDate?: SortOrderInput | SortOrder
+    originalDeadline?: SortOrderInput | SortOrder
     transferredFromProgress?: SortOrder
+    startDate?: SortOrderInput | SortOrder
+    features?: SortOrderInput | SortOrder
     clientTask?: ClientTaskOrderByRelationAggregateInput
-    transferHistory?: TaskTransferHistoryOrderByRelationAggregateInput
     recurringOccurrence?: RecurringTaskOccurrenceOrderByWithRelationInput
+    transferHistory?: TaskTransferHistoryOrderByRelationAggregateInput
     agreement?: IncomeServiceAgreementOrderByWithRelationInput
     user?: StaffOrderByWithRelationInput
     contentCycle?: ContentCycleOrderByWithRelationInput
@@ -52968,7 +52968,6 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFilter<"Task"> | $Enums.TaskPriority
     department?: StringFilter<"Task"> | string
     deadline?: DateTimeNullableFilter<"Task"> | Date | string | null
-    originalDeadline?: DateTimeNullableFilter<"Task"> | Date | string | null
     extraTimeMinutes?: IntFilter<"Task"> | number
     completedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     progressUpdatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
@@ -52976,7 +52975,6 @@ export namespace Prisma {
     progress?: IntFilter<"Task"> | number
     supervisor?: StringFilter<"Task"> | string
     serviceInformation?: StringNullableFilter<"Task"> | string | null
-    features?: JsonNullableFilter<"Task">
     isPersonal?: BoolFilter<"Task"> | boolean
     agreementId?: StringNullableFilter<"Task"> | string | null
     contentCycleId?: StringNullableFilter<"Task"> | string | null
@@ -52986,11 +52984,13 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     workflowStage?: EnumWorkflowStageFilter<"Task"> | $Enums.WorkflowStage
     workflowStepId?: StringNullableFilter<"Task"> | string | null
-    startDate?: DateTimeNullableFilter<"Task"> | Date | string | null
+    originalDeadline?: DateTimeNullableFilter<"Task"> | Date | string | null
     transferredFromProgress?: IntFilter<"Task"> | number
+    startDate?: DateTimeNullableFilter<"Task"> | Date | string | null
+    features?: JsonNullableFilter<"Task">
     clientTask?: ClientTaskListRelationFilter
-    transferHistory?: TaskTransferHistoryListRelationFilter
     recurringOccurrence?: XOR<RecurringTaskOccurrenceNullableRelationFilter, RecurringTaskOccurrenceWhereInput> | null
+    transferHistory?: TaskTransferHistoryListRelationFilter
     agreement?: XOR<IncomeServiceAgreementNullableRelationFilter, IncomeServiceAgreementWhereInput> | null
     user?: XOR<StaffRelationFilter, StaffWhereInput>
     contentCycle?: XOR<ContentCycleNullableRelationFilter, ContentCycleWhereInput> | null
@@ -53007,7 +53007,6 @@ export namespace Prisma {
     priority?: SortOrder
     department?: SortOrder
     deadline?: SortOrderInput | SortOrder
-    originalDeadline?: SortOrderInput | SortOrder
     extraTimeMinutes?: SortOrder
     completedAt?: SortOrderInput | SortOrder
     progressUpdatedAt?: SortOrderInput | SortOrder
@@ -53015,7 +53014,6 @@ export namespace Prisma {
     progress?: SortOrder
     supervisor?: SortOrder
     serviceInformation?: SortOrderInput | SortOrder
-    features?: SortOrderInput | SortOrder
     isPersonal?: SortOrder
     agreementId?: SortOrderInput | SortOrder
     contentCycleId?: SortOrderInput | SortOrder
@@ -53025,8 +53023,10 @@ export namespace Prisma {
     updatedAt?: SortOrderInput | SortOrder
     workflowStage?: SortOrder
     workflowStepId?: SortOrderInput | SortOrder
-    startDate?: SortOrderInput | SortOrder
+    originalDeadline?: SortOrderInput | SortOrder
     transferredFromProgress?: SortOrder
+    startDate?: SortOrderInput | SortOrder
+    features?: SortOrderInput | SortOrder
     _count?: TaskCountOrderByAggregateInput
     _avg?: TaskAvgOrderByAggregateInput
     _max?: TaskMaxOrderByAggregateInput
@@ -53045,7 +53045,6 @@ export namespace Prisma {
     priority?: EnumTaskPriorityWithAggregatesFilter<"Task"> | $Enums.TaskPriority
     department?: StringWithAggregatesFilter<"Task"> | string
     deadline?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
-    originalDeadline?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
     extraTimeMinutes?: IntWithAggregatesFilter<"Task"> | number
     completedAt?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
     progressUpdatedAt?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
@@ -53053,7 +53052,6 @@ export namespace Prisma {
     progress?: IntWithAggregatesFilter<"Task"> | number
     supervisor?: StringWithAggregatesFilter<"Task"> | string
     serviceInformation?: StringNullableWithAggregatesFilter<"Task"> | string | null
-    features?: JsonNullableWithAggregatesFilter<"Task">
     isPersonal?: BoolWithAggregatesFilter<"Task"> | boolean
     agreementId?: StringNullableWithAggregatesFilter<"Task"> | string | null
     contentCycleId?: StringNullableWithAggregatesFilter<"Task"> | string | null
@@ -53063,8 +53061,10 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
     workflowStage?: EnumWorkflowStageWithAggregatesFilter<"Task"> | $Enums.WorkflowStage
     workflowStepId?: StringNullableWithAggregatesFilter<"Task"> | string | null
-    startDate?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
+    originalDeadline?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
     transferredFromProgress?: IntWithAggregatesFilter<"Task"> | number
+    startDate?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
+    features?: JsonNullableWithAggregatesFilter<"Task">
   }
 
   export type TaskTransferHistoryWhereInput = {
@@ -53079,8 +53079,8 @@ export namespace Prisma {
     progressAtTransfer?: IntFilter<"TaskTransferHistory"> | number
     deadlineAtTransfer?: DateTimeNullableFilter<"TaskTransferHistory"> | Date | string | null
     transferredById?: StringNullableFilter<"TaskTransferHistory"> | string | null
-    task?: XOR<TaskRelationFilter, TaskWhereInput>
     fromAssignee?: XOR<StaffRelationFilter, StaffWhereInput>
+    task?: XOR<TaskRelationFilter, TaskWhereInput>
     toAssignee?: XOR<StaffRelationFilter, StaffWhereInput>
     transferredBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
   }
@@ -53094,8 +53094,8 @@ export namespace Prisma {
     progressAtTransfer?: SortOrder
     deadlineAtTransfer?: SortOrderInput | SortOrder
     transferredById?: SortOrderInput | SortOrder
-    task?: TaskOrderByWithRelationInput
     fromAssignee?: StaffOrderByWithRelationInput
+    task?: TaskOrderByWithRelationInput
     toAssignee?: StaffOrderByWithRelationInput
     transferredBy?: StaffOrderByWithRelationInput
   }
@@ -53112,8 +53112,8 @@ export namespace Prisma {
     progressAtTransfer?: IntFilter<"TaskTransferHistory"> | number
     deadlineAtTransfer?: DateTimeNullableFilter<"TaskTransferHistory"> | Date | string | null
     transferredById?: StringNullableFilter<"TaskTransferHistory"> | string | null
-    task?: XOR<TaskRelationFilter, TaskWhereInput>
     fromAssignee?: XOR<StaffRelationFilter, StaffWhereInput>
+    task?: XOR<TaskRelationFilter, TaskWhereInput>
     toAssignee?: XOR<StaffRelationFilter, StaffWhereInput>
     transferredBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
   }, "id">
@@ -55697,9 +55697,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -55717,10 +55717,10 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
-    assignedTasks?: TaskCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
   }
 
   export type StaffUncheckedCreateInput = {
@@ -55740,9 +55740,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -55758,10 +55758,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type StaffUpdateInput = {
@@ -55779,9 +55779,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -55799,10 +55799,10 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateInput = {
@@ -55822,9 +55822,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -55840,10 +55840,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type StaffCreateManyInput = {
@@ -55863,9 +55863,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
   }
 
   export type StaffUpdateManyMutationInput = {
@@ -55883,9 +55883,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type StaffUncheckedUpdateManyInput = {
@@ -55905,9 +55905,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type SessionCreateInput = {
@@ -56189,6 +56189,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
@@ -56197,7 +56198,6 @@ export namespace Prisma {
     contracts?: ContractCreateNestedManyWithoutClientInput
     projects?: ProjectCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
   }
 
   export type ClientUncheckedCreateInput = {
@@ -56224,13 +56224,13 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
     contracts?: ContractUncheckedCreateNestedManyWithoutClientInput
     projects?: ProjectUncheckedCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
   }
 
   export type ClientUpdateInput = {
@@ -56255,6 +56255,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
@@ -56263,7 +56264,6 @@ export namespace Prisma {
     contracts?: ContractUpdateManyWithoutClientNestedInput
     projects?: ProjectUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateInput = {
@@ -56290,13 +56290,13 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutClientNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
   }
 
   export type ClientCreateManyInput = {
@@ -56566,6 +56566,7 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
+    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
     clients?: ClientCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
     contracts?: ContractCreateNestedManyWithoutPortfolioInput
@@ -56573,7 +56574,6 @@ export namespace Prisma {
     recurringSchedules?: RecurringScheduleCreateNestedManyWithoutPortfolioInput
     services?: ServiceCreateNestedManyWithoutPortfolioInput
     users?: StaffCreateNestedManyWithoutPortfolioInput
-    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
   }
 
   export type PortfolioUncheckedCreateInput = {
@@ -56593,6 +56593,7 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
+    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
     clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
     contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
@@ -56600,7 +56601,6 @@ export namespace Prisma {
     recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutPortfolioInput
     services?: ServiceUncheckedCreateNestedManyWithoutPortfolioInput
     users?: StaffUncheckedCreateNestedManyWithoutPortfolioInput
-    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
   }
 
   export type PortfolioUpdateInput = {
@@ -56620,6 +56620,7 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUpdateManyWithoutPortfolioNestedInput
@@ -56627,7 +56628,6 @@ export namespace Prisma {
     recurringSchedules?: RecurringScheduleUpdateManyWithoutPortfolioNestedInput
     services?: ServiceUpdateManyWithoutPortfolioNestedInput
     users?: StaffUpdateManyWithoutPortfolioNestedInput
-    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
   }
 
   export type PortfolioUncheckedUpdateInput = {
@@ -56647,6 +56647,7 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
@@ -56654,7 +56655,6 @@ export namespace Prisma {
     recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutPortfolioNestedInput
     services?: ServiceUncheckedUpdateManyWithoutPortfolioNestedInput
     users?: StaffUncheckedUpdateManyWithoutPortfolioNestedInput
-    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
   export type PortfolioCreateManyInput = {
@@ -56919,23 +56919,23 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
-    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
+    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
     user: StaffCreateNestedOneWithoutAssignedTasksInput
     contentCycle?: ContentCycleCreateNestedOneWithoutTasksInput
@@ -56952,7 +56952,6 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -56960,7 +56959,6 @@ export namespace Prisma {
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     agreementId?: string | null
     contentCycleId?: string | null
@@ -56970,11 +56968,13 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
-    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
+    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
   }
 
   export type TaskUpdateInput = {
@@ -56985,23 +56985,23 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
-    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
     user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
     contentCycle?: ContentCycleUpdateOneWithoutTasksNestedInput
@@ -57018,7 +57018,6 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -57026,7 +57025,6 @@ export namespace Prisma {
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     agreementId?: NullableStringFieldUpdateOperationsInput | string | null
     contentCycleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57036,11 +57034,13 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
-    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
   }
 
   export type TaskCreateManyInput = {
@@ -57051,7 +57051,6 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -57059,7 +57058,6 @@ export namespace Prisma {
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     agreementId?: string | null
     contentCycleId?: string | null
@@ -57069,8 +57067,10 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type TaskUpdateManyMutationInput = {
@@ -57081,20 +57081,20 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type TaskUncheckedUpdateManyInput = {
@@ -57105,7 +57105,6 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -57113,7 +57112,6 @@ export namespace Prisma {
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     agreementId?: NullableStringFieldUpdateOperationsInput | string | null
     contentCycleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57123,8 +57121,10 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type TaskTransferHistoryCreateInput = {
@@ -57132,8 +57132,8 @@ export namespace Prisma {
     createdAt?: Date | string
     progressAtTransfer?: number
     deadlineAtTransfer?: Date | string | null
-    task: TaskCreateNestedOneWithoutTransferHistoryInput
     fromAssignee: StaffCreateNestedOneWithoutTransferredFromTasksInput
+    task: TaskCreateNestedOneWithoutTransferHistoryInput
     toAssignee: StaffCreateNestedOneWithoutTransferredToTasksInput
     transferredBy?: StaffCreateNestedOneWithoutTransferredByTasksInput
   }
@@ -57154,8 +57154,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     progressAtTransfer?: IntFieldUpdateOperationsInput | number
     deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    task?: TaskUpdateOneRequiredWithoutTransferHistoryNestedInput
     fromAssignee?: StaffUpdateOneRequiredWithoutTransferredFromTasksNestedInput
+    task?: TaskUpdateOneRequiredWithoutTransferHistoryNestedInput
     toAssignee?: StaffUpdateOneRequiredWithoutTransferredToTasksNestedInput
     transferredBy?: StaffUpdateOneWithoutTransferredByTasksNestedInput
   }
@@ -60046,16 +60046,16 @@ export namespace Prisma {
     isNot?: RoleWhereInput | null
   }
 
-  export type TaskListRelationFilter = {
-    every?: TaskWhereInput
-    some?: TaskWhereInput
-    none?: TaskWhereInput
-  }
-
   export type TaskTransferHistoryListRelationFilter = {
     every?: TaskTransferHistoryWhereInput
     some?: TaskTransferHistoryWhereInput
     none?: TaskTransferHistoryWhereInput
+  }
+
+  export type TaskListRelationFilter = {
+    every?: TaskWhereInput
+    some?: TaskWhereInput
+    none?: TaskWhereInput
   }
 
   export type ExpenseTransactionOrderByRelationAggregateInput = {
@@ -60114,11 +60114,11 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type TaskOrderByRelationAggregateInput = {
+  export type TaskTransferHistoryOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
-  export type TaskTransferHistoryOrderByRelationAggregateInput = {
+  export type TaskOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -60139,9 +60139,9 @@ export namespace Prisma {
     banReason?: SortOrder
     banExpires?: SortOrder
     portfolioId?: SortOrder
-    staffCode?: SortOrder
-    jobTitle?: SortOrder
     employmentType?: SortOrder
+    jobTitle?: SortOrder
+    staffCode?: SortOrder
   }
 
   export type StaffMaxOrderByAggregateInput = {
@@ -60161,9 +60161,9 @@ export namespace Prisma {
     banReason?: SortOrder
     banExpires?: SortOrder
     portfolioId?: SortOrder
-    staffCode?: SortOrder
-    jobTitle?: SortOrder
     employmentType?: SortOrder
+    jobTitle?: SortOrder
+    staffCode?: SortOrder
   }
 
   export type StaffMinOrderByAggregateInput = {
@@ -60183,9 +60183,9 @@ export namespace Prisma {
     banReason?: SortOrder
     banExpires?: SortOrder
     portfolioId?: SortOrder
-    staffCode?: SortOrder
-    jobTitle?: SortOrder
     employmentType?: SortOrder
+    jobTitle?: SortOrder
+    staffCode?: SortOrder
   }
 
   export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -60368,6 +60368,11 @@ export namespace Prisma {
     none?: ClientInstallmentWhereInput
   }
 
+  export type ClientSchemaNullableRelationFilter = {
+    is?: ClientSchemaWhereInput | null
+    isNot?: ClientSchemaWhereInput | null
+  }
+
   export type StaffNullableRelationFilter = {
     is?: StaffWhereInput | null
     isNot?: StaffWhereInput | null
@@ -60389,11 +60394,6 @@ export namespace Prisma {
     every?: RecurringScheduleWhereInput
     some?: RecurringScheduleWhereInput
     none?: RecurringScheduleWhereInput
-  }
-
-  export type ClientSchemaNullableRelationFilter = {
-    is?: ClientSchemaWhereInput | null
-    isNot?: ClientSchemaWhereInput | null
   }
 
   export type ClientSubServiceOrderByRelationAggregateInput = {
@@ -60730,23 +60730,23 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
-  export type ServiceListRelationFilter = {
-    every?: ServiceWhereInput
-    some?: ServiceWhereInput
-    none?: ServiceWhereInput
-  }
-
   export type ClientSchemaListRelationFilter = {
     every?: ClientSchemaWhereInput
     some?: ClientSchemaWhereInput
     none?: ClientSchemaWhereInput
   }
 
-  export type ServiceOrderByRelationAggregateInput = {
-    _count?: SortOrder
+  export type ServiceListRelationFilter = {
+    every?: ServiceWhereInput
+    some?: ServiceWhereInput
+    none?: ServiceWhereInput
   }
 
   export type ClientSchemaOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ServiceOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -60981,7 +60981,6 @@ export namespace Prisma {
     priority?: SortOrder
     department?: SortOrder
     deadline?: SortOrder
-    originalDeadline?: SortOrder
     extraTimeMinutes?: SortOrder
     completedAt?: SortOrder
     progressUpdatedAt?: SortOrder
@@ -60989,7 +60988,6 @@ export namespace Prisma {
     progress?: SortOrder
     supervisor?: SortOrder
     serviceInformation?: SortOrder
-    features?: SortOrder
     isPersonal?: SortOrder
     agreementId?: SortOrder
     contentCycleId?: SortOrder
@@ -60999,8 +60997,10 @@ export namespace Prisma {
     updatedAt?: SortOrder
     workflowStage?: SortOrder
     workflowStepId?: SortOrder
-    startDate?: SortOrder
+    originalDeadline?: SortOrder
     transferredFromProgress?: SortOrder
+    startDate?: SortOrder
+    features?: SortOrder
   }
 
   export type TaskAvgOrderByAggregateInput = {
@@ -61018,7 +61018,6 @@ export namespace Prisma {
     priority?: SortOrder
     department?: SortOrder
     deadline?: SortOrder
-    originalDeadline?: SortOrder
     extraTimeMinutes?: SortOrder
     completedAt?: SortOrder
     progressUpdatedAt?: SortOrder
@@ -61035,8 +61034,9 @@ export namespace Prisma {
     updatedAt?: SortOrder
     workflowStage?: SortOrder
     workflowStepId?: SortOrder
-    startDate?: SortOrder
+    originalDeadline?: SortOrder
     transferredFromProgress?: SortOrder
+    startDate?: SortOrder
   }
 
   export type TaskMinOrderByAggregateInput = {
@@ -61047,7 +61047,6 @@ export namespace Prisma {
     priority?: SortOrder
     department?: SortOrder
     deadline?: SortOrder
-    originalDeadline?: SortOrder
     extraTimeMinutes?: SortOrder
     completedAt?: SortOrder
     progressUpdatedAt?: SortOrder
@@ -61064,8 +61063,9 @@ export namespace Prisma {
     updatedAt?: SortOrder
     workflowStage?: SortOrder
     workflowStepId?: SortOrder
-    startDate?: SortOrder
+    originalDeadline?: SortOrder
     transferredFromProgress?: SortOrder
+    startDate?: SortOrder
   }
 
   export type TaskSumOrderByAggregateInput = {
@@ -63103,13 +63103,6 @@ export namespace Prisma {
     connect?: RoleWhereUniqueInput
   }
 
-  export type TaskCreateNestedManyWithoutUserInput = {
-    create?: XOR<TaskCreateWithoutUserInput, TaskUncheckedCreateWithoutUserInput> | TaskCreateWithoutUserInput[] | TaskUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: TaskCreateOrConnectWithoutUserInput | TaskCreateOrConnectWithoutUserInput[]
-    createMany?: TaskCreateManyUserInputEnvelope
-    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
-  }
-
   export type TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput = {
     create?: XOR<TaskTransferHistoryCreateWithoutFromAssigneeInput, TaskTransferHistoryUncheckedCreateWithoutFromAssigneeInput> | TaskTransferHistoryCreateWithoutFromAssigneeInput[] | TaskTransferHistoryUncheckedCreateWithoutFromAssigneeInput[]
     connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutFromAssigneeInput | TaskTransferHistoryCreateOrConnectWithoutFromAssigneeInput[]
@@ -63129,6 +63122,13 @@ export namespace Prisma {
     connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutTransferredByInput | TaskTransferHistoryCreateOrConnectWithoutTransferredByInput[]
     createMany?: TaskTransferHistoryCreateManyTransferredByInputEnvelope
     connect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+  }
+
+  export type TaskCreateNestedManyWithoutUserInput = {
+    create?: XOR<TaskCreateWithoutUserInput, TaskUncheckedCreateWithoutUserInput> | TaskCreateWithoutUserInput[] | TaskUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutUserInput | TaskCreateOrConnectWithoutUserInput[]
+    createMany?: TaskCreateManyUserInputEnvelope
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
   }
 
   export type ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput = {
@@ -63236,13 +63236,6 @@ export namespace Prisma {
     connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
   }
 
-  export type TaskUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<TaskCreateWithoutUserInput, TaskUncheckedCreateWithoutUserInput> | TaskCreateWithoutUserInput[] | TaskUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: TaskCreateOrConnectWithoutUserInput | TaskCreateOrConnectWithoutUserInput[]
-    createMany?: TaskCreateManyUserInputEnvelope
-    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
-  }
-
   export type TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput = {
     create?: XOR<TaskTransferHistoryCreateWithoutFromAssigneeInput, TaskTransferHistoryUncheckedCreateWithoutFromAssigneeInput> | TaskTransferHistoryCreateWithoutFromAssigneeInput[] | TaskTransferHistoryUncheckedCreateWithoutFromAssigneeInput[]
     connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutFromAssigneeInput | TaskTransferHistoryCreateOrConnectWithoutFromAssigneeInput[]
@@ -63262,6 +63255,13 @@ export namespace Prisma {
     connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutTransferredByInput | TaskTransferHistoryCreateOrConnectWithoutTransferredByInput[]
     createMany?: TaskTransferHistoryCreateManyTransferredByInputEnvelope
     connect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
+  }
+
+  export type TaskUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<TaskCreateWithoutUserInput, TaskUncheckedCreateWithoutUserInput> | TaskCreateWithoutUserInput[] | TaskUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutUserInput | TaskCreateOrConnectWithoutUserInput[]
+    createMany?: TaskCreateManyUserInputEnvelope
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
   }
 
   export type NullableBoolFieldUpdateOperationsInput = {
@@ -63502,20 +63502,6 @@ export namespace Prisma {
     update?: XOR<XOR<RoleUpdateToOneWithWhereWithoutUsersInput, RoleUpdateWithoutUsersInput>, RoleUncheckedUpdateWithoutUsersInput>
   }
 
-  export type TaskUpdateManyWithoutUserNestedInput = {
-    create?: XOR<TaskCreateWithoutUserInput, TaskUncheckedCreateWithoutUserInput> | TaskCreateWithoutUserInput[] | TaskUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: TaskCreateOrConnectWithoutUserInput | TaskCreateOrConnectWithoutUserInput[]
-    upsert?: TaskUpsertWithWhereUniqueWithoutUserInput | TaskUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: TaskCreateManyUserInputEnvelope
-    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
-    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
-    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
-    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
-    update?: TaskUpdateWithWhereUniqueWithoutUserInput | TaskUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: TaskUpdateManyWithWhereWithoutUserInput | TaskUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
-  }
-
   export type TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput = {
     create?: XOR<TaskTransferHistoryCreateWithoutFromAssigneeInput, TaskTransferHistoryUncheckedCreateWithoutFromAssigneeInput> | TaskTransferHistoryCreateWithoutFromAssigneeInput[] | TaskTransferHistoryUncheckedCreateWithoutFromAssigneeInput[]
     connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutFromAssigneeInput | TaskTransferHistoryCreateOrConnectWithoutFromAssigneeInput[]
@@ -63556,6 +63542,20 @@ export namespace Prisma {
     update?: TaskTransferHistoryUpdateWithWhereUniqueWithoutTransferredByInput | TaskTransferHistoryUpdateWithWhereUniqueWithoutTransferredByInput[]
     updateMany?: TaskTransferHistoryUpdateManyWithWhereWithoutTransferredByInput | TaskTransferHistoryUpdateManyWithWhereWithoutTransferredByInput[]
     deleteMany?: TaskTransferHistoryScalarWhereInput | TaskTransferHistoryScalarWhereInput[]
+  }
+
+  export type TaskUpdateManyWithoutUserNestedInput = {
+    create?: XOR<TaskCreateWithoutUserInput, TaskUncheckedCreateWithoutUserInput> | TaskCreateWithoutUserInput[] | TaskUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutUserInput | TaskCreateOrConnectWithoutUserInput[]
+    upsert?: TaskUpsertWithWhereUniqueWithoutUserInput | TaskUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: TaskCreateManyUserInputEnvelope
+    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    update?: TaskUpdateWithWhereUniqueWithoutUserInput | TaskUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: TaskUpdateManyWithWhereWithoutUserInput | TaskUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
   }
 
   export type ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput = {
@@ -63768,20 +63768,6 @@ export namespace Prisma {
     deleteMany?: SessionScalarWhereInput | SessionScalarWhereInput[]
   }
 
-  export type TaskUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<TaskCreateWithoutUserInput, TaskUncheckedCreateWithoutUserInput> | TaskCreateWithoutUserInput[] | TaskUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: TaskCreateOrConnectWithoutUserInput | TaskCreateOrConnectWithoutUserInput[]
-    upsert?: TaskUpsertWithWhereUniqueWithoutUserInput | TaskUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: TaskCreateManyUserInputEnvelope
-    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
-    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
-    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
-    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
-    update?: TaskUpdateWithWhereUniqueWithoutUserInput | TaskUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: TaskUpdateManyWithWhereWithoutUserInput | TaskUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
-  }
-
   export type TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput = {
     create?: XOR<TaskTransferHistoryCreateWithoutFromAssigneeInput, TaskTransferHistoryUncheckedCreateWithoutFromAssigneeInput> | TaskTransferHistoryCreateWithoutFromAssigneeInput[] | TaskTransferHistoryUncheckedCreateWithoutFromAssigneeInput[]
     connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutFromAssigneeInput | TaskTransferHistoryCreateOrConnectWithoutFromAssigneeInput[]
@@ -63822,6 +63808,20 @@ export namespace Prisma {
     update?: TaskTransferHistoryUpdateWithWhereUniqueWithoutTransferredByInput | TaskTransferHistoryUpdateWithWhereUniqueWithoutTransferredByInput[]
     updateMany?: TaskTransferHistoryUpdateManyWithWhereWithoutTransferredByInput | TaskTransferHistoryUpdateManyWithWhereWithoutTransferredByInput[]
     deleteMany?: TaskTransferHistoryScalarWhereInput | TaskTransferHistoryScalarWhereInput[]
+  }
+
+  export type TaskUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<TaskCreateWithoutUserInput, TaskUncheckedCreateWithoutUserInput> | TaskCreateWithoutUserInput[] | TaskUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: TaskCreateOrConnectWithoutUserInput | TaskCreateOrConnectWithoutUserInput[]
+    upsert?: TaskUpsertWithWhereUniqueWithoutUserInput | TaskUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: TaskCreateManyUserInputEnvelope
+    set?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    disconnect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    delete?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+    update?: TaskUpdateWithWhereUniqueWithoutUserInput | TaskUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: TaskUpdateManyWithWhereWithoutUserInput | TaskUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
   }
 
   export type StaffCreateNestedOneWithoutSessionsInput = {
@@ -63880,6 +63880,12 @@ export namespace Prisma {
     connect?: ClientInstallmentWhereUniqueInput | ClientInstallmentWhereUniqueInput[]
   }
 
+  export type ClientSchemaCreateNestedOneWithoutClientInput = {
+    create?: XOR<ClientSchemaCreateWithoutClientInput, ClientSchemaUncheckedCreateWithoutClientInput>
+    connectOrCreate?: ClientSchemaCreateOrConnectWithoutClientInput
+    connect?: ClientSchemaWhereUniqueInput
+  }
+
   export type StaffCreateNestedOneWithoutManagedClientsInput = {
     create?: XOR<StaffCreateWithoutManagedClientsInput, StaffUncheckedCreateWithoutManagedClientsInput>
     connectOrCreate?: StaffCreateOrConnectWithoutManagedClientsInput
@@ -63934,12 +63940,6 @@ export namespace Prisma {
     connect?: RecurringScheduleWhereUniqueInput | RecurringScheduleWhereUniqueInput[]
   }
 
-  export type ClientSchemaCreateNestedOneWithoutClientInput = {
-    create?: XOR<ClientSchemaCreateWithoutClientInput, ClientSchemaUncheckedCreateWithoutClientInput>
-    connectOrCreate?: ClientSchemaCreateOrConnectWithoutClientInput
-    connect?: ClientSchemaWhereUniqueInput
-  }
-
   export type ClientSubServiceUncheckedCreateNestedManyWithoutClientInput = {
     create?: XOR<ClientSubServiceCreateWithoutClientInput, ClientSubServiceUncheckedCreateWithoutClientInput> | ClientSubServiceCreateWithoutClientInput[] | ClientSubServiceUncheckedCreateWithoutClientInput[]
     connectOrCreate?: ClientSubServiceCreateOrConnectWithoutClientInput | ClientSubServiceCreateOrConnectWithoutClientInput[]
@@ -63966,6 +63966,12 @@ export namespace Prisma {
     connectOrCreate?: ClientInstallmentCreateOrConnectWithoutClientInput | ClientInstallmentCreateOrConnectWithoutClientInput[]
     createMany?: ClientInstallmentCreateManyClientInputEnvelope
     connect?: ClientInstallmentWhereUniqueInput | ClientInstallmentWhereUniqueInput[]
+  }
+
+  export type ClientSchemaUncheckedCreateNestedOneWithoutClientInput = {
+    create?: XOR<ClientSchemaCreateWithoutClientInput, ClientSchemaUncheckedCreateWithoutClientInput>
+    connectOrCreate?: ClientSchemaCreateOrConnectWithoutClientInput
+    connect?: ClientSchemaWhereUniqueInput
   }
 
   export type ClientTaskUncheckedCreateNestedManyWithoutClientInput = {
@@ -64008,12 +64014,6 @@ export namespace Prisma {
     connectOrCreate?: RecurringScheduleCreateOrConnectWithoutClientInput | RecurringScheduleCreateOrConnectWithoutClientInput[]
     createMany?: RecurringScheduleCreateManyClientInputEnvelope
     connect?: RecurringScheduleWhereUniqueInput | RecurringScheduleWhereUniqueInput[]
-  }
-
-  export type ClientSchemaUncheckedCreateNestedOneWithoutClientInput = {
-    create?: XOR<ClientSchemaCreateWithoutClientInput, ClientSchemaUncheckedCreateWithoutClientInput>
-    connectOrCreate?: ClientSchemaCreateOrConnectWithoutClientInput
-    connect?: ClientSchemaWhereUniqueInput
   }
 
   export type EnumClientTypeFieldUpdateOperationsInput = {
@@ -64082,6 +64082,16 @@ export namespace Prisma {
     update?: ClientInstallmentUpdateWithWhereUniqueWithoutClientInput | ClientInstallmentUpdateWithWhereUniqueWithoutClientInput[]
     updateMany?: ClientInstallmentUpdateManyWithWhereWithoutClientInput | ClientInstallmentUpdateManyWithWhereWithoutClientInput[]
     deleteMany?: ClientInstallmentScalarWhereInput | ClientInstallmentScalarWhereInput[]
+  }
+
+  export type ClientSchemaUpdateOneWithoutClientNestedInput = {
+    create?: XOR<ClientSchemaCreateWithoutClientInput, ClientSchemaUncheckedCreateWithoutClientInput>
+    connectOrCreate?: ClientSchemaCreateOrConnectWithoutClientInput
+    upsert?: ClientSchemaUpsertWithoutClientInput
+    disconnect?: ClientSchemaWhereInput | boolean
+    delete?: ClientSchemaWhereInput | boolean
+    connect?: ClientSchemaWhereUniqueInput
+    update?: XOR<XOR<ClientSchemaUpdateToOneWithWhereWithoutClientInput, ClientSchemaUpdateWithoutClientInput>, ClientSchemaUncheckedUpdateWithoutClientInput>
   }
 
   export type StaffUpdateOneWithoutManagedClientsNestedInput = {
@@ -64188,16 +64198,6 @@ export namespace Prisma {
     deleteMany?: RecurringScheduleScalarWhereInput | RecurringScheduleScalarWhereInput[]
   }
 
-  export type ClientSchemaUpdateOneWithoutClientNestedInput = {
-    create?: XOR<ClientSchemaCreateWithoutClientInput, ClientSchemaUncheckedCreateWithoutClientInput>
-    connectOrCreate?: ClientSchemaCreateOrConnectWithoutClientInput
-    upsert?: ClientSchemaUpsertWithoutClientInput
-    disconnect?: ClientSchemaWhereInput | boolean
-    delete?: ClientSchemaWhereInput | boolean
-    connect?: ClientSchemaWhereUniqueInput
-    update?: XOR<XOR<ClientSchemaUpdateToOneWithWhereWithoutClientInput, ClientSchemaUpdateWithoutClientInput>, ClientSchemaUncheckedUpdateWithoutClientInput>
-  }
-
   export type ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput = {
     create?: XOR<ClientSubServiceCreateWithoutClientInput, ClientSubServiceUncheckedCreateWithoutClientInput> | ClientSubServiceCreateWithoutClientInput[] | ClientSubServiceUncheckedCreateWithoutClientInput[]
     connectOrCreate?: ClientSubServiceCreateOrConnectWithoutClientInput | ClientSubServiceCreateOrConnectWithoutClientInput[]
@@ -64252,6 +64252,16 @@ export namespace Prisma {
     update?: ClientInstallmentUpdateWithWhereUniqueWithoutClientInput | ClientInstallmentUpdateWithWhereUniqueWithoutClientInput[]
     updateMany?: ClientInstallmentUpdateManyWithWhereWithoutClientInput | ClientInstallmentUpdateManyWithWhereWithoutClientInput[]
     deleteMany?: ClientInstallmentScalarWhereInput | ClientInstallmentScalarWhereInput[]
+  }
+
+  export type ClientSchemaUncheckedUpdateOneWithoutClientNestedInput = {
+    create?: XOR<ClientSchemaCreateWithoutClientInput, ClientSchemaUncheckedCreateWithoutClientInput>
+    connectOrCreate?: ClientSchemaCreateOrConnectWithoutClientInput
+    upsert?: ClientSchemaUpsertWithoutClientInput
+    disconnect?: ClientSchemaWhereInput | boolean
+    delete?: ClientSchemaWhereInput | boolean
+    connect?: ClientSchemaWhereUniqueInput
+    update?: XOR<XOR<ClientSchemaUpdateToOneWithWhereWithoutClientInput, ClientSchemaUpdateWithoutClientInput>, ClientSchemaUncheckedUpdateWithoutClientInput>
   }
 
   export type ClientTaskUncheckedUpdateManyWithoutClientNestedInput = {
@@ -64336,16 +64346,6 @@ export namespace Prisma {
     update?: RecurringScheduleUpdateWithWhereUniqueWithoutClientInput | RecurringScheduleUpdateWithWhereUniqueWithoutClientInput[]
     updateMany?: RecurringScheduleUpdateManyWithWhereWithoutClientInput | RecurringScheduleUpdateManyWithWhereWithoutClientInput[]
     deleteMany?: RecurringScheduleScalarWhereInput | RecurringScheduleScalarWhereInput[]
-  }
-
-  export type ClientSchemaUncheckedUpdateOneWithoutClientNestedInput = {
-    create?: XOR<ClientSchemaCreateWithoutClientInput, ClientSchemaUncheckedCreateWithoutClientInput>
-    connectOrCreate?: ClientSchemaCreateOrConnectWithoutClientInput
-    upsert?: ClientSchemaUpsertWithoutClientInput
-    disconnect?: ClientSchemaWhereInput | boolean
-    delete?: ClientSchemaWhereInput | boolean
-    connect?: ClientSchemaWhereUniqueInput
-    update?: XOR<XOR<ClientSchemaUpdateToOneWithWhereWithoutClientInput, ClientSchemaUpdateWithoutClientInput>, ClientSchemaUncheckedUpdateWithoutClientInput>
   }
 
   export type IncomeServiceAgreementCreateNestedManyWithoutServiceInput = {
@@ -64600,6 +64600,13 @@ export namespace Prisma {
     deleteMany?: IncomeServiceAgreementScalarWhereInput | IncomeServiceAgreementScalarWhereInput[]
   }
 
+  export type ClientSchemaCreateNestedManyWithoutPortfolioInput = {
+    create?: XOR<ClientSchemaCreateWithoutPortfolioInput, ClientSchemaUncheckedCreateWithoutPortfolioInput> | ClientSchemaCreateWithoutPortfolioInput[] | ClientSchemaUncheckedCreateWithoutPortfolioInput[]
+    connectOrCreate?: ClientSchemaCreateOrConnectWithoutPortfolioInput | ClientSchemaCreateOrConnectWithoutPortfolioInput[]
+    createMany?: ClientSchemaCreateManyPortfolioInputEnvelope
+    connect?: ClientSchemaWhereUniqueInput | ClientSchemaWhereUniqueInput[]
+  }
+
   export type ClientCreateNestedManyWithoutPortfolioInput = {
     create?: XOR<ClientCreateWithoutPortfolioInput, ClientUncheckedCreateWithoutPortfolioInput> | ClientCreateWithoutPortfolioInput[] | ClientUncheckedCreateWithoutPortfolioInput[]
     connectOrCreate?: ClientCreateOrConnectWithoutPortfolioInput | ClientCreateOrConnectWithoutPortfolioInput[]
@@ -64649,7 +64656,7 @@ export namespace Prisma {
     connect?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
   }
 
-  export type ClientSchemaCreateNestedManyWithoutPortfolioInput = {
+  export type ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput = {
     create?: XOR<ClientSchemaCreateWithoutPortfolioInput, ClientSchemaUncheckedCreateWithoutPortfolioInput> | ClientSchemaCreateWithoutPortfolioInput[] | ClientSchemaUncheckedCreateWithoutPortfolioInput[]
     connectOrCreate?: ClientSchemaCreateOrConnectWithoutPortfolioInput | ClientSchemaCreateOrConnectWithoutPortfolioInput[]
     createMany?: ClientSchemaCreateManyPortfolioInputEnvelope
@@ -64705,11 +64712,18 @@ export namespace Prisma {
     connect?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
   }
 
-  export type ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput = {
+  export type ClientSchemaUpdateManyWithoutPortfolioNestedInput = {
     create?: XOR<ClientSchemaCreateWithoutPortfolioInput, ClientSchemaUncheckedCreateWithoutPortfolioInput> | ClientSchemaCreateWithoutPortfolioInput[] | ClientSchemaUncheckedCreateWithoutPortfolioInput[]
     connectOrCreate?: ClientSchemaCreateOrConnectWithoutPortfolioInput | ClientSchemaCreateOrConnectWithoutPortfolioInput[]
+    upsert?: ClientSchemaUpsertWithWhereUniqueWithoutPortfolioInput | ClientSchemaUpsertWithWhereUniqueWithoutPortfolioInput[]
     createMany?: ClientSchemaCreateManyPortfolioInputEnvelope
+    set?: ClientSchemaWhereUniqueInput | ClientSchemaWhereUniqueInput[]
+    disconnect?: ClientSchemaWhereUniqueInput | ClientSchemaWhereUniqueInput[]
+    delete?: ClientSchemaWhereUniqueInput | ClientSchemaWhereUniqueInput[]
     connect?: ClientSchemaWhereUniqueInput | ClientSchemaWhereUniqueInput[]
+    update?: ClientSchemaUpdateWithWhereUniqueWithoutPortfolioInput | ClientSchemaUpdateWithWhereUniqueWithoutPortfolioInput[]
+    updateMany?: ClientSchemaUpdateManyWithWhereWithoutPortfolioInput | ClientSchemaUpdateManyWithWhereWithoutPortfolioInput[]
+    deleteMany?: ClientSchemaScalarWhereInput | ClientSchemaScalarWhereInput[]
   }
 
   export type ClientUpdateManyWithoutPortfolioNestedInput = {
@@ -64810,7 +64824,7 @@ export namespace Prisma {
     deleteMany?: StaffScalarWhereInput | StaffScalarWhereInput[]
   }
 
-  export type ClientSchemaUpdateManyWithoutPortfolioNestedInput = {
+  export type ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput = {
     create?: XOR<ClientSchemaCreateWithoutPortfolioInput, ClientSchemaUncheckedCreateWithoutPortfolioInput> | ClientSchemaCreateWithoutPortfolioInput[] | ClientSchemaUncheckedCreateWithoutPortfolioInput[]
     connectOrCreate?: ClientSchemaCreateOrConnectWithoutPortfolioInput | ClientSchemaCreateOrConnectWithoutPortfolioInput[]
     upsert?: ClientSchemaUpsertWithWhereUniqueWithoutPortfolioInput | ClientSchemaUpsertWithWhereUniqueWithoutPortfolioInput[]
@@ -64922,20 +64936,6 @@ export namespace Prisma {
     deleteMany?: StaffScalarWhereInput | StaffScalarWhereInput[]
   }
 
-  export type ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput = {
-    create?: XOR<ClientSchemaCreateWithoutPortfolioInput, ClientSchemaUncheckedCreateWithoutPortfolioInput> | ClientSchemaCreateWithoutPortfolioInput[] | ClientSchemaUncheckedCreateWithoutPortfolioInput[]
-    connectOrCreate?: ClientSchemaCreateOrConnectWithoutPortfolioInput | ClientSchemaCreateOrConnectWithoutPortfolioInput[]
-    upsert?: ClientSchemaUpsertWithWhereUniqueWithoutPortfolioInput | ClientSchemaUpsertWithWhereUniqueWithoutPortfolioInput[]
-    createMany?: ClientSchemaCreateManyPortfolioInputEnvelope
-    set?: ClientSchemaWhereUniqueInput | ClientSchemaWhereUniqueInput[]
-    disconnect?: ClientSchemaWhereUniqueInput | ClientSchemaWhereUniqueInput[]
-    delete?: ClientSchemaWhereUniqueInput | ClientSchemaWhereUniqueInput[]
-    connect?: ClientSchemaWhereUniqueInput | ClientSchemaWhereUniqueInput[]
-    update?: ClientSchemaUpdateWithWhereUniqueWithoutPortfolioInput | ClientSchemaUpdateWithWhereUniqueWithoutPortfolioInput[]
-    updateMany?: ClientSchemaUpdateManyWithWhereWithoutPortfolioInput | ClientSchemaUpdateManyWithWhereWithoutPortfolioInput[]
-    deleteMany?: ClientSchemaScalarWhereInput | ClientSchemaScalarWhereInput[]
-  }
-
   export type ClientCreateNestedOneWithoutClientSchemaInput = {
     create?: XOR<ClientCreateWithoutClientSchemaInput, ClientUncheckedCreateWithoutClientSchemaInput>
     connectOrCreate?: ClientCreateOrConnectWithoutClientSchemaInput
@@ -65029,17 +65029,17 @@ export namespace Prisma {
     connect?: ClientTaskWhereUniqueInput | ClientTaskWhereUniqueInput[]
   }
 
+  export type RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput = {
+    create?: XOR<RecurringTaskOccurrenceCreateWithoutTaskInput, RecurringTaskOccurrenceUncheckedCreateWithoutTaskInput>
+    connectOrCreate?: RecurringTaskOccurrenceCreateOrConnectWithoutTaskInput
+    connect?: RecurringTaskOccurrenceWhereUniqueInput
+  }
+
   export type TaskTransferHistoryCreateNestedManyWithoutTaskInput = {
     create?: XOR<TaskTransferHistoryCreateWithoutTaskInput, TaskTransferHistoryUncheckedCreateWithoutTaskInput> | TaskTransferHistoryCreateWithoutTaskInput[] | TaskTransferHistoryUncheckedCreateWithoutTaskInput[]
     connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutTaskInput | TaskTransferHistoryCreateOrConnectWithoutTaskInput[]
     createMany?: TaskTransferHistoryCreateManyTaskInputEnvelope
     connect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
-  }
-
-  export type RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput = {
-    create?: XOR<RecurringTaskOccurrenceCreateWithoutTaskInput, RecurringTaskOccurrenceUncheckedCreateWithoutTaskInput>
-    connectOrCreate?: RecurringTaskOccurrenceCreateOrConnectWithoutTaskInput
-    connect?: RecurringTaskOccurrenceWhereUniqueInput
   }
 
   export type IncomeServiceAgreementCreateNestedOneWithoutTasksInput = {
@@ -65085,17 +65085,17 @@ export namespace Prisma {
     connect?: ClientTaskWhereUniqueInput | ClientTaskWhereUniqueInput[]
   }
 
+  export type RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput = {
+    create?: XOR<RecurringTaskOccurrenceCreateWithoutTaskInput, RecurringTaskOccurrenceUncheckedCreateWithoutTaskInput>
+    connectOrCreate?: RecurringTaskOccurrenceCreateOrConnectWithoutTaskInput
+    connect?: RecurringTaskOccurrenceWhereUniqueInput
+  }
+
   export type TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput = {
     create?: XOR<TaskTransferHistoryCreateWithoutTaskInput, TaskTransferHistoryUncheckedCreateWithoutTaskInput> | TaskTransferHistoryCreateWithoutTaskInput[] | TaskTransferHistoryUncheckedCreateWithoutTaskInput[]
     connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutTaskInput | TaskTransferHistoryCreateOrConnectWithoutTaskInput[]
     createMany?: TaskTransferHistoryCreateManyTaskInputEnvelope
     connect?: TaskTransferHistoryWhereUniqueInput | TaskTransferHistoryWhereUniqueInput[]
-  }
-
-  export type RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput = {
-    create?: XOR<RecurringTaskOccurrenceCreateWithoutTaskInput, RecurringTaskOccurrenceUncheckedCreateWithoutTaskInput>
-    connectOrCreate?: RecurringTaskOccurrenceCreateOrConnectWithoutTaskInput
-    connect?: RecurringTaskOccurrenceWhereUniqueInput
   }
 
   export type EnumTaskStatusFieldUpdateOperationsInput = {
@@ -65124,6 +65124,16 @@ export namespace Prisma {
     deleteMany?: ClientTaskScalarWhereInput | ClientTaskScalarWhereInput[]
   }
 
+  export type RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput = {
+    create?: XOR<RecurringTaskOccurrenceCreateWithoutTaskInput, RecurringTaskOccurrenceUncheckedCreateWithoutTaskInput>
+    connectOrCreate?: RecurringTaskOccurrenceCreateOrConnectWithoutTaskInput
+    upsert?: RecurringTaskOccurrenceUpsertWithoutTaskInput
+    disconnect?: RecurringTaskOccurrenceWhereInput | boolean
+    delete?: RecurringTaskOccurrenceWhereInput | boolean
+    connect?: RecurringTaskOccurrenceWhereUniqueInput
+    update?: XOR<XOR<RecurringTaskOccurrenceUpdateToOneWithWhereWithoutTaskInput, RecurringTaskOccurrenceUpdateWithoutTaskInput>, RecurringTaskOccurrenceUncheckedUpdateWithoutTaskInput>
+  }
+
   export type TaskTransferHistoryUpdateManyWithoutTaskNestedInput = {
     create?: XOR<TaskTransferHistoryCreateWithoutTaskInput, TaskTransferHistoryUncheckedCreateWithoutTaskInput> | TaskTransferHistoryCreateWithoutTaskInput[] | TaskTransferHistoryUncheckedCreateWithoutTaskInput[]
     connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutTaskInput | TaskTransferHistoryCreateOrConnectWithoutTaskInput[]
@@ -65136,16 +65146,6 @@ export namespace Prisma {
     update?: TaskTransferHistoryUpdateWithWhereUniqueWithoutTaskInput | TaskTransferHistoryUpdateWithWhereUniqueWithoutTaskInput[]
     updateMany?: TaskTransferHistoryUpdateManyWithWhereWithoutTaskInput | TaskTransferHistoryUpdateManyWithWhereWithoutTaskInput[]
     deleteMany?: TaskTransferHistoryScalarWhereInput | TaskTransferHistoryScalarWhereInput[]
-  }
-
-  export type RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput = {
-    create?: XOR<RecurringTaskOccurrenceCreateWithoutTaskInput, RecurringTaskOccurrenceUncheckedCreateWithoutTaskInput>
-    connectOrCreate?: RecurringTaskOccurrenceCreateOrConnectWithoutTaskInput
-    upsert?: RecurringTaskOccurrenceUpsertWithoutTaskInput
-    disconnect?: RecurringTaskOccurrenceWhereInput | boolean
-    delete?: RecurringTaskOccurrenceWhereInput | boolean
-    connect?: RecurringTaskOccurrenceWhereUniqueInput
-    update?: XOR<XOR<RecurringTaskOccurrenceUpdateToOneWithWhereWithoutTaskInput, RecurringTaskOccurrenceUpdateWithoutTaskInput>, RecurringTaskOccurrenceUncheckedUpdateWithoutTaskInput>
   }
 
   export type IncomeServiceAgreementUpdateOneWithoutTasksNestedInput = {
@@ -65220,6 +65220,16 @@ export namespace Prisma {
     deleteMany?: ClientTaskScalarWhereInput | ClientTaskScalarWhereInput[]
   }
 
+  export type RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput = {
+    create?: XOR<RecurringTaskOccurrenceCreateWithoutTaskInput, RecurringTaskOccurrenceUncheckedCreateWithoutTaskInput>
+    connectOrCreate?: RecurringTaskOccurrenceCreateOrConnectWithoutTaskInput
+    upsert?: RecurringTaskOccurrenceUpsertWithoutTaskInput
+    disconnect?: RecurringTaskOccurrenceWhereInput | boolean
+    delete?: RecurringTaskOccurrenceWhereInput | boolean
+    connect?: RecurringTaskOccurrenceWhereUniqueInput
+    update?: XOR<XOR<RecurringTaskOccurrenceUpdateToOneWithWhereWithoutTaskInput, RecurringTaskOccurrenceUpdateWithoutTaskInput>, RecurringTaskOccurrenceUncheckedUpdateWithoutTaskInput>
+  }
+
   export type TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput = {
     create?: XOR<TaskTransferHistoryCreateWithoutTaskInput, TaskTransferHistoryUncheckedCreateWithoutTaskInput> | TaskTransferHistoryCreateWithoutTaskInput[] | TaskTransferHistoryUncheckedCreateWithoutTaskInput[]
     connectOrCreate?: TaskTransferHistoryCreateOrConnectWithoutTaskInput | TaskTransferHistoryCreateOrConnectWithoutTaskInput[]
@@ -65234,26 +65244,16 @@ export namespace Prisma {
     deleteMany?: TaskTransferHistoryScalarWhereInput | TaskTransferHistoryScalarWhereInput[]
   }
 
-  export type RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput = {
-    create?: XOR<RecurringTaskOccurrenceCreateWithoutTaskInput, RecurringTaskOccurrenceUncheckedCreateWithoutTaskInput>
-    connectOrCreate?: RecurringTaskOccurrenceCreateOrConnectWithoutTaskInput
-    upsert?: RecurringTaskOccurrenceUpsertWithoutTaskInput
-    disconnect?: RecurringTaskOccurrenceWhereInput | boolean
-    delete?: RecurringTaskOccurrenceWhereInput | boolean
-    connect?: RecurringTaskOccurrenceWhereUniqueInput
-    update?: XOR<XOR<RecurringTaskOccurrenceUpdateToOneWithWhereWithoutTaskInput, RecurringTaskOccurrenceUpdateWithoutTaskInput>, RecurringTaskOccurrenceUncheckedUpdateWithoutTaskInput>
+  export type StaffCreateNestedOneWithoutTransferredFromTasksInput = {
+    create?: XOR<StaffCreateWithoutTransferredFromTasksInput, StaffUncheckedCreateWithoutTransferredFromTasksInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutTransferredFromTasksInput
+    connect?: StaffWhereUniqueInput
   }
 
   export type TaskCreateNestedOneWithoutTransferHistoryInput = {
     create?: XOR<TaskCreateWithoutTransferHistoryInput, TaskUncheckedCreateWithoutTransferHistoryInput>
     connectOrCreate?: TaskCreateOrConnectWithoutTransferHistoryInput
     connect?: TaskWhereUniqueInput
-  }
-
-  export type StaffCreateNestedOneWithoutTransferredFromTasksInput = {
-    create?: XOR<StaffCreateWithoutTransferredFromTasksInput, StaffUncheckedCreateWithoutTransferredFromTasksInput>
-    connectOrCreate?: StaffCreateOrConnectWithoutTransferredFromTasksInput
-    connect?: StaffWhereUniqueInput
   }
 
   export type StaffCreateNestedOneWithoutTransferredToTasksInput = {
@@ -65268,20 +65268,20 @@ export namespace Prisma {
     connect?: StaffWhereUniqueInput
   }
 
-  export type TaskUpdateOneRequiredWithoutTransferHistoryNestedInput = {
-    create?: XOR<TaskCreateWithoutTransferHistoryInput, TaskUncheckedCreateWithoutTransferHistoryInput>
-    connectOrCreate?: TaskCreateOrConnectWithoutTransferHistoryInput
-    upsert?: TaskUpsertWithoutTransferHistoryInput
-    connect?: TaskWhereUniqueInput
-    update?: XOR<XOR<TaskUpdateToOneWithWhereWithoutTransferHistoryInput, TaskUpdateWithoutTransferHistoryInput>, TaskUncheckedUpdateWithoutTransferHistoryInput>
-  }
-
   export type StaffUpdateOneRequiredWithoutTransferredFromTasksNestedInput = {
     create?: XOR<StaffCreateWithoutTransferredFromTasksInput, StaffUncheckedCreateWithoutTransferredFromTasksInput>
     connectOrCreate?: StaffCreateOrConnectWithoutTransferredFromTasksInput
     upsert?: StaffUpsertWithoutTransferredFromTasksInput
     connect?: StaffWhereUniqueInput
     update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutTransferredFromTasksInput, StaffUpdateWithoutTransferredFromTasksInput>, StaffUncheckedUpdateWithoutTransferredFromTasksInput>
+  }
+
+  export type TaskUpdateOneRequiredWithoutTransferHistoryNestedInput = {
+    create?: XOR<TaskCreateWithoutTransferHistoryInput, TaskUncheckedCreateWithoutTransferHistoryInput>
+    connectOrCreate?: TaskCreateOrConnectWithoutTransferHistoryInput
+    upsert?: TaskUpsertWithoutTransferHistoryInput
+    connect?: TaskWhereUniqueInput
+    update?: XOR<XOR<TaskUpdateToOneWithWhereWithoutTransferHistoryInput, TaskUpdateWithoutTransferHistoryInput>, TaskUncheckedUpdateWithoutTransferHistoryInput>
   }
 
   export type StaffUpdateOneRequiredWithoutTransferredToTasksNestedInput = {
@@ -67854,9 +67854,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -67873,10 +67873,10 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
-    assignedTasks?: TaskCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
   }
 
   export type StaffUncheckedCreateWithoutDynamicRoleInput = {
@@ -67895,9 +67895,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -67913,10 +67913,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type StaffCreateOrConnectWithoutDynamicRoleInput = {
@@ -67996,9 +67996,9 @@ export namespace Prisma {
     banReason?: StringNullableFilter<"Staff"> | string | null
     banExpires?: DateTimeNullableFilter<"Staff"> | Date | string | null
     portfolioId?: StringNullableFilter<"Staff"> | string | null
-    staffCode?: StringNullableFilter<"Staff"> | string | null
-    jobTitle?: StringNullableFilter<"Staff"> | string | null
     employmentType?: StringNullableFilter<"Staff"> | string | null
+    jobTitle?: StringNullableFilter<"Staff"> | string | null
+    staffCode?: StringNullableFilter<"Staff"> | string | null
   }
 
   export type ExpenseTransactionCreateWithoutUserInput = {
@@ -68277,6 +68277,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
@@ -68284,7 +68285,6 @@ export namespace Prisma {
     contracts?: ContractCreateNestedManyWithoutClientInput
     projects?: ProjectCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutAccountManagerInput = {
@@ -68310,13 +68310,13 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
     contracts?: ContractUncheckedCreateNestedManyWithoutClientInput
     projects?: ProjectUncheckedCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutAccountManagerInput = {
@@ -68618,13 +68618,13 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
+    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
     clients?: ClientCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
     contracts?: ContractCreateNestedManyWithoutPortfolioInput
     projects?: ProjectCreateNestedManyWithoutPortfolioInput
     recurringSchedules?: RecurringScheduleCreateNestedManyWithoutPortfolioInput
     services?: ServiceCreateNestedManyWithoutPortfolioInput
-    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
   }
 
   export type PortfolioUncheckedCreateWithoutUsersInput = {
@@ -68644,13 +68644,13 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
+    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
     clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
     contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
     projects?: ProjectUncheckedCreateNestedManyWithoutPortfolioInput
     recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutPortfolioInput
     services?: ServiceUncheckedCreateNestedManyWithoutPortfolioInput
-    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
   }
 
   export type PortfolioCreateOrConnectWithoutUsersInput = {
@@ -68683,80 +68683,6 @@ export namespace Prisma {
   export type RoleCreateOrConnectWithoutUsersInput = {
     where: RoleWhereUniqueInput
     create: XOR<RoleCreateWithoutUsersInput, RoleUncheckedCreateWithoutUsersInput>
-  }
-
-  export type TaskCreateWithoutUserInput = {
-    id: string
-    createdAt?: Date | string | null
-    description: string
-    status: $Enums.TaskStatus
-    priority?: $Enums.TaskPriority
-    department: string
-    deadline?: Date | string | null
-    originalDeadline?: Date | string | null
-    extraTimeMinutes?: number
-    completedAt?: Date | string | null
-    progressUpdatedAt?: Date | string | null
-    progress?: number
-    supervisor?: string
-    serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
-    isPersonal?: boolean
-    sortOrder?: number
-    updatedAt?: Date | string | null
-    workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
-    transferredFromProgress?: number
-    clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
-    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
-    recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
-    agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
-    contentCycle?: ContentCycleCreateNestedOneWithoutTasksInput
-    contentRequest?: ContentRequestCreateNestedOneWithoutTasksInput
-    project?: ProjectCreateNestedOneWithoutTasksInput
-    workflowStep?: WorkflowTemplateStepCreateNestedOneWithoutGeneratedTasksInput
-  }
-
-  export type TaskUncheckedCreateWithoutUserInput = {
-    id: string
-    createdAt?: Date | string | null
-    description: string
-    status: $Enums.TaskStatus
-    priority?: $Enums.TaskPriority
-    department: string
-    deadline?: Date | string | null
-    originalDeadline?: Date | string | null
-    extraTimeMinutes?: number
-    completedAt?: Date | string | null
-    progressUpdatedAt?: Date | string | null
-    progress?: number
-    supervisor?: string
-    serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
-    isPersonal?: boolean
-    agreementId?: string | null
-    contentCycleId?: string | null
-    contentRequestId?: string | null
-    projectId?: string | null
-    sortOrder?: number
-    updatedAt?: Date | string | null
-    workflowStage?: $Enums.WorkflowStage
-    workflowStepId?: string | null
-    startDate?: Date | string | null
-    transferredFromProgress?: number
-    clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
-    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
-    recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
-  }
-
-  export type TaskCreateOrConnectWithoutUserInput = {
-    where: TaskWhereUniqueInput
-    create: XOR<TaskCreateWithoutUserInput, TaskUncheckedCreateWithoutUserInput>
-  }
-
-  export type TaskCreateManyUserInputEnvelope = {
-    data: TaskCreateManyUserInput | TaskCreateManyUserInput[]
-    skipDuplicates?: boolean
   }
 
   export type TaskTransferHistoryCreateWithoutFromAssigneeInput = {
@@ -68794,8 +68720,8 @@ export namespace Prisma {
     createdAt?: Date | string
     progressAtTransfer?: number
     deadlineAtTransfer?: Date | string | null
-    task: TaskCreateNestedOneWithoutTransferHistoryInput
     fromAssignee: StaffCreateNestedOneWithoutTransferredFromTasksInput
+    task: TaskCreateNestedOneWithoutTransferHistoryInput
     transferredBy?: StaffCreateNestedOneWithoutTransferredByTasksInput
   }
 
@@ -68824,8 +68750,8 @@ export namespace Prisma {
     createdAt?: Date | string
     progressAtTransfer?: number
     deadlineAtTransfer?: Date | string | null
-    task: TaskCreateNestedOneWithoutTransferHistoryInput
     fromAssignee: StaffCreateNestedOneWithoutTransferredFromTasksInput
+    task: TaskCreateNestedOneWithoutTransferHistoryInput
     toAssignee: StaffCreateNestedOneWithoutTransferredToTasksInput
   }
 
@@ -68846,6 +68772,80 @@ export namespace Prisma {
 
   export type TaskTransferHistoryCreateManyTransferredByInputEnvelope = {
     data: TaskTransferHistoryCreateManyTransferredByInput | TaskTransferHistoryCreateManyTransferredByInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TaskCreateWithoutUserInput = {
+    id: string
+    createdAt?: Date | string | null
+    description: string
+    status: $Enums.TaskStatus
+    priority?: $Enums.TaskPriority
+    department: string
+    deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
+    progress?: number
+    supervisor?: string
+    serviceInformation?: string | null
+    isPersonal?: boolean
+    sortOrder?: number
+    updatedAt?: Date | string | null
+    workflowStage?: $Enums.WorkflowStage
+    originalDeadline?: Date | string | null
+    transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
+    clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
+    recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
+    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
+    agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
+    contentCycle?: ContentCycleCreateNestedOneWithoutTasksInput
+    contentRequest?: ContentRequestCreateNestedOneWithoutTasksInput
+    project?: ProjectCreateNestedOneWithoutTasksInput
+    workflowStep?: WorkflowTemplateStepCreateNestedOneWithoutGeneratedTasksInput
+  }
+
+  export type TaskUncheckedCreateWithoutUserInput = {
+    id: string
+    createdAt?: Date | string | null
+    description: string
+    status: $Enums.TaskStatus
+    priority?: $Enums.TaskPriority
+    department: string
+    deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
+    progress?: number
+    supervisor?: string
+    serviceInformation?: string | null
+    isPersonal?: boolean
+    agreementId?: string | null
+    contentCycleId?: string | null
+    contentRequestId?: string | null
+    projectId?: string | null
+    sortOrder?: number
+    updatedAt?: Date | string | null
+    workflowStage?: $Enums.WorkflowStage
+    workflowStepId?: string | null
+    originalDeadline?: Date | string | null
+    transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
+    clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
+    recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
+    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
+  }
+
+  export type TaskCreateOrConnectWithoutUserInput = {
+    where: TaskWhereUniqueInput
+    create: XOR<TaskCreateWithoutUserInput, TaskUncheckedCreateWithoutUserInput>
+  }
+
+  export type TaskCreateManyUserInputEnvelope = {
+    data: TaskCreateManyUserInput | TaskCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -69361,13 +69361,13 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUpdateManyWithoutPortfolioNestedInput
     projects?: ProjectUpdateManyWithoutPortfolioNestedInput
     recurringSchedules?: RecurringScheduleUpdateManyWithoutPortfolioNestedInput
     services?: ServiceUpdateManyWithoutPortfolioNestedInput
-    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
   }
 
   export type PortfolioUncheckedUpdateWithoutUsersInput = {
@@ -69387,13 +69387,13 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutPortfolioNestedInput
     recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutPortfolioNestedInput
     services?: ServiceUncheckedUpdateManyWithoutPortfolioNestedInput
-    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
   export type RoleUpsertWithoutUsersInput = {
@@ -69427,55 +69427,6 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     canViewSalary?: BoolFieldUpdateOperationsInput | boolean
     menuAccess?: RoleMenuAccessUncheckedUpdateManyWithoutRoleNestedInput
-  }
-
-  export type TaskUpsertWithWhereUniqueWithoutUserInput = {
-    where: TaskWhereUniqueInput
-    update: XOR<TaskUpdateWithoutUserInput, TaskUncheckedUpdateWithoutUserInput>
-    create: XOR<TaskCreateWithoutUserInput, TaskUncheckedCreateWithoutUserInput>
-  }
-
-  export type TaskUpdateWithWhereUniqueWithoutUserInput = {
-    where: TaskWhereUniqueInput
-    data: XOR<TaskUpdateWithoutUserInput, TaskUncheckedUpdateWithoutUserInput>
-  }
-
-  export type TaskUpdateManyWithWhereWithoutUserInput = {
-    where: TaskScalarWhereInput
-    data: XOR<TaskUpdateManyMutationInput, TaskUncheckedUpdateManyWithoutUserInput>
-  }
-
-  export type TaskScalarWhereInput = {
-    AND?: TaskScalarWhereInput | TaskScalarWhereInput[]
-    OR?: TaskScalarWhereInput[]
-    NOT?: TaskScalarWhereInput | TaskScalarWhereInput[]
-    id?: StringFilter<"Task"> | string
-    createdAt?: DateTimeNullableFilter<"Task"> | Date | string | null
-    description?: StringFilter<"Task"> | string
-    status?: EnumTaskStatusFilter<"Task"> | $Enums.TaskStatus
-    priority?: EnumTaskPriorityFilter<"Task"> | $Enums.TaskPriority
-    department?: StringFilter<"Task"> | string
-    deadline?: DateTimeNullableFilter<"Task"> | Date | string | null
-    originalDeadline?: DateTimeNullableFilter<"Task"> | Date | string | null
-    extraTimeMinutes?: IntFilter<"Task"> | number
-    completedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
-    progressUpdatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
-    assgineeId?: StringFilter<"Task"> | string
-    progress?: IntFilter<"Task"> | number
-    supervisor?: StringFilter<"Task"> | string
-    serviceInformation?: StringNullableFilter<"Task"> | string | null
-    features?: JsonNullableFilter<"Task">
-    isPersonal?: BoolFilter<"Task"> | boolean
-    agreementId?: StringNullableFilter<"Task"> | string | null
-    contentCycleId?: StringNullableFilter<"Task"> | string | null
-    contentRequestId?: StringNullableFilter<"Task"> | string | null
-    projectId?: StringNullableFilter<"Task"> | string | null
-    sortOrder?: IntFilter<"Task"> | number
-    updatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
-    workflowStage?: EnumWorkflowStageFilter<"Task"> | $Enums.WorkflowStage
-    workflowStepId?: StringNullableFilter<"Task"> | string | null
-    startDate?: DateTimeNullableFilter<"Task"> | Date | string | null
-    transferredFromProgress?: IntFilter<"Task"> | number
   }
 
   export type TaskTransferHistoryUpsertWithWhereUniqueWithoutFromAssigneeInput = {
@@ -69540,6 +69491,55 @@ export namespace Prisma {
     data: XOR<TaskTransferHistoryUpdateManyMutationInput, TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByInput>
   }
 
+  export type TaskUpsertWithWhereUniqueWithoutUserInput = {
+    where: TaskWhereUniqueInput
+    update: XOR<TaskUpdateWithoutUserInput, TaskUncheckedUpdateWithoutUserInput>
+    create: XOR<TaskCreateWithoutUserInput, TaskUncheckedCreateWithoutUserInput>
+  }
+
+  export type TaskUpdateWithWhereUniqueWithoutUserInput = {
+    where: TaskWhereUniqueInput
+    data: XOR<TaskUpdateWithoutUserInput, TaskUncheckedUpdateWithoutUserInput>
+  }
+
+  export type TaskUpdateManyWithWhereWithoutUserInput = {
+    where: TaskScalarWhereInput
+    data: XOR<TaskUpdateManyMutationInput, TaskUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type TaskScalarWhereInput = {
+    AND?: TaskScalarWhereInput | TaskScalarWhereInput[]
+    OR?: TaskScalarWhereInput[]
+    NOT?: TaskScalarWhereInput | TaskScalarWhereInput[]
+    id?: StringFilter<"Task"> | string
+    createdAt?: DateTimeNullableFilter<"Task"> | Date | string | null
+    description?: StringFilter<"Task"> | string
+    status?: EnumTaskStatusFilter<"Task"> | $Enums.TaskStatus
+    priority?: EnumTaskPriorityFilter<"Task"> | $Enums.TaskPriority
+    department?: StringFilter<"Task"> | string
+    deadline?: DateTimeNullableFilter<"Task"> | Date | string | null
+    extraTimeMinutes?: IntFilter<"Task"> | number
+    completedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
+    progressUpdatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
+    assgineeId?: StringFilter<"Task"> | string
+    progress?: IntFilter<"Task"> | number
+    supervisor?: StringFilter<"Task"> | string
+    serviceInformation?: StringNullableFilter<"Task"> | string | null
+    isPersonal?: BoolFilter<"Task"> | boolean
+    agreementId?: StringNullableFilter<"Task"> | string | null
+    contentCycleId?: StringNullableFilter<"Task"> | string | null
+    contentRequestId?: StringNullableFilter<"Task"> | string | null
+    projectId?: StringNullableFilter<"Task"> | string | null
+    sortOrder?: IntFilter<"Task"> | number
+    updatedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
+    workflowStage?: EnumWorkflowStageFilter<"Task"> | $Enums.WorkflowStage
+    workflowStepId?: StringNullableFilter<"Task"> | string | null
+    originalDeadline?: DateTimeNullableFilter<"Task"> | Date | string | null
+    transferredFromProgress?: IntFilter<"Task"> | number
+    startDate?: DateTimeNullableFilter<"Task"> | Date | string | null
+    features?: JsonNullableFilter<"Task">
+  }
+
   export type StaffCreateWithoutSessionsInput = {
     id: string
     createdAt?: Date | string
@@ -69555,9 +69555,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -69574,10 +69574,10 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
-    assignedTasks?: TaskCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
   }
 
   export type StaffUncheckedCreateWithoutSessionsInput = {
@@ -69597,9 +69597,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -69614,10 +69614,10 @@ export namespace Prisma {
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
-    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type StaffCreateOrConnectWithoutSessionsInput = {
@@ -69651,9 +69651,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -69670,10 +69670,10 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutSessionsInput = {
@@ -69693,9 +69693,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -69710,10 +69710,10 @@ export namespace Prisma {
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type StaffCreateWithoutAccountsInput = {
@@ -69731,9 +69731,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -69750,10 +69750,10 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
-    assignedTasks?: TaskCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
   }
 
   export type StaffUncheckedCreateWithoutAccountsInput = {
@@ -69773,9 +69773,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -69790,10 +69790,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type StaffCreateOrConnectWithoutAccountsInput = {
@@ -69827,9 +69827,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -69846,10 +69846,10 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutAccountsInput = {
@@ -69869,9 +69869,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -69886,10 +69886,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ClientSubServiceCreateWithoutClientInput = {
@@ -70024,6 +70024,41 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ClientSchemaCreateWithoutClientInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    saturday?: string | null
+    sunday?: string | null
+    monday?: string | null
+    tuesday?: string | null
+    wednesday?: string | null
+    thursday?: string | null
+    friday?: string | null
+    notes?: string | null
+    portfolio?: PortfolioCreateNestedOneWithoutClientSchemasInput
+  }
+
+  export type ClientSchemaUncheckedCreateWithoutClientInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    portfolioId?: string | null
+    saturday?: string | null
+    sunday?: string | null
+    monday?: string | null
+    tuesday?: string | null
+    wednesday?: string | null
+    thursday?: string | null
+    friday?: string | null
+    notes?: string | null
+  }
+
+  export type ClientSchemaCreateOrConnectWithoutClientInput = {
+    where: ClientSchemaWhereUniqueInput
+    create: XOR<ClientSchemaCreateWithoutClientInput, ClientSchemaUncheckedCreateWithoutClientInput>
+  }
+
   export type StaffCreateWithoutManagedClientsInput = {
     id: string
     createdAt?: Date | string
@@ -70039,9 +70074,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -70058,10 +70093,10 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
-    assignedTasks?: TaskCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
   }
 
   export type StaffUncheckedCreateWithoutManagedClientsInput = {
@@ -70081,9 +70116,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -70098,10 +70133,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type StaffCreateOrConnectWithoutManagedClientsInput = {
@@ -70126,13 +70161,13 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
+    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
     contracts?: ContractCreateNestedManyWithoutPortfolioInput
     projects?: ProjectCreateNestedManyWithoutPortfolioInput
     recurringSchedules?: RecurringScheduleCreateNestedManyWithoutPortfolioInput
     services?: ServiceCreateNestedManyWithoutPortfolioInput
     users?: StaffCreateNestedManyWithoutPortfolioInput
-    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
   }
 
   export type PortfolioUncheckedCreateWithoutClientsInput = {
@@ -70152,13 +70187,13 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
+    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
     contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
     projects?: ProjectUncheckedCreateNestedManyWithoutPortfolioInput
     recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutPortfolioInput
     services?: ServiceUncheckedCreateNestedManyWithoutPortfolioInput
     users?: StaffUncheckedCreateNestedManyWithoutPortfolioInput
-    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
   }
 
   export type PortfolioCreateOrConnectWithoutClientsInput = {
@@ -70406,41 +70441,6 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type ClientSchemaCreateWithoutClientInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    saturday?: string | null
-    sunday?: string | null
-    monday?: string | null
-    tuesday?: string | null
-    wednesday?: string | null
-    thursday?: string | null
-    friday?: string | null
-    notes?: string | null
-    portfolio?: PortfolioCreateNestedOneWithoutClientSchemasInput
-  }
-
-  export type ClientSchemaUncheckedCreateWithoutClientInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    portfolioId?: string | null
-    saturday?: string | null
-    sunday?: string | null
-    monday?: string | null
-    tuesday?: string | null
-    wednesday?: string | null
-    thursday?: string | null
-    friday?: string | null
-    notes?: string | null
-  }
-
-  export type ClientSchemaCreateOrConnectWithoutClientInput = {
-    where: ClientSchemaWhereUniqueInput
-    create: XOR<ClientSchemaCreateWithoutClientInput, ClientSchemaUncheckedCreateWithoutClientInput>
-  }
-
   export type ClientSubServiceUpsertWithWhereUniqueWithoutClientInput = {
     where: ClientSubServiceWhereUniqueInput
     update: XOR<ClientSubServiceUpdateWithoutClientInput, ClientSubServiceUncheckedUpdateWithoutClientInput>
@@ -70565,6 +70565,47 @@ export namespace Prisma {
     contractId?: StringNullableFilter<"ClientInstallment"> | string | null
   }
 
+  export type ClientSchemaUpsertWithoutClientInput = {
+    update: XOR<ClientSchemaUpdateWithoutClientInput, ClientSchemaUncheckedUpdateWithoutClientInput>
+    create: XOR<ClientSchemaCreateWithoutClientInput, ClientSchemaUncheckedCreateWithoutClientInput>
+    where?: ClientSchemaWhereInput
+  }
+
+  export type ClientSchemaUpdateToOneWithWhereWithoutClientInput = {
+    where?: ClientSchemaWhereInput
+    data: XOR<ClientSchemaUpdateWithoutClientInput, ClientSchemaUncheckedUpdateWithoutClientInput>
+  }
+
+  export type ClientSchemaUpdateWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    saturday?: NullableStringFieldUpdateOperationsInput | string | null
+    sunday?: NullableStringFieldUpdateOperationsInput | string | null
+    monday?: NullableStringFieldUpdateOperationsInput | string | null
+    tuesday?: NullableStringFieldUpdateOperationsInput | string | null
+    wednesday?: NullableStringFieldUpdateOperationsInput | string | null
+    thursday?: NullableStringFieldUpdateOperationsInput | string | null
+    friday?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolio?: PortfolioUpdateOneWithoutClientSchemasNestedInput
+  }
+
+  export type ClientSchemaUncheckedUpdateWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    saturday?: NullableStringFieldUpdateOperationsInput | string | null
+    sunday?: NullableStringFieldUpdateOperationsInput | string | null
+    monday?: NullableStringFieldUpdateOperationsInput | string | null
+    tuesday?: NullableStringFieldUpdateOperationsInput | string | null
+    wednesday?: NullableStringFieldUpdateOperationsInput | string | null
+    thursday?: NullableStringFieldUpdateOperationsInput | string | null
+    friday?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type StaffUpsertWithoutManagedClientsInput = {
     update: XOR<StaffUpdateWithoutManagedClientsInput, StaffUncheckedUpdateWithoutManagedClientsInput>
     create: XOR<StaffCreateWithoutManagedClientsInput, StaffUncheckedCreateWithoutManagedClientsInput>
@@ -70591,9 +70632,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -70610,10 +70651,10 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutManagedClientsInput = {
@@ -70633,9 +70674,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -70650,10 +70691,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type PortfolioUpsertWithoutClientsInput = {
@@ -70684,13 +70725,13 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUpdateManyWithoutPortfolioNestedInput
     projects?: ProjectUpdateManyWithoutPortfolioNestedInput
     recurringSchedules?: RecurringScheduleUpdateManyWithoutPortfolioNestedInput
     services?: ServiceUpdateManyWithoutPortfolioNestedInput
     users?: StaffUpdateManyWithoutPortfolioNestedInput
-    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
   }
 
   export type PortfolioUncheckedUpdateWithoutClientsInput = {
@@ -70710,13 +70751,13 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutPortfolioNestedInput
     recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutPortfolioNestedInput
     services?: ServiceUncheckedUpdateManyWithoutPortfolioNestedInput
     users?: StaffUncheckedUpdateManyWithoutPortfolioNestedInput
-    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
   export type ClientTaskUpsertWithWhereUniqueWithoutClientInput = {
@@ -70858,47 +70899,6 @@ export namespace Prisma {
     portfolioId?: StringNullableFilter<"RecurringSchedule"> | string | null
   }
 
-  export type ClientSchemaUpsertWithoutClientInput = {
-    update: XOR<ClientSchemaUpdateWithoutClientInput, ClientSchemaUncheckedUpdateWithoutClientInput>
-    create: XOR<ClientSchemaCreateWithoutClientInput, ClientSchemaUncheckedCreateWithoutClientInput>
-    where?: ClientSchemaWhereInput
-  }
-
-  export type ClientSchemaUpdateToOneWithWhereWithoutClientInput = {
-    where?: ClientSchemaWhereInput
-    data: XOR<ClientSchemaUpdateWithoutClientInput, ClientSchemaUncheckedUpdateWithoutClientInput>
-  }
-
-  export type ClientSchemaUpdateWithoutClientInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    saturday?: NullableStringFieldUpdateOperationsInput | string | null
-    sunday?: NullableStringFieldUpdateOperationsInput | string | null
-    monday?: NullableStringFieldUpdateOperationsInput | string | null
-    tuesday?: NullableStringFieldUpdateOperationsInput | string | null
-    wednesday?: NullableStringFieldUpdateOperationsInput | string | null
-    thursday?: NullableStringFieldUpdateOperationsInput | string | null
-    friday?: NullableStringFieldUpdateOperationsInput | string | null
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    portfolio?: PortfolioUpdateOneWithoutClientSchemasNestedInput
-  }
-
-  export type ClientSchemaUncheckedUpdateWithoutClientInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    saturday?: NullableStringFieldUpdateOperationsInput | string | null
-    sunday?: NullableStringFieldUpdateOperationsInput | string | null
-    monday?: NullableStringFieldUpdateOperationsInput | string | null
-    tuesday?: NullableStringFieldUpdateOperationsInput | string | null
-    wednesday?: NullableStringFieldUpdateOperationsInput | string | null
-    thursday?: NullableStringFieldUpdateOperationsInput | string | null
-    friday?: NullableStringFieldUpdateOperationsInput | string | null
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
   export type IncomeServiceAgreementCreateWithoutServiceInput = {
     id?: string
     createdAt?: Date | string
@@ -70988,13 +70988,13 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
+    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
     clients?: ClientCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
     contracts?: ContractCreateNestedManyWithoutPortfolioInput
     projects?: ProjectCreateNestedManyWithoutPortfolioInput
     recurringSchedules?: RecurringScheduleCreateNestedManyWithoutPortfolioInput
     users?: StaffCreateNestedManyWithoutPortfolioInput
-    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
   }
 
   export type PortfolioUncheckedCreateWithoutServicesInput = {
@@ -71014,13 +71014,13 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
+    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
     clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
     contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
     projects?: ProjectUncheckedCreateNestedManyWithoutPortfolioInput
     recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutPortfolioInput
     users?: StaffUncheckedCreateNestedManyWithoutPortfolioInput
-    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
   }
 
   export type PortfolioCreateOrConnectWithoutServicesInput = {
@@ -71124,13 +71124,13 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUpdateManyWithoutPortfolioNestedInput
     projects?: ProjectUpdateManyWithoutPortfolioNestedInput
     recurringSchedules?: RecurringScheduleUpdateManyWithoutPortfolioNestedInput
     users?: StaffUpdateManyWithoutPortfolioNestedInput
-    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
   }
 
   export type PortfolioUncheckedUpdateWithoutServicesInput = {
@@ -71150,13 +71150,13 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutPortfolioNestedInput
     recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutPortfolioNestedInput
     users?: StaffUncheckedUpdateManyWithoutPortfolioNestedInput
-    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
   export type SubServiceUpsertWithWhereUniqueWithoutServiceInput = {
@@ -71364,6 +71364,46 @@ export namespace Prisma {
     clientService?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
   }
 
+  export type ClientSchemaCreateWithoutPortfolioInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    saturday?: string | null
+    sunday?: string | null
+    monday?: string | null
+    tuesday?: string | null
+    wednesday?: string | null
+    thursday?: string | null
+    friday?: string | null
+    notes?: string | null
+    client: ClientCreateNestedOneWithoutClientSchemaInput
+  }
+
+  export type ClientSchemaUncheckedCreateWithoutPortfolioInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    clientId: string
+    saturday?: string | null
+    sunday?: string | null
+    monday?: string | null
+    tuesday?: string | null
+    wednesday?: string | null
+    thursday?: string | null
+    friday?: string | null
+    notes?: string | null
+  }
+
+  export type ClientSchemaCreateOrConnectWithoutPortfolioInput = {
+    where: ClientSchemaWhereUniqueInput
+    create: XOR<ClientSchemaCreateWithoutPortfolioInput, ClientSchemaUncheckedCreateWithoutPortfolioInput>
+  }
+
+  export type ClientSchemaCreateManyPortfolioInputEnvelope = {
+    data: ClientSchemaCreateManyPortfolioInput | ClientSchemaCreateManyPortfolioInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ClientCreateWithoutPortfolioInput = {
     id: string
     createdAt?: Date | string | null
@@ -71386,6 +71426,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
@@ -71393,7 +71434,6 @@ export namespace Prisma {
     contracts?: ContractCreateNestedManyWithoutClientInput
     projects?: ProjectCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutPortfolioInput = {
@@ -71419,13 +71459,13 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
     contracts?: ContractUncheckedCreateNestedManyWithoutClientInput
     projects?: ProjectUncheckedCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutPortfolioInput = {
@@ -71677,9 +71717,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -71696,10 +71736,10 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
-    assignedTasks?: TaskCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
   }
 
   export type StaffUncheckedCreateWithoutPortfolioInput = {
@@ -71718,9 +71758,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -71736,10 +71776,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type StaffCreateOrConnectWithoutPortfolioInput = {
@@ -71752,44 +71792,39 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type ClientSchemaCreateWithoutPortfolioInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    saturday?: string | null
-    sunday?: string | null
-    monday?: string | null
-    tuesday?: string | null
-    wednesday?: string | null
-    thursday?: string | null
-    friday?: string | null
-    notes?: string | null
-    client: ClientCreateNestedOneWithoutClientSchemaInput
-  }
-
-  export type ClientSchemaUncheckedCreateWithoutPortfolioInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    clientId: string
-    saturday?: string | null
-    sunday?: string | null
-    monday?: string | null
-    tuesday?: string | null
-    wednesday?: string | null
-    thursday?: string | null
-    friday?: string | null
-    notes?: string | null
-  }
-
-  export type ClientSchemaCreateOrConnectWithoutPortfolioInput = {
+  export type ClientSchemaUpsertWithWhereUniqueWithoutPortfolioInput = {
     where: ClientSchemaWhereUniqueInput
+    update: XOR<ClientSchemaUpdateWithoutPortfolioInput, ClientSchemaUncheckedUpdateWithoutPortfolioInput>
     create: XOR<ClientSchemaCreateWithoutPortfolioInput, ClientSchemaUncheckedCreateWithoutPortfolioInput>
   }
 
-  export type ClientSchemaCreateManyPortfolioInputEnvelope = {
-    data: ClientSchemaCreateManyPortfolioInput | ClientSchemaCreateManyPortfolioInput[]
-    skipDuplicates?: boolean
+  export type ClientSchemaUpdateWithWhereUniqueWithoutPortfolioInput = {
+    where: ClientSchemaWhereUniqueInput
+    data: XOR<ClientSchemaUpdateWithoutPortfolioInput, ClientSchemaUncheckedUpdateWithoutPortfolioInput>
+  }
+
+  export type ClientSchemaUpdateManyWithWhereWithoutPortfolioInput = {
+    where: ClientSchemaScalarWhereInput
+    data: XOR<ClientSchemaUpdateManyMutationInput, ClientSchemaUncheckedUpdateManyWithoutPortfolioInput>
+  }
+
+  export type ClientSchemaScalarWhereInput = {
+    AND?: ClientSchemaScalarWhereInput | ClientSchemaScalarWhereInput[]
+    OR?: ClientSchemaScalarWhereInput[]
+    NOT?: ClientSchemaScalarWhereInput | ClientSchemaScalarWhereInput[]
+    id?: StringFilter<"ClientSchema"> | string
+    createdAt?: DateTimeFilter<"ClientSchema"> | Date | string
+    updatedAt?: DateTimeFilter<"ClientSchema"> | Date | string
+    clientId?: StringFilter<"ClientSchema"> | string
+    portfolioId?: StringNullableFilter<"ClientSchema"> | string | null
+    saturday?: StringNullableFilter<"ClientSchema"> | string | null
+    sunday?: StringNullableFilter<"ClientSchema"> | string | null
+    monday?: StringNullableFilter<"ClientSchema"> | string | null
+    tuesday?: StringNullableFilter<"ClientSchema"> | string | null
+    wednesday?: StringNullableFilter<"ClientSchema"> | string | null
+    thursday?: StringNullableFilter<"ClientSchema"> | string | null
+    friday?: StringNullableFilter<"ClientSchema"> | string | null
+    notes?: StringNullableFilter<"ClientSchema"> | string | null
   }
 
   export type ClientUpsertWithWhereUniqueWithoutPortfolioInput = {
@@ -71917,41 +71952,6 @@ export namespace Prisma {
   export type StaffUpdateManyWithWhereWithoutPortfolioInput = {
     where: StaffScalarWhereInput
     data: XOR<StaffUpdateManyMutationInput, StaffUncheckedUpdateManyWithoutPortfolioInput>
-  }
-
-  export type ClientSchemaUpsertWithWhereUniqueWithoutPortfolioInput = {
-    where: ClientSchemaWhereUniqueInput
-    update: XOR<ClientSchemaUpdateWithoutPortfolioInput, ClientSchemaUncheckedUpdateWithoutPortfolioInput>
-    create: XOR<ClientSchemaCreateWithoutPortfolioInput, ClientSchemaUncheckedCreateWithoutPortfolioInput>
-  }
-
-  export type ClientSchemaUpdateWithWhereUniqueWithoutPortfolioInput = {
-    where: ClientSchemaWhereUniqueInput
-    data: XOR<ClientSchemaUpdateWithoutPortfolioInput, ClientSchemaUncheckedUpdateWithoutPortfolioInput>
-  }
-
-  export type ClientSchemaUpdateManyWithWhereWithoutPortfolioInput = {
-    where: ClientSchemaScalarWhereInput
-    data: XOR<ClientSchemaUpdateManyMutationInput, ClientSchemaUncheckedUpdateManyWithoutPortfolioInput>
-  }
-
-  export type ClientSchemaScalarWhereInput = {
-    AND?: ClientSchemaScalarWhereInput | ClientSchemaScalarWhereInput[]
-    OR?: ClientSchemaScalarWhereInput[]
-    NOT?: ClientSchemaScalarWhereInput | ClientSchemaScalarWhereInput[]
-    id?: StringFilter<"ClientSchema"> | string
-    createdAt?: DateTimeFilter<"ClientSchema"> | Date | string
-    updatedAt?: DateTimeFilter<"ClientSchema"> | Date | string
-    clientId?: StringFilter<"ClientSchema"> | string
-    portfolioId?: StringNullableFilter<"ClientSchema"> | string | null
-    saturday?: StringNullableFilter<"ClientSchema"> | string | null
-    sunday?: StringNullableFilter<"ClientSchema"> | string | null
-    monday?: StringNullableFilter<"ClientSchema"> | string | null
-    tuesday?: StringNullableFilter<"ClientSchema"> | string | null
-    wednesday?: StringNullableFilter<"ClientSchema"> | string | null
-    thursday?: StringNullableFilter<"ClientSchema"> | string | null
-    friday?: StringNullableFilter<"ClientSchema"> | string | null
-    notes?: StringNullableFilter<"ClientSchema"> | string | null
   }
 
   export type ClientCreateWithoutClientSchemaInput = {
@@ -72239,6 +72239,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
@@ -72247,7 +72248,6 @@ export namespace Prisma {
     contracts?: ContractCreateNestedManyWithoutClientInput
     projects?: ProjectCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutClientSubServiceInput = {
@@ -72273,13 +72273,13 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
     contracts?: ContractUncheckedCreateNestedManyWithoutClientInput
     projects?: ProjectUncheckedCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutClientSubServiceInput = {
@@ -72350,6 +72350,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
@@ -72358,7 +72359,6 @@ export namespace Prisma {
     contracts?: ContractUpdateManyWithoutClientNestedInput
     projects?: ProjectUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutClientSubServiceInput = {
@@ -72384,13 +72384,13 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutClientNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
   }
 
   export type SubServiceUpsertWithoutClientSubServiceInput = {
@@ -72451,6 +72451,7 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
@@ -72459,7 +72460,6 @@ export namespace Prisma {
     contracts?: ContractCreateNestedManyWithoutClientInput
     projects?: ProjectCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutClientServiceInput = {
@@ -72485,13 +72485,13 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
     contracts?: ContractUncheckedCreateNestedManyWithoutClientInput
     projects?: ProjectUncheckedCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutClientServiceInput = {
@@ -72564,6 +72564,7 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
@@ -72572,7 +72573,6 @@ export namespace Prisma {
     contracts?: ContractUpdateManyWithoutClientNestedInput
     projects?: ProjectUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutClientServiceInput = {
@@ -72598,13 +72598,13 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutClientNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
   }
 
   export type ServiceUpsertWithoutClientServiceInput = {
@@ -72666,6 +72666,25 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type RecurringTaskOccurrenceCreateWithoutTaskInput = {
+    id?: string
+    createdAt?: Date | string
+    scheduledDate: Date | string
+    scheduleStep: RecurringScheduleStepCreateNestedOneWithoutOccurrencesInput
+  }
+
+  export type RecurringTaskOccurrenceUncheckedCreateWithoutTaskInput = {
+    id?: string
+    createdAt?: Date | string
+    scheduleStepId: string
+    scheduledDate: Date | string
+  }
+
+  export type RecurringTaskOccurrenceCreateOrConnectWithoutTaskInput = {
+    where: RecurringTaskOccurrenceWhereUniqueInput
+    create: XOR<RecurringTaskOccurrenceCreateWithoutTaskInput, RecurringTaskOccurrenceUncheckedCreateWithoutTaskInput>
+  }
+
   export type TaskTransferHistoryCreateWithoutTaskInput = {
     id?: string
     createdAt?: Date | string
@@ -72694,25 +72713,6 @@ export namespace Prisma {
   export type TaskTransferHistoryCreateManyTaskInputEnvelope = {
     data: TaskTransferHistoryCreateManyTaskInput | TaskTransferHistoryCreateManyTaskInput[]
     skipDuplicates?: boolean
-  }
-
-  export type RecurringTaskOccurrenceCreateWithoutTaskInput = {
-    id?: string
-    createdAt?: Date | string
-    scheduledDate: Date | string
-    scheduleStep: RecurringScheduleStepCreateNestedOneWithoutOccurrencesInput
-  }
-
-  export type RecurringTaskOccurrenceUncheckedCreateWithoutTaskInput = {
-    id?: string
-    createdAt?: Date | string
-    scheduleStepId: string
-    scheduledDate: Date | string
-  }
-
-  export type RecurringTaskOccurrenceCreateOrConnectWithoutTaskInput = {
-    where: RecurringTaskOccurrenceWhereUniqueInput
-    create: XOR<RecurringTaskOccurrenceCreateWithoutTaskInput, RecurringTaskOccurrenceUncheckedCreateWithoutTaskInput>
   }
 
   export type IncomeServiceAgreementCreateWithoutTasksInput = {
@@ -72775,9 +72775,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -72817,9 +72817,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -73001,22 +73001,6 @@ export namespace Prisma {
     data: XOR<ClientTaskUpdateManyMutationInput, ClientTaskUncheckedUpdateManyWithoutTaskInput>
   }
 
-  export type TaskTransferHistoryUpsertWithWhereUniqueWithoutTaskInput = {
-    where: TaskTransferHistoryWhereUniqueInput
-    update: XOR<TaskTransferHistoryUpdateWithoutTaskInput, TaskTransferHistoryUncheckedUpdateWithoutTaskInput>
-    create: XOR<TaskTransferHistoryCreateWithoutTaskInput, TaskTransferHistoryUncheckedCreateWithoutTaskInput>
-  }
-
-  export type TaskTransferHistoryUpdateWithWhereUniqueWithoutTaskInput = {
-    where: TaskTransferHistoryWhereUniqueInput
-    data: XOR<TaskTransferHistoryUpdateWithoutTaskInput, TaskTransferHistoryUncheckedUpdateWithoutTaskInput>
-  }
-
-  export type TaskTransferHistoryUpdateManyWithWhereWithoutTaskInput = {
-    where: TaskTransferHistoryScalarWhereInput
-    data: XOR<TaskTransferHistoryUpdateManyMutationInput, TaskTransferHistoryUncheckedUpdateManyWithoutTaskInput>
-  }
-
   export type RecurringTaskOccurrenceUpsertWithoutTaskInput = {
     update: XOR<RecurringTaskOccurrenceUpdateWithoutTaskInput, RecurringTaskOccurrenceUncheckedUpdateWithoutTaskInput>
     create: XOR<RecurringTaskOccurrenceCreateWithoutTaskInput, RecurringTaskOccurrenceUncheckedCreateWithoutTaskInput>
@@ -73040,6 +73024,22 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     scheduleStepId?: StringFieldUpdateOperationsInput | string
     scheduledDate?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TaskTransferHistoryUpsertWithWhereUniqueWithoutTaskInput = {
+    where: TaskTransferHistoryWhereUniqueInput
+    update: XOR<TaskTransferHistoryUpdateWithoutTaskInput, TaskTransferHistoryUncheckedUpdateWithoutTaskInput>
+    create: XOR<TaskTransferHistoryCreateWithoutTaskInput, TaskTransferHistoryUncheckedCreateWithoutTaskInput>
+  }
+
+  export type TaskTransferHistoryUpdateWithWhereUniqueWithoutTaskInput = {
+    where: TaskTransferHistoryWhereUniqueInput
+    data: XOR<TaskTransferHistoryUpdateWithoutTaskInput, TaskTransferHistoryUncheckedUpdateWithoutTaskInput>
+  }
+
+  export type TaskTransferHistoryUpdateManyWithWhereWithoutTaskInput = {
+    where: TaskTransferHistoryScalarWhereInput
+    data: XOR<TaskTransferHistoryUpdateManyMutationInput, TaskTransferHistoryUncheckedUpdateManyWithoutTaskInput>
   }
 
   export type IncomeServiceAgreementUpsertWithoutTasksInput = {
@@ -73119,9 +73119,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -73161,9 +73161,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -73348,75 +73348,6 @@ export namespace Prisma {
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
   }
 
-  export type TaskCreateWithoutTransferHistoryInput = {
-    id: string
-    createdAt?: Date | string | null
-    description: string
-    status: $Enums.TaskStatus
-    priority?: $Enums.TaskPriority
-    department: string
-    deadline?: Date | string | null
-    originalDeadline?: Date | string | null
-    extraTimeMinutes?: number
-    completedAt?: Date | string | null
-    progressUpdatedAt?: Date | string | null
-    progress?: number
-    supervisor?: string
-    serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
-    isPersonal?: boolean
-    sortOrder?: number
-    updatedAt?: Date | string | null
-    workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
-    transferredFromProgress?: number
-    clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
-    recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
-    agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
-    user: StaffCreateNestedOneWithoutAssignedTasksInput
-    contentCycle?: ContentCycleCreateNestedOneWithoutTasksInput
-    contentRequest?: ContentRequestCreateNestedOneWithoutTasksInput
-    project?: ProjectCreateNestedOneWithoutTasksInput
-    workflowStep?: WorkflowTemplateStepCreateNestedOneWithoutGeneratedTasksInput
-  }
-
-  export type TaskUncheckedCreateWithoutTransferHistoryInput = {
-    id: string
-    createdAt?: Date | string | null
-    description: string
-    status: $Enums.TaskStatus
-    priority?: $Enums.TaskPriority
-    department: string
-    deadline?: Date | string | null
-    originalDeadline?: Date | string | null
-    extraTimeMinutes?: number
-    completedAt?: Date | string | null
-    progressUpdatedAt?: Date | string | null
-    assgineeId: string
-    progress?: number
-    supervisor?: string
-    serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
-    isPersonal?: boolean
-    agreementId?: string | null
-    contentCycleId?: string | null
-    contentRequestId?: string | null
-    projectId?: string | null
-    sortOrder?: number
-    updatedAt?: Date | string | null
-    workflowStage?: $Enums.WorkflowStage
-    workflowStepId?: string | null
-    startDate?: Date | string | null
-    transferredFromProgress?: number
-    clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
-    recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
-  }
-
-  export type TaskCreateOrConnectWithoutTransferHistoryInput = {
-    where: TaskWhereUniqueInput
-    create: XOR<TaskCreateWithoutTransferHistoryInput, TaskUncheckedCreateWithoutTransferHistoryInput>
-  }
-
   export type StaffCreateWithoutTransferredFromTasksInput = {
     id: string
     createdAt?: Date | string
@@ -73432,9 +73363,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -73452,9 +73383,9 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
-    assignedTasks?: TaskCreateNestedManyWithoutUserInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
   }
 
   export type StaffUncheckedCreateWithoutTransferredFromTasksInput = {
@@ -73474,9 +73405,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -73492,14 +73423,83 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type StaffCreateOrConnectWithoutTransferredFromTasksInput = {
     where: StaffWhereUniqueInput
     create: XOR<StaffCreateWithoutTransferredFromTasksInput, StaffUncheckedCreateWithoutTransferredFromTasksInput>
+  }
+
+  export type TaskCreateWithoutTransferHistoryInput = {
+    id: string
+    createdAt?: Date | string | null
+    description: string
+    status: $Enums.TaskStatus
+    priority?: $Enums.TaskPriority
+    department: string
+    deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
+    progress?: number
+    supervisor?: string
+    serviceInformation?: string | null
+    isPersonal?: boolean
+    sortOrder?: number
+    updatedAt?: Date | string | null
+    workflowStage?: $Enums.WorkflowStage
+    originalDeadline?: Date | string | null
+    transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
+    clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
+    recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
+    agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
+    user: StaffCreateNestedOneWithoutAssignedTasksInput
+    contentCycle?: ContentCycleCreateNestedOneWithoutTasksInput
+    contentRequest?: ContentRequestCreateNestedOneWithoutTasksInput
+    project?: ProjectCreateNestedOneWithoutTasksInput
+    workflowStep?: WorkflowTemplateStepCreateNestedOneWithoutGeneratedTasksInput
+  }
+
+  export type TaskUncheckedCreateWithoutTransferHistoryInput = {
+    id: string
+    createdAt?: Date | string | null
+    description: string
+    status: $Enums.TaskStatus
+    priority?: $Enums.TaskPriority
+    department: string
+    deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
+    assgineeId: string
+    progress?: number
+    supervisor?: string
+    serviceInformation?: string | null
+    isPersonal?: boolean
+    agreementId?: string | null
+    contentCycleId?: string | null
+    contentRequestId?: string | null
+    projectId?: string | null
+    sortOrder?: number
+    updatedAt?: Date | string | null
+    workflowStage?: $Enums.WorkflowStage
+    workflowStepId?: string | null
+    originalDeadline?: Date | string | null
+    transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
+    clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
+    recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
+  }
+
+  export type TaskCreateOrConnectWithoutTransferHistoryInput = {
+    where: TaskWhereUniqueInput
+    create: XOR<TaskCreateWithoutTransferHistoryInput, TaskUncheckedCreateWithoutTransferHistoryInput>
   }
 
   export type StaffCreateWithoutTransferredToTasksInput = {
@@ -73517,9 +73517,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -73537,9 +73537,9 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
-    assignedTasks?: TaskCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
   }
 
   export type StaffUncheckedCreateWithoutTransferredToTasksInput = {
@@ -73559,9 +73559,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -73577,9 +73577,9 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type StaffCreateOrConnectWithoutTransferredToTasksInput = {
@@ -73602,9 +73602,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -73622,9 +73622,9 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
-    assignedTasks?: TaskCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
   }
 
   export type StaffUncheckedCreateWithoutTransferredByTasksInput = {
@@ -73644,9 +73644,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -73662,89 +73662,14 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type StaffCreateOrConnectWithoutTransferredByTasksInput = {
     where: StaffWhereUniqueInput
     create: XOR<StaffCreateWithoutTransferredByTasksInput, StaffUncheckedCreateWithoutTransferredByTasksInput>
-  }
-
-  export type TaskUpsertWithoutTransferHistoryInput = {
-    update: XOR<TaskUpdateWithoutTransferHistoryInput, TaskUncheckedUpdateWithoutTransferHistoryInput>
-    create: XOR<TaskCreateWithoutTransferHistoryInput, TaskUncheckedCreateWithoutTransferHistoryInput>
-    where?: TaskWhereInput
-  }
-
-  export type TaskUpdateToOneWithWhereWithoutTransferHistoryInput = {
-    where?: TaskWhereInput
-    data: XOR<TaskUpdateWithoutTransferHistoryInput, TaskUncheckedUpdateWithoutTransferHistoryInput>
-  }
-
-  export type TaskUpdateWithoutTransferHistoryInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    description?: StringFieldUpdateOperationsInput | string
-    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
-    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
-    deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
-    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    progress?: IntFieldUpdateOperationsInput | number
-    supervisor?: StringFieldUpdateOperationsInput | string
-    serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
-    isPersonal?: BoolFieldUpdateOperationsInput | boolean
-    sortOrder?: IntFieldUpdateOperationsInput | number
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    transferredFromProgress?: IntFieldUpdateOperationsInput | number
-    clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
-    recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
-    agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
-    user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
-    contentCycle?: ContentCycleUpdateOneWithoutTasksNestedInput
-    contentRequest?: ContentRequestUpdateOneWithoutTasksNestedInput
-    project?: ProjectUpdateOneWithoutTasksNestedInput
-    workflowStep?: WorkflowTemplateStepUpdateOneWithoutGeneratedTasksNestedInput
-  }
-
-  export type TaskUncheckedUpdateWithoutTransferHistoryInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    description?: StringFieldUpdateOperationsInput | string
-    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
-    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
-    deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
-    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    assgineeId?: StringFieldUpdateOperationsInput | string
-    progress?: IntFieldUpdateOperationsInput | number
-    supervisor?: StringFieldUpdateOperationsInput | string
-    serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
-    isPersonal?: BoolFieldUpdateOperationsInput | boolean
-    agreementId?: NullableStringFieldUpdateOperationsInput | string | null
-    contentCycleId?: NullableStringFieldUpdateOperationsInput | string | null
-    contentRequestId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    sortOrder?: IntFieldUpdateOperationsInput | number
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    transferredFromProgress?: IntFieldUpdateOperationsInput | number
-    clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
-    recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
   }
 
   export type StaffUpsertWithoutTransferredFromTasksInput = {
@@ -73773,9 +73698,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -73793,9 +73718,9 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutTransferredFromTasksInput = {
@@ -73815,9 +73740,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -73833,9 +73758,84 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type TaskUpsertWithoutTransferHistoryInput = {
+    update: XOR<TaskUpdateWithoutTransferHistoryInput, TaskUncheckedUpdateWithoutTransferHistoryInput>
+    create: XOR<TaskCreateWithoutTransferHistoryInput, TaskUncheckedCreateWithoutTransferHistoryInput>
+    where?: TaskWhereInput
+  }
+
+  export type TaskUpdateToOneWithWhereWithoutTransferHistoryInput = {
+    where?: TaskWhereInput
+    data: XOR<TaskUpdateWithoutTransferHistoryInput, TaskUncheckedUpdateWithoutTransferHistoryInput>
+  }
+
+  export type TaskUpdateWithoutTransferHistoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    description?: StringFieldUpdateOperationsInput | string
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
+    department?: StringFieldUpdateOperationsInput | string
+    deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progress?: IntFieldUpdateOperationsInput | number
+    supervisor?: StringFieldUpdateOperationsInput | string
+    serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
+    isPersonal?: BoolFieldUpdateOperationsInput | boolean
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
+    clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
+    recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
+    agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
+    user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
+    contentCycle?: ContentCycleUpdateOneWithoutTasksNestedInput
+    contentRequest?: ContentRequestUpdateOneWithoutTasksNestedInput
+    project?: ProjectUpdateOneWithoutTasksNestedInput
+    workflowStep?: WorkflowTemplateStepUpdateOneWithoutGeneratedTasksNestedInput
+  }
+
+  export type TaskUncheckedUpdateWithoutTransferHistoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    description?: StringFieldUpdateOperationsInput | string
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
+    department?: StringFieldUpdateOperationsInput | string
+    deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    assgineeId?: StringFieldUpdateOperationsInput | string
+    progress?: IntFieldUpdateOperationsInput | number
+    supervisor?: StringFieldUpdateOperationsInput | string
+    serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
+    isPersonal?: BoolFieldUpdateOperationsInput | boolean
+    agreementId?: NullableStringFieldUpdateOperationsInput | string | null
+    contentCycleId?: NullableStringFieldUpdateOperationsInput | string | null
+    contentRequestId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
+    clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
+    recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
   }
 
   export type StaffUpsertWithoutTransferredToTasksInput = {
@@ -73864,9 +73864,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -73884,9 +73884,9 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutTransferredToTasksInput = {
@@ -73906,9 +73906,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -73924,9 +73924,9 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUpsertWithoutTransferredByTasksInput = {
@@ -73955,9 +73955,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -73975,9 +73975,9 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutTransferredByTasksInput = {
@@ -73997,9 +73997,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -74015,9 +74015,9 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ClientCreateWithoutClientTaskInput = {
@@ -74042,6 +74042,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
@@ -74049,7 +74050,6 @@ export namespace Prisma {
     contracts?: ContractCreateNestedManyWithoutClientInput
     projects?: ProjectCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutClientTaskInput = {
@@ -74076,12 +74076,12 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
     contracts?: ContractUncheckedCreateNestedManyWithoutClientInput
     projects?: ProjectUncheckedCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutClientTaskInput = {
@@ -74097,22 +74097,22 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
-    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
+    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
     user: StaffCreateNestedOneWithoutAssignedTasksInput
     contentCycle?: ContentCycleCreateNestedOneWithoutTasksInput
@@ -74129,7 +74129,6 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -74137,7 +74136,6 @@ export namespace Prisma {
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     agreementId?: string | null
     contentCycleId?: string | null
@@ -74147,10 +74145,12 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
-    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
+    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
   }
 
   export type TaskCreateOrConnectWithoutClientTaskInput = {
@@ -74191,6 +74191,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
@@ -74198,7 +74199,6 @@ export namespace Prisma {
     contracts?: ContractUpdateManyWithoutClientNestedInput
     projects?: ProjectUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutClientTaskInput = {
@@ -74225,12 +74225,12 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutClientNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
   }
 
   export type TaskUpsertWithoutClientTaskInput = {
@@ -74252,22 +74252,22 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
-    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
     user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
     contentCycle?: ContentCycleUpdateOneWithoutTasksNestedInput
@@ -74284,7 +74284,6 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -74292,7 +74291,6 @@ export namespace Prisma {
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     agreementId?: NullableStringFieldUpdateOperationsInput | string | null
     contentCycleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -74302,10 +74300,12 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
-    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
   }
 
   export type IncomeTransactionCreateWithoutIncomeInput = {
@@ -74523,9 +74523,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
     reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
@@ -74542,10 +74542,10 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
-    assignedTasks?: TaskCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
   }
 
   export type StaffUncheckedCreateWithoutIncomeTransactionInput = {
@@ -74565,9 +74565,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
     reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
@@ -74582,10 +74582,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type StaffCreateOrConnectWithoutIncomeTransactionInput = {
@@ -74719,9 +74719,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
@@ -74738,10 +74738,10 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutIncomeTransactionInput = {
@@ -74761,9 +74761,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
@@ -74778,10 +74778,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ExpenseTransactionDetailsCreateWithoutExpenseTransactionInput = {
@@ -74857,9 +74857,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
     reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
@@ -74876,10 +74876,10 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
-    assignedTasks?: TaskCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
   }
 
   export type StaffUncheckedCreateWithoutExpenseTransactionInput = {
@@ -74899,9 +74899,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
     reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
@@ -74916,10 +74916,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type StaffCreateOrConnectWithoutExpenseTransactionInput = {
@@ -75027,9 +75027,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
@@ -75046,10 +75046,10 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutExpenseTransactionInput = {
@@ -75069,9 +75069,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
@@ -75086,10 +75086,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type IncomeTransactionCreateWithoutTransactionDetailsInput = {
@@ -75195,9 +75195,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
@@ -75214,10 +75214,10 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
-    assignedTasks?: TaskCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
   }
 
   export type StaffUncheckedCreateWithoutUserFilesInput = {
@@ -75237,9 +75237,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
@@ -75254,10 +75254,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type StaffCreateOrConnectWithoutUserFilesInput = {
@@ -75291,9 +75291,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
@@ -75310,10 +75310,10 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutUserFilesInput = {
@@ -75333,9 +75333,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
@@ -75350,10 +75350,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ClientCreateWithoutServiceAgreementsInput = {
@@ -75377,6 +75377,7 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
@@ -75385,7 +75386,6 @@ export namespace Prisma {
     contracts?: ContractCreateNestedManyWithoutClientInput
     projects?: ProjectCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutServiceAgreementsInput = {
@@ -75411,13 +75411,13 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
     contracts?: ContractUncheckedCreateNestedManyWithoutClientInput
     projects?: ProjectUncheckedCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutServiceAgreementsInput = {
@@ -75586,23 +75586,23 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
-    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
+    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     user: StaffCreateNestedOneWithoutAssignedTasksInput
     contentCycle?: ContentCycleCreateNestedOneWithoutTasksInput
     contentRequest?: ContentRequestCreateNestedOneWithoutTasksInput
@@ -75618,7 +75618,6 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -75626,7 +75625,6 @@ export namespace Prisma {
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     contentCycleId?: string | null
     contentRequestId?: string | null
@@ -75635,11 +75633,13 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
-    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
+    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
   }
 
   export type TaskCreateOrConnectWithoutAgreementInput = {
@@ -75684,6 +75684,7 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
@@ -75692,7 +75693,6 @@ export namespace Prisma {
     contracts?: ContractUpdateManyWithoutClientNestedInput
     projects?: ProjectUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutServiceAgreementsInput = {
@@ -75718,13 +75718,13 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutClientNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
   }
 
   export type ProjectUpsertWithoutServiceAgreementsInput = {
@@ -76025,9 +76025,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -76044,10 +76044,10 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
-    assignedTasks?: TaskCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
   }
 
   export type StaffUncheckedCreateWithoutRecieverInput = {
@@ -76067,9 +76067,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -76084,10 +76084,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type StaffCreateOrConnectWithoutRecieverInput = {
@@ -76110,9 +76110,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -76129,10 +76129,10 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
-    assignedTasks?: TaskCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
   }
 
   export type StaffUncheckedCreateWithoutRegistererInput = {
@@ -76152,9 +76152,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -76169,10 +76169,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type StaffCreateOrConnectWithoutRegistererInput = {
@@ -76228,9 +76228,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -76247,10 +76247,10 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutRecieverInput = {
@@ -76270,9 +76270,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -76287,10 +76287,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUpsertWithoutRegistererInput = {
@@ -76319,9 +76319,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -76338,10 +76338,10 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutRegistererInput = {
@@ -76361,9 +76361,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -76378,10 +76378,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserSalaryDetailsUpsertWithWhereUniqueWithoutUserSalaryInput = {
@@ -77032,9 +77032,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -77051,10 +77051,10 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
-    assignedTasks?: TaskCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
   }
 
   export type StaffUncheckedCreateWithoutAuditLogsInput = {
@@ -77074,9 +77074,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -77091,10 +77091,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type StaffCreateOrConnectWithoutAuditLogsInput = {
@@ -77128,9 +77128,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -77147,10 +77147,10 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutAuditLogsInput = {
@@ -77170,9 +77170,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -77187,10 +77187,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type IncomeServiceAgreementCreateWithoutProjectInput = {
@@ -77354,13 +77354,13 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
+    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
     clients?: ClientCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
     contracts?: ContractCreateNestedManyWithoutPortfolioInput
     recurringSchedules?: RecurringScheduleCreateNestedManyWithoutPortfolioInput
     services?: ServiceCreateNestedManyWithoutPortfolioInput
     users?: StaffCreateNestedManyWithoutPortfolioInput
-    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
   }
 
   export type PortfolioUncheckedCreateWithoutProjectsInput = {
@@ -77380,13 +77380,13 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
+    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
     clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
     contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
     recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutPortfolioInput
     services?: ServiceUncheckedCreateNestedManyWithoutPortfolioInput
     users?: StaffUncheckedCreateNestedManyWithoutPortfolioInput
-    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
   }
 
   export type PortfolioCreateOrConnectWithoutProjectsInput = {
@@ -77416,6 +77416,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
@@ -77423,7 +77424,6 @@ export namespace Prisma {
     contentRequests?: ContentRequestCreateNestedManyWithoutClientInput
     contracts?: ContractCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutProjectsInput = {
@@ -77450,12 +77450,12 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
     contracts?: ContractUncheckedCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutProjectsInput = {
@@ -77478,9 +77478,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -77497,10 +77497,10 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
-    assignedTasks?: TaskCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedProjectsInput = {
@@ -77520,9 +77520,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -77537,10 +77537,10 @@ export namespace Prisma {
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedProjectsInput = {
@@ -77556,23 +77556,23 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
-    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
+    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
     user: StaffCreateNestedOneWithoutAssignedTasksInput
     contentCycle?: ContentCycleCreateNestedOneWithoutTasksInput
@@ -77588,7 +77588,6 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -77596,7 +77595,6 @@ export namespace Prisma {
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     agreementId?: string | null
     contentCycleId?: string | null
@@ -77605,11 +77603,13 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
-    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
+    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
   }
 
   export type TaskCreateOrConnectWithoutProjectInput = {
@@ -77698,13 +77698,13 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUpdateManyWithoutPortfolioNestedInput
     recurringSchedules?: RecurringScheduleUpdateManyWithoutPortfolioNestedInput
     services?: ServiceUpdateManyWithoutPortfolioNestedInput
     users?: StaffUpdateManyWithoutPortfolioNestedInput
-    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
   }
 
   export type PortfolioUncheckedUpdateWithoutProjectsInput = {
@@ -77724,13 +77724,13 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
     recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutPortfolioNestedInput
     services?: ServiceUncheckedUpdateManyWithoutPortfolioNestedInput
     users?: StaffUncheckedUpdateManyWithoutPortfolioNestedInput
-    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
   export type ClientUpsertWithoutProjectsInput = {
@@ -77766,6 +77766,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
@@ -77773,7 +77774,6 @@ export namespace Prisma {
     contentRequests?: ContentRequestUpdateManyWithoutClientNestedInput
     contracts?: ContractUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutProjectsInput = {
@@ -77800,12 +77800,12 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
   }
 
   export type StaffUpsertWithoutCreatedProjectsInput = {
@@ -77834,9 +77834,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -77853,10 +77853,10 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedProjectsInput = {
@@ -77876,9 +77876,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -77893,10 +77893,10 @@ export namespace Prisma {
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TaskUpsertWithWhereUniqueWithoutProjectInput = {
@@ -78004,13 +78004,13 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
+    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
     clients?: ClientCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
     projects?: ProjectCreateNestedManyWithoutPortfolioInput
     recurringSchedules?: RecurringScheduleCreateNestedManyWithoutPortfolioInput
     services?: ServiceCreateNestedManyWithoutPortfolioInput
     users?: StaffCreateNestedManyWithoutPortfolioInput
-    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
   }
 
   export type PortfolioUncheckedCreateWithoutContractsInput = {
@@ -78030,13 +78030,13 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
+    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
     clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
     projects?: ProjectUncheckedCreateNestedManyWithoutPortfolioInput
     recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutPortfolioInput
     services?: ServiceUncheckedCreateNestedManyWithoutPortfolioInput
     users?: StaffUncheckedCreateNestedManyWithoutPortfolioInput
-    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
   }
 
   export type PortfolioCreateOrConnectWithoutContractsInput = {
@@ -78066,6 +78066,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
@@ -78073,7 +78074,6 @@ export namespace Prisma {
     contentRequests?: ContentRequestCreateNestedManyWithoutClientInput
     projects?: ProjectCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutContractsInput = {
@@ -78100,12 +78100,12 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
     projects?: ProjectUncheckedCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutContractsInput = {
@@ -78128,9 +78128,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -78147,10 +78147,10 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
-    assignedTasks?: TaskCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedContractsInput = {
@@ -78170,9 +78170,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -78187,10 +78187,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedContractsInput = {
@@ -78301,13 +78301,13 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
     projects?: ProjectUpdateManyWithoutPortfolioNestedInput
     recurringSchedules?: RecurringScheduleUpdateManyWithoutPortfolioNestedInput
     services?: ServiceUpdateManyWithoutPortfolioNestedInput
     users?: StaffUpdateManyWithoutPortfolioNestedInput
-    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
   }
 
   export type PortfolioUncheckedUpdateWithoutContractsInput = {
@@ -78327,13 +78327,13 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutPortfolioNestedInput
     recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutPortfolioNestedInput
     services?: ServiceUncheckedUpdateManyWithoutPortfolioNestedInput
     users?: StaffUncheckedUpdateManyWithoutPortfolioNestedInput
-    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
   export type ClientUpsertWithoutContractsInput = {
@@ -78369,6 +78369,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
@@ -78376,7 +78377,6 @@ export namespace Prisma {
     contentRequests?: ContentRequestUpdateManyWithoutClientNestedInput
     projects?: ProjectUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutContractsInput = {
@@ -78403,12 +78403,12 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
   }
 
   export type StaffUpsertWithoutCreatedContractsInput = {
@@ -78437,9 +78437,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -78456,10 +78456,10 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedContractsInput = {
@@ -78479,9 +78479,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -78496,10 +78496,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProjectUpsertWithoutContractsInput = {
@@ -78572,6 +78572,7 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
@@ -78580,7 +78581,6 @@ export namespace Prisma {
     contracts?: ContractCreateNestedManyWithoutClientInput
     projects?: ProjectCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutInstallmentsInput = {
@@ -78606,13 +78606,13 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
     contracts?: ContractUncheckedCreateNestedManyWithoutClientInput
     projects?: ProjectUncheckedCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutInstallmentsInput = {
@@ -78699,6 +78699,7 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
@@ -78707,7 +78708,6 @@ export namespace Prisma {
     contracts?: ContractUpdateManyWithoutClientNestedInput
     projects?: ProjectUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutInstallmentsInput = {
@@ -78733,13 +78733,13 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutClientNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
   }
 
   export type ContractUpsertWithoutInstallmentsInput = {
@@ -78857,9 +78857,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -78876,10 +78876,10 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
-    assignedTasks?: TaskCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
   }
 
   export type StaffUncheckedCreateWithoutUploadedContractDocumentsInput = {
@@ -78899,9 +78899,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -78916,10 +78916,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type StaffCreateOrConnectWithoutUploadedContractDocumentsInput = {
@@ -79006,9 +79006,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -79025,10 +79025,10 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutUploadedContractDocumentsInput = {
@@ -79048,9 +79048,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -79065,10 +79065,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ContentRequestAssigneeCreateWithoutContentRequestInput = {
@@ -79112,13 +79112,13 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
+    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
     clients?: ClientCreateNestedManyWithoutPortfolioInput
     contracts?: ContractCreateNestedManyWithoutPortfolioInput
     projects?: ProjectCreateNestedManyWithoutPortfolioInput
     recurringSchedules?: RecurringScheduleCreateNestedManyWithoutPortfolioInput
     services?: ServiceCreateNestedManyWithoutPortfolioInput
     users?: StaffCreateNestedManyWithoutPortfolioInput
-    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
   }
 
   export type PortfolioUncheckedCreateWithoutContentRequestsInput = {
@@ -79138,13 +79138,13 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
+    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
     clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
     contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
     projects?: ProjectUncheckedCreateNestedManyWithoutPortfolioInput
     recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutPortfolioInput
     services?: ServiceUncheckedCreateNestedManyWithoutPortfolioInput
     users?: StaffUncheckedCreateNestedManyWithoutPortfolioInput
-    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
   }
 
   export type PortfolioCreateOrConnectWithoutContentRequestsInput = {
@@ -79174,6 +79174,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
@@ -79181,7 +79182,6 @@ export namespace Prisma {
     contracts?: ContractCreateNestedManyWithoutClientInput
     projects?: ProjectCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutContentRequestsInput = {
@@ -79208,12 +79208,12 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contracts?: ContractUncheckedCreateNestedManyWithoutClientInput
     projects?: ProjectUncheckedCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutContentRequestsInput = {
@@ -79236,9 +79236,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -79255,10 +79255,10 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
-    assignedTasks?: TaskCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
   }
 
   export type StaffUncheckedCreateWithoutContentRequestsCreatedInput = {
@@ -79278,9 +79278,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -79295,10 +79295,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type StaffCreateOrConnectWithoutContentRequestsCreatedInput = {
@@ -79357,23 +79357,23 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
-    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
+    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
     user: StaffCreateNestedOneWithoutAssignedTasksInput
     contentCycle?: ContentCycleCreateNestedOneWithoutTasksInput
@@ -79389,7 +79389,6 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -79397,7 +79396,6 @@ export namespace Prisma {
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     agreementId?: string | null
     contentCycleId?: string | null
@@ -79406,11 +79404,13 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
-    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
+    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
   }
 
   export type TaskCreateOrConnectWithoutContentRequestInput = {
@@ -79467,13 +79467,13 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUpdateManyWithoutPortfolioNestedInput
     projects?: ProjectUpdateManyWithoutPortfolioNestedInput
     recurringSchedules?: RecurringScheduleUpdateManyWithoutPortfolioNestedInput
     services?: ServiceUpdateManyWithoutPortfolioNestedInput
     users?: StaffUpdateManyWithoutPortfolioNestedInput
-    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
   }
 
   export type PortfolioUncheckedUpdateWithoutContentRequestsInput = {
@@ -79493,13 +79493,13 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutPortfolioNestedInput
     recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutPortfolioNestedInput
     services?: ServiceUncheckedUpdateManyWithoutPortfolioNestedInput
     users?: StaffUncheckedUpdateManyWithoutPortfolioNestedInput
-    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
   export type ClientUpsertWithoutContentRequestsInput = {
@@ -79535,6 +79535,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
@@ -79542,7 +79543,6 @@ export namespace Prisma {
     contracts?: ContractUpdateManyWithoutClientNestedInput
     projects?: ProjectUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutContentRequestsInput = {
@@ -79569,12 +79569,12 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutClientNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
   }
 
   export type StaffUpsertWithoutContentRequestsCreatedInput = {
@@ -79603,9 +79603,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -79622,10 +79622,10 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutContentRequestsCreatedInput = {
@@ -79645,9 +79645,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -79662,10 +79662,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProjectUpsertWithoutContentRequestsInput = {
@@ -79785,9 +79785,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -79804,10 +79804,10 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
-    assignedTasks?: TaskCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
   }
 
   export type StaffUncheckedCreateWithoutContentRequestAssignmentsInput = {
@@ -79827,9 +79827,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -79844,10 +79844,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type StaffCreateOrConnectWithoutContentRequestAssignmentsInput = {
@@ -79924,9 +79924,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -79943,10 +79943,10 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutContentRequestAssignmentsInput = {
@@ -79966,9 +79966,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -79983,10 +79983,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ContentCycleCreateWithoutScheduleInput = {
@@ -80082,13 +80082,13 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
+    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
     clients?: ClientCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
     contracts?: ContractCreateNestedManyWithoutPortfolioInput
     projects?: ProjectCreateNestedManyWithoutPortfolioInput
     services?: ServiceCreateNestedManyWithoutPortfolioInput
     users?: StaffCreateNestedManyWithoutPortfolioInput
-    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
   }
 
   export type PortfolioUncheckedCreateWithoutRecurringSchedulesInput = {
@@ -80108,13 +80108,13 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
+    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
     clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
     contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
     projects?: ProjectUncheckedCreateNestedManyWithoutPortfolioInput
     services?: ServiceUncheckedCreateNestedManyWithoutPortfolioInput
     users?: StaffUncheckedCreateNestedManyWithoutPortfolioInput
-    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
   }
 
   export type PortfolioCreateOrConnectWithoutRecurringSchedulesInput = {
@@ -80144,6 +80144,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
@@ -80151,7 +80152,6 @@ export namespace Prisma {
     contentRequests?: ContentRequestCreateNestedManyWithoutClientInput
     contracts?: ContractCreateNestedManyWithoutClientInput
     projects?: ProjectCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutRecurringSchedulesInput = {
@@ -80178,12 +80178,12 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
     contracts?: ContractUncheckedCreateNestedManyWithoutClientInput
     projects?: ProjectUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutRecurringSchedulesInput = {
@@ -80251,13 +80251,13 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUpdateManyWithoutPortfolioNestedInput
     projects?: ProjectUpdateManyWithoutPortfolioNestedInput
     services?: ServiceUpdateManyWithoutPortfolioNestedInput
     users?: StaffUpdateManyWithoutPortfolioNestedInput
-    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
   }
 
   export type PortfolioUncheckedUpdateWithoutRecurringSchedulesInput = {
@@ -80277,13 +80277,13 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
+    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutPortfolioNestedInput
     services?: ServiceUncheckedUpdateManyWithoutPortfolioNestedInput
     users?: StaffUncheckedUpdateManyWithoutPortfolioNestedInput
-    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
   export type ClientUpsertWithoutRecurringSchedulesInput = {
@@ -80319,6 +80319,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
@@ -80326,7 +80327,6 @@ export namespace Prisma {
     contentRequests?: ContentRequestUpdateManyWithoutClientNestedInput
     contracts?: ContractUpdateManyWithoutClientNestedInput
     projects?: ProjectUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutRecurringSchedulesInput = {
@@ -80353,12 +80353,12 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutClientNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
   }
 
   export type StaffCreateWithoutAssignedRecurringStepsInput = {
@@ -80376,9 +80376,9 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
     userFiles?: UserFilesCreateNestedManyWithoutUserInput
@@ -80395,10 +80395,10 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
-    assignedTasks?: TaskCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
   }
 
   export type StaffUncheckedCreateWithoutAssignedRecurringStepsInput = {
@@ -80418,9 +80418,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
     expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
     incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
     userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
@@ -80435,10 +80435,10 @@ export namespace Prisma {
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type StaffCreateOrConnectWithoutAssignedRecurringStepsInput = {
@@ -80566,9 +80566,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -80585,10 +80585,10 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutAssignedRecurringStepsInput = {
@@ -80608,9 +80608,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -80625,10 +80625,10 @@ export namespace Prisma {
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type RecurringScheduleUpsertWithoutStepsInput = {
@@ -80785,20 +80785,20 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
     transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
@@ -80817,7 +80817,6 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -80825,7 +80824,6 @@ export namespace Prisma {
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     agreementId?: string | null
     contentCycleId?: string | null
@@ -80835,8 +80833,10 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
     transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
   }
@@ -80908,20 +80908,20 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
     transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
@@ -80940,7 +80940,6 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -80948,7 +80947,6 @@ export namespace Prisma {
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     agreementId?: NullableStringFieldUpdateOperationsInput | string | null
     contentCycleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -80958,8 +80956,10 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
     transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
   }
@@ -80986,6 +80986,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
@@ -80993,7 +80994,6 @@ export namespace Prisma {
     contracts?: ContractCreateNestedManyWithoutClientInput
     projects?: ProjectCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
   }
 
   export type ClientUncheckedCreateWithoutContentCyclesInput = {
@@ -81020,12 +81020,12 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
+    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
     contracts?: ContractUncheckedCreateNestedManyWithoutClientInput
     projects?: ProjectUncheckedCreateNestedManyWithoutClientInput
     recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
   }
 
   export type ClientCreateOrConnectWithoutContentCyclesInput = {
@@ -81080,23 +81080,23 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
-    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
+    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
     user: StaffCreateNestedOneWithoutAssignedTasksInput
     contentRequest?: ContentRequestCreateNestedOneWithoutTasksInput
@@ -81112,7 +81112,6 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -81120,7 +81119,6 @@ export namespace Prisma {
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     agreementId?: string | null
     contentRequestId?: string | null
@@ -81129,11 +81127,13 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
-    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
+    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
   }
 
   export type TaskCreateOrConnectWithoutContentCycleInput = {
@@ -81179,6 +81179,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
@@ -81186,7 +81187,6 @@ export namespace Prisma {
     contracts?: ContractUpdateManyWithoutClientNestedInput
     projects?: ProjectUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutContentCyclesInput = {
@@ -81213,12 +81213,12 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutClientNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
   }
 
   export type RecurringScheduleUpsertWithoutCyclesInput = {
@@ -81416,23 +81416,23 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskCreateNestedManyWithoutTaskInput
-    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceCreateNestedOneWithoutTaskInput
+    transferHistory?: TaskTransferHistoryCreateNestedManyWithoutTaskInput
     agreement?: IncomeServiceAgreementCreateNestedOneWithoutTasksInput
     user: StaffCreateNestedOneWithoutAssignedTasksInput
     contentCycle?: ContentCycleCreateNestedOneWithoutTasksInput
@@ -81448,7 +81448,6 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -81456,7 +81455,6 @@ export namespace Prisma {
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     agreementId?: string | null
     contentCycleId?: string | null
@@ -81465,11 +81463,13 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutTaskInput
-    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedCreateNestedOneWithoutTaskInput
+    transferHistory?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTaskInput
   }
 
   export type TaskCreateOrConnectWithoutWorkflowStepInput = {
@@ -81593,9 +81593,9 @@ export namespace Prisma {
     banReason?: string | null
     banExpires?: Date | string | null
     portfolioId?: string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
   }
 
   export type RoleMenuAccessUpdateWithoutRoleInput = {
@@ -81648,9 +81648,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -81667,10 +81667,10 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutDynamicRoleInput = {
@@ -81689,9 +81689,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -81707,10 +81707,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateManyWithoutDynamicRoleInput = {
@@ -81729,9 +81729,9 @@ export namespace Prisma {
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ExpenseTransactionCreateManyUserInput = {
@@ -81935,35 +81935,6 @@ export namespace Prisma {
     impersonatedBy?: string | null
   }
 
-  export type TaskCreateManyUserInput = {
-    id: string
-    createdAt?: Date | string | null
-    description: string
-    status: $Enums.TaskStatus
-    priority?: $Enums.TaskPriority
-    department: string
-    deadline?: Date | string | null
-    originalDeadline?: Date | string | null
-    extraTimeMinutes?: number
-    completedAt?: Date | string | null
-    progressUpdatedAt?: Date | string | null
-    progress?: number
-    supervisor?: string
-    serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
-    isPersonal?: boolean
-    agreementId?: string | null
-    contentCycleId?: string | null
-    contentRequestId?: string | null
-    projectId?: string | null
-    sortOrder?: number
-    updatedAt?: Date | string | null
-    workflowStage?: $Enums.WorkflowStage
-    workflowStepId?: string | null
-    startDate?: Date | string | null
-    transferredFromProgress?: number
-  }
-
   export type TaskTransferHistoryCreateManyFromAssigneeInput = {
     id?: string
     createdAt?: Date | string
@@ -81992,6 +81963,35 @@ export namespace Prisma {
     toAssigneeId: string
     progressAtTransfer?: number
     deadlineAtTransfer?: Date | string | null
+  }
+
+  export type TaskCreateManyUserInput = {
+    id: string
+    createdAt?: Date | string | null
+    description: string
+    status: $Enums.TaskStatus
+    priority?: $Enums.TaskPriority
+    department: string
+    deadline?: Date | string | null
+    extraTimeMinutes?: number
+    completedAt?: Date | string | null
+    progressUpdatedAt?: Date | string | null
+    progress?: number
+    supervisor?: string
+    serviceInformation?: string | null
+    isPersonal?: boolean
+    agreementId?: string | null
+    contentCycleId?: string | null
+    contentRequestId?: string | null
+    projectId?: string | null
+    sortOrder?: number
+    updatedAt?: Date | string | null
+    workflowStage?: $Enums.WorkflowStage
+    workflowStepId?: string | null
+    originalDeadline?: Date | string | null
+    transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ExpenseTransactionUpdateWithoutUserInput = {
@@ -82288,6 +82288,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
@@ -82295,7 +82296,6 @@ export namespace Prisma {
     contracts?: ContractUpdateManyWithoutClientNestedInput
     projects?: ProjectUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutAccountManagerInput = {
@@ -82321,13 +82321,13 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutClientNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateManyWithoutAccountManagerInput = {
@@ -82645,99 +82645,6 @@ export namespace Prisma {
     impersonatedBy?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type TaskUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    description?: StringFieldUpdateOperationsInput | string
-    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
-    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
-    deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
-    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    progress?: IntFieldUpdateOperationsInput | number
-    supervisor?: StringFieldUpdateOperationsInput | string
-    serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
-    isPersonal?: BoolFieldUpdateOperationsInput | boolean
-    sortOrder?: IntFieldUpdateOperationsInput | number
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    transferredFromProgress?: IntFieldUpdateOperationsInput | number
-    clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
-    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
-    recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
-    agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
-    contentCycle?: ContentCycleUpdateOneWithoutTasksNestedInput
-    contentRequest?: ContentRequestUpdateOneWithoutTasksNestedInput
-    project?: ProjectUpdateOneWithoutTasksNestedInput
-    workflowStep?: WorkflowTemplateStepUpdateOneWithoutGeneratedTasksNestedInput
-  }
-
-  export type TaskUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    description?: StringFieldUpdateOperationsInput | string
-    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
-    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
-    deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
-    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    progress?: IntFieldUpdateOperationsInput | number
-    supervisor?: StringFieldUpdateOperationsInput | string
-    serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
-    isPersonal?: BoolFieldUpdateOperationsInput | boolean
-    agreementId?: NullableStringFieldUpdateOperationsInput | string | null
-    contentCycleId?: NullableStringFieldUpdateOperationsInput | string | null
-    contentRequestId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    sortOrder?: IntFieldUpdateOperationsInput | number
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    transferredFromProgress?: IntFieldUpdateOperationsInput | number
-    clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
-    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
-    recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
-  }
-
-  export type TaskUncheckedUpdateManyWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    description?: StringFieldUpdateOperationsInput | string
-    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
-    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
-    department?: StringFieldUpdateOperationsInput | string
-    deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
-    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    progress?: IntFieldUpdateOperationsInput | number
-    supervisor?: StringFieldUpdateOperationsInput | string
-    serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
-    isPersonal?: BoolFieldUpdateOperationsInput | boolean
-    agreementId?: NullableStringFieldUpdateOperationsInput | string | null
-    contentCycleId?: NullableStringFieldUpdateOperationsInput | string | null
-    contentRequestId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: NullableStringFieldUpdateOperationsInput | string | null
-    sortOrder?: IntFieldUpdateOperationsInput | number
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    transferredFromProgress?: IntFieldUpdateOperationsInput | number
-  }
-
   export type TaskTransferHistoryUpdateWithoutFromAssigneeInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -82773,8 +82680,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     progressAtTransfer?: IntFieldUpdateOperationsInput | number
     deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    task?: TaskUpdateOneRequiredWithoutTransferHistoryNestedInput
     fromAssignee?: StaffUpdateOneRequiredWithoutTransferredFromTasksNestedInput
+    task?: TaskUpdateOneRequiredWithoutTransferHistoryNestedInput
     transferredBy?: StaffUpdateOneWithoutTransferredByTasksNestedInput
   }
 
@@ -82803,8 +82710,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     progressAtTransfer?: IntFieldUpdateOperationsInput | number
     deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    task?: TaskUpdateOneRequiredWithoutTransferHistoryNestedInput
     fromAssignee?: StaffUpdateOneRequiredWithoutTransferredFromTasksNestedInput
+    task?: TaskUpdateOneRequiredWithoutTransferHistoryNestedInput
     toAssignee?: StaffUpdateOneRequiredWithoutTransferredToTasksNestedInput
   }
 
@@ -82826,6 +82733,99 @@ export namespace Prisma {
     toAssigneeId?: StringFieldUpdateOperationsInput | string
     progressAtTransfer?: IntFieldUpdateOperationsInput | number
     deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type TaskUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    description?: StringFieldUpdateOperationsInput | string
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
+    department?: StringFieldUpdateOperationsInput | string
+    deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progress?: IntFieldUpdateOperationsInput | number
+    supervisor?: StringFieldUpdateOperationsInput | string
+    serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
+    isPersonal?: BoolFieldUpdateOperationsInput | boolean
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
+    clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
+    recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
+    agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
+    contentCycle?: ContentCycleUpdateOneWithoutTasksNestedInput
+    contentRequest?: ContentRequestUpdateOneWithoutTasksNestedInput
+    project?: ProjectUpdateOneWithoutTasksNestedInput
+    workflowStep?: WorkflowTemplateStepUpdateOneWithoutGeneratedTasksNestedInput
+  }
+
+  export type TaskUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    description?: StringFieldUpdateOperationsInput | string
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
+    department?: StringFieldUpdateOperationsInput | string
+    deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progress?: IntFieldUpdateOperationsInput | number
+    supervisor?: StringFieldUpdateOperationsInput | string
+    serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
+    isPersonal?: BoolFieldUpdateOperationsInput | boolean
+    agreementId?: NullableStringFieldUpdateOperationsInput | string | null
+    contentCycleId?: NullableStringFieldUpdateOperationsInput | string | null
+    contentRequestId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
+    clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
+    recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
+  }
+
+  export type TaskUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    description?: StringFieldUpdateOperationsInput | string
+    status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
+    department?: StringFieldUpdateOperationsInput | string
+    deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extraTimeMinutes?: IntFieldUpdateOperationsInput | number
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    progress?: IntFieldUpdateOperationsInput | number
+    supervisor?: StringFieldUpdateOperationsInput | string
+    serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
+    isPersonal?: BoolFieldUpdateOperationsInput | boolean
+    agreementId?: NullableStringFieldUpdateOperationsInput | string | null
+    contentCycleId?: NullableStringFieldUpdateOperationsInput | string | null
+    contentRequestId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
+    workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ClientSubServiceCreateManyClientInput = {
@@ -83590,6 +83590,21 @@ export namespace Prisma {
     finalAmount?: FloatFieldUpdateOperationsInput | number
   }
 
+  export type ClientSchemaCreateManyPortfolioInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    clientId: string
+    saturday?: string | null
+    sunday?: string | null
+    monday?: string | null
+    tuesday?: string | null
+    wednesday?: string | null
+    thursday?: string | null
+    friday?: string | null
+    notes?: string | null
+  }
+
   export type ClientCreateManyPortfolioInput = {
     id: string
     createdAt?: Date | string | null
@@ -83701,24 +83716,54 @@ export namespace Prisma {
     banned?: boolean | null
     banReason?: string | null
     banExpires?: Date | string | null
-    staffCode?: string | null
-    jobTitle?: string | null
     employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
   }
 
-  export type ClientSchemaCreateManyPortfolioInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    clientId: string
-    saturday?: string | null
-    sunday?: string | null
-    monday?: string | null
-    tuesday?: string | null
-    wednesday?: string | null
-    thursday?: string | null
-    friday?: string | null
-    notes?: string | null
+  export type ClientSchemaUpdateWithoutPortfolioInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    saturday?: NullableStringFieldUpdateOperationsInput | string | null
+    sunday?: NullableStringFieldUpdateOperationsInput | string | null
+    monday?: NullableStringFieldUpdateOperationsInput | string | null
+    tuesday?: NullableStringFieldUpdateOperationsInput | string | null
+    wednesday?: NullableStringFieldUpdateOperationsInput | string | null
+    thursday?: NullableStringFieldUpdateOperationsInput | string | null
+    friday?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    client?: ClientUpdateOneRequiredWithoutClientSchemaNestedInput
+  }
+
+  export type ClientSchemaUncheckedUpdateWithoutPortfolioInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clientId?: StringFieldUpdateOperationsInput | string
+    saturday?: NullableStringFieldUpdateOperationsInput | string | null
+    sunday?: NullableStringFieldUpdateOperationsInput | string | null
+    monday?: NullableStringFieldUpdateOperationsInput | string | null
+    tuesday?: NullableStringFieldUpdateOperationsInput | string | null
+    wednesday?: NullableStringFieldUpdateOperationsInput | string | null
+    thursday?: NullableStringFieldUpdateOperationsInput | string | null
+    friday?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ClientSchemaUncheckedUpdateManyWithoutPortfolioInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    clientId?: StringFieldUpdateOperationsInput | string
+    saturday?: NullableStringFieldUpdateOperationsInput | string | null
+    sunday?: NullableStringFieldUpdateOperationsInput | string | null
+    monday?: NullableStringFieldUpdateOperationsInput | string | null
+    tuesday?: NullableStringFieldUpdateOperationsInput | string | null
+    wednesday?: NullableStringFieldUpdateOperationsInput | string | null
+    thursday?: NullableStringFieldUpdateOperationsInput | string | null
+    friday?: NullableStringFieldUpdateOperationsInput | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ClientUpdateWithoutPortfolioInput = {
@@ -83743,6 +83788,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
@@ -83750,7 +83796,6 @@ export namespace Prisma {
     contracts?: ContractUpdateManyWithoutClientNestedInput
     projects?: ProjectUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateWithoutPortfolioInput = {
@@ -83776,13 +83821,13 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
+    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutClientNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutClientNestedInput
     recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateManyWithoutPortfolioInput = {
@@ -84069,9 +84114,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUpdateManyWithoutUserNestedInput
@@ -84088,10 +84133,10 @@ export namespace Prisma {
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
-    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutPortfolioInput = {
@@ -84110,9 +84155,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
     expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
     incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
     userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
@@ -84128,10 +84173,10 @@ export namespace Prisma {
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type StaffUncheckedUpdateManyWithoutPortfolioInput = {
@@ -84150,54 +84195,9 @@ export namespace Prisma {
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
-    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
     employmentType?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type ClientSchemaUpdateWithoutPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    saturday?: NullableStringFieldUpdateOperationsInput | string | null
-    sunday?: NullableStringFieldUpdateOperationsInput | string | null
-    monday?: NullableStringFieldUpdateOperationsInput | string | null
-    tuesday?: NullableStringFieldUpdateOperationsInput | string | null
-    wednesday?: NullableStringFieldUpdateOperationsInput | string | null
-    thursday?: NullableStringFieldUpdateOperationsInput | string | null
-    friday?: NullableStringFieldUpdateOperationsInput | string | null
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    client?: ClientUpdateOneRequiredWithoutClientSchemaNestedInput
-  }
-
-  export type ClientSchemaUncheckedUpdateWithoutPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    clientId?: StringFieldUpdateOperationsInput | string
-    saturday?: NullableStringFieldUpdateOperationsInput | string | null
-    sunday?: NullableStringFieldUpdateOperationsInput | string | null
-    monday?: NullableStringFieldUpdateOperationsInput | string | null
-    tuesday?: NullableStringFieldUpdateOperationsInput | string | null
-    wednesday?: NullableStringFieldUpdateOperationsInput | string | null
-    thursday?: NullableStringFieldUpdateOperationsInput | string | null
-    friday?: NullableStringFieldUpdateOperationsInput | string | null
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type ClientSchemaUncheckedUpdateManyWithoutPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    clientId?: StringFieldUpdateOperationsInput | string
-    saturday?: NullableStringFieldUpdateOperationsInput | string | null
-    sunday?: NullableStringFieldUpdateOperationsInput | string | null
-    monday?: NullableStringFieldUpdateOperationsInput | string | null
-    tuesday?: NullableStringFieldUpdateOperationsInput | string | null
-    wednesday?: NullableStringFieldUpdateOperationsInput | string | null
-    thursday?: NullableStringFieldUpdateOperationsInput | string | null
-    friday?: NullableStringFieldUpdateOperationsInput | string | null
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ClientTaskCreateManyTaskInput = {
@@ -84457,7 +84457,6 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -84465,7 +84464,6 @@ export namespace Prisma {
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     contentCycleId?: string | null
     contentRequestId?: string | null
@@ -84474,8 +84472,10 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type IncomeTransactionUpdateWithoutServiceAgreementInput = {
@@ -84539,23 +84539,23 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
-    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
     contentCycle?: ContentCycleUpdateOneWithoutTasksNestedInput
     contentRequest?: ContentRequestUpdateOneWithoutTasksNestedInput
@@ -84571,7 +84571,6 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -84579,7 +84578,6 @@ export namespace Prisma {
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     contentCycleId?: NullableStringFieldUpdateOperationsInput | string | null
     contentRequestId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -84588,11 +84586,13 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
-    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
   }
 
   export type TaskUncheckedUpdateManyWithoutAgreementInput = {
@@ -84603,7 +84603,6 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -84611,7 +84610,6 @@ export namespace Prisma {
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     contentCycleId?: NullableStringFieldUpdateOperationsInput | string | null
     contentRequestId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -84620,8 +84618,10 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ExpenseTransactionCreateManyExpenseServiceAgreementInput = {
@@ -84937,7 +84937,6 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -84945,7 +84944,6 @@ export namespace Prisma {
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     agreementId?: string | null
     contentCycleId?: string | null
@@ -84954,8 +84952,10 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type IncomeServiceAgreementUpdateWithoutProjectInput = {
@@ -85131,23 +85131,23 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
-    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
     user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
     contentCycle?: ContentCycleUpdateOneWithoutTasksNestedInput
@@ -85163,7 +85163,6 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -85171,7 +85170,6 @@ export namespace Prisma {
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     agreementId?: NullableStringFieldUpdateOperationsInput | string | null
     contentCycleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -85180,11 +85178,13 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
-    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
   }
 
   export type TaskUncheckedUpdateManyWithoutProjectInput = {
@@ -85195,7 +85195,6 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -85203,7 +85202,6 @@ export namespace Prisma {
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     agreementId?: NullableStringFieldUpdateOperationsInput | string | null
     contentCycleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -85212,8 +85210,10 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ClientInstallmentCreateManyContractInput = {
@@ -85335,7 +85335,6 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -85343,7 +85342,6 @@ export namespace Prisma {
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     agreementId?: string | null
     contentCycleId?: string | null
@@ -85352,8 +85350,10 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ContentRequestAssigneeUpdateWithoutContentRequestInput = {
@@ -85385,23 +85385,23 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
-    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
     user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
     contentCycle?: ContentCycleUpdateOneWithoutTasksNestedInput
@@ -85417,7 +85417,6 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -85425,7 +85424,6 @@ export namespace Prisma {
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     agreementId?: NullableStringFieldUpdateOperationsInput | string | null
     contentCycleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -85434,11 +85432,13 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
-    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
   }
 
   export type TaskUncheckedUpdateManyWithoutContentRequestInput = {
@@ -85449,7 +85449,6 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -85457,7 +85456,6 @@ export namespace Prisma {
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     agreementId?: NullableStringFieldUpdateOperationsInput | string | null
     contentCycleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -85466,8 +85464,10 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ContentCycleCreateManyScheduleInput = {
@@ -85614,7 +85614,6 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -85622,7 +85621,6 @@ export namespace Prisma {
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     agreementId?: string | null
     contentRequestId?: string | null
@@ -85631,8 +85629,10 @@ export namespace Prisma {
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
     workflowStepId?: string | null
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type TaskUpdateWithoutContentCycleInput = {
@@ -85643,23 +85643,23 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
-    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
     user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
     contentRequest?: ContentRequestUpdateOneWithoutTasksNestedInput
@@ -85675,7 +85675,6 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -85683,7 +85682,6 @@ export namespace Prisma {
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     agreementId?: NullableStringFieldUpdateOperationsInput | string | null
     contentRequestId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -85692,11 +85690,13 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
-    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
   }
 
   export type TaskUncheckedUpdateManyWithoutContentCycleInput = {
@@ -85707,7 +85707,6 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -85715,7 +85714,6 @@ export namespace Prisma {
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     agreementId?: NullableStringFieldUpdateOperationsInput | string | null
     contentRequestId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -85724,8 +85722,10 @@ export namespace Prisma {
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
     workflowStepId?: NullableStringFieldUpdateOperationsInput | string | null
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type RecurringScheduleStepCreateManyTemplateInput = {
@@ -85848,7 +85848,6 @@ export namespace Prisma {
     priority?: $Enums.TaskPriority
     department: string
     deadline?: Date | string | null
-    originalDeadline?: Date | string | null
     extraTimeMinutes?: number
     completedAt?: Date | string | null
     progressUpdatedAt?: Date | string | null
@@ -85856,7 +85855,6 @@ export namespace Prisma {
     progress?: number
     supervisor?: string
     serviceInformation?: string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: boolean
     agreementId?: string | null
     contentCycleId?: string | null
@@ -85865,8 +85863,10 @@ export namespace Prisma {
     sortOrder?: number
     updatedAt?: Date | string | null
     workflowStage?: $Enums.WorkflowStage
-    startDate?: Date | string | null
+    originalDeadline?: Date | string | null
     transferredFromProgress?: number
+    startDate?: Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type TaskUpdateWithoutWorkflowStepInput = {
@@ -85877,23 +85877,23 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskUpdateManyWithoutTaskNestedInput
-    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUpdateOneWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUpdateManyWithoutTaskNestedInput
     agreement?: IncomeServiceAgreementUpdateOneWithoutTasksNestedInput
     user?: StaffUpdateOneRequiredWithoutAssignedTasksNestedInput
     contentCycle?: ContentCycleUpdateOneWithoutTasksNestedInput
@@ -85909,7 +85909,6 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -85917,7 +85916,6 @@ export namespace Prisma {
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     agreementId?: NullableStringFieldUpdateOperationsInput | string | null
     contentCycleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -85926,11 +85924,13 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
     clientTask?: ClientTaskUncheckedUpdateManyWithoutTaskNestedInput
-    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
     recurringOccurrence?: RecurringTaskOccurrenceUncheckedUpdateOneWithoutTaskNestedInput
+    transferHistory?: TaskTransferHistoryUncheckedUpdateManyWithoutTaskNestedInput
   }
 
   export type TaskUncheckedUpdateManyWithoutWorkflowStepInput = {
@@ -85941,7 +85941,6 @@ export namespace Prisma {
     priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     department?: StringFieldUpdateOperationsInput | string
     deadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     extraTimeMinutes?: IntFieldUpdateOperationsInput | number
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     progressUpdatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -85949,7 +85948,6 @@ export namespace Prisma {
     progress?: IntFieldUpdateOperationsInput | number
     supervisor?: StringFieldUpdateOperationsInput | string
     serviceInformation?: NullableStringFieldUpdateOperationsInput | string | null
-    features?: NullableJsonNullValueInput | InputJsonValue
     isPersonal?: BoolFieldUpdateOperationsInput | boolean
     agreementId?: NullableStringFieldUpdateOperationsInput | string | null
     contentCycleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -85958,8 +85956,10 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     workflowStage?: EnumWorkflowStageFieldUpdateOperationsInput | $Enums.WorkflowStage
-    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    originalDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredFromProgress?: IntFieldUpdateOperationsInput | number
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    features?: NullableJsonNullValueInput | InputJsonValue
   }
 
 

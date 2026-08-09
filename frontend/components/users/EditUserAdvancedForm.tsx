@@ -163,10 +163,10 @@ export default function EditUserAdvancedForm({ data }: Props) {
             if (banExpires) {
               toast.success(
                 "Sucessfully Banned " +
-                  data?.name +
-                  "For" +
-                  formData.banExpires +
-                  `${(formData.banExpires?.length ?? 0 > 1) ? " Days" : " Day"}`,
+                data?.name +
+                "For" +
+                formData.banExpires +
+                `${(formData.banExpires?.length ?? 0 > 1) ? " Days" : " Day"}`,
               );
             } else {
               toast.success("Succesfully Banned " + data?.name + " Forever");

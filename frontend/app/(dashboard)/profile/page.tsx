@@ -6,6 +6,7 @@ import {
   saveUserFiles,
   deleteUserFileById,
   updateUserData,
+  getUserById,
 } from "@/lib/apis/userApi";
 import ConfirmDialog from "@/components/Shared/ConfirmDialog";
 import { getTaskFormBranchOptions } from "@/lib/apis/sharedApi";
@@ -88,13 +89,20 @@ function getInitials(name?: string) {
 
 export default function ProfilePage() {
   const session = authClient.useSession();
-  const user = session.data?.user as any;
+  const sessionUser = session.data?.user as any;
   const { mutate } = useSWRConfig();
+
+  const { data: userDetailsRes } = useSWR(
+    sessionUser?.id ? ["user-profile-details", sessionUser.id] : null,
+    () => getUserById(sessionUser.id),
+  );
+
+  const user = userDetailsRes?.data ?? sessionUser;
 
   const [isEditing, setIsEditing] = useState(false);
   const [nameVal, setNameVal] = useState("");
   const [emailVal, setEmailVal] = useState("");
-  const [departmentVal, setDepartmentVal] = useState("");
+  const [jobTitleVal, setJobTitleVal] = useState("");
   const [roleVal, setRoleVal] = useState("");
   const [portfolioVal, setPortfolioVal] = useState("");
 
@@ -137,7 +145,7 @@ export default function ProfilePage() {
     if (user) {
       setNameVal(user.name || "");
       setEmailVal(user.email || "");
-      setDepartmentVal(user.department || "");
+      setJobTitleVal(user.jobTitle || "");
       setRoleVal(user.role || "staff");
       setPortfolioVal(user.portfolioId || "");
     }
@@ -177,6 +185,9 @@ export default function ProfilePage() {
           await session.refetch();
         }
         mutate(["user-session"]);
+        if (sessionUser?.id) {
+          mutate(["user-profile-details", sessionUser.id]);
+        }
         window.dispatchEvent(new Event("user-profile-updated"));
       } else {
         toast.error("Failed to update profile picture. Try again.");
@@ -203,6 +214,9 @@ export default function ProfilePage() {
           await session.refetch();
         }
         mutate(["user-session"]);
+        if (sessionUser?.id) {
+          mutate(["user-profile-details", sessionUser.id]);
+        }
         window.dispatchEvent(new Event("user-profile-updated"));
       } else {
         toast.error("Failed to remove profile picture. Try again.");
@@ -258,8 +272,8 @@ export default function ProfilePage() {
       if (nameVal.trim() && nameVal.trim() !== user.name) {
         payload.name = nameVal.trim();
       }
-      if (departmentVal !== (user.department || "")) {
-        payload.department = departmentVal;
+      if (jobTitleVal !== (user.jobTitle || "")) {
+        payload.jobTitle = jobTitleVal;
       }
       if (isAdmin) {
         if (emailVal.trim() && emailVal.trim() !== user.email) {
@@ -279,6 +293,10 @@ export default function ProfilePage() {
           toast.success("Profile updated successfully!");
           if (session.refetch) {
             await session.refetch();
+          }
+          mutate(["user-session"]);
+          if (sessionUser?.id) {
+            mutate(["user-profile-details", sessionUser.id]);
           }
           window.dispatchEvent(new Event("user-profile-updated"));
         } else {
@@ -552,16 +570,16 @@ export default function ProfilePage() {
                     )}
                   </div>
 
-                  {/* Department */}
+                  {/* Job Title */}
                   <div>
                     <label className="mb-1 block text-xs font-bold text-zinc-700">
-                      Department
+                      Job Title
                     </label>
                     <input
                       type="text"
-                      value={departmentVal}
-                      onChange={(e) => setDepartmentVal(e.target.value)}
-                      placeholder="Department"
+                      value={jobTitleVal}
+                      onChange={(e) => setJobTitleVal(e.target.value)}
+                      placeholder="Job Title"
                       className="h-10 w-full rounded-xl border border-zinc-200 bg-white px-3.5 text-sm font-medium outline-none focus:border-primary"
                     />
                   </div>
@@ -858,6 +876,15 @@ export default function ProfilePage() {
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   <div className="rounded-2xl border border-zinc-100 bg-zinc-50/60 p-4">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                      Staff ID
+                    </p>
+                    <p className="mt-1.5 truncate text-base font-semibold text-primary">
+                      {user.staffCode || "N/A"}
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-zinc-100 bg-zinc-50/60 p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
                       Full Name
                     </p>
                     <p className="mt-1.5 truncate text-sm font-bold text-slate-800">
@@ -894,10 +921,10 @@ export default function ProfilePage() {
 
                   <div className="rounded-2xl border border-zinc-100 bg-zinc-50/60 p-4">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                      Department
+                      Job Title
                     </p>
                     <p className="mt-1.5 truncate text-sm font-bold text-slate-800">
-                      {user.department || "N/A"}
+                      {user.jobTitle || "N/A"}
                     </p>
                   </div>
 
@@ -910,14 +937,8 @@ export default function ProfilePage() {
                     </p>
                   </div>
 
-                  <div className="rounded-2xl border border-zinc-100 bg-zinc-50/60 p-4">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                      User ID
-                    </p>
-                    <p className="mt-1.5 truncate text-xs font-mono font-bold text-slate-700">
-                      {user.id}
-                    </p>
-                  </div>
+                  
+
 
                   <div className="rounded-2xl border border-zinc-100 bg-zinc-50/60 p-4">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">

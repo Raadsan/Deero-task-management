@@ -7,6 +7,27 @@ import {
 } from "../lib/portfolio-logo.js";
 import { branchListWhere, canManageBranches, clearMainBranchCache, denyIfOutOfScope, getScope } from "../lib/portfolio-scope.js";
 
+// In-memory cache to reduce DB hits on every page load
+const brandingCache = new Map();
+const BRANDING_CACHE_MS = 60_000; // 60 seconds
+
+function getBrandingCached(key) {
+  const entry = brandingCache.get(key);
+  if (entry && Date.now() - entry.createdAt < BRANDING_CACHE_MS) return entry.data;
+  return null;
+}
+
+function setBrandingCached(key, data) {
+  brandingCache.set(key, { createdAt: Date.now(), data });
+  if (brandingCache.size > 500) {
+    brandingCache.delete(brandingCache.keys().next().value);
+  }
+}
+
+export function clearBrandingCache() {
+  brandingCache.clear();
+}
+
 const publicBranchSelect = {
   id: true,
   name: true,
@@ -224,6 +245,9 @@ export const getPublicPortfolioBySlug = async (req, res) => {
 
 export const getRootLoginPortfolioBranding = async (req, res) => {
   try {
+    const cached = getBrandingCached("root-login");
+    if (cached) return res.json({ success: true, data: cached });
+
     const portfolio = await prisma.portfolio.findFirst({
       where: {
         isActive: true,
@@ -234,6 +258,7 @@ export const getRootLoginPortfolioBranding = async (req, res) => {
     if (!portfolio) {
       return res.status(404).json({ success: false, message: "Root login portfolio not found" });
     }
+    setBrandingCached("root-login", portfolio);
     res.json({ success: true, data: portfolio });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -246,6 +271,9 @@ export const getMainBranchBranding = getRootLoginPortfolioBranding;
 export const getPortfolioBrandingById = async (req, res) => {
   const { id } = req.params;
   try {
+    const cached = getBrandingCached(`branding:${id}`);
+    if (cached) return res.json({ success: true, data: cached });
+
     const portfolio = await prisma.portfolio.findUnique({
       where: { id },
       select: publicBranchSelect,
@@ -253,6 +281,7 @@ export const getPortfolioBrandingById = async (req, res) => {
     if (!portfolio) {
       return res.status(404).json({ success: false, message: "Portfolio not found" });
     }
+    setBrandingCached(`branding:${id}`, portfolio);
     res.json({ success: true, data: portfolio });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });

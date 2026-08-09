@@ -149,9 +149,9 @@ exports.Prisma.StaffScalarFieldEnum = {
   banReason: 'banReason',
   banExpires: 'banExpires',
   portfolioId: 'portfolioId',
-  staffCode: 'staffCode',
+  employmentType: 'employmentType',
   jobTitle: 'jobTitle',
-  employmentType: 'employmentType'
+  staffCode: 'staffCode'
 };
 
 exports.Prisma.SessionScalarFieldEnum = {
@@ -293,7 +293,6 @@ exports.Prisma.TaskScalarFieldEnum = {
   priority: 'priority',
   department: 'department',
   deadline: 'deadline',
-  originalDeadline: 'originalDeadline',
   extraTimeMinutes: 'extraTimeMinutes',
   completedAt: 'completedAt',
   progressUpdatedAt: 'progressUpdatedAt',
@@ -301,7 +300,6 @@ exports.Prisma.TaskScalarFieldEnum = {
   progress: 'progress',
   supervisor: 'supervisor',
   serviceInformation: 'serviceInformation',
-  features: 'features',
   isPersonal: 'isPersonal',
   agreementId: 'agreementId',
   contentCycleId: 'contentCycleId',
@@ -311,8 +309,10 @@ exports.Prisma.TaskScalarFieldEnum = {
   updatedAt: 'updatedAt',
   workflowStage: 'workflowStage',
   workflowStepId: 'workflowStepId',
+  originalDeadline: 'originalDeadline',
+  transferredFromProgress: 'transferredFromProgress',
   startDate: 'startDate',
-  transferredFromProgress: 'transferredFromProgress'
+  features: 'features'
 };
 
 exports.Prisma.TaskTransferHistoryScalarFieldEnum = {

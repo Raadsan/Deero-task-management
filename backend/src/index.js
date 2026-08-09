@@ -27,8 +27,7 @@
 // app.use(express.json());
 
 // // Better Auth integration
-// app.all("/api/auth/*", toNodeHandler(auth));
-
+// const authHandler = toNodeHandler(auth);
 // // Routes
 // app.use("/api/staffs", userRoutes);
 // app.use("/api/auth-custom", authRoutes);
@@ -54,6 +53,7 @@
 
 
 import dotenv from "dotenv";
+import { createHash } from "crypto";
 dotenv.config();
 
 const isProduction = process.env.NODE_ENV === "production";
@@ -118,12 +118,50 @@ app.use(cors({
   credentials: true
 }));
 
-app.use(express.json({ limit: "5mb" }));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
-app.all("/api/auth/*", toNodeHandler(auth));
+// Session-level in-memory cache to avoid DB hits on every SSR page load
+const sessionCache = new Map();
+const SESSION_CACHE_MS = 5000; // 5 seconds
+
+app.get("/api/auth/get-session", (req, res, next) => {
+  const cookieHeader = req.headers.cookie || "";
+  if (!cookieHeader) return next();
+
+  const cacheKey = createHash("sha256").update(cookieHeader).digest("hex");
+  const cached = sessionCache.get(cacheKey);
+  if (cached && Date.now() - cached.createdAt < SESSION_CACHE_MS) {
+    res.set("X-Session-Cache", "HIT");
+    return res.json(cached.data);
+  }
+
+  const originalJson = res.json.bind(res);
+  res.json = (body) => {
+    if (res.statusCode < 400 && body) {
+      sessionCache.set(cacheKey, { createdAt: Date.now(), data: body });
+      if (sessionCache.size > 200) {
+        sessionCache.delete(sessionCache.keys().next().value);
+      }
+    }
+    return originalJson(body);
+  };
+  next();
+});
+
+const authHandler = toNodeHandler(auth);
+app.all("/api/auth/*", (req, res, next) => {
+  void authHandler(req, res)
+    .then(() => {
+      // Better Auth can write a successful response without ending the
+      // chunked stream when hosted by Express. Close it explicitly.
+      if (!res.writableEnded) res.end();
+    })
+    .catch(next);
+});
 
 app.use("/api/staffs", attachSessionScope, staffRoutes);
 app.use("/api/auth-custom", authRoutes);
@@ -160,7 +198,7 @@ setTimeout(runOverdueSync, 30_000);
 setInterval(runOverdueSync, 5 * 60 * 1000);
 
 // 👇 muhiim
-app.listen(port, "0.0.0.0", async () => {
+app.listen(port, async () => {
   console.log(`Server is running on port ${port}`);
   try {
     const { ensureDefaultMenusOnStartup } = await import(
