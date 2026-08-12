@@ -24,6 +24,21 @@ function forwardWithPathname(request: NextRequest, pathName: string) {
 export async function middleware(request: NextRequest) {
   const pathName = request.nextUrl.pathname;
 
+  // --- Guard: clear cookies if total cookie header is too large (HTTP 431 prevention) ---
+  const cookieHeader = request.headers.get("cookie") ?? "";
+  if (cookieHeader.length > 8000) {
+    // Cookies are bloated (stale BetterAuth cache cookies). Clear everything and send to login.
+    const clearResponse = NextResponse.redirect(new URL(LOGIN_PATH, request.url));
+    request.cookies.getAll().forEach((cookie) => {
+      clearResponse.cookies.set(cookie.name, "", {
+        maxAge: 0,
+        path: "/",
+        expires: new Date(0),
+      });
+    });
+    return clearResponse;
+  }
+
   if (pathName === "/notification" || pathName === "/notification/") {
     return NextResponse.redirect(new URL("/notifications", request.url));
   }

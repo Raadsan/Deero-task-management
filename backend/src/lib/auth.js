@@ -95,15 +95,7 @@ export const auth = betterAuth({
   session: {
     expiresIn: 8 * 60 * 60, // 8 hours
     updateAge: 60 * 60, // refresh session age every 1 hour when active
-    dontRememberMaxAge: 8 * 60 * 60, // persistent cookie attribute (8 hours)
-    cookieCache: {
-      enabled: true,
-      maxAge: 8 * 60 * 60, // 8 hours
-    },
-    cookie: {
-      sameSite: "lax",
-      maxAge: 8 * 60 * 60, // 8 hours
-    },
+    dontRememberMaxAge: 8 * 60 * 60, // persistent cookie (8 hours)
   },
   advanced: {
     defaultCookieAttributes: {
