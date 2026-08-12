@@ -140,7 +140,7 @@ model Client {
   serviceAgreements  IncomeServiceAgreement[]
   clientService      ClientService[]
   installments       ClientInstallment[]
-  clientSchema       ClientSchema?
+
   accountManager     Staff?                   @relation("ClientAccountManager", fields: [accountManagerId], references: [id])
   portfolio          Portfolio?               @relation(fields: [portfolioId], references: [id], map: "clients_branchId_fkey")
   clientTask         ClientTask[]
@@ -214,7 +214,7 @@ model Portfolio {
   iconLogoUrl        String?
   slugClearedOnce    Boolean             @default(false)
   usesRootLogin      Boolean             @default(false)
-  clientSchemas      ClientSchema[]
+
   clients            Client[]
   contentRequests    ContentRequest[]
   contracts          Contract[]
@@ -226,27 +226,7 @@ model Portfolio {
   @@map("portfolios")
 }
 
-model ClientSchema {
-  id          String     @id @default(uuid())
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  clientId    String     @unique
-  portfolioId String?
-  saturday    String?    @db.Text
-  sunday      String?    @db.Text
-  monday      String?    @db.Text
-  tuesday     String?    @db.Text
-  wednesday   String?    @db.Text
-  thursday    String?    @db.Text
-  friday      String?    @db.Text
-  notes       String?    @db.Text
-  client      Client     @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  portfolio   Portfolio? @relation(fields: [portfolioId], references: [id])
 
-  @@index([clientId])
-  @@index([portfolioId])
-  @@map("client_schemas")
-}
 
 model ClientSubService {
   subServiceId String
@@ -811,23 +791,26 @@ model RecurringSchedule {
 
 /// Day-of-week steps inside a recurring schedule (e.g. Monday = shoot, Tuesday = edit)
 model RecurringScheduleStep {
-  id           String                    @id @default(uuid())
-  createdAt    DateTime                  @default(now())
-  scheduleId   String
-  dayOfWeek    Int?
-  dayOfMonth   Int?
-  stepOrder    Int                       @default(0)
-  label        String
-  contentType  ContentType?
-  department   String?
-  templateId   String?
-  assigneeId   String?
-  intervalDays Int?
-  supervisor   String                    @default("")
-  assignee     Staff?                    @relation("RecurringStepAssignee", fields: [assigneeId], references: [id])
-  schedule     RecurringSchedule         @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
-  template     WorkflowTemplate?         @relation(fields: [templateId], references: [id])
-  occurrences  RecurringTaskOccurrence[]
+  id             String                    @id @default(uuid())
+  createdAt      DateTime                  @default(now())
+  scheduleId     String
+  dayOfWeek      Int?
+  dayOfMonth     Int?
+  stepOrder      Int                       @default(0)
+  label          String
+  contentType    ContentType?
+  department     String?
+  templateId     String?
+  assigneeId     String?
+  assigneeIds    Json?
+  startHour      String?                   @default("09:00")
+  estimatedHours Float?                    @default(2)
+  intervalDays   Int?
+  supervisor     String                    @default("")
+  assignee       Staff?                    @relation("RecurringStepAssignee", fields: [assigneeId], references: [id])
+  schedule       RecurringSchedule         @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  template       WorkflowTemplate?         @relation(fields: [templateId], references: [id])
+  occurrences    RecurringTaskOccurrence[]
 
   @@index([scheduleId])
   @@index([assigneeId])

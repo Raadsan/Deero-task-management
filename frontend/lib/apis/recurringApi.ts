@@ -18,6 +18,9 @@ export type RecurringScheduleStep = {
   department?: string | null;
   supervisor?: string;
   assigneeId?: string | null;
+  assigneeIds?: string[] | null;
+  startHour?: string | null;
+  estimatedHours?: number | null;
 };
 
 export type RecurringScheduleRecord = {

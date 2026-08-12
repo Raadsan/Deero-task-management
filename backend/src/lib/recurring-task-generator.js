@@ -105,71 +105,99 @@ async function createOccurrenceTask(tx, { step, schedule, client, assigneeId, ru
   });
   if (existing) return { skipped: true, reason: "already_exists", occurrence: existing };
 
-  const resolvedAssignee = await resolveWorkflowAssignee(
-    {
-      assigneeId: step.assigneeId ?? assigneeId,
-      accountManagerId: client.accountManagerId,
-    },
-    tx,
-  );
-  if (!resolvedAssignee) {
+  // Calculate startDate from step.startHour (default "09:00")
+  const startHourStr = step.startHour || "09:00";
+  const [hoursStr, minsStr] = String(startHourStr).split(":");
+  const taskStartDate = new Date(scheduledDate);
+  taskStartDate.setHours(Number(hoursStr) || 9, Number(minsStr) || 0, 0, 0);
+
+  // Calculate deadline from estimatedHours (default 2 hours)
+  const estHours = Math.max(0.5, Number(step.estimatedHours) || 2);
+  const taskDeadline = new Date(taskStartDate.getTime() + estHours * 60 * 60 * 1000);
+
+  // Determine assignees (single or multiple)
+  let rawAssignees = Array.isArray(step.assigneeIds) && step.assigneeIds.length > 0
+    ? step.assigneeIds
+    : [step.assigneeId ?? assigneeId].filter(Boolean);
+
+  if (!rawAssignees.length && client.accountManagerId) {
+    rawAssignees = [client.accountManagerId];
+  }
+
+  if (!rawAssignees.length) {
     return { skipped: true, reason: "no_assignee" };
   }
 
-  const assignee = await tx.user.findUnique({
-    where: { id: resolvedAssignee },
-    select: { id: true, name: true },
-  });
-
   const dateLabel = formatDisplayDate(scheduledDate);
   const taskTitle = `Today's ${step.label}`;
-  const taskId = await generateCustomId({ entityTybe: "tasks", prisma: tx });
 
-  const task = await tx.task.create({
-    data: {
-      id: taskId,
-      description: taskTitle,
-      status: "pending",
-      priority: "normal",
-      department: step.department || "General",
-      deadline: endOfDay(scheduledDate),
-      progress: 0,
-      workflowStage: "pending",
-      sortOrder: step.stepOrder,
-      assgineeId: resolvedAssignee,
-      supervisor: step.supervisor ?? "",
-      serviceInformation: `${client.institution} — ${schedule.name} (${dateLabel})`,
-      isPersonal: false,
-    },
-  });
+  let createdPrimaryTask = null;
+  let primaryOccurrence = null;
 
-  await tx.clientTask.create({
-    data: { clientId: client.id, taskId: task.id },
-  });
-
-  const occurrence = await tx.recurringTaskOccurrence.create({
-    data: {
-      scheduleStepId: step.id,
-      scheduledDate,
-      taskId: task.id,
-    },
-    include: { task: true },
-  });
-
-  try {
-    await createNotification({
-      taskId: task.id,
-      taskName: taskTitle,
-      assigneeName: assignee?.name ?? "",
-      deadline: task.deadline,
-      type: "new-assignment",
-      userId: resolvedAssignee,
+  for (let idx = 0; idx < rawAssignees.length; idx++) {
+    const targetAssigneeId = rawAssignees[idx];
+    const assignee = await tx.staff.findUnique({
+      where: { id: targetAssigneeId },
+      select: { id: true, name: true },
     });
-  } catch (err) {
-    console.error("Failed to notify assignee for recurring task:", err);
+    if (!assignee) continue;
+
+    const taskId = await generateCustomId({ entityTybe: "tasks", prisma: tx });
+    const task = await tx.task.create({
+      data: {
+        id: taskId,
+        description: taskTitle,
+        status: "pending",
+        priority: "normal",
+        department: step.department || "General",
+        startDate: taskStartDate,
+        deadline: taskDeadline,
+        originalDeadline: taskDeadline,
+        progress: 0,
+        workflowStage: "pending",
+        sortOrder: step.stepOrder,
+        assgineeId: targetAssigneeId,
+        supervisor: step.supervisor ?? "",
+        serviceInformation: `${client.institution} - ${step.label}`,
+        isPersonal: false,
+      },
+    });
+
+    await tx.clientTask.create({
+      data: { clientId: client.id, taskId: task.id },
+    });
+
+    if (idx === 0) {
+      createdPrimaryTask = task;
+      primaryOccurrence = await tx.recurringTaskOccurrence.create({
+        data: {
+          scheduleStepId: step.id,
+          scheduledDate,
+          taskId: task.id,
+        },
+        include: { task: true },
+      });
+    }
+
+    try {
+      await createNotification({
+        taskId: task.id,
+        taskName: taskTitle,
+        assigneeName: assignee.name ?? "",
+        deadline: task.deadline,
+        type: "new-assignment",
+        userId: targetAssigneeId,
+      });
+    } catch (err) {
+      console.error("Failed to notify assignee for recurring task:", err);
+    }
   }
 
-  return { skipped: false, occurrence, task };
+  if (!createdPrimaryTask) {
+    return { skipped: true, reason: "no_valid_assignees" };
+  }
+
+  return { skipped: false, occurrence: primaryOccurrence, task: createdPrimaryTask };
 }
 
 /**

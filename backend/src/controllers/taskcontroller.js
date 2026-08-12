@@ -87,14 +87,6 @@ export const getMyTasks = async (req, res) => {
     const now = new Date();
     const where = {
       assgineeId: userId,
-      AND: [
-        {
-          OR: [
-            { startDate: null },
-            { startDate: { lte: now } },
-          ],
-        },
-      ],
     };
 
     if (taskScope === "personal") {
@@ -540,6 +532,25 @@ export const updateTask = async (req, res) => {
 
       if (t.id === id) {
         mainUpdatedTask = updated;
+      }
+
+      if (t.status !== normalized.status) {
+        try {
+          const notifId = Math.random().toString(36).substring(2, 15);
+          await prisma.$executeRawUnsafe(
+            `INSERT INTO notifications (id, taskId, taskName, assigneeName, deadline, type, userId, isSeen) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            notifId,
+            updated.id,
+            `${(updated.serviceInformation || updated.description || "Task").substring(0, 50)} (${normalized.status.replace("_", " ")})`,
+            updated.user?.name || "User",
+            updated.deadline || new Date(),
+            normalized.status === "in_progress" ? "status-in_progress" : "status-update",
+            updated.assgineeId,
+            0,
+          );
+        } catch (err) {
+          console.error("Failed to create status notification:", err);
+        }
       }
     }
 

@@ -55,8 +55,9 @@ export default function MyTasksManagementPage() {
     {
       fallbackData: [],
       revalidateOnMount: true,
-      revalidateOnFocus: false,
+      revalidateOnFocus: true,
       dedupingInterval: 0,
+      refreshInterval: 3000,
     },
   );
   const { mutate } = useSWRConfig();

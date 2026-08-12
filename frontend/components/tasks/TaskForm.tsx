@@ -460,13 +460,18 @@ export default function TaskForm({
       const isGeneral = createData.taskKind === "general";
       const targetAssignees = selectedAssigneeIds.length > 0 ? selectedAssigneeIds : [createData.assigneeId];
       setStartTransition(async () => {
-        const result = await createTask({
-          clientId: isGeneral ? undefined : createData.clientInstitutionId,
-          serviceInformation: isGeneral
+          const clientObj = branchClients.find((c) => String(c.id) === String(createData.clientInstitutionId));
+          const clientName = clientObj?.institution ?? "";
+          const taskOrService = createData.taskName
+            ? (createData.serviceInformation ? `${createData.serviceInformation} - ${createData.taskName}` : createData.taskName)
+            : (createData.serviceInformation || "");
+          const finalServiceInfo = isGeneral
             ? createData.taskName
-            : (createData.taskName
-                ? `${createData.serviceInformation} — ${createData.taskName}`
-                : createData.serviceInformation),
+            : (clientName ? `${clientName} - ${taskOrService}` : taskOrService);
+
+          const result = await createTask({
+            clientId: isGeneral ? undefined : createData.clientInstitutionId,
+            serviceInformation: finalServiceInfo,
           assgineeId: targetAssignees[0],
           assigneeIds: targetAssignees,
           description: createData.description,
@@ -752,7 +757,7 @@ export default function TaskForm({
           </div>
         )}
 
-        {isCreate && (
+        {isCreate && taskKind && (
           <TextInput
             labelId="taskName"
             labelText="Task Name"

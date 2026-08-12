@@ -20,6 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getClientsForForm, getClientById } from "@/lib/apis/clientApi";
+import { getAllUsers } from "@/lib/apis/userApi";
 import {
   createRecurringSchedule,
   CreateRecurringScheduleInput,
@@ -53,7 +54,7 @@ import {
   getTaskStatusBadgeClass,
 } from "@/lib/dashboard-ui";
 import { cn, formatDate } from "@/lib/utils";
-import { CalendarClock, Download, Edit, Eye, Play, Plus, Power, Printer, Search, Trash2 } from "lucide-react";
+import { CalendarClock, Download, Edit, Eye, Play, Plus, Power, Printer, Search, Trash2, Users, UserCheck, X } from "lucide-react";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import toast from "react-hot-toast";
 import useSWR, { useSWRConfig } from "swr";
@@ -99,6 +100,9 @@ type StepRow = {
   dayOfWeek: string;
   label: string;
   department: string;
+  assigneeId: string;
+  startHour: string;
+  estimatedHours: string;
 };
 
 function ScheduleFormModal({
@@ -123,12 +127,19 @@ function ScheduleFormModal({
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [autoGenerate, setAutoGenerate] = useState(true);
+  const [isActive, setIsActive] = useState(true);
+  const [globalAssigneeId, setGlobalAssigneeId] = useState("");
   const [steps, setSteps] = useState<StepRow[]>([
-    { dayOfWeek: "6", label: "", department: "" },
+    { dayOfWeek: "6", label: "", department: "", assigneeId: "", startHour: "09:00", estimatedHours: "2" },
   ]);
 
   const { data: clients = [] } = useSWR("recurring/clients", async () => {
     const result = await getClientsForForm();
+    return result.data ?? [];
+  });
+
+  const { data: staffList = [] } = useSWR("recurring/staffs", async () => {
+    const result = await getAllUsers();
     return result.data ?? [];
   });
 
@@ -148,17 +159,26 @@ function ScheduleFormModal({
         scheduleToEdit.endDate ? String(scheduleToEdit.endDate).slice(0, 10) : "",
       );
       setAutoGenerate(scheduleToEdit.autoGenerateTasks !== false);
+      setIsActive(scheduleToEdit.isActive !== false);
 
       if (scheduleToEdit.steps && scheduleToEdit.steps.length > 0) {
+        const firstAssigneeId = scheduleToEdit.steps[0]?.assigneeId
+          || (Array.isArray(scheduleToEdit.steps[0]?.assigneeIds) && scheduleToEdit.steps[0]?.assigneeIds?.[0])
+          || "";
+        setGlobalAssigneeId(String(firstAssigneeId));
         setSteps(
           scheduleToEdit.steps.map((st) => ({
             dayOfWeek: String(st.dayOfWeek ?? 6),
             label: st.label || "",
             department: st.department || "",
+            assigneeId: st.assigneeId || (Array.isArray(st.assigneeIds) && st.assigneeIds[0] ? st.assigneeIds[0] : ""),
+            startHour: st.startHour || "09:00",
+            estimatedHours: String(st.estimatedHours ?? 2),
           })),
         );
       } else {
-        setSteps([{ dayOfWeek: "6", label: "", department: "" }]);
+        setGlobalAssigneeId("");
+        setSteps([{ dayOfWeek: "6", label: "", department: "", assigneeId: "", startHour: "09:00", estimatedHours: "2" }]);
       }
     } else {
       resetForm();
@@ -192,11 +212,16 @@ function ScheduleFormModal({
             setRecurrenceType(client.schedule.recurrenceType);
           }
           if (client.schedule?.steps && client.schedule.steps.length > 0) {
+            const firstAid = client.schedule.steps[0]?.assigneeId || "";
+            setGlobalAssigneeId(String(firstAid));
             setSteps(
               client.schedule.steps.map((st: any) => ({
                 dayOfWeek: String(st.dayOfWeek ?? 6),
                 label: st.label || "",
                 department: st.department || "",
+                assigneeId: st.assigneeId || (Array.isArray(st.assigneeIds) && st.assigneeIds[0] ? st.assigneeIds[0] : ""),
+                startHour: st.startHour || "09:00",
+                estimatedHours: String(st.estimatedHours ?? 2),
               })),
             );
           }
@@ -208,14 +233,14 @@ function ScheduleFormModal({
   }, [clientId, isEdit]);
 
   function addStep() {
-    setSteps((prev) => [...prev, { dayOfWeek: "6", label: "", department: "" }]);
+    setSteps((prev) => [...prev, { dayOfWeek: "6", label: "", department: "", assigneeId: "", startHour: "09:00", estimatedHours: "2" }]);
   }
 
   function removeStep(idx: number) {
     setSteps((prev) => prev.filter((_, i) => i !== idx));
   }
 
-  function updateStep(idx: number, field: keyof StepRow, value: string) {
+  function updateStep<K extends keyof StepRow>(idx: number, field: K, value: StepRow[K]) {
     setSteps((prev) => prev.map((s, i) => (i === idx ? { ...s, [field]: value } : s)));
   }
 
@@ -227,7 +252,9 @@ function ScheduleFormModal({
     setStartDate("");
     setEndDate("");
     setAutoGenerate(true);
-    setSteps([{ dayOfWeek: "6", label: "", department: "" }]);
+    setIsActive(true);
+    setGlobalAssigneeId("");
+    setSteps([{ dayOfWeek: "6", label: "", department: "", assigneeId: "", startHour: "09:00", estimatedHours: "2" }]);
   }
 
   function handleSubmit() {
@@ -245,11 +272,15 @@ function ScheduleFormModal({
         startDate,
         endDate: endDate || undefined,
         autoGenerateTasks: autoGenerate,
+        isActive,
         steps: steps.map((s, i) => ({
           dayOfWeek: Number(s.dayOfWeek),
           stepOrder: i + 1,
           label: s.label.trim(),
           department: s.department || undefined,
+          assigneeId: s.assigneeId || globalAssigneeId || undefined,
+          startHour: s.startHour || "09:00",
+          estimatedHours: Number(s.estimatedHours) || 2,
         })),
       };
 
@@ -279,7 +310,7 @@ function ScheduleFormModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden border-zinc-200 bg-white p-0 sm:max-w-2xl">
+      <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden border-zinc-200 bg-white p-0 sm:max-w-5xl">
         <DialogHeader className="shrink-0 border-b border-zinc-100 px-6 py-4 text-left">
           <DialogTitle className="flex items-center gap-2 text-xl font-bold text-[#1e293b]">
             <CalendarClock className="h-5 w-5 text-primary" />
@@ -299,18 +330,17 @@ function ScheduleFormModal({
               <FieldLabel>Schedule name *</FieldLabel>
               <input
                 className={fieldInputClass}
+                placeholder="e.g. Weekly Content Plan"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Weekly Content Plan"
               />
             </div>
             <div>
               <FieldLabel>Client *</FieldLabel>
               <select
-                className={fieldSelectClass}
+                className={fieldInputClass}
                 value={clientId}
                 onChange={(e) => setClientId(e.target.value)}
-                disabled={isEdit}
               >
                 <option value="">Select client</option>
                 {clients.map((c) => (
@@ -323,13 +353,13 @@ function ScheduleFormModal({
             <div>
               <FieldLabel>Recurrence type</FieldLabel>
               <select
-                className={fieldSelectClass}
+                className={fieldInputClass}
                 value={recurrenceType}
                 onChange={(e) => setRecurrenceType(e.target.value)}
               >
-                {RECURRENCE_TYPE_OPTIONS.map((o) => (
-                  <option key={o.value} value={o.value}>
-                    {o.label}
+                {RECURRENCE_TYPE_OPTIONS.map((r) => (
+                  <option key={r.value} value={r.value}>
+                    {r.label}
                   </option>
                 ))}
               </select>
@@ -337,16 +367,16 @@ function ScheduleFormModal({
             <div>
               <FieldLabel>Content type</FieldLabel>
               <select
-                className={fieldSelectClass}
+                className={fieldInputClass}
                 value={contentType}
                 onChange={(e) => setContentType(e.target.value)}
               >
-                <option value="OTHER">Other</option>
-                <option value="SOCIAL_MEDIA">Social Media</option>
-                <option value="BLOG">Blog</option>
                 <option value="VIDEO">Video</option>
-                <option value="DESIGN">Design</option>
-                <option value="REPORTING">Reporting</option>
+                <option value="GRAPHIC_DESIGN">Graphic Design</option>
+                <option value="PHOTOGRAPHY">Photography</option>
+                <option value="SOCIAL_MEDIA_POST">Social Media Post</option>
+                <option value="MARKETING_CAMPAIGN">Marketing Campaign</option>
+                <option value="OTHER">Other</option>
               </select>
             </div>
             <div>
@@ -367,6 +397,17 @@ function ScheduleFormModal({
                 onChange={(e) => setEndDate(e.target.value)}
               />
             </div>
+            <div>
+              <FieldLabel>Status</FieldLabel>
+              <select
+                className={fieldInputClass}
+                value={isActive ? "active" : "paused"}
+                onChange={(e) => setIsActive(e.target.value === "active")}
+              >
+                <option value="active">Active (Running)</option>
+                <option value="paused">Paused (Inactive)</option>
+              </select>
+            </div>
           </div>
 
           <label className="flex cursor-pointer items-center gap-2 text-sm text-zinc-600">
@@ -378,6 +419,9 @@ function ScheduleFormModal({
             />
             Auto-generate tasks on scheduled days
           </label>
+
+          {/* Global Assignee Picker */}
+         
 
           {/* Steps */}
           <div>
@@ -393,53 +437,96 @@ function ScheduleFormModal({
               </button>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               {steps.map((step, idx) => (
                 <div
                   key={idx}
-                  className="grid grid-cols-[auto_1fr_1fr_auto] gap-2 rounded-lg border border-zinc-100 bg-zinc-50 p-3"
+                  className="space-y-2.5 rounded-lg border border-zinc-200 bg-zinc-50/70 p-3.5 shadow-sm"
                 >
-                  <div>
-                    <p className="mb-1 text-xs text-zinc-400">Day</p>
-                    <select
-                      className="h-8 cursor-pointer rounded-md border border-zinc-200 bg-white px-2 text-xs text-zinc-600 outline-none"
-                      value={step.dayOfWeek}
-                      onChange={(e) => updateStep(idx, "dayOfWeek", e.target.value)}
-                    >
-                      {WEEKDAY_OPTIONS.map((w) => (
-                        <option key={w.value} value={String(w.value)}>
-                          {w.label}
-                        </option>
-                      ))}
-                    </select>
+                  <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+                    <div>
+                      <p className="mb-1 text-xs font-medium text-zinc-500">Day</p>
+                      <select
+                        className="h-8 w-full cursor-pointer rounded-md border border-zinc-200 bg-white px-2 text-xs text-zinc-700 outline-none focus:border-primary"
+                        value={step.dayOfWeek}
+                        onChange={(e) => updateStep(idx, "dayOfWeek", e.target.value)}
+                      >
+                        {WEEKDAY_OPTIONS.map((w) => (
+                          <option key={w.value} value={String(w.value)}>
+                            {w.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <p className="mb-1 text-xs font-medium text-zinc-500">Step label *</p>
+                      <input
+                        className="h-8 w-full rounded-md border border-zinc-200 bg-white px-2 text-xs text-zinc-700 outline-none focus:border-primary"
+                        placeholder="e.g. Shoot videos"
+                        value={step.label}
+                        onChange={(e) => updateStep(idx, "label", e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <p className="mb-1 text-xs font-medium text-zinc-500">Department</p>
+                      <input
+                        className="h-8 w-full rounded-md border border-zinc-200 bg-white px-2 text-xs text-zinc-700 outline-none focus:border-primary"
+                        placeholder="Optional"
+                        value={step.department}
+                        onChange={(e) => updateStep(idx, "department", e.target.value)}
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <p className="mb-1 text-xs text-zinc-400">Step label *</p>
-                    <input
-                      className="h-8 w-full rounded-md border border-zinc-200 bg-white px-2 text-xs text-zinc-600 outline-none focus:border-primary"
-                      placeholder="e.g. Shoot videos"
-                      value={step.label}
-                      onChange={(e) => updateStep(idx, "label", e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <p className="mb-1 text-xs text-zinc-400">Department</p>
-                    <input
-                      className="h-8 w-full rounded-md border border-zinc-200 bg-white px-2 text-xs text-zinc-600 outline-none focus:border-primary"
-                      placeholder="Optional"
-                      value={step.department}
-                      onChange={(e) => updateStep(idx, "department", e.target.value)}
-                    />
-                  </div>
-                  <div className="flex items-end pb-0.5">
-                    <button
-                      type="button"
-                      disabled={steps.length === 1}
-                      onClick={() => removeStep(idx)}
-                      className="rounded p-1.5 text-zinc-400 hover:bg-rose-50 hover:text-rose-500 disabled:opacity-30"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
+
+                  {/* Assignee, Start Time & Duration row */}
+                  <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+                    <div>
+                      <p className="mb-1 text-xs font-medium text-zinc-500">Assigned Staff (for this day)</p>
+                      <select
+                        className="h-8 w-full cursor-pointer rounded-md border border-zinc-200 bg-white px-2 text-xs text-zinc-700 outline-none focus:border-primary"
+                        value={step.assigneeId || ""}
+                        onChange={(e) => updateStep(idx, "assigneeId", e.target.value)}
+                      >
+                        <option value="">Default (Global Staff)</option>
+                        {staffList.map((s: any) => (
+                          <option key={s.id} value={s.id}>
+                            {s.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <p className="mb-1 text-xs font-medium text-zinc-500">Start Time (Hour)</p>
+                      <input
+                        type="time"
+                        className="h-8 w-full rounded-md border border-zinc-200 bg-white px-2 text-xs text-zinc-700 outline-none focus:border-primary"
+                        value={step.startHour || "09:00"}
+                        onChange={(e) => updateStep(idx, "startHour", e.target.value)}
+                      />
+                    </div>
+                    <div className="flex items-end gap-2">
+                      <div className="flex-1">
+                        <p className="mb-1 text-xs font-medium text-zinc-500">Duration (Hours)</p>
+                        <input
+                          type="number"
+                          min="0.5"
+                          step="0.5"
+                          className="h-8 w-full rounded-md border border-zinc-200 bg-white px-2 text-xs text-zinc-700 outline-none focus:border-primary"
+                          placeholder="2"
+                          value={step.estimatedHours || "2"}
+                          onChange={(e) => updateStep(idx, "estimatedHours", e.target.value)}
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        disabled={steps.length === 1}
+                        onClick={() => removeStep(idx)}
+                        className="mb-0.5 rounded p-1.5 text-zinc-400 hover:bg-rose-50 hover:text-rose-500 disabled:opacity-30"
+                        title="Remove step"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -485,6 +572,7 @@ export default function RecurringSchedulesPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<RecurringScheduleRecord | null>(null);
   const [deletingSchedule, setDeletingSchedule] = useState<RecurringScheduleRecord | null>(null);
+  const [togglingSchedule, setTogglingSchedule] = useState<RecurringScheduleRecord | null>(null);
   const [taskModalOpen, setTaskModalOpen] = useState(false);
   const [taskModalInitialData, setTaskModalInitialData] = useState<any>(null);
 
@@ -516,6 +604,7 @@ export default function RecurringSchedulesPage() {
       if (!result.success) throw new Error(result.errors?.message ?? "Failed to load schedules");
       return result.data ?? [];
     },
+    { refreshInterval: 4000, revalidateOnFocus: true }
   );
 
   const { data: occurrences = [], isLoading: historyLoading } = useSWR(
@@ -525,6 +614,7 @@ export default function RecurringSchedulesPage() {
       if (!result.success) throw new Error(result.errors?.message ?? "Failed to load occurrences");
       return result.data ?? [];
     },
+    { refreshInterval: 4000, revalidateOnFocus: true }
   );
 
   const viewed = schedules.find((s) => s.id === viewId);
@@ -600,7 +690,7 @@ export default function RecurringSchedulesPage() {
 
     const getStepsForDay = (dayNum: number) => {
       const matches = (viewed.steps ?? []).filter((s) => s.dayOfWeek === dayNum);
-      if (matches.length === 0) return "—";
+      if (matches.length === 0) return "N/A";
       return matches.map((s) => s.label).join("<br/>");
     };
 
@@ -611,12 +701,13 @@ export default function RecurringSchedulesPage() {
           <title>${viewed.client?.institution || viewed.name} - Weekly Content Schedule</title>
           <style>
             body { font-family: system-ui, -apple-system, sans-serif; margin: 20px; color: #111; }
-            h2 { text-align: center; margin-bottom: 5px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; color: #881337; }
+            h2 { text-align: center; margin-bottom: 5px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; color: #1e293b; }
             p.sub { text-align: center; margin-top: 0; font-size: 13px; color: #666; margin-bottom: 25px; }
             table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-            th, td { border: 2px solid #991b1b; padding: 12px; text-align: center; font-size: 13px; }
-            th { background-color: #ffe4e6; color: #881337; font-weight: bold; }
-            .day-ar { font-size: 11px; display: block; opacity: 0.8; }
+            th, td { border: 1px solid #e2e8f0; padding: 12px; text-align: center; font-size: 13px; }
+            th { background-color: #f8fafc; color: #334155; font-weight: 600; }
+            td { color: #374151; }
+            .day-ar { font-size: 11px; display: block; opacity: 0.7; }
             @media print {
               body { margin: 0; }
               @page { size: landscape; margin: 15mm; }
@@ -776,21 +867,27 @@ export default function RecurringSchedulesPage() {
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
                         <span className={dashboardTextSecondary}>
-                          {formatDate(String(row.startDate))}
-                          {row.endDate ? ` to ${formatDate(String(row.endDate))}` : " to ongoing"}
+                          {new Date(row.startDate).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
+                          {row.endDate
+                            ? ` – ${new Date(row.endDate).toLocaleDateString("en-US", { month: "short", year: "numeric" })}`
+                            : " – ongoing"}
                         </span>
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
-                        <span
+                        <button
+                          type="button"
+                          title={row.isActive ? "Click to pause" : "Click to activate"}
+                          onClick={() => setTogglingSchedule(row)}
                           className={cn(
                             dashboardStatusBadgeClass,
+                            "cursor-pointer transition-opacity hover:opacity-80",
                             row.isActive
                               ? getTaskStatusBadgeClass("completed")
                               : getTaskStatusBadgeClass("pending"),
                           )}
                         >
                           {row.isActive ? "Active" : "Paused"}
-                        </span>
+                        </button>
                       </TableCell>
                       <TableCell className={cn(dashboardTableCellClass, "text-right")}>
                         <div className="flex justify-end gap-1">
@@ -877,7 +974,7 @@ export default function RecurringSchedulesPage() {
 
       {/* View / Table / History Modal */}
       <Dialog open={viewOpen} onOpenChange={setViewOpen}>
-        <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden border-zinc-200 bg-white p-0 sm:max-w-3xl">
+        <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden border-zinc-200 bg-white p-0 sm:max-w-5xl">
           <DialogHeader className="shrink-0 border-b border-zinc-100 px-6 py-4 text-left">
             <DialogTitle className="flex items-center gap-2 text-xl font-bold text-[#1e293b]">
               <CalendarClock className="h-5 w-5 text-primary" />
@@ -892,18 +989,12 @@ export default function RecurringSchedulesPage() {
             <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-5">
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-100 pb-3">
                 <div className="flex gap-2">
-                  {/* GENERATE TODAY'S TASKS (INSIDE VIEW MODAL) */}
-                  <Button size="sm" onClick={() => handleOpenGenerateTaskModal(viewed)}>
-                    <Play className="mr-2 h-4 w-4" />
-                    Generate today&apos;s tasks
-                  </Button>
-
                   {/* PAUSE / ACTIVATE SCHEDULE (INSIDE VIEW MODAL) */}
                   <Button
                     size="sm"
                     variant="outline"
                     disabled={pending}
-                    onClick={() => handleToggle(viewed.id)}
+                    onClick={() => setTogglingSchedule(viewed)}
                   >
                     <Power className="mr-1.5 h-4 w-4" />
                     {viewed.isActive ? "Pause schedule" : "Activate schedule"}
@@ -936,17 +1027,17 @@ export default function RecurringSchedulesPage() {
                 <h3 className="mb-2 text-sm font-bold text-zinc-800">Weekly Schedule Grid</h3>
                 <div className="overflow-x-auto rounded-lg border border-zinc-200 shadow-xs">
                   <table className="w-full border-collapse text-center text-sm">
-                    <thead>
-                      <tr className="border-b border-rose-200 bg-rose-100 text-rose-950">
+                    <thead className={dashboardTableHeaderClass}>
+                      <tr className={dashboardTableHeadRowClass}>
                         {WEEKDAYS_TABLE.map((day) => (
                           <th
                             key={day.dayNum}
-                            className="border-r border-rose-200 px-2 py-2.5 font-bold last:border-r-0"
+                            className={cn(dashboardTableHeadClass, "border-r border-rose-900/20 text-center last:border-r-0")}
                           >
-                            <div className="text-xs font-extrabold uppercase tracking-wider">
+                            <div className="text-xs font-extrabold uppercase tracking-wider text-white">
                               {day.labelEn}
                             </div>
-                            <div className="text-[11px] font-medium text-rose-800">
+                            <div className="text-[11px] font-medium text-white/80">
                               {day.labelAr}
                             </div>
                           </th>
@@ -962,21 +1053,21 @@ export default function RecurringSchedulesPage() {
                           return (
                             <td
                               key={day.dayNum}
-                              className="border-r border-zinc-200 p-3 align-top font-semibold text-zinc-800 last:border-r-0"
+                              className="border-r border-zinc-200 p-3 align-top text-zinc-700 last:border-r-0"
                             >
                               {matchingSteps.length > 0 ? (
                                 <div className="space-y-1.5">
                                   {matchingSteps.map((st) => (
                                     <span
                                       key={st.id}
-                                      className="inline-block rounded-md border border-rose-100 bg-rose-50/80 px-2 py-1 text-xs font-medium text-rose-900 shadow-2xs"
+                                      className="inline-block text-xs font-medium text-zinc-700"
                                     >
                                       {st.label}
                                     </span>
                                   ))}
                                 </div>
                               ) : (
-                                <span className="font-normal text-zinc-300">—</span>
+                                <span className="text-xs font-semibold text-zinc-400">N/A</span>
                               )}
                             </td>
                           );
@@ -998,23 +1089,32 @@ export default function RecurringSchedulesPage() {
                 ) : (
                   <div className={dashboardTableWrapClass}>
                     <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Date</TableHead>
-                          <TableHead>Step</TableHead>
-                          <TableHead>Task</TableHead>
-                          <TableHead>Assignee</TableHead>
-                          <TableHead>Status</TableHead>
+                      <TableHeader className={dashboardTableHeaderClass}>
+                        <TableRow className={dashboardTableHeadRowClass}>
+                          <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Date</TableHead>
+                          <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Step</TableHead>
+                          <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Task</TableHead>
+                          <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Assignee</TableHead>
+                          <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Status</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {occurrences.map((row) => (
-                          <TableRow key={row.id}>
-                            <TableCell>{formatDate(String(row.scheduledDate))}</TableCell>
-                            <TableCell>{row.scheduleStep?.label ?? "N/A"}</TableCell>
-                            <TableCell>{row.task?.description ?? "N/A"}</TableCell>
-                            <TableCell>{row.task?.user?.name ?? "N/A"}</TableCell>
-                            <TableCell>{row.task?.status ?? "N/A"}</TableCell>
+                          <TableRow key={row.id} className={dashboardTableBodyRowClass}>
+                            <TableCell className={dashboardTableCellClass}>{formatDate(String(row.scheduledDate))}</TableCell>
+                            <TableCell className={dashboardTableCellClass}>{row.scheduleStep?.label ?? "N/A"}</TableCell>
+                            <TableCell className={dashboardTableCellClass}>{row.task?.description ?? "N/A"}</TableCell>
+                            <TableCell className={dashboardTableCellClass}>{row.task?.user?.name ?? "N/A"}</TableCell>
+                            <TableCell className={dashboardTableCellClass}>
+                              <span
+                                className={cn(
+                                  dashboardStatusBadgeClass,
+                                  getTaskStatusBadgeClass(row.task?.status ?? "pending"),
+                                )}
+                              >
+                                {row.task?.status ?? "N/A"}
+                              </span>
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -1055,6 +1155,28 @@ export default function RecurringSchedulesPage() {
         onConfirm={handleConfirmDelete}
         confirmLabel={pending ? "Deleting..." : "Delete Schedule"}
         destructive
+      />
+
+      {/* Confirm Toggle Status Dialog */}
+      <ConfirmDialog
+        open={Boolean(togglingSchedule)}
+        onOpenChange={(v) => {
+          if (!v) setTogglingSchedule(null);
+        }}
+        title={togglingSchedule?.isActive ? "Pause Schedule" : "Activate Schedule"}
+        description={
+          togglingSchedule?.isActive
+            ? `Are you sure you want to pause the schedule "${togglingSchedule?.name}"?`
+            : `Are you sure you want to activate the schedule "${togglingSchedule?.name}"?`
+        }
+        onConfirm={() => {
+          if (togglingSchedule) {
+            handleToggle(togglingSchedule.id);
+            setTogglingSchedule(null);
+          }
+        }}
+        confirmLabel={pending ? "Updating..." : togglingSchedule?.isActive ? "Pause schedule" : "Activate schedule"}
+        destructive={togglingSchedule?.isActive}
       />
 
       {/* Create Task Modal */}

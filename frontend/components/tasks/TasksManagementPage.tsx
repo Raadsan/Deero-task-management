@@ -69,6 +69,7 @@ export default function TasksManagementPage() {
   const { data: tasksRes, isLoading } = useSWR(
     SWR_CACH_KEYS.tasks.key,
     getAllTasksClient,
+    { refreshInterval: 3000, revalidateOnFocus: true }
   );
   const { data: usersRes } = useSWR(
     "tasks-users-filter",

@@ -87,7 +87,7 @@ import contentRequestRoutes from "./routes/contentrequestrouter.js";
 import recurringRoutes from "./routes/recurringrouter.js";
 import workflowTemplateRoutes from "./routes/workflowtemplaterouter.js";
 import contractRoutes from "./routes/contractrouter.js";
-import schemaRoutes from "./routes/schemarouter.js";
+
 import billingRoutes from "./routes/billingrouter.js";
 import jobRoutes from "./routes/jobrouter.js";
 import { attachSessionScope } from "./middleware/session-scope.js";
@@ -170,7 +170,7 @@ app.use("/api/projects", attachSessionScope, projectRoutes);
 app.use("/api/content-requests", attachSessionScope, contentRequestRoutes);
 app.use("/api/recurring-schedules", attachSessionScope, recurringRoutes);
 app.use("/api/contracts", attachSessionScope, contractRoutes);
-app.use("/api/contracts/schemas", attachSessionScope, schemaRoutes);
+
 app.use("/api/billing", attachSessionScope, billingRoutes);
 app.use("/api/workflow-templates", attachSessionScope, workflowTemplateRoutes);
 app.use("/api/jobs", attachSessionScope, jobRoutes);
@@ -222,10 +222,16 @@ app.listen(port, async () => {
     );
     const runRecurringJob = async () => {
       try {
-        const result = await generateDailyRecurringTasks();
-        if (result.created > 0) {
+        const now = new Date();
+        // Run for today
+        const result = await generateDailyRecurringTasks({ runDate: now });
+        // Also pre-generate tasks for 1 hour ahead (so pending tasks appear before start time)
+        const lookahead = new Date(now.getTime() + 60 * 60 * 1000);
+        const lookaheadResult = await generateDailyRecurringTasks({ runDate: lookahead });
+        const totalCreated = (result.created || 0) + (lookaheadResult.created || 0);
+        if (totalCreated > 0) {
           console.log(
-            `[recurring-job] Created ${result.created} task(s) for ${result.runDate}`,
+            `[recurring-job] Created ${result.created} task(s) for ${result.runDate} + ${lookaheadResult.created} pre-generated task(s) for ${lookaheadResult.runDate}`,
           );
         }
       } catch (err) {
@@ -233,7 +239,54 @@ app.listen(port, async () => {
       }
     };
     await runRecurringJob();
-    setInterval(runRecurringJob, 60 * 60 * 1000);
+    setInterval(runRecurringJob, 5 * 60 * 1000);
+
+    // Auto-notify assignees when pending task startDate is reached
+    const { prisma } = await import("./lib/prisma.js");
+    const autoTransitionJob = async () => {
+      try {
+        const now = new Date();
+        const startingTasks = await prisma.task.findMany({
+          where: {
+            status: "pending",
+            startDate: { lte: now },
+            progress: 0,
+          },
+          select: { id: true, assgineeId: true, serviceInformation: true, description: true, deadline: true },
+          take: 20,
+        });
+        if (startingTasks.length > 0) {
+          for (const task of startingTasks) {
+            try {
+              // Check if notification already exists for this task status start
+              const existingNotif = await prisma.$queryRawUnsafe(
+                `SELECT id FROM notifications WHERE taskId = ? AND type = 'status-in_progress' LIMIT 1`,
+                task.id,
+              );
+              if (!existingNotif || existingNotif.length === 0) {
+                const notifId = Math.random().toString(36).substring(2, 15);
+                const taskName = `${(task.serviceInformation || task.description || "Task").substring(0, 50)} (in progress)`;
+                await prisma.$executeRawUnsafe(
+                  `INSERT INTO notifications (id, taskId, taskName, assigneeName, deadline, type, userId, isSeen) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                  notifId,
+                  task.id,
+                  taskName,
+                  "",
+                  task.deadline || new Date(),
+                  "status-in_progress",
+                  task.assgineeId,
+                  0,
+                );
+              }
+            } catch (_) {}
+          }
+        }
+      } catch (err) {
+        console.error("[auto-transition] Failed:", err.message);
+      }
+    };
+    await autoTransitionJob();
+    setInterval(autoTransitionJob, 60 * 1000); // Run every 1 minute
   } catch (error) {
     console.error("Failed to start recurring task scheduler:", error);
   }

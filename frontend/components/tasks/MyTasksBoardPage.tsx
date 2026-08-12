@@ -70,6 +70,7 @@ export default function MyTasksBoardPage() {
       revalidateIfStale: true,
       revalidateOnFocus: true,
       dedupingInterval: 0,
+      refreshInterval: 3000,
     },
   );
   const [tasks, setTasks] = useState<Task[]>([]);

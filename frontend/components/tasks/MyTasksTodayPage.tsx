@@ -67,8 +67,9 @@ export default function MyTasksTodayPage() {
     {
       fallbackData: [],
       revalidateOnMount: true,
-      revalidateOnFocus: false,
+      revalidateOnFocus: true,
       dedupingInterval: 0,
+      refreshInterval: 3000,
     },
   );
   const { mutate } = useSWRConfig();
@@ -88,6 +89,7 @@ export default function MyTasksTodayPage() {
   const todayTasks = useMemo(() => {
     return allTasks.filter(
       (task) =>
+        isToday(task.startDate) ||
         isToday(task.deadline) ||
         isToday((task as Task & { createdAt?: string | Date }).createdAt),
     );

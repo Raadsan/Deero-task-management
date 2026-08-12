@@ -126,7 +126,7 @@ export default function StaffTasksSummaryReport() {
   const loading = usersLoading || tasksLoading;
   const roleOptions = useMemo(() =>
     Array.from(new Set(users.map((staff: any) => String(staff.role ?? "").trim()).filter(Boolean))).sort(),
-  [users]);
+    [users]);
   const branding = dashboardSession?.branding;
   const brandLogo = resolveBranchLogoUrl(branding?.logoUrl) || "/logo.png";
   const brandColor = branding?.primaryColor ?? "#651210";
@@ -441,10 +441,10 @@ export default function StaffTasksSummaryReport() {
                               <button type="button" aria-label="View task information" onClick={() => setSelectedDetailTask(paginatedDetailTasks[index])} className="inline-flex size-8 items-center justify-center rounded-lg border border-zinc-200 text-primary hover:bg-primary/5">
                                 <Eye className="size-4" />
                               </button>
-                            /* Status badge */
+                              /* Status badge */
                             ) : cellIndex === 3 ? (
                               <span className={cn("inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-semibold capitalize", getTaskStatusBadgeClass(String(cell)))}>{cell}</span>
-                            /* Hours col — second to last before Action */
+                              /* Hours col — second to last before Action */
                             ) : cellIndex === row.length - 2 ? (
                               <span className="font-bold text-indigo-600">{cell}</span>
                             ) : cell}

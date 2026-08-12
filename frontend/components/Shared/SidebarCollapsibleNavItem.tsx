@@ -97,6 +97,8 @@ export default function SidebarCollapsibleNavItem({
   });
 
   if (isCollapsed) {
+    const isAnySubActive = items.some((sub) => isSubNavActive(pathname, sub.href));
+
     return (
       <SidebarMenuItem className="w-full">
         <Popover
@@ -111,7 +113,7 @@ export default function SidebarCollapsibleNavItem({
               aria-label={name}
               className={cn(
                 "!mx-auto !flex !h-10 !w-10 !items-center !justify-center !rounded-xl !p-0",
-                open
+                isAnySubActive || open
                   ? "sidebar-brand-active !text-white"
                   : "!text-white/90 hover:!bg-white/10 hover:!text-white",
               )}
@@ -135,6 +137,8 @@ export default function SidebarCollapsibleNavItem({
     );
   }
 
+  const isAnySubActive = items.some((sub) => isSubNavActive(pathname, sub.href));
+
   return (
     <SidebarMenuItem className="w-full">
       <div className="flex w-full flex-col">
@@ -144,7 +148,7 @@ export default function SidebarCollapsibleNavItem({
           tooltip={name}
           className={cn(
             "h-11 w-full rounded-xl px-4 text-[15px] font-medium transition-all",
-            open
+            open || isAnySubActive
               ? "sidebar-brand-active !text-white shadow-sm"
               : "!text-white/90 hover:!bg-white/10 hover:!text-white",
             "group-data-[collapsible=icon]:!mx-auto group-data-[collapsible=icon]:!flex group-data-[collapsible=icon]:!h-10 group-data-[collapsible=icon]:!w-10 group-data-[collapsible=icon]:!items-center group-data-[collapsible=icon]:!justify-center group-data-[collapsible=icon]:!p-0",

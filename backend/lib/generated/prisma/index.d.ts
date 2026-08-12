@@ -59,11 +59,6 @@ export type SubService = $Result.DefaultSelection<Prisma.$SubServicePayload>
  */
 export type Portfolio = $Result.DefaultSelection<Prisma.$PortfolioPayload>
 /**
- * Model ClientSchema
- * 
- */
-export type ClientSchema = $Result.DefaultSelection<Prisma.$ClientSchemaPayload>
-/**
  * Model ClientSubService
  * 
  */
@@ -682,16 +677,6 @@ export class PrismaClient<
     * ```
     */
   get portfolio(): Prisma.PortfolioDelegate<ExtArgs>;
-
-  /**
-   * `prisma.clientSchema`: Exposes CRUD operations for the **ClientSchema** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more ClientSchemas
-    * const clientSchemas = await prisma.clientSchema.findMany()
-    * ```
-    */
-  get clientSchema(): Prisma.ClientSchemaDelegate<ExtArgs>;
 
   /**
    * `prisma.clientSubService`: Exposes CRUD operations for the **ClientSubService** model.
@@ -1492,7 +1477,6 @@ export namespace Prisma {
     Service: 'Service',
     SubService: 'SubService',
     Portfolio: 'Portfolio',
-    ClientSchema: 'ClientSchema',
     ClientSubService: 'ClientSubService',
     ClientService: 'ClientService',
     Task: 'Task',
@@ -1543,7 +1527,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "role" | "staff" | "session" | "account" | "verification" | "client" | "service" | "subService" | "portfolio" | "clientSchema" | "clientSubService" | "clientService" | "task" | "taskTransferHistory" | "clientTask" | "counter" | "income" | "expense" | "incomeTransaction" | "expenseTransaction" | "incomeTransactionDetails" | "userFiles" | "incomeServiceAgreement" | "expenseServiceAgreement" | "expenseTransactionDetails" | "userSalary" | "userSalaryDetails" | "notification" | "navMenu" | "navSubMenu" | "roleMenuAccess" | "roleSubMenuAccess" | "auditLog" | "project" | "contract" | "clientInstallment" | "contractDocument" | "contentRequest" | "contentRequestAssignee" | "recurringSchedule" | "recurringScheduleStep" | "recurringTaskOccurrence" | "contentCycle" | "workflowTemplate" | "workflowTemplateStep"
+      modelProps: "role" | "staff" | "session" | "account" | "verification" | "client" | "service" | "subService" | "portfolio" | "clientSubService" | "clientService" | "task" | "taskTransferHistory" | "clientTask" | "counter" | "income" | "expense" | "incomeTransaction" | "expenseTransaction" | "incomeTransactionDetails" | "userFiles" | "incomeServiceAgreement" | "expenseServiceAgreement" | "expenseTransactionDetails" | "userSalary" | "userSalaryDetails" | "notification" | "navMenu" | "navSubMenu" | "roleMenuAccess" | "roleSubMenuAccess" | "auditLog" | "project" | "contract" | "clientInstallment" | "contractDocument" | "contentRequest" | "contentRequestAssignee" | "recurringSchedule" | "recurringScheduleStep" | "recurringTaskOccurrence" | "contentCycle" | "workflowTemplate" | "workflowTemplateStep"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2138,72 +2122,6 @@ export namespace Prisma {
           count: {
             args: Prisma.PortfolioCountArgs<ExtArgs>
             result: $Utils.Optional<PortfolioCountAggregateOutputType> | number
-          }
-        }
-      }
-      ClientSchema: {
-        payload: Prisma.$ClientSchemaPayload<ExtArgs>
-        fields: Prisma.ClientSchemaFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.ClientSchemaFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ClientSchemaPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.ClientSchemaFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ClientSchemaPayload>
-          }
-          findFirst: {
-            args: Prisma.ClientSchemaFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ClientSchemaPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.ClientSchemaFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ClientSchemaPayload>
-          }
-          findMany: {
-            args: Prisma.ClientSchemaFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ClientSchemaPayload>[]
-          }
-          create: {
-            args: Prisma.ClientSchemaCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ClientSchemaPayload>
-          }
-          createMany: {
-            args: Prisma.ClientSchemaCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          delete: {
-            args: Prisma.ClientSchemaDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ClientSchemaPayload>
-          }
-          update: {
-            args: Prisma.ClientSchemaUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ClientSchemaPayload>
-          }
-          deleteMany: {
-            args: Prisma.ClientSchemaDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.ClientSchemaUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          upsert: {
-            args: Prisma.ClientSchemaUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ClientSchemaPayload>
-          }
-          aggregate: {
-            args: Prisma.ClientSchemaAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateClientSchema>
-          }
-          groupBy: {
-            args: Prisma.ClientSchemaGroupByArgs<ExtArgs>
-            result: $Utils.Optional<ClientSchemaGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.ClientSchemaCountArgs<ExtArgs>
-            result: $Utils.Optional<ClientSchemaCountAggregateOutputType> | number
           }
         }
       }
@@ -5112,7 +5030,6 @@ export namespace Prisma {
    */
 
   export type PortfolioCountOutputType = {
-    clientSchemas: number
     clients: number
     contentRequests: number
     contracts: number
@@ -5123,7 +5040,6 @@ export namespace Prisma {
   }
 
   export type PortfolioCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    clientSchemas?: boolean | PortfolioCountOutputTypeCountClientSchemasArgs
     clients?: boolean | PortfolioCountOutputTypeCountClientsArgs
     contentRequests?: boolean | PortfolioCountOutputTypeCountContentRequestsArgs
     contracts?: boolean | PortfolioCountOutputTypeCountContractsArgs
@@ -5142,13 +5058,6 @@ export namespace Prisma {
      * Select specific fields to fetch from the PortfolioCountOutputType
      */
     select?: PortfolioCountOutputTypeSelect<ExtArgs> | null
-  }
-
-  /**
-   * PortfolioCountOutputType without action
-   */
-  export type PortfolioCountOutputTypeCountClientSchemasArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ClientSchemaWhereInput
   }
 
   /**
@@ -11403,7 +11312,6 @@ export namespace Prisma {
     serviceAgreements?: boolean | Client$serviceAgreementsArgs<ExtArgs>
     clientService?: boolean | Client$clientServiceArgs<ExtArgs>
     installments?: boolean | Client$installmentsArgs<ExtArgs>
-    clientSchema?: boolean | Client$clientSchemaArgs<ExtArgs>
     accountManager?: boolean | Client$accountManagerArgs<ExtArgs>
     portfolio?: boolean | Client$portfolioArgs<ExtArgs>
     clientTask?: boolean | Client$clientTaskArgs<ExtArgs>
@@ -11443,7 +11351,6 @@ export namespace Prisma {
     serviceAgreements?: boolean | Client$serviceAgreementsArgs<ExtArgs>
     clientService?: boolean | Client$clientServiceArgs<ExtArgs>
     installments?: boolean | Client$installmentsArgs<ExtArgs>
-    clientSchema?: boolean | Client$clientSchemaArgs<ExtArgs>
     accountManager?: boolean | Client$accountManagerArgs<ExtArgs>
     portfolio?: boolean | Client$portfolioArgs<ExtArgs>
     clientTask?: boolean | Client$clientTaskArgs<ExtArgs>
@@ -11462,7 +11369,6 @@ export namespace Prisma {
       serviceAgreements: Prisma.$IncomeServiceAgreementPayload<ExtArgs>[]
       clientService: Prisma.$ClientServicePayload<ExtArgs>[]
       installments: Prisma.$ClientInstallmentPayload<ExtArgs>[]
-      clientSchema: Prisma.$ClientSchemaPayload<ExtArgs> | null
       accountManager: Prisma.$StaffPayload<ExtArgs> | null
       portfolio: Prisma.$PortfolioPayload<ExtArgs> | null
       clientTask: Prisma.$ClientTaskPayload<ExtArgs>[]
@@ -11836,7 +11742,6 @@ export namespace Prisma {
     serviceAgreements<T extends Client$serviceAgreementsArgs<ExtArgs> = {}>(args?: Subset<T, Client$serviceAgreementsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IncomeServiceAgreementPayload<ExtArgs>, T, "findMany"> | Null>
     clientService<T extends Client$clientServiceArgs<ExtArgs> = {}>(args?: Subset<T, Client$clientServiceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientServicePayload<ExtArgs>, T, "findMany"> | Null>
     installments<T extends Client$installmentsArgs<ExtArgs> = {}>(args?: Subset<T, Client$installmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientInstallmentPayload<ExtArgs>, T, "findMany"> | Null>
-    clientSchema<T extends Client$clientSchemaArgs<ExtArgs> = {}>(args?: Subset<T, Client$clientSchemaArgs<ExtArgs>>): Prisma__ClientSchemaClient<$Result.GetResult<Prisma.$ClientSchemaPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     accountManager<T extends Client$accountManagerArgs<ExtArgs> = {}>(args?: Subset<T, Client$accountManagerArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     portfolio<T extends Client$portfolioArgs<ExtArgs> = {}>(args?: Subset<T, Client$portfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     clientTask<T extends Client$clientTaskArgs<ExtArgs> = {}>(args?: Subset<T, Client$clientTaskArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientTaskPayload<ExtArgs>, T, "findMany"> | Null>
@@ -12269,21 +12174,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ClientInstallmentScalarFieldEnum | ClientInstallmentScalarFieldEnum[]
-  }
-
-  /**
-   * Client.clientSchema
-   */
-  export type Client$clientSchemaArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ClientSchema
-     */
-    select?: ClientSchemaSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ClientSchemaInclude<ExtArgs> | null
-    where?: ClientSchemaWhereInput
   }
 
   /**
@@ -14722,7 +14612,6 @@ export namespace Prisma {
     iconLogoUrl?: boolean
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
-    clientSchemas?: boolean | Portfolio$clientSchemasArgs<ExtArgs>
     clients?: boolean | Portfolio$clientsArgs<ExtArgs>
     contentRequests?: boolean | Portfolio$contentRequestsArgs<ExtArgs>
     contracts?: boolean | Portfolio$contractsArgs<ExtArgs>
@@ -14754,7 +14643,6 @@ export namespace Prisma {
   }
 
   export type PortfolioInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    clientSchemas?: boolean | Portfolio$clientSchemasArgs<ExtArgs>
     clients?: boolean | Portfolio$clientsArgs<ExtArgs>
     contentRequests?: boolean | Portfolio$contentRequestsArgs<ExtArgs>
     contracts?: boolean | Portfolio$contractsArgs<ExtArgs>
@@ -14768,7 +14656,6 @@ export namespace Prisma {
   export type $PortfolioPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Portfolio"
     objects: {
-      clientSchemas: Prisma.$ClientSchemaPayload<ExtArgs>[]
       clients: Prisma.$ClientPayload<ExtArgs>[]
       contentRequests: Prisma.$ContentRequestPayload<ExtArgs>[]
       contracts: Prisma.$ContractPayload<ExtArgs>[]
@@ -15134,7 +15021,6 @@ export namespace Prisma {
    */
   export interface Prisma__PortfolioClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    clientSchemas<T extends Portfolio$clientSchemasArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$clientSchemasArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientSchemaPayload<ExtArgs>, T, "findMany"> | Null>
     clients<T extends Portfolio$clientsArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$clientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findMany"> | Null>
     contentRequests<T extends Portfolio$contentRequestsArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$contentRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentRequestPayload<ExtArgs>, T, "findMany"> | Null>
     contracts<T extends Portfolio$contractsArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$contractsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContractPayload<ExtArgs>, T, "findMany"> | Null>
@@ -15486,26 +15372,6 @@ export namespace Prisma {
   }
 
   /**
-   * Portfolio.clientSchemas
-   */
-  export type Portfolio$clientSchemasArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ClientSchema
-     */
-    select?: ClientSchemaSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ClientSchemaInclude<ExtArgs> | null
-    where?: ClientSchemaWhereInput
-    orderBy?: ClientSchemaOrderByWithRelationInput | ClientSchemaOrderByWithRelationInput[]
-    cursor?: ClientSchemaWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: ClientSchemaScalarFieldEnum | ClientSchemaScalarFieldEnum[]
-  }
-
-  /**
    * Portfolio.clients
    */
   export type Portfolio$clientsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -15657,992 +15523,6 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: PortfolioInclude<ExtArgs> | null
-  }
-
-
-  /**
-   * Model ClientSchema
-   */
-
-  export type AggregateClientSchema = {
-    _count: ClientSchemaCountAggregateOutputType | null
-    _min: ClientSchemaMinAggregateOutputType | null
-    _max: ClientSchemaMaxAggregateOutputType | null
-  }
-
-  export type ClientSchemaMinAggregateOutputType = {
-    id: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
-    clientId: string | null
-    portfolioId: string | null
-    saturday: string | null
-    sunday: string | null
-    monday: string | null
-    tuesday: string | null
-    wednesday: string | null
-    thursday: string | null
-    friday: string | null
-    notes: string | null
-  }
-
-  export type ClientSchemaMaxAggregateOutputType = {
-    id: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
-    clientId: string | null
-    portfolioId: string | null
-    saturday: string | null
-    sunday: string | null
-    monday: string | null
-    tuesday: string | null
-    wednesday: string | null
-    thursday: string | null
-    friday: string | null
-    notes: string | null
-  }
-
-  export type ClientSchemaCountAggregateOutputType = {
-    id: number
-    createdAt: number
-    updatedAt: number
-    clientId: number
-    portfolioId: number
-    saturday: number
-    sunday: number
-    monday: number
-    tuesday: number
-    wednesday: number
-    thursday: number
-    friday: number
-    notes: number
-    _all: number
-  }
-
-
-  export type ClientSchemaMinAggregateInputType = {
-    id?: true
-    createdAt?: true
-    updatedAt?: true
-    clientId?: true
-    portfolioId?: true
-    saturday?: true
-    sunday?: true
-    monday?: true
-    tuesday?: true
-    wednesday?: true
-    thursday?: true
-    friday?: true
-    notes?: true
-  }
-
-  export type ClientSchemaMaxAggregateInputType = {
-    id?: true
-    createdAt?: true
-    updatedAt?: true
-    clientId?: true
-    portfolioId?: true
-    saturday?: true
-    sunday?: true
-    monday?: true
-    tuesday?: true
-    wednesday?: true
-    thursday?: true
-    friday?: true
-    notes?: true
-  }
-
-  export type ClientSchemaCountAggregateInputType = {
-    id?: true
-    createdAt?: true
-    updatedAt?: true
-    clientId?: true
-    portfolioId?: true
-    saturday?: true
-    sunday?: true
-    monday?: true
-    tuesday?: true
-    wednesday?: true
-    thursday?: true
-    friday?: true
-    notes?: true
-    _all?: true
-  }
-
-  export type ClientSchemaAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which ClientSchema to aggregate.
-     */
-    where?: ClientSchemaWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of ClientSchemas to fetch.
-     */
-    orderBy?: ClientSchemaOrderByWithRelationInput | ClientSchemaOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: ClientSchemaWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` ClientSchemas from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` ClientSchemas.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned ClientSchemas
-    **/
-    _count?: true | ClientSchemaCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: ClientSchemaMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: ClientSchemaMaxAggregateInputType
-  }
-
-  export type GetClientSchemaAggregateType<T extends ClientSchemaAggregateArgs> = {
-        [P in keyof T & keyof AggregateClientSchema]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateClientSchema[P]>
-      : GetScalarType<T[P], AggregateClientSchema[P]>
-  }
-
-
-
-
-  export type ClientSchemaGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ClientSchemaWhereInput
-    orderBy?: ClientSchemaOrderByWithAggregationInput | ClientSchemaOrderByWithAggregationInput[]
-    by: ClientSchemaScalarFieldEnum[] | ClientSchemaScalarFieldEnum
-    having?: ClientSchemaScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: ClientSchemaCountAggregateInputType | true
-    _min?: ClientSchemaMinAggregateInputType
-    _max?: ClientSchemaMaxAggregateInputType
-  }
-
-  export type ClientSchemaGroupByOutputType = {
-    id: string
-    createdAt: Date
-    updatedAt: Date
-    clientId: string
-    portfolioId: string | null
-    saturday: string | null
-    sunday: string | null
-    monday: string | null
-    tuesday: string | null
-    wednesday: string | null
-    thursday: string | null
-    friday: string | null
-    notes: string | null
-    _count: ClientSchemaCountAggregateOutputType | null
-    _min: ClientSchemaMinAggregateOutputType | null
-    _max: ClientSchemaMaxAggregateOutputType | null
-  }
-
-  type GetClientSchemaGroupByPayload<T extends ClientSchemaGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<ClientSchemaGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof ClientSchemaGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], ClientSchemaGroupByOutputType[P]>
-            : GetScalarType<T[P], ClientSchemaGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type ClientSchemaSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    clientId?: boolean
-    portfolioId?: boolean
-    saturday?: boolean
-    sunday?: boolean
-    monday?: boolean
-    tuesday?: boolean
-    wednesday?: boolean
-    thursday?: boolean
-    friday?: boolean
-    notes?: boolean
-    client?: boolean | ClientDefaultArgs<ExtArgs>
-    portfolio?: boolean | ClientSchema$portfolioArgs<ExtArgs>
-  }, ExtArgs["result"]["clientSchema"]>
-
-
-  export type ClientSchemaSelectScalar = {
-    id?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    clientId?: boolean
-    portfolioId?: boolean
-    saturday?: boolean
-    sunday?: boolean
-    monday?: boolean
-    tuesday?: boolean
-    wednesday?: boolean
-    thursday?: boolean
-    friday?: boolean
-    notes?: boolean
-  }
-
-  export type ClientSchemaInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    client?: boolean | ClientDefaultArgs<ExtArgs>
-    portfolio?: boolean | ClientSchema$portfolioArgs<ExtArgs>
-  }
-
-  export type $ClientSchemaPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "ClientSchema"
-    objects: {
-      client: Prisma.$ClientPayload<ExtArgs>
-      portfolio: Prisma.$PortfolioPayload<ExtArgs> | null
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      createdAt: Date
-      updatedAt: Date
-      clientId: string
-      portfolioId: string | null
-      saturday: string | null
-      sunday: string | null
-      monday: string | null
-      tuesday: string | null
-      wednesday: string | null
-      thursday: string | null
-      friday: string | null
-      notes: string | null
-    }, ExtArgs["result"]["clientSchema"]>
-    composites: {}
-  }
-
-  type ClientSchemaGetPayload<S extends boolean | null | undefined | ClientSchemaDefaultArgs> = $Result.GetResult<Prisma.$ClientSchemaPayload, S>
-
-  type ClientSchemaCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
-    Omit<ClientSchemaFindManyArgs, 'select' | 'include' | 'distinct'> & {
-      select?: ClientSchemaCountAggregateInputType | true
-    }
-
-  export interface ClientSchemaDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ClientSchema'], meta: { name: 'ClientSchema' } }
-    /**
-     * Find zero or one ClientSchema that matches the filter.
-     * @param {ClientSchemaFindUniqueArgs} args - Arguments to find a ClientSchema
-     * @example
-     * // Get one ClientSchema
-     * const clientSchema = await prisma.clientSchema.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends ClientSchemaFindUniqueArgs>(args: SelectSubset<T, ClientSchemaFindUniqueArgs<ExtArgs>>): Prisma__ClientSchemaClient<$Result.GetResult<Prisma.$ClientSchemaPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
-
-    /**
-     * Find one ClientSchema that matches the filter or throw an error with `error.code='P2025'` 
-     * if no matches were found.
-     * @param {ClientSchemaFindUniqueOrThrowArgs} args - Arguments to find a ClientSchema
-     * @example
-     * // Get one ClientSchema
-     * const clientSchema = await prisma.clientSchema.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends ClientSchemaFindUniqueOrThrowArgs>(args: SelectSubset<T, ClientSchemaFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ClientSchemaClient<$Result.GetResult<Prisma.$ClientSchemaPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
-
-    /**
-     * Find the first ClientSchema that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ClientSchemaFindFirstArgs} args - Arguments to find a ClientSchema
-     * @example
-     * // Get one ClientSchema
-     * const clientSchema = await prisma.clientSchema.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends ClientSchemaFindFirstArgs>(args?: SelectSubset<T, ClientSchemaFindFirstArgs<ExtArgs>>): Prisma__ClientSchemaClient<$Result.GetResult<Prisma.$ClientSchemaPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
-
-    /**
-     * Find the first ClientSchema that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ClientSchemaFindFirstOrThrowArgs} args - Arguments to find a ClientSchema
-     * @example
-     * // Get one ClientSchema
-     * const clientSchema = await prisma.clientSchema.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends ClientSchemaFindFirstOrThrowArgs>(args?: SelectSubset<T, ClientSchemaFindFirstOrThrowArgs<ExtArgs>>): Prisma__ClientSchemaClient<$Result.GetResult<Prisma.$ClientSchemaPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
-
-    /**
-     * Find zero or more ClientSchemas that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ClientSchemaFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all ClientSchemas
-     * const clientSchemas = await prisma.clientSchema.findMany()
-     * 
-     * // Get first 10 ClientSchemas
-     * const clientSchemas = await prisma.clientSchema.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const clientSchemaWithIdOnly = await prisma.clientSchema.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends ClientSchemaFindManyArgs>(args?: SelectSubset<T, ClientSchemaFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientSchemaPayload<ExtArgs>, T, "findMany">>
-
-    /**
-     * Create a ClientSchema.
-     * @param {ClientSchemaCreateArgs} args - Arguments to create a ClientSchema.
-     * @example
-     * // Create one ClientSchema
-     * const ClientSchema = await prisma.clientSchema.create({
-     *   data: {
-     *     // ... data to create a ClientSchema
-     *   }
-     * })
-     * 
-     */
-    create<T extends ClientSchemaCreateArgs>(args: SelectSubset<T, ClientSchemaCreateArgs<ExtArgs>>): Prisma__ClientSchemaClient<$Result.GetResult<Prisma.$ClientSchemaPayload<ExtArgs>, T, "create">, never, ExtArgs>
-
-    /**
-     * Create many ClientSchemas.
-     * @param {ClientSchemaCreateManyArgs} args - Arguments to create many ClientSchemas.
-     * @example
-     * // Create many ClientSchemas
-     * const clientSchema = await prisma.clientSchema.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends ClientSchemaCreateManyArgs>(args?: SelectSubset<T, ClientSchemaCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a ClientSchema.
-     * @param {ClientSchemaDeleteArgs} args - Arguments to delete one ClientSchema.
-     * @example
-     * // Delete one ClientSchema
-     * const ClientSchema = await prisma.clientSchema.delete({
-     *   where: {
-     *     // ... filter to delete one ClientSchema
-     *   }
-     * })
-     * 
-     */
-    delete<T extends ClientSchemaDeleteArgs>(args: SelectSubset<T, ClientSchemaDeleteArgs<ExtArgs>>): Prisma__ClientSchemaClient<$Result.GetResult<Prisma.$ClientSchemaPayload<ExtArgs>, T, "delete">, never, ExtArgs>
-
-    /**
-     * Update one ClientSchema.
-     * @param {ClientSchemaUpdateArgs} args - Arguments to update one ClientSchema.
-     * @example
-     * // Update one ClientSchema
-     * const clientSchema = await prisma.clientSchema.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends ClientSchemaUpdateArgs>(args: SelectSubset<T, ClientSchemaUpdateArgs<ExtArgs>>): Prisma__ClientSchemaClient<$Result.GetResult<Prisma.$ClientSchemaPayload<ExtArgs>, T, "update">, never, ExtArgs>
-
-    /**
-     * Delete zero or more ClientSchemas.
-     * @param {ClientSchemaDeleteManyArgs} args - Arguments to filter ClientSchemas to delete.
-     * @example
-     * // Delete a few ClientSchemas
-     * const { count } = await prisma.clientSchema.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends ClientSchemaDeleteManyArgs>(args?: SelectSubset<T, ClientSchemaDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more ClientSchemas.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ClientSchemaUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many ClientSchemas
-     * const clientSchema = await prisma.clientSchema.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends ClientSchemaUpdateManyArgs>(args: SelectSubset<T, ClientSchemaUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one ClientSchema.
-     * @param {ClientSchemaUpsertArgs} args - Arguments to update or create a ClientSchema.
-     * @example
-     * // Update or create a ClientSchema
-     * const clientSchema = await prisma.clientSchema.upsert({
-     *   create: {
-     *     // ... data to create a ClientSchema
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the ClientSchema we want to update
-     *   }
-     * })
-     */
-    upsert<T extends ClientSchemaUpsertArgs>(args: SelectSubset<T, ClientSchemaUpsertArgs<ExtArgs>>): Prisma__ClientSchemaClient<$Result.GetResult<Prisma.$ClientSchemaPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
-
-
-    /**
-     * Count the number of ClientSchemas.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ClientSchemaCountArgs} args - Arguments to filter ClientSchemas to count.
-     * @example
-     * // Count the number of ClientSchemas
-     * const count = await prisma.clientSchema.count({
-     *   where: {
-     *     // ... the filter for the ClientSchemas we want to count
-     *   }
-     * })
-    **/
-    count<T extends ClientSchemaCountArgs>(
-      args?: Subset<T, ClientSchemaCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], ClientSchemaCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a ClientSchema.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ClientSchemaAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends ClientSchemaAggregateArgs>(args: Subset<T, ClientSchemaAggregateArgs>): Prisma.PrismaPromise<GetClientSchemaAggregateType<T>>
-
-    /**
-     * Group by ClientSchema.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ClientSchemaGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends ClientSchemaGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: ClientSchemaGroupByArgs['orderBy'] }
-        : { orderBy?: ClientSchemaGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, ClientSchemaGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetClientSchemaGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the ClientSchema model
-   */
-  readonly fields: ClientSchemaFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for ClientSchema.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__ClientSchemaClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    client<T extends ClientDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ClientDefaultArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
-    portfolio<T extends ClientSchema$portfolioArgs<ExtArgs> = {}>(args?: Subset<T, ClientSchema$portfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the ClientSchema model
-   */ 
-  interface ClientSchemaFieldRefs {
-    readonly id: FieldRef<"ClientSchema", 'String'>
-    readonly createdAt: FieldRef<"ClientSchema", 'DateTime'>
-    readonly updatedAt: FieldRef<"ClientSchema", 'DateTime'>
-    readonly clientId: FieldRef<"ClientSchema", 'String'>
-    readonly portfolioId: FieldRef<"ClientSchema", 'String'>
-    readonly saturday: FieldRef<"ClientSchema", 'String'>
-    readonly sunday: FieldRef<"ClientSchema", 'String'>
-    readonly monday: FieldRef<"ClientSchema", 'String'>
-    readonly tuesday: FieldRef<"ClientSchema", 'String'>
-    readonly wednesday: FieldRef<"ClientSchema", 'String'>
-    readonly thursday: FieldRef<"ClientSchema", 'String'>
-    readonly friday: FieldRef<"ClientSchema", 'String'>
-    readonly notes: FieldRef<"ClientSchema", 'String'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * ClientSchema findUnique
-   */
-  export type ClientSchemaFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ClientSchema
-     */
-    select?: ClientSchemaSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ClientSchemaInclude<ExtArgs> | null
-    /**
-     * Filter, which ClientSchema to fetch.
-     */
-    where: ClientSchemaWhereUniqueInput
-  }
-
-  /**
-   * ClientSchema findUniqueOrThrow
-   */
-  export type ClientSchemaFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ClientSchema
-     */
-    select?: ClientSchemaSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ClientSchemaInclude<ExtArgs> | null
-    /**
-     * Filter, which ClientSchema to fetch.
-     */
-    where: ClientSchemaWhereUniqueInput
-  }
-
-  /**
-   * ClientSchema findFirst
-   */
-  export type ClientSchemaFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ClientSchema
-     */
-    select?: ClientSchemaSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ClientSchemaInclude<ExtArgs> | null
-    /**
-     * Filter, which ClientSchema to fetch.
-     */
-    where?: ClientSchemaWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of ClientSchemas to fetch.
-     */
-    orderBy?: ClientSchemaOrderByWithRelationInput | ClientSchemaOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for ClientSchemas.
-     */
-    cursor?: ClientSchemaWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` ClientSchemas from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` ClientSchemas.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of ClientSchemas.
-     */
-    distinct?: ClientSchemaScalarFieldEnum | ClientSchemaScalarFieldEnum[]
-  }
-
-  /**
-   * ClientSchema findFirstOrThrow
-   */
-  export type ClientSchemaFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ClientSchema
-     */
-    select?: ClientSchemaSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ClientSchemaInclude<ExtArgs> | null
-    /**
-     * Filter, which ClientSchema to fetch.
-     */
-    where?: ClientSchemaWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of ClientSchemas to fetch.
-     */
-    orderBy?: ClientSchemaOrderByWithRelationInput | ClientSchemaOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for ClientSchemas.
-     */
-    cursor?: ClientSchemaWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` ClientSchemas from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` ClientSchemas.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of ClientSchemas.
-     */
-    distinct?: ClientSchemaScalarFieldEnum | ClientSchemaScalarFieldEnum[]
-  }
-
-  /**
-   * ClientSchema findMany
-   */
-  export type ClientSchemaFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ClientSchema
-     */
-    select?: ClientSchemaSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ClientSchemaInclude<ExtArgs> | null
-    /**
-     * Filter, which ClientSchemas to fetch.
-     */
-    where?: ClientSchemaWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of ClientSchemas to fetch.
-     */
-    orderBy?: ClientSchemaOrderByWithRelationInput | ClientSchemaOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing ClientSchemas.
-     */
-    cursor?: ClientSchemaWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` ClientSchemas from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` ClientSchemas.
-     */
-    skip?: number
-    distinct?: ClientSchemaScalarFieldEnum | ClientSchemaScalarFieldEnum[]
-  }
-
-  /**
-   * ClientSchema create
-   */
-  export type ClientSchemaCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ClientSchema
-     */
-    select?: ClientSchemaSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ClientSchemaInclude<ExtArgs> | null
-    /**
-     * The data needed to create a ClientSchema.
-     */
-    data: XOR<ClientSchemaCreateInput, ClientSchemaUncheckedCreateInput>
-  }
-
-  /**
-   * ClientSchema createMany
-   */
-  export type ClientSchemaCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many ClientSchemas.
-     */
-    data: ClientSchemaCreateManyInput | ClientSchemaCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * ClientSchema update
-   */
-  export type ClientSchemaUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ClientSchema
-     */
-    select?: ClientSchemaSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ClientSchemaInclude<ExtArgs> | null
-    /**
-     * The data needed to update a ClientSchema.
-     */
-    data: XOR<ClientSchemaUpdateInput, ClientSchemaUncheckedUpdateInput>
-    /**
-     * Choose, which ClientSchema to update.
-     */
-    where: ClientSchemaWhereUniqueInput
-  }
-
-  /**
-   * ClientSchema updateMany
-   */
-  export type ClientSchemaUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update ClientSchemas.
-     */
-    data: XOR<ClientSchemaUpdateManyMutationInput, ClientSchemaUncheckedUpdateManyInput>
-    /**
-     * Filter which ClientSchemas to update
-     */
-    where?: ClientSchemaWhereInput
-  }
-
-  /**
-   * ClientSchema upsert
-   */
-  export type ClientSchemaUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ClientSchema
-     */
-    select?: ClientSchemaSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ClientSchemaInclude<ExtArgs> | null
-    /**
-     * The filter to search for the ClientSchema to update in case it exists.
-     */
-    where: ClientSchemaWhereUniqueInput
-    /**
-     * In case the ClientSchema found by the `where` argument doesn't exist, create a new ClientSchema with this data.
-     */
-    create: XOR<ClientSchemaCreateInput, ClientSchemaUncheckedCreateInput>
-    /**
-     * In case the ClientSchema was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<ClientSchemaUpdateInput, ClientSchemaUncheckedUpdateInput>
-  }
-
-  /**
-   * ClientSchema delete
-   */
-  export type ClientSchemaDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ClientSchema
-     */
-    select?: ClientSchemaSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ClientSchemaInclude<ExtArgs> | null
-    /**
-     * Filter which ClientSchema to delete.
-     */
-    where: ClientSchemaWhereUniqueInput
-  }
-
-  /**
-   * ClientSchema deleteMany
-   */
-  export type ClientSchemaDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which ClientSchemas to delete
-     */
-    where?: ClientSchemaWhereInput
-  }
-
-  /**
-   * ClientSchema.portfolio
-   */
-  export type ClientSchema$portfolioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Portfolio
-     */
-    select?: PortfolioSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PortfolioInclude<ExtArgs> | null
-    where?: PortfolioWhereInput
-  }
-
-  /**
-   * ClientSchema without action
-   */
-  export type ClientSchemaDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ClientSchema
-     */
-    select?: ClientSchemaSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ClientSchemaInclude<ExtArgs> | null
   }
 
 
@@ -45913,6 +44793,7 @@ export namespace Prisma {
     dayOfWeek: number | null
     dayOfMonth: number | null
     stepOrder: number | null
+    estimatedHours: number | null
     intervalDays: number | null
   }
 
@@ -45920,6 +44801,7 @@ export namespace Prisma {
     dayOfWeek: number | null
     dayOfMonth: number | null
     stepOrder: number | null
+    estimatedHours: number | null
     intervalDays: number | null
   }
 
@@ -45935,6 +44817,8 @@ export namespace Prisma {
     department: string | null
     templateId: string | null
     assigneeId: string | null
+    startHour: string | null
+    estimatedHours: number | null
     intervalDays: number | null
     supervisor: string | null
   }
@@ -45951,6 +44835,8 @@ export namespace Prisma {
     department: string | null
     templateId: string | null
     assigneeId: string | null
+    startHour: string | null
+    estimatedHours: number | null
     intervalDays: number | null
     supervisor: string | null
   }
@@ -45967,6 +44853,9 @@ export namespace Prisma {
     department: number
     templateId: number
     assigneeId: number
+    assigneeIds: number
+    startHour: number
+    estimatedHours: number
     intervalDays: number
     supervisor: number
     _all: number
@@ -45977,6 +44866,7 @@ export namespace Prisma {
     dayOfWeek?: true
     dayOfMonth?: true
     stepOrder?: true
+    estimatedHours?: true
     intervalDays?: true
   }
 
@@ -45984,6 +44874,7 @@ export namespace Prisma {
     dayOfWeek?: true
     dayOfMonth?: true
     stepOrder?: true
+    estimatedHours?: true
     intervalDays?: true
   }
 
@@ -45999,6 +44890,8 @@ export namespace Prisma {
     department?: true
     templateId?: true
     assigneeId?: true
+    startHour?: true
+    estimatedHours?: true
     intervalDays?: true
     supervisor?: true
   }
@@ -46015,6 +44908,8 @@ export namespace Prisma {
     department?: true
     templateId?: true
     assigneeId?: true
+    startHour?: true
+    estimatedHours?: true
     intervalDays?: true
     supervisor?: true
   }
@@ -46031,6 +44926,9 @@ export namespace Prisma {
     department?: true
     templateId?: true
     assigneeId?: true
+    assigneeIds?: true
+    startHour?: true
+    estimatedHours?: true
     intervalDays?: true
     supervisor?: true
     _all?: true
@@ -46134,6 +45032,9 @@ export namespace Prisma {
     department: string | null
     templateId: string | null
     assigneeId: string | null
+    assigneeIds: JsonValue | null
+    startHour: string | null
+    estimatedHours: number | null
     intervalDays: number | null
     supervisor: string
     _count: RecurringScheduleStepCountAggregateOutputType | null
@@ -46169,6 +45070,9 @@ export namespace Prisma {
     department?: boolean
     templateId?: boolean
     assigneeId?: boolean
+    assigneeIds?: boolean
+    startHour?: boolean
+    estimatedHours?: boolean
     intervalDays?: boolean
     supervisor?: boolean
     assignee?: boolean | RecurringScheduleStep$assigneeArgs<ExtArgs>
@@ -46191,6 +45095,9 @@ export namespace Prisma {
     department?: boolean
     templateId?: boolean
     assigneeId?: boolean
+    assigneeIds?: boolean
+    startHour?: boolean
+    estimatedHours?: boolean
     intervalDays?: boolean
     supervisor?: boolean
   }
@@ -46223,6 +45130,9 @@ export namespace Prisma {
       department: string | null
       templateId: string | null
       assigneeId: string | null
+      assigneeIds: Prisma.JsonValue | null
+      startHour: string | null
+      estimatedHours: number | null
       intervalDays: number | null
       supervisor: string
     }, ExtArgs["result"]["recurringScheduleStep"]>
@@ -46609,6 +45519,9 @@ export namespace Prisma {
     readonly department: FieldRef<"RecurringScheduleStep", 'String'>
     readonly templateId: FieldRef<"RecurringScheduleStep", 'String'>
     readonly assigneeId: FieldRef<"RecurringScheduleStep", 'String'>
+    readonly assigneeIds: FieldRef<"RecurringScheduleStep", 'Json'>
+    readonly startHour: FieldRef<"RecurringScheduleStep", 'String'>
+    readonly estimatedHours: FieldRef<"RecurringScheduleStep", 'Float'>
     readonly intervalDays: FieldRef<"RecurringScheduleStep", 'Int'>
     readonly supervisor: FieldRef<"RecurringScheduleStep", 'String'>
   }
@@ -51001,25 +49914,6 @@ export namespace Prisma {
   export type PortfolioScalarFieldEnum = (typeof PortfolioScalarFieldEnum)[keyof typeof PortfolioScalarFieldEnum]
 
 
-  export const ClientSchemaScalarFieldEnum: {
-    id: 'id',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
-    clientId: 'clientId',
-    portfolioId: 'portfolioId',
-    saturday: 'saturday',
-    sunday: 'sunday',
-    monday: 'monday',
-    tuesday: 'tuesday',
-    wednesday: 'wednesday',
-    thursday: 'thursday',
-    friday: 'friday',
-    notes: 'notes'
-  };
-
-  export type ClientSchemaScalarFieldEnum = (typeof ClientSchemaScalarFieldEnum)[keyof typeof ClientSchemaScalarFieldEnum]
-
-
   export const ClientSubServiceScalarFieldEnum: {
     subServiceId: 'subServiceId',
     count: 'count',
@@ -51476,6 +50370,9 @@ export namespace Prisma {
     department: 'department',
     templateId: 'templateId',
     assigneeId: 'assigneeId',
+    assigneeIds: 'assigneeIds',
+    startHour: 'startHour',
+    estimatedHours: 'estimatedHours',
     intervalDays: 'intervalDays',
     supervisor: 'supervisor'
   };
@@ -52235,7 +51132,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementListRelationFilter
     clientService?: ClientServiceListRelationFilter
     installments?: ClientInstallmentListRelationFilter
-    clientSchema?: XOR<ClientSchemaNullableRelationFilter, ClientSchemaWhereInput> | null
     accountManager?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
     clientTask?: ClientTaskListRelationFilter
@@ -52270,7 +51166,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementOrderByRelationAggregateInput
     clientService?: ClientServiceOrderByRelationAggregateInput
     installments?: ClientInstallmentOrderByRelationAggregateInput
-    clientSchema?: ClientSchemaOrderByWithRelationInput
     accountManager?: StaffOrderByWithRelationInput
     portfolio?: PortfolioOrderByWithRelationInput
     clientTask?: ClientTaskOrderByRelationAggregateInput
@@ -52308,7 +51203,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementListRelationFilter
     clientService?: ClientServiceListRelationFilter
     installments?: ClientInstallmentListRelationFilter
-    clientSchema?: XOR<ClientSchemaNullableRelationFilter, ClientSchemaWhereInput> | null
     accountManager?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
     clientTask?: ClientTaskListRelationFilter
@@ -52562,7 +51456,6 @@ export namespace Prisma {
     iconLogoUrl?: StringNullableFilter<"Portfolio"> | string | null
     slugClearedOnce?: BoolFilter<"Portfolio"> | boolean
     usesRootLogin?: BoolFilter<"Portfolio"> | boolean
-    clientSchemas?: ClientSchemaListRelationFilter
     clients?: ClientListRelationFilter
     contentRequests?: ContentRequestListRelationFilter
     contracts?: ContractListRelationFilter
@@ -52589,7 +51482,6 @@ export namespace Prisma {
     iconLogoUrl?: SortOrderInput | SortOrder
     slugClearedOnce?: SortOrder
     usesRootLogin?: SortOrder
-    clientSchemas?: ClientSchemaOrderByRelationAggregateInput
     clients?: ClientOrderByRelationAggregateInput
     contentRequests?: ContentRequestOrderByRelationAggregateInput
     contracts?: ContractOrderByRelationAggregateInput
@@ -52619,7 +51511,6 @@ export namespace Prisma {
     iconLogoUrl?: StringNullableFilter<"Portfolio"> | string | null
     slugClearedOnce?: BoolFilter<"Portfolio"> | boolean
     usesRootLogin?: BoolFilter<"Portfolio"> | boolean
-    clientSchemas?: ClientSchemaListRelationFilter
     clients?: ClientListRelationFilter
     contentRequests?: ContentRequestListRelationFilter
     contracts?: ContractListRelationFilter
@@ -52671,104 +51562,6 @@ export namespace Prisma {
     iconLogoUrl?: StringNullableWithAggregatesFilter<"Portfolio"> | string | null
     slugClearedOnce?: BoolWithAggregatesFilter<"Portfolio"> | boolean
     usesRootLogin?: BoolWithAggregatesFilter<"Portfolio"> | boolean
-  }
-
-  export type ClientSchemaWhereInput = {
-    AND?: ClientSchemaWhereInput | ClientSchemaWhereInput[]
-    OR?: ClientSchemaWhereInput[]
-    NOT?: ClientSchemaWhereInput | ClientSchemaWhereInput[]
-    id?: StringFilter<"ClientSchema"> | string
-    createdAt?: DateTimeFilter<"ClientSchema"> | Date | string
-    updatedAt?: DateTimeFilter<"ClientSchema"> | Date | string
-    clientId?: StringFilter<"ClientSchema"> | string
-    portfolioId?: StringNullableFilter<"ClientSchema"> | string | null
-    saturday?: StringNullableFilter<"ClientSchema"> | string | null
-    sunday?: StringNullableFilter<"ClientSchema"> | string | null
-    monday?: StringNullableFilter<"ClientSchema"> | string | null
-    tuesday?: StringNullableFilter<"ClientSchema"> | string | null
-    wednesday?: StringNullableFilter<"ClientSchema"> | string | null
-    thursday?: StringNullableFilter<"ClientSchema"> | string | null
-    friday?: StringNullableFilter<"ClientSchema"> | string | null
-    notes?: StringNullableFilter<"ClientSchema"> | string | null
-    client?: XOR<ClientRelationFilter, ClientWhereInput>
-    portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
-  }
-
-  export type ClientSchemaOrderByWithRelationInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    clientId?: SortOrder
-    portfolioId?: SortOrderInput | SortOrder
-    saturday?: SortOrderInput | SortOrder
-    sunday?: SortOrderInput | SortOrder
-    monday?: SortOrderInput | SortOrder
-    tuesday?: SortOrderInput | SortOrder
-    wednesday?: SortOrderInput | SortOrder
-    thursday?: SortOrderInput | SortOrder
-    friday?: SortOrderInput | SortOrder
-    notes?: SortOrderInput | SortOrder
-    client?: ClientOrderByWithRelationInput
-    portfolio?: PortfolioOrderByWithRelationInput
-  }
-
-  export type ClientSchemaWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    clientId?: string
-    AND?: ClientSchemaWhereInput | ClientSchemaWhereInput[]
-    OR?: ClientSchemaWhereInput[]
-    NOT?: ClientSchemaWhereInput | ClientSchemaWhereInput[]
-    createdAt?: DateTimeFilter<"ClientSchema"> | Date | string
-    updatedAt?: DateTimeFilter<"ClientSchema"> | Date | string
-    portfolioId?: StringNullableFilter<"ClientSchema"> | string | null
-    saturday?: StringNullableFilter<"ClientSchema"> | string | null
-    sunday?: StringNullableFilter<"ClientSchema"> | string | null
-    monday?: StringNullableFilter<"ClientSchema"> | string | null
-    tuesday?: StringNullableFilter<"ClientSchema"> | string | null
-    wednesday?: StringNullableFilter<"ClientSchema"> | string | null
-    thursday?: StringNullableFilter<"ClientSchema"> | string | null
-    friday?: StringNullableFilter<"ClientSchema"> | string | null
-    notes?: StringNullableFilter<"ClientSchema"> | string | null
-    client?: XOR<ClientRelationFilter, ClientWhereInput>
-    portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
-  }, "id" | "clientId">
-
-  export type ClientSchemaOrderByWithAggregationInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    clientId?: SortOrder
-    portfolioId?: SortOrderInput | SortOrder
-    saturday?: SortOrderInput | SortOrder
-    sunday?: SortOrderInput | SortOrder
-    monday?: SortOrderInput | SortOrder
-    tuesday?: SortOrderInput | SortOrder
-    wednesday?: SortOrderInput | SortOrder
-    thursday?: SortOrderInput | SortOrder
-    friday?: SortOrderInput | SortOrder
-    notes?: SortOrderInput | SortOrder
-    _count?: ClientSchemaCountOrderByAggregateInput
-    _max?: ClientSchemaMaxOrderByAggregateInput
-    _min?: ClientSchemaMinOrderByAggregateInput
-  }
-
-  export type ClientSchemaScalarWhereWithAggregatesInput = {
-    AND?: ClientSchemaScalarWhereWithAggregatesInput | ClientSchemaScalarWhereWithAggregatesInput[]
-    OR?: ClientSchemaScalarWhereWithAggregatesInput[]
-    NOT?: ClientSchemaScalarWhereWithAggregatesInput | ClientSchemaScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"ClientSchema"> | string
-    createdAt?: DateTimeWithAggregatesFilter<"ClientSchema"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"ClientSchema"> | Date | string
-    clientId?: StringWithAggregatesFilter<"ClientSchema"> | string
-    portfolioId?: StringNullableWithAggregatesFilter<"ClientSchema"> | string | null
-    saturday?: StringNullableWithAggregatesFilter<"ClientSchema"> | string | null
-    sunday?: StringNullableWithAggregatesFilter<"ClientSchema"> | string | null
-    monday?: StringNullableWithAggregatesFilter<"ClientSchema"> | string | null
-    tuesday?: StringNullableWithAggregatesFilter<"ClientSchema"> | string | null
-    wednesday?: StringNullableWithAggregatesFilter<"ClientSchema"> | string | null
-    thursday?: StringNullableWithAggregatesFilter<"ClientSchema"> | string | null
-    friday?: StringNullableWithAggregatesFilter<"ClientSchema"> | string | null
-    notes?: StringNullableWithAggregatesFilter<"ClientSchema"> | string | null
   }
 
   export type ClientSubServiceWhereInput = {
@@ -55207,6 +54000,9 @@ export namespace Prisma {
     department?: StringNullableFilter<"RecurringScheduleStep"> | string | null
     templateId?: StringNullableFilter<"RecurringScheduleStep"> | string | null
     assigneeId?: StringNullableFilter<"RecurringScheduleStep"> | string | null
+    assigneeIds?: JsonNullableFilter<"RecurringScheduleStep">
+    startHour?: StringNullableFilter<"RecurringScheduleStep"> | string | null
+    estimatedHours?: FloatNullableFilter<"RecurringScheduleStep"> | number | null
     intervalDays?: IntNullableFilter<"RecurringScheduleStep"> | number | null
     supervisor?: StringFilter<"RecurringScheduleStep"> | string
     assignee?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
@@ -55227,6 +54023,9 @@ export namespace Prisma {
     department?: SortOrderInput | SortOrder
     templateId?: SortOrderInput | SortOrder
     assigneeId?: SortOrderInput | SortOrder
+    assigneeIds?: SortOrderInput | SortOrder
+    startHour?: SortOrderInput | SortOrder
+    estimatedHours?: SortOrderInput | SortOrder
     intervalDays?: SortOrderInput | SortOrder
     supervisor?: SortOrder
     assignee?: StaffOrderByWithRelationInput
@@ -55250,6 +54049,9 @@ export namespace Prisma {
     department?: StringNullableFilter<"RecurringScheduleStep"> | string | null
     templateId?: StringNullableFilter<"RecurringScheduleStep"> | string | null
     assigneeId?: StringNullableFilter<"RecurringScheduleStep"> | string | null
+    assigneeIds?: JsonNullableFilter<"RecurringScheduleStep">
+    startHour?: StringNullableFilter<"RecurringScheduleStep"> | string | null
+    estimatedHours?: FloatNullableFilter<"RecurringScheduleStep"> | number | null
     intervalDays?: IntNullableFilter<"RecurringScheduleStep"> | number | null
     supervisor?: StringFilter<"RecurringScheduleStep"> | string
     assignee?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
@@ -55270,6 +54072,9 @@ export namespace Prisma {
     department?: SortOrderInput | SortOrder
     templateId?: SortOrderInput | SortOrder
     assigneeId?: SortOrderInput | SortOrder
+    assigneeIds?: SortOrderInput | SortOrder
+    startHour?: SortOrderInput | SortOrder
+    estimatedHours?: SortOrderInput | SortOrder
     intervalDays?: SortOrderInput | SortOrder
     supervisor?: SortOrder
     _count?: RecurringScheduleStepCountOrderByAggregateInput
@@ -55294,6 +54099,9 @@ export namespace Prisma {
     department?: StringNullableWithAggregatesFilter<"RecurringScheduleStep"> | string | null
     templateId?: StringNullableWithAggregatesFilter<"RecurringScheduleStep"> | string | null
     assigneeId?: StringNullableWithAggregatesFilter<"RecurringScheduleStep"> | string | null
+    assigneeIds?: JsonNullableWithAggregatesFilter<"RecurringScheduleStep">
+    startHour?: StringNullableWithAggregatesFilter<"RecurringScheduleStep"> | string | null
+    estimatedHours?: FloatNullableWithAggregatesFilter<"RecurringScheduleStep"> | number | null
     intervalDays?: IntNullableWithAggregatesFilter<"RecurringScheduleStep"> | number | null
     supervisor?: StringWithAggregatesFilter<"RecurringScheduleStep"> | string
   }
@@ -56189,7 +54997,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
@@ -56224,7 +55031,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
@@ -56255,7 +55061,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
@@ -56290,7 +55095,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
@@ -56566,7 +55370,6 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
-    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
     clients?: ClientCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
     contracts?: ContractCreateNestedManyWithoutPortfolioInput
@@ -56593,7 +55396,6 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
-    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
     clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
     contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
@@ -56620,7 +55422,6 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
-    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUpdateManyWithoutPortfolioNestedInput
@@ -56647,7 +55448,6 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
-    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
@@ -56712,116 +55512,6 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
-  }
-
-  export type ClientSchemaCreateInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    saturday?: string | null
-    sunday?: string | null
-    monday?: string | null
-    tuesday?: string | null
-    wednesday?: string | null
-    thursday?: string | null
-    friday?: string | null
-    notes?: string | null
-    client: ClientCreateNestedOneWithoutClientSchemaInput
-    portfolio?: PortfolioCreateNestedOneWithoutClientSchemasInput
-  }
-
-  export type ClientSchemaUncheckedCreateInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    clientId: string
-    portfolioId?: string | null
-    saturday?: string | null
-    sunday?: string | null
-    monday?: string | null
-    tuesday?: string | null
-    wednesday?: string | null
-    thursday?: string | null
-    friday?: string | null
-    notes?: string | null
-  }
-
-  export type ClientSchemaUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    saturday?: NullableStringFieldUpdateOperationsInput | string | null
-    sunday?: NullableStringFieldUpdateOperationsInput | string | null
-    monday?: NullableStringFieldUpdateOperationsInput | string | null
-    tuesday?: NullableStringFieldUpdateOperationsInput | string | null
-    wednesday?: NullableStringFieldUpdateOperationsInput | string | null
-    thursday?: NullableStringFieldUpdateOperationsInput | string | null
-    friday?: NullableStringFieldUpdateOperationsInput | string | null
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    client?: ClientUpdateOneRequiredWithoutClientSchemaNestedInput
-    portfolio?: PortfolioUpdateOneWithoutClientSchemasNestedInput
-  }
-
-  export type ClientSchemaUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    clientId?: StringFieldUpdateOperationsInput | string
-    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    saturday?: NullableStringFieldUpdateOperationsInput | string | null
-    sunday?: NullableStringFieldUpdateOperationsInput | string | null
-    monday?: NullableStringFieldUpdateOperationsInput | string | null
-    tuesday?: NullableStringFieldUpdateOperationsInput | string | null
-    wednesday?: NullableStringFieldUpdateOperationsInput | string | null
-    thursday?: NullableStringFieldUpdateOperationsInput | string | null
-    friday?: NullableStringFieldUpdateOperationsInput | string | null
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type ClientSchemaCreateManyInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    clientId: string
-    portfolioId?: string | null
-    saturday?: string | null
-    sunday?: string | null
-    monday?: string | null
-    tuesday?: string | null
-    wednesday?: string | null
-    thursday?: string | null
-    friday?: string | null
-    notes?: string | null
-  }
-
-  export type ClientSchemaUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    saturday?: NullableStringFieldUpdateOperationsInput | string | null
-    sunday?: NullableStringFieldUpdateOperationsInput | string | null
-    monday?: NullableStringFieldUpdateOperationsInput | string | null
-    tuesday?: NullableStringFieldUpdateOperationsInput | string | null
-    wednesday?: NullableStringFieldUpdateOperationsInput | string | null
-    thursday?: NullableStringFieldUpdateOperationsInput | string | null
-    friday?: NullableStringFieldUpdateOperationsInput | string | null
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type ClientSchemaUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    clientId?: StringFieldUpdateOperationsInput | string
-    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    saturday?: NullableStringFieldUpdateOperationsInput | string | null
-    sunday?: NullableStringFieldUpdateOperationsInput | string | null
-    monday?: NullableStringFieldUpdateOperationsInput | string | null
-    tuesday?: NullableStringFieldUpdateOperationsInput | string | null
-    wednesday?: NullableStringFieldUpdateOperationsInput | string | null
-    thursday?: NullableStringFieldUpdateOperationsInput | string | null
-    friday?: NullableStringFieldUpdateOperationsInput | string | null
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ClientSubServiceCreateInput = {
@@ -59351,6 +58041,9 @@ export namespace Prisma {
     label: string
     contentType?: $Enums.ContentType | null
     department?: string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: string | null
+    estimatedHours?: number | null
     intervalDays?: number | null
     supervisor?: string
     assignee?: StaffCreateNestedOneWithoutAssignedRecurringStepsInput
@@ -59371,6 +58064,9 @@ export namespace Prisma {
     department?: string | null
     templateId?: string | null
     assigneeId?: string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: string | null
+    estimatedHours?: number | null
     intervalDays?: number | null
     supervisor?: string
     occurrences?: RecurringTaskOccurrenceUncheckedCreateNestedManyWithoutScheduleStepInput
@@ -59385,6 +58081,9 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
     intervalDays?: NullableIntFieldUpdateOperationsInput | number | null
     supervisor?: StringFieldUpdateOperationsInput | string
     assignee?: StaffUpdateOneWithoutAssignedRecurringStepsNestedInput
@@ -59405,6 +58104,9 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
     intervalDays?: NullableIntFieldUpdateOperationsInput | number | null
     supervisor?: StringFieldUpdateOperationsInput | string
     occurrences?: RecurringTaskOccurrenceUncheckedUpdateManyWithoutScheduleStepNestedInput
@@ -59422,6 +58124,9 @@ export namespace Prisma {
     department?: string | null
     templateId?: string | null
     assigneeId?: string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: string | null
+    estimatedHours?: number | null
     intervalDays?: number | null
     supervisor?: string
   }
@@ -59435,6 +58140,9 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
     intervalDays?: NullableIntFieldUpdateOperationsInput | number | null
     supervisor?: StringFieldUpdateOperationsInput | string
   }
@@ -59451,6 +58159,9 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
     intervalDays?: NullableIntFieldUpdateOperationsInput | number | null
     supervisor?: StringFieldUpdateOperationsInput | string
   }
@@ -60368,11 +59079,6 @@ export namespace Prisma {
     none?: ClientInstallmentWhereInput
   }
 
-  export type ClientSchemaNullableRelationFilter = {
-    is?: ClientSchemaWhereInput | null
-    isNot?: ClientSchemaWhereInput | null
-  }
-
   export type StaffNullableRelationFilter = {
     is?: StaffWhereInput | null
     isNot?: StaffWhereInput | null
@@ -60730,20 +59436,10 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
-  export type ClientSchemaListRelationFilter = {
-    every?: ClientSchemaWhereInput
-    some?: ClientSchemaWhereInput
-    none?: ClientSchemaWhereInput
-  }
-
   export type ServiceListRelationFilter = {
     every?: ServiceWhereInput
     some?: ServiceWhereInput
     none?: ServiceWhereInput
-  }
-
-  export type ClientSchemaOrderByRelationAggregateInput = {
-    _count?: SortOrder
   }
 
   export type ServiceOrderByRelationAggregateInput = {
@@ -60810,54 +59506,6 @@ export namespace Prisma {
   export type ClientRelationFilter = {
     is?: ClientWhereInput
     isNot?: ClientWhereInput
-  }
-
-  export type ClientSchemaCountOrderByAggregateInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    clientId?: SortOrder
-    portfolioId?: SortOrder
-    saturday?: SortOrder
-    sunday?: SortOrder
-    monday?: SortOrder
-    tuesday?: SortOrder
-    wednesday?: SortOrder
-    thursday?: SortOrder
-    friday?: SortOrder
-    notes?: SortOrder
-  }
-
-  export type ClientSchemaMaxOrderByAggregateInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    clientId?: SortOrder
-    portfolioId?: SortOrder
-    saturday?: SortOrder
-    sunday?: SortOrder
-    monday?: SortOrder
-    tuesday?: SortOrder
-    wednesday?: SortOrder
-    thursday?: SortOrder
-    friday?: SortOrder
-    notes?: SortOrder
-  }
-
-  export type ClientSchemaMinOrderByAggregateInput = {
-    id?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    clientId?: SortOrder
-    portfolioId?: SortOrder
-    saturday?: SortOrder
-    sunday?: SortOrder
-    monday?: SortOrder
-    tuesday?: SortOrder
-    wednesday?: SortOrder
-    thursday?: SortOrder
-    friday?: SortOrder
-    notes?: SortOrder
   }
 
   export type SubServiceRelationFilter = {
@@ -62604,6 +61252,9 @@ export namespace Prisma {
     department?: SortOrder
     templateId?: SortOrder
     assigneeId?: SortOrder
+    assigneeIds?: SortOrder
+    startHour?: SortOrder
+    estimatedHours?: SortOrder
     intervalDays?: SortOrder
     supervisor?: SortOrder
   }
@@ -62612,6 +61263,7 @@ export namespace Prisma {
     dayOfWeek?: SortOrder
     dayOfMonth?: SortOrder
     stepOrder?: SortOrder
+    estimatedHours?: SortOrder
     intervalDays?: SortOrder
   }
 
@@ -62627,6 +61279,8 @@ export namespace Prisma {
     department?: SortOrder
     templateId?: SortOrder
     assigneeId?: SortOrder
+    startHour?: SortOrder
+    estimatedHours?: SortOrder
     intervalDays?: SortOrder
     supervisor?: SortOrder
   }
@@ -62643,6 +61297,8 @@ export namespace Prisma {
     department?: SortOrder
     templateId?: SortOrder
     assigneeId?: SortOrder
+    startHour?: SortOrder
+    estimatedHours?: SortOrder
     intervalDays?: SortOrder
     supervisor?: SortOrder
   }
@@ -62651,6 +61307,7 @@ export namespace Prisma {
     dayOfWeek?: SortOrder
     dayOfMonth?: SortOrder
     stepOrder?: SortOrder
+    estimatedHours?: SortOrder
     intervalDays?: SortOrder
   }
 
@@ -63880,12 +62537,6 @@ export namespace Prisma {
     connect?: ClientInstallmentWhereUniqueInput | ClientInstallmentWhereUniqueInput[]
   }
 
-  export type ClientSchemaCreateNestedOneWithoutClientInput = {
-    create?: XOR<ClientSchemaCreateWithoutClientInput, ClientSchemaUncheckedCreateWithoutClientInput>
-    connectOrCreate?: ClientSchemaCreateOrConnectWithoutClientInput
-    connect?: ClientSchemaWhereUniqueInput
-  }
-
   export type StaffCreateNestedOneWithoutManagedClientsInput = {
     create?: XOR<StaffCreateWithoutManagedClientsInput, StaffUncheckedCreateWithoutManagedClientsInput>
     connectOrCreate?: StaffCreateOrConnectWithoutManagedClientsInput
@@ -63966,12 +62617,6 @@ export namespace Prisma {
     connectOrCreate?: ClientInstallmentCreateOrConnectWithoutClientInput | ClientInstallmentCreateOrConnectWithoutClientInput[]
     createMany?: ClientInstallmentCreateManyClientInputEnvelope
     connect?: ClientInstallmentWhereUniqueInput | ClientInstallmentWhereUniqueInput[]
-  }
-
-  export type ClientSchemaUncheckedCreateNestedOneWithoutClientInput = {
-    create?: XOR<ClientSchemaCreateWithoutClientInput, ClientSchemaUncheckedCreateWithoutClientInput>
-    connectOrCreate?: ClientSchemaCreateOrConnectWithoutClientInput
-    connect?: ClientSchemaWhereUniqueInput
   }
 
   export type ClientTaskUncheckedCreateNestedManyWithoutClientInput = {
@@ -64082,16 +62727,6 @@ export namespace Prisma {
     update?: ClientInstallmentUpdateWithWhereUniqueWithoutClientInput | ClientInstallmentUpdateWithWhereUniqueWithoutClientInput[]
     updateMany?: ClientInstallmentUpdateManyWithWhereWithoutClientInput | ClientInstallmentUpdateManyWithWhereWithoutClientInput[]
     deleteMany?: ClientInstallmentScalarWhereInput | ClientInstallmentScalarWhereInput[]
-  }
-
-  export type ClientSchemaUpdateOneWithoutClientNestedInput = {
-    create?: XOR<ClientSchemaCreateWithoutClientInput, ClientSchemaUncheckedCreateWithoutClientInput>
-    connectOrCreate?: ClientSchemaCreateOrConnectWithoutClientInput
-    upsert?: ClientSchemaUpsertWithoutClientInput
-    disconnect?: ClientSchemaWhereInput | boolean
-    delete?: ClientSchemaWhereInput | boolean
-    connect?: ClientSchemaWhereUniqueInput
-    update?: XOR<XOR<ClientSchemaUpdateToOneWithWhereWithoutClientInput, ClientSchemaUpdateWithoutClientInput>, ClientSchemaUncheckedUpdateWithoutClientInput>
   }
 
   export type StaffUpdateOneWithoutManagedClientsNestedInput = {
@@ -64252,16 +62887,6 @@ export namespace Prisma {
     update?: ClientInstallmentUpdateWithWhereUniqueWithoutClientInput | ClientInstallmentUpdateWithWhereUniqueWithoutClientInput[]
     updateMany?: ClientInstallmentUpdateManyWithWhereWithoutClientInput | ClientInstallmentUpdateManyWithWhereWithoutClientInput[]
     deleteMany?: ClientInstallmentScalarWhereInput | ClientInstallmentScalarWhereInput[]
-  }
-
-  export type ClientSchemaUncheckedUpdateOneWithoutClientNestedInput = {
-    create?: XOR<ClientSchemaCreateWithoutClientInput, ClientSchemaUncheckedCreateWithoutClientInput>
-    connectOrCreate?: ClientSchemaCreateOrConnectWithoutClientInput
-    upsert?: ClientSchemaUpsertWithoutClientInput
-    disconnect?: ClientSchemaWhereInput | boolean
-    delete?: ClientSchemaWhereInput | boolean
-    connect?: ClientSchemaWhereUniqueInput
-    update?: XOR<XOR<ClientSchemaUpdateToOneWithWhereWithoutClientInput, ClientSchemaUpdateWithoutClientInput>, ClientSchemaUncheckedUpdateWithoutClientInput>
   }
 
   export type ClientTaskUncheckedUpdateManyWithoutClientNestedInput = {
@@ -64600,13 +63225,6 @@ export namespace Prisma {
     deleteMany?: IncomeServiceAgreementScalarWhereInput | IncomeServiceAgreementScalarWhereInput[]
   }
 
-  export type ClientSchemaCreateNestedManyWithoutPortfolioInput = {
-    create?: XOR<ClientSchemaCreateWithoutPortfolioInput, ClientSchemaUncheckedCreateWithoutPortfolioInput> | ClientSchemaCreateWithoutPortfolioInput[] | ClientSchemaUncheckedCreateWithoutPortfolioInput[]
-    connectOrCreate?: ClientSchemaCreateOrConnectWithoutPortfolioInput | ClientSchemaCreateOrConnectWithoutPortfolioInput[]
-    createMany?: ClientSchemaCreateManyPortfolioInputEnvelope
-    connect?: ClientSchemaWhereUniqueInput | ClientSchemaWhereUniqueInput[]
-  }
-
   export type ClientCreateNestedManyWithoutPortfolioInput = {
     create?: XOR<ClientCreateWithoutPortfolioInput, ClientUncheckedCreateWithoutPortfolioInput> | ClientCreateWithoutPortfolioInput[] | ClientUncheckedCreateWithoutPortfolioInput[]
     connectOrCreate?: ClientCreateOrConnectWithoutPortfolioInput | ClientCreateOrConnectWithoutPortfolioInput[]
@@ -64656,13 +63274,6 @@ export namespace Prisma {
     connect?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
   }
 
-  export type ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput = {
-    create?: XOR<ClientSchemaCreateWithoutPortfolioInput, ClientSchemaUncheckedCreateWithoutPortfolioInput> | ClientSchemaCreateWithoutPortfolioInput[] | ClientSchemaUncheckedCreateWithoutPortfolioInput[]
-    connectOrCreate?: ClientSchemaCreateOrConnectWithoutPortfolioInput | ClientSchemaCreateOrConnectWithoutPortfolioInput[]
-    createMany?: ClientSchemaCreateManyPortfolioInputEnvelope
-    connect?: ClientSchemaWhereUniqueInput | ClientSchemaWhereUniqueInput[]
-  }
-
   export type ClientUncheckedCreateNestedManyWithoutPortfolioInput = {
     create?: XOR<ClientCreateWithoutPortfolioInput, ClientUncheckedCreateWithoutPortfolioInput> | ClientCreateWithoutPortfolioInput[] | ClientUncheckedCreateWithoutPortfolioInput[]
     connectOrCreate?: ClientCreateOrConnectWithoutPortfolioInput | ClientCreateOrConnectWithoutPortfolioInput[]
@@ -64710,20 +63321,6 @@ export namespace Prisma {
     connectOrCreate?: StaffCreateOrConnectWithoutPortfolioInput | StaffCreateOrConnectWithoutPortfolioInput[]
     createMany?: StaffCreateManyPortfolioInputEnvelope
     connect?: StaffWhereUniqueInput | StaffWhereUniqueInput[]
-  }
-
-  export type ClientSchemaUpdateManyWithoutPortfolioNestedInput = {
-    create?: XOR<ClientSchemaCreateWithoutPortfolioInput, ClientSchemaUncheckedCreateWithoutPortfolioInput> | ClientSchemaCreateWithoutPortfolioInput[] | ClientSchemaUncheckedCreateWithoutPortfolioInput[]
-    connectOrCreate?: ClientSchemaCreateOrConnectWithoutPortfolioInput | ClientSchemaCreateOrConnectWithoutPortfolioInput[]
-    upsert?: ClientSchemaUpsertWithWhereUniqueWithoutPortfolioInput | ClientSchemaUpsertWithWhereUniqueWithoutPortfolioInput[]
-    createMany?: ClientSchemaCreateManyPortfolioInputEnvelope
-    set?: ClientSchemaWhereUniqueInput | ClientSchemaWhereUniqueInput[]
-    disconnect?: ClientSchemaWhereUniqueInput | ClientSchemaWhereUniqueInput[]
-    delete?: ClientSchemaWhereUniqueInput | ClientSchemaWhereUniqueInput[]
-    connect?: ClientSchemaWhereUniqueInput | ClientSchemaWhereUniqueInput[]
-    update?: ClientSchemaUpdateWithWhereUniqueWithoutPortfolioInput | ClientSchemaUpdateWithWhereUniqueWithoutPortfolioInput[]
-    updateMany?: ClientSchemaUpdateManyWithWhereWithoutPortfolioInput | ClientSchemaUpdateManyWithWhereWithoutPortfolioInput[]
-    deleteMany?: ClientSchemaScalarWhereInput | ClientSchemaScalarWhereInput[]
   }
 
   export type ClientUpdateManyWithoutPortfolioNestedInput = {
@@ -64824,20 +63421,6 @@ export namespace Prisma {
     deleteMany?: StaffScalarWhereInput | StaffScalarWhereInput[]
   }
 
-  export type ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput = {
-    create?: XOR<ClientSchemaCreateWithoutPortfolioInput, ClientSchemaUncheckedCreateWithoutPortfolioInput> | ClientSchemaCreateWithoutPortfolioInput[] | ClientSchemaUncheckedCreateWithoutPortfolioInput[]
-    connectOrCreate?: ClientSchemaCreateOrConnectWithoutPortfolioInput | ClientSchemaCreateOrConnectWithoutPortfolioInput[]
-    upsert?: ClientSchemaUpsertWithWhereUniqueWithoutPortfolioInput | ClientSchemaUpsertWithWhereUniqueWithoutPortfolioInput[]
-    createMany?: ClientSchemaCreateManyPortfolioInputEnvelope
-    set?: ClientSchemaWhereUniqueInput | ClientSchemaWhereUniqueInput[]
-    disconnect?: ClientSchemaWhereUniqueInput | ClientSchemaWhereUniqueInput[]
-    delete?: ClientSchemaWhereUniqueInput | ClientSchemaWhereUniqueInput[]
-    connect?: ClientSchemaWhereUniqueInput | ClientSchemaWhereUniqueInput[]
-    update?: ClientSchemaUpdateWithWhereUniqueWithoutPortfolioInput | ClientSchemaUpdateWithWhereUniqueWithoutPortfolioInput[]
-    updateMany?: ClientSchemaUpdateManyWithWhereWithoutPortfolioInput | ClientSchemaUpdateManyWithWhereWithoutPortfolioInput[]
-    deleteMany?: ClientSchemaScalarWhereInput | ClientSchemaScalarWhereInput[]
-  }
-
   export type ClientUncheckedUpdateManyWithoutPortfolioNestedInput = {
     create?: XOR<ClientCreateWithoutPortfolioInput, ClientUncheckedCreateWithoutPortfolioInput> | ClientCreateWithoutPortfolioInput[] | ClientUncheckedCreateWithoutPortfolioInput[]
     connectOrCreate?: ClientCreateOrConnectWithoutPortfolioInput | ClientCreateOrConnectWithoutPortfolioInput[]
@@ -64934,36 +63517,6 @@ export namespace Prisma {
     update?: StaffUpdateWithWhereUniqueWithoutPortfolioInput | StaffUpdateWithWhereUniqueWithoutPortfolioInput[]
     updateMany?: StaffUpdateManyWithWhereWithoutPortfolioInput | StaffUpdateManyWithWhereWithoutPortfolioInput[]
     deleteMany?: StaffScalarWhereInput | StaffScalarWhereInput[]
-  }
-
-  export type ClientCreateNestedOneWithoutClientSchemaInput = {
-    create?: XOR<ClientCreateWithoutClientSchemaInput, ClientUncheckedCreateWithoutClientSchemaInput>
-    connectOrCreate?: ClientCreateOrConnectWithoutClientSchemaInput
-    connect?: ClientWhereUniqueInput
-  }
-
-  export type PortfolioCreateNestedOneWithoutClientSchemasInput = {
-    create?: XOR<PortfolioCreateWithoutClientSchemasInput, PortfolioUncheckedCreateWithoutClientSchemasInput>
-    connectOrCreate?: PortfolioCreateOrConnectWithoutClientSchemasInput
-    connect?: PortfolioWhereUniqueInput
-  }
-
-  export type ClientUpdateOneRequiredWithoutClientSchemaNestedInput = {
-    create?: XOR<ClientCreateWithoutClientSchemaInput, ClientUncheckedCreateWithoutClientSchemaInput>
-    connectOrCreate?: ClientCreateOrConnectWithoutClientSchemaInput
-    upsert?: ClientUpsertWithoutClientSchemaInput
-    connect?: ClientWhereUniqueInput
-    update?: XOR<XOR<ClientUpdateToOneWithWhereWithoutClientSchemaInput, ClientUpdateWithoutClientSchemaInput>, ClientUncheckedUpdateWithoutClientSchemaInput>
-  }
-
-  export type PortfolioUpdateOneWithoutClientSchemasNestedInput = {
-    create?: XOR<PortfolioCreateWithoutClientSchemasInput, PortfolioUncheckedCreateWithoutClientSchemasInput>
-    connectOrCreate?: PortfolioCreateOrConnectWithoutClientSchemasInput
-    upsert?: PortfolioUpsertWithoutClientSchemasInput
-    disconnect?: PortfolioWhereInput | boolean
-    delete?: PortfolioWhereInput | boolean
-    connect?: PortfolioWhereUniqueInput
-    update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutClientSchemasInput, PortfolioUpdateWithoutClientSchemasInput>, PortfolioUncheckedUpdateWithoutClientSchemasInput>
   }
 
   export type ClientCreateNestedOneWithoutClientSubServiceInput = {
@@ -68277,7 +66830,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
@@ -68310,7 +66862,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
@@ -68536,6 +67087,9 @@ export namespace Prisma {
     label: string
     contentType?: $Enums.ContentType | null
     department?: string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: string | null
+    estimatedHours?: number | null
     intervalDays?: number | null
     supervisor?: string
     schedule: RecurringScheduleCreateNestedOneWithoutStepsInput
@@ -68554,6 +67108,9 @@ export namespace Prisma {
     contentType?: $Enums.ContentType | null
     department?: string | null
     templateId?: string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: string | null
+    estimatedHours?: number | null
     intervalDays?: number | null
     supervisor?: string
     occurrences?: RecurringTaskOccurrenceUncheckedCreateNestedManyWithoutScheduleStepInput
@@ -68618,7 +67175,6 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
-    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
     clients?: ClientCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
     contracts?: ContractCreateNestedManyWithoutPortfolioInput
@@ -68644,7 +67200,6 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
-    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
     clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
     contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
@@ -69298,6 +67853,9 @@ export namespace Prisma {
     department?: StringNullableFilter<"RecurringScheduleStep"> | string | null
     templateId?: StringNullableFilter<"RecurringScheduleStep"> | string | null
     assigneeId?: StringNullableFilter<"RecurringScheduleStep"> | string | null
+    assigneeIds?: JsonNullableFilter<"RecurringScheduleStep">
+    startHour?: StringNullableFilter<"RecurringScheduleStep"> | string | null
+    estimatedHours?: FloatNullableFilter<"RecurringScheduleStep"> | number | null
     intervalDays?: IntNullableFilter<"RecurringScheduleStep"> | number | null
     supervisor?: StringFilter<"RecurringScheduleStep"> | string
   }
@@ -69361,7 +67919,6 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
-    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUpdateManyWithoutPortfolioNestedInput
@@ -69387,7 +67944,6 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
-    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
@@ -70024,41 +68580,6 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type ClientSchemaCreateWithoutClientInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    saturday?: string | null
-    sunday?: string | null
-    monday?: string | null
-    tuesday?: string | null
-    wednesday?: string | null
-    thursday?: string | null
-    friday?: string | null
-    notes?: string | null
-    portfolio?: PortfolioCreateNestedOneWithoutClientSchemasInput
-  }
-
-  export type ClientSchemaUncheckedCreateWithoutClientInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    portfolioId?: string | null
-    saturday?: string | null
-    sunday?: string | null
-    monday?: string | null
-    tuesday?: string | null
-    wednesday?: string | null
-    thursday?: string | null
-    friday?: string | null
-    notes?: string | null
-  }
-
-  export type ClientSchemaCreateOrConnectWithoutClientInput = {
-    where: ClientSchemaWhereUniqueInput
-    create: XOR<ClientSchemaCreateWithoutClientInput, ClientSchemaUncheckedCreateWithoutClientInput>
-  }
-
   export type StaffCreateWithoutManagedClientsInput = {
     id: string
     createdAt?: Date | string
@@ -70161,7 +68682,6 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
-    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
     contracts?: ContractCreateNestedManyWithoutPortfolioInput
     projects?: ProjectCreateNestedManyWithoutPortfolioInput
@@ -70187,7 +68707,6 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
-    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
     contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
     projects?: ProjectUncheckedCreateNestedManyWithoutPortfolioInput
@@ -70565,47 +69084,6 @@ export namespace Prisma {
     contractId?: StringNullableFilter<"ClientInstallment"> | string | null
   }
 
-  export type ClientSchemaUpsertWithoutClientInput = {
-    update: XOR<ClientSchemaUpdateWithoutClientInput, ClientSchemaUncheckedUpdateWithoutClientInput>
-    create: XOR<ClientSchemaCreateWithoutClientInput, ClientSchemaUncheckedCreateWithoutClientInput>
-    where?: ClientSchemaWhereInput
-  }
-
-  export type ClientSchemaUpdateToOneWithWhereWithoutClientInput = {
-    where?: ClientSchemaWhereInput
-    data: XOR<ClientSchemaUpdateWithoutClientInput, ClientSchemaUncheckedUpdateWithoutClientInput>
-  }
-
-  export type ClientSchemaUpdateWithoutClientInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    saturday?: NullableStringFieldUpdateOperationsInput | string | null
-    sunday?: NullableStringFieldUpdateOperationsInput | string | null
-    monday?: NullableStringFieldUpdateOperationsInput | string | null
-    tuesday?: NullableStringFieldUpdateOperationsInput | string | null
-    wednesday?: NullableStringFieldUpdateOperationsInput | string | null
-    thursday?: NullableStringFieldUpdateOperationsInput | string | null
-    friday?: NullableStringFieldUpdateOperationsInput | string | null
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    portfolio?: PortfolioUpdateOneWithoutClientSchemasNestedInput
-  }
-
-  export type ClientSchemaUncheckedUpdateWithoutClientInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    saturday?: NullableStringFieldUpdateOperationsInput | string | null
-    sunday?: NullableStringFieldUpdateOperationsInput | string | null
-    monday?: NullableStringFieldUpdateOperationsInput | string | null
-    tuesday?: NullableStringFieldUpdateOperationsInput | string | null
-    wednesday?: NullableStringFieldUpdateOperationsInput | string | null
-    thursday?: NullableStringFieldUpdateOperationsInput | string | null
-    friday?: NullableStringFieldUpdateOperationsInput | string | null
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
   export type StaffUpsertWithoutManagedClientsInput = {
     update: XOR<StaffUpdateWithoutManagedClientsInput, StaffUncheckedUpdateWithoutManagedClientsInput>
     create: XOR<StaffCreateWithoutManagedClientsInput, StaffUncheckedCreateWithoutManagedClientsInput>
@@ -70725,7 +69203,6 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
-    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUpdateManyWithoutPortfolioNestedInput
     projects?: ProjectUpdateManyWithoutPortfolioNestedInput
@@ -70751,7 +69228,6 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
-    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutPortfolioNestedInput
@@ -70988,7 +69464,6 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
-    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
     clients?: ClientCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
     contracts?: ContractCreateNestedManyWithoutPortfolioInput
@@ -71014,7 +69489,6 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
-    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
     clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
     contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
@@ -71124,7 +69598,6 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
-    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUpdateManyWithoutPortfolioNestedInput
@@ -71150,7 +69623,6 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
-    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
@@ -71364,46 +69836,6 @@ export namespace Prisma {
     clientService?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
   }
 
-  export type ClientSchemaCreateWithoutPortfolioInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    saturday?: string | null
-    sunday?: string | null
-    monday?: string | null
-    tuesday?: string | null
-    wednesday?: string | null
-    thursday?: string | null
-    friday?: string | null
-    notes?: string | null
-    client: ClientCreateNestedOneWithoutClientSchemaInput
-  }
-
-  export type ClientSchemaUncheckedCreateWithoutPortfolioInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    clientId: string
-    saturday?: string | null
-    sunday?: string | null
-    monday?: string | null
-    tuesday?: string | null
-    wednesday?: string | null
-    thursday?: string | null
-    friday?: string | null
-    notes?: string | null
-  }
-
-  export type ClientSchemaCreateOrConnectWithoutPortfolioInput = {
-    where: ClientSchemaWhereUniqueInput
-    create: XOR<ClientSchemaCreateWithoutPortfolioInput, ClientSchemaUncheckedCreateWithoutPortfolioInput>
-  }
-
-  export type ClientSchemaCreateManyPortfolioInputEnvelope = {
-    data: ClientSchemaCreateManyPortfolioInput | ClientSchemaCreateManyPortfolioInput[]
-    skipDuplicates?: boolean
-  }
-
   export type ClientCreateWithoutPortfolioInput = {
     id: string
     createdAt?: Date | string | null
@@ -71426,7 +69858,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
@@ -71459,7 +69890,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
@@ -71792,41 +70222,6 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type ClientSchemaUpsertWithWhereUniqueWithoutPortfolioInput = {
-    where: ClientSchemaWhereUniqueInput
-    update: XOR<ClientSchemaUpdateWithoutPortfolioInput, ClientSchemaUncheckedUpdateWithoutPortfolioInput>
-    create: XOR<ClientSchemaCreateWithoutPortfolioInput, ClientSchemaUncheckedCreateWithoutPortfolioInput>
-  }
-
-  export type ClientSchemaUpdateWithWhereUniqueWithoutPortfolioInput = {
-    where: ClientSchemaWhereUniqueInput
-    data: XOR<ClientSchemaUpdateWithoutPortfolioInput, ClientSchemaUncheckedUpdateWithoutPortfolioInput>
-  }
-
-  export type ClientSchemaUpdateManyWithWhereWithoutPortfolioInput = {
-    where: ClientSchemaScalarWhereInput
-    data: XOR<ClientSchemaUpdateManyMutationInput, ClientSchemaUncheckedUpdateManyWithoutPortfolioInput>
-  }
-
-  export type ClientSchemaScalarWhereInput = {
-    AND?: ClientSchemaScalarWhereInput | ClientSchemaScalarWhereInput[]
-    OR?: ClientSchemaScalarWhereInput[]
-    NOT?: ClientSchemaScalarWhereInput | ClientSchemaScalarWhereInput[]
-    id?: StringFilter<"ClientSchema"> | string
-    createdAt?: DateTimeFilter<"ClientSchema"> | Date | string
-    updatedAt?: DateTimeFilter<"ClientSchema"> | Date | string
-    clientId?: StringFilter<"ClientSchema"> | string
-    portfolioId?: StringNullableFilter<"ClientSchema"> | string | null
-    saturday?: StringNullableFilter<"ClientSchema"> | string | null
-    sunday?: StringNullableFilter<"ClientSchema"> | string | null
-    monday?: StringNullableFilter<"ClientSchema"> | string | null
-    tuesday?: StringNullableFilter<"ClientSchema"> | string | null
-    wednesday?: StringNullableFilter<"ClientSchema"> | string | null
-    thursday?: StringNullableFilter<"ClientSchema"> | string | null
-    friday?: StringNullableFilter<"ClientSchema"> | string | null
-    notes?: StringNullableFilter<"ClientSchema"> | string | null
-  }
-
   export type ClientUpsertWithWhereUniqueWithoutPortfolioInput = {
     where: ClientWhereUniqueInput
     update: XOR<ClientUpdateWithoutPortfolioInput, ClientUncheckedUpdateWithoutPortfolioInput>
@@ -71954,270 +70349,6 @@ export namespace Prisma {
     data: XOR<StaffUpdateManyMutationInput, StaffUncheckedUpdateManyWithoutPortfolioInput>
   }
 
-  export type ClientCreateWithoutClientSchemaInput = {
-    id: string
-    createdAt?: Date | string | null
-    updatedAt?: Date | string | null
-    institution: string
-    email: string
-    phone: string
-    source: string
-    address?: string | null
-    clientType?: $Enums.ClientType
-    companyName?: string | null
-    contactPerson?: string | null
-    contractEndDate?: Date | string | null
-    contractStartDate?: Date | string | null
-    isActive?: boolean
-    monthlyBudget?: number | null
-    notes?: string | null
-    isDraft?: boolean
-    clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
-    serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
-    clientService?: ClientServiceCreateNestedManyWithoutClientInput
-    installments?: ClientInstallmentCreateNestedManyWithoutClientInput
-    accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
-    portfolio?: PortfolioCreateNestedOneWithoutClientsInput
-    clientTask?: ClientTaskCreateNestedManyWithoutClientInput
-    contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
-    contentRequests?: ContentRequestCreateNestedManyWithoutClientInput
-    contracts?: ContractCreateNestedManyWithoutClientInput
-    projects?: ProjectCreateNestedManyWithoutClientInput
-    recurringSchedules?: RecurringScheduleCreateNestedManyWithoutClientInput
-  }
-
-  export type ClientUncheckedCreateWithoutClientSchemaInput = {
-    id: string
-    createdAt?: Date | string | null
-    updatedAt?: Date | string | null
-    institution: string
-    email: string
-    phone: string
-    source: string
-    accountManagerId?: string | null
-    address?: string | null
-    portfolioId?: string | null
-    clientType?: $Enums.ClientType
-    companyName?: string | null
-    contactPerson?: string | null
-    contractEndDate?: Date | string | null
-    contractStartDate?: Date | string | null
-    isActive?: boolean
-    monthlyBudget?: number | null
-    notes?: string | null
-    isDraft?: boolean
-    clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
-    serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
-    clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
-    installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
-    clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
-    contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
-    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
-    contracts?: ContractUncheckedCreateNestedManyWithoutClientInput
-    projects?: ProjectUncheckedCreateNestedManyWithoutClientInput
-    recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutClientInput
-  }
-
-  export type ClientCreateOrConnectWithoutClientSchemaInput = {
-    where: ClientWhereUniqueInput
-    create: XOR<ClientCreateWithoutClientSchemaInput, ClientUncheckedCreateWithoutClientSchemaInput>
-  }
-
-  export type PortfolioCreateWithoutClientSchemasInput = {
-    id: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    name: string
-    location?: string | null
-    phone?: string | null
-    isActive?: boolean
-    description?: string | null
-    customDomain?: string | null
-    logoUrl?: string | null
-    primaryColor?: string
-    secondaryColor?: string
-    slug?: string | null
-    iconLogoUrl?: string | null
-    slugClearedOnce?: boolean
-    usesRootLogin?: boolean
-    clients?: ClientCreateNestedManyWithoutPortfolioInput
-    contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
-    contracts?: ContractCreateNestedManyWithoutPortfolioInput
-    projects?: ProjectCreateNestedManyWithoutPortfolioInput
-    recurringSchedules?: RecurringScheduleCreateNestedManyWithoutPortfolioInput
-    services?: ServiceCreateNestedManyWithoutPortfolioInput
-    users?: StaffCreateNestedManyWithoutPortfolioInput
-  }
-
-  export type PortfolioUncheckedCreateWithoutClientSchemasInput = {
-    id: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    name: string
-    location?: string | null
-    phone?: string | null
-    isActive?: boolean
-    description?: string | null
-    customDomain?: string | null
-    logoUrl?: string | null
-    primaryColor?: string
-    secondaryColor?: string
-    slug?: string | null
-    iconLogoUrl?: string | null
-    slugClearedOnce?: boolean
-    usesRootLogin?: boolean
-    clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
-    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
-    contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
-    projects?: ProjectUncheckedCreateNestedManyWithoutPortfolioInput
-    recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutPortfolioInput
-    services?: ServiceUncheckedCreateNestedManyWithoutPortfolioInput
-    users?: StaffUncheckedCreateNestedManyWithoutPortfolioInput
-  }
-
-  export type PortfolioCreateOrConnectWithoutClientSchemasInput = {
-    where: PortfolioWhereUniqueInput
-    create: XOR<PortfolioCreateWithoutClientSchemasInput, PortfolioUncheckedCreateWithoutClientSchemasInput>
-  }
-
-  export type ClientUpsertWithoutClientSchemaInput = {
-    update: XOR<ClientUpdateWithoutClientSchemaInput, ClientUncheckedUpdateWithoutClientSchemaInput>
-    create: XOR<ClientCreateWithoutClientSchemaInput, ClientUncheckedCreateWithoutClientSchemaInput>
-    where?: ClientWhereInput
-  }
-
-  export type ClientUpdateToOneWithWhereWithoutClientSchemaInput = {
-    where?: ClientWhereInput
-    data: XOR<ClientUpdateWithoutClientSchemaInput, ClientUncheckedUpdateWithoutClientSchemaInput>
-  }
-
-  export type ClientUpdateWithoutClientSchemaInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    institution?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    phone?: StringFieldUpdateOperationsInput | string
-    source?: StringFieldUpdateOperationsInput | string
-    address?: NullableStringFieldUpdateOperationsInput | string | null
-    clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
-    companyName?: NullableStringFieldUpdateOperationsInput | string | null
-    contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
-    contractEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    contractStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    isDraft?: BoolFieldUpdateOperationsInput | boolean
-    clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
-    serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
-    clientService?: ClientServiceUpdateManyWithoutClientNestedInput
-    installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
-    accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
-    portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
-    clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
-    contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
-    contentRequests?: ContentRequestUpdateManyWithoutClientNestedInput
-    contracts?: ContractUpdateManyWithoutClientNestedInput
-    projects?: ProjectUpdateManyWithoutClientNestedInput
-    recurringSchedules?: RecurringScheduleUpdateManyWithoutClientNestedInput
-  }
-
-  export type ClientUncheckedUpdateWithoutClientSchemaInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    institution?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    phone?: StringFieldUpdateOperationsInput | string
-    source?: StringFieldUpdateOperationsInput | string
-    accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
-    address?: NullableStringFieldUpdateOperationsInput | string | null
-    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
-    clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
-    companyName?: NullableStringFieldUpdateOperationsInput | string | null
-    contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
-    contractEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    contractStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    isDraft?: BoolFieldUpdateOperationsInput | boolean
-    clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
-    serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
-    clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
-    installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
-    clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
-    contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
-    contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
-    contracts?: ContractUncheckedUpdateManyWithoutClientNestedInput
-    projects?: ProjectUncheckedUpdateManyWithoutClientNestedInput
-    recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutClientNestedInput
-  }
-
-  export type PortfolioUpsertWithoutClientSchemasInput = {
-    update: XOR<PortfolioUpdateWithoutClientSchemasInput, PortfolioUncheckedUpdateWithoutClientSchemasInput>
-    create: XOR<PortfolioCreateWithoutClientSchemasInput, PortfolioUncheckedCreateWithoutClientSchemasInput>
-    where?: PortfolioWhereInput
-  }
-
-  export type PortfolioUpdateToOneWithWhereWithoutClientSchemasInput = {
-    where?: PortfolioWhereInput
-    data: XOR<PortfolioUpdateWithoutClientSchemasInput, PortfolioUncheckedUpdateWithoutClientSchemasInput>
-  }
-
-  export type PortfolioUpdateWithoutClientSchemasInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    location?: NullableStringFieldUpdateOperationsInput | string | null
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    customDomain?: NullableStringFieldUpdateOperationsInput | string | null
-    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    primaryColor?: StringFieldUpdateOperationsInput | string
-    secondaryColor?: StringFieldUpdateOperationsInput | string
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
-    usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
-    clients?: ClientUpdateManyWithoutPortfolioNestedInput
-    contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
-    contracts?: ContractUpdateManyWithoutPortfolioNestedInput
-    projects?: ProjectUpdateManyWithoutPortfolioNestedInput
-    recurringSchedules?: RecurringScheduleUpdateManyWithoutPortfolioNestedInput
-    services?: ServiceUpdateManyWithoutPortfolioNestedInput
-    users?: StaffUpdateManyWithoutPortfolioNestedInput
-  }
-
-  export type PortfolioUncheckedUpdateWithoutClientSchemasInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    name?: StringFieldUpdateOperationsInput | string
-    location?: NullableStringFieldUpdateOperationsInput | string | null
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
-    isActive?: BoolFieldUpdateOperationsInput | boolean
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    customDomain?: NullableStringFieldUpdateOperationsInput | string | null
-    logoUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    primaryColor?: StringFieldUpdateOperationsInput | string
-    secondaryColor?: StringFieldUpdateOperationsInput | string
-    slug?: NullableStringFieldUpdateOperationsInput | string | null
-    iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
-    slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
-    usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
-    clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
-    contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
-    contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
-    projects?: ProjectUncheckedUpdateManyWithoutPortfolioNestedInput
-    recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutPortfolioNestedInput
-    services?: ServiceUncheckedUpdateManyWithoutPortfolioNestedInput
-    users?: StaffUncheckedUpdateManyWithoutPortfolioNestedInput
-  }
-
   export type ClientCreateWithoutClientSubServiceInput = {
     id: string
     createdAt?: Date | string | null
@@ -72239,7 +70370,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
@@ -72273,7 +70403,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
@@ -72350,7 +70479,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
@@ -72384,7 +70512,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
@@ -72451,7 +70578,6 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
@@ -72485,7 +70611,6 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
@@ -72564,7 +70689,6 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
@@ -72598,7 +70722,6 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
@@ -74042,7 +72165,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
@@ -74076,7 +72198,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
     contracts?: ContractUncheckedCreateNestedManyWithoutClientInput
@@ -74191,7 +72312,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
@@ -74225,7 +72345,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutClientNestedInput
@@ -75377,7 +73496,6 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
@@ -75411,7 +73529,6 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
@@ -75684,7 +73801,6 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
@@ -75718,7 +73834,6 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
@@ -77354,7 +75469,6 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
-    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
     clients?: ClientCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
     contracts?: ContractCreateNestedManyWithoutPortfolioInput
@@ -77380,7 +75494,6 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
-    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
     clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
     contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
@@ -77416,7 +75529,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
@@ -77450,7 +75562,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
@@ -77698,7 +75809,6 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
-    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUpdateManyWithoutPortfolioNestedInput
@@ -77724,7 +75834,6 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
-    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
@@ -77766,7 +75875,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
@@ -77800,7 +75908,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
@@ -78004,7 +76111,6 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
-    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
     clients?: ClientCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
     projects?: ProjectCreateNestedManyWithoutPortfolioInput
@@ -78030,7 +76136,6 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
-    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
     clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
     projects?: ProjectUncheckedCreateNestedManyWithoutPortfolioInput
@@ -78066,7 +76171,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
@@ -78100,7 +76204,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
@@ -78301,7 +76404,6 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
-    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
     projects?: ProjectUpdateManyWithoutPortfolioNestedInput
@@ -78327,7 +76429,6 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
-    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutPortfolioNestedInput
@@ -78369,7 +76470,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
@@ -78403,7 +76503,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
@@ -78572,7 +76671,6 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
@@ -78606,7 +76704,6 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
@@ -78699,7 +76796,6 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
@@ -78733,7 +76829,6 @@ export namespace Prisma {
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
@@ -79112,7 +77207,6 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
-    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
     clients?: ClientCreateNestedManyWithoutPortfolioInput
     contracts?: ContractCreateNestedManyWithoutPortfolioInput
     projects?: ProjectCreateNestedManyWithoutPortfolioInput
@@ -79138,7 +77232,6 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
-    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
     clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
     contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
     projects?: ProjectUncheckedCreateNestedManyWithoutPortfolioInput
@@ -79174,7 +77267,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
@@ -79208,7 +77300,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contracts?: ContractUncheckedCreateNestedManyWithoutClientInput
@@ -79467,7 +77558,6 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
-    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUpdateManyWithoutPortfolioNestedInput
     projects?: ProjectUpdateManyWithoutPortfolioNestedInput
@@ -79493,7 +77583,6 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
-    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutPortfolioNestedInput
@@ -79535,7 +77624,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
@@ -79569,7 +77657,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutClientNestedInput
@@ -80032,6 +78119,9 @@ export namespace Prisma {
     label: string
     contentType?: $Enums.ContentType | null
     department?: string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: string | null
+    estimatedHours?: number | null
     intervalDays?: number | null
     supervisor?: string
     assignee?: StaffCreateNestedOneWithoutAssignedRecurringStepsInput
@@ -80050,6 +78140,9 @@ export namespace Prisma {
     department?: string | null
     templateId?: string | null
     assigneeId?: string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: string | null
+    estimatedHours?: number | null
     intervalDays?: number | null
     supervisor?: string
     occurrences?: RecurringTaskOccurrenceUncheckedCreateNestedManyWithoutScheduleStepInput
@@ -80082,7 +78175,6 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
-    clientSchemas?: ClientSchemaCreateNestedManyWithoutPortfolioInput
     clients?: ClientCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestCreateNestedManyWithoutPortfolioInput
     contracts?: ContractCreateNestedManyWithoutPortfolioInput
@@ -80108,7 +78200,6 @@ export namespace Prisma {
     iconLogoUrl?: string | null
     slugClearedOnce?: boolean
     usesRootLogin?: boolean
-    clientSchemas?: ClientSchemaUncheckedCreateNestedManyWithoutPortfolioInput
     clients?: ClientUncheckedCreateNestedManyWithoutPortfolioInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutPortfolioInput
     contracts?: ContractUncheckedCreateNestedManyWithoutPortfolioInput
@@ -80144,7 +78235,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
@@ -80178,7 +78268,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
@@ -80251,7 +78340,6 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
-    clientSchemas?: ClientSchemaUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUpdateManyWithoutPortfolioNestedInput
@@ -80277,7 +78365,6 @@ export namespace Prisma {
     iconLogoUrl?: NullableStringFieldUpdateOperationsInput | string | null
     slugClearedOnce?: BoolFieldUpdateOperationsInput | boolean
     usesRootLogin?: BoolFieldUpdateOperationsInput | boolean
-    clientSchemas?: ClientSchemaUncheckedUpdateManyWithoutPortfolioNestedInput
     clients?: ClientUncheckedUpdateManyWithoutPortfolioNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutPortfolioNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutPortfolioNestedInput
@@ -80319,7 +78406,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
@@ -80353,7 +78439,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
@@ -80749,6 +78834,9 @@ export namespace Prisma {
     label: string
     contentType?: $Enums.ContentType | null
     department?: string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: string | null
+    estimatedHours?: number | null
     intervalDays?: number | null
     supervisor?: string
     assignee?: StaffCreateNestedOneWithoutAssignedRecurringStepsInput
@@ -80768,6 +78856,9 @@ export namespace Prisma {
     department?: string | null
     templateId?: string | null
     assigneeId?: string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: string | null
+    estimatedHours?: number | null
     intervalDays?: number | null
     supervisor?: string
   }
@@ -80866,6 +78957,9 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
     intervalDays?: NullableIntFieldUpdateOperationsInput | number | null
     supervisor?: StringFieldUpdateOperationsInput | string
     assignee?: StaffUpdateOneWithoutAssignedRecurringStepsNestedInput
@@ -80885,6 +78979,9 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
     intervalDays?: NullableIntFieldUpdateOperationsInput | number | null
     supervisor?: StringFieldUpdateOperationsInput | string
   }
@@ -80986,7 +79083,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaCreateNestedOneWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
@@ -81020,7 +79116,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
-    clientSchema?: ClientSchemaUncheckedCreateNestedOneWithoutClientInput
     clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
     contracts?: ContractUncheckedCreateNestedManyWithoutClientInput
@@ -81179,7 +79274,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
@@ -81213,7 +79307,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutClientNestedInput
@@ -81291,6 +79384,9 @@ export namespace Prisma {
     label: string
     contentType?: $Enums.ContentType | null
     department?: string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: string | null
+    estimatedHours?: number | null
     intervalDays?: number | null
     supervisor?: string
     assignee?: StaffCreateNestedOneWithoutAssignedRecurringStepsInput
@@ -81309,6 +79405,9 @@ export namespace Prisma {
     contentType?: $Enums.ContentType | null
     department?: string | null
     assigneeId?: string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: string | null
+    estimatedHours?: number | null
     intervalDays?: number | null
     supervisor?: string
     occurrences?: RecurringTaskOccurrenceUncheckedCreateNestedManyWithoutScheduleStepInput
@@ -81920,6 +80019,9 @@ export namespace Prisma {
     contentType?: $Enums.ContentType | null
     department?: string | null
     templateId?: string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: string | null
+    estimatedHours?: number | null
     intervalDays?: number | null
     supervisor?: string
   }
@@ -82288,7 +80390,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
@@ -82321,7 +80422,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
@@ -82574,6 +80674,9 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
     intervalDays?: NullableIntFieldUpdateOperationsInput | number | null
     supervisor?: StringFieldUpdateOperationsInput | string
     schedule?: RecurringScheduleUpdateOneRequiredWithoutStepsNestedInput
@@ -82592,6 +80695,9 @@ export namespace Prisma {
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
     intervalDays?: NullableIntFieldUpdateOperationsInput | number | null
     supervisor?: StringFieldUpdateOperationsInput | string
     occurrences?: RecurringTaskOccurrenceUncheckedUpdateManyWithoutScheduleStepNestedInput
@@ -82608,6 +80714,9 @@ export namespace Prisma {
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
     intervalDays?: NullableIntFieldUpdateOperationsInput | number | null
     supervisor?: StringFieldUpdateOperationsInput | string
   }
@@ -83590,21 +81699,6 @@ export namespace Prisma {
     finalAmount?: FloatFieldUpdateOperationsInput | number
   }
 
-  export type ClientSchemaCreateManyPortfolioInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    clientId: string
-    saturday?: string | null
-    sunday?: string | null
-    monday?: string | null
-    tuesday?: string | null
-    wednesday?: string | null
-    thursday?: string | null
-    friday?: string | null
-    notes?: string | null
-  }
-
   export type ClientCreateManyPortfolioInput = {
     id: string
     createdAt?: Date | string | null
@@ -83721,51 +81815,6 @@ export namespace Prisma {
     staffCode?: string | null
   }
 
-  export type ClientSchemaUpdateWithoutPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    saturday?: NullableStringFieldUpdateOperationsInput | string | null
-    sunday?: NullableStringFieldUpdateOperationsInput | string | null
-    monday?: NullableStringFieldUpdateOperationsInput | string | null
-    tuesday?: NullableStringFieldUpdateOperationsInput | string | null
-    wednesday?: NullableStringFieldUpdateOperationsInput | string | null
-    thursday?: NullableStringFieldUpdateOperationsInput | string | null
-    friday?: NullableStringFieldUpdateOperationsInput | string | null
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-    client?: ClientUpdateOneRequiredWithoutClientSchemaNestedInput
-  }
-
-  export type ClientSchemaUncheckedUpdateWithoutPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    clientId?: StringFieldUpdateOperationsInput | string
-    saturday?: NullableStringFieldUpdateOperationsInput | string | null
-    sunday?: NullableStringFieldUpdateOperationsInput | string | null
-    monday?: NullableStringFieldUpdateOperationsInput | string | null
-    tuesday?: NullableStringFieldUpdateOperationsInput | string | null
-    wednesday?: NullableStringFieldUpdateOperationsInput | string | null
-    thursday?: NullableStringFieldUpdateOperationsInput | string | null
-    friday?: NullableStringFieldUpdateOperationsInput | string | null
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type ClientSchemaUncheckedUpdateManyWithoutPortfolioInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    clientId?: StringFieldUpdateOperationsInput | string
-    saturday?: NullableStringFieldUpdateOperationsInput | string | null
-    sunday?: NullableStringFieldUpdateOperationsInput | string | null
-    monday?: NullableStringFieldUpdateOperationsInput | string | null
-    tuesday?: NullableStringFieldUpdateOperationsInput | string | null
-    wednesday?: NullableStringFieldUpdateOperationsInput | string | null
-    thursday?: NullableStringFieldUpdateOperationsInput | string | null
-    friday?: NullableStringFieldUpdateOperationsInput | string | null
-    notes?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
   export type ClientUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -83788,7 +81837,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUpdateOneWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
@@ -83821,7 +81869,6 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
-    clientSchema?: ClientSchemaUncheckedUpdateOneWithoutClientNestedInput
     clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
@@ -85492,6 +83539,9 @@ export namespace Prisma {
     department?: string | null
     templateId?: string | null
     assigneeId?: string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: string | null
+    estimatedHours?: number | null
     intervalDays?: number | null
     supervisor?: string
   }
@@ -85540,6 +83590,9 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
     intervalDays?: NullableIntFieldUpdateOperationsInput | number | null
     supervisor?: StringFieldUpdateOperationsInput | string
     assignee?: StaffUpdateOneWithoutAssignedRecurringStepsNestedInput
@@ -85558,6 +83611,9 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
     intervalDays?: NullableIntFieldUpdateOperationsInput | number | null
     supervisor?: StringFieldUpdateOperationsInput | string
     occurrences?: RecurringTaskOccurrenceUncheckedUpdateManyWithoutScheduleStepNestedInput
@@ -85574,6 +83630,9 @@ export namespace Prisma {
     department?: NullableStringFieldUpdateOperationsInput | string | null
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
     intervalDays?: NullableIntFieldUpdateOperationsInput | number | null
     supervisor?: StringFieldUpdateOperationsInput | string
   }
@@ -85739,6 +83798,9 @@ export namespace Prisma {
     contentType?: $Enums.ContentType | null
     department?: string | null
     assigneeId?: string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: string | null
+    estimatedHours?: number | null
     intervalDays?: number | null
     supervisor?: string
   }
@@ -85764,6 +83826,9 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
     intervalDays?: NullableIntFieldUpdateOperationsInput | number | null
     supervisor?: StringFieldUpdateOperationsInput | string
     assignee?: StaffUpdateOneWithoutAssignedRecurringStepsNestedInput
@@ -85782,6 +83847,9 @@ export namespace Prisma {
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
     intervalDays?: NullableIntFieldUpdateOperationsInput | number | null
     supervisor?: StringFieldUpdateOperationsInput | string
     occurrences?: RecurringTaskOccurrenceUncheckedUpdateManyWithoutScheduleStepNestedInput
@@ -85798,6 +83866,9 @@ export namespace Prisma {
     contentType?: NullableEnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType | null
     department?: NullableStringFieldUpdateOperationsInput | string | null
     assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    assigneeIds?: NullableJsonNullValueInput | InputJsonValue
+    startHour?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedHours?: NullableFloatFieldUpdateOperationsInput | number | null
     intervalDays?: NullableIntFieldUpdateOperationsInput | number | null
     supervisor?: StringFieldUpdateOperationsInput | string
   }
@@ -86103,10 +84174,6 @@ export namespace Prisma {
      * @deprecated Use PortfolioDefaultArgs instead
      */
     export type PortfolioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PortfolioDefaultArgs<ExtArgs>
-    /**
-     * @deprecated Use ClientSchemaDefaultArgs instead
-     */
-    export type ClientSchemaArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ClientSchemaDefaultArgs<ExtArgs>
     /**
      * @deprecated Use ClientSubServiceDefaultArgs instead
      */

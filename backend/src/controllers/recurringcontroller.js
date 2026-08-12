@@ -108,9 +108,9 @@ export const createRecurringSchedule = async (req, res) => {
       ? data.contentType
       : "OTHER";
 
-    const result = await prisma.$transaction(async (tx) => {
+    const schedule = await prisma.$transaction(async (tx) => {
       const id = await generateCustomId({ entityTybe: "recurring_schedules", prisma: tx });
-      const schedule = await tx.recurringSchedule.create({
+      return await tx.recurringSchedule.create({
         data: {
           id,
           name: String(data.name ?? "").trim(),
@@ -128,6 +128,8 @@ export const createRecurringSchedule = async (req, res) => {
               const stepCt = VALID_CONTENT_TYPES.includes(step.contentType)
                 ? step.contentType
                 : null;
+              const stepAssigneeId = step.assigneeId ?? (Array.isArray(step.assigneeIds) && step.assigneeIds.length > 0 ? step.assigneeIds[0] : (data.assigneeId ?? null));
+              const stepAssigneeIds = Array.isArray(step.assigneeIds) && step.assigneeIds.length > 0 ? step.assigneeIds : (stepAssigneeId ? [stepAssigneeId] : null);
               return {
                 dayOfWeek: step.dayOfWeek != null ? Number(step.dayOfWeek) : null,
                 dayOfMonth: step.dayOfMonth != null ? Number(step.dayOfMonth) : null,
@@ -137,7 +139,10 @@ export const createRecurringSchedule = async (req, res) => {
                 contentType: stepCt,
                 department: step.department ?? null,
                 supervisor: step.supervisor ?? "",
-                assigneeId: step.assigneeId ?? data.assigneeId ?? null,
+                assigneeId: stepAssigneeId,
+                assigneeIds: stepAssigneeIds,
+                startHour: step.startHour ?? "09:00",
+                estimatedHours: step.estimatedHours != null ? Number(step.estimatedHours) : 2,
                 templateId: step.templateId ?? null,
               };
             }),
@@ -145,24 +150,21 @@ export const createRecurringSchedule = async (req, res) => {
         },
         include: { steps: true },
       });
-
-      let dailyGeneration = null;
-      if (data.autoGenerateTasks !== false) {
-        try {
-          dailyGeneration = await generateDailyRecurringTasks({
-            runDate: new Date(),
-            scheduleId: schedule.id,
-            tx,
-          });
-        } catch (genErr) {
-          console.error("Auto task generation on schedule create warning:", genErr.message);
-        }
-      }
-
-      return { schedule, dailyGeneration };
     });
 
-    res.status(201).json({ success: true, data: result });
+    let dailyGeneration = null;
+    if (data.autoGenerateTasks !== false) {
+      try {
+        dailyGeneration = await generateDailyRecurringTasks({
+          runDate: new Date(),
+          scheduleId: schedule.id,
+        });
+      } catch (genErr) {
+        console.error("Auto task generation on schedule create warning:", genErr.message);
+      }
+    }
+
+    res.status(201).json({ success: true, data: { schedule, dailyGeneration } });
   } catch (error) {
     console.error("createRecurringSchedule error:", error);
     res.status(500).json({ success: false, error: error.message });
@@ -420,7 +422,10 @@ export const updateRecurringSchedule = async (req, res) => {
                       contentType: stepCt,
                       department: step.department ?? null,
                       supervisor: step.supervisor ?? "",
-                      assigneeId: step.assigneeId ?? null,
+                      assigneeId: step.assigneeId ?? (Array.isArray(step.assigneeIds) && step.assigneeIds.length > 0 ? step.assigneeIds[0] : null),
+                      assigneeIds: Array.isArray(step.assigneeIds) ? step.assigneeIds : (step.assigneeId ? [step.assigneeId] : null),
+                      startHour: step.startHour ? String(step.startHour).trim() : "09:00",
+                      estimatedHours: step.estimatedHours != null ? Number(step.estimatedHours) : 2,
                     };
                   }),
                 },

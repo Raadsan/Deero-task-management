@@ -55,7 +55,7 @@ const compactInputClass =
   "h-9 w-full rounded-md border border-zinc-200 bg-zinc-50 pl-9 pr-3 text-sm text-zinc-600 outline-none focus:border-primary focus:ring-1 focus:ring-primary/10";
 
 function weekdayLabel(value?: number | null) {
-  if (value == null) return "—";
+  if (value == null) return "N/A";
   return WEEKDAY_OPTIONS.find((d) => d.value === value)?.label ?? String(value);
 }
 
@@ -274,17 +274,7 @@ export default function RecurringSchedulesManagementPage() {
                           >
                             <Eye className="size-4" />
                           </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            title="Generate today's tasks"
-                            disabled={pending}
-                            className={actionBtnView}
-                            onClick={() => handleRunDaily(row.id)}
-                          >
-                            <Play className="size-4" />
-                          </Button>
+
                           <Button
                             type="button"
                             variant="ghost"
