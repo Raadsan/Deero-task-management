@@ -93,59 +93,115 @@ function formatDisplayDate(date) {
   });
 }
 
-async function createOccurrenceTask(tx, { step, schedule, client, assigneeId, runDate }) {
+function parseHourAndMinute(timeStr) {
+  if (!timeStr) return { hours: 9, minutes: 0 };
+  const str = String(timeStr).trim();
+  const isPM = /pm/i.test(str);
+  const isAM = /am/i.test(str);
+  const cleaned = str.replace(/[^\d:]/g, "");
+  const parts = cleaned.split(":");
+  let hours = parseInt(parts[0] || "9", 10);
+  let minutes = parseInt(parts[1] || "0", 10);
+  if (isNaN(hours)) hours = 9;
+  if (isNaN(minutes)) minutes = 0;
+
+  if (isPM && hours < 12) hours += 12;
+  if (isAM && hours === 12) hours = 0;
+
+  return { hours, minutes };
+}
+
+async function createOccurrenceTask(clientDb, { step, schedule, client, assigneeId, runDate }) {
   const scheduledDate = startOfDay(runDate);
-  const existing = await tx.recurringTaskOccurrence.findUnique({
-    where: {
-      scheduleStepId_scheduledDate: {
-        scheduleStepId: step.id,
-        scheduledDate,
+
+  return prisma.$transaction(
+    async (tx) => {
+    // 1. Primary check: exact step ID + date
+    const existing = await tx.recurringTaskOccurrence.findUnique({
+      where: {
+        scheduleStepId_scheduledDate: {
+          scheduleStepId: step.id,
+          scheduledDate,
+        },
       },
-    },
-  });
-  if (existing) return { skipped: true, reason: "already_exists", occurrence: existing };
+    });
+    if (existing) return { skipped: true, reason: "already_exists", occurrence: existing };
 
-  // Calculate startDate from step.startHour (default "09:00")
-  const startHourStr = step.startHour || "09:00";
-  const [hoursStr, minsStr] = String(startHourStr).split(":");
-  const taskStartDate = new Date(scheduledDate);
-  taskStartDate.setHours(Number(hoursStr) || 9, Number(minsStr) || 0, 0, 0);
+    // 2. Secondary guard: catch step-ID-change after edit (same schedule + label + date = duplicate)
+    const duplicateForSchedule = await tx.recurringTaskOccurrence.findFirst({
+      where: {
+        scheduledDate,
+        scheduleStep: {
+          scheduleId: schedule.id,
+          label: step.label,
+        },
+      },
+      select: { id: true },
+    });
+    if (duplicateForSchedule) return { skipped: true, reason: "schedule_label_date_exists" };
 
-  // Calculate deadline from estimatedHours (default 2 hours)
-  const estHours = Math.max(0.5, Number(step.estimatedHours) || 2);
-  const taskDeadline = new Date(taskStartDate.getTime() + estHours * 60 * 60 * 1000);
+    // 3. Tertiary guard: check if task with same client institution + step label already exists on this day
+    const taskServiceInfo = `${client.institution} - ${step.label}`;
+    const existingTaskForDay = await tx.task.findFirst({
+      where: {
+        serviceInformation: taskServiceInfo,
+        startDate: {
+          gte: scheduledDate,
+          lt: new Date(scheduledDate.getTime() + 24 * 60 * 60 * 1000),
+        },
+      },
+      select: { id: true },
+    });
+    if (existingTaskForDay) return { skipped: true, reason: "task_already_exists_for_day" };
 
-  // Determine assignees (single or multiple)
-  let rawAssignees = Array.isArray(step.assigneeIds) && step.assigneeIds.length > 0
-    ? step.assigneeIds
-    : [step.assigneeId ?? assigneeId].filter(Boolean);
+    // Calculate startDate from step.startHour (handles "12:20 PM", "01:20 PM", "09:00", etc.)
+    const { hours, minutes } = parseHourAndMinute(step.startHour);
+    const taskStartDate = new Date(scheduledDate);
+    taskStartDate.setHours(hours, minutes, 0, 0);
 
-  if (!rawAssignees.length && client.accountManagerId) {
-    rawAssignees = [client.accountManagerId];
-  }
+    // Only generate if within 1 hour of start time (or already past it, same day)
+    const nowMs = Date.now();
+    const oneHourBeforeStart = taskStartDate.getTime() - 60 * 60 * 1000;
+    if (nowMs < oneHourBeforeStart) {
+      return { skipped: true, reason: "too_early" };
+    }
 
-  if (!rawAssignees.length) {
-    return { skipped: true, reason: "no_assignee" };
-  }
+    // Calculate deadline from estimatedHours (default 2 hours)
+    const estHours = Math.max(0.5, Number(step.estimatedHours) || 2);
+    const taskDeadline = new Date(taskStartDate.getTime() + estHours * 60 * 60 * 1000);
 
-  const dateLabel = formatDisplayDate(scheduledDate);
-  const taskTitle = `Today's ${step.label}`;
+    // Determine assignees (deduplicate user IDs)
+    let rawAssignees = Array.from(
+      new Set(
+        (Array.isArray(step.assigneeIds) && step.assigneeIds.length > 0
+          ? step.assigneeIds
+          : [step.assigneeId ?? assigneeId]
+        ).filter(Boolean)
+      )
+    );
 
-  let createdPrimaryTask = null;
-  let primaryOccurrence = null;
+    if (!rawAssignees.length && client.accountManagerId) {
+      rawAssignees = [client.accountManagerId];
+    }
 
-  for (let idx = 0; idx < rawAssignees.length; idx++) {
-    const targetAssigneeId = rawAssignees[idx];
-    const assignee = await tx.staff.findUnique({
-      where: { id: targetAssigneeId },
+    if (!rawAssignees.length) {
+      return { skipped: true, reason: "no_assignee" };
+    }
+
+    const taskTitle = `Today's ${step.label}`;
+
+    // Get primary assignee
+    const primaryAssigneeId = rawAssignees[0];
+    const primaryAssignee = await tx.staff.findUnique({
+      where: { id: primaryAssigneeId },
       select: { id: true, name: true },
     });
-    if (!assignee) continue;
+    const primaryTaskId = await generateCustomId({ entityTybe: "tasks", prisma: tx });
 
-    const taskId = await generateCustomId({ entityTybe: "tasks", prisma: tx });
-    const task = await tx.task.create({
+    // CREATE PRIMARY TASK FIRST inside transaction
+    const createdPrimaryTask = await tx.task.create({
       data: {
-        id: taskId,
+        id: primaryTaskId,
         description: taskTitle,
         status: "pending",
         priority: "normal",
@@ -156,48 +212,97 @@ async function createOccurrenceTask(tx, { step, schedule, client, assigneeId, ru
         progress: 0,
         workflowStage: "pending",
         sortOrder: step.stepOrder,
-        assgineeId: targetAssigneeId,
+        assgineeId: primaryAssigneeId,
         supervisor: step.supervisor ?? "",
-        serviceInformation: `${client.institution} - ${step.label}`,
+        serviceInformation: taskServiceInfo,
         isPersonal: false,
       },
     });
 
     await tx.clientTask.create({
-      data: { clientId: client.id, taskId: task.id },
+      data: { clientId: client.id, taskId: createdPrimaryTask.id },
     });
 
-    if (idx === 0) {
-      createdPrimaryTask = task;
+    // CREATE OCCURRENCE SECOND: if duplicate step+date exists, transaction automatically rolls back task creation!
+    let primaryOccurrence;
+    try {
       primaryOccurrence = await tx.recurringTaskOccurrence.create({
         data: {
           scheduleStepId: step.id,
           scheduledDate,
-          taskId: task.id,
+          taskId: primaryTaskId,
         },
-        include: { task: true },
       });
+    } catch (err) {
+      if (err.code === "P2002") {
+        throw new Error("CONCURRENT_DUPLICATE_SKIPPED");
+      }
+      throw err;
     }
 
     try {
       await createNotification({
-        taskId: task.id,
+        taskId: createdPrimaryTask.id,
         taskName: taskTitle,
-        assigneeName: assignee.name ?? "",
-        deadline: task.deadline,
+        assigneeName: primaryAssignee.name ?? "",
+        deadline: createdPrimaryTask.deadline,
         type: "new-assignment",
-        userId: targetAssigneeId,
+        userId: primaryAssigneeId,
       });
     } catch (err) {
-      console.error("Failed to notify assignee for recurring task:", err);
+      console.error("Failed to notify primary assignee for recurring task:", err);
     }
-  }
 
-  if (!createdPrimaryTask) {
-    return { skipped: true, reason: "no_valid_assignees" };
-  }
+    // Process extra assignees if step has multiple distinct assignees
+    for (let idx = 1; idx < rawAssignees.length; idx++) {
+      const extraAssigneeId = rawAssignees[idx];
+      const extraAssignee = await tx.staff.findUnique({
+        where: { id: extraAssigneeId },
+        select: { id: true, name: true },
+      });
+      if (!extraAssignee) continue;
 
-  return { skipped: false, occurrence: primaryOccurrence, task: createdPrimaryTask };
+      const extraTaskId = await generateCustomId({ entityTybe: "tasks", prisma: tx });
+      const extraTask = await tx.task.create({
+        data: {
+          id: extraTaskId,
+          description: taskTitle,
+          status: "pending",
+          priority: "normal",
+          department: step.department || "General",
+          startDate: taskStartDate,
+          deadline: taskDeadline,
+          originalDeadline: taskDeadline,
+          progress: 0,
+          workflowStage: "pending",
+          sortOrder: step.stepOrder,
+          assgineeId: extraAssigneeId,
+          supervisor: step.supervisor ?? "",
+          serviceInformation: taskServiceInfo,
+          isPersonal: false,
+        },
+      });
+
+      await tx.clientTask.create({
+        data: { clientId: client.id, taskId: extraTask.id },
+      });
+
+      try {
+        await createNotification({
+          taskId: extraTask.id,
+          taskName: taskTitle,
+          assigneeName: extraAssignee.name ?? "",
+          deadline: extraTask.deadline,
+          type: "new-assignment",
+          userId: extraAssigneeId,
+        });
+      } catch (err) {
+        console.error("Failed to notify extra assignee:", err);
+      }
+    }
+
+    return { skipped: false, occurrence: primaryOccurrence, task: createdPrimaryTask };
+  }, { timeout: 15000 });
 }
 
 /**
@@ -211,7 +316,6 @@ export async function generateDailyRecurringTasks({
   const run = async (client) => {
     const where = {
       isActive: true,
-      autoGenerateTasks: true,
       ...(scheduleId ? { id: scheduleId } : {}),
     };
 
@@ -265,11 +369,15 @@ export async function generateDailyRecurringTasks({
             });
           }
         } catch (err) {
-          results.errors.push({
-            scheduleId: schedule.id,
-            stepId: step.id,
-            message: err.message,
-          });
+          if (err.message === "CONCURRENT_DUPLICATE_SKIPPED") {
+            results.skipped += 1;
+          } else {
+            results.errors.push({
+              scheduleId: schedule.id,
+              stepId: step.id,
+              message: err.message,
+            });
+          }
         }
       }
     }

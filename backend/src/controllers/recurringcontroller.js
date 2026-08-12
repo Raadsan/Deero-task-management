@@ -129,7 +129,7 @@ export const createRecurringSchedule = async (req, res) => {
                 ? step.contentType
                 : null;
               const stepAssigneeId = step.assigneeId ?? (Array.isArray(step.assigneeIds) && step.assigneeIds.length > 0 ? step.assigneeIds[0] : (data.assigneeId ?? null));
-              const stepAssigneeIds = Array.isArray(step.assigneeIds) && step.assigneeIds.length > 0 ? step.assigneeIds : (stepAssigneeId ? [stepAssigneeId] : null);
+              const stepAssigneeIds = Array.from(new Set(Array.isArray(step.assigneeIds) && step.assigneeIds.length > 0 ? step.assigneeIds : (stepAssigneeId ? [stepAssigneeId] : [])));
               return {
                 dayOfWeek: step.dayOfWeek != null ? Number(step.dayOfWeek) : null,
                 dayOfMonth: step.dayOfMonth != null ? Number(step.dayOfMonth) : null,
@@ -316,6 +316,14 @@ export const toggleRecurringSchedule = async (req, res) => {
       include: scheduleInclude,
     });
 
+    // Fire-and-forget: generate today's tasks without blocking the response
+    if (schedule.isActive) {
+      setImmediate(() => {
+        generateDailyRecurringTasks({ runDate: new Date(), scheduleId: schedule.id })
+          .catch((genErr) => console.error("Auto task gen on toggle warning:", genErr.message));
+      });
+    }
+
     res.json({ success: true, data: schedule });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -423,7 +431,7 @@ export const updateRecurringSchedule = async (req, res) => {
                       department: step.department ?? null,
                       supervisor: step.supervisor ?? "",
                       assigneeId: step.assigneeId ?? (Array.isArray(step.assigneeIds) && step.assigneeIds.length > 0 ? step.assigneeIds[0] : null),
-                      assigneeIds: Array.isArray(step.assigneeIds) ? step.assigneeIds : (step.assigneeId ? [step.assigneeId] : null),
+                      assigneeIds: Array.from(new Set(Array.isArray(step.assigneeIds) ? step.assigneeIds : (step.assigneeId ? [step.assigneeId] : []))),
                       startHour: step.startHour ? String(step.startHour).trim() : "09:00",
                       estimatedHours: step.estimatedHours != null ? Number(step.estimatedHours) : 2,
                     };
@@ -437,6 +445,14 @@ export const updateRecurringSchedule = async (req, res) => {
 
       return schedule;
     });
+
+    // Fire-and-forget: run generation in background, don't block the response
+    if (result.isActive !== false) {
+      setImmediate(() => {
+        generateDailyRecurringTasks({ runDate: new Date(), scheduleId: result.id })
+          .catch((genErr) => console.error("Auto task gen on update warning:", genErr.message));
+      });
+    }
 
     res.json({ success: true, data: result });
   } catch (error) {

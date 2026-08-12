@@ -223,15 +223,18 @@ app.listen(port, async () => {
     const runRecurringJob = async () => {
       try {
         const now = new Date();
-        // Run for today
         const result = await generateDailyRecurringTasks({ runDate: now });
-        // Also pre-generate tasks for 1 hour ahead (so pending tasks appear before start time)
+        let lookaheadCreated = 0;
         const lookahead = new Date(now.getTime() + 60 * 60 * 1000);
-        const lookaheadResult = await generateDailyRecurringTasks({ runDate: lookahead });
-        const totalCreated = (result.created || 0) + (lookaheadResult.created || 0);
+        // Only run lookahead if it crosses into tomorrow (midnight)
+        if (lookahead.getDate() !== now.getDate()) {
+          const lookaheadResult = await generateDailyRecurringTasks({ runDate: lookahead });
+          lookaheadCreated = lookaheadResult.created || 0;
+        }
+        const totalCreated = (result.created || 0) + lookaheadCreated;
         if (totalCreated > 0) {
           console.log(
-            `[recurring-job] Created ${result.created} task(s) for ${result.runDate} + ${lookaheadResult.created} pre-generated task(s) for ${lookaheadResult.runDate}`,
+            `[recurring-job] Created ${totalCreated} task(s)`,
           );
         }
       } catch (err) {
@@ -249,34 +252,43 @@ app.listen(port, async () => {
         const startingTasks = await prisma.task.findMany({
           where: {
             status: "pending",
+            workflowStage: "pending",
             startDate: { lte: now },
             progress: 0,
           },
           select: { id: true, assgineeId: true, serviceInformation: true, description: true, deadline: true },
-          take: 20,
+          take: 30,
         });
         if (startingTasks.length > 0) {
+          const ids = startingTasks.map((t) => t.id);
+          // Flip all to in_progress via workflowStage (status enum has no in_progress)
+          await prisma.task.updateMany({
+            where: { id: { in: ids } },
+            data: { workflowStage: "in_progress" },
+          });
+          console.log(`[auto-transition] Transitioned ${ids.length} task(s) to in_progress`);
+
+          // Send notification to each assignee
           for (const task of startingTasks) {
             try {
-              // Check if notification already exists for this task status start
-              const existingNotif = await prisma.$queryRawUnsafe(
-                `SELECT id FROM notifications WHERE taskId = ? AND type = 'status-in_progress' LIMIT 1`,
-                task.id,
-              );
-              if (!existingNotif || existingNotif.length === 0) {
-                const notifId = Math.random().toString(36).substring(2, 15);
-                const taskName = `${(task.serviceInformation || task.description || "Task").substring(0, 50)} (in progress)`;
-                await prisma.$executeRawUnsafe(
-                  `INSERT INTO notifications (id, taskId, taskName, assigneeName, deadline, type, userId, isSeen) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-                  notifId,
-                  task.id,
-                  taskName,
-                  "",
-                  task.deadline || new Date(),
-                  "status-in_progress",
-                  task.assgineeId,
-                  0,
-                );
+              const existingNotif = await prisma.notification.findFirst({
+                where: { taskId: task.id, type: "status-in_progress" },
+                select: { id: true },
+              });
+              if (!existingNotif) {
+                const taskName = `${(task.serviceInformation || task.description || "Task").substring(0, 60)} (started)`;
+                await prisma.notification.create({
+                  data: {
+                    id: Math.random().toString(36).substring(2, 15),
+                    taskId: task.id,
+                    taskName,
+                    assigneeName: "",
+                    deadline: task.deadline || now,
+                    type: "status-in_progress",
+                    userId: task.assgineeId,
+                    isSeen: false,
+                  },
+                });
               }
             } catch (_) {}
           }

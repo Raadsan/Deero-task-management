@@ -178,31 +178,33 @@ export function formatTaskDeadline(
   }
 
   const now = new Date();
-  const diffMs = Math.max(0, parsedDeadline.getTime() - now.getTime());
+  const startDateMs = context?.startDate ? new Date(context.startDate).getTime() : 0;
+  const isPendingStart = displayStatus === "pending" && startDateMs > now.getTime();
+
+  const targetMs = isPendingStart ? startDateMs : parsedDeadline.getTime();
+  const diffMs = Math.max(0, targetMs - now.getTime());
   const totalMinutes = Math.floor(diffMs / (1000 * 60));
   const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
   const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
   const remainingHours = totalHours % 24;
 
+  let durationLabel = "Less than 1 min";
   if (days >= 1) {
     const dayLabel = days === 1 ? "1 day" : `${days} days`;
-    if (remainingHours > 0) {
-      const hourLabel =
-        remainingHours === 1 ? "1 hr" : `${remainingHours} hrs`;
-      return `${dayLabel} ${hourLabel}`;
-    }
-    return dayLabel;
+    durationLabel = remainingHours > 0
+      ? `${dayLabel} ${remainingHours === 1 ? "1 hr" : `${remainingHours} hrs`}`
+      : dayLabel;
+  } else if (totalHours >= 1) {
+    durationLabel = totalHours === 1 ? "1 hr" : `${totalHours} hrs`;
+  } else if (totalMinutes >= 1) {
+    durationLabel = totalMinutes === 1 ? "1 min" : `${totalMinutes} mins`;
   }
 
-  if (totalHours >= 1) {
-    return totalHours === 1 ? "1 hr" : `${totalHours} hrs`;
+  if (isPendingStart) {
+    return `Starts in ${durationLabel}`;
   }
 
-  if (totalMinutes >= 1) {
-    return totalMinutes === 1 ? "1 min" : `${totalMinutes} mins`;
-  }
-
-  return "Less than 1 min";
+  return durationLabel;
 }
 
 type Params = {

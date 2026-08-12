@@ -137,6 +137,7 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
                             {formatTaskDeadline(task.deadline, {
                               status: task.status,
                               progress: task.progress,
+                              startDate: task.startDate,
                             })}
                           </span>
                         </TableCell>

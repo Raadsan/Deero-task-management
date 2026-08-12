@@ -47,9 +47,17 @@ export const auth = betterAuth({
     database: {
       generateId: false,
     },
+    defaultCookieAttributes: {
+      maxAge: 8 * 60 * 60, // 8 hours
+    },
   },
   session: {
-    expiresIn: 60 * 60 * 24 * 30, // 30 days
+    expiresIn: 8 * 60 * 60, // 8 hours
+    updateAge: 60 * 60, // refresh every 1 hr when active
+    cookieCache: {
+      enabled: true,
+      maxAge: 8 * 60 * 60, // 8 hours
+    },
   },
 
   user: {

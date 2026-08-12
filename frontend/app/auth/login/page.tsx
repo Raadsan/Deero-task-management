@@ -19,12 +19,12 @@ import { DefaultValues, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import z from "zod";
 
-const LOGIN_LOGO_SRC = "/logo-02.png";
+const LOGIN_LOGO_SRC = "/logo-02.png?v=2";
 
 export default function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
 
   const {
     register,
@@ -80,6 +80,7 @@ export default function LoginPage() {
               alt="Deero logo"
               className="h-auto max-h-28 w-auto max-w-full object-contain"
               priority
+              unoptimized
             />
           </div>
           <p className="text-sm text-zinc-500">Sign in to manage your Deero system</p>

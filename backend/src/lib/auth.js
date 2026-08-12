@@ -93,10 +93,23 @@ export const auth = betterAuth({
     },
   },
   session: {
-    expiresIn: 60 * 60 * 24 * 30, // 30 days
+    expiresIn: 8 * 60 * 60, // 8 hours
+    updateAge: 60 * 60, // refresh session age every 1 hour when active
+    dontRememberMaxAge: 8 * 60 * 60, // persistent cookie attribute (8 hours)
+    cookieCache: {
+      enabled: true,
+      maxAge: 8 * 60 * 60, // 8 hours
+    },
     cookie: {
       sameSite: "lax",
-    }
+      maxAge: 8 * 60 * 60, // 8 hours
+    },
+  },
+  advanced: {
+    defaultCookieAttributes: {
+      sameSite: "lax",
+      maxAge: 8 * 60 * 60, // 8 hours
+    },
   },
 
   user: {

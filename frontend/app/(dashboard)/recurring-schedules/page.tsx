@@ -51,9 +51,10 @@ import {
   dashboardTableWrapClass,
   dashboardTextPrimary,
   dashboardTextSecondary,
+  formatStatusLabel,
   getTaskStatusBadgeClass,
 } from "@/lib/dashboard-ui";
-import { cn, formatDate } from "@/lib/utils";
+import { cn, formatDate, resolveTaskDisplayStatus } from "@/lib/utils";
 import { CalendarClock, Download, Edit, Eye, Play, Plus, Power, Printer, Search, Trash2, Users, UserCheck, X } from "lucide-react";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import toast from "react-hot-toast";
@@ -1056,14 +1057,21 @@ export default function RecurringSchedulesPage() {
                               className="border-r border-zinc-200 p-3 align-top text-zinc-700 last:border-r-0"
                             >
                               {matchingSteps.length > 0 ? (
-                                <div className="space-y-1.5">
-                                  {matchingSteps.map((st) => (
-                                    <span
-                                      key={st.id}
-                                      className="inline-block text-xs font-medium text-zinc-700"
-                                    >
-                                      {st.label}
-                                    </span>
+                                <div className="flex flex-col gap-1">
+                                  {matchingSteps.map((st, idx) => (
+                                    <div key={st.id}>
+                                      {idx > 0 && (
+                                        <div className="my-1 border-t border-dashed border-zinc-200" />
+                                      )}
+                                      <span className="block text-xs font-medium text-zinc-700">
+                                        {st.label}
+                                      </span>
+                                      {st.startHour && (
+                                        <span className="block text-[10px] text-zinc-400">
+                                          {st.startHour}
+                                        </span>
+                                      )}
+                                    </div>
                                   ))}
                                 </div>
                               ) : (
@@ -1099,24 +1107,29 @@ export default function RecurringSchedulesPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {occurrences.map((row) => (
-                          <TableRow key={row.id} className={dashboardTableBodyRowClass}>
-                            <TableCell className={dashboardTableCellClass}>{formatDate(String(row.scheduledDate))}</TableCell>
-                            <TableCell className={dashboardTableCellClass}>{row.scheduleStep?.label ?? "N/A"}</TableCell>
-                            <TableCell className={dashboardTableCellClass}>{row.task?.description ?? "N/A"}</TableCell>
-                            <TableCell className={dashboardTableCellClass}>{row.task?.user?.name ?? "N/A"}</TableCell>
-                            <TableCell className={dashboardTableCellClass}>
-                              <span
-                                className={cn(
-                                  dashboardStatusBadgeClass,
-                                  getTaskStatusBadgeClass(row.task?.status ?? "pending"),
-                                )}
-                              >
-                                {row.task?.status ?? "N/A"}
-                              </span>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                        {occurrences.map((row) => {
+                          const displayStatus = row.task
+                            ? resolveTaskDisplayStatus(row.task)
+                            : "pending";
+                          return (
+                            <TableRow key={row.id} className={dashboardTableBodyRowClass}>
+                              <TableCell className={dashboardTableCellClass}>{formatDate(String(row.scheduledDate))}</TableCell>
+                              <TableCell className={dashboardTableCellClass}>{row.scheduleStep?.label ?? "N/A"}</TableCell>
+                              <TableCell className={dashboardTableCellClass}>{row.task?.description ?? "N/A"}</TableCell>
+                              <TableCell className={dashboardTableCellClass}>{row.task?.user?.name ?? "N/A"}</TableCell>
+                              <TableCell className={dashboardTableCellClass}>
+                                <span
+                                  className={cn(
+                                    dashboardStatusBadgeClass,
+                                    getTaskStatusBadgeClass(displayStatus),
+                                  )}
+                                >
+                                  {formatStatusLabel(displayStatus)}
+                                </span>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                       </TableBody>
                     </Table>
                   </div>

@@ -287,6 +287,7 @@ export default function MyTasksManagementPage() {
                             {formatTaskDeadline(task.deadline, {
                               status: task.status,
                               progress: task.progress,
+                              startDate: task.startDate,
                             })}
                           </span>
                         </TableCell>

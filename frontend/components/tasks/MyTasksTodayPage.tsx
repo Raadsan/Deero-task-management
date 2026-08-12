@@ -302,6 +302,7 @@ export default function MyTasksTodayPage() {
                             {formatTaskDeadline(task.deadline, {
                               status: task.status,
                               progress: task.progress,
+                              startDate: task.startDate,
                             })}
                           </span>
                         </TableCell>

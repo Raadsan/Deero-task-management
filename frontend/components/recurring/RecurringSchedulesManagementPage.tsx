@@ -40,9 +40,10 @@ import {
   dashboardTableWrapClass,
   dashboardTextPrimary,
   dashboardTextSecondary,
+  formatStatusLabel,
   getTaskStatusBadgeClass,
 } from "@/lib/dashboard-ui";
-import { cn, formatDate } from "@/lib/utils";
+import { cn, formatDate, resolveTaskDisplayStatus } from "@/lib/utils";
 import { CalendarClock, Eye, Play, Power, Search } from "lucide-react";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import toast from "react-hot-toast";
@@ -400,15 +401,29 @@ export default function RecurringSchedulesManagementPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {occurrences.map((row) => (
-                          <TableRow key={row.id}>
-                            <TableCell>{formatDate(String(row.scheduledDate))}</TableCell>
-                            <TableCell>{row.scheduleStep?.label ?? "—"}</TableCell>
-                            <TableCell>{row.task?.description ?? "—"}</TableCell>
-                            <TableCell>{row.task?.user?.name ?? "—"}</TableCell>
-                            <TableCell>{row.task?.status ?? "—"}</TableCell>
-                          </TableRow>
-                        ))}
+                        {occurrences.map((row) => {
+                          const displayStatus = row.task
+                            ? resolveTaskDisplayStatus(row.task)
+                            : "pending";
+                          return (
+                            <TableRow key={row.id}>
+                              <TableCell>{formatDate(String(row.scheduledDate))}</TableCell>
+                              <TableCell>{row.scheduleStep?.label ?? "—"}</TableCell>
+                              <TableCell>{row.task?.description ?? "—"}</TableCell>
+                              <TableCell>{row.task?.user?.name ?? "—"}</TableCell>
+                              <TableCell>
+                                <span
+                                  className={cn(
+                                    dashboardStatusBadgeClass,
+                                    getTaskStatusBadgeClass(displayStatus),
+                                  )}
+                                >
+                                  {formatStatusLabel(displayStatus)}
+                                </span>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
                       </TableBody>
                     </Table>
                   </div>
