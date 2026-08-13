@@ -707,6 +707,7 @@ exports.ServiceType = exports.$Enums.ServiceType = {
 
 exports.TaskStatus = exports.$Enums.TaskStatus = {
   pending: 'pending',
+  in_progress: 'in_progress',
   overdue: 'overdue',
   completed: 'completed'
 };

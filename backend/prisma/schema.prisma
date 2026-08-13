@@ -889,6 +889,7 @@ model WorkflowTemplateStep {
 
 enum TaskStatus {
   pending
+  in_progress
   overdue
   completed
 }

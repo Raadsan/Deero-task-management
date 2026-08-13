@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { getTaskFormBranchOptions } from "@/lib/apis/sharedApi";
-import { formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
+import { resolveTaskDisplayStatus } from "@/lib/utils";
 import { btnFormSubmit } from "@/lib/dashboard-ui";
 import { Task } from "@/lib/types";
 import {
@@ -32,6 +32,7 @@ interface Props {
 
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   pending: { bg: "bg-yellow-100", text: "text-yellow-800" },
+  in_progress: { bg: "bg-amber-100", text: "text-amber-800" },
   overdue: { bg: "bg-red-100", text: "text-red-800" },
   completed: { bg: "bg-green-100", text: "text-green-800" },
 };
@@ -132,6 +133,21 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
                 (task.assignedTo?.portfolioId
                   ? `Portfolio ${task.assignedTo.portfolioId}`
                   : "—")
+              }
+            />
+            <InfoItem
+              icon={Calendar}
+              label="Start Date"
+              value={
+                task.startDate
+                  ? new Date(task.startDate).toLocaleString("en-US", {
+                      month: "short",
+                      day: "2-digit",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  : "N/A"
               }
             />
             <InfoItem

@@ -259,6 +259,8 @@ export const createTask = async (req, res) => {
         status: data.status,
         progress: data.progress,
         deadline: data.deadline,
+        startDate: data.startDate,
+        extraTimeMinutes: data.extraTimeMinutes,
         currentStatus: "pending",
         currentProgress: data.progress ?? 0,
       });
@@ -274,7 +276,7 @@ export const createTask = async (req, res) => {
         department: data.department || "General",
         deadline: data.deadline ? new Date(data.deadline) : null,
         extraTimeMinutes: Math.max(0, Number(data.extraTimeMinutes) || 0),
-        completedAt: normalized.status === "completed" ? new Date() : null,
+        completedAt: normalized.status === "completed" ? (data.completedAt ? new Date(data.completedAt) : new Date()) : null,
         progressUpdatedAt: normalized.progress > 0 ? new Date() : null,
         startDate: data.startDate ? new Date(data.startDate) : null,
         assgineeId: targetAssigneeId,
@@ -363,7 +365,7 @@ async function notifyTaskAssignee(result, creatorName) {
 
 export const updateTask = async (req, res) => {
   const { id } = req.params;
-  const { description, status, priority, department, deadline, extraTimeMinutes, startDate, assgineeId, assigneeIds, supervisor, progress, serviceInformation, features } = req.body;
+  const { description, status, priority, department, deadline, extraTimeMinutes, startDate, completedAt, assgineeId, assigneeIds, supervisor, progress, serviceInformation, features } = req.body;
   try {
     const scope = getScope(req);
     const originalTask = await findAccessibleTask(scope, id, { user: true });
@@ -389,6 +391,7 @@ export const updateTask = async (req, res) => {
       status: calculatedStatus ?? status,
       progress: calculatedProgress ?? progress,
       deadline,
+      startDate: startDate !== undefined ? startDate : originalTask.startDate,
       extraTimeMinutes,
       currentStatus: originalTask.status,
       currentProgress: originalTask.progress,
@@ -415,13 +418,15 @@ export const updateTask = async (req, res) => {
       });
     }
 
-    const targetAssigneeIds = Array.isArray(assigneeIds) && assigneeIds.length > 0
-      ? assigneeIds.filter(Boolean)
-      : [assgineeId || originalTask.assgineeId].filter(Boolean);
-
-    if (!targetAssigneeIds.length) {
-      return res.status(400).json({ success: false, error: "At least one assignee is required" });
+    if (!siblings.length) {
+      siblings = [originalTask];
     }
+
+    const requestedAssigneeIds = Array.isArray(assigneeIds) && assigneeIds.length > 0
+      ? assigneeIds
+      : assgineeId ? [assgineeId] : [originalTask.assgineeId];
+
+    const targetAssigneeIds = Array.from(new Set(requestedAssigneeIds.map(String)));
 
     // Delete tasks for assignees that were deselected
     const tasksToDelete = siblings.filter(s => !targetAssigneeIds.includes(s.assgineeId));
@@ -448,7 +453,7 @@ export const updateTask = async (req, res) => {
         department: department ?? originalTask.department ?? "General",
         deadline: deadline !== undefined ? (deadline ? new Date(deadline) : null) : originalTask.deadline,
         extraTimeMinutes: extraTimeMinutes !== undefined ? Math.max(0, Number(extraTimeMinutes) || 0) : originalTask.extraTimeMinutes,
-        completedAt: normalized.status === "completed" ? new Date() : null,
+        completedAt: normalized.status === "completed" ? (completedAt ? new Date(completedAt) : new Date()) : null,
         progressUpdatedAt: normalized.progress > 0 ? new Date() : null,
         startDate: startDate !== undefined ? (startDate ? new Date(startDate) : null) : originalTask.startDate,
         assgineeId: newAssigneeId,
@@ -509,11 +514,9 @@ export const updateTask = async (req, res) => {
           ...(supervisor !== undefined ? { supervisor } : {}),
           progress: normalized.progress,
           ...(t.progress !== normalized.progress ? { progressUpdatedAt: new Date() } : {}),
-          ...(t.status !== "completed" && normalized.status === "completed"
-            ? { completedAt: new Date() }
-            : t.status === "completed" && normalized.status !== "completed"
-              ? { completedAt: null }
-              : {}),
+          ...(normalized.status === "completed"
+            ? { completedAt: completedAt ? new Date(completedAt) : (t.completedAt || new Date()) }
+            : { completedAt: null }),
           ...(serviceInformation !== undefined ? { serviceInformation } : {}),
           ...(features !== undefined ? { features } : {}),
         },
@@ -747,6 +750,7 @@ export const getTasksReport = async (req, res) => {
         description: t.description,
         status: t.status,
         priority: t.priority,
+        startDate: t.startDate,
         deadline: t.deadline,
         createdAt: t.createdAt,
         client: t.clientTask[0]?.Client?.institution || "N/A",

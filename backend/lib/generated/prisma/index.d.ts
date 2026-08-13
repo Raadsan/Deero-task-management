@@ -257,6 +257,7 @@ export type ServiceType = (typeof ServiceType)[keyof typeof ServiceType]
 
 export const TaskStatus: {
   pending: 'pending',
+  in_progress: 'in_progress',
   overdue: 'overdue',
   completed: 'completed'
 };

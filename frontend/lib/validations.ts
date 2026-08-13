@@ -65,6 +65,7 @@ export const TaskSchema = z.object({
   extraTimeHours: z.number().min(0).max(8760).optional().default(0),
   startDate: z.date().optional(),
   progress: z.number().min(0).max(100).optional().default(0),
+  completedAt: z.date().optional().nullable(),
 });
 
 export const CreateTaskSchema = z
@@ -86,6 +87,7 @@ export const CreateTaskSchema = z
     extraTimeHours: z.number().min(0).max(8760).optional().default(0),
     startDate: z.date().optional(),
     progress: z.number().min(0).max(100).optional().default(0),
+    completedAt: z.date().optional().nullable(),
   })
   .superRefine((data, ctx) => {
     if (!data.taskKind) {

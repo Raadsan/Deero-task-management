@@ -46,7 +46,7 @@ import {
   dashboardTableWrapClass,
   getTaskStatusBadgeClass,
 } from "@/lib/dashboard-ui";
-import { cn, formatDate } from "@/lib/utils";
+import { cn, formatDate, resolveTaskDisplayStatus } from "@/lib/utils";
 import {
   BadgeCheck,
   BriefcaseBusiness,
@@ -407,7 +407,7 @@ export default function DeeroReportPage({ type, chartsOnly = false }: { type: De
 
   const filteredTasks = useMemo(() => {
     return tasks.filter((t) => {
-      if (statusFilter !== "all" && t.status !== statusFilter) return false;
+      if (statusFilter !== "all" && resolveTaskDisplayStatus(t) !== statusFilter) return false;
       if (taskUserFilter !== "all" && String(t.assignedTo?.id) !== taskUserFilter) return false;
       const dateValue = taskDueDate(t) ?? t.createdAt;
       return inDateRange(dateValue, startDate, endDate);
@@ -686,12 +686,13 @@ export default function DeeroReportPage({ type, chartsOnly = false }: { type: De
         .some((value) => String(value || "").toLowerCase().includes(s)),
     );
     return {
-      headers: ["Task Name", "Assigned", "Priority", "Status", "Original Due Date", "Extra Time", "Updated Due Date", "Completed Date", "Remained", "Action"],
+      headers: ["Task Name", "Assigned", "Priority", "Status", "Start Date", "Original Due Date", "Extra Time", "Updated Due Date", "Completed Date", "Remained", "Action"],
       rows: filtered.map((task) => [
         task.title ?? task.serviceInformation ?? task.description ?? "N/A",
         task.assignedTo?.name ?? "N/A",
         task.priority ?? "normal",
-        task.status,
+        resolveTaskDisplayStatus(task),
+        formatDateTime(task.startDate),
         formatDateTime(task.originalDeadline ?? taskDueDate(task)),
         formatExtraTime(task),
         taskExtraMinutes(task) > 0 ? formatDateTime(taskFinalDueDate(task)) : "N/A",
@@ -1069,7 +1070,7 @@ export default function DeeroReportPage({ type, chartsOnly = false }: { type: De
                 ["Priority", selectedTask.priority ?? "normal"],
                 ["Status", selectedTask.status ?? "N/A"],
                 ["Progress", `${Number(selectedTask.progress ?? 0)}%`],
-                ["Created Date", formatDateTime(selectedTask.createdAt)],
+                ["Created Date", formatDateTime(selectedTask.createdAt)], ["Start Date", formatDateTime(selectedTask.startDate)],
                 ["Original Due Date", formatDateTime(selectedTask.originalDeadline ?? taskDueDate(selectedTask))],
                 ["Extra Time Added", formatExtraTime(selectedTask)],
                 ["Updated Due Date", taskExtraMinutes(selectedTask) > 0 ? formatDateTime(taskFinalDueDate(selectedTask)) : "N/A"],

@@ -1,4 +1,4 @@
-const ACTIVE_STATUSES = ["pending", "overdue"];
+const ACTIVE_STATUSES = ["pending", "in_progress", "overdue"];
 const OVERDUE_SYNC_INTERVAL_MS = 60_000;
 let overdueSyncPromise = null;
 let lastOverdueSyncAt = 0;
@@ -12,10 +12,9 @@ export function isTaskPastDeadline(deadline, extraTimeMinutes = 0) {
 
 export function resolveTaskStatus(task) {
   if (task.status === "completed") return "completed";
-  if (!task.deadline) return task.status || "pending";
   if (isTaskPastDeadline(task.deadline, task.extraTimeMinutes)) return "overdue";
-  if (task.status === "overdue") return "pending";
-  return task.status || "pending";
+  if (task.startDate && new Date(task.startDate).getTime() <= Date.now()) return "in_progress";
+  return "pending";
 }
 
 export async function syncOverdueTasks(prisma) {
@@ -35,22 +34,27 @@ export async function syncOverdueTasks(prisma) {
         },
         data: { status: "overdue" },
       }),
+      // Start dates reached: move pending tasks into In Progress while their final due date is still valid.
+      prisma.$executeRawUnsafe(
+        `UPDATE tasks SET status = 'in_progress'
+         WHERE status = 'pending'
+           AND startDate IS NOT NULL
+           AND startDate <= NOW()
+           AND (
+             deadline IS NULL
+             OR (extraTimeMinutes <= 0 AND deadline >= NOW())
+             OR (extraTimeMinutes > 0 AND DATE_ADD(deadline, INTERVAL extraTimeMinutes MINUTE) >= NOW())
+           )`,
+      ).catch(() => { }),
       // Mark as overdue: deadline+extraTime window also expired
       prisma.$executeRawUnsafe(
         `UPDATE tasks SET status = 'overdue'
-         WHERE status IN ('pending','overdue')
+         WHERE status IN ('pending','in_progress','overdue')
            AND deadline IS NOT NULL
            AND extraTimeMinutes > 0
            AND DATE_ADD(deadline, INTERVAL extraTimeMinutes MINUTE) < NOW()`,
       ).catch(() => { }), // non-fatal if raw fails on non-MySQL
-      // Restore to pending: overdue but deadline is now in future
-      prisma.task.updateMany({
-        where: {
-          status: "overdue",
-          deadline: { not: null, gte: now },
-        },
-        data: { status: "pending" },
-      }),
+
     ]);
     lastOverdueSyncAt = Date.now();
   })();
@@ -66,6 +70,7 @@ export function normalizeTaskWriteStatus({
   status,
   progress,
   deadline,
+  startDate,
   extraTimeMinutes,
   currentStatus,
   currentProgress,
@@ -74,7 +79,7 @@ export function normalizeTaskWriteStatus({
     progress !== undefined ? Number(progress) : Number(currentProgress ?? 0);
   let nextStatus = (status ?? currentStatus ?? "pending").toLowerCase();
   const nextDeadline = deadline ? new Date(deadline) : null;
-  const hasExtraTime = Number(extraTimeMinutes ?? 0) > 0;
+  const nextStartDate = startDate ? new Date(startDate) : null;
 
   if (currentStatus === "overdue" && nextProgress !== Number(currentProgress ?? 0)) {
     return {
@@ -94,11 +99,12 @@ export function normalizeTaskWriteStatus({
     return {
       error: "Task cannot be marked completed until progress is 100%",
     };
-  } else if (!hasExtraTime && nextDeadline && isTaskPastDeadline(nextDeadline)) {
-    // Only force overdue when no extra time is being added
+  } else if (nextDeadline && isTaskPastDeadline(nextDeadline, extraTimeMinutes)) {
     nextStatus = "overdue";
-  } else if (ACTIVE_STATUSES.includes(nextStatus)) {
+  } else if (nextStartDate && nextStartDate.getTime() > Date.now()) {
     nextStatus = "pending";
+  } else if (nextStartDate) {
+    nextStatus = "in_progress";
   }
 
   return { status: nextStatus, progress: nextProgress };

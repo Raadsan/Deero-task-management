@@ -344,9 +344,7 @@ export function getTaskStatus(
 ) {
   switch (taskFormType) {
     case "create":
-      return Object.values(TaskStatus).filter(
-        (each: TaskStatus) => each === "pending",
-      );
+      return Object.values(TaskStatus);
     case "edit":
       return Object.values(TaskStatus);
     case "own:edit":

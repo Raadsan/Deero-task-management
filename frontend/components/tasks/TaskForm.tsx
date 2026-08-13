@@ -120,6 +120,11 @@ export default function TaskForm({
       extraTimeHours: Number(currentTask?.extraTimeMinutes ?? 0) / 60,
       progress: currentTask?.progress || 0,
       serviceInformation: initialData?.serviceInformation ?? currentTask?.serviceInformation ?? "",
+      completedAt: initialData?.completedAt
+        ? new Date(initialData.completedAt)
+        : currentTask?.completedAt
+          ? new Date(currentTask.completedAt)
+          : defaultDueDate(),
     },
     resolver: standardSchemaResolver(formSchema),
     mode: isCreate ? "onSubmit" : "onTouched",
@@ -272,12 +277,14 @@ export default function TaskForm({
   const watchedPriority = watch("priority");
   const watchedStatus = watch("status");
   const watchedProgress = watch("progress");
+  const completedAtValue = watch("completedAt");
 
   useEffect(() => {
     if (!isCreate) return;
-    setValue("status", TaskStatus.pending, { shouldValidate: false });
-    setValue("progress", 0, { shouldValidate: false });
-  }, [isCreate, setValue]);
+    if (watchedStatus === TaskStatus.completed && Number(watchedProgress) !== 100) {
+      setValue("progress", 100, { shouldValidate: true });
+    }
+  }, [isCreate, watchedStatus, watchedProgress, setValue]);
 
   useEffect(() => {
     if (formType === "create") return;
@@ -371,7 +378,7 @@ export default function TaskForm({
       if (newProgress === 100) {
         setValue("status", TaskStatus.completed, { shouldValidate: true });
       } else if (newProgress > 0 && watchedStatus !== TaskStatus.completed) {
-        setValue("status", TaskStatus.pending, { shouldValidate: true });
+        setValue("status", TaskStatus.in_progress, { shouldValidate: true });
       }
     }
   }
@@ -410,6 +417,7 @@ export default function TaskForm({
         extraTimeHours: Number(currentTask.extraTimeMinutes ?? 0) / 60,
         progress: currentTask.progress || 0,
         serviceInformation: currentTask.serviceInformation || "",
+        completedAt: currentTask.completedAt ? new Date(currentTask.completedAt) : defaultDueDate(),
       });
     }
   }, [currentTask, reset]);
@@ -472,20 +480,21 @@ export default function TaskForm({
           const result = await createTask({
             clientId: isGeneral ? undefined : createData.clientInstitutionId,
             serviceInformation: finalServiceInfo,
-          assgineeId: targetAssignees[0],
-          assigneeIds: targetAssignees,
-          description: createData.description,
-          status: TaskStatus.pending,
-          department: createData.department,
-          priority: createData.priority,
-          supervisor: createData.supervisor?.trim() || "",
-          startDate: createData.startDate ?? null,
-          deadline: createData.deadline ?? null,
-          extraTimeMinutes: Math.round(Number(createData.extraTimeHours ?? 0) * 60),
-          progress: 0,
-          isPersonal: false,
-          features: taskFeatures,
-        });
+            assgineeId: targetAssignees[0],
+            assigneeIds: targetAssignees,
+            description: createData.description,
+            status: createData.status,
+            department: createData.department,
+            priority: createData.priority,
+            supervisor: createData.supervisor?.trim() || "",
+            startDate: createData.startDate ?? null,
+            deadline: createData.deadline ?? null,
+            extraTimeMinutes: Math.round(Number(createData.extraTimeHours ?? 0) * 60),
+            progress: createData.status === TaskStatus.completed ? 100 : Number(createData.progress ?? 0),
+            completedAt: createData.status === TaskStatus.completed ? (createData.completedAt ?? new Date()) : null,
+            isPersonal: false,
+            features: taskFeatures,
+          });
         if (result?.success) {
           toast.success("Successfully Created Task.");
           refreshTasksList();
@@ -505,6 +514,7 @@ export default function TaskForm({
             extraTimeHours: 0,
             progress: 0,
             serviceInformation: "",
+            completedAt: defaultDueDate(),
           });
           setExtraTimeUntil(undefined);
           setTaskKind(null);
@@ -533,6 +543,7 @@ export default function TaskForm({
           priority: data.priority,
           supervisor: data.supervisor,
           progress: data.progress,
+          completedAt: data.status === TaskStatus.completed ? (data.completedAt ?? new Date()) : null,
           serviceInformation: data.serviceInformation,
           features: taskFeatures,
         });
@@ -558,6 +569,7 @@ export default function TaskForm({
           priority: data.priority,
           supervisor: data.supervisor,
           progress: data.progress,
+          completedAt: data.status === TaskStatus.completed ? (data.completedAt ?? new Date()) : null,
           serviceInformation: data.serviceInformation,
         });
         if (result.success) {
@@ -957,6 +969,32 @@ export default function TaskForm({
               />
             </div>
 
+            {isCreate && (
+              <SelectElement
+                disbaleSelect={transiton || session.data?.user.role === "user"}
+                labelText="Select Task Status"
+                placeholder="Select Status"
+                value={watchedStatus}
+                defaultValue={watchedStatus}
+                errorMessage={fieldMessage("status")}
+                invalid={fieldInvalid("status")}
+                elements={taskStatus}
+                compact={isModal}
+                onChange={(value) => {
+                  const status = value as TaskStatus;
+                  setValue("status", status, { shouldValidate: true });
+                  if (status === TaskStatus.completed) {
+                    setValue("progress", 100, { shouldValidate: true });
+                    if (!getValues("completedAt")) {
+                      setValue("completedAt", defaultDueDate(), { shouldValidate: true });
+                    }
+                  } else if (getValues("progress") === 100) {
+                    setValue("progress", 0, { shouldValidate: true });
+                  }
+                }}
+              />
+            )}
+
             {!isCreate && (
               <SelectElement
                 disbaleSelect={transiton || formType === "own:edit"}
@@ -969,8 +1007,32 @@ export default function TaskForm({
                 elements={taskStatus}
                 compact={isModal}
                 onChange={(value) => {
-                  setValue("status", value as TaskStatus, { shouldValidate: true });
+                  const status = value as TaskStatus;
+                  setValue("status", status, { shouldValidate: true });
+                  if (status === TaskStatus.completed) {
+                    if (getValues("progress") !== 100) {
+                      setValue("progress", 100, { shouldValidate: true });
+                    }
+                    if (!getValues("completedAt")) {
+                      setValue("completedAt", defaultDueDate(), { shouldValidate: true });
+                    }
+                  }
                 }}
+              />
+            )}
+
+            {String(watchedStatus).toLowerCase() === "completed" && (
+              <DatePicker
+                labelText="Completion Date (Completed At)"
+                disbaled={transiton}
+                date={completedAtValue ?? defaultDueDate()}
+                showTimePicker
+                compact={isModal}
+                setDate={(date) => {
+                  setValue("completedAt", date, { shouldValidate: true });
+                }}
+                errorMessage={fieldMessage("completedAt")}
+                invalid={fieldInvalid("completedAt")}
               />
             )}
 
@@ -993,9 +1055,16 @@ export default function TaskForm({
                     setExtraTimeUntil(effectiveDate);
                     setValue("extraTimeHours", minutes / 60, { shouldValidate: true });
 
-                    // Auto-set status from overdue → pending when extra time is granted
+                    // Granting extra time reopens an overdue task. Its Start Date decides whether it is Pending or In Progress.
                     if (minutes > 0 && watchedStatus === TaskStatus.overdue) {
-                      setValue("status", TaskStatus.pending, { shouldValidate: true });
+                      const startDate = getValues("startDate");
+                      setValue(
+                        "status",
+                        startDate && startDate.getTime() > Date.now()
+                          ? TaskStatus.pending
+                          : TaskStatus.in_progress,
+                        { shouldValidate: true },
+                      );
                     }
                   }}
                 />

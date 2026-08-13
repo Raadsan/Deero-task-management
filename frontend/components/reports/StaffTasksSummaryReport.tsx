@@ -241,14 +241,15 @@ export default function StaffTasksSummaryReport() {
   );
 
   // UI table includes "Hours" and "Action" columns — exports exclude both
-  const detailHeaders = ["Task Name", "Assigned", "Priority", "Status", "Original Due Date", "Extra Time", "Updated Due Date", "Completed Date", "Remained", "Hours", "Action"];
-  const detailExportHeaders = ["Task Name", "Assigned", "Priority", "Status", "Original Due Date", "Extra Time", "Updated Due Date", "Completed Date", "Remained", "Hours Worked"];
+  const detailHeaders = ["Task Name", "Assigned", "Priority", "Status", "Start Date", "Original Due Date", "Extra Time", "Updated Due Date", "Completed Date", "Remained", "Hours", "Action"];
+  const detailExportHeaders = ["Task Name", "Assigned", "Priority", "Status", "Start Date", "Original Due Date", "Extra Time", "Updated Due Date", "Completed Date", "Remained", "Hours Worked"];
 
   const taskDetailRow = (task: any) => [
     valueOrNA(task.title ?? task.serviceInformation ?? task.description),
     valueOrNA(selected?.staff?.name),
     valueOrNA(task.priority),
     valueOrNA(resolveTaskDisplayStatus(task)),
+    dateTime(task.startDate),
     dateTime(task.originalDeadline ?? task.deadline),
     taskExtraLabel(task),
     Number(task.extraTimeMinutes) > 0 ? dateTime(taskFinalDue(task)) : "N/A",
@@ -263,6 +264,7 @@ export default function StaffTasksSummaryReport() {
     valueOrNA(selected?.staff?.name),
     valueOrNA(task.priority),
     valueOrNA(resolveTaskDisplayStatus(task)),
+    dateTime(task.startDate),
     dateTime(task.originalDeadline ?? task.deadline),
     taskExtraLabel(task),
     Number(task.extraTimeMinutes) > 0 ? dateTime(taskFinalDue(task)) : "N/A",
@@ -485,7 +487,7 @@ export default function StaffTasksSummaryReport() {
                 ["Client", selectedDetailTask.institutions?.[0]?.institution], ["Job Title", selectedDetailTask.department],
                 ["Supervisor", selectedDetailTask.supervisor], ["Priority", selectedDetailTask.priority],
                 ["Status", resolveTaskDisplayStatus(selectedDetailTask)], ["Progress", `${Number(selectedDetailTask.progress ?? 0)}%`],
-                ["Created Date", dateTime(selectedDetailTask.createdAt)],
+                ["Created Date", dateTime(selectedDetailTask.createdAt)], ["Start Date", dateTime(selectedDetailTask.startDate)],
                 ["Original Due Date", dateTime(selectedDetailTask.originalDeadline ?? selectedDetailTask.deadline)],
                 ["Extra Time Added", taskExtraLabel(selectedDetailTask)],
                 ["Updated Due Date", Number(selectedDetailTask.extraTimeMinutes) > 0 ? dateTime(taskFinalDue(selectedDetailTask)) : "N/A"],

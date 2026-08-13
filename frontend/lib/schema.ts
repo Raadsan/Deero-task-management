@@ -12,6 +12,7 @@ export type UserRole = (typeof UserRole)[keyof typeof UserRole];
 
 export const TaskStatus = {
   pending: "pending",
+  in_progress: "in_progress",
   overdue: "overdue",
   completed: "completed",
 } as const;
