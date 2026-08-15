@@ -13,8 +13,7 @@ export function isTaskPastDeadline(deadline, extraTimeMinutes = 0) {
 export function resolveTaskStatus(task) {
   if (task.status === "completed") return "completed";
   if (isTaskPastDeadline(task.deadline, task.extraTimeMinutes)) return "overdue";
-  if (task.startDate && new Date(task.startDate).getTime() <= Date.now()) return "in_progress";
-  return "pending";
+  return task.status || "pending";
 }
 
 export async function syncOverdueTasks(prisma) {
@@ -34,18 +33,6 @@ export async function syncOverdueTasks(prisma) {
         },
         data: { status: "overdue" },
       }),
-      // Start dates reached: move pending tasks into In Progress while their final due date is still valid.
-      prisma.$executeRawUnsafe(
-        `UPDATE tasks SET status = 'in_progress'
-         WHERE status = 'pending'
-           AND startDate IS NOT NULL
-           AND startDate <= NOW()
-           AND (
-             deadline IS NULL
-             OR (extraTimeMinutes <= 0 AND deadline >= NOW())
-             OR (extraTimeMinutes > 0 AND DATE_ADD(deadline, INTERVAL extraTimeMinutes MINUTE) >= NOW())
-           )`,
-      ).catch(() => { }),
       // Mark as overdue: deadline+extraTime window also expired
       prisma.$executeRawUnsafe(
         `UPDATE tasks SET status = 'overdue'
@@ -54,7 +41,6 @@ export async function syncOverdueTasks(prisma) {
            AND extraTimeMinutes > 0
            AND DATE_ADD(deadline, INTERVAL extraTimeMinutes MINUTE) < NOW()`,
       ).catch(() => { }), // non-fatal if raw fails on non-MySQL
-
     ]);
     lastOverdueSyncAt = Date.now();
   })();
@@ -101,10 +87,6 @@ export function normalizeTaskWriteStatus({
     };
   } else if (nextDeadline && isTaskPastDeadline(nextDeadline, extraTimeMinutes)) {
     nextStatus = "overdue";
-  } else if (nextStartDate && nextStartDate.getTime() > Date.now()) {
-    nextStatus = "pending";
-  } else if (nextStartDate) {
-    nextStatus = "in_progress";
   }
 
   return { status: nextStatus, progress: nextProgress };

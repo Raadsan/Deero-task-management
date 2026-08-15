@@ -278,6 +278,24 @@ export default function TaskForm({
   const watchedStatus = watch("status");
   const watchedProgress = watch("progress");
   const completedAtValue = watch("completedAt");
+  const watchedDeadline = watch("deadline");
+
+  const isDeadlinePast = watchedDeadline
+    ? new Date(watchedDeadline).getTime() < Date.now()
+    : false;
+
+  useEffect(() => {
+    if (!isCreate) return;
+    if (isDeadlinePast) {
+      if (watchedStatus === TaskStatus.pending || watchedStatus === TaskStatus.in_progress) {
+        setValue("status", TaskStatus.overdue, { shouldValidate: true });
+      }
+    } else {
+      if (watchedStatus !== TaskStatus.pending) {
+        setValue("status", TaskStatus.pending, { shouldValidate: true });
+      }
+    }
+  }, [isCreate, isDeadlinePast, watchedStatus, setValue]);
 
   useEffect(() => {
     if (!isCreate) return;
@@ -969,7 +987,7 @@ export default function TaskForm({
               />
             </div>
 
-            {isCreate && (
+            {isCreate && isDeadlinePast && (
               <SelectElement
                 disbaleSelect={transiton || session.data?.user.role === "user"}
                 labelText="Select Task Status"
@@ -978,7 +996,9 @@ export default function TaskForm({
                 defaultValue={watchedStatus}
                 errorMessage={fieldMessage("status")}
                 invalid={fieldInvalid("status")}
-                elements={taskStatus}
+                elements={taskStatus.filter(
+                  (s) => s !== TaskStatus.pending && s !== TaskStatus.in_progress,
+                )}
                 compact={isModal}
                 onChange={(value) => {
                   const status = value as TaskStatus;
