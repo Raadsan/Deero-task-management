@@ -76,6 +76,7 @@
       background-color 0.2s ease;
   }
 
+  button.action-icon-view:hover:not(:disabled),
   [data-slot="button"].action-icon-view:hover:not(:disabled),
   a.action-icon-view:hover {
     color: #16a34a !important;
@@ -89,6 +90,7 @@
       background-color 0.2s ease;
   }
 
+  button.action-icon-edit:hover:not(:disabled),
   [data-slot="button"].action-icon-edit:hover:not(:disabled),
   a.action-icon-edit:hover {
     color: #2563eb !important;
@@ -100,6 +102,7 @@
     transition: background-color 0.2s ease;
   }
 
+  button.action-icon-delete:hover:not(:disabled),
   [data-slot="button"].action-icon-delete:hover:not(:disabled),
   a.action-icon-delete:hover {
     color: #e11d48 !important;

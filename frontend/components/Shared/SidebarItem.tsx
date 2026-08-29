@@ -10,9 +10,13 @@ import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 
 /** Sibling routes under the same prefix — only exact path is active */
 const SIDEBAR_EXACT_PATHS = new Set([
-  "/my-tasks",
-  "/my-tasks/board",
-  "/my-tasks/today",
+  "/tasks",
+  "/tasks/dashboard",
+  "/accounting",
+  "/accounting/dashboard",
+  "/tasks/my-tasks",
+  "/tasks/my-tasks/board",
+  "/tasks/my-tasks/today",
 ]);
 
 function normalizePath(path: string) {

@@ -12,9 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { authClient } from "@/lib/auth-client";
-import { clearLoginBranchCookie } from "@/lib/apis/portfolioApi";
 import { ROUTES } from "@/lib/constants";
+import { signOutAndRedirect } from "@/lib/logout";
 import { UserRole } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 import { ChevronDown, LogOut, Settings, User as UserIcon } from "lucide-react";
@@ -79,12 +78,11 @@ export default function HeaderUserMenu({ className, user }: Props) {
     if (transition) return;
     startTransition(async () => {
       try {
-        await Promise.all([authClient.signOut(), clearLoginBranchCookie()]);
+        await signOutAndRedirect();
       } catch {
         toast.error("Logout failed. Please try again.");
         return;
       }
-      window.location.assign(ROUTES.login);
     });
   }
 

@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+"/c/Users/Raadsan/.vscode/extensions/openai.chatgpt-26.820.71523-win32-x64/bin/windows-x86_64/codex.exe" --codex-run-as-apply-patch "$(< /d/projects/deero-management/.login-design.patch)"

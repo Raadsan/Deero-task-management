@@ -1,66 +1,5 @@
-// import dotenv from "dotenv";
-// dotenv.config();
-// import express from "express";
-// import cors from "cors";
-// import { auth } from "./lib/auth.js";
-// import { toNodeHandler } from "better-auth/node";
-// import userRoutes from "./routes/userrouter.js";
-// import authRoutes from "./routes/authrouter.js";
-// import clientRoutes from "./routes/clientrouter.js";
-// import taskRoutes from "./routes/taskrouter.js";
-// import serviceRoutes from "./routes/servicerouter.js";
-// import transactionRoutes from "./routes/transactionrouter.js";
-// import salaryRoutes from "./routes/salaryrouter.js";
-// import roleRoutes from "./routes/rolerouter.js";
-// import utilRoutes from "./routes/utilrouter.js";
-// import notificationRoutes from "./routes/notificationrouter.js";
-
-
-
-// const app = express();
-// const port = process.env.PORT || 700;
-
-// app.use(cors({
-//   origin: process.env.FRONTEND_URL || "http://localhost:3000",
-//   credentials: true
-// }));
-// app.use(express.json());
-
-// // Better Auth integration
-// const authHandler = toNodeHandler(auth);
-// // Routes
-// app.use("/api/staffs", userRoutes);
-// app.use("/api/auth-custom", authRoutes);
-// app.use("/api/clients", clientRoutes);
-// app.use("/api/tasks", taskRoutes);
-// app.use("/api/services", serviceRoutes);
-// app.use("/api/transactions", transactionRoutes);
-// app.use("/api/salaries", salaryRoutes);
-// app.use("/api/roles", roleRoutes);
-// app.use("/api/utils", utilRoutes);
-// app.use("/api/notifications", notificationRoutes);
-
-// app.get("/", (req, res) => {
-//   res.send("Deero Management API is running...");
-// });
-
-// app.listen(port, () => {
-//   console.log(`Server is running on port ${port}`);
-// });
-
-
-
-
-
-import dotenv from "dotenv";
-import { createHash } from "crypto";
-dotenv.config();
-
 const isProduction = process.env.NODE_ENV === "production";
-
-const frontendUrl = isProduction
-  ? process.env.FRONTEND_URL_PROD
-  : process.env.FRONTEND_URL;
+const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
 
 import express from "express";
 import cors from "cors";
@@ -68,29 +7,32 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { auth } from "./lib/auth.js";
 import { toNodeHandler } from "better-auth/node";
+import { createHash } from "crypto";
 
-import staffRoutes from "./routes/staffrouter.js";
-import authRoutes from "./routes/authrouter.js";
-import clientRoutes from "./routes/clientrouter.js";
-import taskRoutes from "./routes/taskrouter.js";
-import serviceRoutes from "./routes/servicerouter.js";
-import transactionRoutes from "./routes/transactionrouter.js";
-import salaryRoutes from "./routes/salaryrouter.js";
-import roleRoutes from "./routes/rolerouter.js";
-import utilRoutes from "./routes/utilrouter.js";
-import notificationRoutes from "./routes/notificationrouter.js";
-import portfolioRoutes from "./routes/portfoliorouter.js";
-import navMenuRoutes from "./routes/navmenurouter.js";
-import trackingRoutes from "./routes/trackingrouter.js";
-import projectRoutes from "./routes/projectrouter.js";
-import contentRequestRoutes from "./routes/contentrequestrouter.js";
-import recurringRoutes from "./routes/recurringrouter.js";
-import workflowTemplateRoutes from "./routes/workflowtemplaterouter.js";
-import contractRoutes from "./routes/contractrouter.js";
-
-import billingRoutes from "./routes/billingrouter.js";
-import jobRoutes from "./routes/jobrouter.js";
-import { attachSessionScope } from "./middleware/session-scope.js";
+import {
+  accountingRoutes,
+  taskRoutes,
+  recurringRoutes,
+  workflowTemplateRoutes,
+  trackingRoutes,
+  jobRoutes,
+  contentRequestRoutes,
+  clientRoutes,
+  contractRoutes,
+  serviceRoutes,
+  portfolioRoutes,
+  departmentRoutes,
+  projectRoutes,
+  quotationRoutes,
+  documentTemplateRoutes,
+  staffRoutes,
+  roleRoutes,
+  navMenuRoutes,
+  authRoutes,
+  notificationRoutes,
+  utilRoutes,
+} from "./modules/index.js";
+import { attachSessionScope } from "./middlewares/session-scope.js";
 import { prisma } from "./lib/prisma.js";
 import { syncOverdueTasks } from "./lib/task-status.js";
 
@@ -171,7 +113,6 @@ app.use("/api/content-requests", attachSessionScope, contentRequestRoutes);
 app.use("/api/recurring-schedules", attachSessionScope, recurringRoutes);
 app.use("/api/contracts", attachSessionScope, contractRoutes);
 
-app.use("/api/billing", attachSessionScope, billingRoutes);
 app.use("/api/workflow-templates", attachSessionScope, workflowTemplateRoutes);
 app.use("/api/jobs", attachSessionScope, jobRoutes);
 app.use("/api/tasks", attachSessionScope, taskRoutes);
@@ -179,8 +120,9 @@ app.use("/api/services", attachSessionScope, serviceRoutes);
 app.use("/api/portfolios", attachSessionScope, portfolioRoutes);
 app.use("/api/nav-menus", attachSessionScope, navMenuRoutes);
 app.use("/api/tracking", attachSessionScope, trackingRoutes);
-app.use("/api/transactions", attachSessionScope, transactionRoutes);
-app.use("/api/salaries", attachSessionScope, salaryRoutes);
+app.use("/api/quotations", attachSessionScope, quotationRoutes);
+app.use("/api/document-templates", attachSessionScope, documentTemplateRoutes);
+app.use("/api/accounting", attachSessionScope, accountingRoutes);
 app.use("/api/roles", roleRoutes);
 app.use("/api/utils", utilRoutes);
 app.use("/api/notifications", notificationRoutes);
@@ -202,7 +144,7 @@ app.listen(port, async () => {
   console.log(`Server is running on port ${port}`);
   try {
     const { ensureDefaultMenusOnStartup } = await import(
-      "./controllers/navmenucontroller.js"
+      "./modules/staff/menus/navmenu.controller.js"
     );
     await ensureDefaultMenusOnStartup();
   } catch (error) {

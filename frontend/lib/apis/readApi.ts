@@ -23,8 +23,10 @@ export async function getAllTasksClient(): Promise<ActionResponse<Task[]>> {
               id: task.user.id,
               name: task.user.name ?? "Unassigned",
               portfolioId: task.user.portfolioId ?? null,
+              image: task.user.image ?? null,
+              jobTitle: task.user.jobTitle ?? null,
             }
-          : { id: "", name: "Unassigned", portfolioId: null },
+          : { id: "", name: "Unassigned", portfolioId: null, image: null, jobTitle: null },
         isPersonal: Boolean(task.isPersonal),
         siblings: (task.siblings ?? []).map((s: any) => ({
           id: s.id,

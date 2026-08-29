@@ -67,10 +67,7 @@ export default function MyTasksBoardPage() {
     {
       fallbackData: [],
       revalidateOnMount: true,
-      revalidateIfStale: true,
-      revalidateOnFocus: true,
-      dedupingInterval: 0,
-      refreshInterval: 3000,
+      revalidateOnFocus: false,
     },
   );
   const [tasks, setTasks] = useState<Task[]>([]);

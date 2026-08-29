@@ -1,7 +1,5 @@
 import axios from "axios";
-import { headers } from "next/headers";
 import { API_URL } from "./config";
-
 
 const api = axios.create({
   baseURL: API_URL,
@@ -15,6 +13,7 @@ const api = axios.create({
 api.interceptors.request.use(async (config) => {
   if (typeof window === "undefined") {
     try {
+      const { headers } = await import("next/headers");
       const cookieHeader = (await headers()).get("cookie");
       if (cookieHeader) {
         config.headers = config.headers ?? ({} as any);

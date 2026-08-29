@@ -1,8 +1,6 @@
 "use client";
 
-import { authClient } from "@/lib/auth-client";
-import { clearLoginBranchCookie } from "@/lib/apis/portfolioApi";
-import { ROUTES } from "@/lib/constants";
+import { signOutAndRedirect } from "@/lib/logout";
 import { LogOut } from "lucide-react";
 import { useTransition } from "react";
 import toast from "react-hot-toast";
@@ -19,12 +17,11 @@ export default function SettingAndLogoutMenu() {
     if (transition) return;
     startTransition(async () => {
       try {
-        await Promise.all([authClient.signOut(), clearLoginBranchCookie()]);
+        await signOutAndRedirect();
       } catch {
         toast.error("Logout failed. Please try again.");
         return;
       }
-      window.location.assign(ROUTES.login);
     });
   }
 

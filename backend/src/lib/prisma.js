@@ -8,7 +8,21 @@ dotenv.config();
 const globalForPrisma = globalThis;
 
 function createPrismaClient() {
+  const url = process.env.DATABASE_URL;
+  const separator = url && url.includes("?") ? "&" : "?";
+  const pooledUrl =
+    url && !url.includes("connection_limit")
+      ? `${url}${separator}connection_limit=5&pool_timeout=30&connect_timeout=30`
+      : url;
+
   return new PrismaClient({
+    datasources: pooledUrl
+      ? {
+          db: {
+            url: pooledUrl,
+          },
+        }
+      : undefined,
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
 }

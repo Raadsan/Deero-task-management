@@ -90,7 +90,7 @@ export default function TaskNotifications({ userId }: { userId?: string }) {
   const { data: notificationsResponse } = useSWR(
     userId ? [SWR_CACH_KEYS.taskNotifications.key, userId] : null,
     () => getTaskNotificationsClient(userId!),
-    { refreshInterval: 3000 },
+    { refreshInterval: 60000, revalidateOnFocus: false },
   );
 
   const notifications = notificationsResponse?.data ?? [];

@@ -66,8 +66,14 @@ export function normalizeTaskWriteStatus({
   let nextStatus = (status ?? currentStatus ?? "pending").toLowerCase();
   const nextDeadline = deadline ? new Date(deadline) : null;
   const nextStartDate = startDate ? new Date(startDate) : null;
+  const hasActiveDeadlineExtension =
+    nextDeadline && !isTaskPastDeadline(nextDeadline, extraTimeMinutes);
 
-  if (currentStatus === "overdue" && nextProgress !== Number(currentProgress ?? 0)) {
+  if (
+    currentStatus === "overdue" &&
+    nextProgress !== Number(currentProgress ?? 0) &&
+    !hasActiveDeadlineExtension
+  ) {
     return {
       error: "Cannot update progress of an overdue task. Extra time must be granted first.",
     };
@@ -87,6 +93,10 @@ export function normalizeTaskWriteStatus({
     };
   } else if (nextDeadline && isTaskPastDeadline(nextDeadline, extraTimeMinutes)) {
     nextStatus = "overdue";
+  } else if (nextStatus === "overdue" && hasActiveDeadlineExtension) {
+    nextStatus = nextStartDate && nextStartDate.getTime() > Date.now()
+      ? "pending"
+      : "in_progress";
   }
 
   return { status: nextStatus, progress: nextProgress };

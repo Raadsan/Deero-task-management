@@ -52,6 +52,8 @@ interface Task {
     id: string;
     name: string;
     portfolioId?: string | null;
+    image?: string | null;
+    jobTitle?: string | null;
   };
   assignedToId: string;
   description: string;
@@ -80,6 +82,7 @@ interface Task {
   progress: number;
   serviceInformation?: string;
   features?: Array<{ id?: string; name: string; done?: boolean; completed?: boolean; doneAt?: string }>;
+  progressNotes?: Array<{ id: string; text: string; progress: number; authorId: string; authorName: string; authorRole: string; createdAt: string }>;
 }
 
 type StatusColorConfig = {
@@ -144,6 +147,12 @@ interface Client {
   clientType?: string;
   companyName?: string | null;
   contactPerson?: string | null;
+  address?: string | null;
+  notes?: string | null;
+  portfolioId?: string | null;
+  monthlyBudget?: number | null;
+  contractStartDate?: string | null;
+  contractEndDate?: string | null;
   isActive?: boolean;
   isDraft?: boolean;
 }

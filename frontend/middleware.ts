@@ -40,7 +40,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (pathName === "/notification" || pathName === "/notification/") {
-    return NextResponse.redirect(new URL("/notifications", request.url));
+    return NextResponse.redirect(new URL("/tasks/notifications", request.url));
   }
 
   if (

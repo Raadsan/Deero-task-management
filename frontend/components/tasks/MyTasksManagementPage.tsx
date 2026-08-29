@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { editTask } from "@/lib/apis/taskApi";
-import { SWR_CACH_KEYS } from "@/lib/constants";
+import { ROUTES, SWR_CACH_KEYS } from "@/lib/constants";
 import { isBoardOnlyTask, normalizeMyTasksList } from "@/lib/my-task-filters";
 import { fetchMyCompanyTasks } from "@/lib/apis/myTasksApi";
 import {
@@ -36,7 +36,8 @@ import {
 } from "@/lib/dashboard-ui";
 import { Task } from "@/lib/types";
 import { cn, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
-import { Gauge, Eye, Search } from "lucide-react";
+import { CalendarDays, Gauge, Eye, Plus, Search } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import useSWR from "swr";
@@ -44,6 +45,13 @@ import { useSWRConfig } from "swr";
 
 const compactSelectClass =
   "h-9 cursor-pointer rounded-md border border-zinc-200 bg-white px-2 text-sm text-zinc-600 outline-none focus:border-primary";
+
+function taskDeadlineDate(task: Task) {
+  const base = task.status === "completed" && task.completedAt ? new Date(task.completedAt) : new Date(task.deadline);
+  const extra = task.status === "completed" ? 0 : Number(task.extraTimeMinutes ?? 0);
+  const date = new Date(base.getTime() + Math.max(0, extra) * 60000);
+  return Number.isNaN(date.getTime()) ? "No due date" : date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
 
 const compactInputClass =
   "h-9 w-full rounded-md border border-zinc-200 bg-zinc-50 pl-9 pr-3 text-sm text-zinc-600 outline-none focus:border-primary focus:ring-1 focus:ring-primary/10";
@@ -55,9 +63,7 @@ export default function MyTasksManagementPage() {
     {
       fallbackData: [],
       revalidateOnMount: true,
-      revalidateOnFocus: true,
-      dedupingInterval: 0,
-      refreshInterval: 3000,
+      revalidateOnFocus: false,
     },
   );
   const { mutate } = useSWRConfig();
@@ -120,7 +126,7 @@ export default function MyTasksManagementPage() {
     setProcessTarget(task);
   }
 
-  async function confirmProcessTask(nextProgress: number) {
+  async function confirmProcessTask(nextProgress: number, notes: string) {
     if (!processTarget) return;
     const progress = Math.min(100, Math.max(0, Number(nextProgress)));
     const isCompleted = progress >= 100;
@@ -131,6 +137,7 @@ export default function MyTasksManagementPage() {
         taskId: processTarget.id,
         status: isCompleted ? "completed" : "pending",
         progress,
+        notes: notes.trim() || undefined,
       });
       if (result.success) {
         toast.success(isCompleted ? "Task completed" : "Task progress saved");
@@ -155,7 +162,7 @@ export default function MyTasksManagementPage() {
     }
   }
   return (
-    <ManagementPageShell title="My tasks">
+    <ManagementPageShell title="My tasks" subtitle="Track and manage all tasks assigned to you." className={cn("transition-[padding] duration-200", processTarget && "lg:pr-[470px]")}>
       <div className={dashboardCardClass}>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-50 px-6 py-3">
           <div className={cn("flex items-center gap-2", dashboardLabelClass)}>
@@ -198,11 +205,12 @@ export default function MyTasksManagementPage() {
               className={compactInputClass}
             />
           </div>
+          {/* <Link href={ROUTES.createTask} className="flex h-9 items-center gap-2 rounded-md bg-[#651210] px-4 text-xs font-semibold text-white shadow-sm transition hover:bg-[#7d1915]"><Plus className="size-4" />Create Task</Link> */}
         </div>
 
         <div className={dashboardTableWrapClass}>
           <div className="overflow-x-auto">
-            <Table className="w-full">
+            <Table className="w-full table-fixed [&_th]:px-3 [&_td]:px-3 [&_th:nth-child(1)]:w-[11%] [&_th:nth-child(2)]:w-[31%] [&_th:nth-child(3)]:w-[17%] [&_th:nth-child(4)]:w-[20%] [&_th:nth-child(5)]:w-[12%] [&_th:nth-child(6)]:w-[9%]">
               <TableHeader className={dashboardTableHeaderClass}>
                 <TableRow className={dashboardTableHeadRowClass}>
                   <TableHead
@@ -273,23 +281,19 @@ export default function MyTasksManagementPage() {
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextSecondary}>
-                            {task.description || task.serviceInformation || "—"}
+                          <span className={cn(dashboardTextSecondary, "block min-w-0 truncate")}>
+                            {task.serviceInformation || task.description || "N/A"}
+                            <small className="mt-1 block text-[11px] text-zinc-400">Client: {task.institutions?.[0]?.institution || "Internal"}</small>
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextPrimary}>
-                            {task.progress ?? 0}%
+                          <span className={cn(dashboardTextPrimary, "whitespace-nowrap")}>
+                            <span className="inline-block w-9">{task.progress ?? 0}%</span>
+                            <span className="ml-2 inline-block h-1.5 w-24 overflow-hidden rounded-full bg-zinc-100 align-middle"><span className="block h-full rounded-full bg-[#7b1512]" style={{ width: Math.min(100, Number(task.progress ?? 0)) + "%" }} /></span>
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextSecondary}>
-                            {formatTaskDeadline(task.deadline, {
-                              status: task.status,
-                              progress: task.progress,
-                              startDate: task.startDate,
-                            })}
-                          </span>
+                          <div className="flex items-center gap-2"><CalendarDays className={cn("size-4 shrink-0", displayStatus === "overdue" ? "text-rose-500" : displayStatus === "in_progress" ? "text-orange-500" : "text-emerald-500")} /><div className="min-w-0 leading-tight"><span className={cn("block truncate text-[11px] font-semibold", displayStatus === "overdue" ? "text-rose-600" : displayStatus === "in_progress" ? "text-orange-500" : "text-zinc-700")}>{displayStatus === "completed" ? "Completed" : displayStatus === "overdue" ? "Overdue by" : "Due on"}</span><span className={cn("mt-0.5 block text-[10px]", displayStatus === "overdue" ? "font-semibold text-rose-500" : "text-zinc-500")}>{taskDeadlineDate(task)}</span></div></div>
                         </TableCell>
                         <TableCell
                           className={cn(dashboardTableCellClass, "text-right")}

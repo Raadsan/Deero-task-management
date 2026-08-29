@@ -100,7 +100,7 @@ export default function SidebarCollapsibleNavItem({
     const isAnySubActive = items.some((sub) => isSubNavActive(pathname, sub.href));
 
     return (
-      <SidebarMenuItem className="w-full">
+      <SidebarMenuItem className="w-full" data-sidebar-dropdown>
         <Popover
           open={open}
           onOpenChange={(nextOpen) => {
@@ -140,7 +140,7 @@ export default function SidebarCollapsibleNavItem({
   const isAnySubActive = items.some((sub) => isSubNavActive(pathname, sub.href));
 
   return (
-    <SidebarMenuItem className="w-full">
+    <SidebarMenuItem className="w-full" data-sidebar-dropdown>
       <div className="flex w-full flex-col">
         <SidebarMenuButton
           type="button"

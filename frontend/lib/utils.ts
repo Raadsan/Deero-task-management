@@ -130,6 +130,12 @@ export function resolveTaskDisplayStatus(
   const extraMinutes = Number(task.extraTimeMinutes ?? (Number(task.extraTimeHours ?? 0) * 60));
   if (task.deadline && isTaskPastDeadline(task.deadline, extraMinutes)) return "overdue";
 
+  if (task.status === "overdue") {
+    return task.startDate && new Date(task.startDate).getTime() > Date.now()
+      ? "pending"
+      : "in_progress";
+  }
+
   // If start date is reached, display as in_progress
   if (task.startDate && new Date(task.startDate).getTime() <= Date.now()) {
     return "in_progress";
@@ -157,7 +163,14 @@ export function formatTaskDeadline(
   const parsedDeadline = new Date(deadline);
   if (Number.isNaN(parsedDeadline.getTime())) return String(deadline);
 
-  const dateLabel = parsedDeadline.toLocaleDateString("en-US", {
+  const extraMinutes = Number(
+    context?.extraTimeMinutes ?? (Number(context?.extraTimeHours ?? 0) * 60),
+  );
+  const effectiveDeadlineMs =
+    parsedDeadline.getTime() + Math.max(0, extraMinutes) * 60_000;
+  const effectiveDeadline = new Date(effectiveDeadlineMs);
+
+  const dateLabel = effectiveDeadline.toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
     year: "numeric",
@@ -181,7 +194,7 @@ export function formatTaskDeadline(
   const startDateMs = context?.startDate ? new Date(context.startDate).getTime() : 0;
   const isPendingStart = displayStatus === "pending" && startDateMs > now.getTime();
 
-  const targetMs = isPendingStart ? startDateMs : parsedDeadline.getTime();
+  const targetMs = isPendingStart ? startDateMs : effectiveDeadlineMs;
   const diffMs = Math.max(0, targetMs - now.getTime());
   const totalMinutes = Math.floor(diffMs / (1000 * 60));
   const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
@@ -482,4 +495,3 @@ export function sortStaffByCode<T extends { staffCode?: string | null; createdAt
 
   return codeA.localeCompare(codeB, undefined, { numeric: true, sensitivity: "base" });
 }
-

@@ -11,6 +11,8 @@ function mapMyTask(task: Record<string, unknown>): Task {
     id?: string;
     name?: string;
     portfolioId?: string | null;
+    image?: string | null;
+    jobTitle?: string | null;
   } | null;
   const clientTask =
     (task.clientTask as Array<{
@@ -23,6 +25,8 @@ function mapMyTask(task: Record<string, unknown>): Task {
       id: user?.id ?? "",
       name: user?.name ?? "Unassigned",
       portfolioId: user?.portfolioId ?? null,
+      image: user?.image ?? null,
+      jobTitle: user?.jobTitle ?? null,
     },
     isAssignedToCurrentUser: true,
     isPersonal: Boolean(task.isPersonal),

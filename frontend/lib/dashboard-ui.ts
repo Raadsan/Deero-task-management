@@ -35,7 +35,7 @@ export const dashboardTableIdClass =
   "text-[13px] font-bold text-primary";
 
 export const dashboardStatusBadgeClass =
-  "px-3 py-1 text-[11px] font-black uppercase tracking-wider rounded-md";
+  "inline-flex min-w-[70px] items-center justify-center rounded-md px-3 py-1 text-[11px] font-black uppercase tracking-wider";
 
 export const chartPrimary = "var(--color-brand-primary)";
 export const chartSecondary = "var(--color-brand-secondary)";
@@ -142,13 +142,13 @@ export const dashboardLabelClass =
   "shrink-0 text-[13px] font-normal text-zinc-400";
 
 export const actionBtnView =
-  "action-icon-view h-8 w-8 rounded-lg p-0";
+  "action-icon-view inline-flex h-8 w-8 items-center justify-center rounded-lg p-0";
 
 export const actionBtnEdit =
-  "action-icon-edit h-8 w-8 rounded-lg p-0";
+  "action-icon-edit inline-flex h-8 w-8 items-center justify-center rounded-lg p-0";
 
 export const actionBtnDelete =
-  "action-icon-delete h-8 w-8 rounded-lg p-0";
+  "action-icon-delete inline-flex h-8 w-8 items-center justify-center rounded-lg p-0";
 
 export const btnCreatePage =
   "btn-brand flex h-[42px] items-center gap-2 rounded-md border-none px-6 text-sm font-medium shadow-sm hover:shadow-md";
@@ -158,3 +158,7 @@ export const btnFormSubmit =
 
 export const btnFormCancel =
   "h-10 min-w-[100px] rounded-md border border-zinc-200 bg-white px-6 text-sm font-semibold text-zinc-700 hover:bg-zinc-50";
+
+export const dashboardNativeTheadClass = "table-head-brand";
+export const dashboardNativeThClass = "px-6 py-3.5 text-[11px] font-bold uppercase text-white tracking-wider border-none";
+

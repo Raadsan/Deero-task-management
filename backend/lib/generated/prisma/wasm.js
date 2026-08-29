@@ -296,7 +296,8 @@ exports.Prisma.TaskScalarFieldEnum = {
   originalDeadline: 'originalDeadline',
   transferredFromProgress: 'transferredFromProgress',
   startDate: 'startDate',
-  features: 'features'
+  features: 'features',
+  progressNotes: 'progressNotes'
 };
 
 exports.Prisma.TaskTransferHistoryScalarFieldEnum = {
@@ -674,6 +675,496 @@ exports.Prisma.WorkflowTemplateStepScalarFieldEnum = {
   workflowStage: 'workflowStage'
 };
 
+exports.Prisma.Account_typesScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  internal_group: 'internal_group',
+  normal_balance: 'normal_balance',
+  report_type: 'report_type',
+  sequence: 'sequence'
+};
+
+exports.Prisma.Bank_accountsScalarFieldEnum = {
+  id: 'id',
+  company_id: 'company_id',
+  bank_id: 'bank_id',
+  institution_name: 'institution_name',
+  account_name: 'account_name',
+  account_number: 'account_number',
+  iban: 'iban',
+  currency_id: 'currency_id',
+  gl_account_id: 'gl_account_id',
+  payment_method_id: 'payment_method_id',
+  journal_id: 'journal_id',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.BanksScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  swift_bic: 'swift_bic',
+  address: 'address',
+  city: 'city',
+  country: 'country',
+  phone: 'phone',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.Chart_of_accountsScalarFieldEnum = {
+  id: 'id',
+  company_id: 'company_id',
+  code: 'code',
+  name: 'name',
+  account_type_id: 'account_type_id',
+  parent_id: 'parent_id',
+  currency_id: 'currency_id',
+  is_reconcilable: 'is_reconcilable',
+  allow_manual_entry: 'allow_manual_entry',
+  is_active: 'is_active',
+  notes: 'notes',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.CompaniesScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  legal_name: 'legal_name',
+  tax_id: 'tax_id',
+  currency_id: 'currency_id',
+  address: 'address',
+  city: 'city',
+  country: 'country',
+  phone: 'phone',
+  email: 'email',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.CurrenciesScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  symbol: 'symbol',
+  decimal_places: 'decimal_places',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.Customer_invoice_linesScalarFieldEnum = {
+  id: 'id',
+  invoice_id: 'invoice_id',
+  sequence: 'sequence',
+  product_id: 'product_id',
+  description: 'description',
+  quantity: 'quantity',
+  unit_price: 'unit_price',
+  discount_percent: 'discount_percent',
+  tax_id: 'tax_id',
+  income_account_id: 'income_account_id',
+  subtotal: 'subtotal'
+};
+
+exports.Prisma.Customer_invoicesScalarFieldEnum = {
+  id: 'id',
+  company_id: 'company_id',
+  document_type: 'document_type',
+  invoice_number: 'invoice_number',
+  customer_id: 'customer_id',
+  journal_id: 'journal_id',
+  fiscal_period_id: 'fiscal_period_id',
+  invoice_date: 'invoice_date',
+  due_date: 'due_date',
+  payment_term_id: 'payment_term_id',
+  currency_id: 'currency_id',
+  exchange_rate: 'exchange_rate',
+  receivable_account_id: 'receivable_account_id',
+  reversed_invoice_id: 'reversed_invoice_id',
+  customer_reference: 'customer_reference',
+  state: 'state',
+  payment_state: 'payment_state',
+  amount_untaxed: 'amount_untaxed',
+  amount_tax: 'amount_tax',
+  amount_total: 'amount_total',
+  paid_amount: 'paid_amount',
+  amount_due: 'amount_due',
+  journal_entry_id: 'journal_entry_id',
+  notes: 'notes',
+  posted_at: 'posted_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  client_id: 'client_id'
+};
+
+exports.Prisma.Customer_receiptsScalarFieldEnum = {
+  id: 'id',
+  company_id: 'company_id',
+  receipt_number: 'receipt_number',
+  customer_id: 'customer_id',
+  journal_id: 'journal_id',
+  payment_method_id: 'payment_method_id',
+  fiscal_period_id: 'fiscal_period_id',
+  receipt_date: 'receipt_date',
+  currency_id: 'currency_id',
+  exchange_rate: 'exchange_rate',
+  amount: 'amount',
+  unallocated_amount: 'unallocated_amount',
+  reference: 'reference',
+  memo: 'memo',
+  state: 'state',
+  journal_entry_id: 'journal_entry_id',
+  posted_at: 'posted_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.CustomersScalarFieldEnum = {
+  id: 'id',
+  company_id: 'company_id',
+  customer_code: 'customer_code',
+  name: 'name',
+  partner_type: 'partner_type',
+  tax_id: 'tax_id',
+  email: 'email',
+  phone: 'phone',
+  address: 'address',
+  city: 'city',
+  country: 'country',
+  currency_id: 'currency_id',
+  payment_term_id: 'payment_term_id',
+  receivable_account_id: 'receivable_account_id',
+  credit_limit: 'credit_limit',
+  notes: 'notes',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  clientId: 'clientId'
+};
+
+exports.Prisma.Fiscal_periodsScalarFieldEnum = {
+  id: 'id',
+  fiscal_year_id: 'fiscal_year_id',
+  name: 'name',
+  period_number: 'period_number',
+  start_date: 'start_date',
+  end_date: 'end_date',
+  state: 'state',
+  is_closing_period: 'is_closing_period'
+};
+
+exports.Prisma.Fiscal_yearsScalarFieldEnum = {
+  id: 'id',
+  company_id: 'company_id',
+  name: 'name',
+  start_date: 'start_date',
+  end_date: 'end_date',
+  state: 'state',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.Journal_entriesScalarFieldEnum = {
+  id: 'id',
+  company_id: 'company_id',
+  journal_id: 'journal_id',
+  entry_number: 'entry_number',
+  entry_date: 'entry_date',
+  fiscal_period_id: 'fiscal_period_id',
+  reference: 'reference',
+  narration: 'narration',
+  state: 'state',
+  source_type: 'source_type',
+  source_id: 'source_id',
+  reversed_entry_id: 'reversed_entry_id',
+  posted_at: 'posted_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.Journal_itemsScalarFieldEnum = {
+  id: 'id',
+  entry_id: 'entry_id',
+  sequence: 'sequence',
+  account_id: 'account_id',
+  label: 'label',
+  partner_type: 'partner_type',
+  partner_id: 'partner_id',
+  debit: 'debit',
+  credit: 'credit',
+  currency_id: 'currency_id',
+  amount_currency: 'amount_currency',
+  is_reconciled: 'is_reconciled',
+  matching_number: 'matching_number'
+};
+
+exports.Prisma.JournalsScalarFieldEnum = {
+  id: 'id',
+  company_id: 'company_id',
+  name: 'name',
+  code: 'code',
+  journal_type: 'journal_type',
+  default_debit_account_id: 'default_debit_account_id',
+  default_credit_account_id: 'default_credit_account_id',
+  currency_id: 'currency_id',
+  sequence_prefix: 'sequence_prefix',
+  next_sequence: 'next_sequence',
+  is_active: 'is_active',
+  allow_manual_entries: 'allow_manual_entries',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.Payment_allocationsScalarFieldEnum = {
+  id: 'id',
+  payment_id: 'payment_id',
+  bill_id: 'bill_id',
+  allocated_amount: 'allocated_amount',
+  allocated_at: 'allocated_at'
+};
+
+exports.Prisma.Payment_methodsScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  code: 'code',
+  payment_type: 'payment_type',
+  gl_account_id: 'gl_account_id',
+  allow_multiple_accounts: 'allow_multiple_accounts',
+  requires_reference: 'requires_reference',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.Payment_term_linesScalarFieldEnum = {
+  id: 'id',
+  payment_term_id: 'payment_term_id',
+  sequence: 'sequence',
+  value_type: 'value_type',
+  value_amount: 'value_amount',
+  due_days: 'due_days',
+  day_of_month: 'day_of_month'
+};
+
+exports.Prisma.Payment_termsScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.Product_categoriesScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  parent_id: 'parent_id'
+};
+
+exports.Prisma.ProductsScalarFieldEnum = {
+  id: 'id',
+  sku: 'sku',
+  name: 'name',
+  description: 'description',
+  product_type: 'product_type',
+  category_id: 'category_id',
+  uom: 'uom',
+  can_be_sold: 'can_be_sold',
+  can_be_purchased: 'can_be_purchased',
+  list_price: 'list_price',
+  standard_cost: 'standard_cost',
+  income_account_id: 'income_account_id',
+  expense_account_id: 'expense_account_id',
+  sale_tax_id: 'sale_tax_id',
+  purchase_tax_id: 'purchase_tax_id',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.Receipt_allocationsScalarFieldEnum = {
+  id: 'id',
+  receipt_id: 'receipt_id',
+  invoice_id: 'invoice_id',
+  allocated_amount: 'allocated_amount',
+  allocated_at: 'allocated_at'
+};
+
+exports.Prisma.TaxesScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  tax_scope: 'tax_scope',
+  rate_percent: 'rate_percent',
+  tax_account_id: 'tax_account_id',
+  price_includes_tax: 'price_includes_tax',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.Vendor_bill_linesScalarFieldEnum = {
+  id: 'id',
+  bill_id: 'bill_id',
+  sequence: 'sequence',
+  product_id: 'product_id',
+  description: 'description',
+  quantity: 'quantity',
+  unit_price: 'unit_price',
+  discount_percent: 'discount_percent',
+  tax_id: 'tax_id',
+  expense_account_id: 'expense_account_id',
+  subtotal: 'subtotal'
+};
+
+exports.Prisma.Vendor_billsScalarFieldEnum = {
+  id: 'id',
+  company_id: 'company_id',
+  document_type: 'document_type',
+  bill_number: 'bill_number',
+  vendor_id: 'vendor_id',
+  vendor_reference: 'vendor_reference',
+  journal_id: 'journal_id',
+  fiscal_period_id: 'fiscal_period_id',
+  bill_date: 'bill_date',
+  received_date: 'received_date',
+  due_date: 'due_date',
+  payment_term_id: 'payment_term_id',
+  currency_id: 'currency_id',
+  exchange_rate: 'exchange_rate',
+  payable_account_id: 'payable_account_id',
+  reversed_bill_id: 'reversed_bill_id',
+  state: 'state',
+  payment_state: 'payment_state',
+  amount_untaxed: 'amount_untaxed',
+  amount_tax: 'amount_tax',
+  amount_total: 'amount_total',
+  amount_paid: 'amount_paid',
+  amount_due: 'amount_due',
+  journal_entry_id: 'journal_entry_id',
+  notes: 'notes',
+  posted_at: 'posted_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.Vendor_paymentsScalarFieldEnum = {
+  id: 'id',
+  company_id: 'company_id',
+  payment_number: 'payment_number',
+  vendor_id: 'vendor_id',
+  journal_id: 'journal_id',
+  payment_method_id: 'payment_method_id',
+  bank_account_id: 'bank_account_id',
+  fiscal_period_id: 'fiscal_period_id',
+  payment_date: 'payment_date',
+  currency_id: 'currency_id',
+  exchange_rate: 'exchange_rate',
+  amount: 'amount',
+  unallocated_amount: 'unallocated_amount',
+  reference: 'reference',
+  memo: 'memo',
+  state: 'state',
+  journal_entry_id: 'journal_entry_id',
+  posted_at: 'posted_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.Vendor_advancesScalarFieldEnum = {
+  id: 'id',
+  company_id: 'company_id',
+  vendor_id: 'vendor_id',
+  currency_id: 'currency_id',
+  payment_id: 'payment_id',
+  advance_account_id: 'advance_account_id',
+  original_amount: 'original_amount',
+  remaining_amount: 'remaining_amount',
+  state: 'state',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.Vendor_advance_applicationsScalarFieldEnum = {
+  id: 'id',
+  advance_id: 'advance_id',
+  bill_id: 'bill_id',
+  amount: 'amount',
+  applied_at: 'applied_at'
+};
+
+exports.Prisma.VendorsScalarFieldEnum = {
+  id: 'id',
+  company_id: 'company_id',
+  vendor_code: 'vendor_code',
+  name: 'name',
+  partner_type: 'partner_type',
+  tax_id: 'tax_id',
+  email: 'email',
+  phone: 'phone',
+  address: 'address',
+  city: 'city',
+  country: 'country',
+  currency_id: 'currency_id',
+  payment_term_id: 'payment_term_id',
+  payable_account_id: 'payable_account_id',
+  default_bank_account: 'default_bank_account',
+  notes: 'notes',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.QuotationsScalarFieldEnum = {
+  id: 'id',
+  company_id: 'company_id',
+  quotation_number: 'quotation_number',
+  client_id: 'client_id',
+  customer_id: 'customer_id',
+  date: 'date',
+  valid_until: 'valid_until',
+  currency_id: 'currency_id',
+  status: 'status',
+  subtotal: 'subtotal',
+  discount: 'discount',
+  tax: 'tax',
+  total: 'total',
+  notes: 'notes',
+  terms: 'terms',
+  converted_invoice_id: 'converted_invoice_id',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.Quotation_linesScalarFieldEnum = {
+  id: 'id',
+  quotation_id: 'quotation_id',
+  sequence: 'sequence',
+  product_id: 'product_id',
+  description: 'description',
+  quantity: 'quantity',
+  unit_price: 'unit_price',
+  discount_percent: 'discount_percent',
+  tax_id: 'tax_id',
+  subtotal: 'subtotal'
+};
+
+exports.Prisma.Document_templatesScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  type: 'type',
+  file_url: 'file_url',
+  html_content: 'html_content',
+  is_default: 'is_default',
+  placeholders: 'placeholders',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -816,6 +1307,157 @@ exports.ContentCycleStatus = exports.$Enums.ContentCycleStatus = {
   SKIPPED: 'SKIPPED'
 };
 
+exports.account_types_internal_group = exports.$Enums.account_types_internal_group = {
+  asset: 'asset',
+  liability: 'liability',
+  equity: 'equity',
+  income: 'income',
+  expense: 'expense'
+};
+
+exports.account_types_normal_balance = exports.$Enums.account_types_normal_balance = {
+  debit: 'debit',
+  credit: 'credit'
+};
+
+exports.account_types_report_type = exports.$Enums.account_types_report_type = {
+  balance_sheet: 'balance_sheet',
+  profit_loss: 'profit_loss'
+};
+
+exports.customer_invoices_document_type = exports.$Enums.customer_invoices_document_type = {
+  invoice: 'invoice',
+  credit_note: 'credit_note'
+};
+
+exports.customer_invoices_state = exports.$Enums.customer_invoices_state = {
+  draft: 'draft',
+  posted: 'posted',
+  cancelled: 'cancelled'
+};
+
+exports.customer_invoices_payment_state = exports.$Enums.customer_invoices_payment_state = {
+  not_paid: 'not_paid',
+  partial: 'partial',
+  paid: 'paid',
+  reversed: 'reversed'
+};
+
+exports.customer_receipts_state = exports.$Enums.customer_receipts_state = {
+  draft: 'draft',
+  posted: 'posted',
+  cancelled: 'cancelled'
+};
+
+exports.customers_partner_type = exports.$Enums.customers_partner_type = {
+  individual: 'individual',
+  company: 'company'
+};
+
+exports.fiscal_periods_state = exports.$Enums.fiscal_periods_state = {
+  open: 'open',
+  closed: 'closed'
+};
+
+exports.fiscal_years_state = exports.$Enums.fiscal_years_state = {
+  open: 'open',
+  closed: 'closed'
+};
+
+exports.journal_entries_state = exports.$Enums.journal_entries_state = {
+  draft: 'draft',
+  posted: 'posted',
+  cancelled: 'cancelled'
+};
+
+exports.journal_entries_source_type = exports.$Enums.journal_entries_source_type = {
+  manual: 'manual',
+  customer_invoice: 'customer_invoice',
+  customer_receipt: 'customer_receipt',
+  vendor_bill: 'vendor_bill',
+  vendor_payment: 'vendor_payment',
+  pos_order: 'pos_order',
+  restaurant_purchase: 'restaurant_purchase',
+  vendor_advance: 'vendor_advance'
+};
+
+exports.journal_items_partner_type = exports.$Enums.journal_items_partner_type = {
+  customer: 'customer',
+  vendor: 'vendor'
+};
+
+exports.journals_journal_type = exports.$Enums.journals_journal_type = {
+  sale: 'sale',
+  purchase: 'purchase',
+  cash: 'cash',
+  bank: 'bank',
+  general: 'general',
+  opening_balance: 'opening_balance',
+  adjustment: 'adjustment',
+  closing: 'closing'
+};
+
+exports.payment_methods_payment_type = exports.$Enums.payment_methods_payment_type = {
+  inbound: 'inbound',
+  outbound: 'outbound',
+  both: 'both'
+};
+
+exports.payment_term_lines_value_type = exports.$Enums.payment_term_lines_value_type = {
+  percent: 'percent',
+  fixed: 'fixed',
+  balance: 'balance'
+};
+
+exports.products_product_type = exports.$Enums.products_product_type = {
+  goods: 'goods',
+  service: 'service'
+};
+
+exports.taxes_tax_scope = exports.$Enums.taxes_tax_scope = {
+  sale: 'sale',
+  purchase: 'purchase',
+  both: 'both'
+};
+
+exports.vendor_bills_document_type = exports.$Enums.vendor_bills_document_type = {
+  bill: 'bill',
+  refund: 'refund'
+};
+
+exports.vendor_bills_state = exports.$Enums.vendor_bills_state = {
+  draft: 'draft',
+  posted: 'posted',
+  cancelled: 'cancelled'
+};
+
+exports.vendor_bills_payment_state = exports.$Enums.vendor_bills_payment_state = {
+  not_paid: 'not_paid',
+  partial: 'partial',
+  paid: 'paid',
+  reversed: 'reversed'
+};
+
+exports.vendor_payments_state = exports.$Enums.vendor_payments_state = {
+  draft: 'draft',
+  posted: 'posted',
+  cancelled: 'cancelled'
+};
+
+exports.vendors_partner_type = exports.$Enums.vendors_partner_type = {
+  individual: 'individual',
+  company: 'company'
+};
+
+exports.quotation_status = exports.$Enums.quotation_status = {
+  DRAFT: 'DRAFT',
+  SENT: 'SENT',
+  ACCEPTED: 'ACCEPTED',
+  REJECTED: 'REJECTED',
+  EXPIRED: 'EXPIRED',
+  CONVERTED: 'CONVERTED'
+};
+
 exports.Prisma.ModelName = {
   Role: 'Role',
   Staff: 'Staff',
@@ -860,7 +1502,39 @@ exports.Prisma.ModelName = {
   RecurringTaskOccurrence: 'RecurringTaskOccurrence',
   ContentCycle: 'ContentCycle',
   WorkflowTemplate: 'WorkflowTemplate',
-  WorkflowTemplateStep: 'WorkflowTemplateStep'
+  WorkflowTemplateStep: 'WorkflowTemplateStep',
+  account_types: 'account_types',
+  bank_accounts: 'bank_accounts',
+  banks: 'banks',
+  chart_of_accounts: 'chart_of_accounts',
+  companies: 'companies',
+  currencies: 'currencies',
+  customer_invoice_lines: 'customer_invoice_lines',
+  customer_invoices: 'customer_invoices',
+  customer_receipts: 'customer_receipts',
+  customers: 'customers',
+  fiscal_periods: 'fiscal_periods',
+  fiscal_years: 'fiscal_years',
+  journal_entries: 'journal_entries',
+  journal_items: 'journal_items',
+  journals: 'journals',
+  payment_allocations: 'payment_allocations',
+  payment_methods: 'payment_methods',
+  payment_term_lines: 'payment_term_lines',
+  payment_terms: 'payment_terms',
+  product_categories: 'product_categories',
+  products: 'products',
+  receipt_allocations: 'receipt_allocations',
+  taxes: 'taxes',
+  vendor_bill_lines: 'vendor_bill_lines',
+  vendor_bills: 'vendor_bills',
+  vendor_payments: 'vendor_payments',
+  vendor_advances: 'vendor_advances',
+  vendor_advance_applications: 'vendor_advance_applications',
+  vendors: 'vendors',
+  quotations: 'quotations',
+  quotation_lines: 'quotation_lines',
+  document_templates: 'document_templates'
 };
 
 /**

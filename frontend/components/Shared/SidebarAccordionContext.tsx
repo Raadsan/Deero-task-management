@@ -38,6 +38,15 @@ export function SidebarAccordionProvider({
     else localStorage.removeItem(storageKey);
   }, [openId, storageKey]);
 
+  useEffect(() => {
+    const closeOnOutsidePointer = (event: PointerEvent) => {
+      const target = event.target as Element | null;
+      if (openId && !target?.closest("[data-sidebar-dropdown]")) setOpenId(null);
+    };
+    document.addEventListener("pointerdown", closeOnOutsidePointer);
+    return () => document.removeEventListener("pointerdown", closeOnOutsidePointer);
+  }, [openId]);
+
   const value = useMemo(
     () => ({
       openId,

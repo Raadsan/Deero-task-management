@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { getTaskFormBranchOptions } from "@/lib/apis/sharedApi";
+import { editTask } from "@/lib/apis/taskApi";
+import { SWR_CACH_KEYS } from "@/lib/constants";
 import { resolveTaskDisplayStatus } from "@/lib/utils";
 import { btnFormSubmit } from "@/lib/dashboard-ui";
 import { Task } from "@/lib/types";
@@ -18,11 +20,14 @@ import {
   Calendar,
   Clock,
   GitBranch,
+  MessageSquareText,
   Tag,
   User,
   Users,
 } from "lucide-react";
-import useSWR from "swr";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import useSWR, { useSWRConfig } from "swr";
 
 interface Props {
   open: boolean;
@@ -44,10 +49,27 @@ const PRIORITY_COLORS: Record<string, { bg: string; text: string }> = {
 };
 
 export default function TaskViewModal({ open, onOpenChange, task }: Props) {
+  const { mutate } = useSWRConfig();
+  const [newNote, setNewNote] = useState("");
+  const [savingNote, setSavingNote] = useState(false);
   const { data: branchOptionsRes } = useSWR(
     open && task ? "task-view-portfolios" : null,
     getTaskFormBranchOptions,
   );
+
+  async function saveNote() {
+    const text = newNote.trim();
+    if (!task || !text || savingNote) return;
+    setSavingNote(true);
+    try {
+      const result = await editTask({ taskId: task.id, status: task.status, progress: task.progress, notes: text });
+      if (!result.success) { toast.error(result.errors?.message || "Failed to save note"); return; }
+      setNewNote("");
+      await Promise.all([mutate(SWR_CACH_KEYS.tasks.key), mutate(SWR_CACH_KEYS.myTasksList.key)]);
+      toast.success("Task note saved");
+      onOpenChange(false);
+    } finally { setSavingNote(false); }
+  }
 
   if (!task) return null;
   const assignedBranchName =
@@ -83,7 +105,7 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
                 {assignedBranchName ||
                   (task.assignedTo?.portfolioId
                     ? `Portfolio ${task.assignedTo.portfolioId}`
-                    : "—")}
+                    : "â€”")}
               </span>
             </div>
           </div>
@@ -118,12 +140,12 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
             <InfoItem
               icon={User}
               label="Assigned To"
-              value={task.assignedTo?.name ?? "—"}
+              value={task.assignedTo?.name ?? "â€”"}
             />
             <InfoItem
               icon={Users}
               label="Supervisor"
-              value={task.supervisor || "—"}
+              value={task.supervisor || "â€”"}
             />
             <InfoItem
               icon={GitBranch}
@@ -132,7 +154,7 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
                 assignedBranchName ||
                 (task.assignedTo?.portfolioId
                   ? `Portfolio ${task.assignedTo.portfolioId}`
-                  : "—")
+                  : "â€”")
               }
             />
             <InfoItem
@@ -228,6 +250,17 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
             </div>
           )}
 
+          <div className="rounded-lg border border-zinc-200 bg-white p-4"><label htmlFor="task-view-note" className="text-xs font-bold uppercase tracking-wide text-zinc-500">Add Note</label><textarea id="task-view-note" value={newNote} onChange={(event) => setNewNote(event.target.value)} maxLength={2000} rows={3} placeholder="Write a task progress note..." className="mt-2 w-full resize-none rounded-lg border border-zinc-200 p-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" /><div className="mt-2 flex justify-end"><Button type="button" onClick={() => void saveNote()} disabled={!newNote.trim() || savingNote} className="bg-[#651210] text-white hover:bg-[#7b1512]">{savingNote ? "Saving..." : "Save Note"}</Button></div></div>
+
+          {task.progressNotes?.length ? (
+            <div className="rounded-lg border border-amber-100 bg-amber-50/40 p-4">
+              <div className="mb-3 flex items-center gap-2"><MessageSquareText className="size-4 text-[#7b1512]" /><p className="text-xs font-bold uppercase tracking-wide text-[#7b1512]">Progress Notes</p></div>
+              <div className="space-y-3">{[...task.progressNotes].reverse().map((note) => (
+                <div key={note.id} className="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm"><p className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-800">{note.text}</p><div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-500"><span><strong className="text-zinc-700">{note.authorName}</strong> · {String(note.authorRole).replace(/[_-]+/g, " ")}</span><span>{note.progress}% · {new Date(note.createdAt).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })}</span></div></div>
+              ))}</div>
+            </div>
+          ) : null}
+
           {(task as any).transferHistory?.length > 0 && (
             <div className="rounded-lg border border-indigo-100 bg-indigo-50/50 p-4">
               <div className="mb-3 flex items-center gap-2">
@@ -248,7 +281,7 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
                     <div className="min-w-0 flex-1 space-y-1">
                       <p className="text-xs font-semibold text-slate-800">
                         <span className="text-indigo-700">{transfer.fromAssignee?.name ?? "Unknown"}</span>
-                        {" → "}
+                        {" â†’ "}
                         <span className="text-indigo-700">{transfer.toAssignee?.name ?? "Unknown"}</span>
                       </p>
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-zinc-500">

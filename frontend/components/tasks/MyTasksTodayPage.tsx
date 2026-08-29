@@ -67,9 +67,7 @@ export default function MyTasksTodayPage() {
     {
       fallbackData: [],
       revalidateOnMount: true,
-      revalidateOnFocus: true,
-      dedupingInterval: 0,
-      refreshInterval: 3000,
+      revalidateOnFocus: false,
     },
   );
   const { mutate } = useSWRConfig();
