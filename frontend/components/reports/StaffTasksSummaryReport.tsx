@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getDashboardSession } from "@/lib/apis/portfolioApi";
+import { authClient } from "@/lib/auth-client";
 import { getAllTasks } from "@/lib/apis/taskApi";
 import { getAllUsers } from "@/lib/apis/userApi";
 import {
@@ -22,11 +23,28 @@ import {
 import { resolveBranchLogoUrl } from "@/lib/portfolio-branding";
 import { exportCsv, exportPdf, printReport, reportDateRangeLabel } from "@/lib/report-export";
 import { cn, resolveTaskDisplayStatus } from "@/lib/utils";
-import { Download, Eye, FileText, Printer, Search, X } from "lucide-react";
+import { AlertCircle, BarChart3, CheckCircle2, Clock, Download, Eye, FileText, Hourglass, Printer, Search, TimerReset, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import useSWR from "swr";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 const EMPTY_LIST: any[] = [];
+const BRAND_MAROON = "#5b1017";
+const BRAND_CORAL = "#e85d3f";
+const BRAND_AMBER = "#f59e0b";
+const BRAND_RED = "#dc2626";
+const chartTooltipStyle = { backgroundColor: "#fff", border: "1px solid #e5e7eb", borderRadius: "10px", fontSize: "12px", fontWeight: 600 };
 
 function valueOrNA(value: unknown) {
   return value === null || value === undefined || value === "" ? "N/A" : String(value);
@@ -102,8 +120,9 @@ function taskHoursWorked(task: any): number {
   return (endTime - startTime) / (1000 * 60 * 60);
 }
 
-export default function StaffTasksSummaryReport() {
+export default function StaffTasksSummaryReport({ personalOnly = false }: { personalOnly?: boolean }) {
   const { open: sidebarOpen, isMobile } = useSidebar();
+  const session = authClient.useSession();
   const { data: usersResponse, isLoading: usersLoading } = useSWR("staff-task-summary-users", getAllUsers, { revalidateOnFocus: false });
   const { data: tasksResponse, isLoading: tasksLoading } = useSWR("staff-task-summary-tasks", getAllTasks, { revalidateOnFocus: false });
   const { data: dashboardSession } = useSWR("staff-task-summary-branding", getDashboardSession, { revalidateOnFocus: false });
@@ -121,6 +140,8 @@ export default function StaffTasksSummaryReport() {
   const [detailStatus, setDetailStatus] = useState("all");
   const [detailPage, setDetailPage] = useState(1);
 
+  const currentUser = session.data?.user;
+  const currentUserId = currentUser?.id ?? dashboardSession?.session?.user?.id ?? "";
   const users = usersResponse?.data ?? EMPTY_LIST;
   const tasks = tasksResponse?.data ?? EMPTY_LIST;
   const loading = usersLoading || tasksLoading;

@@ -70,8 +70,8 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#fff8f7] px-4 py-8 sm:px-6">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_18%,rgba(236,71,36,0.09),transparent_28%),radial-gradient(circle_at_90%_84%,rgba(101,18,16,0.07),transparent_30%)]" />
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white px-4 py-8 sm:px-6">
+      <div className="pointer-events-none absolute inset-0 bg-white" />
 
       <section className="relative grid w-full max-w-[1080px] overflow-hidden rounded-[26px] border border-white/80 bg-white shadow-[0_28px_90px_rgba(101,18,16,0.16)] lg:min-h-[650px] lg:grid-cols-[44%_56%]">
         <aside className="relative hidden overflow-hidden bg-[radial-gradient(circle_at_55%_35%,#8f1d18_0%,#651210_46%,#3d0908_100%)] px-12 py-11 text-white lg:flex lg:flex-col">

@@ -570,6 +570,7 @@ const DEFAULT_MENUS = [
       { title: "Employees Report", url: "/reports/users", order: 1 },
       { title: "Client Report", url: "/reports/clients", order: 2 },
       { title: "Tasks Report", url: "/reports/tasks", order: 3 },
+      { title: "My Report", url: "/reports/my-report", order: 4 },
     ],
   },
   {

@@ -1,10 +1,8 @@
 "use client";
 
-import type { NavMenuItem } from "@/lib/apis/configApi";
 import { usePermissions } from "@/context/PermissionContext";
-import { normalizeRoleName } from "@/lib/portfolio-access";
 import { getLucideIcon } from "@/lib/lucide-icons";
-import { isLegacySidebarRole } from "@/lib/role-options";
+import { normalizeRoleName } from "@/lib/portfolio-access";
 import { AuthSession } from "@/lib/types";
 import {
   CalendarDays,
@@ -23,11 +21,10 @@ import {
   FileSpreadsheet,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import SideBarItem from "./SidebarItem";
 import SidebarCollapsibleNavItem from "./SidebarCollapsibleNavItem";
-import { useSidebarAccordion } from "./SidebarAccordionContext";
 
 type Props = {
   data?: AuthSession | null;
@@ -39,15 +36,9 @@ type Props = {
   }>;
 };
 
-export default function DynamicSidebarNav({
-  data,
-  fallback,
-  fallbackMenus = [],
-}: Props) {
+export default function DynamicSidebarNav({ data }: Props) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { setOpenId } = useSidebarAccordion();
-  const { menus, loading } = usePermissions();
+  const { menus, canView } = usePermissions();
   const userRole = data?.user?.role ?? "";
   const normalizedRole = normalizeRoleName(userRole);
   const isSuperadmin = normalizedRole === "superadmin" || normalizedRole === "admin";
@@ -218,9 +209,9 @@ export default function DynamicSidebarNav({
       title: "My Tasks",
       icon: ShoppingBag,
       items: [
-        { id: "task-my-list", title: "My Tasks", url: "/tasks/my-tasks" },
-        { id: "task-my-board", title: "My Board", url: "/tasks/my-tasks/board" },
-        { id: "task-my-today", title: "Today Tasks", url: "/tasks/my-tasks/today" },
+        { id: "task-my-list", title: "My Tasks", url: "/tasks/my-tasks", icon: ShoppingBag },
+        { id: "task-my-board", title: "My Board", url: "/tasks/my-tasks/board", icon: LayoutGrid },
+        { id: "task-my-today", title: "Today Tasks", url: "/tasks/my-tasks/today", icon: CalendarDays },
       ],
     },
     {
@@ -259,6 +250,7 @@ export default function DynamicSidebarNav({
         { id: "rep-employees", title: "Employees Report", url: "/reports/users" },
         { id: "rep-clients", title: "Client Report", url: "/reports/clients" },
         { id: "rep-tasks", title: "Tasks Report", url: "/reports/tasks" },
+        { id: "rep-my", title: "My Report", url: "/reports/my-report" },
       ],
     },
     {
@@ -308,6 +300,112 @@ export default function DynamicSidebarNav({
     },
   ], []);
 
+  // Some saved permission records use legacy URLs while the live routes now sit
+  // below /tasks or /accounting. Check both so old permissions still work.
+  const permissionUrlAliases: Record<string, string[]> = {
+    "/tasks/dashboard": ["/"],
+    "/tasks/my-tasks": ["/my-tasks"],
+    "/tasks/my-tasks/board": ["/my-tasks/board"],
+    "/tasks/my-tasks/today": ["/my-tasks/today"],
+    "/tasks/recurring-schedules": ["/recurring-schedules"],
+    "/accounting/quotations": ["/quotations"],
+    "/reports/my-report": ["/reports/tasks", "/reports/users"],
+  };
+
+  const mayViewUrl = (url: string) => {
+    if (isSuperadmin) return true;
+    return [url, ...(permissionUrlAliases[url] ?? [])].some((candidate) =>
+      canView(candidate),
+    );
+  };
+
+  type StaticSidebarItem = {
+    id: string;
+    title: string;
+    url?: string;
+    icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+    items?: Array<{
+      id: string;
+      title: string;
+      url: string;
+      icon?: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+    }>;
+  };
+
+  const filterMenusByPermission = (
+    menuItems: StaticSidebarItem[],
+    flattenChildren = false,
+  ): StaticSidebarItem[] =>
+    menuItems.flatMap((item): StaticSidebarItem[] => {
+      if (item.items?.length) {
+        const allowedItems = item.items.filter((sub) => mayViewUrl(sub.url));
+
+        if (flattenChildren && !isSuperadmin) {
+          return allowedItems.map((sub) => ({
+            id: sub.id,
+            title: sub.title,
+            url: sub.url,
+            icon: sub.icon ?? item.icon,
+          }));
+        }
+
+        const parentAllowed = item.url ? mayViewUrl(item.url) : false;
+        return parentAllowed || allowedItems.length
+          ? [{ ...item, items: allowedItems }]
+          : [];
+      }
+
+      if (!item.url || !mayViewUrl(item.url)) return [];
+
+      return [
+        {
+          ...item,
+          url: !isSuperadmin && item.url === "/tasks/dashboard" ? "/" : item.url,
+        },
+      ];
+    });
+
+  const visibleAccountingMenus = filterMenusByPermission(accountingMenus);
+  const visibleTaskMenus = filterMenusByPermission(taskMenus);
+  const visibleConfigMenus = filterMenusByPermission(configMenus);
+
+  const routeAliases: Record<string, string> = {
+    "/my-tasks": "/tasks/my-tasks",
+    "/my-tasks/board": "/tasks/my-tasks/board",
+    "/my-tasks/today": "/tasks/my-tasks/today",
+    "/recurring-schedules": "/tasks/recurring-schedules",
+    "/quotations": "/accounting/quotations",
+  };
+
+  const toAppRoute = (url?: string | null) => {
+    if (!url) return "#";
+    return routeAliases[url] ?? url;
+  };
+
+  const roleMenus = menus.map((menu) => {
+    const Icon = getLucideIcon(menu.icon);
+    return {
+      id: menu.id,
+      title: menu.title,
+      url: menu.url === "/tasks/dashboard" ? "/" : toAppRoute(menu.url),
+      icon: Icon,
+      items: (menu.items ?? []).map((sub) => ({
+        id: sub.id,
+        title: sub.title,
+        url: toAppRoute(sub.url),
+      })),
+    };
+  });
+
+  const staffTaskLinks = [
+    { id: "staff-my-tasks", title: "My Tasks", url: "/tasks/my-tasks", icon: ShoppingBag },
+    { id: "staff-my-board", title: "My Board", url: "/tasks/my-tasks/board", icon: LayoutGrid },
+    { id: "staff-today-tasks", title: "Today Tasks", url: "/tasks/my-tasks/today", icon: CalendarDays },
+  ];
+
+  const staffReportLinks = [
+    { id: "staff-my-report", title: "My Report", url: "/reports/my-report", icon: BarChart3 },
+  ];
   if (!mounted) {
     return null;
   }
@@ -331,6 +429,93 @@ export default function DynamicSidebarNav({
     );
   }
 
+  if (!isSuperadmin) {
+    const renderedStaffUrls = new Set<string>();
+    const renderRoleItem = (item: (typeof roleMenus)[number]) => {
+      const Icon = item.icon;
+      const isStaffTaskGroup = normalizedRole === "staff" && (item.title === "My Tasks" || item.title === "Tasks" || item.url.includes("/my-tasks") || item.url.includes("/tasks"));
+
+      if (isStaffTaskGroup) {
+        const links = item.items.length > 0 ? item.items : staffTaskLinks;
+        links.forEach((sub) => renderedStaffUrls.add(sub.url));
+        return links.map((sub) => {
+          return (
+            <SideBarItem
+              key={sub.id}
+              href={sub.url}
+              name={sub.title}
+              icon={<Icon className="size-[18px] shrink-0" strokeWidth={2} />}
+            />
+          );
+        });
+      }
+
+      if (item.items.length > 1) {
+        item.items.forEach((sub) => renderedStaffUrls.add(sub.url));
+        return (
+          <SidebarCollapsibleNavItem
+            key={item.id}
+            id={item.id}
+            name={item.title}
+            icon={<Icon className="size-[18px] shrink-0" strokeWidth={2} />}
+            items={item.items.map((sub) => ({
+              id: sub.id,
+              name: sub.title,
+              href: sub.url,
+            }))}
+          />
+        );
+      }
+
+      const href = item.items.length === 1 ? item.items[0].url : item.url;
+      const name = item.items.length === 1 ? item.items[0].title : item.title;
+      renderedStaffUrls.add(href);
+
+      return (
+        <SideBarItem
+          key={item.id}
+          href={href}
+          name={name}
+          icon={<Icon className="size-[18px] shrink-0" strokeWidth={2} />}
+        />
+      );
+    };
+
+    return (
+      <div className="space-y-1">
+        {roleMenus.map(renderRoleItem)}
+        {normalizedRole === "staff" &&
+          canView("/my-tasks") &&
+          staffTaskLinks
+            .filter((item) => !renderedStaffUrls.has(item.url))
+            .map((item) => {
+              const Icon = item.icon;
+              return (
+                <SideBarItem
+                  key={item.id}
+                  href={item.url}
+                  name={item.title}
+                  icon={<Icon className="size-[18px] shrink-0" strokeWidth={2} />}
+                />
+              );
+            })}
+        {normalizedRole === "staff" &&
+          staffReportLinks
+            .filter((item) => (mayViewUrl(item.url) || canView("/my-tasks")) && !renderedStaffUrls.has(item.url))
+            .map((item) => {
+              const Icon = item.icon;
+              return (
+                <SideBarItem
+                  key={item.id}
+                  href={item.url}
+                  name={item.title}
+                  icon={<Icon className="size-[18px] shrink-0" strokeWidth={2} />}
+                />
+              );
+            })}
+      </div>
+    );
+  }
   // If inside a Submodule, show "< Back to Modules" header (Bloom_cafe style)
   return (
     <div className="space-y-1">
@@ -348,7 +533,7 @@ export default function DynamicSidebarNav({
 
       {/* Render Module specific navigation */}
       {isAccountingModule ? (
-        accountingMenus.map((item) => {
+        visibleAccountingMenus.map((item) => {
           const Icon = item.icon || Layers;
           if (item.items?.length) {
             return (
@@ -375,7 +560,7 @@ export default function DynamicSidebarNav({
           );
         })
       ) : isConfigModule ? (
-        configMenus.map((item) => {
+        visibleConfigMenus.map((item) => {
           const Icon = item.icon;
           return (
             <SideBarItem
@@ -387,7 +572,7 @@ export default function DynamicSidebarNav({
           );
         })
       ) : (
-        taskMenus.map((item) => {
+        visibleTaskMenus.map((item) => {
           const Icon = item.icon;
           if (item.items?.length) {
             return (
@@ -437,3 +622,7 @@ function BookOpenIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
+
+
+
+

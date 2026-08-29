@@ -27,6 +27,7 @@ function findPerm(menus: NavMenuItem[], url: string) {
     if (menu.url === url && menu.permissions) return menu.permissions;
     if (
       menu.url &&
+      menu.url !== "/" &&
       url.startsWith(menu.url) &&
       menu.url.length > bestLen &&
       menu.permissions
@@ -38,6 +39,7 @@ function findPerm(menus: NavMenuItem[], url: string) {
       if (sub.url === url && sub.permissions) return sub.permissions;
       if (
         sub.url &&
+        sub.url !== "/" &&
         url.startsWith(sub.url) &&
         sub.url.length > bestLen &&
         sub.permissions
