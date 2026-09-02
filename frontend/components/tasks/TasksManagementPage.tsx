@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/table";
 import { getAllTasksClient, getAllUsersClient } from "@/lib/apis/readApi";
 import { ROUTES, SWR_CACH_KEYS } from "@/lib/constants";
+import { Task } from "@/lib/types";
 import {
   actionBtnDelete,
   actionBtnEdit,
@@ -38,7 +39,7 @@ import {
 import { cn, formatTaskDeadline, getTaskTableLabels, isTaskNotesUnseen, resolveTaskDisplayStatus } from "@/lib/utils";
 import { CalendarDays, Edit, Eye, Plus, Search } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 
 const compactSelectClass =

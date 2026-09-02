@@ -84,7 +84,7 @@ export default function ProcessTaskConfirmModal({
   // Accurately parse and separate task name, client/company name, and service name
   const labels = task
     ? getTaskTableLabels(task)
-    : { taskName: "Untitled Task", clientName: "Internal", serviceName: "General" };
+    : { taskName: "Untitled Task", clientName: "Internal", serviceName: "General", description: "" };
   const taskName = labels.taskName;
   const clientName = labels.clientName;
   const serviceInfo = labels.serviceName;
