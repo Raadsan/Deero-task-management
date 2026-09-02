@@ -91,7 +91,7 @@ export default function DashboardDataTable<T extends { id: number | string }>({
 
       <div className={dashboardTableWrapClass}>
         <div className="overflow-x-auto">
-          <table className="w-full text-left" style={{ minWidth }}>
+          <table className="w-full text-left text-xs" style={{ minWidth }}>
             <thead className={dashboardNativeTheadClass}>
               <tr>{columns.map((column) => <th key={column.key} className={`${dashboardNativeThClass} ${align(column.align)} ${column.className || ''}`}>{column.header}</th>)}</tr>
             </thead>
@@ -105,7 +105,7 @@ export default function DashboardDataTable<T extends { id: number | string }>({
                   {columns.map((column) => <td key={column.key} className={`${dashboardTableCellClass} ${align(column.align)} ${column.className || ''}`}>{column.cell(row)}</td>)}
                 </tr>
               )) : (
-                <tr><td colSpan={columns.length} className="px-6 py-12 text-center text-sm text-zinc-500 dark:text-white/70">{emptyText}</td></tr>
+                <tr><td colSpan={columns.length} className="px-6 py-12 text-center text-sm font-medium text-zinc-500">{emptyText}</td></tr>
               )}
             </tbody>
             {footer}

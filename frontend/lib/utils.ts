@@ -176,6 +176,15 @@ export function formatTaskDeadline(
     year: "numeric",
   });
 
+  const timeLabel = effectiveDeadline
+    .toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    })
+    .toLowerCase()
+    .replace(/\s+/g, "");
+
   const displayStatus = context
     ? resolveTaskDisplayStatus({ ...context, deadline })
     : isTaskPastDeadline(deadline)
@@ -187,7 +196,7 @@ export function formatTaskDeadline(
   }
 
   if (displayStatus === "overdue") {
-    return `Overdue by (${dateLabel})`;
+    return `Overdue by ${timeLabel}`;
   }
 
   const now = new Date();
@@ -218,6 +227,150 @@ export function formatTaskDeadline(
   }
 
   return durationLabel;
+}
+
+export function taskDeadlineDate(task: {
+  deadline?: Date | string | null;
+  status?: string;
+  completedAt?: Date | string | null;
+  extraTimeMinutes?: number | null;
+  extraTimeHours?: number | null;
+}) {
+  if (!task.deadline) return "No due date";
+  const baseDate = task.status === "completed" && task.completedAt
+    ? new Date(task.completedAt)
+    : new Date(task.deadline);
+  const extraMinutes = task.status === "completed"
+    ? 0
+    : Number(task.extraTimeMinutes ?? (Number(task.extraTimeHours ?? 0) * 60));
+  const effectiveDate = new Date(baseDate.getTime() + Math.max(0, extraMinutes) * 60_000);
+
+  if (Number.isNaN(effectiveDate.getTime())) return "No due date";
+  return effectiveDate.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+export function getTaskTableLabels(task: {
+  serviceInformation?: string | null;
+  description?: string | null;
+  institutions?: Array<{ institution?: string; id?: string }> | null;
+  department?: string | null;
+}) {
+  const combined = String(task.serviceInformation ?? "").trim();
+  const linkedClient = String(task.institutions?.[0]?.institution ?? "").trim();
+
+  // Split by " - "
+  const parts = combined
+    ? combined.split(/\s+-\s+/).map((p) => p.trim()).filter(Boolean)
+    : [];
+
+  let clientName = linkedClient && linkedClient !== "Internal" ? linkedClient : "";
+  let remainingParts = [...parts];
+
+  if (parts.length > 1) {
+    if (!clientName) {
+      clientName = parts[0];
+      remainingParts = parts.slice(1);
+    } else if (parts[0]?.toLowerCase() === clientName.toLowerCase()) {
+      remainingParts = parts.slice(1);
+    }
+  } else if (parts.length === 1 && clientName && parts[0]?.toLowerCase() === clientName.toLowerCase()) {
+    remainingParts = [];
+  }
+
+  if (!clientName) {
+    clientName = linkedClient || "Internal";
+  }
+
+  // Ensure client name is never retained inside remainingParts
+  if (
+    remainingParts.length > 0 &&
+    clientName &&
+    clientName !== "Internal" &&
+    remainingParts[0]?.toLowerCase() === clientName.toLowerCase()
+  ) {
+    remainingParts = remainingParts.slice(1);
+  }
+
+  // Also check if remainingParts[0] starts with clientName prefix
+  if (
+    remainingParts.length > 0 &&
+    clientName &&
+    clientName !== "Internal" &&
+    remainingParts[0]?.toLowerCase().startsWith(clientName.toLowerCase())
+  ) {
+    remainingParts[0] = remainingParts[0]
+      .slice(clientName.length)
+      .replace(/^[\s—\-–]+/, "")
+      .trim();
+    if (!remainingParts[0]) {
+      remainingParts = remainingParts.slice(1);
+    }
+  }
+
+  let serviceName = "General";
+  let extractedTaskName = "";
+
+  if (remainingParts.length >= 2) {
+    // e.g. ["Digital Marketing — Baahiye Package", "hh"]
+    // Service is the middle part(s), Task Name is the last part!
+    serviceName = remainingParts.slice(0, -1).join(" — ");
+    extractedTaskName = remainingParts[remainingParts.length - 1];
+  } else if (remainingParts.length === 1) {
+    serviceName = remainingParts[0];
+    extractedTaskName = remainingParts[0];
+  } else if (task.department) {
+    serviceName = task.department;
+    extractedTaskName = "Task";
+  }
+
+  // Fallback cleanup if serviceName accidentally still has clientName prefix
+  if (
+    clientName &&
+    clientName !== "Internal" &&
+    serviceName.toLowerCase().startsWith(clientName.toLowerCase())
+  ) {
+    serviceName =
+      serviceName
+        .slice(clientName.length)
+        .replace(/^[\s—\-–]+/, "")
+        .trim() || "General";
+  }
+
+  const taskName = extractedTaskName || combined || "Untitled Task";
+  const description = task.description?.trim() || "";
+
+  return { taskName, clientName, serviceName, description };
+}
+
+// Track seen task notes in localStorage to clear Eye icon badge upon opening modal
+export function getSeenTaskNoteIds(): Set<string> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const raw = localStorage.getItem("seen_task_note_ids");
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+export function markTaskNotesSeen(taskId: string | number) {
+  if (typeof window === "undefined" || !taskId) return;
+  try {
+    const set = getSeenTaskNoteIds();
+    set.add(String(taskId));
+    localStorage.setItem("seen_task_note_ids", JSON.stringify(Array.from(set)));
+    window.dispatchEvent(new Event("task-notes-seen-updated"));
+  } catch {}
+}
+
+export function isTaskNotesUnseen(taskId: string | number, count: number): boolean {
+  if (!count || count <= 0) return false;
+  const set = getSeenTaskNoteIds();
+  return !set.has(String(taskId));
 }
 
 type Params = {

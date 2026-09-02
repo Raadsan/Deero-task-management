@@ -129,11 +129,26 @@ export async function deleteService(id: string): Promise<ActionResponse> {
   }
 }
 
+export async function getAllSubServices(): Promise<ActionResponse<SubServiceRecord[]>> {
+  try {
+    const response = await api.get("/api/services/sub/all");
+    if (response.data.success) {
+      return { success: true, data: response.data.data };
+    }
+    return { success: false, data: [] };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}
+
 export async function createSubService(data: {
   name: string;
   categoryId: string;
   description?: string;
-}): Promise<ActionResponse> {
+  price?: number | null;
+  currency?: string;
+  features?: string[];
+}): Promise<ActionResponse<SubServiceRecord>> {
   try {
     const response = await api.post("/api/services/sub", data);
     if (response.data.success) return { success: true, data: response.data.data };
@@ -145,8 +160,15 @@ export async function createSubService(data: {
 
 export async function updateSubService(
   id: string,
-  data: { name: string; categoryId?: string; description?: string },
-): Promise<ActionResponse> {
+  data: {
+    name: string;
+    categoryId?: string;
+    description?: string;
+    price?: number | null;
+    currency?: string;
+    features?: string[];
+  },
+): Promise<ActionResponse<SubServiceRecord>> {
   try {
     const response = await api.put(`/api/services/sub/${id}`, data);
     if (response.data.success) return { success: true, data: response.data.data };

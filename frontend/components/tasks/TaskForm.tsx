@@ -9,7 +9,7 @@ import {
 import { ROUTES, SWR_CACH_KEYS, TASK_PRIORITIES } from "@/lib/constants";
 import { btnFormCancel, btnFormSubmit } from "@/lib/dashboard-ui";
 import { cn, getTaskStatus, resolveTaskDisplayStatus } from "@/lib/utils";
-import { ArrowRightLeft, CheckSquare, Clock, Lock, Plus, UserCheck, Users, X } from "lucide-react";
+import { ArrowRightLeft, CheckSquare, Clock, Lock, MessageSquareText, Plus, UserCheck, Users, X } from "lucide-react";
 import { CreateTaskSchema, TaskSchema } from "@/lib/validations";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useRouter } from "next/navigation";
@@ -1058,6 +1058,42 @@ export default function TaskForm({
 
             {!isCreate && (
               <>
+                {/* Staff Messages / Progress Notes display for Admin/Manager when editing */}
+                {currentTask?.progressNotes && currentTask.progressNotes.length > 0 && (
+                  <div className="rounded-xl border border-amber-200/80 bg-amber-50/60 p-4 space-y-3 my-2">
+                    <div className="flex items-center gap-2">
+                      <MessageSquareText className="size-4 text-[#7b1512]" />
+                      <span className="text-xs font-bold uppercase tracking-wide text-[#7b1512]">
+                        Staff Messages / Notes ({currentTask.progressNotes.length})
+                      </span>
+                    </div>
+                    <div className="space-y-2.5 max-h-48 overflow-y-auto pr-1">
+                      {[...currentTask.progressNotes].reverse().map((note: any) => (
+                        <div key={note.id || note.text} className="rounded-lg border border-amber-200/60 bg-white p-3 shadow-xs">
+                          <p className="text-xs leading-relaxed text-zinc-800 whitespace-pre-wrap font-medium">
+                            "{note.text}"
+                          </p>
+                          <div className="mt-1.5 flex flex-wrap items-center justify-between gap-1 text-[10px] text-zinc-500">
+                            <span>
+                              <strong className="text-zinc-700">{note.authorName}</strong> ({String(note.authorRole).replace(/[_-]+/g, " ")})
+                            </span>
+                            <span>
+                              {note.createdAt
+                                ? new Date(note.createdAt).toLocaleString("en-US", {
+                                    month: "short",
+                                    day: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })
+                                : ""}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <DatePicker
                   labelText="Extra Time Until (optional)"
                   disbaled={transiton || formType === "own:edit" || session.data?.user.role === "user"}

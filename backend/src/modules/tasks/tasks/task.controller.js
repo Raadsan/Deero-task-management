@@ -556,6 +556,29 @@ export const updateTask = async (req, res) => {
         mainUpdatedTask = updated;
       }
 
+      if (progressNote && t.id === id) {
+        try {
+          const noteNotifId = Math.random().toString(36).substring(2, 15);
+          const targetUserId = progressNote.authorId === updated.assgineeId
+            ? (updated.supervisor || null)
+            : updated.assgineeId;
+
+          await prisma.$executeRawUnsafe(
+            `INSERT INTO notifications (id, taskId, taskName, assigneeName, deadline, type, userId, isSeen) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            noteNotifId,
+            updated.id,
+            `Note on ${updated.serviceInformation || updated.description || "Task"}: "${progressNote.text.substring(0, 45)}"`,
+            progressNote.authorName || "User",
+            updated.deadline || new Date(),
+            "task-comment",
+            targetUserId || updated.assgineeId,
+            0,
+          );
+        } catch (err) {
+          console.error("Failed to create note notification:", err);
+        }
+      }
+
       if (t.status !== normalized.status) {
         try {
           const notifId = Math.random().toString(36).substring(2, 15);

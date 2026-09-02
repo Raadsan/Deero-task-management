@@ -5,6 +5,7 @@ import {
   deleteService,
   deleteSubService,
   getAllServices,
+  getAllSubServices,
   getServiceById,
   getSubServicesByServiceId,
   updateService,
@@ -15,6 +16,7 @@ import {
 const router = Router();
 
 router.get("/", getAllServices);
+router.get("/sub/all", getAllSubServices);
 router.post("/", createService);
 router.post("/sync-advert", syncAdvertServices);
 router.post("/sub", createSubService);

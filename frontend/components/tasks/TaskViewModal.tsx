@@ -8,10 +8,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { getAllTasksClient } from "@/lib/apis/readApi";
 import { getTaskFormBranchOptions } from "@/lib/apis/sharedApi";
 import { editTask } from "@/lib/apis/taskApi";
 import { SWR_CACH_KEYS } from "@/lib/constants";
-import { resolveTaskDisplayStatus } from "@/lib/utils";
+import { getTaskTableLabels, markTaskNotesSeen, resolveTaskDisplayStatus } from "@/lib/utils";
 import { btnFormSubmit } from "@/lib/dashboard-ui";
 import { Task } from "@/lib/types";
 import {
@@ -25,7 +26,7 @@ import {
   User,
   Users,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import useSWR, { useSWRConfig } from "swr";
 
@@ -57,6 +58,24 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
     getTaskFormBranchOptions,
   );
 
+  const { data: tasksRes } = useSWR(
+    open ? SWR_CACH_KEYS.tasks.key : null,
+    getAllTasksClient,
+    { refreshInterval: 3000 },
+  );
+
+  const currentTask = useMemo(() => {
+    if (!task) return null;
+    const found = tasksRes?.data?.find((t: any) => String(t.id) === String(task.id));
+    return found || task;
+  }, [tasksRes?.data, task]);
+
+  useEffect(() => {
+    if (open && currentTask?.id) {
+      markTaskNotesSeen(currentTask.id);
+    }
+  }, [open, currentTask?.id]);
+
   async function saveNote() {
     const text = newNote.trim();
     if (!task || !text || savingNote) return;
@@ -71,18 +90,18 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
     } finally { setSavingNote(false); }
   }
 
-  if (!task) return null;
+  if (!task || !currentTask) return null;
   const assignedBranchName =
     branchOptionsRes?.data?.portfolios?.find(
       (portfolio: { id: string; name: string }) =>
-        String(portfolio.id) === String(task.assignedTo?.portfolioId ?? ""),
+        String(portfolio.id) === String(currentTask.assignedTo?.portfolioId ?? ""),
     )?.name ?? "";
 
-  const displayStatus = resolveTaskDisplayStatus(task);
+  const displayStatus = resolveTaskDisplayStatus(currentTask);
   const statusColor =
     STATUS_COLORS[displayStatus] ?? { bg: "bg-gray-100", text: "text-gray-800" };
   const priorityColor =
-    PRIORITY_COLORS[task.priority] ?? { bg: "bg-gray-100", text: "text-gray-800" };
+    PRIORITY_COLORS[currentTask.priority] ?? { bg: "bg-gray-100", text: "text-gray-800" };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -98,26 +117,61 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
 
         <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-5">
           <div className="flex items-center justify-between">
-            <div className="text-xs font-mono text-zinc-400">ID: {task.id}</div>
+            <div className="text-xs font-mono text-zinc-400">ID: {currentTask.id}</div>
             <div className="text-xs font-medium text-zinc-500">
               Assigned Portfolio:{" "}
               <span className="font-semibold text-zinc-700">
                 {assignedBranchName ||
-                  (task.assignedTo?.portfolioId
-                    ? `Portfolio ${task.assignedTo.portfolioId}`
-                    : "â€”")}
+                  (currentTask.assignedTo?.portfolioId
+                    ? `Portfolio ${currentTask.assignedTo.portfolioId}`
+                    : "N/A")}
               </span>
             </div>
           </div>
 
+          {/* Task Name Box */}
           <div className="rounded-lg border border-zinc-100 bg-zinc-50 p-4">
-            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-zinc-400">
-              Description
+            <p className="mb-0.5 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+              Task Name
             </p>
-            <p className="text-sm leading-relaxed text-zinc-800">
-              {task.description}
-            </p>
+            <h4 className="text-base font-semibold text-zinc-900 leading-snug">
+              {getTaskTableLabels(currentTask).taskName}
+            </h4>
           </div>
+
+          {/* Client & Service Information */}
+          <div className="rounded-lg border border-zinc-100 bg-zinc-50 p-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                  Client / Company
+                </p>
+                <p className="mt-0.5 text-xs font-semibold text-zinc-800">
+                  {getTaskTableLabels(currentTask).clientName}
+                </p>
+              </div>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                  Service
+                </p>
+                <p className="mt-0.5 text-xs font-semibold text-zinc-800">
+                  {getTaskTableLabels(currentTask).serviceName}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Separate Description Box */}
+          {getTaskTableLabels(currentTask).description ? (
+            <div className="rounded-lg border border-zinc-100 bg-zinc-50 p-4">
+              <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                Description
+              </p>
+              <p className="text-sm leading-relaxed text-zinc-800 whitespace-pre-wrap">
+                {getTaskTableLabels(currentTask).description}
+              </p>
+            </div>
+          ) : null}
 
           <div className="rounded-lg border border-zinc-100 bg-zinc-50 p-4">
             <div className="mb-2 flex items-center justify-between">
@@ -125,44 +179,74 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
                 Completion Progress
               </p>
               <span className="text-sm font-bold text-primary">
-                {task.progress || 0}%
+                {currentTask.progress || 0}%
               </span>
             </div>
             <div className="h-2.5 w-full rounded-full bg-zinc-200">
               <div
                 className="h-2.5 rounded-full bg-primary transition-all duration-500"
-                style={{ width: `${task.progress || 0}%` }}
+                style={{ width: `${currentTask.progress || 0}%` }}
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <InfoItem
-              icon={User}
-              label="Assigned To"
-              value={task.assignedTo?.name ?? "â€”"}
-            />
+            {/* Assigned To with Avatar / Image */}
+            <div className="flex items-center gap-3 rounded-lg border border-zinc-100 bg-zinc-50 p-3">
+              {currentTask.assignedTo?.image ? (
+                <img
+                  src={currentTask.assignedTo.image}
+                  alt={currentTask.assignedTo.name}
+                  className="size-9 rounded-full object-cover ring-2 ring-white shadow-xs"
+                />
+              ) : (
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#651210] text-xs font-bold text-white shadow-xs">
+                  {currentTask.assignedTo?.name
+                    ? currentTask.assignedTo.name
+                        .split(" ")
+                        .slice(0, 2)
+                        .map((n) => n[0] || "")
+                        .join("")
+                        .toUpperCase()
+                    : "U"}
+                </div>
+              )}
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                  Assigned To
+                </p>
+                <p className="truncate text-xs font-semibold text-zinc-800">
+                  {currentTask.assignedTo?.name || "Unassigned"}
+                </p>
+                {currentTask.assignedTo?.jobTitle ? (
+                  <p className="truncate text-[10px] text-zinc-500">
+                    {currentTask.assignedTo.jobTitle}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+
             <InfoItem
               icon={Users}
               label="Supervisor"
-              value={task.supervisor || "â€”"}
+              value={currentTask.supervisor?.trim() || "N/A"}
             />
             <InfoItem
               icon={GitBranch}
               label="Assignee Portfolio"
               value={
                 assignedBranchName ||
-                (task.assignedTo?.portfolioId
-                  ? `Portfolio ${task.assignedTo.portfolioId}`
-                  : "â€”")
+                (currentTask.assignedTo?.portfolioId
+                  ? `Portfolio ${currentTask.assignedTo.portfolioId}`
+                  : "N/A")
               }
             />
             <InfoItem
               icon={Calendar}
               label="Start Date"
               value={
-                task.startDate
-                  ? new Date(task.startDate).toLocaleString("en-US", {
+                currentTask.startDate
+                  ? new Date(currentTask.startDate).toLocaleString("en-US", {
                       month: "short",
                       day: "2-digit",
                       year: "numeric",
@@ -176,8 +260,8 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
               icon={Calendar}
               label="Original Due Date"
               value={
-                task.originalDeadline || task.deadline
-                  ? new Date(task.originalDeadline ?? task.deadline!).toLocaleString("en-US", {
+                currentTask.originalDeadline || currentTask.deadline
+                  ? new Date(currentTask.originalDeadline ?? currentTask.deadline!).toLocaleString("en-US", {
                       month: "short",
                       day: "2-digit",
                       year: "numeric",
@@ -191,17 +275,17 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
               icon={Clock}
               label="Extra Time Added"
               value={
-                Number(task.extraTimeMinutes) > 0
-                  ? `${Math.floor(Number(task.extraTimeMinutes) / 60)}h ${Number(task.extraTimeMinutes) % 60}m`
-                  : "No extra time"
+                Number(currentTask.extraTimeMinutes) > 0
+                  ? `${Math.floor(Number(currentTask.extraTimeMinutes) / 60)}h ${Number(currentTask.extraTimeMinutes) % 60}m`
+                  : "0h 0m"
               }
             />
             <InfoItem
               icon={Calendar}
               label="Updated Ending Due Date"
               value={
-                Number(task.extraTimeMinutes) > 0 && task.deadline
-                  ? new Date(new Date(task.deadline).getTime() + Number(task.extraTimeMinutes) * 60_000).toLocaleString("en-US", {
+                Number(currentTask.extraTimeMinutes) > 0 && currentTask.deadline
+                  ? new Date(new Date(currentTask.deadline).getTime() + Number(currentTask.extraTimeMinutes) * 60_000).toLocaleString("en-US", {
                       month: "short",
                       day: "2-digit",
                       year: "numeric",
@@ -227,41 +311,52 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
               <span
                 className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${priorityColor.bg} ${priorityColor.text}`}
               >
-                {task.priority}
+                {currentTask.priority}
               </span>
             </div>
           </div>
 
-          {task.institutions?.length > 0 && (
-            <div className="rounded-lg border border-zinc-100 bg-zinc-50 p-4">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">
-                Clients
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {task.institutions.map(({ id, institution }) => (
-                  <span
-                    key={id}
-                    className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs font-medium text-zinc-700"
+
+          {currentTask.progressNotes?.length ? (
+            <div className="rounded-lg border border-amber-100 bg-amber-50/40 p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <MessageSquareText className="size-4 text-[#7b1512]" />
+                <p className="text-xs font-bold uppercase tracking-wide text-[#7b1512]">
+                  Progress Notes / Messages ({currentTask.progressNotes.length})
+                </p>
+              </div>
+              <div className="space-y-3">
+                {[...currentTask.progressNotes].reverse().map((note) => (
+                  <div
+                    key={note.id}
+                    className="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm"
                   >
-                    {institution}
-                  </span>
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-800">
+                      {note.text}
+                    </p>
+                    <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-500">
+                      <span>
+                        <strong className="text-zinc-700">{note.authorName}</strong> ·{" "}
+                        {String(note.authorRole).replace(/[_-]+/g, " ")}
+                      </span>
+                      <span>
+                        {note.progress}% ·{" "}
+                        {new Date(note.createdAt).toLocaleString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
-          )}
-
-          <div className="rounded-lg border border-zinc-200 bg-white p-4"><label htmlFor="task-view-note" className="text-xs font-bold uppercase tracking-wide text-zinc-500">Add Note</label><textarea id="task-view-note" value={newNote} onChange={(event) => setNewNote(event.target.value)} maxLength={2000} rows={3} placeholder="Write a task progress note..." className="mt-2 w-full resize-none rounded-lg border border-zinc-200 p-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/10" /><div className="mt-2 flex justify-end"><Button type="button" onClick={() => void saveNote()} disabled={!newNote.trim() || savingNote} className="bg-[#651210] text-white hover:bg-[#7b1512]">{savingNote ? "Saving..." : "Save Note"}</Button></div></div>
-
-          {task.progressNotes?.length ? (
-            <div className="rounded-lg border border-amber-100 bg-amber-50/40 p-4">
-              <div className="mb-3 flex items-center gap-2"><MessageSquareText className="size-4 text-[#7b1512]" /><p className="text-xs font-bold uppercase tracking-wide text-[#7b1512]">Progress Notes</p></div>
-              <div className="space-y-3">{[...task.progressNotes].reverse().map((note) => (
-                <div key={note.id} className="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm"><p className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-800">{note.text}</p><div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-500"><span><strong className="text-zinc-700">{note.authorName}</strong> · {String(note.authorRole).replace(/[_-]+/g, " ")}</span><span>{note.progress}% · {new Date(note.createdAt).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })}</span></div></div>
-              ))}</div>
-            </div>
           ) : null}
 
-          {(task as any).transferHistory?.length > 0 && (
+          {(currentTask as any).transferHistory?.length > 0 && (
             <div className="rounded-lg border border-indigo-100 bg-indigo-50/50 p-4">
               <div className="mb-3 flex items-center gap-2">
                 <ArrowRightLeft className="size-4 text-indigo-600" />

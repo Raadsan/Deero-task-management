@@ -461,8 +461,13 @@ export default function StaffTasksSummaryReport({ personalOnly = false }: { pers
                           <TableCell key={cellIndex} className={dashboardTableCellClass}>
                             {/* Last col = Action button */}
                             {cellIndex === row.length - 1 ? (
-                              <button type="button" aria-label="View task information" onClick={() => setSelectedDetailTask(paginatedDetailTasks[index])} className="inline-flex size-8 items-center justify-center rounded-lg border border-zinc-200 text-primary hover:bg-primary/5">
+                              <button type="button" aria-label="View task information" onClick={() => setSelectedDetailTask(paginatedDetailTasks[index])} className="relative inline-flex size-8 items-center justify-center rounded-lg border border-zinc-200 text-primary hover:bg-primary/5">
                                 <Eye className="size-4" />
+                                {paginatedDetailTasks[index]?.progressNotes?.length ? (
+                                  <span className="absolute -top-1 -right-1 flex size-3.5 items-center justify-center rounded-full bg-blue-600 text-[9px] font-bold text-white ring-2 ring-white shadow-xs">
+                                    {paginatedDetailTasks[index].progressNotes.length > 9 ? "9+" : paginatedDetailTasks[index].progressNotes.length}
+                                  </span>
+                                ) : null}
                               </button>
                               /* Status badge */
                             ) : cellIndex === 3 ? (

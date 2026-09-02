@@ -103,6 +103,18 @@ export async function getAllTasks(): Promise<ActionResponse<Task[]>> {
     if (response.data.success) {
       const tasks = response.data.data.map((task: any) => ({
         ...task,
+        progressNotes: (() => {
+          if (Array.isArray(task.progressNotes)) return task.progressNotes;
+          if (typeof task.progressNotes === "string" && task.progressNotes.trim()) {
+            try {
+              const parsed = JSON.parse(task.progressNotes);
+              return Array.isArray(parsed) ? parsed : [];
+            } catch {
+              return [];
+            }
+          }
+          return [];
+        })(),
         assignedTo: mapAssignedTo(task.user),
         isPersonal: Boolean(task.isPersonal),
         institutions: task.clientTask.map((ct: any) => ({
@@ -140,6 +152,18 @@ export async function getAssginedTasks(): Promise<ActionResponse<Task[]>> {
     if (response.data.success) {
       const tasks = response.data.data.map((task: any) => ({
         ...task,
+        progressNotes: (() => {
+          if (Array.isArray(task.progressNotes)) return task.progressNotes;
+          if (typeof task.progressNotes === "string" && task.progressNotes.trim()) {
+            try {
+              const parsed = JSON.parse(task.progressNotes);
+              return Array.isArray(parsed) ? parsed : [];
+            } catch {
+              return [];
+            }
+          }
+          return [];
+        })(),
         assignedTo: mapAssignedTo(task.user),
         isAssignedToCurrentUser: true,
         isPersonal: Boolean(task.isPersonal),

@@ -334,7 +334,7 @@ export const deleteService = async (req, res) => {
 };
 
 export const createSubService = async (req, res) => {
-  const { name, categoryId, description } = req.body;
+  const { name, categoryId, description, price, currency, features } = req.body;
   try {
     const id = await generateCustomId({ entityTybe: "subservices" });
     const subService = await prisma.subService.create({
@@ -343,9 +343,19 @@ export const createSubService = async (req, res) => {
         name,
         categoryId,
         description: description || null,
+        price: price === "" || price == null ? null : Number(price),
+        currency: currency || "USD",
+        features: features || [],
       },
       include: {
-        service: { select: { id: true, serviceName: true } },
+        service: {
+          select: {
+            id: true,
+            serviceName: true,
+            serviceType: true,
+            portfolio: { select: { id: true, name: true } },
+          },
+        },
       },
     });
     res.status(201).json({ success: true, data: subService });
@@ -356,7 +366,7 @@ export const createSubService = async (req, res) => {
 
 export const updateSubService = async (req, res) => {
   const { id } = req.params;
-  const { name, categoryId, description } = req.body;
+  const { name, categoryId, description, price, currency, features } = req.body;
   try {
     const subService = await prisma.subService.update({
       where: { id },
@@ -364,9 +374,19 @@ export const updateSubService = async (req, res) => {
         name,
         description: description ?? null,
         ...(categoryId ? { categoryId } : {}),
+        ...(price !== undefined ? { price: price === "" || price == null ? null : Number(price) } : {}),
+        ...(currency ? { currency } : {}),
+        ...(features !== undefined ? { features } : {}),
       },
       include: {
-        service: { select: { id: true, serviceName: true } },
+        service: {
+          select: {
+            id: true,
+            serviceName: true,
+            serviceType: true,
+            portfolio: { select: { id: true, name: true } },
+          },
+        },
       },
     });
     res.json({ success: true, data: subService });
@@ -392,7 +412,14 @@ export const getSubServicesByServiceId = async (req, res) => {
       where: { categoryId: id },
       orderBy: { name: "asc" },
       include: {
-        service: { select: { id: true, serviceName: true } },
+        service: {
+          select: {
+            id: true,
+            serviceName: true,
+            serviceType: true,
+            portfolio: { select: { id: true, name: true } },
+          },
+        },
       },
     });
     res.json({ success: true, data: subServices });
@@ -404,9 +431,16 @@ export const getSubServicesByServiceId = async (req, res) => {
 export const getAllSubServices = async (req, res) => {
   try {
     const subServices = await prisma.subService.findMany({
-      orderBy: { name: "asc" },
+      orderBy: [{ service: { serviceName: "asc" } }, { name: "asc" }],
       include: {
-        service: { select: { id: true, serviceName: true } },
+        service: {
+          select: {
+            id: true,
+            serviceName: true,
+            serviceType: true,
+            portfolio: { select: { id: true, name: true } },
+          },
+        },
       },
     });
     res.json({ success: true, data: subServices });

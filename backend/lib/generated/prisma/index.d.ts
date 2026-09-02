@@ -9157,6 +9157,7 @@ export namespace Prisma {
     vendor_payments: number
     vendor_advances: number
     vendors: number
+    quotations: number
   }
 
   export type CurrenciesCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9172,6 +9173,7 @@ export namespace Prisma {
     vendor_payments?: boolean | CurrenciesCountOutputTypeCountVendor_paymentsArgs
     vendor_advances?: boolean | CurrenciesCountOutputTypeCountVendor_advancesArgs
     vendors?: boolean | CurrenciesCountOutputTypeCountVendorsArgs
+    quotations?: boolean | CurrenciesCountOutputTypeCountQuotationsArgs
   }
 
   // Custom InputTypes
@@ -9267,6 +9269,13 @@ export namespace Prisma {
    */
   export type CurrenciesCountOutputTypeCountVendorsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: vendorsWhereInput
+  }
+
+  /**
+   * CurrenciesCountOutputType without action
+   */
+  export type CurrenciesCountOutputTypeCountQuotationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: quotationsWhereInput
   }
 
 
@@ -60208,6 +60217,7 @@ export namespace Prisma {
     vendor_payments?: boolean | currencies$vendor_paymentsArgs<ExtArgs>
     vendor_advances?: boolean | currencies$vendor_advancesArgs<ExtArgs>
     vendors?: boolean | currencies$vendorsArgs<ExtArgs>
+    quotations?: boolean | currencies$quotationsArgs<ExtArgs>
     _count?: boolean | CurrenciesCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["currencies"]>
 
@@ -60236,6 +60246,7 @@ export namespace Prisma {
     vendor_payments?: boolean | currencies$vendor_paymentsArgs<ExtArgs>
     vendor_advances?: boolean | currencies$vendor_advancesArgs<ExtArgs>
     vendors?: boolean | currencies$vendorsArgs<ExtArgs>
+    quotations?: boolean | currencies$quotationsArgs<ExtArgs>
     _count?: boolean | CurrenciesCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -60254,6 +60265,7 @@ export namespace Prisma {
       vendor_payments: Prisma.$vendor_paymentsPayload<ExtArgs>[]
       vendor_advances: Prisma.$vendor_advancesPayload<ExtArgs>[]
       vendors: Prisma.$vendorsPayload<ExtArgs>[]
+      quotations: Prisma.$quotationsPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -60616,6 +60628,7 @@ export namespace Prisma {
     vendor_payments<T extends currencies$vendor_paymentsArgs<ExtArgs> = {}>(args?: Subset<T, currencies$vendor_paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$vendor_paymentsPayload<ExtArgs>, T, "findMany"> | Null>
     vendor_advances<T extends currencies$vendor_advancesArgs<ExtArgs> = {}>(args?: Subset<T, currencies$vendor_advancesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$vendor_advancesPayload<ExtArgs>, T, "findMany"> | Null>
     vendors<T extends currencies$vendorsArgs<ExtArgs> = {}>(args?: Subset<T, currencies$vendorsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$vendorsPayload<ExtArgs>, T, "findMany"> | Null>
+    quotations<T extends currencies$quotationsArgs<ExtArgs> = {}>(args?: Subset<T, currencies$quotationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$quotationsPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -61189,6 +61202,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: VendorsScalarFieldEnum | VendorsScalarFieldEnum[]
+  }
+
+  /**
+   * currencies.quotations
+   */
+  export type currencies$quotationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the quotations
+     */
+    select?: quotationsSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: quotationsInclude<ExtArgs> | null
+    where?: quotationsWhereInput
+    orderBy?: quotationsOrderByWithRelationInput | quotationsOrderByWithRelationInput[]
+    cursor?: quotationsWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: QuotationsScalarFieldEnum | QuotationsScalarFieldEnum[]
   }
 
   /**
@@ -87181,6 +87214,7 @@ export namespace Prisma {
     lines?: boolean | quotations$linesArgs<ExtArgs>
     client?: boolean | quotations$clientArgs<ExtArgs>
     customer?: boolean | quotations$customerArgs<ExtArgs>
+    currencies?: boolean | quotations$currenciesArgs<ExtArgs>
     converted_invoice?: boolean | quotations$converted_invoiceArgs<ExtArgs>
     _count?: boolean | QuotationsCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["quotations"]>
@@ -87211,6 +87245,7 @@ export namespace Prisma {
     lines?: boolean | quotations$linesArgs<ExtArgs>
     client?: boolean | quotations$clientArgs<ExtArgs>
     customer?: boolean | quotations$customerArgs<ExtArgs>
+    currencies?: boolean | quotations$currenciesArgs<ExtArgs>
     converted_invoice?: boolean | quotations$converted_invoiceArgs<ExtArgs>
     _count?: boolean | QuotationsCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -87221,6 +87256,7 @@ export namespace Prisma {
       lines: Prisma.$quotation_linesPayload<ExtArgs>[]
       client: Prisma.$ClientPayload<ExtArgs> | null
       customer: Prisma.$customersPayload<ExtArgs> | null
+      currencies: Prisma.$currenciesPayload<ExtArgs> | null
       converted_invoice: Prisma.$customer_invoicesPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -87585,6 +87621,7 @@ export namespace Prisma {
     lines<T extends quotations$linesArgs<ExtArgs> = {}>(args?: Subset<T, quotations$linesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$quotation_linesPayload<ExtArgs>, T, "findMany"> | Null>
     client<T extends quotations$clientArgs<ExtArgs> = {}>(args?: Subset<T, quotations$clientArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     customer<T extends quotations$customerArgs<ExtArgs> = {}>(args?: Subset<T, quotations$customerArgs<ExtArgs>>): Prisma__customersClient<$Result.GetResult<Prisma.$customersPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    currencies<T extends quotations$currenciesArgs<ExtArgs> = {}>(args?: Subset<T, quotations$currenciesArgs<ExtArgs>>): Prisma__currenciesClient<$Result.GetResult<Prisma.$currenciesPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     converted_invoice<T extends quotations$converted_invoiceArgs<ExtArgs> = {}>(args?: Subset<T, quotations$converted_invoiceArgs<ExtArgs>>): Prisma__customer_invoicesClient<$Result.GetResult<Prisma.$customer_invoicesPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -87979,6 +88016,21 @@ export namespace Prisma {
      */
     include?: customersInclude<ExtArgs> | null
     where?: customersWhereInput
+  }
+
+  /**
+   * quotations.currencies
+   */
+  export type quotations$currenciesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the currencies
+     */
+    select?: currenciesSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: currenciesInclude<ExtArgs> | null
+    where?: currenciesWhereInput
   }
 
   /**
@@ -95981,6 +96033,7 @@ export namespace Prisma {
     vendor_payments?: Vendor_paymentsListRelationFilter
     vendor_advances?: Vendor_advancesListRelationFilter
     vendors?: VendorsListRelationFilter
+    quotations?: QuotationsListRelationFilter
   }
 
   export type currenciesOrderByWithRelationInput = {
@@ -96004,6 +96057,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsOrderByRelationAggregateInput
     vendor_advances?: vendor_advancesOrderByRelationAggregateInput
     vendors?: vendorsOrderByRelationAggregateInput
+    quotations?: quotationsOrderByRelationAggregateInput
   }
 
   export type currenciesWhereUniqueInput = Prisma.AtLeast<{
@@ -96030,6 +96084,7 @@ export namespace Prisma {
     vendor_payments?: Vendor_paymentsListRelationFilter
     vendor_advances?: Vendor_advancesListRelationFilter
     vendors?: VendorsListRelationFilter
+    quotations?: QuotationsListRelationFilter
   }, "id" | "code">
 
   export type currenciesOrderByWithAggregationInput = {
@@ -98648,6 +98703,7 @@ export namespace Prisma {
     lines?: Quotation_linesListRelationFilter
     client?: XOR<ClientNullableRelationFilter, ClientWhereInput> | null
     customer?: XOR<CustomersNullableRelationFilter, customersWhereInput> | null
+    currencies?: XOR<CurrenciesNullableRelationFilter, currenciesWhereInput> | null
     converted_invoice?: XOR<Customer_invoicesNullableRelationFilter, customer_invoicesWhereInput> | null
   }
 
@@ -98673,6 +98729,7 @@ export namespace Prisma {
     lines?: quotation_linesOrderByRelationAggregateInput
     client?: ClientOrderByWithRelationInput
     customer?: customersOrderByWithRelationInput
+    currencies?: currenciesOrderByWithRelationInput
     converted_invoice?: customer_invoicesOrderByWithRelationInput
   }
 
@@ -98701,6 +98758,7 @@ export namespace Prisma {
     lines?: Quotation_linesListRelationFilter
     client?: XOR<ClientNullableRelationFilter, ClientWhereInput> | null
     customer?: XOR<CustomersNullableRelationFilter, customersWhereInput> | null
+    currencies?: XOR<CurrenciesNullableRelationFilter, currenciesWhereInput> | null
     converted_invoice?: XOR<Customer_invoicesNullableRelationFilter, customer_invoicesWhereInput> | null
   }, "id" | "quotation_number">
 
@@ -103630,6 +103688,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesUncheckedCreateInput = {
@@ -103653,6 +103712,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUncheckedCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesUncheckedCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsUncheckedCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsUncheckedCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesUpdateInput = {
@@ -103675,6 +103735,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type currenciesUncheckedUpdateInput = {
@@ -103698,6 +103759,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUncheckedUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUncheckedUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type currenciesCreateManyInput = {
@@ -106334,7 +106396,6 @@ export namespace Prisma {
     quotation_number: string
     date: Date | string
     valid_until?: Date | string | null
-    currency_id?: number | null
     status?: $Enums.quotation_status
     subtotal?: Decimal | DecimalJsLike | number | string
     discount?: Decimal | DecimalJsLike | number | string
@@ -106347,6 +106408,7 @@ export namespace Prisma {
     lines?: quotation_linesCreateNestedManyWithoutQuotationInput
     client?: ClientCreateNestedOneWithoutQuotationsInput
     customer?: customersCreateNestedOneWithoutQuotationsInput
+    currencies?: currenciesCreateNestedOneWithoutQuotationsInput
     converted_invoice?: customer_invoicesCreateNestedOneWithoutConverted_quotationsInput
   }
 
@@ -106377,7 +106439,6 @@ export namespace Prisma {
     quotation_number?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    currency_id?: NullableIntFieldUpdateOperationsInput | number | null
     status?: Enumquotation_statusFieldUpdateOperationsInput | $Enums.quotation_status
     subtotal?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -106390,6 +106451,7 @@ export namespace Prisma {
     lines?: quotation_linesUpdateManyWithoutQuotationNestedInput
     client?: ClientUpdateOneWithoutQuotationsNestedInput
     customer?: customersUpdateOneWithoutQuotationsNestedInput
+    currencies?: currenciesUpdateOneWithoutQuotationsNestedInput
     converted_invoice?: customer_invoicesUpdateOneWithoutConverted_quotationsNestedInput
   }
 
@@ -106441,7 +106503,6 @@ export namespace Prisma {
     quotation_number?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    currency_id?: NullableIntFieldUpdateOperationsInput | number | null
     status?: Enumquotation_statusFieldUpdateOperationsInput | $Enums.quotation_status
     subtotal?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -118654,6 +118715,13 @@ export namespace Prisma {
     connect?: vendorsWhereUniqueInput | vendorsWhereUniqueInput[]
   }
 
+  export type quotationsCreateNestedManyWithoutCurrenciesInput = {
+    create?: XOR<quotationsCreateWithoutCurrenciesInput, quotationsUncheckedCreateWithoutCurrenciesInput> | quotationsCreateWithoutCurrenciesInput[] | quotationsUncheckedCreateWithoutCurrenciesInput[]
+    connectOrCreate?: quotationsCreateOrConnectWithoutCurrenciesInput | quotationsCreateOrConnectWithoutCurrenciesInput[]
+    createMany?: quotationsCreateManyCurrenciesInputEnvelope
+    connect?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+  }
+
   export type bank_accountsUncheckedCreateNestedManyWithoutCurrenciesInput = {
     create?: XOR<bank_accountsCreateWithoutCurrenciesInput, bank_accountsUncheckedCreateWithoutCurrenciesInput> | bank_accountsCreateWithoutCurrenciesInput[] | bank_accountsUncheckedCreateWithoutCurrenciesInput[]
     connectOrCreate?: bank_accountsCreateOrConnectWithoutCurrenciesInput | bank_accountsCreateOrConnectWithoutCurrenciesInput[]
@@ -118736,6 +118804,13 @@ export namespace Prisma {
     connectOrCreate?: vendorsCreateOrConnectWithoutCurrenciesInput | vendorsCreateOrConnectWithoutCurrenciesInput[]
     createMany?: vendorsCreateManyCurrenciesInputEnvelope
     connect?: vendorsWhereUniqueInput | vendorsWhereUniqueInput[]
+  }
+
+  export type quotationsUncheckedCreateNestedManyWithoutCurrenciesInput = {
+    create?: XOR<quotationsCreateWithoutCurrenciesInput, quotationsUncheckedCreateWithoutCurrenciesInput> | quotationsCreateWithoutCurrenciesInput[] | quotationsUncheckedCreateWithoutCurrenciesInput[]
+    connectOrCreate?: quotationsCreateOrConnectWithoutCurrenciesInput | quotationsCreateOrConnectWithoutCurrenciesInput[]
+    createMany?: quotationsCreateManyCurrenciesInputEnvelope
+    connect?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
   }
 
   export type bank_accountsUpdateManyWithoutCurrenciesNestedInput = {
@@ -118906,6 +118981,20 @@ export namespace Prisma {
     deleteMany?: vendorsScalarWhereInput | vendorsScalarWhereInput[]
   }
 
+  export type quotationsUpdateManyWithoutCurrenciesNestedInput = {
+    create?: XOR<quotationsCreateWithoutCurrenciesInput, quotationsUncheckedCreateWithoutCurrenciesInput> | quotationsCreateWithoutCurrenciesInput[] | quotationsUncheckedCreateWithoutCurrenciesInput[]
+    connectOrCreate?: quotationsCreateOrConnectWithoutCurrenciesInput | quotationsCreateOrConnectWithoutCurrenciesInput[]
+    upsert?: quotationsUpsertWithWhereUniqueWithoutCurrenciesInput | quotationsUpsertWithWhereUniqueWithoutCurrenciesInput[]
+    createMany?: quotationsCreateManyCurrenciesInputEnvelope
+    set?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    disconnect?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    delete?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    connect?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    update?: quotationsUpdateWithWhereUniqueWithoutCurrenciesInput | quotationsUpdateWithWhereUniqueWithoutCurrenciesInput[]
+    updateMany?: quotationsUpdateManyWithWhereWithoutCurrenciesInput | quotationsUpdateManyWithWhereWithoutCurrenciesInput[]
+    deleteMany?: quotationsScalarWhereInput | quotationsScalarWhereInput[]
+  }
+
   export type bank_accountsUncheckedUpdateManyWithoutCurrenciesNestedInput = {
     create?: XOR<bank_accountsCreateWithoutCurrenciesInput, bank_accountsUncheckedCreateWithoutCurrenciesInput> | bank_accountsCreateWithoutCurrenciesInput[] | bank_accountsUncheckedCreateWithoutCurrenciesInput[]
     connectOrCreate?: bank_accountsCreateOrConnectWithoutCurrenciesInput | bank_accountsCreateOrConnectWithoutCurrenciesInput[]
@@ -119072,6 +119161,20 @@ export namespace Prisma {
     update?: vendorsUpdateWithWhereUniqueWithoutCurrenciesInput | vendorsUpdateWithWhereUniqueWithoutCurrenciesInput[]
     updateMany?: vendorsUpdateManyWithWhereWithoutCurrenciesInput | vendorsUpdateManyWithWhereWithoutCurrenciesInput[]
     deleteMany?: vendorsScalarWhereInput | vendorsScalarWhereInput[]
+  }
+
+  export type quotationsUncheckedUpdateManyWithoutCurrenciesNestedInput = {
+    create?: XOR<quotationsCreateWithoutCurrenciesInput, quotationsUncheckedCreateWithoutCurrenciesInput> | quotationsCreateWithoutCurrenciesInput[] | quotationsUncheckedCreateWithoutCurrenciesInput[]
+    connectOrCreate?: quotationsCreateOrConnectWithoutCurrenciesInput | quotationsCreateOrConnectWithoutCurrenciesInput[]
+    upsert?: quotationsUpsertWithWhereUniqueWithoutCurrenciesInput | quotationsUpsertWithWhereUniqueWithoutCurrenciesInput[]
+    createMany?: quotationsCreateManyCurrenciesInputEnvelope
+    set?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    disconnect?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    delete?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    connect?: quotationsWhereUniqueInput | quotationsWhereUniqueInput[]
+    update?: quotationsUpdateWithWhereUniqueWithoutCurrenciesInput | quotationsUpdateWithWhereUniqueWithoutCurrenciesInput[]
+    updateMany?: quotationsUpdateManyWithWhereWithoutCurrenciesInput | quotationsUpdateManyWithWhereWithoutCurrenciesInput[]
+    deleteMany?: quotationsScalarWhereInput | quotationsScalarWhereInput[]
   }
 
   export type chart_of_accountsCreateNestedOneWithoutCustomer_invoice_linesInput = {
@@ -122711,6 +122814,12 @@ export namespace Prisma {
     connect?: customersWhereUniqueInput
   }
 
+  export type currenciesCreateNestedOneWithoutQuotationsInput = {
+    create?: XOR<currenciesCreateWithoutQuotationsInput, currenciesUncheckedCreateWithoutQuotationsInput>
+    connectOrCreate?: currenciesCreateOrConnectWithoutQuotationsInput
+    connect?: currenciesWhereUniqueInput
+  }
+
   export type customer_invoicesCreateNestedOneWithoutConverted_quotationsInput = {
     create?: XOR<customer_invoicesCreateWithoutConverted_quotationsInput, customer_invoicesUncheckedCreateWithoutConverted_quotationsInput>
     connectOrCreate?: customer_invoicesCreateOrConnectWithoutConverted_quotationsInput
@@ -122760,6 +122869,16 @@ export namespace Prisma {
     delete?: customersWhereInput | boolean
     connect?: customersWhereUniqueInput
     update?: XOR<XOR<customersUpdateToOneWithWhereWithoutQuotationsInput, customersUpdateWithoutQuotationsInput>, customersUncheckedUpdateWithoutQuotationsInput>
+  }
+
+  export type currenciesUpdateOneWithoutQuotationsNestedInput = {
+    create?: XOR<currenciesCreateWithoutQuotationsInput, currenciesUncheckedCreateWithoutQuotationsInput>
+    connectOrCreate?: currenciesCreateOrConnectWithoutQuotationsInput
+    upsert?: currenciesUpsertWithoutQuotationsInput
+    disconnect?: currenciesWhereInput | boolean
+    delete?: currenciesWhereInput | boolean
+    connect?: currenciesWhereUniqueInput
+    update?: XOR<XOR<currenciesUpdateToOneWithWhereWithoutQuotationsInput, currenciesUpdateWithoutQuotationsInput>, currenciesUncheckedUpdateWithoutQuotationsInput>
   }
 
   export type customer_invoicesUpdateOneWithoutConverted_quotationsNestedInput = {
@@ -126521,7 +126640,6 @@ export namespace Prisma {
     quotation_number: string
     date: Date | string
     valid_until?: Date | string | null
-    currency_id?: number | null
     status?: $Enums.quotation_status
     subtotal?: Decimal | DecimalJsLike | number | string
     discount?: Decimal | DecimalJsLike | number | string
@@ -126533,6 +126651,7 @@ export namespace Prisma {
     updated_at?: Date | string
     lines?: quotation_linesCreateNestedManyWithoutQuotationInput
     customer?: customersCreateNestedOneWithoutQuotationsInput
+    currencies?: currenciesCreateNestedOneWithoutQuotationsInput
     converted_invoice?: customer_invoicesCreateNestedOneWithoutConverted_quotationsInput
   }
 
@@ -137860,6 +137979,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesUncheckedCreateWithoutBank_accountsInput = {
@@ -137882,6 +138002,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUncheckedCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesUncheckedCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsUncheckedCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsUncheckedCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesCreateOrConnectWithoutBank_accountsInput = {
@@ -138224,6 +138345,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type currenciesUncheckedUpdateWithoutBank_accountsInput = {
@@ -138246,6 +138368,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUncheckedUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUncheckedUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type chart_of_accountsUpsertWithoutBank_accountsInput = {
@@ -138694,6 +138817,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesUncheckedCreateWithoutChart_of_accountsInput = {
@@ -138716,6 +138840,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUncheckedCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesUncheckedCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsUncheckedCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsUncheckedCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesCreateOrConnectWithoutChart_of_accountsInput = {
@@ -139697,6 +139822,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type currenciesUncheckedUpdateWithoutChart_of_accountsInput = {
@@ -139719,6 +139845,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUncheckedUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUncheckedUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type chart_of_accountsUpsertWithoutOther_chart_of_accountsInput = {
@@ -140392,6 +140519,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesUncheckedCreateWithoutCompaniesInput = {
@@ -140414,6 +140542,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUncheckedCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesUncheckedCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsUncheckedCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsUncheckedCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesCreateOrConnectWithoutCompaniesInput = {
@@ -141039,6 +141168,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type currenciesUncheckedUpdateWithoutCompaniesInput = {
@@ -141061,6 +141191,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUncheckedUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUncheckedUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type customer_invoicesUpsertWithWhereUniqueWithoutCompaniesInput = {
@@ -141969,6 +142100,57 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type quotationsCreateWithoutCurrenciesInput = {
+    company_id?: number | null
+    quotation_number: string
+    date: Date | string
+    valid_until?: Date | string | null
+    status?: $Enums.quotation_status
+    subtotal?: Decimal | DecimalJsLike | number | string
+    discount?: Decimal | DecimalJsLike | number | string
+    tax?: Decimal | DecimalJsLike | number | string
+    total?: Decimal | DecimalJsLike | number | string
+    notes?: string | null
+    terms?: string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    lines?: quotation_linesCreateNestedManyWithoutQuotationInput
+    client?: ClientCreateNestedOneWithoutQuotationsInput
+    customer?: customersCreateNestedOneWithoutQuotationsInput
+    converted_invoice?: customer_invoicesCreateNestedOneWithoutConverted_quotationsInput
+  }
+
+  export type quotationsUncheckedCreateWithoutCurrenciesInput = {
+    id?: number
+    company_id?: number | null
+    quotation_number: string
+    client_id?: string | null
+    customer_id?: number | null
+    date: Date | string
+    valid_until?: Date | string | null
+    status?: $Enums.quotation_status
+    subtotal?: Decimal | DecimalJsLike | number | string
+    discount?: Decimal | DecimalJsLike | number | string
+    tax?: Decimal | DecimalJsLike | number | string
+    total?: Decimal | DecimalJsLike | number | string
+    notes?: string | null
+    terms?: string | null
+    converted_invoice_id?: number | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    lines?: quotation_linesUncheckedCreateNestedManyWithoutQuotationInput
+  }
+
+  export type quotationsCreateOrConnectWithoutCurrenciesInput = {
+    where: quotationsWhereUniqueInput
+    create: XOR<quotationsCreateWithoutCurrenciesInput, quotationsUncheckedCreateWithoutCurrenciesInput>
+  }
+
+  export type quotationsCreateManyCurrenciesInputEnvelope = {
+    data: quotationsCreateManyCurrenciesInput | quotationsCreateManyCurrenciesInput[]
+    skipDuplicates?: boolean
+  }
+
   export type bank_accountsUpsertWithWhereUniqueWithoutCurrenciesInput = {
     where: bank_accountsWhereUniqueInput
     update: XOR<bank_accountsUpdateWithoutCurrenciesInput, bank_accountsUncheckedUpdateWithoutCurrenciesInput>
@@ -142178,6 +142360,22 @@ export namespace Prisma {
   export type vendorsUpdateManyWithWhereWithoutCurrenciesInput = {
     where: vendorsScalarWhereInput
     data: XOR<vendorsUpdateManyMutationInput, vendorsUncheckedUpdateManyWithoutCurrenciesInput>
+  }
+
+  export type quotationsUpsertWithWhereUniqueWithoutCurrenciesInput = {
+    where: quotationsWhereUniqueInput
+    update: XOR<quotationsUpdateWithoutCurrenciesInput, quotationsUncheckedUpdateWithoutCurrenciesInput>
+    create: XOR<quotationsCreateWithoutCurrenciesInput, quotationsUncheckedCreateWithoutCurrenciesInput>
+  }
+
+  export type quotationsUpdateWithWhereUniqueWithoutCurrenciesInput = {
+    where: quotationsWhereUniqueInput
+    data: XOR<quotationsUpdateWithoutCurrenciesInput, quotationsUncheckedUpdateWithoutCurrenciesInput>
+  }
+
+  export type quotationsUpdateManyWithWhereWithoutCurrenciesInput = {
+    where: quotationsScalarWhereInput
+    data: XOR<quotationsUpdateManyMutationInput, quotationsUncheckedUpdateManyWithoutCurrenciesInput>
   }
 
   export type chart_of_accountsCreateWithoutCustomer_invoice_linesInput = {
@@ -142830,6 +143028,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesUncheckedCreateWithoutCustomer_invoicesInput = {
@@ -142852,6 +143051,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUncheckedCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesUncheckedCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsUncheckedCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsUncheckedCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesCreateOrConnectWithoutCustomer_invoicesInput = {
@@ -143325,7 +143525,6 @@ export namespace Prisma {
     quotation_number: string
     date: Date | string
     valid_until?: Date | string | null
-    currency_id?: number | null
     status?: $Enums.quotation_status
     subtotal?: Decimal | DecimalJsLike | number | string
     discount?: Decimal | DecimalJsLike | number | string
@@ -143338,6 +143537,7 @@ export namespace Prisma {
     lines?: quotation_linesCreateNestedManyWithoutQuotationInput
     client?: ClientCreateNestedOneWithoutQuotationsInput
     customer?: customersCreateNestedOneWithoutQuotationsInput
+    currencies?: currenciesCreateNestedOneWithoutQuotationsInput
   }
 
   export type quotationsUncheckedCreateWithoutConverted_invoiceInput = {
@@ -143553,6 +143753,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type currenciesUncheckedUpdateWithoutCustomer_invoicesInput = {
@@ -143575,6 +143776,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUncheckedUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUncheckedUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type customersUpsertWithoutCustomer_invoicesInput = {
@@ -144116,6 +144318,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesUncheckedCreateWithoutCustomer_receiptsInput = {
@@ -144138,6 +144341,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUncheckedCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesUncheckedCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsUncheckedCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsUncheckedCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesCreateOrConnectWithoutCustomer_receiptsInput = {
@@ -144482,6 +144686,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type currenciesUncheckedUpdateWithoutCustomer_receiptsInput = {
@@ -144504,6 +144709,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUncheckedUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUncheckedUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type customersUpsertWithoutCustomer_receiptsInput = {
@@ -145045,6 +145251,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesUncheckedCreateWithoutCustomersInput = {
@@ -145067,6 +145274,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUncheckedCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesUncheckedCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsUncheckedCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsUncheckedCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesCreateOrConnectWithoutCustomersInput = {
@@ -145182,7 +145390,6 @@ export namespace Prisma {
     quotation_number: string
     date: Date | string
     valid_until?: Date | string | null
-    currency_id?: number | null
     status?: $Enums.quotation_status
     subtotal?: Decimal | DecimalJsLike | number | string
     discount?: Decimal | DecimalJsLike | number | string
@@ -145194,6 +145401,7 @@ export namespace Prisma {
     updated_at?: Date | string
     lines?: quotation_linesCreateNestedManyWithoutQuotationInput
     client?: ClientCreateNestedOneWithoutQuotationsInput
+    currencies?: currenciesCreateNestedOneWithoutQuotationsInput
     converted_invoice?: customer_invoicesCreateNestedOneWithoutConverted_quotationsInput
   }
 
@@ -145426,6 +145634,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type currenciesUncheckedUpdateWithoutCustomersInput = {
@@ -145448,6 +145657,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUncheckedUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUncheckedUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type payment_termsUpsertWithoutCustomersInput = {
@@ -147172,6 +147382,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesUncheckedCreateWithoutJournal_itemsInput = {
@@ -147194,6 +147405,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUncheckedCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesUncheckedCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsUncheckedCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsUncheckedCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesCreateOrConnectWithoutJournal_itemsInput = {
@@ -147353,6 +147565,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type currenciesUncheckedUpdateWithoutJournal_itemsInput = {
@@ -147375,6 +147588,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUncheckedUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUncheckedUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type journal_entriesUpsertWithoutJournal_itemsInput = {
@@ -147804,6 +148018,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesUncheckedCreateWithoutJournalsInput = {
@@ -147826,6 +148041,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUncheckedCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesUncheckedCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsUncheckedCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsUncheckedCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesCreateOrConnectWithoutJournalsInput = {
@@ -148263,6 +148479,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type currenciesUncheckedUpdateWithoutJournalsInput = {
@@ -148285,6 +148502,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUncheckedUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUncheckedUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type chart_of_accountsUpsertWithoutJournals_journals_default_debit_account_idTochart_of_accountsInput = {
@@ -151627,6 +151845,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesUncheckedCreateWithoutVendor_billsInput = {
@@ -151649,6 +151868,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUncheckedCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesUncheckedCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsUncheckedCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsUncheckedCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesCreateOrConnectWithoutVendor_billsInput = {
@@ -152255,6 +152475,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type currenciesUncheckedUpdateWithoutVendor_billsInput = {
@@ -152277,6 +152498,7 @@ export namespace Prisma {
     vendor_payments?: vendor_paymentsUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUncheckedUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUncheckedUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type journal_entriesUpsertWithoutVendor_billsInput = {
@@ -152792,6 +153014,7 @@ export namespace Prisma {
     vendor_bills?: vendor_billsCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesUncheckedCreateWithoutVendor_paymentsInput = {
@@ -152814,6 +153037,7 @@ export namespace Prisma {
     vendor_bills?: vendor_billsUncheckedCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesUncheckedCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsUncheckedCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsUncheckedCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesCreateOrConnectWithoutVendor_paymentsInput = {
@@ -153209,6 +153433,7 @@ export namespace Prisma {
     vendor_bills?: vendor_billsUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type currenciesUncheckedUpdateWithoutVendor_paymentsInput = {
@@ -153231,6 +153456,7 @@ export namespace Prisma {
     vendor_bills?: vendor_billsUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUncheckedUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUncheckedUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type journal_entriesUpsertWithoutVendor_paymentsInput = {
@@ -153610,6 +153836,7 @@ export namespace Prisma {
     vendor_bills?: vendor_billsCreateNestedManyWithoutCurrenciesInput
     vendor_payments?: vendor_paymentsCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesUncheckedCreateWithoutVendor_advancesInput = {
@@ -153632,6 +153859,7 @@ export namespace Prisma {
     vendor_bills?: vendor_billsUncheckedCreateNestedManyWithoutCurrenciesInput
     vendor_payments?: vendor_paymentsUncheckedCreateNestedManyWithoutCurrenciesInput
     vendors?: vendorsUncheckedCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsUncheckedCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesCreateOrConnectWithoutVendor_advancesInput = {
@@ -153932,6 +154160,7 @@ export namespace Prisma {
     vendor_bills?: vendor_billsUpdateManyWithoutCurrenciesNestedInput
     vendor_payments?: vendor_paymentsUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type currenciesUncheckedUpdateWithoutVendor_advancesInput = {
@@ -153954,6 +154183,7 @@ export namespace Prisma {
     vendor_bills?: vendor_billsUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendor_payments?: vendor_paymentsUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendors?: vendorsUncheckedUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUncheckedUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type vendor_paymentsUpsertWithoutVendor_advancesInput = {
@@ -154636,6 +154866,7 @@ export namespace Prisma {
     vendor_bills?: vendor_billsCreateNestedManyWithoutCurrenciesInput
     vendor_payments?: vendor_paymentsCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesUncheckedCreateWithoutVendorsInput = {
@@ -154658,6 +154889,7 @@ export namespace Prisma {
     vendor_bills?: vendor_billsUncheckedCreateNestedManyWithoutCurrenciesInput
     vendor_payments?: vendor_paymentsUncheckedCreateNestedManyWithoutCurrenciesInput
     vendor_advances?: vendor_advancesUncheckedCreateNestedManyWithoutCurrenciesInput
+    quotations?: quotationsUncheckedCreateNestedManyWithoutCurrenciesInput
   }
 
   export type currenciesCreateOrConnectWithoutVendorsInput = {
@@ -154909,6 +155141,7 @@ export namespace Prisma {
     vendor_bills?: vendor_billsUpdateManyWithoutCurrenciesNestedInput
     vendor_payments?: vendor_paymentsUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type currenciesUncheckedUpdateWithoutVendorsInput = {
@@ -154931,6 +155164,7 @@ export namespace Prisma {
     vendor_bills?: vendor_billsUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendor_payments?: vendor_paymentsUncheckedUpdateManyWithoutCurrenciesNestedInput
     vendor_advances?: vendor_advancesUncheckedUpdateManyWithoutCurrenciesNestedInput
+    quotations?: quotationsUncheckedUpdateManyWithoutCurrenciesNestedInput
   }
 
   export type payment_termsUpsertWithoutVendorsInput = {
@@ -155127,6 +155361,56 @@ export namespace Prisma {
   export type customersCreateOrConnectWithoutQuotationsInput = {
     where: customersWhereUniqueInput
     create: XOR<customersCreateWithoutQuotationsInput, customersUncheckedCreateWithoutQuotationsInput>
+  }
+
+  export type currenciesCreateWithoutQuotationsInput = {
+    code: string
+    name: string
+    symbol?: string
+    decimal_places?: number
+    is_active?: boolean
+    created_at?: Date | string
+    updated_at?: Date | string
+    bank_accounts?: bank_accountsCreateNestedManyWithoutCurrenciesInput
+    chart_of_accounts?: chart_of_accountsCreateNestedManyWithoutCurrenciesInput
+    companies?: companiesCreateNestedManyWithoutCurrenciesInput
+    customer_invoices?: customer_invoicesCreateNestedManyWithoutCurrenciesInput
+    customer_receipts?: customer_receiptsCreateNestedManyWithoutCurrenciesInput
+    customers?: customersCreateNestedManyWithoutCurrenciesInput
+    journal_items?: journal_itemsCreateNestedManyWithoutCurrenciesInput
+    journals?: journalsCreateNestedManyWithoutCurrenciesInput
+    vendor_bills?: vendor_billsCreateNestedManyWithoutCurrenciesInput
+    vendor_payments?: vendor_paymentsCreateNestedManyWithoutCurrenciesInput
+    vendor_advances?: vendor_advancesCreateNestedManyWithoutCurrenciesInput
+    vendors?: vendorsCreateNestedManyWithoutCurrenciesInput
+  }
+
+  export type currenciesUncheckedCreateWithoutQuotationsInput = {
+    id?: number
+    code: string
+    name: string
+    symbol?: string
+    decimal_places?: number
+    is_active?: boolean
+    created_at?: Date | string
+    updated_at?: Date | string
+    bank_accounts?: bank_accountsUncheckedCreateNestedManyWithoutCurrenciesInput
+    chart_of_accounts?: chart_of_accountsUncheckedCreateNestedManyWithoutCurrenciesInput
+    companies?: companiesUncheckedCreateNestedManyWithoutCurrenciesInput
+    customer_invoices?: customer_invoicesUncheckedCreateNestedManyWithoutCurrenciesInput
+    customer_receipts?: customer_receiptsUncheckedCreateNestedManyWithoutCurrenciesInput
+    customers?: customersUncheckedCreateNestedManyWithoutCurrenciesInput
+    journal_items?: journal_itemsUncheckedCreateNestedManyWithoutCurrenciesInput
+    journals?: journalsUncheckedCreateNestedManyWithoutCurrenciesInput
+    vendor_bills?: vendor_billsUncheckedCreateNestedManyWithoutCurrenciesInput
+    vendor_payments?: vendor_paymentsUncheckedCreateNestedManyWithoutCurrenciesInput
+    vendor_advances?: vendor_advancesUncheckedCreateNestedManyWithoutCurrenciesInput
+    vendors?: vendorsUncheckedCreateNestedManyWithoutCurrenciesInput
+  }
+
+  export type currenciesCreateOrConnectWithoutQuotationsInput = {
+    where: currenciesWhereUniqueInput
+    create: XOR<currenciesCreateWithoutQuotationsInput, currenciesUncheckedCreateWithoutQuotationsInput>
   }
 
   export type customer_invoicesCreateWithoutConverted_quotationsInput = {
@@ -155356,6 +155640,62 @@ export namespace Prisma {
     customer_receipts?: customer_receiptsUncheckedUpdateManyWithoutCustomersNestedInput
   }
 
+  export type currenciesUpsertWithoutQuotationsInput = {
+    update: XOR<currenciesUpdateWithoutQuotationsInput, currenciesUncheckedUpdateWithoutQuotationsInput>
+    create: XOR<currenciesCreateWithoutQuotationsInput, currenciesUncheckedCreateWithoutQuotationsInput>
+    where?: currenciesWhereInput
+  }
+
+  export type currenciesUpdateToOneWithWhereWithoutQuotationsInput = {
+    where?: currenciesWhereInput
+    data: XOR<currenciesUpdateWithoutQuotationsInput, currenciesUncheckedUpdateWithoutQuotationsInput>
+  }
+
+  export type currenciesUpdateWithoutQuotationsInput = {
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    decimal_places?: IntFieldUpdateOperationsInput | number
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    bank_accounts?: bank_accountsUpdateManyWithoutCurrenciesNestedInput
+    chart_of_accounts?: chart_of_accountsUpdateManyWithoutCurrenciesNestedInput
+    companies?: companiesUpdateManyWithoutCurrenciesNestedInput
+    customer_invoices?: customer_invoicesUpdateManyWithoutCurrenciesNestedInput
+    customer_receipts?: customer_receiptsUpdateManyWithoutCurrenciesNestedInput
+    customers?: customersUpdateManyWithoutCurrenciesNestedInput
+    journal_items?: journal_itemsUpdateManyWithoutCurrenciesNestedInput
+    journals?: journalsUpdateManyWithoutCurrenciesNestedInput
+    vendor_bills?: vendor_billsUpdateManyWithoutCurrenciesNestedInput
+    vendor_payments?: vendor_paymentsUpdateManyWithoutCurrenciesNestedInput
+    vendor_advances?: vendor_advancesUpdateManyWithoutCurrenciesNestedInput
+    vendors?: vendorsUpdateManyWithoutCurrenciesNestedInput
+  }
+
+  export type currenciesUncheckedUpdateWithoutQuotationsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    decimal_places?: IntFieldUpdateOperationsInput | number
+    is_active?: BoolFieldUpdateOperationsInput | boolean
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    bank_accounts?: bank_accountsUncheckedUpdateManyWithoutCurrenciesNestedInput
+    chart_of_accounts?: chart_of_accountsUncheckedUpdateManyWithoutCurrenciesNestedInput
+    companies?: companiesUncheckedUpdateManyWithoutCurrenciesNestedInput
+    customer_invoices?: customer_invoicesUncheckedUpdateManyWithoutCurrenciesNestedInput
+    customer_receipts?: customer_receiptsUncheckedUpdateManyWithoutCurrenciesNestedInput
+    customers?: customersUncheckedUpdateManyWithoutCurrenciesNestedInput
+    journal_items?: journal_itemsUncheckedUpdateManyWithoutCurrenciesNestedInput
+    journals?: journalsUncheckedUpdateManyWithoutCurrenciesNestedInput
+    vendor_bills?: vendor_billsUncheckedUpdateManyWithoutCurrenciesNestedInput
+    vendor_payments?: vendor_paymentsUncheckedUpdateManyWithoutCurrenciesNestedInput
+    vendor_advances?: vendor_advancesUncheckedUpdateManyWithoutCurrenciesNestedInput
+    vendors?: vendorsUncheckedUpdateManyWithoutCurrenciesNestedInput
+  }
+
   export type customer_invoicesUpsertWithoutConverted_quotationsInput = {
     update: XOR<customer_invoicesUpdateWithoutConverted_quotationsInput, customer_invoicesUncheckedUpdateWithoutConverted_quotationsInput>
     create: XOR<customer_invoicesCreateWithoutConverted_quotationsInput, customer_invoicesUncheckedCreateWithoutConverted_quotationsInput>
@@ -155439,7 +155779,6 @@ export namespace Prisma {
     quotation_number: string
     date: Date | string
     valid_until?: Date | string | null
-    currency_id?: number | null
     status?: $Enums.quotation_status
     subtotal?: Decimal | DecimalJsLike | number | string
     discount?: Decimal | DecimalJsLike | number | string
@@ -155451,6 +155790,7 @@ export namespace Prisma {
     updated_at?: Date | string
     client?: ClientCreateNestedOneWithoutQuotationsInput
     customer?: customersCreateNestedOneWithoutQuotationsInput
+    currencies?: currenciesCreateNestedOneWithoutQuotationsInput
     converted_invoice?: customer_invoicesCreateNestedOneWithoutConverted_quotationsInput
   }
 
@@ -155582,7 +155922,6 @@ export namespace Prisma {
     quotation_number?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    currency_id?: NullableIntFieldUpdateOperationsInput | number | null
     status?: Enumquotation_statusFieldUpdateOperationsInput | $Enums.quotation_status
     subtotal?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -155594,6 +155933,7 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneWithoutQuotationsNestedInput
     customer?: customersUpdateOneWithoutQuotationsNestedInput
+    currencies?: currenciesUpdateOneWithoutQuotationsNestedInput
     converted_invoice?: customer_invoicesUpdateOneWithoutConverted_quotationsNestedInput
   }
 
@@ -157571,7 +157911,6 @@ export namespace Prisma {
     quotation_number?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    currency_id?: NullableIntFieldUpdateOperationsInput | number | null
     status?: Enumquotation_statusFieldUpdateOperationsInput | $Enums.quotation_status
     subtotal?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -157583,6 +157922,7 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     lines?: quotation_linesUpdateManyWithoutQuotationNestedInput
     customer?: customersUpdateOneWithoutQuotationsNestedInput
+    currencies?: currenciesUpdateOneWithoutQuotationsNestedInput
     converted_invoice?: customer_invoicesUpdateOneWithoutConverted_quotationsNestedInput
   }
 
@@ -163059,6 +163399,26 @@ export namespace Prisma {
     updated_at?: Date | string
   }
 
+  export type quotationsCreateManyCurrenciesInput = {
+    id?: number
+    company_id?: number | null
+    quotation_number: string
+    client_id?: string | null
+    customer_id?: number | null
+    date: Date | string
+    valid_until?: Date | string | null
+    status?: $Enums.quotation_status
+    subtotal?: Decimal | DecimalJsLike | number | string
+    discount?: Decimal | DecimalJsLike | number | string
+    tax?: Decimal | DecimalJsLike | number | string
+    total?: Decimal | DecimalJsLike | number | string
+    notes?: string | null
+    terms?: string | null
+    converted_invoice_id?: number | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
   export type bank_accountsUpdateWithoutCurrenciesInput = {
     institution_name?: StringFieldUpdateOperationsInput | string
     account_name?: StringFieldUpdateOperationsInput | string
@@ -163861,6 +164221,67 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type quotationsUpdateWithoutCurrenciesInput = {
+    company_id?: NullableIntFieldUpdateOperationsInput | number | null
+    quotation_number?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: Enumquotation_statusFieldUpdateOperationsInput | $Enums.quotation_status
+    subtotal?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    tax?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    terms?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    lines?: quotation_linesUpdateManyWithoutQuotationNestedInput
+    client?: ClientUpdateOneWithoutQuotationsNestedInput
+    customer?: customersUpdateOneWithoutQuotationsNestedInput
+    converted_invoice?: customer_invoicesUpdateOneWithoutConverted_quotationsNestedInput
+  }
+
+  export type quotationsUncheckedUpdateWithoutCurrenciesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    company_id?: NullableIntFieldUpdateOperationsInput | number | null
+    quotation_number?: StringFieldUpdateOperationsInput | string
+    client_id?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_id?: NullableIntFieldUpdateOperationsInput | number | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: Enumquotation_statusFieldUpdateOperationsInput | $Enums.quotation_status
+    subtotal?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    tax?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    terms?: NullableStringFieldUpdateOperationsInput | string | null
+    converted_invoice_id?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    lines?: quotation_linesUncheckedUpdateManyWithoutQuotationNestedInput
+  }
+
+  export type quotationsUncheckedUpdateManyWithoutCurrenciesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    company_id?: NullableIntFieldUpdateOperationsInput | number | null
+    quotation_number?: StringFieldUpdateOperationsInput | string
+    client_id?: NullableStringFieldUpdateOperationsInput | string | null
+    customer_id?: NullableIntFieldUpdateOperationsInput | number | null
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: Enumquotation_statusFieldUpdateOperationsInput | $Enums.quotation_status
+    subtotal?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    tax?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    terms?: NullableStringFieldUpdateOperationsInput | string | null
+    converted_invoice_id?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type customer_invoice_linesCreateManyCustomer_invoicesInput = {
     id?: number
     sequence?: number
@@ -164091,7 +164512,6 @@ export namespace Prisma {
     quotation_number?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    currency_id?: NullableIntFieldUpdateOperationsInput | number | null
     status?: Enumquotation_statusFieldUpdateOperationsInput | $Enums.quotation_status
     subtotal?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -164104,6 +164524,7 @@ export namespace Prisma {
     lines?: quotation_linesUpdateManyWithoutQuotationNestedInput
     client?: ClientUpdateOneWithoutQuotationsNestedInput
     customer?: customersUpdateOneWithoutQuotationsNestedInput
+    currencies?: currenciesUpdateOneWithoutQuotationsNestedInput
   }
 
   export type quotationsUncheckedUpdateWithoutConverted_invoiceInput = {
@@ -164411,7 +164832,6 @@ export namespace Prisma {
     quotation_number?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     valid_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    currency_id?: NullableIntFieldUpdateOperationsInput | number | null
     status?: Enumquotation_statusFieldUpdateOperationsInput | $Enums.quotation_status
     subtotal?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     discount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -164423,6 +164843,7 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     lines?: quotation_linesUpdateManyWithoutQuotationNestedInput
     client?: ClientUpdateOneWithoutQuotationsNestedInput
+    currencies?: currenciesUpdateOneWithoutQuotationsNestedInput
     converted_invoice?: customer_invoicesUpdateOneWithoutConverted_quotationsNestedInput
   }
 

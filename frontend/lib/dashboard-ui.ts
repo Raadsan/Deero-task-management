@@ -24,15 +24,16 @@ export const dashboardTableHeaderClass =
 export const dashboardTableHeadRowClass = "hover:bg-transparent border-none";
 
 export const dashboardTableHeadClass =
-  "px-6 py-3.5 text-[11px] font-bold uppercase text-white tracking-wider border-none";
+  "px-4 py-3.5 text-[11px] font-bold uppercase text-white tracking-wider border-none";
 
 export const dashboardTableBodyRowClass =
   "border-zinc-100 hover:bg-zinc-50/50 transition-colors";
 
-export const dashboardTableCellClass = "px-6 py-3 text-foreground";
+export const dashboardTableCellClass =
+  "px-4 py-3 text-xs font-semibold text-zinc-900";
 
 export const dashboardTableIdClass =
-  "text-[13px] font-bold text-primary";
+  "text-xs font-bold text-primary";
 
 export const dashboardStatusBadgeClass =
   "inline-flex min-w-[70px] items-center justify-center rounded-md px-3 py-1 text-[11px] font-black uppercase tracking-wider";
@@ -118,28 +119,28 @@ export const dashboardCardClass =
   "overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm";
 
 export const dashboardControlsRowClass =
-  "flex flex-wrap items-center gap-6 border-b border-zinc-50 px-8 py-4";
+  "flex flex-wrap items-center gap-3 border-b border-zinc-50 px-4 py-3";
 
 export const dashboardTableWrapClass =
   "overflow-hidden border-t border-zinc-100 bg-white";
 
 export const dashboardPaginationClass =
-  "flex flex-col justify-between gap-4 border-t border-zinc-100 bg-zinc-50/30 px-8 py-2 text-xs text-zinc-400 md:flex-row md:items-center";
+  "flex flex-col justify-between gap-4 border-t border-zinc-100 bg-zinc-50/30 px-6 py-2 text-xs text-zinc-400 md:flex-row md:items-center";
 
 export const dashboardSelectClass =
-  "h-[42px] cursor-pointer rounded-md border border-zinc-200 bg-white px-2 text-sm font-normal text-zinc-600 outline-none transition-colors focus:border-primary";
+  "h-9 cursor-pointer rounded-md border border-zinc-200 bg-white px-2.5 text-xs text-zinc-600 outline-none transition-colors focus:border-primary";
 
 export const dashboardInputClass =
-  "h-[42px] w-full rounded-md border border-zinc-200 bg-zinc-50 pl-10 pr-4 text-sm font-normal text-zinc-600 outline-none transition-all placeholder:text-zinc-400 focus:border-primary focus:ring-1 focus:ring-primary/10";
+  "h-9 w-full rounded-md border border-zinc-200 bg-zinc-50 pl-9 pr-3 text-xs text-zinc-600 outline-none transition-all placeholder:text-zinc-400 focus:border-primary focus:ring-1 focus:ring-primary/10";
 
 export const dashboardTextPrimary =
-  "text-[13px] font-medium text-zinc-700";
+  "text-[13px] font-semibold text-zinc-900";
 
 export const dashboardTextSecondary =
-  "text-[13px] font-medium text-zinc-600";
+  "text-[13px] font-medium text-zinc-800";
 
 export const dashboardLabelClass =
-  "shrink-0 text-[13px] font-normal text-zinc-400";
+  "shrink-0 text-xs font-medium text-zinc-700";
 
 export const actionBtnView =
   "action-icon-view inline-flex h-8 w-8 items-center justify-center rounded-lg p-0";
@@ -151,14 +152,14 @@ export const actionBtnDelete =
   "action-icon-delete inline-flex h-8 w-8 items-center justify-center rounded-lg p-0";
 
 export const btnCreatePage =
-  "btn-brand flex h-[42px] items-center gap-2 rounded-md border-none px-6 text-sm font-medium shadow-sm hover:shadow-md";
+  "btn-brand flex h-9 items-center gap-2 rounded-md border-none px-4 text-xs font-semibold shadow-sm hover:shadow-md";
 
 export const btnFormSubmit =
-  "btn-brand h-10 min-w-[100px] rounded-md border-none px-6 text-sm font-semibold";
+  "btn-brand h-9 min-w-[90px] rounded-md border-none px-4 text-xs font-semibold";
 
 export const btnFormCancel =
-  "h-10 min-w-[100px] rounded-md border border-zinc-200 bg-white px-6 text-sm font-semibold text-zinc-700 hover:bg-zinc-50";
+  "h-9 min-w-[90px] rounded-md border border-zinc-200 bg-white px-4 text-xs font-semibold text-zinc-700 hover:bg-zinc-50";
 
 export const dashboardNativeTheadClass = "table-head-brand";
-export const dashboardNativeThClass = "px-6 py-3.5 text-[11px] font-bold uppercase text-white tracking-wider border-none";
+export const dashboardNativeThClass = "px-4 py-3.5 text-[11px] font-bold uppercase text-white tracking-wider border-none";
 

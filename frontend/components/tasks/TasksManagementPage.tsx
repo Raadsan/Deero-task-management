@@ -35,11 +35,10 @@ import {
   formatStatusLabel,
   getTaskStatusBadgeClass,
 } from "@/lib/dashboard-ui";
-import { Task } from "@/lib/types";
-import { cn, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
+import { cn, formatTaskDeadline, getTaskTableLabels, isTaskNotesUnseen, resolveTaskDisplayStatus } from "@/lib/utils";
 import { CalendarDays, Edit, Eye, Plus, Search } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 
 const compactSelectClass =
@@ -47,24 +46,6 @@ const compactSelectClass =
 
 const compactInputClass =
   "h-9 w-full rounded-md border border-zinc-200 bg-zinc-50 pl-9 pr-3 text-sm text-zinc-600 outline-none focus:border-primary focus:ring-1 focus:ring-primary/10";
-
-function getTaskTableLabels(task: Task) {
-  const combined = String(task.serviceInformation ?? "").trim();
-  const linkedClient = String(task.institutions?.[0]?.institution ?? "").trim();
-  const parts = combined.split(/\s+-\s+/).map((part) => part.trim()).filter(Boolean);
-  const hasClientPrefix = Boolean(linkedClient) && parts[0]?.toLowerCase() === linkedClient.toLowerCase();
-  const contentParts = hasClientPrefix ? parts.slice(1) : parts;
-
-  const taskName = contentParts.length > 1
-    ? contentParts[contentParts.length - 1]
-    : (contentParts[0] || task.description || "—");
-  const serviceName = contentParts.length > 1
-    ? contentParts.slice(0, -1).join(" - ")
-    : (combined || "No service");
-  const clientName = linkedClient || (parts.length > 1 ? parts[0] : "General");
-
-  return { taskName, clientName, serviceName };
-}
 
 function getServiceBadgeClass(serviceName: string) {
   const value = serviceName.toLowerCase();
@@ -107,15 +88,23 @@ export default function TasksManagementPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [formMode, setFormMode] = useState<"create" | "edit">("create");
   const [editingTaskId, setEditingTaskId] = useState<string | undefined>();
+  // Tick that forces badge re-render after "seen" is stored in localStorage
+  const [seenTick, setSeenTick] = useState(0);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    function onSeen() { setSeenTick((t) => t + 1); }
+    window.addEventListener("task-notes-seen-updated", onSeen);
+    return () => window.removeEventListener("task-notes-seen-updated", onSeen);
+  }, []);
+
   const { data: tasksRes, isLoading } = useSWR(
     SWR_CACH_KEYS.tasks.key,
     getAllTasksClient,
-    { revalidateOnFocus: false, revalidateOnMount: true }
+    { revalidateOnFocus: true, revalidateOnMount: true, refreshInterval: 3000 }
   );
   const { data: usersRes } = useSWR(
     "tasks-users-filter",
@@ -455,7 +444,12 @@ export default function TasksManagementPage() {
                                       extraTimeMinutes: task.extraTimeMinutes,
                                     })}
                               </span>
-                              <span className="mt-0.5 text-[10px] text-zinc-500">
+                              <span className={cn(
+                                "mt-0.5 text-[10px]",
+                                displayStatus === "overdue"
+                                  ? "font-semibold text-rose-500"
+                                  : "text-zinc-500",
+                              )}>
                                 {taskDeadlineDate(task)}
                               </span>
                             </div>
@@ -482,9 +476,19 @@ export default function TasksManagementPage() {
                               variant="ghost"
                               size="sm"
                               onClick={() => openViewModal(task)}
-                              className={actionBtnView}
+                              className={cn(actionBtnView, "relative")}
+                              title={
+                                isTaskNotesUnseen(task.id, task.progressNotes?.length ?? 0)
+                                  ? `${task.progressNotes!.length} unread message(s)`
+                                  : "View task"
+                              }
                             >
                               <Eye className="size-4" />
+                              {isTaskNotesUnseen(task.id, task.progressNotes?.length ?? 0) ? (
+                                <span className="absolute -top-1 -right-1 flex size-3.5 items-center justify-center rounded-full bg-[#651210] text-[9px] font-bold text-white ring-2 ring-white shadow-xs">
+                                  {(task.progressNotes?.length ?? 0) > 9 ? "9+" : task.progressNotes!.length}
+                                </span>
+                              ) : null}
                             </Button>
                             <Button
                               type="button"

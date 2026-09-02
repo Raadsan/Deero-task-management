@@ -139,10 +139,11 @@ export default function MyTasksTodayPage() {
     setProcessTarget(task);
   }
 
-  async function confirmProcessTask(nextProgress: number) {
+  async function confirmProcessTask(nextProgress: number, notes?: string) {
     if (!processTarget) return;
     const progress = Math.min(100, Math.max(0, Number(nextProgress)));
     const isCompleted = progress >= 100;
+    const noteText = notes?.trim() || "";
 
     setUpdatingTaskId(String(processTarget.id));
     try {
@@ -150,9 +151,16 @@ export default function MyTasksTodayPage() {
         taskId: processTarget.id,
         status: isCompleted ? "completed" : "pending",
         progress,
+        notes: noteText || undefined,
       });
       if (result.success) {
-        toast.success(isCompleted ? "Task completed" : "Task progress saved");
+        toast.success(
+          noteText && !isCompleted
+            ? "Message sent successfully"
+            : isCompleted
+            ? "Task completed successfully"
+            : "Message sent successfully",
+        );
         await mutate(SWR_CACH_KEYS.myTasks.key);
         await mutate(SWR_CACH_KEYS.myTasksList.key);
         await mutate(SWR_CACH_KEYS.myTasksToday.key);
@@ -340,14 +348,23 @@ export default function MyTasksTodayPage() {
                               type="button"
                               variant="ghost"
                               size="sm"
-                              className={actionBtnView}
-                              title="View"
+                              className={cn(actionBtnView, "relative")}
+                              title={
+                                task.progressNotes && task.progressNotes.length > 0
+                                  ? `${task.progressNotes.length} message(s) on this task`
+                                  : "View"
+                              }
                               onClick={() => {
                                 setSelectedTask(task);
                                 setViewOpen(true);
                               }}
                             >
                               <Eye className="size-4" />
+                              {task.progressNotes && task.progressNotes.length > 0 ? (
+                                <span className="absolute -top-1 -right-1 flex size-3.5 items-center justify-center rounded-full bg-blue-600 text-[9px] font-bold text-white ring-2 ring-white shadow-xs">
+                                  {task.progressNotes.length > 9 ? "9+" : task.progressNotes.length}
+                                </span>
+                              ) : null}
                             </Button>
                           </div>
                         </TableCell>

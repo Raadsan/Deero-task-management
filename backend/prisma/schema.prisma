@@ -1159,6 +1159,7 @@ model currencies {
   vendor_payments   vendor_payments[]
   vendor_advances   vendor_advances[]
   vendors           vendors[]
+  quotations        quotations[]
 }
 
 model customer_invoice_lines {
@@ -1953,10 +1954,12 @@ model quotations {
   lines             quotation_lines[]
   client            Client?            @relation(fields: [client_id], references: [id], onDelete: SetNull)
   customer          customers?         @relation(fields: [customer_id], references: [id], onDelete: SetNull)
+  currencies        currencies?        @relation(fields: [currency_id], references: [id], onDelete: SetNull)
   converted_invoice customer_invoices? @relation("QuotationToInvoice", fields: [converted_invoice_id], references: [id], onDelete: SetNull)
 
   @@index([client_id])
   @@index([customer_id])
+  @@index([currency_id])
   @@index([status])
 }
 

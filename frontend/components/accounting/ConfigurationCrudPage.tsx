@@ -254,7 +254,7 @@ export default function ConfigurationCrudPage({ section }: { section: string }) 
       header: humanize(column.replace('_id', '')),
       cell: (row) => column === 'is_active'
         ? <span className={`${dashboardStatusBadgeClass} ${row[column] ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'}`}>{row[column] ? <span className="inline-flex items-center gap-1"><Check className="size-3" /> Active</span> : 'Inactive'}</span>
-        : <span className="block max-w-[240px] truncate">{displayValue(column, row[column], relations)}</span>,
+        : <span className="block max-w-[240px] truncate font-semibold text-zinc-900">{displayValue(column, row[column], relations)}</span>,
     })),
     { key: 'actions', header: 'Actions', align: 'right', cell: (row) => <div className="flex justify-end gap-1"><button type="button" onClick={() => { setSelected(row); setViewOpen(true); }} aria-label={`View ${config.singular}`} className={actionBtnView}><Eye className="size-4" /></button><button type="button" onClick={() => openEdit(row)} aria-label={`Edit ${config.singular}`} className={actionBtnEdit}><SquarePen className="size-4" /></button><button onClick={() => { setSelected(row); setDeleteOpen(true); }} aria-label={`Delete ${config.singular}`} className={actionBtnDelete}><Trash2 className="size-4" /></button></div> },
   ];

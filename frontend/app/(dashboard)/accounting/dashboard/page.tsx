@@ -59,7 +59,8 @@ import {
 
 type DashboardPeriod = "today" | "yesterday" | "week" | "month" | "custom";
 
-const BRAND = "#5b1017";
+const BRAND_PRIMARY = "var(--color-brand-primary, #5f3a16)";
+const BRAND_SECONDARY = "var(--color-brand-secondary, #c3986b)";
 const ROSE = "#e11d48";
 const EMERALD = "#059669";
 const AMBER = "#d97706";
@@ -142,10 +143,10 @@ export default function AccountingDashboard() {
   const expenseBreakdown = useMemo(() => {
     if (data?.expenseBreakdown?.length) return data.expenseBreakdown;
     return [
-      { name: "Rent & Utilities", value: 40, amount: 720, color: "#5b1017" },
-      { name: "Salaries", value: 30, amount: 540, color: "#d94b63" },
-      { name: "Hosting & Tools", value: 15, amount: 270, color: "#f99bab" },
-      { name: "Marketing", value: 15, amount: 270, color: "#8b5a63" },
+      { name: "Rent & Utilities", value: 40, amount: 720, color: "var(--color-brand-primary, #5f3a16)" },
+      { name: "Salaries", value: 30, amount: 540, color: "var(--color-brand-secondary, #c3986b)" },
+      { name: "Hosting & Tools", value: 15, amount: 270, color: "color-mix(in srgb, var(--color-brand-primary, #5f3a16) 65%, white)" },
+      { name: "Marketing", value: 15, amount: 270, color: "color-mix(in srgb, var(--color-brand-secondary, #c3986b) 70%, white)" },
     ];
   }, [data]);
 
@@ -215,9 +216,9 @@ export default function AccountingDashboard() {
               type="button"
               onClick={() => setPeriod(value)}
               className={cn(
-                "rounded-xl px-3 py-2 text-[11px] font-bold transition-colors",
+                "rounded-xl px-3 py-2 text-[11px] font-bold transition-all",
                 period === value
-                  ? "bg-[#5b1017] text-white"
+                  ? "btn-brand shadow-sm"
                   : "text-zinc-600 hover:bg-zinc-100",
               )}
             >
@@ -250,7 +251,7 @@ export default function AccountingDashboard() {
             type="button"
             onClick={fetchDashboardData}
             disabled={isLoading}
-            className="ml-1 flex items-center gap-1.5 rounded-xl border border-zinc-200 px-3 py-2 text-[11px] font-bold text-slate-700 hover:bg-zinc-50 disabled:opacity-60"
+            className="ml-1 flex items-center gap-1.5 rounded-xl border border-zinc-200 px-3 py-2 text-[11px] font-bold text-slate-700 hover:bg-zinc-50 disabled:opacity-60 transition"
           >
             <RefreshCw className={cn("size-3.5", isLoading && "animate-spin")} />
             Refresh
@@ -261,10 +262,10 @@ export default function AccountingDashboard() {
       {/* ── 5 KPI Stat Cards ── */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {/* Total Revenue */}
-        <div className="flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+        <div className="flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between text-zinc-400">
             <div className="flex items-center gap-2">
-              <span className="flex size-8 items-center justify-center rounded-xl bg-rose-50 text-[#5b1017]">
+              <span className="flex size-8 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <DollarSign className="size-4.5" />
               </span>
               <span className="text-xs font-semibold text-zinc-700">Total Revenue</span>
@@ -277,12 +278,12 @@ export default function AccountingDashboard() {
                 <TrendingUp className="size-3" /> +16.1% vs last month
               </span>
             </div>
-            <MiniSparkline color={BRAND} />
+            <MiniSparkline color={BRAND_PRIMARY} />
           </div>
         </div>
 
         {/* Expenses */}
-        <div className="flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+        <div className="flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between text-zinc-400">
             <div className="flex items-center gap-2">
               <span className="flex size-8 items-center justify-center rounded-xl bg-red-50 text-red-600">
@@ -303,7 +304,7 @@ export default function AccountingDashboard() {
         </div>
 
         {/* Net Profit */}
-        <div className="flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+        <div className="flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between text-zinc-400">
             <div className="flex items-center gap-2">
               <span className="flex size-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
@@ -324,10 +325,10 @@ export default function AccountingDashboard() {
         </div>
 
         {/* Cash Balance */}
-        <div className="flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+        <div className="flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between text-zinc-400">
             <div className="flex items-center gap-2">
-              <span className="flex size-8 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+              <span className="flex size-8 items-center justify-center rounded-xl bg-secondary/15 text-secondary">
                 <Wallet className="size-4.5" />
               </span>
               <span className="text-xs font-semibold text-zinc-700">Cash Balance</span>
@@ -340,12 +341,12 @@ export default function AccountingDashboard() {
                 <TrendingUp className="size-3" /> +18.2% vs last month
               </span>
             </div>
-            <MiniSparkline color={AMBER} />
+            <MiniSparkline color={BRAND_SECONDARY} />
           </div>
         </div>
 
         {/* Bank Balance */}
-        <div className="flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+        <div className="flex flex-col justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between text-zinc-400">
             <div className="flex items-center gap-2">
               <span className="flex size-8 items-center justify-center rounded-xl bg-sky-50 text-sky-600">
@@ -381,10 +382,10 @@ export default function AccountingDashboard() {
             </div>
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1 text-[11px] font-semibold text-zinc-600">
-                <span className="size-2 rounded-full bg-[#5b1017]" /> Revenue
+                <span className="size-2 rounded-full bg-primary" /> Revenue
               </span>
               <span className="flex items-center gap-1 text-[11px] font-semibold text-zinc-600">
-                <span className="size-2 rounded-full bg-[#f99bab]" /> Expense
+                <span className="size-2 rounded-full bg-secondary" /> Expense
               </span>
             </div>
           </div>
@@ -394,20 +395,20 @@ export default function AccountingDashboard() {
               <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="accRevGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#5b1017" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#5b1017" stopOpacity={0.0} />
+                    <stop offset="5%" stopColor="var(--color-brand-primary, #5f3a16)" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="var(--color-brand-primary, #5f3a16)" stopOpacity={0.0} />
                   </linearGradient>
                   <linearGradient id="accExpGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#f99bab" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#f99bab" stopOpacity={0.0} />
+                    <stop offset="5%" stopColor="var(--color-brand-secondary, #c3986b)" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="var(--color-brand-secondary, #c3986b)" stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis dataKey="date" axisLine={false} tickLine={false} tick={chartAxisTick} />
                 <YAxis axisLine={false} tickLine={false} tick={chartAxisTick} />
                 <Tooltip contentStyle={lightTooltipStyle} />
-                <Area type="monotone" dataKey="revenue" stroke="#5b1017" strokeWidth={2.5} fillOpacity={1} fill="url(#accRevGrad)" />
-                <Area type="monotone" dataKey="expense" stroke="#f99bab" strokeWidth={2} fillOpacity={1} fill="url(#accExpGrad)" />
+                <Area type="monotone" dataKey="revenue" stroke="var(--color-brand-primary, #5f3a16)" strokeWidth={2.5} fillOpacity={1} fill="url(#accRevGrad)" />
+                <Area type="monotone" dataKey="expense" stroke="var(--color-brand-secondary, #c3986b)" strokeWidth={2} fillOpacity={1} fill="url(#accExpGrad)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -426,10 +427,10 @@ export default function AccountingDashboard() {
             </div>
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1 text-[11px] font-semibold text-zinc-600">
-                <span className="size-2 rounded-full bg-[#5b1017]" /> In
+                <span className="size-2 rounded-full bg-primary" /> In
               </span>
               <span className="flex items-center gap-1 text-[11px] font-semibold text-zinc-600">
-                <span className="size-2 rounded-full bg-[#f99bab]" /> Out
+                <span className="size-2 rounded-full bg-secondary" /> Out
               </span>
             </div>
           </div>
@@ -441,8 +442,8 @@ export default function AccountingDashboard() {
                 <XAxis dataKey="date" axisLine={false} tickLine={false} tick={chartAxisTick} />
                 <YAxis axisLine={false} tickLine={false} tick={chartAxisTick} />
                 <Tooltip contentStyle={lightTooltipStyle} />
-                <Bar dataKey="cashIn" fill="#5b1017" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="cashOut" fill="#f99bab" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="cashIn" fill="var(--color-brand-primary, #5f3a16)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="cashOut" fill="var(--color-brand-secondary, #c3986b)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

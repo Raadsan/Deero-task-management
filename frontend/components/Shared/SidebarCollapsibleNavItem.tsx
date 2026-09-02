@@ -42,9 +42,16 @@ export default function SidebarCollapsibleNavItem({
 }: Props) {
   const pathname = usePathname();
   const [pendingHref, setPendingHref] = useState<string | null>(null);
-  const { isOpen, toggle } = useSidebarAccordion();
+  const { isOpen, toggle, setOpenId } = useSidebarAccordion();
   const { state: sidebarState, isMobile } = useSidebar();
   const open = isOpen(id);
+  const isAnySubActive = items.some((sub) => isSubNavActive(pathname, sub.href));
+
+  useEffect(() => {
+    if (isAnySubActive) {
+      setOpenId(id);
+    }
+  }, [pathname, isAnySubActive, id, setOpenId]);
 
   useEffect(() => setPendingHref(null), [pathname]);
   useEffect(() => {
@@ -79,7 +86,9 @@ export default function SidebarCollapsibleNavItem({
         prefetch
         onClick={() => {
           setPendingHref(sub.href);
-          if (isCollapsed && open) toggle(id);
+          if (isCollapsed && open) {
+            toggle(id);
+          }
           window.dispatchEvent(
             new CustomEvent("sidebar-navigation-start", { detail: sub.href }),
           );
@@ -97,8 +106,6 @@ export default function SidebarCollapsibleNavItem({
   });
 
   if (isCollapsed) {
-    const isAnySubActive = items.some((sub) => isSubNavActive(pathname, sub.href));
-
     return (
       <SidebarMenuItem className="w-full" data-sidebar-dropdown>
         <Popover
@@ -136,8 +143,6 @@ export default function SidebarCollapsibleNavItem({
       </SidebarMenuItem>
     );
   }
-
-  const isAnySubActive = items.some((sub) => isSubNavActive(pathname, sub.href));
 
   return (
     <SidebarMenuItem className="w-full" data-sidebar-dropdown>

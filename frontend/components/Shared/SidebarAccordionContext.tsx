@@ -38,15 +38,7 @@ export function SidebarAccordionProvider({
     else localStorage.removeItem(storageKey);
   }, [openId, storageKey]);
 
-  useEffect(() => {
-    const closeOnOutsidePointer = (event: PointerEvent) => {
-      const target = event.target as Element | null;
-      if (openId && !target?.closest("[data-sidebar-dropdown]")) setOpenId(null);
-    };
-    document.addEventListener("pointerdown", closeOnOutsidePointer);
-    return () => document.removeEventListener("pointerdown", closeOnOutsidePointer);
-  }, [openId]);
-
+  // Keep open dropdown persisted; only close when another dropdown is toggled
   const value = useMemo(
     () => ({
       openId,

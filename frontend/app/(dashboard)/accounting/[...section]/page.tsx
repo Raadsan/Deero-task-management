@@ -1,6 +1,8 @@
 import { Landmark } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import ConfigurationCrudPage from '@/components/accounting/ConfigurationCrudPage';
+import AccountingServicesPage from '@/components/accounting/AccountingServicesPage';
+import AccountingProductsPage from '@/components/accounting/AccountingProductsPage';
 import ChartOfAccountsPage from '@/components/accounting/ChartOfAccountsPage';
 import FiscalManagementPage from '@/components/accounting/FiscalManagementPage';
 import GeneralLedgerPage from '@/components/accounting/GeneralLedgerPage';
@@ -16,7 +18,7 @@ import FinancialReportsPage, { type FinancialReportKind } from '@/components/acc
 
 const CONFIGURATION_SECTIONS = new Set([
   'account-types', 'currencies', 'companies', 'payment-methods',
-  'payment-terms', 'taxes', 'product-categories',
+  'payment-terms', 'taxes',
 ]);
 
 const TITLES: Record<string, string> = {
@@ -26,7 +28,7 @@ const TITLES: Record<string, string> = {
   'payment-methods': 'Payment Methods',
   'payment-terms': 'Payment Terms',
   taxes: 'Taxes',
-  'product-categories': 'Product Categories',
+  'product-categories': 'Service Categories',
   configuration: 'Accounting Configuration',
   'chart-of-accounts': 'Chart of Accounts',
   fiscal: 'Fiscal Management',
@@ -48,7 +50,7 @@ const TITLES: Record<string, string> = {
   banking: 'Banking',
   'bank-accounts': 'Bank Accounts',
   'cash-transactions': 'Cash Transactions',
-  products: 'Products',
+  products: 'Services & Sub-Services Catalog',
   reports: 'Financial Reports',
   'general-ledger': 'General Ledger Report',
   'trial-balance': 'Trial Balance',
@@ -69,6 +71,14 @@ export default async function AccountingDynamicSectionPage({ params }: Props) {
   const sections = resolved.section || [];
   const key = sections.join('/') || sections[0] || 'dashboard';
   const title = TITLES[key] || 'Accounting Workspace';
+
+  if (key === 'product-categories') {
+    return <AccountingServicesPage />;
+  }
+
+  if (key === 'products') {
+    return <AccountingProductsPage />;
+  }
 
   if (CONFIGURATION_SECTIONS.has(key)) {
     return <ConfigurationCrudPage section={key} />;
@@ -139,10 +149,6 @@ export default async function AccountingDynamicSectionPage({ params }: Props) {
   if (['reports', 'general-ledger', 'trial-balance', 'profit-and-loss', 'balance-sheet', 'cash-flow', 'journal-report'].includes(key)) {
     const reportKind = key === 'reports' ? 'general-ledger' : key;
     return <FinancialReportsPage kind={reportKind as FinancialReportKind} />;
-  }
-
-  if (key === 'products') {
-    return <ConfigurationCrudPage section="product-categories" />;
   }
 
   return (
