@@ -2,6 +2,7 @@
 
 import ManagementPageShell from "@/components/Shared/ManagementPageShell";
 import ProcessTaskConfirmModal from "@/components/tasks/ProcessTaskConfirmModal";
+import TaskViewModal from "@/components/tasks/TaskViewModal";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -11,7 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import TaskViewModal from "@/components/tasks/TaskViewModal";
 import { editTask } from "@/lib/apis/taskApi";
 import { isBoardOnlyTask, normalizeMyTasksList } from "@/lib/my-task-filters";
 import { fetchMyCompanyTasks } from "@/lib/apis/myTasksApi";
@@ -36,11 +36,11 @@ import {
 } from "@/lib/dashboard-ui";
 import { Task } from "@/lib/types";
 import { cn, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
-import { Gauge, Eye, Search } from "lucide-react";
+import { CalendarDays, Eye, Gauge, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import useSWR from "swr";
-import { useSWRConfig } from "swr";
+import useSWR, { useSWRConfig } from "swr";
+import { useLiveTimer } from "@/hooks/useLiveTimer";
 
 const compactSelectClass =
   "h-9 cursor-pointer rounded-md border border-zinc-200 bg-white px-2 text-sm text-zinc-600 outline-none focus:border-primary";
@@ -60,20 +60,60 @@ function isToday(value?: string | Date) {
   );
 }
 
+function taskDeadlineDate(task: Task) {
+  const base =
+    task.status === "completed" && task.completedAt
+      ? new Date(task.completedAt)
+      : new Date(task.deadline);
+  const extra =
+    task.status === "completed" ? 0 : Number(task.extraTimeMinutes ?? 0);
+  const date = new Date(base.getTime() + Math.max(0, extra) * 60000);
+  return Number.isNaN(date.getTime())
+    ? "No due date"
+    : date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+}
+
 export default function MyTasksTodayPage() {
-  const { data: tasksRaw, isLoading } = useSWR(
+  // Live timer tick every 1 second keeps countdown and overdue timers live
+  useLiveTimer(1000);
+
+  const { data: tasksRaw, isLoading, mutate: mutateTodayTasks } = useSWR(
     SWR_CACH_KEYS.myTasksToday.key,
     fetchMyCompanyTasks,
     {
       fallbackData: [],
       revalidateOnMount: true,
-      revalidateOnFocus: false,
+      revalidateOnFocus: true,
+      revalidateOnReconnect: true,
+      refreshInterval: 2500,
+      dedupingInterval: 1000,
     },
   );
   const { mutate } = useSWRConfig();
 
+  useEffect(() => {
+    function onTaskUpdated() {
+      void mutateTodayTasks();
+    }
+    window.addEventListener("task-updated", onTaskUpdated);
+    const storageHandler = (e: StorageEvent) => {
+      if (e.key === "deero-task-updated") void mutateTodayTasks();
+    };
+    window.addEventListener("storage", storageHandler);
+    return () => {
+      window.removeEventListener("task-updated", onTaskUpdated);
+      window.removeEventListener("storage", storageHandler);
+    };
+  }, [mutateTodayTasks]);
+
   const [mounted, setMounted] = useState(false);
-  const allTasks = normalizeMyTasksList(tasksRaw).filter((task) => !isBoardOnlyTask(task));
+  const allTasks = normalizeMyTasksList(tasksRaw).filter(
+    (task) => !isBoardOnlyTask(task),
+  );
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -168,11 +208,18 @@ export default function MyTasksTodayPage() {
         await mutate(SWR_CACH_KEYS.tasks.key);
         await mutate(
           (key) =>
-            (typeof key === "string" && (key.includes("dashboard") || key.includes("task"))) ||
-            (Array.isArray(key) && (String(key[0]).includes("dashboard") || String(key[0]).includes("task"))),
+            (typeof key === "string" &&
+              (key.includes("dashboard") || key.includes("task"))) ||
+            (Array.isArray(key) &&
+              (String(key[0]).includes("dashboard") ||
+                String(key[0]).includes("task"))),
           undefined,
           { revalidate: true },
         );
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("task-updated"));
+          localStorage.setItem("deero-task-updated", String(Date.now()));
+        }
         setProcessTarget(null);
       } else {
         toast.error(result.errors?.message ?? "Failed to update task");
@@ -181,8 +228,16 @@ export default function MyTasksTodayPage() {
       setUpdatingTaskId(null);
     }
   }
+
   return (
-    <ManagementPageShell title="Today tasks">
+    <ManagementPageShell
+      title="Today tasks"
+      subtitle="Track and manage all tasks scheduled for today."
+      className={cn(
+        "transition-[padding] duration-200",
+        processTarget && "lg:pr-[470px]",
+      )}
+    >
       <div className={dashboardCardClass}>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-50 px-6 py-3">
           <div className={cn("flex items-center gap-2", dashboardLabelClass)}>
@@ -195,6 +250,7 @@ export default function MyTasksTodayPage() {
               <option value={10}>10</option>
               <option value={25}>25</option>
               <option value={50}>50</option>
+              <option value={100}>100</option>
             </select>
           </div>
 
@@ -228,7 +284,7 @@ export default function MyTasksTodayPage() {
 
         <div className={dashboardTableWrapClass}>
           <div className="overflow-x-auto">
-            <Table className="w-full">
+            <Table className="w-full table-fixed [&_th]:px-3 [&_td]:px-3 [&_th:nth-child(1)]:w-[11%] [&_th:nth-child(2)]:w-[31%] [&_th:nth-child(3)]:w-[17%] [&_th:nth-child(4)]:w-[20%] [&_th:nth-child(5)]:w-[12%] [&_th:nth-child(6)]:w-[9%]">
               <TableHeader className={dashboardTableHeaderClass}>
                 <TableRow className={dashboardTableHeadRowClass}>
                   <TableHead
@@ -244,12 +300,12 @@ export default function MyTasksTodayPage() {
                   <TableHead
                     className={cn(dashboardTableHeadClass, "text-left")}
                   >
-                    Date
+                    Progress
                   </TableHead>
                   <TableHead
                     className={cn(dashboardTableHeadClass, "text-left")}
                   >
-                    Progress
+                    Deadline
                   </TableHead>
                   <TableHead
                     className={cn(dashboardTableHeadClass, "text-right")}
@@ -299,23 +355,90 @@ export default function MyTasksTodayPage() {
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextSecondary}>
-                            {task.description || task.serviceInformation || "—"}
+                          <span
+                            className={cn(
+                              dashboardTextSecondary,
+                              "block min-w-0 truncate",
+                            )}
+                          >
+                            {task.serviceInformation ||
+                              task.description ||
+                              "N/A"}
+                            <small className="mt-1 block text-[11px] text-zinc-400">
+                              Client:{" "}
+                              {task.institutions?.[0]?.institution ||
+                                "Internal"}
+                            </small>
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextSecondary}>
-                            {formatTaskDeadline(task.deadline, {
-                              status: task.status,
-                              progress: task.progress,
-                              startDate: task.startDate,
-                            })}
+                          <span
+                            className={cn(
+                              dashboardTextPrimary,
+                              "whitespace-nowrap",
+                            )}
+                          >
+                            <span className="inline-block w-9">
+                              {task.progress ?? 0}%
+                            </span>
+                            <span className="ml-2 inline-block h-1.5 w-24 overflow-hidden rounded-full bg-zinc-100 align-middle">
+                              <span
+                                className="block h-full rounded-full bg-[#7b1512]"
+                                style={{
+                                  width:
+                                    Math.min(
+                                      100,
+                                      Number(task.progress ?? 0),
+                                    ) + "%",
+                                }}
+                              />
+                            </span>
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextPrimary}>
-                            {task.progress ?? 0}%
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <CalendarDays
+                              className={cn(
+                                "size-4 shrink-0",
+                                displayStatus === "overdue"
+                                  ? "text-rose-500"
+                                  : displayStatus === "in_progress"
+                                    ? "text-orange-500"
+                                    : "text-emerald-500",
+                              )}
+                            />
+                            <div className="min-w-0 leading-tight">
+                              <span
+                                className={cn(
+                                  "block truncate text-[11px] font-semibold",
+                                  displayStatus === "overdue"
+                                    ? "text-rose-600"
+                                    : displayStatus === "in_progress"
+                                      ? "text-orange-500"
+                                      : "text-zinc-700",
+                                )}
+                              >
+                                {displayStatus === "completed"
+                                  ? "Completed"
+                                  : formatTaskDeadline(task.deadline, {
+                                      status: task.status,
+                                      progress: task.progress,
+                                      startDate: task.startDate,
+                                      extraTimeMinutes: task.extraTimeMinutes,
+                                    })}
+                              </span>
+                              <span
+                                className={cn(
+                                  "mt-0.5 block text-[10px]",
+                                  displayStatus === "overdue"
+                                    ? "font-semibold text-rose-500"
+                                    : "text-zinc-500",
+                                )}
+                              >
+                                {taskDeadlineDate(task)}
+                              </span>
+                            </div>
+                          </div>
                         </TableCell>
                         <TableCell
                           className={cn(dashboardTableCellClass, "text-right")}
@@ -337,20 +460,10 @@ export default function MyTasksTodayPage() {
                               type="button"
                               variant="ghost"
                               size="sm"
-                              title="Update progress"
-                              disabled={busy}
-                              onClick={() => openProcessDialog(task)}
-                              className={actionBtnView}
-                            >
-                              <Gauge className="size-4" />
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
                               className={cn(actionBtnView, "relative")}
                               title={
-                                task.progressNotes && task.progressNotes.length > 0
+                                task.progressNotes &&
+                                task.progressNotes.length > 0
                                   ? `${task.progressNotes.length} message(s) on this task`
                                   : "View"
                               }
@@ -360,11 +473,25 @@ export default function MyTasksTodayPage() {
                               }}
                             >
                               <Eye className="size-4" />
-                              {task.progressNotes && task.progressNotes.length > 0 ? (
+                              {task.progressNotes &&
+                              task.progressNotes.length > 0 ? (
                                 <span className="absolute -top-1 -right-1 flex size-3.5 items-center justify-center rounded-full bg-blue-600 text-[9px] font-bold text-white ring-2 ring-white shadow-xs">
-                                  {task.progressNotes.length > 9 ? "9+" : task.progressNotes.length}
+                                  {task.progressNotes.length > 9
+                                    ? "9+"
+                                    : task.progressNotes.length}
                                 </span>
                               ) : null}
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              title="Update progress"
+                              disabled={busy}
+                              onClick={() => openProcessDialog(task)}
+                              className={actionBtnView}
+                            >
+                              <Gauge className="size-4" />
                             </Button>
                           </div>
                         </TableCell>
@@ -408,6 +535,12 @@ export default function MyTasksTodayPage() {
         </div>
       </div>
 
+      <TaskViewModal
+        open={viewOpen}
+        onOpenChange={setViewOpen}
+        task={selectedTask}
+      />
+
       <ProcessTaskConfirmModal
         open={Boolean(processTarget)}
         onOpenChange={(open) => {
@@ -418,12 +551,6 @@ export default function MyTasksTodayPage() {
           processTarget && updatingTaskId === String(processTarget.id),
         )}
         onConfirm={confirmProcessTask}
-      />
-
-      <TaskViewModal
-        open={viewOpen}
-        onOpenChange={setViewOpen}
-        task={selectedTask}
       />
     </ManagementPageShell>
   );

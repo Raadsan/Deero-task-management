@@ -7,6 +7,7 @@ import {
   resolveWritableBranchId,
   userBranchWhere,
 } from "../../../lib/portfolio-scope.js";
+import { clearRolesCache } from "../roles/role.controller.js";
 
 const staffListCache = new Map();
 const STAFF_LIST_CACHE_MS = 5 * 60 * 1000;
@@ -231,6 +232,7 @@ export const createStaff = async (req, res) => {
     });
 
     clearStaffListCache();
+    clearRolesCache();
     res.status(201).json({ success: true, data: updatedUser });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -308,6 +310,7 @@ if (staffCode !== undefined && String(staffCode).trim()) {
       },
     });
     clearStaffListCache();
+    clearRolesCache();
     res.json({ success: true, data: user });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -330,6 +333,7 @@ export const deleteStaff = async (req, res) => {
       where: { id },
     });
     clearStaffListCache();
+    clearRolesCache();
     res.json({ success: true, message: "Staff deleted successfully" });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });

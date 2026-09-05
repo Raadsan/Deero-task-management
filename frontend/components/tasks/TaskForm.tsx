@@ -467,6 +467,10 @@ export default function TaskForm({
       undefined,
       { revalidate: true },
     );
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("task-updated"));
+      localStorage.setItem("deero-task-updated", String(Date.now()));
+    }
   }
 
   function handleSubmitForm(data: FormValues) {

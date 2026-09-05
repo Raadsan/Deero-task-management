@@ -18,6 +18,7 @@ import {
   chartAxisTick,
 } from "@/lib/dashboard-ui";
 import { cn } from "@/lib/utils";
+import { authClient } from "@/lib/auth-client";
 import {
   Table,
   TableBody,
@@ -90,7 +91,16 @@ function dateInputValue(date: Date) {
   return new Date(date.getTime() - offset * 60_000).toISOString().slice(0, 10);
 }
 
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+}
+
 export default function AccountingDashboard() {
+  const session = authClient.useSession();
+  const userName = session.data?.user?.name || "Accounting";
   const [period, setPeriod] = useState<DashboardPeriod>("month");
   const todayValue = dateInputValue(new Date());
   const [customFrom, setCustomFrom] = useState(todayValue);
@@ -197,7 +207,9 @@ export default function AccountingDashboard() {
       {/* ── Page Header matching Task Management Dashboard ── */}
       <div className={cn(pageHeaderWrapperClass, "flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between")}>
         <div>
-          <h1 className={pageHeaderTitleClass}>Accounting Dashboard</h1>
+          <h1 className={pageHeaderTitleClass}>
+            {getGreeting()}, {userName} 👋
+          </h1>
           <p className="mt-1 text-sm text-zinc-500">
             Financial metrics, cash flow, revenue and expense breakdown
           </p>

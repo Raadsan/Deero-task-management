@@ -9,15 +9,27 @@ export function clearRolesCache() {
 
 export const getAllRoles = async (req, res) => {
   try {
-    if (cachedRolesList) {
-      return res.json({ success: true, data: cachedRolesList });
-    }
     const roles = await prisma.role.findMany({
+      orderBy: { name: "asc" },
+    });
+
+    // Auto-heal/sync any staff with missing roleId
+    for (const r of roles) {
+      await prisma.staff.updateMany({
+        where: {
+          roleId: null,
+          role: r.name,
+        },
+        data: { roleId: r.id },
+      });
+    }
+
+    const rolesWithCount = await prisma.role.findMany({
       include: { _count: { select: { users: true } } },
       orderBy: { name: "asc" },
     });
-    cachedRolesList = roles;
-    res.json({ success: true, data: roles });
+
+    res.json({ success: true, data: rolesWithCount });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

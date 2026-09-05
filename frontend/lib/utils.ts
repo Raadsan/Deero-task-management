@@ -191,35 +191,59 @@ export function formatTaskDeadline(
       ? "overdue"
       : "pending";
 
+  const now = new Date();
+
   if (displayStatus === "completed") {
     return `Completed (${dateLabel})`;
   }
 
   if (displayStatus === "overdue") {
-    return `Overdue by ${timeLabel}`;
+    const overdueMs = Math.max(0, now.getTime() - effectiveDeadlineMs);
+    const overdueSec = Math.floor(overdueMs / 1000);
+    const overdueMin = Math.floor(overdueMs / (1000 * 60));
+    const overdueHours = Math.floor(overdueMs / (1000 * 60 * 60));
+    const overdueDays = Math.floor(overdueMs / (1000 * 60 * 60 * 24));
+
+    let overdueDuration = "";
+    if (overdueDays >= 1) {
+      overdueDuration = overdueDays === 1 ? "1 day" : `${overdueDays} days`;
+    } else if (overdueHours >= 1) {
+      const remM = overdueMin % 60;
+      overdueDuration = `${overdueHours}h ${remM}m`;
+    } else if (overdueMin >= 1) {
+      const remS = overdueSec % 60;
+      overdueDuration = `${overdueMin}m ${remS}s`;
+    } else {
+      overdueDuration = `${overdueSec}s`;
+    }
+    return `Overdue (${overdueDuration})`;
   }
 
-  const now = new Date();
   const startDateMs = context?.startDate ? new Date(context.startDate).getTime() : 0;
   const isPendingStart = displayStatus === "pending" && startDateMs > now.getTime();
 
   const targetMs = isPendingStart ? startDateMs : effectiveDeadlineMs;
   const diffMs = Math.max(0, targetMs - now.getTime());
+  const totalSeconds = Math.floor(diffMs / 1000);
   const totalMinutes = Math.floor(diffMs / (1000 * 60));
   const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
   const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
   const remainingHours = totalHours % 24;
+  const remainingMinutes = totalMinutes % 60;
+  const remainingSeconds = totalSeconds % 60;
 
-  let durationLabel = "Less than 1 min";
-  if (days >= 1) {
-    const dayLabel = days === 1 ? "1 day" : `${days} days`;
-    durationLabel = remainingHours > 0
-      ? `${dayLabel} ${remainingHours === 1 ? "1 hr" : `${remainingHours} hrs`}`
-      : dayLabel;
+  let durationLabel = `${remainingSeconds}s`;
+  if (days >= 2) {
+    const dayLabel = `${days} days`;
+    durationLabel = remainingHours > 0 ? `${dayLabel} ${remainingHours} hrs` : dayLabel;
+  } else if (days === 1) {
+    durationLabel = remainingHours > 0 ? `1 day ${remainingHours} hrs` : "1 day";
   } else if (totalHours >= 1) {
-    durationLabel = totalHours === 1 ? "1 hr" : `${totalHours} hrs`;
+    durationLabel = `${totalHours}h ${remainingMinutes}m ${remainingSeconds}s`;
   } else if (totalMinutes >= 1) {
-    durationLabel = totalMinutes === 1 ? "1 min" : `${totalMinutes} mins`;
+    durationLabel = `${totalMinutes}m ${remainingSeconds}s`;
+  } else {
+    durationLabel = `${remainingSeconds}s`;
   }
 
   if (isPendingStart) {

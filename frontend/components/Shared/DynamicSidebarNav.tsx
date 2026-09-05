@@ -45,6 +45,7 @@ export default function DynamicSidebarNav({ data }: Props) {
   const userRole = data?.user?.role ?? "";
   const normalizedRole = normalizeRoleName(userRole);
   const isSuperadmin = normalizedRole === "superadmin" || normalizedRole === "admin";
+  const isAccountingRole = normalizedRole === "accounting";
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -313,13 +314,34 @@ export default function DynamicSidebarNav({ data }: Props) {
     "/tasks/recurring-schedules": ["/recurring-schedules"],
     "/accounting/quotations": ["/quotations"],
     "/reports/my-report": ["/reports/tasks", "/reports/users"],
+    "/accounting/account-types": ["/accounting/configuration", "/accounting/dashboard"],
+    "/accounting/currencies": ["/accounting/configuration", "/accounting/dashboard"],
+    "/accounting/companies": ["/accounting/configuration", "/accounting/dashboard"],
+    "/accounting/taxes": ["/accounting/configuration", "/accounting/dashboard"],
+    "/accounting/payment-terms": ["/accounting/configuration", "/accounting/dashboard"],
+    "/accounting/payment-methods": ["/accounting/configuration", "/accounting/dashboard"],
+    "/accounting/product-categories": ["/accounting/configuration", "/accounting/dashboard"],
+    "/accounting/products": ["/accounting/configuration", "/accounting/dashboard"],
+    "/accounting/templates": ["/accounting/configuration", "/accounting/dashboard"],
+    "/accounting/fiscal-years": ["/accounting/fiscal-management", "/accounting/dashboard"],
+    "/accounting/fiscal-periods": ["/accounting/fiscal-management", "/accounting/dashboard"],
+    "/accounting/journals": ["/accounting/journal-entries", "/accounting/general-ledger", "/accounting/dashboard"],
+    "/accounting/customers": ["/accounting/customer-invoices", "/accounting/dashboard"],
+    "/accounting/credit-notes": ["/accounting/customer-invoices", "/accounting/dashboard"],
+    "/accounting/vendors": ["/accounting/vendor-bills", "/accounting/dashboard"],
+    "/accounting/vendor-refunds": ["/accounting/vendor-bills", "/accounting/dashboard"],
   };
 
   const mayViewUrl = (url: string) => {
     if (isSuperadmin) return true;
-    return [url, ...(permissionUrlAliases[url] ?? [])].some((candidate) =>
-      canView(candidate),
-    );
+    const candidates = [url, ...(permissionUrlAliases[url] ?? [])];
+    const permitted = candidates.some((candidate) => canView(candidate));
+    if (isAccountingRole) {
+      if (url.startsWith("/accounting") || url === "/quotations") {
+        return permitted || canView("/accounting/dashboard");
+      }
+    }
+    return permitted;
   };
 
   type StaticSidebarItem = {
@@ -433,6 +455,134 @@ export default function DynamicSidebarNav({ data }: Props) {
   }
 
   if (!isSuperadmin) {
+    if (isAccountingRole) {
+      const hasTasks = mayViewUrl("/tasks") || canView("/tasks");
+      const hasMyTasks =
+        mayViewUrl("/tasks/my-tasks") ||
+        mayViewUrl("/my-tasks") ||
+        canView("/tasks/my-tasks") ||
+        canView("/my-tasks");
+
+      const dashItem: StaticSidebarItem = visibleAccountingMenus.find(
+        (m) => m.id === "acc-dash",
+      ) || {
+        id: "acc-dash",
+        title: "Dashboard",
+        url: "/accounting/dashboard",
+        icon: LayoutDashboard,
+      };
+
+      const taskSubItems: StaticSidebarItem[] = [];
+      if (hasTasks) {
+        taskSubItems.push({
+          id: "acc-nav-tasks",
+          title: "Tasks",
+          url: "/tasks",
+          icon: BriefcaseBusiness,
+        });
+      }
+      if (hasMyTasks) {
+        taskSubItems.push({
+          id: "acc-nav-my-tasks",
+          title: "My Tasks",
+          icon: ShoppingBag,
+          items: [
+            { id: "acc-my-list", title: "My Tasks", url: "/tasks/my-tasks" },
+            { id: "acc-my-board", title: "My Board", url: "/tasks/my-tasks/board" },
+            { id: "acc-my-today", title: "Today Tasks", url: "/tasks/my-tasks/today" },
+          ],
+        });
+      }
+
+      const restAccItems = visibleAccountingMenus.filter(
+        (m) => m.id !== "acc-dash",
+      );
+
+      const fullAccountingNav: StaticSidebarItem[] = [
+        dashItem,
+        ...taskSubItems,
+        ...restAccItems,
+      ];
+
+      const renderedUrls = new Set<string>([
+        "/accounting/dashboard",
+        "/tasks",
+        "/tasks/my-tasks",
+        "/my-tasks",
+        "/my-tasks/board",
+        "/my-tasks/today",
+        ...fullAccountingNav.flatMap((m) => [
+          m.url || "",
+          ...(m.items?.map((s) => s.url) || []),
+        ]),
+      ]);
+
+      const extraPermittedMenus = roleMenus.filter((rm) => {
+        if (!rm.url || rm.url === "/" || rm.url.startsWith("/accounting")) return false;
+        if (rm.url === "/tasks" || rm.url.includes("/my-tasks")) return false;
+        return !renderedUrls.has(rm.url);
+      });
+
+      return (
+        <div className="space-y-1">
+          {fullAccountingNav.map((item) => {
+            const Icon = item.icon || Layers;
+            if (item.items?.length) {
+              return (
+                <SidebarCollapsibleNavItem
+                  key={item.id}
+                  id={item.id}
+                  name={item.title}
+                  icon={<Icon className="size-[18px] shrink-0" strokeWidth={2} />}
+                  items={item.items.map((sub) => ({
+                    id: sub.id,
+                    name: sub.title,
+                    href: sub.url,
+                  }))}
+                />
+              );
+            }
+            return (
+              <SideBarItem
+                key={item.id}
+                href={item.url!}
+                name={item.title}
+                icon={<Icon className="size-[18px] shrink-0" strokeWidth={2} />}
+              />
+            );
+          })}
+          {extraPermittedMenus.map((item) => {
+            const Icon = item.icon || Layers;
+            if (item.items?.length > 1) {
+              return (
+                <SidebarCollapsibleNavItem
+                  key={item.id}
+                  id={item.id}
+                  name={item.title}
+                  icon={<Icon className="size-[18px] shrink-0" strokeWidth={2} />}
+                  items={item.items.map((sub) => ({
+                    id: sub.id,
+                    name: sub.title,
+                    href: sub.url,
+                  }))}
+                />
+              );
+            }
+            const href = item.items?.length === 1 ? item.items[0].url : item.url;
+            const name = item.items?.length === 1 ? item.items[0].title : item.title;
+            return (
+              <SideBarItem
+                key={item.id}
+                href={href}
+                name={name}
+                icon={<Icon className="size-[18px] shrink-0" strokeWidth={2} />}
+              />
+            );
+          })}
+        </div>
+      );
+    }
+
     const renderedStaffUrls = new Set<string>();
     const renderRoleItem = (item: (typeof roleMenus)[number]) => {
       const Icon = item.icon;

@@ -266,21 +266,76 @@ export default function PermissionsConfigRoute() {
 
       if (subMenuId) {
         const sub = { ...copy[menuId].submenus[subMenuId] };
-        sub[field] = !sub[field];
-        if (field === "canView" && !sub.canView) {
+        const nextVal = !sub[field];
+        sub[field] = nextVal;
+        if (field === "canView" && !nextVal) {
           sub.canAdd = sub.canEdit = sub.canDelete = false;
+        }
+        const menu = { ...copy[menuId].menu };
+        if (nextVal && !menu.canView) {
+          menu.canView = true;
         }
         copy[menuId] = {
           ...copy[menuId],
+          menu,
           submenus: { ...copy[menuId].submenus, [subMenuId]: sub },
         };
       } else {
         const menu = { ...copy[menuId].menu };
-        menu[field] = !menu[field];
-        if (field === "canView" && !menu.canView) {
-          menu.canAdd = menu.canEdit = menu.canDelete = false;
+        const nextVal = !menu[field];
+        menu[field] = nextVal;
+
+        const updatedSubmenus = { ...copy[menuId].submenus };
+
+        if (field === "canView") {
+          if (nextVal) {
+            // Turning View ON on the module makes the module and all submenus full
+            if (canToggle(menuId, "canAdd")) menu.canAdd = true;
+            if (canToggle(menuId, "canEdit")) menu.canEdit = true;
+            if (canToggle(menuId, "canDelete")) menu.canDelete = true;
+
+            for (const sId of Object.keys(updatedSubmenus)) {
+              const sCopy = { ...updatedSubmenus[sId] };
+              if (canToggle(menuId, "canView", sId)) sCopy.canView = true;
+              if (canToggle(menuId, "canAdd", sId)) sCopy.canAdd = true;
+              if (canToggle(menuId, "canEdit", sId)) sCopy.canEdit = true;
+              if (canToggle(menuId, "canDelete", sId)) sCopy.canDelete = true;
+              updatedSubmenus[sId] = sCopy;
+            }
+          } else {
+            // Turning View OFF unchecks all permissions for parent and submenus
+            menu.canAdd = menu.canEdit = menu.canDelete = false;
+            for (const sId of Object.keys(updatedSubmenus)) {
+              updatedSubmenus[sId] = {
+                canView: false,
+                canAdd: false,
+                canEdit: false,
+                canDelete: false,
+              };
+            }
+          }
+        } else {
+          // For other fields (canAdd, canEdit, canDelete) on parent module
+          if (nextVal && !menu.canView) {
+            menu.canView = true;
+          }
+          for (const sId of Object.keys(updatedSubmenus)) {
+            const sCopy = { ...updatedSubmenus[sId] };
+            if (canToggle(menuId, field, sId)) {
+              sCopy[field] = nextVal;
+              if (nextVal && !sCopy.canView) {
+                sCopy.canView = true;
+              }
+            }
+            updatedSubmenus[sId] = sCopy;
+          }
         }
-        copy[menuId] = { ...copy[menuId], menu };
+
+        copy[menuId] = {
+          ...copy[menuId],
+          menu,
+          submenus: updatedSubmenus,
+        };
       }
       return copy;
     });

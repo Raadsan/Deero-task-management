@@ -77,6 +77,8 @@ function taskDeadlineDate(task: Task) {
   });
 }
 
+import { useLiveTimer } from "@/hooks/useLiveTimer";
+
 export default function TasksManagementPage() {
   const [mounted, setMounted] = useState(false);
   const [search, setSearch] = useState("");
@@ -92,6 +94,9 @@ export default function TasksManagementPage() {
   // Tick that forces badge re-render after "seen" is stored in localStorage
   const [seenTick, setSeenTick] = useState(0);
 
+  // Live timer tick every 1 second keeps countdown and overdue timers live
+  useLiveTimer(1000);
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -102,11 +107,33 @@ export default function TasksManagementPage() {
     return () => window.removeEventListener("task-notes-seen-updated", onSeen);
   }, []);
 
-  const { data: tasksRes, isLoading } = useSWR(
+  const { data: tasksRes, isLoading, mutate: mutateTasks } = useSWR(
     SWR_CACH_KEYS.tasks.key,
     getAllTasksClient,
-    { revalidateOnFocus: true, revalidateOnMount: true, refreshInterval: 3000 }
+    {
+      revalidateOnFocus: true,
+      revalidateOnMount: true,
+      revalidateOnReconnect: true,
+      refreshInterval: 2500,
+      dedupingInterval: 1000,
+    }
   );
+
+  useEffect(() => {
+    function onTaskUpdated() {
+      void mutateTasks();
+    }
+    window.addEventListener("task-updated", onTaskUpdated);
+    const storageHandler = (e: StorageEvent) => {
+      if (e.key === "deero-task-updated") void mutateTasks();
+    };
+    window.addEventListener("storage", storageHandler);
+    return () => {
+      window.removeEventListener("task-updated", onTaskUpdated);
+      window.removeEventListener("storage", storageHandler);
+    };
+  }, [mutateTasks]);
+
   const { data: usersRes } = useSWR(
     "tasks-users-filter",
     getAllUsersClient,

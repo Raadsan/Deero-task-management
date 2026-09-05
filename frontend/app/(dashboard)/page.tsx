@@ -68,6 +68,7 @@ import {
   Wallet,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import {
@@ -1310,6 +1311,7 @@ function MiniSparkline({ color }: { color: string }) {
 // Root Dashboard Page
 // ─────────────────────────────────────────────────────────────
 export default function DashboardPage() {
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
@@ -1319,6 +1321,12 @@ export default function DashboardPage() {
     | undefined;
   const normalizedRole = normalizeRoleName(user?.role);
   const isBranchDashboard = isBranchScopedRole(normalizedRole);
+
+  useEffect(() => {
+    if (mounted && !session.isPending && normalizedRole === "accounting") {
+      router.replace("/accounting/dashboard");
+    }
+  }, [mounted, session.isPending, normalizedRole, router]);
 
   const { data: branchOptionsRes } = useSWR(
     mounted && isBranchDashboard && user?.portfolioId && !session.isPending
@@ -1331,7 +1339,7 @@ export default function DashboardPage() {
       (p: { id: string; name: string }) => String(p.id) === String(user?.portfolioId ?? ""),
     )?.name ?? "";
 
-  if (!mounted || session.isPending) {
+  if (!mounted || session.isPending || normalizedRole === "accounting") {
     return (
       <div className="space-y-8 animate-pulse px-1">
         <div className="h-20 rounded-xl bg-muted/20" />

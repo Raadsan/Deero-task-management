@@ -25,6 +25,7 @@ import { AlertTriangle, CalendarDays, CheckCircle2, Circle, Clock3, LayoutGrid, 
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import useSWR, { useSWRConfig } from "swr";
+import { useLiveTimer } from "@/hooks/useLiveTimer";
 
 type BoardLane = "todo" | "overdue" | "completed";
 
@@ -60,6 +61,9 @@ function dateLabel(value?: string | Date | null) {
 }
 
 export default function MyTasksBoardPage() {
+  // Live timer tick every 1 second keeps countdown and overdue timers live
+  useLiveTimer(1000);
+
   const { mutate: globalMutate } = useSWRConfig();
   const { data: remoteTasks, error: tasksError, isLoading, mutate } = useSWR(
     SWR_CACH_KEYS.myTasksBoard.key,
@@ -67,9 +71,28 @@ export default function MyTasksBoardPage() {
     {
       fallbackData: [],
       revalidateOnMount: true,
-      revalidateOnFocus: false,
+      revalidateOnFocus: true,
+      revalidateOnReconnect: true,
+      refreshInterval: 2500,
+      dedupingInterval: 1000,
     },
   );
+
+  useEffect(() => {
+    function onTaskUpdated() {
+      void mutate();
+    }
+    window.addEventListener("task-updated", onTaskUpdated);
+    const storageHandler = (e: StorageEvent) => {
+      if (e.key === "deero-task-updated") void mutate();
+    };
+    window.addEventListener("storage", storageHandler);
+    return () => {
+      window.removeEventListener("task-updated", onTaskUpdated);
+      window.removeEventListener("storage", storageHandler);
+    };
+  }, [mutate]);
+
   const [tasks, setTasks] = useState<Task[]>([]);
   const [search, setSearch] = useState("");
   const [view, setView] = useState<"board" | "table" | "calendar">("board");

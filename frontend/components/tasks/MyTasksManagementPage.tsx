@@ -53,21 +53,43 @@ function taskDeadlineDate(task: Task) {
   return Number.isNaN(date.getTime()) ? "No due date" : date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
+import { useLiveTimer } from "@/hooks/useLiveTimer";
+
 const compactInputClass =
   "h-9 w-full rounded-md border border-zinc-200 bg-zinc-50 pl-9 pr-3 text-sm text-zinc-600 outline-none focus:border-primary focus:ring-1 focus:ring-primary/10";
 
 export default function MyTasksManagementPage() {
-  const { data: tasksRaw, isLoading } = useSWR(
+  // Live timer tick every 1 second keeps countdown and overdue timers live
+  useLiveTimer(1000);
+
+  const { data: tasksRaw, isLoading, mutate: mutateMyTasks } = useSWR(
     SWR_CACH_KEYS.myTasksList.key,
     fetchMyCompanyTasks,
     {
       fallbackData: [],
       revalidateOnMount: true,
       revalidateOnFocus: true,
-      refreshInterval: 3000,
+      revalidateOnReconnect: true,
+      refreshInterval: 2500,
+      dedupingInterval: 1000,
     },
   );
   const { mutate } = useSWRConfig();
+
+  useEffect(() => {
+    function onTaskUpdated() {
+      void mutateMyTasks();
+    }
+    window.addEventListener("task-updated", onTaskUpdated);
+    const storageHandler = (e: StorageEvent) => {
+      if (e.key === "deero-task-updated") void mutateMyTasks();
+    };
+    window.addEventListener("storage", storageHandler);
+    return () => {
+      window.removeEventListener("task-updated", onTaskUpdated);
+      window.removeEventListener("storage", storageHandler);
+    };
+  }, [mutateMyTasks]);
 
   const [mounted, setMounted] = useState(false);
 
@@ -160,6 +182,10 @@ export default function MyTasksManagementPage() {
           undefined,
           { revalidate: true },
         );
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("task-updated"));
+          localStorage.setItem("deero-task-updated", String(Date.now()));
+        }
         setProcessTarget(null);
       } else {
         toast.error(result.errors?.message ?? "Failed to update task");
