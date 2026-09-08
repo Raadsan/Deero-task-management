@@ -231,7 +231,8 @@ export default function MyTasksBoardPage() {
           <span className="text-sm text-zinc-400">{historyTasks.length} tasks</span>
         </div>
         <div className={cn(dashboardTableWrapClass, "border-0")}>
-          <Table>
+          <div className="w-full overflow-x-auto">
+            <Table className="w-full min-w-[750px]">
             <TableHeader className={dashboardTableHeaderClass}>
               <TableRow className={dashboardTableHeadRowClass}>
                 <TableHead className={dashboardTableHeadClass}>Task</TableHead>
@@ -258,6 +259,7 @@ export default function MyTasksBoardPage() {
               }) : <TableRow><TableCell colSpan={6} className="py-12 text-center text-zinc-500">No task history found</TableCell></TableRow>}
             </TableBody>
           </Table>
+          </div>
         </div>
       </section>
 

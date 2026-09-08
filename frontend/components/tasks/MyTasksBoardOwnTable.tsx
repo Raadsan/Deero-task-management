@@ -74,8 +74,16 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
     <>
       <div className={dashboardCardClass}>
         <div className={dashboardTableWrapClass}>
-          <div className="overflow-x-auto">
-            <Table className="w-full">
+          <div className="w-full overflow-x-auto">
+            <Table className="w-full min-w-[900px] table-fixed [&_th]:px-3.5 [&_td]:px-3.5">
+              <colgroup>
+                <col className="w-[80px]" />
+                <col className="w-[290px]" />
+                <col className="w-[190px]" />
+                <col className="w-[80px]" />
+                <col className="w-[125px]" />
+                <col className="w-[135px]" />
+              </colgroup>
               <TableHeader className={dashboardTableHeaderClass}>
                 <TableRow className={dashboardTableHeadRowClass}>
                   <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
@@ -90,10 +98,10 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
                   <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
                     Progress
                   </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-right")}>
+                  <TableHead className={cn(dashboardTableHeadClass, "text-center")}>
                     Status
                   </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-right")}>
+                  <TableHead className={cn(dashboardTableHeadClass, "text-center")}>
                     Action
                   </TableHead>
                 </TableRow>
@@ -142,13 +150,19 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextPrimary}>
-                            {task.progress ?? 0}%
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="w-9 shrink-0 text-xs font-semibold tabular-nums text-zinc-700">
+                              {task.progress ?? 0}%
+                            </span>
+                            <div className="h-2 flex-1 overflow-hidden rounded-full bg-zinc-100">
+                              <div
+                                className="h-full rounded-full bg-primary transition-all duration-300"
+                                style={{ width: Math.min(100, Math.max(0, Number(task.progress ?? 0))) + "%" }}
+                              />
+                            </div>
+                          </div>
                         </TableCell>
-                        <TableCell
-                          className={cn(dashboardTableCellClass, "text-right")}
-                        >
+                        <TableCell className={cn(dashboardTableCellClass, "text-center")}>
                           <span
                             className={cn(
                               dashboardStatusBadgeClass,
@@ -158,9 +172,7 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
                             {formatStatusLabel(displayStatus)}
                           </span>
                         </TableCell>
-                        <TableCell
-                          className={cn(dashboardTableCellClass, "text-right")}
-                        >
+                        <TableCell className={cn(dashboardTableCellClass, "text-center")}>
                           <div className="flex justify-end gap-2">
                             <Button
                               type="button"

@@ -269,7 +269,7 @@ export default function TasksManagementPage() {
 
           <div className="min-w-4 flex-1" />
 
-          <div className="group relative w-52">
+          <div className="group relative w-full sm:w-52">
             <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-400" />
             <input
               type="text"
@@ -283,7 +283,7 @@ export default function TasksManagementPage() {
           <Button
             type="button"
             onClick={openCreateModal}
-            className={cn(btnCreatePage, "h-9 px-4 text-sm")}
+            className={cn(btnCreatePage, "h-9 w-full sm:w-auto px-4 text-sm")}
           >
             <Plus className="size-4" />
             Create Task
@@ -291,257 +291,285 @@ export default function TasksManagementPage() {
         </div>
 
         <div className={dashboardTableWrapClass}>
-          <div className="w-full overflow-hidden">
-            <Table className="w-full table-fixed [&_td]:px-3 [&_th]:px-3">
-              <colgroup>
-                <col className="w-[7%]" />
-                <col className="w-[22%]" />
-                <col className="w-[16%]" />
-                <col className="w-[15%]" />
-                <col className="w-[9%]" />
-                <col className="w-[13%]" />
-                <col className="w-[7%]" />
-                <col className="w-[11%]" />
-              </colgroup>
-              <TableHeader className={dashboardTableHeaderClass}>
-                <TableRow className={dashboardTableHeadRowClass}>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    No
-                  </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Task
-                  </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Assigned To
-                  </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Service Info
-                  </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Progress
-                  </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Deadline
-                  </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-center")}>
-                    Status
-                  </TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-center")}>
-                    Actions
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isTasksLoading ? (
-                  [...Array(5)].map((_, i) => (
-                    <TableRow key={i} className="h-14 animate-pulse">
-                      {[...Array(8)].map((_, j) => (
-                        <TableCell key={j} className="px-6 py-4">
-                          <div className="h-4 w-full rounded bg-zinc-100" />
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                ) : paginatedTasks.length === 0 ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={8}
-                      className="px-6 py-10 text-center text-muted-foreground"
-                    >
-                      No tasks found
-                    </TableCell>
+          <Table className="w-full min-w-[1290px] table-fixed [&_td]:px-3.5 [&_th]:px-3.5">
+            <colgroup>
+              <col className="w-[75px]" />
+              <col className="w-[240px]" />
+              <col className="w-[230px]" />
+              <col className="w-[200px]" />
+              <col className="w-[140px]" />
+              <col className="w-[175px]" />
+              <col className="w-[115px]" />
+              <col className="w-[115px]" />
+            </colgroup>
+            <TableHeader className={dashboardTableHeaderClass}>
+              <TableRow className={dashboardTableHeadRowClass}>
+                <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
+                  No
+                </TableHead>
+                <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
+                  Task
+                </TableHead>
+                <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
+                  Assigned To
+                </TableHead>
+                <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
+                  Service Info
+                </TableHead>
+                <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
+                  Progress
+                </TableHead>
+                <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
+                  Deadline
+                </TableHead>
+                <TableHead className={cn(dashboardTableHeadClass, "text-center")}>
+                  Status
+                </TableHead>
+                <TableHead className={cn(dashboardTableHeadClass, "text-center")}>
+                  Actions
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isTasksLoading ? (
+                [...Array(5)].map((_, i) => (
+                  <TableRow key={i} className="h-14 animate-pulse">
+                    {[...Array(8)].map((_, j) => (
+                      <TableCell key={j} className="px-6 py-4">
+                        <div className="h-4 w-full rounded bg-zinc-100" />
+                      </TableCell>
+                    ))}
                   </TableRow>
-                ) : (
-                  paginatedTasks.map((task) => {
-                    const { taskName, clientName, serviceName } = getTaskTableLabels(task);
-                    // Display status
-                    const displayStatus = resolveTaskDisplayStatus(task);
-                    const progress = task.progress ?? 0;
-                    // Assignee info
-                    const assignedName = task.assignedTo?.name || "Unassigned";
-                    const assignedImage = task.assignedTo?.image ?? null;
-                    const jobTitle = task.assignedTo?.jobTitle ?? null;
-                    const initials = assignedName
-                      .split(" ")
-                      .slice(0, 2)
-                      .map((w: string) => w[0] ?? "")
-                      .join("")
-                      .toUpperCase();
+                ))
+              ) : paginatedTasks.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={8}
+                    className="px-6 py-10 text-center text-muted-foreground"
+                  >
+                    No tasks found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                paginatedTasks.map((task) => {
+                  const { taskName, clientName, serviceName } = getTaskTableLabels(task);
+                  // Display status
+                  const displayStatus = resolveTaskDisplayStatus(task);
+                  const progress = task.progress ?? 0;
+                  // Assignee info
+                  const assignedName = task.assignedTo?.name || "Unassigned";
+                  const assignedImage = task.assignedTo?.image ?? null;
+                  const jobTitle = task.assignedTo?.jobTitle ?? null;
+                  const initials = assignedName
+                    .split(" ")
+                    .slice(0, 2)
+                    .map((w: string) => w[0] ?? "")
+                    .join("")
+                    .toUpperCase();
 
-                    return (
-                      <TableRow key={task.id} className={dashboardTableBodyRowClass}>
+                  return (
+                    <TableRow key={task.id} className={dashboardTableBodyRowClass}>
 
-                        {/* No */}
-                        <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTableIdClass}>
-                            {String(task.id ?? "").slice(0, 8).toUpperCase()}
+                      {/* No */}
+                      <TableCell className={cn(dashboardTableCellClass, "font-mono")}>
+                        <span className={dashboardTableIdClass}>
+                          {String(task.id ?? "").slice(0, 8).toUpperCase()}
+                        </span>
+                      </TableCell>
+
+                      {/* Task */}
+                      <TableCell className={dashboardTableCellClass}>
+                        <div className="flex flex-col gap-0.5">
+                          <span
+                            className={cn(dashboardTextPrimary, "font-medium leading-snug line-clamp-2")}
+                            title={taskName}
+                          >
+                            {taskName}
                           </span>
-                        </TableCell>
+                        </div>
+                      </TableCell>
 
-                        {/* Task */}
-                        <TableCell className={dashboardTableCellClass}>
-                          <div className="flex flex-col gap-0.5 max-w-[220px]">
-                            <span className={cn(dashboardTextPrimary, "font-medium leading-snug line-clamp-2")}>
-                              {taskName}
+                      {/* Assigned To — avatar + name + job title */}
+                      <TableCell className={dashboardTableCellClass}>
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          {assignedImage ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={assignedImage}
+                              alt={assignedName}
+                              className="size-8 shrink-0 rounded-full object-cover ring-1 ring-zinc-200"
+                            />
+                          ) : (
+                            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-white select-none">
+                              {initials}
+                            </div>
+                          )}
+                          <div className="flex min-w-0 flex-1 flex-col leading-tight">
+                            <span
+                              className={cn(dashboardTextPrimary, "truncate text-sm font-medium")}
+                              title={assignedName}
+                            >
+                              {assignedName}
                             </span>
-                          </div>
-                        </TableCell>
-
-                        {/* Assigned To — avatar + name + job title */}
-                        <TableCell className={dashboardTableCellClass}>
-                          <div className="flex items-center gap-2">
-                            {assignedImage ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img
-                                src={assignedImage}
-                                alt={assignedName}
-                                className="size-8 shrink-0 rounded-full object-cover ring-1 ring-zinc-200"
-                              />
-                            ) : (
-                              <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-white select-none">
-                                {initials}
-                              </div>
-                            )}
-                            <div className="flex flex-col leading-tight">
-                              <span className={cn(dashboardTextPrimary, "text-sm font-medium whitespace-nowrap")}>
-                                {assignedName}
+                            {jobTitle && (
+                              <span
+                                className="truncate text-[11px] text-zinc-400"
+                                title={jobTitle}
+                              >
+                                {jobTitle}
                               </span>
-                              {jobTitle && (
-                                <span className="text-[11px] text-zinc-400">{jobTitle}</span>
-                              )}
-                            </div>
+                            )}
                           </div>
-                        </TableCell>
+                        </div>
+                      </TableCell>
 
-                        {/* Service Info — client name */}
-                        <TableCell className={dashboardTableCellClass}>
-                          <div className="flex max-w-[190px] flex-col gap-1">
-                            <span className={cn(dashboardTextPrimary, "truncate text-sm font-medium")}>
-                              {clientName}
-                            </span>
-                            <span className={cn(
-                              "w-fit max-w-full truncate rounded px-1.5 py-0.5 text-[10px] font-semibold",
+                      {/* Service Info — client name */}
+                      <TableCell className={dashboardTableCellClass}>
+                        <div className="flex min-w-0 flex-col gap-1">
+                          <span
+                            className={cn(dashboardTextPrimary, "truncate text-sm font-medium")}
+                            title={clientName}
+                          >
+                            {clientName}
+                          </span>
+                          <span
+                            className={cn(
+                              "w-fit max-w-full truncate rounded px-2 py-0.5 text-[10.5px] font-semibold",
                               getServiceBadgeClass(serviceName),
-                            )}>
-                              {serviceName}
-                            </span>
-                          </div>
-                        </TableCell>
+                            )}
+                            title={serviceName}
+                          >
+                            {serviceName}
+                          </span>
+                        </div>
+                      </TableCell>
 
-                        {/* Progress */}
-                        <TableCell className={dashboardTableCellClass}>
-                          <div className="flex items-center gap-2">
-                            <span className="w-8 shrink-0 text-xs font-medium text-zinc-600">
-                              {progress}%
-                            </span>
-                            <div className="h-1.5 flex-1 min-w-[60px] rounded-full bg-zinc-100 overflow-hidden">
-                              <div
-                                className="h-full rounded-full bg-primary transition-all"
-                                style={{ width: `${Math.min(100, progress)}%` }}
-                              />
-                            </div>
+                      {/* Progress */}
+                      <TableCell className={dashboardTableCellClass}>
+                        <div className="flex items-center gap-2.5">
+                          <span className="w-9 shrink-0 text-xs font-semibold text-zinc-700 tabular-nums">
+                            {progress}%
+                          </span>
+                          <div className="h-2 flex-1 min-w-[50px] overflow-hidden rounded-full bg-zinc-100">
+                            <div
+                              className="h-full rounded-full bg-primary transition-all duration-300"
+                              style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+                            />
                           </div>
-                        </TableCell>
+                        </div>
+                      </TableCell>
 
-                        {/* Deadline */}
-                        <TableCell className={dashboardTableCellClass}>
-                          <div className="flex items-center gap-2">
-                            <CalendarDays className={cn(
-                              "size-4 shrink-0",
-                              displayStatus === "overdue"
-                                ? "text-rose-500"
-                                : displayStatus === "in_progress"
-                                  ? "text-orange-500"
-                                  : "text-primary",
-                            )} />
-                            <div className="flex min-w-0 flex-col leading-tight">
-                              <span className={cn(
-                                "text-xs font-semibold",
+                      {/* Deadline */}
+                      <TableCell className={dashboardTableCellClass}>
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <CalendarDays className={cn(
+                            "size-4 shrink-0",
+                            displayStatus === "overdue"
+                              ? "text-rose-500"
+                              : displayStatus === "in_progress"
+                                ? "text-orange-500"
+                                : "text-primary",
+                          )} />
+                          <div className="flex min-w-0 flex-1 flex-col leading-tight">
+                            <span
+                              className={cn(
+                                "truncate text-xs font-semibold",
                                 displayStatus === "overdue"
                                   ? "text-rose-600"
                                   : displayStatus === "in_progress"
                                     ? "text-orange-500"
                                     : dashboardTextPrimary,
-                              )}>
-                                {displayStatus === "completed"
+                              )}
+                              title={
+                                displayStatus === "completed"
                                   ? "Completed"
                                   : formatTaskDeadline(task.deadline, {
                                       status: task.status,
                                       progress: task.progress,
                                       startDate: task.startDate,
                                       extraTimeMinutes: task.extraTimeMinutes,
-                                    })}
-                              </span>
-                              <span className={cn(
-                                "mt-0.5 text-[10px]",
-                                displayStatus === "overdue"
-                                  ? "font-semibold text-rose-500"
-                                  : "text-zinc-500",
-                              )}>
-                                {taskDeadlineDate(task)}
-                              </span>
-                            </div>
-                          </div>
-                        </TableCell>
-
-                        {/* Status */}
-                        <TableCell className={cn(dashboardTableCellClass, "text-center")}>
-                          <span
-                            className={cn(
-                              dashboardStatusBadgeClass,
-                              getTaskStatusBadgeClass(displayStatus),
-                            )}
-                          >
-                            {formatStatusLabel(displayStatus)}
-                          </span>
-                        </TableCell>
-
-                        {/* Actions */}
-                        <TableCell className={cn(dashboardTableCellClass, "pr-5 text-center")}>
-                          <div className="flex items-center justify-center gap-1">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => openViewModal(task)}
-                              className={cn(actionBtnView, "relative")}
-                              title={
-                                isTaskNotesUnseen(task.id, task.progressNotes?.length ?? 0)
-                                  ? `${task.progressNotes!.length} unread message(s)`
-                                  : "View task"
+                                    })
                               }
                             >
-                              <Eye className="size-4" />
-                              {isTaskNotesUnseen(task.id, task.progressNotes?.length ?? 0) ? (
-                                <span className="absolute -top-1 -right-1 flex size-3.5 items-center justify-center rounded-full bg-[#651210] text-[9px] font-bold text-white ring-2 ring-white shadow-xs">
-                                  {(task.progressNotes?.length ?? 0) > 9 ? "9+" : task.progressNotes!.length}
-                                </span>
-                              ) : null}
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => openEditModal(String(task.id))}
-                              className={actionBtnEdit}
-                            >
-                              <Edit className="size-4" />
-                            </Button>
-                            {task.id && (
-                              <TaskDeleteDialog
-                                task={task}
-                                triggerClassNames={actionBtnDelete}
-                              />
-                            )}
+                              {displayStatus === "completed"
+                                ? "Completed"
+                                : formatTaskDeadline(task.deadline, {
+                                    status: task.status,
+                                    progress: task.progress,
+                                    startDate: task.startDate,
+                                    extraTimeMinutes: task.extraTimeMinutes,
+                                  })}
+                            </span>
+                            <span className={cn(
+                              "mt-0.5 truncate text-[10px]",
+                              displayStatus === "overdue"
+                                ? "font-semibold text-rose-500"
+                                : "text-zinc-500",
+                            )}>
+                              {taskDeadlineDate(task)}
+                            </span>
                           </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                        </div>
+                      </TableCell>
+
+                      {/* Status */}
+                      <TableCell className={cn(dashboardTableCellClass, "text-center")}>
+                        <span
+                          className={cn(
+                            dashboardStatusBadgeClass,
+                            getTaskStatusBadgeClass(displayStatus),
+                          )}
+                        >
+                          {formatStatusLabel(displayStatus)}
+                        </span>
+                      </TableCell>
+
+                      {/* Actions */}
+                      <TableCell className={cn(dashboardTableCellClass, "text-center")}>
+                        <div className="flex items-center justify-center gap-1.5">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => openViewModal(task)}
+                            className={cn(actionBtnView, "relative")}
+                            title={
+                              isTaskNotesUnseen(task.id, task.progressNotes?.length ?? 0)
+                                ? `${task.progressNotes!.length} unread message(s)`
+                                : "View task"
+                            }
+                          >
+                            <Eye className="size-4" />
+                            {isTaskNotesUnseen(task.id, task.progressNotes?.length ?? 0) ? (
+                              <span className="absolute -top-1 -right-1 flex size-3.5 items-center justify-center rounded-full bg-[#651210] text-[9px] font-bold text-white ring-2 ring-white shadow-xs">
+                                {(task.progressNotes?.length ?? 0) > 9 ? "9+" : task.progressNotes!.length}
+                              </span>
+                            ) : null}
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => openEditModal(String(task.id))}
+                            className={actionBtnEdit}
+                            title="Edit task"
+                          >
+                            <Edit className="size-4" />
+                          </Button>
+                          {task.id && (
+                            <TaskDeleteDialog
+                              task={task}
+                              triggerClassNames={actionBtnDelete}
+                            />
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              )}
+            </TableBody>
+          </Table>
         </div>
 
         <div className={dashboardPaginationClass}>

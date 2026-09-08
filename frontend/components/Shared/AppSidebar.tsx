@@ -9,6 +9,7 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { ICONS, ROUTES } from "@/lib/constants";
 import {
@@ -129,6 +130,7 @@ interface Props {
 }
 
 export function AppSidebar({ data, branding }: Props) {
+  const { setOpenMobile, isMobile } = useSidebar();
   const expandedLogo =
     resolveBranchLogoUrl(branding?.logoUrl) || ICONS.logoPng1;
   const collapsedLogo =
@@ -146,6 +148,9 @@ export function AppSidebar({ data, branding }: Props) {
       <SidebarHeader className="border-sidebar-border sidebar-brand !flex !h-[96px] !items-center !justify-center overflow-hidden border-b !p-0 group-data-[collapsible=icon]:!h-[56px]">
         <Link
           href={ROUTES.dashboard}
+          onClick={() => {
+            if (isMobile) setOpenMobile(false);
+          }}
           className="flex h-full w-full items-center justify-center px-4 py-2 transition-opacity hover:opacity-90"
         >
           <Image

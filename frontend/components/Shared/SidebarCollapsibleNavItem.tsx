@@ -43,7 +43,7 @@ export default function SidebarCollapsibleNavItem({
   const pathname = usePathname();
   const [pendingHref, setPendingHref] = useState<string | null>(null);
   const { isOpen, toggle, setOpenId } = useSidebarAccordion();
-  const { state: sidebarState, isMobile } = useSidebar();
+  const { state: sidebarState, isMobile, setOpenMobile } = useSidebar();
   const open = isOpen(id);
   const isAnySubActive = items.some((sub) => isSubNavActive(pathname, sub.href));
 
@@ -86,6 +86,7 @@ export default function SidebarCollapsibleNavItem({
         prefetch
         onClick={() => {
           setPendingHref(sub.href);
+          if (isMobile) setOpenMobile(false);
           if (isCollapsed && open) {
             toggle(id);
           }

@@ -355,39 +355,41 @@ export default function StaffTasksSummaryReport({ personalOnly = false }: { pers
         </div>
 
         <div className={cn(dashboardTableWrapClass, "border-0")}>
-          <Table>
-            <TableHeader className={dashboardTableHeaderClass}>
-              <TableRow className={dashboardTableHeadRowClass}>
-                {["Staff ID", "Staff Name", "Job Title", "Role", "Total Tasks", "Processing Tasks", "Completed Tasks", "Overdue Tasks", "Total Hours", "Action"].map((header) => (
-                  <TableHead key={header} className={dashboardTableHeadClass}>{header}</TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                <TableRow><TableCell colSpan={10} className="py-12 text-center text-zinc-500">Loading staff task summary...</TableCell></TableRow>
-              ) : rows.length === 0 ? (
-                <TableRow><TableCell colSpan={10} className="py-12 text-center text-zinc-500">No staff found</TableCell></TableRow>
-              ) : paginatedRows.map((row: any) => (
-                <TableRow key={row.staff.id} className={dashboardTableBodyRowClass}>
-                  <TableCell className={dashboardTableCellClass}><span className="font-semibold text-primary">{row.staff.staffCode || "N/A"}</span></TableCell>
-                  <TableCell className={dashboardTableCellClass}><span className="font-bold text-slate-800">{row.staff.name}</span></TableCell>
-                  <TableCell className={dashboardTableCellClass}>{jobTitleName(row.staff)}</TableCell>
-                  <TableCell className={cn(dashboardTableCellClass, "capitalize")}>{valueOrNA(row.staff.role)}</TableCell>
-                  <TableCell className={dashboardTableCellClass}><span className="font-bold text-slate-700">{row.total}</span></TableCell>
-                  <TableCell className={dashboardTableCellClass}><span className="font-bold text-amber-600">{row.pending}</span></TableCell>
-                  <TableCell className={dashboardTableCellClass}><span className="font-bold text-emerald-600">{row.completed}</span></TableCell>
-                  <TableCell className={dashboardTableCellClass}><span className="font-bold text-rose-600">{row.overdue}</span></TableCell>
-                  <TableCell className={dashboardTableCellClass}><span className="font-bold text-indigo-600">{formatTotalHoursWorked(row.totalHours)}</span></TableCell>
-                  <TableCell className={dashboardTableCellClass}>
-                    <button type="button" onClick={() => { setSelectedStaff(row.staff); setDetailSearch(""); setDetailStatus("all"); setDetailPage(1); }} className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 px-3 py-2 text-xs font-bold text-primary hover:border-primary/30 hover:bg-primary/5">
-                      <Eye className="size-4" /> View Details
-                    </button>
-                  </TableCell>
+          <div className="w-full overflow-x-auto">
+            <Table className="w-full min-w-[1000px]">
+              <TableHeader className={dashboardTableHeaderClass}>
+                <TableRow className={dashboardTableHeadRowClass}>
+                  {["Staff ID", "Staff Name", "Job Title", "Role", "Total Tasks", "Processing Tasks", "Completed Tasks", "Overdue Tasks", "Total Hours", "Action"].map((header) => (
+                    <TableHead key={header} className={dashboardTableHeadClass}>{header}</TableHead>
+                  ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  <TableRow><TableCell colSpan={10} className="py-12 text-center text-zinc-500">Loading staff task summary...</TableCell></TableRow>
+                ) : rows.length === 0 ? (
+                  <TableRow><TableCell colSpan={10} className="py-12 text-center text-zinc-500">No staff found</TableCell></TableRow>
+                ) : paginatedRows.map((row: any) => (
+                  <TableRow key={row.staff.id} className={dashboardTableBodyRowClass}>
+                    <TableCell className={dashboardTableCellClass}><span className="font-semibold text-primary">{row.staff.staffCode || "N/A"}</span></TableCell>
+                    <TableCell className={dashboardTableCellClass}><span className="font-bold text-slate-800">{row.staff.name}</span></TableCell>
+                    <TableCell className={dashboardTableCellClass}>{jobTitleName(row.staff)}</TableCell>
+                    <TableCell className={cn(dashboardTableCellClass, "capitalize")}>{valueOrNA(row.staff.role)}</TableCell>
+                    <TableCell className={dashboardTableCellClass}><span className="font-bold text-slate-700">{row.total}</span></TableCell>
+                    <TableCell className={dashboardTableCellClass}><span className="font-bold text-amber-600">{row.pending}</span></TableCell>
+                    <TableCell className={dashboardTableCellClass}><span className="font-bold text-emerald-600">{row.completed}</span></TableCell>
+                    <TableCell className={dashboardTableCellClass}><span className="font-bold text-rose-600">{row.overdue}</span></TableCell>
+                    <TableCell className={dashboardTableCellClass}><span className="font-bold text-indigo-600">{formatTotalHoursWorked(row.totalHours)}</span></TableCell>
+                    <TableCell className={dashboardTableCellClass}>
+                      <button type="button" onClick={() => { setSelectedStaff(row.staff); setDetailSearch(""); setDetailStatus("all"); setDetailPage(1); }} className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 px-3 py-2 text-xs font-bold text-primary hover:border-primary/30 hover:bg-primary/5">
+                        <Eye className="size-4" /> View Details
+                      </button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </div>
         <div className="flex items-center justify-between border-t border-zinc-100 px-6 py-4 text-xs text-zinc-500"><span>Showing {rows.length ? (currentPage - 1) * pageSize + 1 : 0}-{Math.min(currentPage * pageSize, rows.length)} of {rows.length} results</span><div className="flex items-center gap-2"><button type="button" disabled={currentPage <= 1} onClick={() => setCurrentPage((page) => Math.max(1, page - 1))} className="rounded border border-zinc-200 px-3 py-1.5 disabled:opacity-40">Prev</button><span>Page {currentPage} of {totalPages}</span><button type="button" disabled={currentPage >= totalPages} onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))} className="rounded border border-zinc-200 px-3 py-1.5 disabled:opacity-40">Next</button></div></div>
       </div>

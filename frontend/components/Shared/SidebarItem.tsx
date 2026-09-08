@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
+import { SidebarMenuButton, SidebarMenuItem, useSidebar } from "../ui/sidebar";
 
 /** Sibling routes under the same prefix — only exact path is active */
 const SIDEBAR_EXACT_PATHS = new Set([
@@ -50,6 +50,7 @@ export default function SideBarItem({
   currentRole?: UserRole;
 }) {
   const pathname = usePathname();
+  const { setOpenMobile, isMobile } = useSidebar();
   const [mounted, setMounted] = useState(false);
   const [pendingHref, setPendingHref] = useState<string | null>(null);
 
@@ -96,6 +97,7 @@ export default function SideBarItem({
           href={href}
           prefetch
           onClick={() => {
+            if (isMobile) setOpenMobile(false);
             window.dispatchEvent(
               new CustomEvent("sidebar-navigation-start", { detail: href }),
             );

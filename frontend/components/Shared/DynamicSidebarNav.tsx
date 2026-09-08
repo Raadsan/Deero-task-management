@@ -40,7 +40,7 @@ type Props = {
 export default function DynamicSidebarNav({ data }: Props) {
   const pathname = usePathname();
   const { menus, canView } = usePermissions();
-  const { state: sidebarState, isMobile } = useSidebar();
+  const { state: sidebarState, isMobile, setOpenMobile } = useSidebar();
   const isCollapsed = sidebarState === "collapsed" && !isMobile;
   const userRole = data?.user?.role ?? "";
   const normalizedRole = normalizeRoleName(userRole);
@@ -680,6 +680,7 @@ export default function DynamicSidebarNav({ data }: Props) {
               isCollapsed ? "justify-center" : ""
             }`}
             title="Back to Modules"
+            onClick={() => { if (isMobile) setOpenMobile(false); }}
           >
             <ChevronLeft className="size-4 shrink-0" />
             {!isCollapsed && <span>Back to Modules</span>}

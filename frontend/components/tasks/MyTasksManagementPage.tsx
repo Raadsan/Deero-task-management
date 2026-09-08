@@ -197,7 +197,7 @@ export default function MyTasksManagementPage() {
   return (
     <ManagementPageShell title="My tasks" subtitle="Track and manage all tasks assigned to you." className={cn("transition-[padding] duration-200", processTarget && "lg:pr-[470px]")}>
       <div className={dashboardCardClass}>
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-50 px-6 py-3">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-50 px-4 sm:px-6 py-3">
           <div className={cn("flex items-center gap-2", dashboardLabelClass)}>
             <span>Show</span>
             <select
@@ -228,7 +228,7 @@ export default function MyTasksManagementPage() {
 
           <div className="min-w-4 flex-1" />
 
-          <div className="group relative w-52">
+          <div className="group relative w-full sm:w-52">
             <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-400" />
             <input
               type="text"
@@ -242,8 +242,15 @@ export default function MyTasksManagementPage() {
         </div>
 
         <div className={dashboardTableWrapClass}>
-          <div className="overflow-x-auto">
-            <Table className="w-full table-fixed [&_th]:px-3 [&_td]:px-3 [&_th:nth-child(1)]:w-[11%] [&_th:nth-child(2)]:w-[31%] [&_th:nth-child(3)]:w-[17%] [&_th:nth-child(4)]:w-[20%] [&_th:nth-child(5)]:w-[12%] [&_th:nth-child(6)]:w-[9%]">
+          <Table className="w-full min-w-[900px] table-fixed [&_th]:px-3.5 [&_td]:px-3.5">
+            <colgroup>
+              <col className="w-[80px]" />
+              <col className="w-[280px]" />
+              <col className="w-[155px]" />
+              <col className="w-[185px]" />
+              <col className="w-[115px]" />
+              <col className="w-[85px]" />
+            </colgroup>
               <TableHeader className={dashboardTableHeaderClass}>
                 <TableRow className={dashboardTableHeadRowClass}>
                   <TableHead
@@ -314,16 +321,31 @@ export default function MyTasksManagementPage() {
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className={cn(dashboardTextSecondary, "block min-w-0 truncate")}>
-                            {task.serviceInformation || task.description || "N/A"}
-                            <small className="mt-1 block text-[11px] text-zinc-400">Client: {task.institutions?.[0]?.institution || "Internal"}</small>
-                          </span>
+                          <div className="flex min-w-0 flex-col gap-0.5">
+                            <span
+                              className={cn(dashboardTextSecondary, "line-clamp-2 leading-snug")}
+                              title={task.serviceInformation || task.description || "N/A"}
+                            >
+                              {task.serviceInformation || task.description || "N/A"}
+                            </span>
+                            <small
+                              className="truncate text-[11px] text-zinc-400"
+                              title={task.institutions?.[0]?.institution || "Internal"}
+                            >
+                              Client: {task.institutions?.[0]?.institution || "Internal"}
+                            </small>
+                          </div>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className={cn(dashboardTextPrimary, "whitespace-nowrap")}>
-                            <span className="inline-block w-9">{task.progress ?? 0}%</span>
-                            <span className="ml-2 inline-block h-1.5 w-24 overflow-hidden rounded-full bg-zinc-100 align-middle"><span className="block h-full rounded-full bg-[#7b1512]" style={{ width: Math.min(100, Number(task.progress ?? 0)) + "%" }} /></span>
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="w-9 shrink-0 text-xs font-semibold tabular-nums text-zinc-700">{task.progress ?? 0}%</span>
+                            <div className="h-2 flex-1 overflow-hidden rounded-full bg-zinc-100">
+                              <div
+                                className="h-full rounded-full bg-primary transition-all duration-300"
+                                style={{ width: Math.min(100, Math.max(0, Number(task.progress ?? 0))) + "%" }}
+                              />
+                            </div>
+                          </div>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
                           <div className="flex items-center gap-2">
@@ -427,7 +449,6 @@ export default function MyTasksManagementPage() {
                 )}
               </TableBody>
             </Table>
-          </div>
         </div>
 
         <div className={dashboardPaginationClass}>

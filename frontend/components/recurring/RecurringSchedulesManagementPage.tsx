@@ -173,7 +173,7 @@ export default function RecurringSchedulesManagementPage() {
 
           <div className="min-w-4 flex-1" />
 
-          <div className="group relative w-52">
+          <div className="group relative w-full sm:w-52">
             <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-400" />
             <input
               type="text"
@@ -186,8 +186,8 @@ export default function RecurringSchedulesManagementPage() {
         </div>
 
         <div className={dashboardTableWrapClass}>
-          <div className="overflow-x-auto">
-            <Table className="w-full">
+          <div className="w-full overflow-x-auto">
+            <Table className="w-full min-w-[850px]">
               <TableHeader className={dashboardTableHeaderClass}>
                 <TableRow className={dashboardTableHeadRowClass}>
                   <TableHead className={cn(dashboardTableHeadClass, "text-left")}>ID</TableHead>

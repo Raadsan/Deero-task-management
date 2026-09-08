@@ -2,11 +2,9 @@ import AppSidebarWrapper from "@/components/Shared/AppSidebarWrapper";
 import BranchThemeWrapper from "@/components/branding/BranchThemeWrapper";
 import DashboardAccessGuard from "@/components/dashboard/DashboardAccessGuard";
 import DashboardTopBar from "@/components/dashboard/DashboardTopBar";
-import { SidebarSkeletonLoader } from "@/components/Shared/Loader";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { PermissionProvider } from "@/context/PermissionContext";
 import { getDashboardSession } from "@/lib/apis/portfolioApi";
-import { Suspense } from "react";
 import DashboardDataProvider from "@/components/providers/DashboardDataProvider";
 import { cookies } from "next/headers";
 
@@ -34,9 +32,7 @@ export default async function DashboardShell({
           className="h-svh min-h-0 w-full overflow-hidden"
         >
           <div className="flex h-full min-h-0 w-full overflow-hidden">
-            <Suspense fallback={<SidebarSkeletonLoader />}>
-              <AppSidebarWrapper session={session} branding={branding} />
-            </Suspense>
+            <AppSidebarWrapper session={session} branding={branding} />
             <SidebarInset className="m-0 flex h-full min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden bg-[#F8F9FA] p-0">
               <DashboardTopBar user={session?.user ?? null} />
               <main className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto">

@@ -122,7 +122,7 @@ export const dashboardControlsRowClass =
   "flex flex-wrap items-center gap-3 border-b border-zinc-50 px-4 py-3";
 
 export const dashboardTableWrapClass =
-  "overflow-hidden border-t border-zinc-100 bg-white";
+  "w-full overflow-x-auto border-t border-zinc-100 bg-white";
 
 export const dashboardPaginationClass =
   "flex flex-col justify-between gap-4 border-t border-zinc-100 bg-zinc-50/30 px-6 py-2 text-xs text-zinc-400 md:flex-row md:items-center";
