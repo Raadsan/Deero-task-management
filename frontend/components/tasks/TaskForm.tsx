@@ -166,6 +166,12 @@ export default function TaskForm({
   const defaultBranchId = branchOptionsRes?.data?.defaultBranchId ?? "";
   const [selectedBranchId, setSelectedBranchId] = useState(() => editBranchId || (isCreate ? defaultBranchId : ""));
 
+  // Dynamic portfolio colors based on the currently selected branch
+  // (must be AFTER selectedBranchId useState to avoid TDZ)
+  const selectedBranch = branchOptions.find((p: any) => String(p.id) === String(selectedBranchId));
+  const formPrimaryColor: string = (selectedBranch as any)?.primaryColor ?? "var(--portfolio-primary)";
+  const formSecondaryColor: string = (selectedBranch as any)?.secondaryColor ?? "var(--portfolio-secondary)";
+
   // Auto-select the user's portfolio as soon as branch options are available
   useEffect(() => {
     if (!showBranchFields) return;
@@ -659,22 +665,32 @@ export default function TaskForm({
                 fieldInvalid("taskKind") && "ring-2 ring-red-500",
               )}
             >
-              <Button
+              <button
                 type="button"
-                variant={taskKind === "client" ? "default" : "outline"}
-                className="h-9"
+                className={cn(
+                  "h-9 px-4 rounded-lg text-sm font-semibold transition-all border",
+                  taskKind === "client"
+                    ? "text-white shadow-sm"
+                    : "bg-white text-zinc-700 border-zinc-300 hover:bg-zinc-50",
+                )}
+                style={taskKind === "client" ? { backgroundColor: formPrimaryColor, borderColor: formPrimaryColor } : undefined}
                 onClick={() => handleTaskKindChange("client")}
               >
                 Client task
-              </Button>
-              <Button
+              </button>
+              <button
                 type="button"
-                variant={taskKind === "general" ? "default" : "outline"}
-                className="h-9"
+                className={cn(
+                  "h-9 px-4 rounded-lg text-sm font-semibold transition-all border",
+                  taskKind === "general"
+                    ? "text-white shadow-sm"
+                    : "bg-white text-zinc-700 border-zinc-300 hover:bg-zinc-50",
+                )}
+                style={taskKind === "general" ? { backgroundColor: formPrimaryColor, borderColor: formPrimaryColor } : undefined}
                 onClick={() => handleTaskKindChange("general")}
               >
                 General task
-              </Button>
+              </button>
             </div>
           </div>
         )}
@@ -825,12 +841,19 @@ export default function TaskForm({
             <div className="w-full space-y-2 rounded-xl border border-zinc-200 bg-zinc-50/60 p-3.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Users className="size-4 text-[#651210]" />
+                  <Users className="size-4" style={{ color: formPrimaryColor }} />
                   <label className="text-xs font-bold uppercase tracking-wider text-zinc-700">
                     Assigned Staff
                   </label>
                 </div>
-                <span className="text-xs font-semibold text-[#651210] bg-red-50 border border-red-100 px-2.5 py-0.5 rounded-full">
+                <span
+                  className="text-xs font-semibold px-2.5 py-0.5 rounded-full border"
+                  style={{
+                    color: formPrimaryColor,
+                    backgroundColor: `color-mix(in srgb, ${formPrimaryColor} 10%, white)`,
+                    borderColor: `color-mix(in srgb, ${formPrimaryColor} 25%, white)`,
+                  }}
+                >
                   {selectedAssigneeIds.length} Selected
                 </span>
               </div>
@@ -846,15 +869,16 @@ export default function TaskForm({
                     return (
                       <span
                         key={id}
-                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#651210] text-white text-xs font-medium shadow-sm transition-all"
+                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-white text-xs font-medium shadow-sm transition-all"
+                        style={{ backgroundColor: formPrimaryColor }}
                       >
-                        <UserCheck className="size-3 text-red-200" />
+                        <UserCheck className="size-3 opacity-70" />
                         {name}
                         {(isCreate || formType === "edit") && (
                           <button
                             type="button"
                             onClick={() => toggleAssignee(id)}
-                            className="hover:text-red-300 font-bold ml-1 text-xs"
+                            className="hover:opacity-70 font-bold ml-1 text-xs"
                             title="Remove staff member"
                           >
                             <X className="size-3" />
@@ -884,13 +908,18 @@ export default function TaskForm({
                           className={cn(
                             "flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-left transition-all border",
                             isSelected
-                              ? "bg-amber-50 border-amber-300 text-amber-900 font-semibold shadow-xs"
+                              ? "font-semibold shadow-xs"
                               : "bg-white border-zinc-200 text-zinc-700 hover:border-zinc-300 hover:bg-zinc-100",
                           )}
+                          style={isSelected ? {
+                            backgroundColor: `color-mix(in srgb, ${formSecondaryColor} 15%, white)`,
+                            borderColor: `color-mix(in srgb, ${formSecondaryColor} 50%, transparent)`,
+                            color: `color-mix(in srgb, ${formSecondaryColor} 80%, black)`,
+                          } : undefined}
                         >
                           <span className="truncate">{staff.name}</span>
                           {isSelected ? (
-                            <span className="text-amber-700 font-bold text-xs shrink-0 ml-1">✓</span>
+                            <span className="font-bold text-xs shrink-0 ml-1" style={{ color: formPrimaryColor }}>✓</span>
                           ) : (
                             <Plus className="size-3.5 text-zinc-400 shrink-0 ml-1" />
                           )}
@@ -1223,9 +1252,13 @@ export default function TaskForm({
               </Button>
             )}
             {isModal ? (
-              <Button type="submit" className={btnFormSubmit}>
+              <button
+                type="submit"
+                className={cn(btnFormSubmit, "text-white")}
+                style={{ backgroundColor: formPrimaryColor, borderColor: formPrimaryColor }}
+              >
                 {formType === "edit" ? "Save" : "Add"}
-              </Button>
+              </button>
             ) : (
               <ButtonBuilder htmlType="submit" classNames="text-white" type="normal">
                 {formType === "edit"

@@ -1,13 +1,12 @@
 "use client";
 
-import { accountingToast } from '@/lib/accounting-ui';
+import { accountingToast } from "@/lib/accounting-ui";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { FileSpreadsheet, ArrowRight, Printer, Download, CheckCircle, FileText } from "lucide-react";
+import { ArrowRight, Printer, Download, FileText, Loader2 } from "lucide-react";
 import { quotationApi, type Quotation } from "@/lib/api/quotationApi";
 import { documentTemplateApi } from "@/lib/api/documentTemplateApi";
-import { formatDate } from "@/lib/utils";
 
 interface Props {
   open: boolean;
@@ -17,38 +16,42 @@ interface Props {
 }
 
 export default function QuotationViewModal({ open, onOpenChange, quotation, onConverted }: Props) {
-    const [converting, setConverting] = useState(false);
+  const [converting, setConverting] = useState(false);
+  const [iframeLoading, setIframeLoading] = useState(true);
 
   if (!quotation) return null;
 
+  // Build the render URL from the database render endpoint
+  const renderUrl = documentTemplateApi.getQuotationRenderUrl(quotation.id);
+
   const handleConvert = async () => {
-    if (!confirm(`Are you sure you want to convert Quotation ${quotation.quotation_number} into an Accounting Invoice? This will post the appropriate Journal Entries.`)) {
+    if (
+      !confirm(
+        `Are you sure you want to convert Quotation ${quotation.quotation_number} into an Accounting Invoice? This will post the appropriate Journal Entries.`
+      )
+    ) {
       return;
     }
 
     try {
       setConverting(true);
       const res = await quotationApi.convertToInvoice(quotation.id);
-      accountingToast(
-        `Successfully converted to Invoice ${res.invoice?.invoice_number || ""}`,
-        "success"
-      );
+      accountingToast(`Successfully converted to Invoice ${res.invoice?.invoice_number || ""}`, "success");
       if (onConverted) onConverted();
       onOpenChange(false);
     } catch (err: any) {
-      accountingToast(err?.response?.data?.message || err.message || "Failed to convert quotation", 'error');
+      accountingToast(err?.response?.data?.message || err.message || "Failed to convert quotation", "error");
     } finally {
       setConverting(false);
     }
   };
 
   const handleDownloadPdf = () => {
-    const url = documentTemplateApi.getQuotationRenderUrl(quotation.id);
-    const win = window.open(url, "_blank");
+    const win = window.open(renderUrl, "_blank");
     if (win) win.focus();
   };
 
-  const statusColors = {
+  const statusColors: Record<string, string> = {
     DRAFT: "bg-zinc-100 text-zinc-700 border-zinc-200",
     SENT: "bg-blue-50 text-blue-700 border-blue-200",
     ACCEPTED: "bg-emerald-50 text-emerald-700 border-emerald-200",
@@ -59,112 +62,65 @@ export default function QuotationViewModal({ open, onOpenChange, quotation, onCo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-6 bg-white">
-        <DialogHeader className="border-b pb-4">
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-xl font-bold flex items-center gap-2 text-[#1e293b]">
-              <FileSpreadsheet className="size-5 text-primary" />
+      <DialogContent className="max-w-5xl w-[95vw] max-h-[95vh] p-0 bg-zinc-50 flex flex-col overflow-hidden">
+        {/* Sticky Header */}
+        <DialogHeader className="px-4 py-3 bg-white border-b flex flex-row items-center justify-between shrink-0">
+          <div className="flex items-center gap-3">
+            <DialogTitle className="text-base font-bold flex items-center gap-2 text-zinc-900">
+              <FileText className="size-4 text-[#ea580c]" />
               {quotation.quotation_number}
             </DialogTitle>
             <span
-              className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full border ${
+              className={`px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider rounded-full border ${
                 statusColors[quotation.status] || "bg-zinc-100"
               }`}
             >
               {quotation.status}
             </span>
           </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadPdf}
+              className="gap-1.5 text-xs font-bold text-zinc-700 hover:text-black border-zinc-300"
+            >
+              <Printer className="size-3.5 text-[#ea580c]" /> Print / Download PDF
+            </Button>
+          </div>
         </DialogHeader>
 
-        <div className="space-y-6 my-4">
-          <div className="grid grid-cols-2 gap-4 p-4 rounded-xl bg-zinc-50 border text-xs">
-            <div>
-              <p className="text-zinc-500 font-medium">Client / Customer:</p>
-              <p className="font-bold text-sm text-zinc-800 mt-0.5">
-                {quotation.client?.institution || quotation.customer?.name || "Client"}
-              </p>
-              <p className="text-zinc-500">{quotation.client?.email || quotation.customer?.email || ""}</p>
-              <p className="text-zinc-500">{quotation.client?.phone || quotation.customer?.phone || ""}</p>
-            </div>
-            <div className="text-right space-y-1">
-              <p>
-                <span className="text-zinc-500">Quotation Date:</span>{" "}
-                <strong>{formatDate(quotation.date)}</strong>
-              </p>
-              <p>
-                <span className="text-zinc-500">Valid Until:</span>{" "}
-                <strong>{quotation.valid_until ? formatDate(quotation.valid_until) : "N/A"}</strong>
-              </p>
-              {quotation.converted_invoice && (
-                <p className="text-purple-600 font-bold flex items-center justify-end gap-1 mt-1">
-                  <CheckCircle className="size-3.5" /> Converted to Invoice:{" "}
-                  {quotation.converted_invoice.invoice_number}
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-600 mb-2">
-              Itemized Lines
-            </h4>
-            <div className="border rounded-lg overflow-hidden">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-zinc-100 text-zinc-600">
-                  <tr>
-                    <th className="p-3">Description</th>
-                    <th className="p-3 text-center">Qty</th>
-                    <th className="p-3 text-right">Unit Price</th>
-                    <th className="p-3 text-center">Disc %</th>
-                    <th className="p-3 text-right">Total</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-100">
-                  {quotation.lines?.map((line, idx) => (
-                    <tr key={idx} className="hover:bg-zinc-50/50">
-                      <td className="p-3 font-medium">{line.description}</td>
-                      <td className="p-3 text-center">{Number(line.quantity)}</td>
-                      <td className="p-3 text-right">${Number(line.unit_price).toFixed(2)}</td>
-                      <td className="p-3 text-center">{Number(line.discount_percent)}%</td>
-                      <td className="p-3 text-right font-bold">${Number(line.subtotal).toFixed(2)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="flex justify-end">
-            <div className="w-72 bg-zinc-50 p-4 rounded-xl border space-y-1.5 text-xs">
-              <div className="flex justify-between text-zinc-600">
-                <span>Subtotal:</span>
-                <span>${Number(quotation.subtotal).toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-zinc-600">
-                <span>Discount:</span>
-                <span className="text-amber-600">-${Number(quotation.discount).toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-zinc-600">
-                <span>Tax:</span>
-                <span>${Number(quotation.tax).toFixed(2)}</span>
-              </div>
-              <div className="border-t pt-2 flex justify-between font-bold text-sm text-primary">
-                <span>Grand Total:</span>
-                <span>${Number(quotation.total).toFixed(2)}</span>
-              </div>
-            </div>
-          </div>
-
-          {quotation.notes && (
-            <div className="text-xs text-zinc-600 bg-zinc-50 p-3 rounded-lg border">
-              <strong>Notes:</strong> {quotation.notes}
+        {/* iframe Body - reads real template from database via backend render endpoint */}
+        <div className="flex-1 relative overflow-hidden bg-zinc-100 min-h-0">
+          {iframeLoading && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-zinc-100 z-10">
+              <Loader2 className="size-8 text-[#ea580c] animate-spin" />
+              <span className="text-xs font-semibold text-zinc-500">Loading quotation template from database...</span>
             </div>
           )}
+          <iframe
+            key={quotation.id}
+            src={renderUrl}
+            title={`Quotation ${quotation.quotation_number}`}
+            className="w-full h-full border-0"
+            style={{ minHeight: "calc(95vh - 130px)" }}
+            onLoad={() => setIframeLoading(false)}
+            onError={() => setIframeLoading(false)}
+          />
         </div>
 
-        <DialogFooter className="gap-2 pt-4 border-t flex flex-wrap justify-between">
-          <div className="flex gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={handleDownloadPdf} className="gap-1.5">
+        {/* Sticky Footer */}
+        <DialogFooter className="px-4 py-3 bg-white border-t flex flex-wrap justify-between items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadPdf}
+              className="gap-1.5 text-xs font-bold text-white bg-[#ea580c] hover:bg-orange-700 border-none"
+            >
               <Download className="size-4" /> Download / Print PDF
             </Button>
           </div>
@@ -179,7 +135,7 @@ export default function QuotationViewModal({ open, onOpenChange, quotation, onCo
                 size="sm"
                 onClick={handleConvert}
                 disabled={converting}
-                className="btn-brand gap-1.5"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold gap-1.5"
               >
                 <ArrowRight className="size-4" />
                 {converting ? "Converting..." : "Convert to Invoice"}

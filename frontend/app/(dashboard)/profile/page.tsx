@@ -11,6 +11,7 @@ import {
 import ConfirmDialog from "@/components/Shared/ConfirmDialog";
 import { getTaskFormBranchOptions } from "@/lib/apis/sharedApi";
 import { USER_DOCUMENT_TYPES } from "@/lib/constants";
+import { useBranchTheme } from "@/components/branding/BranchThemeProvider";
 import { cn } from "@/lib/utils";
 import {
   Camera,
@@ -91,6 +92,7 @@ export default function ProfilePage() {
   const session = authClient.useSession();
   const sessionUser = session.data?.user as any;
   const { mutate } = useSWRConfig();
+  const { primaryColor, secondaryColor } = useBranchTheme();
 
   const { data: userDetailsRes } = useSWR(
     sessionUser?.id ? ["user-profile-details", sessionUser.id] : null,
@@ -397,7 +399,12 @@ export default function ProfilePage() {
       {/* ── Single Full-Width Consolidated Card ── */}
       <div className="w-full overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-xl">
         {/* Banner Gradient */}
-        <div className="relative h-36 w-full bg-gradient-to-r from-[#651210] via-primary to-secondary p-6 sm:px-8">
+        <div
+          className="relative h-36 w-full p-6 sm:px-8"
+          style={{
+            background: `linear-gradient(135deg, ${primaryColor} 0%, color-mix(in srgb, ${primaryColor} 75%, ${secondaryColor}) 55%, ${secondaryColor} 100%)`,
+          }}
+        >
           <div className="flex items-center justify-between text-white">
             <span className="flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1 text-xs font-bold backdrop-blur-md">
               <Sparkles className="size-3.5 text-amber-300" /> User Profile & Security
@@ -418,7 +425,10 @@ export default function ProfilePage() {
           <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-end">
             {/* Avatar (ROUNDED FULL - Circular Avatar) */}
             <div className="relative -mt-16 shrink-0">
-              <div className="relative flex size-32 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-primary shadow-2xl">
+              <div
+                className="relative flex size-32 items-center justify-center overflow-hidden rounded-full border-4 border-white shadow-2xl text-white"
+                style={{ backgroundColor: primaryColor }}
+              >
                 {user.image ? (
                   <img
                     src={user.image}

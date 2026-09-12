@@ -195,7 +195,7 @@ export default function MyTasksManagementPage() {
     }
   }
   return (
-    <ManagementPageShell title="My tasks" subtitle="Track and manage all tasks assigned to you." className={cn("transition-[padding] duration-200", processTarget && "lg:pr-[470px]")}>
+    <ManagementPageShell title="My tasks" subtitle="Track and manage all tasks assigned to you.">
       <div className={dashboardCardClass}>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-50 px-4 sm:px-6 py-3">
           <div className={cn("flex items-center gap-2", dashboardLabelClass)}>

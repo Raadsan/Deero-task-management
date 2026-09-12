@@ -34,7 +34,7 @@ export interface Quotation {
   converted_invoice_id?: number | null;
   created_at: string;
   updated_at: string;
-  client?: { id: string; institution: string; email?: string; phone?: string };
+  client?: { id: string; institution: string; contactPerson?: string; email?: string; phone?: string };
   customer?: { id: number; name: string; email?: string; phone?: string };
   lines?: QuotationLine[];
   converted_invoice?: {
@@ -73,6 +73,11 @@ export const quotationApi = {
 
   convertToInvoice: async (id: number): Promise<{ quotation: Quotation; invoice: any; journalEntry: any }> => {
     const res = await api.post(`/accounting/quotations/${id}/convert-to-invoice`);
+    return res.data.data;
+  },
+
+  updateStatus: async (id: number, status: string): Promise<Quotation> => {
+    const res = await api.put(`/accounting/quotations/${id}`, { status });
     return res.data.data;
   },
 };

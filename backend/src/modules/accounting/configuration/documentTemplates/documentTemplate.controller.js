@@ -1,6 +1,9 @@
+import fs from "fs";
+import path from "path";
 import { prisma } from "../../../../lib/prisma.js";
 import { logAudit } from "../../../../utils/auditHelper.js";
 import { resolvePublicTemplateUrl, saveTemplateBackground } from "../../../../lib/document-template-files.js";
+import { generateQuotationPdfFromTemplate } from "./pdfQuotationService.js";
 
 const DEFAULT_QUOTATION_HTML = `
 <!DOCTYPE html>
@@ -424,66 +427,414 @@ export const renderQuotationDocument = async (req, res) => {
       where: { id: quotationId },
       include: {
         lines: { include: { products: true, taxes: true } },
-        client: true,
+        client: { include: { portfolio: true } },
         customer: true,
       },
     });
     if (!quotation) return res.status(404).json({ success: false, message: "Quotation not found" });
 
-    // Fetch active template
-    let template = await prisma.document_templates.findFirst({
-      where: { type: "quotation", is_default: true },
-    });
-    if (!template) {
-      template = await prisma.document_templates.findFirst({ where: { type: "quotation" } });
+    // Parse rich metadata from notes first (stores contact details, items, template_id)
+    let meta = null;
+    try { meta = quotation.notes ? JSON.parse(quotation.notes) : null; } catch { meta = null; }
+
+    // Fetch quotation template (selected template ID from metadata, or default, or latest)
+    let customTemplate = null;
+    if (meta?.template_id) {
+      customTemplate = await prisma.document_templates.findUnique({
+        where: { id: Number(meta.template_id) },
+      });
     }
-    const htmlTemplate = template?.html_content || DEFAULT_QUOTATION_HTML;
-
-    // Fetch company info
-    const company = await prisma.companies.findFirst({ where: { is_active: true } });
-
-    // Generate table items rows
-    const itemsHtml = quotation.lines.map((l) => `
-      <tr>
-        <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;"><strong>${escapeHtml(l.description)}</strong></td>
-        <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:center;">${Number(l.quantity)}</td>
-        <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:right;">$${Number(l.unit_price).toFixed(2)}</td>
-        <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:right;">$${Number(l.subtotal).toFixed(2)}</td>
-      </tr>
-    `).join("");
-
-    const clientName = quotation.client?.institution || quotation.client?.companyName || quotation.customer?.name || "Client";
-    const clientAddress = quotation.client?.address || quotation.customer?.address || "";
-    const clientEmail = quotation.client?.email || quotation.customer?.email || "";
-    const clientPhone = quotation.client?.phone || quotation.customer?.phone || "";
-
-    const values = {
-      company_name: company?.name || "Deero Management",
-      company_address: company?.address || "Mogadishu, Somalia",
-      company_logo: "",
-      quotation_number: quotation.quotation_number,
-      quotation_date: new Date(quotation.date).toLocaleDateString(),
-      quotation_valid_until: quotation.valid_until ? new Date(quotation.valid_until).toLocaleDateString() : "N/A",
-      client_name: clientName,
-      client_address: clientAddress,
-      client_email: clientEmail,
-      client_phone: clientPhone,
-      subtotal: `$${Number(quotation.subtotal).toFixed(2)}`,
-      discount: `$${Number(quotation.discount).toFixed(2)}`,
-      tax: `$${Number(quotation.tax).toFixed(2)}`,
-      total: `$${Number(quotation.total).toFixed(2)}`,
-      terms: quotation.terms || "Standard business terms apply.",
-      notes: quotation.notes || "Thank you for your business!",
-    };
-
-    if (template?.file_url && template?.placeholders) {
-      return res.send(buildVisualTemplateHtml(template, req, values, itemsHtml));
+    if (!customTemplate) {
+      customTemplate = await prisma.document_templates.findFirst({
+        where: { type: "quotation", is_default: true },
+      });
+    }
+    if (!customTemplate) {
+      customTemplate = await prisma.document_templates.findFirst({
+        where: { type: "quotation" },
+        orderBy: { updated_at: "desc" },
+      });
     }
 
-    const rendered = applyReplacements(htmlTemplate, values)
-      .replace(/{{items}}/g, itemsHtml);
+    const contactPerson = meta?.contact_person || quotation.client?.contactPerson || "—";
+    const contactEmail = meta?.contact_email || quotation.client?.email || "—";
+    const contactPhone = meta?.contact_phone || quotation.client?.phone || "—";
+    const quotationTo = meta?.quotation_to || quotation.client?.institution || quotation.customer?.name || "—";
+    const quotationNo = quotation.quotation_number || "#DADVQT0000";
+    const vatRate = meta?.vat_percent !== undefined ? Number(meta.vat_percent) : 5;
+    const paymentAdvance = meta?.payment_advance || "70% of charge paid in advance.";
+    const paymentCompletion = meta?.payment_completion || "30% of charge paid after the project Completion";
+    const nbText = meta?.nb_text || meta?.nb || "NB: the advance amount should be paid when you get the invoice.";
+    const quotationDate = new Date(quotation.date || quotation.created_at).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
 
-    res.send(rendered);
+    // Build base URL for serving static assets
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+
+    // Portfolio dynamic branding
+    const branch = quotation.client?.portfolio;
+    const isRaadsan = Boolean(branch?.name?.toLowerCase().includes("raadsan") || branch?.primaryColor?.toLowerCase() === "#0166d2");
+    const primaryColor = branch?.primaryColor || (isRaadsan ? "#0166d2" : "#6e0002");
+    const secondaryColor = branch?.secondaryColor || (isRaadsan ? "#fdc210" : "#ea580c");
+    const companyTitle = branch?.name || "Deero Advertising Agency";
+    const logoUrl = branch?.logoUrl
+      ? `${baseUrl}${branch.logoUrl.startsWith("/") ? branch.logoUrl : `/${branch.logoUrl}`}`
+      : `${baseUrl}/uploads/document-templates/deero-logo.png`;
+    const footerUrl = `${baseUrl}/uploads/document-templates/deero-footer.png`;
+
+    // Items rows from saved lines or meta items
+    const displayItems = Array.isArray(meta?.items) && meta.items.length > 0
+      ? meta.items
+      : (quotation.lines || []).map((l) => ({
+          service_type: l.products?.name || "Service",
+          description: l.description || "",
+          qty: Number(l.quantity || 1),
+          rate: Number(l.unit_price || 0),
+          is_free: Number(l.unit_price || 0) === 0,
+          amount: Number(l.subtotal || 0),
+        }));
+
+    const subtotal = Number(quotation.subtotal || 0).toFixed(0);
+    const tax = Number(quotation.tax || 0).toFixed(0);
+    const grandTotal = Number(quotation.total || 0).toFixed(0);
+
+    const itemsRows = displayItems.map((item, i) => {
+      const isFree = Boolean(item.is_free || Number(item.rate || item.unit_price || 0) === 0);
+      const rateStr = isFree ? "Free" : `$${Number(item.rate || item.unit_price || 0).toFixed(0)}`;
+      const amountStr = isFree ? "Free" : `$${(Number(item.amount || item.subtotal) || Number(item.qty || item.quantity || 1) * Number(item.rate || item.unit_price || 0)).toFixed(0)}`;
+      return `<tr style="background:#ffffff;">
+        <td style="border:1.5px solid #222;padding:8px 4px;text-align:center;font-weight:700;vertical-align:top;font-size:12px;">${i + 1}.</td>
+        <td style="border:1.5px solid #222;padding:8px 10px;font-weight:700;vertical-align:top;line-height:1.4;font-size:12px;">${escapeHtml(item.service_type || "")}</td>
+        <td style="border:1.5px solid #222;padding:8px 10px;white-space:pre-wrap;word-break:break-word;line-height:1.45;font-size:11.5px;vertical-align:top;">${escapeHtml(item.description || "")}</td>
+        <td style="border:1.5px solid #222;padding:8px 4px;text-align:center;font-weight:700;vertical-align:top;font-size:12px;">${item.qty || item.quantity || 1}</td>
+        <td style="border:1.5px solid #222;padding:8px 4px;text-align:center;font-weight:700;vertical-align:top;font-size:12px;">${rateStr}</td>
+        <td style="border:1.5px solid #222;padding:8px 4px;text-align:center;font-weight:700;vertical-align:top;font-size:12px;">${amountStr}</td>
+      </tr>`;
+    }).join("");
+
+    // Only use PDF overlay if template is explicitly a custom uploaded non-standard PDF document
+    const isStandard = !customTemplate || customTemplate.name?.toLowerCase().includes("standard") || customTemplate.is_default;
+    if (!isStandard && customTemplate?.file_url && customTemplate.file_url.toLowerCase().endsWith(".pdf")) {
+      const cleanPath = customTemplate.file_url.replace(/^\//, "");
+      const filePath = path.join(process.cwd(), cleanPath);
+      if (fs.existsSync(filePath)) {
+        const pdfBytes = await generateQuotationPdfFromTemplate(filePath, {
+          contactPerson,
+          quotationNo,
+          contactEmail,
+          quotationTo,
+          contactPhone,
+          date: quotationDate,
+          validUntil: quotation.valid_until ? new Date(quotation.valid_until).toLocaleDateString("en-US") : "",
+          items: displayItems,
+          subtotal,
+          tax,
+          grandTotal,
+          vatPercent: vatRate,
+          paymentAdvance,
+          paymentCompletion,
+          nb: nbText,
+        });
+
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+          "Content-Disposition",
+          `inline; filename="Quotation-${quotation.quotation_number || quotationId}.pdf"`
+        );
+        return res.send(Buffer.from(pdfBytes));
+      }
+    }
+
+    // If template has custom HTML content, render it with placeholders replaced
+    if (customTemplate?.html_content) {
+      const values = {
+        company_name: companyTitle,
+        company_address: branch?.location || "",
+        company_phone: branch?.phone || "",
+        client_name: quotationTo,
+        client_address: quotation.client?.address || quotation.customer?.address || "",
+        client_email: contactEmail,
+        client_phone: contactPhone,
+        contact_person: contactPerson,
+        quotation_number: quotationNo,
+        quotation_date: quotationDate,
+        quotation_valid_until: quotation.valid_until ? new Date(quotation.valid_until).toLocaleDateString("en-US") : "",
+        subtotal: `$${subtotal}`,
+        tax: `$${tax}`,
+        discount: `$${Number(quotation.discount || 0).toFixed(0)}`,
+        total: `$${grandTotal}`,
+        terms: quotation.terms || "",
+        notes: nbText,
+        items: itemsRows,
+      };
+      const rendered = applyReplacements(customTemplate.html_content, values);
+      return res.setHeader("Content-Type", "text/html").send(rendered);
+    }
+
+    // If template has visual placeholder overlay
+    if (customTemplate?.placeholders && customTemplate?.file_url) {
+      const values = {
+        company_name: companyTitle,
+        company_address: branch?.location || "",
+        client_name: quotationTo,
+        client_address: quotation.client?.address || quotation.customer?.address || "",
+        client_email: contactEmail,
+        client_phone: contactPhone,
+        contact_person: contactPerson,
+        quotation_number: quotationNo,
+        quotation_date: quotationDate,
+        quotation_valid_until: quotation.valid_until ? new Date(quotation.valid_until).toLocaleDateString("en-US") : "",
+        subtotal: `$${subtotal}`,
+        tax: `$${tax}`,
+        total: `$${grandTotal}`,
+        notes: nbText,
+        terms: quotation.terms || "",
+      };
+      const rendered = buildVisualTemplateHtml(customTemplate, req, values, itemsRows);
+      return res.setHeader("Content-Type", "text/html").send(rendered);
+    }
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quotation ${escapeHtml(quotationNo)} - Deero Advertising Agency</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #111;
+      background: #f4f4f4;
+      font-size: 13px;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    .no-print { display: block; }
+
+    /* Screen wrapper */
+    .page-outer {
+      padding: 20px;
+    }
+    .print-btn-bar {
+      max-width: 820px;
+      margin: 0 auto 12px;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .page-sheet {
+      max-width: 820px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 3px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+      overflow: hidden;
+    }
+
+    /* The wrapper table makes header/footer repeat on every print page */
+    table.pw {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table.pw > thead > tr > td { padding: 20px 32px 14px 32px; }
+    table.pw > tfoot > tr > td { padding: 14px 32px 18px 32px; }
+    table.pw > tbody > tr > td { padding: 0 32px 20px 32px; }
+
+    /* Quotation badge */
+    .badge-wrap { display: inline-flex; align-items: stretch; margin-right: -32px; height: 42px; line-height: 1; }
+    .badge-pill {
+      background: ${primaryColor};
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 0 34px;
+      border-radius: 24px 0 0 24px;
+      letter-spacing: 0.5px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      border: 0;
+    }
+    .badge-sq { background: ${secondaryColor}; width: 28px; height: 42px; display: block; margin: 0; border: 0; }
+
+    /* Info table */
+    table.info-tbl { width: 100%; border-collapse: collapse; margin-bottom: 14px; border: 1px solid #ddd; }
+    table.info-tbl th { padding: 6px 10px; font-size: 11.5px; font-weight: 600; color: #fff; text-align: left; border: 1px solid #ddd; }
+    table.info-tbl td { padding: 6px 10px; font-size: 11.5px; border: 1px solid #ddd; background: #fff; }
+    .th-m { background: ${primaryColor}; }
+    .th-o { background: ${secondaryColor}; }
+
+    /* Items table */
+    table.items-tbl { width: 100%; border-collapse: collapse; border: 1px solid #ddd; margin-bottom: 0; }
+    table.items-tbl thead th { background: ${secondaryColor}; color: #fff; padding: 6px 6px; font-size: 11.5px; font-weight: 600; text-align: center; border: 1px solid #ddd; }
+    table.items-tbl tbody td { border: 1px solid #ddd; background: #fff; vertical-align: top; padding: 6px 8px; font-size: 11.5px; }
+
+    /* Totals */
+    .totals-wrap { display: flex; justify-content: flex-end; margin-top: -1px; margin-bottom: 16px; }
+    table.totals-tbl { border-collapse: collapse; width: 38%; min-width: 210px; border: 1px solid #ddd; }
+    table.totals-tbl td { padding: 5px 12px; font-size: 11.5px; font-weight: 600; border: 1px solid #ddd; background: ${primaryColor}; color: #fff; }
+
+    /* Payment table */
+    table.pay-tbl { width: 100%; border-collapse: collapse; margin-bottom: 12px; border: 1px solid #ddd; }
+    table.pay-tbl th { padding: 6px 8px; font-size: 11.5px; font-weight: 600; text-align: center; border: 1px solid #ddd; }
+    table.pay-tbl td { padding: 6px 8px; font-size: 11px; border: 1px solid #ddd; background: #fff; }
+    .pay-th-m { background: ${primaryColor}; color: #fff; }
+    .pay-th-o { background: ${secondaryColor}; color: #fff; }
+    .pay-th-sub { background: #fafafa; color: #111; font-weight: 600; font-size: 11px; }
+
+    /* NB */
+    .nb-banner { background: ${primaryColor}; color: #fff; text-align: center; padding: 7px 12px; font-size: 11.5px; font-weight: 600; }
+
+    @media print {
+      @page { size: A4 portrait; margin: 0mm; }
+      body { background: #fff !important; }
+      .page-outer { padding: 14mm 14mm 12mm 14mm !important; }
+      .print-btn-bar { display: none !important; }
+      .page-sheet { box-shadow: none !important; border-radius: 0 !important; max-width: 100% !important; }
+      /* The repeating header/footer magic */
+      thead { display: table-header-group; }
+      tfoot { display: table-footer-group; }
+      tbody { display: table-row-group; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-outer">
+  <div class="print-btn-bar no-print">
+    <button onclick="window.print()" style="background:${secondaryColor};color:#fff;border:none;padding:8px 18px;border-radius:6px;font-weight:bold;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px;">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+      Print / Download PDF
+    </button>
+  </div>
+
+  <div class="page-sheet">
+    <table class="pw">
+      <!-- ===== HEADER (repeats on every print page) ===== -->
+      <thead>
+        <tr><td>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <img src="${logoUrl}" alt="${escapeHtml(companyTitle)}" style="height:74px;width:auto;object-fit:contain;" onerror="this.style.display='none'" />
+            <div class="badge-wrap">
+              <div class="badge-pill">Quotation</div>
+              <div class="badge-sq"></div>
+            </div>
+          </div>
+        </td></tr>
+      </thead>
+
+      <!-- ===== FOOTER (repeats on every print page) ===== -->
+      <tfoot>
+        <tr><td style="text-align:center;padding-top:16px;">
+          <img src="${footerUrl}" alt="Deero Contact Footer" style="max-width:84%;height:auto;object-fit:contain;display:inline-block;margin:0 auto;" onerror="this.style.display='none'" />
+        </td></tr>
+      </tfoot>
+
+      <!-- ===== MAIN CONTENT ===== -->
+      <tbody>
+        <tr><td>
+
+          <!-- Contact & Meta -->
+          <table class="info-tbl">
+            <thead><tr>
+              <th class="th-m" style="width:50%;">Contact Person</th>
+              <th class="th-o" style="width:50%;">Quotation No</th>
+            </tr></thead>
+            <tbody><tr>
+              <td style="font-weight:600;">${escapeHtml(contactPerson)}</td>
+              <td style="font-weight:700;">${escapeHtml(quotationNo)}</td>
+            </tr></tbody>
+            <thead><tr>
+              <th class="th-m">Contact Email</th>
+              <th class="th-o">Quotation To</th>
+            </tr></thead>
+            <tbody><tr>
+              <td style="color:#555;">${escapeHtml(contactEmail)}</td>
+              <td style="font-weight:700;">${escapeHtml(quotationTo)}</td>
+            </tr></tbody>
+            <thead><tr>
+              <th class="th-m">Contact Phone</th>
+              <th class="th-o">Date</th>
+            </tr></thead>
+            <tbody><tr>
+              <td style="font-weight:600;">${escapeHtml(contactPhone)}</td>
+              <td>${escapeHtml(quotationDate)}</td>
+            </tr></tbody>
+          </table>
+
+          <!-- Services / Items -->
+          <table class="items-tbl">
+            <thead><tr>
+              <th style="width:5%;">#</th>
+              <th style="width:23%;">Service Type</th>
+              <th style="width:43%;">Item(s)</th>
+              <th style="width:8%;">Qty</th>
+              <th style="width:10%;">Rate</th>
+              <th style="width:11%;">Amount</th>
+            </tr></thead>
+            <tbody>${itemsRows}</tbody>
+          </table>
+
+          <!-- Totals -->
+          <div class="totals-wrap">
+            <table class="totals-tbl">
+              <tr>
+                <td style="width:60%;">Subtotal</td>
+                <td style="text-align:right;">$${subtotal}</td>
+              </tr>
+              <tr>
+                <td>VAT ${vatRate}%</td>
+                <td style="text-align:right;">$${tax}</td>
+              </tr>
+              <tr>
+                <td style="font-size:13px;">Grand. Total</td>
+                <td style="text-align:right;font-size:13px;">$${grandTotal}</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- Payment -->
+          <table class="pay-tbl">
+            <thead>
+              <tr>
+                <th class="pay-th-m" style="width:40%;">Payment Structure</th>
+                <th class="pay-th-o" colspan="3">Payment Method</th>
+              </tr>
+              <tr>
+                <th class="pay-th-sub" style="border:1px solid #ddd;"></th>
+                <th class="pay-th-sub" style="border:1px solid #ddd;">Premier Bank</th>
+                <th class="pay-th-sub" style="border:1px solid #ddd;">Salaam Bank</th>
+                <th class="pay-th-sub" style="border:1px solid #ddd;">IBS Bank</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td rowspan="2" style="vertical-align:top;line-height:1.7;padding:8px 12px;">
+                  <div>• ${escapeHtml(paymentAdvance)}</div>
+                  <div>• ${escapeHtml(paymentCompletion)}</div>
+                </td>
+                <td style="text-align:center;font-weight:700;">020602086001</td>
+                <td style="text-align:center;font-weight:700;">36122269</td>
+                <td style="text-align:center;font-weight:700;">59676</td>
+              </tr>
+              <tr>
+                <td colspan="2" style="text-align:center;">EVC-Plus: <strong>0618553839</strong></td>
+                <td style="text-align:center;">E-DAHAB: <strong>0628553566</strong></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- NB Banner -->
+          <div class="nb-banner">${escapeHtml(nbText)}</div>
+
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>`;
+
+    res.send(html);
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -496,69 +847,441 @@ export const renderInvoiceDocument = async (req, res) => {
     const invoice = await prisma.customer_invoices.findUnique({
       where: { id: invoiceId },
       include: {
-        customer_invoice_lines: true,
+        customer_invoice_lines: { include: { products: true, taxes: true } },
         customers: true,
-        client: true,
+        client: { include: { portfolio: true } },
         payment_terms: true,
       },
     });
     if (!invoice) return res.status(404).json({ success: false, message: "Invoice not found" });
 
-    let template = await prisma.document_templates.findFirst({
-      where: { type: "invoice", is_default: true },
-    });
+    // Parse rich metadata from notes if available
+    let meta = null;
+    try { meta = invoice.notes ? JSON.parse(invoice.notes) : null; } catch { meta = null; }
+
+    let template = null;
+    if (meta?.template_id) {
+      template = await prisma.document_templates.findUnique({ where: { id: Number(meta.template_id) } });
+    }
+    if (!template) {
+      template = await prisma.document_templates.findFirst({
+        where: { type: "invoice", is_default: true },
+      });
+    }
     if (!template) {
       template = await prisma.document_templates.findFirst({ where: { type: "invoice" } });
     }
-    const htmlTemplate = template?.html_content || DEFAULT_INVOICE_HTML;
 
-    const company = await prisma.companies.findFirst({ where: { is_active: true } });
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
 
-    const itemsHtml = invoice.customer_invoice_lines.map((l) => `
-      <tr>
-        <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;"><strong>${escapeHtml(l.description)}</strong></td>
-        <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:center;">${Number(l.quantity)}</td>
-        <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:right;">$${Number(l.unit_price).toFixed(2)}</td>
-        <td style="padding:8px 10px;border-bottom:1px solid #e2e8f0;text-align:right;">$${Number(l.subtotal).toFixed(2)}</td>
-      </tr>
-    `).join("");
+    // Portfolio dynamic branding
+    const branch = invoice.client?.portfolio;
+    const isRaadsan = Boolean(branch?.name?.toLowerCase().includes("raadsan") || branch?.primaryColor?.toLowerCase() === "#0166d2");
+    const primaryColor = branch?.primaryColor || (isRaadsan ? "#0166d2" : "#6e0002");
+    const secondaryColor = branch?.secondaryColor || (isRaadsan ? "#fdc210" : "#ea580c");
+    const companyTitle = branch?.name || "Deero Advertising Agency";
+    const logoUrl = branch?.logoUrl
+      ? `${baseUrl}${branch.logoUrl.startsWith("/") ? branch.logoUrl : `/${branch.logoUrl}`}`
+      : `${baseUrl}/uploads/document-templates/deero-logo.png`;
+    const footerUrl = `${baseUrl}/uploads/document-templates/deero-footer.png`;
 
-    const clientName = invoice.client?.institution || invoice.client?.companyName || invoice.customers?.name || "Client";
-    const clientAddress = invoice.client?.address || invoice.customers?.address || "";
-    const clientEmail = invoice.client?.email || invoice.customers?.email || "";
-    const clientPhone = invoice.client?.phone || invoice.customers?.phone || "";
+    const contactPerson = meta?.contact_person || invoice.client?.contactPerson || invoice.customers?.contact_person || invoice.customers?.name || "—";
+    const contactEmail = meta?.contact_email || invoice.client?.email || invoice.customers?.email || "—";
+    const contactPhone = meta?.contact_phone || invoice.client?.phone || invoice.customers?.phone || "—";
+    const invoiceTo = meta?.invoice_to || meta?.quotation_to || invoice.client?.institution || invoice.customers?.name || "—";
+    const invoiceNo = invoice.invoice_number || `INV-${invoice.id}`;
+    const invoiceDate = new Date(invoice.invoice_date || invoice.created_at).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+    const dueDate = invoice.due_date ? new Date(invoice.due_date).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" }) : "—";
 
-    const values = {
-      company_name: company?.name || "Deero Management",
-      company_address: company?.address || "Mogadishu, Somalia",
-      company_logo: "",
-      invoice_number: invoice.invoice_number || `INV-${invoice.id}`,
-      invoice_date: new Date(invoice.invoice_date).toLocaleDateString(),
-      invoice_due_date: invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : "N/A",
-      quotation_number: invoice.customer_reference || "N/A",
-      client_name: clientName,
-      client_address: clientAddress,
-      client_email: clientEmail,
-      client_phone: clientPhone,
-      subtotal: `$${Number(invoice.amount_untaxed).toFixed(2)}`,
-      discount: "$0.00",
-      tax: `$${Number(invoice.amount_tax).toFixed(2)}`,
-      total: `$${Number(invoice.amount_total).toFixed(2)}`,
-      amount_paid: `$${Number(invoice.paid_amount).toFixed(2)}`,
-      balance_due: `$${Number(invoice.amount_due).toFixed(2)}`,
-      payment_terms: invoice.payment_terms?.name || "Due on receipt",
-      notes: invoice.notes || "Thank you for your business!",
-    };
+    const subtotalNum = Number(invoice.amount_untaxed || 0);
+    const taxNum = Number(invoice.amount_tax || 0);
+    const grandTotalNum = Number(invoice.amount_total || 0);
 
-    if (template?.file_url && template?.placeholders) {
-      return res.send(buildVisualTemplateHtml(template, req, values, itemsHtml));
+    const subtotal = subtotalNum.toFixed(0);
+    const tax = taxNum.toFixed(0);
+    const grandTotal = grandTotalNum.toFixed(0);
+
+    const vatRate = meta?.vat_percent !== undefined
+      ? Number(meta.vat_percent)
+      : subtotalNum > 0 && taxNum > 0
+      ? Math.round((taxNum / subtotalNum) * 100)
+      : 5;
+
+    const paymentAdvance = meta?.payment_advance || "70% of charge paid in advance.";
+    const paymentCompletion = meta?.payment_completion || "30% of charge paid after the project Completion";
+    const nbText = meta?.nb_text || meta?.nb || "NB: the advance amount should be paid when you get the invoice.";
+
+    const paidNum = Number(invoice.paid_amount ?? (Number(invoice.amount_total) - Number(invoice.amount_due)));
+    const paid = paidNum.toFixed(0);
+
+    // Items rows from saved lines or meta items
+    const displayItems = Array.isArray(meta?.items) && meta.items.length > 0
+      ? meta.items
+      : (invoice.customer_invoice_lines || []).map((l) => ({
+          service_type: l.products?.name || "Service",
+          description: l.description || "",
+          qty: Number(l.quantity || 1),
+          rate: Number(l.unit_price || 0),
+          is_free: Number(l.unit_price || 0) === 0,
+          amount: Number(l.subtotal || 0),
+        }));
+
+    const itemsRows = displayItems.map((item, i) => {
+      const isFree = Boolean(item.is_free || Number(item.rate || item.unit_price || 0) === 0);
+      const rateStr = isFree ? "Free" : `$${Number(item.rate || item.unit_price || 0).toFixed(0)}`;
+      const amountStr = isFree ? "Free" : `$${(Number(item.amount || item.subtotal) || Number(item.qty || item.quantity || 1) * Number(item.rate || item.unit_price || 0)).toFixed(0)}`;
+      const descLines = escapeHtml(item.description || "")
+        .split("\n")
+        .map((l) => {
+          const isTl = l.toLowerCase().includes("timeline");
+          return `<div style="${isTl ? "color:#dc2626;font-weight:700;margin-top:6px;" : "margin-top:2px;"}">${l}</div>`;
+        })
+        .join("");
+
+      return `<tr style="background:#ffffff;">
+        <td style="border:1.5px solid #222;padding:8px 4px;text-align:center;font-weight:700;vertical-align:top;font-size:12px;">${i + 1}.</td>
+        <td style="border:1.5px solid #222;padding:8px 10px;font-weight:700;vertical-align:top;line-height:1.4;font-size:12px;">${escapeHtml(item.service_type || "")}</td>
+        <td style="border:1.5px solid #222;padding:8px 10px;line-height:1.45;font-size:11.5px;vertical-align:top;word-break:break-word;">${descLines}</td>
+        <td style="border:1.5px solid #222;padding:8px 4px;text-align:center;font-weight:700;vertical-align:top;font-size:12px;">${item.qty || item.quantity || 1}</td>
+        <td style="border:1.5px solid #222;padding:8px 4px;text-align:center;font-weight:700;vertical-align:top;font-size:12px;color:${secondaryColor};">${rateStr}</td>
+        <td style="border:1.5px solid #222;padding:8px 4px;text-align:center;font-weight:700;vertical-align:top;font-size:12px;color:${secondaryColor};">${amountStr}</td>
+      </tr>`;
+    }).join("");
+
+    // If template has visual placeholder overlay
+    if (template?.placeholders && template?.file_url) {
+      const values = {
+        company_name: companyTitle,
+        company_address: branch?.location || "",
+        client_name: invoiceTo,
+        client_address: invoice.client?.address || invoice.customers?.address || "",
+        client_email: contactEmail,
+        client_phone: contactPhone,
+        contact_person: contactPerson,
+        invoice_number: invoiceNo,
+        invoice_date: invoiceDate,
+        invoice_due_date: dueDate,
+        subtotal: `$${subtotal}`,
+        tax: `$${tax}`,
+        total: `$${grandTotal}`,
+        notes: nbText,
+      };
+      const rendered = buildVisualTemplateHtml(template, req, values, itemsRows);
+      return res.setHeader("Content-Type", "text/html").send(rendered);
     }
 
-    const rendered = applyReplacements(htmlTemplate, values)
-      .replace(/{{items}}/g, itemsHtml);
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice ${escapeHtml(invoiceNo)} - Deero Advertising Agency</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #111;
+      background: #f4f4f4;
+      font-size: 13px;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    .no-print { display: block; }
 
-    res.send(rendered);
+    /* Screen wrapper */
+    .page-outer {
+      padding: 20px;
+    }
+    .print-btn-bar {
+      max-width: 820px;
+      margin: 0 auto 12px;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .page-sheet {
+      max-width: 820px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 3px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+      overflow: hidden;
+    }
+
+    /* The wrapper table makes header/footer repeat on every print page */
+    table.pw {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table.pw > thead > tr > td { padding: 20px 32px 14px 32px; }
+    table.pw > tfoot > tr > td { padding: 14px 32px 18px 32px; }
+    table.pw > tbody > tr > td { padding: 0 32px 20px 32px; }
+
+    /* Invoice badge */
+    .badge-wrap { display: inline-flex; align-items: stretch; margin-right: -32px; height: 42px; line-height: 1; }
+    .badge-pill {
+      background: ${primaryColor};
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 0 34px;
+      border-radius: 24px 0 0 24px;
+      letter-spacing: 0.5px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      border: 0;
+    }
+    .badge-sq { background: ${secondaryColor}; width: 28px; height: 42px; display: block; margin: 0; border: 0; }
+
+    /* Info table */
+    table.info-tbl { width: 100%; border-collapse: collapse; margin-bottom: 14px; border: 1px solid #ddd; }
+    table.info-tbl th { padding: 6px 10px; font-size: 11.5px; font-weight: 600; color: #fff; text-align: left; border: 1px solid #ddd; }
+    table.info-tbl td { padding: 6px 10px; font-size: 11.5px; border: 1px solid #ddd; background: #fff; }
+    .th-m { background: ${primaryColor}; }
+    .th-o { background: ${secondaryColor}; }
+
+    /* Items table */
+    table.items-tbl { width: 100%; border-collapse: collapse; border: 1.5px solid #222; margin-bottom: 0; }
+    table.items-tbl thead th { background: ${secondaryColor}; color: #fff; padding: 6px 6px; font-size: 11.5px; font-weight: 700; text-align: center; border: 1.5px solid #222; }
+    table.items-tbl tbody td { border: 1.5px solid #222; background: #fff; vertical-align: top; padding: 6px 8px; font-size: 11.5px; }
+
+    @media print {
+      @page { size: A4 portrait; margin: 0mm; }
+      body { background: #fff !important; }
+      .page-outer { padding: 14mm 14mm 12mm 14mm !important; }
+      .print-btn-bar { display: none !important; }
+      .page-sheet { box-shadow: none !important; border-radius: 0 !important; max-width: 100% !important; }
+      thead { display: table-header-group; }
+      tfoot { display: table-footer-group; }
+      tbody { display: table-row-group; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-outer">
+  <div class="print-btn-bar no-print">
+    <button onclick="window.print()" style="background:${secondaryColor};color:#fff;border:none;padding:8px 18px;border-radius:6px;font-weight:bold;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px;">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+      Print / Download PDF
+    </button>
+  </div>
+
+  <div class="page-sheet">
+    <table class="pw">
+      <!-- ===== HEADER (repeats on every print page) ===== -->
+      <thead>
+        <tr><td>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <img src="${logoUrl}" alt="${escapeHtml(companyTitle)}" style="height:74px;width:auto;object-fit:contain;" onerror="this.style.display='none'" />
+            <div class="badge-wrap">
+              <div class="badge-pill">Invoice</div>
+              <div class="badge-sq"></div>
+            </div>
+          </div>
+        </td></tr>
+      </thead>
+
+      <!-- ===== FOOTER (repeats on every print page) ===== -->
+      <tfoot>
+        <tr><td style="text-align:center;padding-top:16px;">
+          <img src="${footerUrl}" alt="Deero Contact Footer" style="max-width:84%;height:auto;object-fit:contain;display:inline-block;margin:0 auto;" onerror="this.style.display='none'" />
+        </td></tr>
+      </tfoot>
+
+      <!-- ===== MAIN CONTENT ===== -->
+      <tbody>
+        <tr><td>
+
+          <!-- Contact & Meta -->
+          <table class="info-tbl">
+            <thead><tr>
+              <th class="th-m" style="width:50%;">Contact Person</th>
+              <th class="th-o" style="width:50%;">Invoice No</th>
+            </tr></thead>
+            <tbody><tr>
+              <td style="font-weight:600;">${escapeHtml(contactPerson)}</td>
+              <td style="font-weight:700;">${escapeHtml(invoiceNo)}</td>
+            </tr></tbody>
+            <thead><tr>
+              <th class="th-m">Contact Email</th>
+              <th class="th-o">Invoice To</th>
+            </tr></thead>
+            <tbody><tr>
+              <td style="color:#555;">${escapeHtml(contactEmail)}</td>
+              <td style="font-weight:700;">${escapeHtml(invoiceTo)}</td>
+            </tr></tbody>
+            <thead><tr>
+              <th class="th-m">Contact Phone</th>
+              <th class="th-o">Date</th>
+            </tr></thead>
+            <tbody><tr>
+              <td style="font-weight:600;">${escapeHtml(contactPhone)}</td>
+              <td>${escapeHtml(invoiceDate)}</td>
+            </tr></tbody>
+          </table>
+
+          <!-- Services / Items -->
+          <table class="items-tbl">
+            <thead><tr>
+              <th style="width:5%;">#</th>
+              <th style="width:22%;">Service Type</th>
+              <th style="width:43%;">Item(s)</th>
+              <th style="width:10%;">Qua</th>
+              <th style="width:10%;">Rate</th>
+              <th style="width:10%;">Amount</th>
+            </tr></thead>
+            <tbody>${itemsRows}</tbody>
+          </table>
+
+          <!-- Stamp & Totals -->
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;margin-bottom:14px;position:relative;">
+            <!-- Blue Stamp on Left -->
+            <div style="padding-left:16px;position:relative;z-index:10;">
+              <img src="${baseUrl}/uploads/document-templates/deero-stamp.svg" alt="Deero Official Stamp" style="width:138px;height:138px;object-fit:contain;opacity:0.95;transform:rotate(-12deg);margin-top:-8px;" onerror="this.style.display='none'" />
+            </div>
+
+            <!-- Totals Table on Right matching Screenshot -->
+            <table style="border-collapse:collapse;width:40%;min-width:240px;border:1.5px solid #222;">
+              <tr>
+                <td style="background:#fff;color:#111;padding:6px 12px;font-size:12px;font-weight:700;border:1.5px solid #222;width:55%;">Subtotal</td>
+                <td style="background:#fff;color:#111;padding:6px 12px;font-size:12px;font-weight:700;text-align:right;border:1.5px solid #222;">$${subtotal}</td>
+              </tr>
+              ${
+                taxNum > 0
+                  ? `<tr>
+                      <td style="background:#fff;color:#111;padding:5px 12px;font-size:11.5px;font-weight:600;border:1.5px solid #222;">VAT ${vatRate}%</td>
+                      <td style="background:#fff;color:#111;padding:5px 12px;font-size:11.5px;font-weight:600;text-align:right;border:1.5px solid #222;">$${tax}</td>
+                    </tr>`
+                  : ""
+              }
+              <tr>
+                <td style="background:${primaryColor};color:#fff;padding:6px 12px;font-size:12px;font-weight:800;border:1.5px solid #222;letter-spacing:0.5px;">PAID</td>
+                <td style="background:${primaryColor};color:#fff;padding:6px 12px;font-size:12px;font-weight:800;text-align:right;border:1.5px solid #222;">$${paid}</td>
+              </tr>
+              <tr>
+                <td style="background:${secondaryColor};color:#fff;padding:6px 12px;font-size:12.5px;font-weight:800;border:1.5px solid #222;letter-spacing:0.5px;">Total Amount</td>
+                <td style="background:${secondaryColor};color:#fff;padding:6px 12px;font-size:12.5px;font-weight:800;text-align:right;border:1.5px solid #222;">$${grandTotal}</td>
+              </tr>
+            </table>
+          <!-- Payment -->
+          <table class="pay-tbl">
+            <thead>
+              <tr>
+                <th class="pay-th-m" style="width:40%;">Payment Structure</th>
+                <th class="pay-th-o" colspan="3">Payment Method</th>
+              </tr>
+              <tr>
+                <th class="pay-th-sub" style="border:1px solid #ddd;"></th>
+                <th class="pay-th-sub" style="border:1px solid #ddd;">Premier Bank</th>
+                <th class="pay-th-sub" style="border:1px solid #ddd;">Salaam Bank</th>
+                <th class="pay-th-sub" style="border:1px solid #ddd;">IBS Bank</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td rowspan="2" style="vertical-align:top;line-height:1.7;padding:8px 12px;">
+                  <div>• ${escapeHtml(paymentAdvance)}</div>
+                  <div>• ${escapeHtml(paymentCompletion)}</div>
+                </td>
+                <td style="text-align:center;font-weight:700;">020602086001</td>
+                <td style="text-align:center;font-weight:700;">36122269</td>
+                <td style="text-align:center;font-weight:700;">59676</td>
+              </tr>
+              <tr>
+                <td colspan="2" style="text-align:center;">EVC-Plus: <strong>0618553839</strong></td>
+                <td style="text-align:center;">E-DAHAB: <strong>0628553566</strong></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- NB Banner -->
+          <div class="nb-banner">${escapeHtml(nbText)}</div>
+
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>`;
+
+    res.send(html);
   } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Live PDF preview on user's real template paper
+export const previewQuotationPdf = async (req, res) => {
+  try {
+    const {
+      templateId,
+      contactPerson,
+      quotationNo,
+      contactEmail,
+      quotationTo,
+      contactPhone,
+      date,
+      validUntil,
+      items,
+      subtotal,
+      tax,
+      grandTotal,
+      vatPercent,
+      paymentAdvance,
+      paymentCompletion,
+      nb,
+    } = req.body;
+
+    let template = null;
+    if (templateId) {
+      template = await prisma.document_templates.findUnique({ where: { id: Number(templateId) } });
+    }
+    if (!template) {
+      template = await prisma.document_templates.findFirst({
+        where: { type: "quotation", is_default: true },
+      });
+    }
+    if (!template) {
+      template = await prisma.document_templates.findFirst({
+        where: { type: "quotation" },
+        orderBy: { updated_at: "desc" },
+      });
+    }
+
+    if (!template?.file_url || !template.file_url.toLowerCase().endsWith(".pdf")) {
+      return res.status(400).json({ success: false, message: "Template is not an uploaded PDF document" });
+    }
+
+    const cleanPath = template.file_url.replace(/^\//, "");
+    const filePath = path.join(process.cwd(), cleanPath);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ success: false, message: "Template PDF file not found on disk" });
+    }
+
+    const pdfBytes = await generateQuotationPdfFromTemplate(filePath, {
+      contactPerson,
+      quotationNo,
+      contactEmail,
+      quotationTo,
+      contactPhone,
+      date,
+      validUntil,
+      items,
+      subtotal,
+      tax,
+      grandTotal,
+      vatPercent,
+      paymentAdvance,
+      paymentCompletion,
+      nb,
+    });
+
+    res.setHeader("Content-Type", "application/pdf");
+    return res.send(Buffer.from(pdfBytes));
+  } catch (error) {
+    console.error("Failed to generate preview PDF:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

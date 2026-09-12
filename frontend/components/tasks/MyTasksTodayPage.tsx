@@ -233,10 +233,6 @@ export default function MyTasksTodayPage() {
     <ManagementPageShell
       title="Today tasks"
       subtitle="Track and manage all tasks scheduled for today."
-      className={cn(
-        "transition-[padding] duration-200",
-        processTarget && "lg:pr-[470px]",
-      )}
     >
       <div className={dashboardCardClass}>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-50 px-4 sm:px-6 py-3">

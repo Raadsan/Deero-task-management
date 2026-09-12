@@ -4,7 +4,7 @@ import { accountingToast } from '@/lib/accounting-ui';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
-import { CreditCard, Eye, FileText, Plus, Printer, RefreshCw, Save, Send, StickyNote, Trash2, SquarePen, X } from 'lucide-react';
+import { CreditCard, Eye, FileText, Plus, Printer, RefreshCw, Save, Send, StickyNote, Trash2, SquarePen, X, Check } from 'lucide-react';
 import { customerInvoiceApi, type CustomerInvoice, type CustomerInvoiceLine } from '@/lib/api/accounting/receivables/customerInvoiceApi';
 import { accountingCustomerApi } from '@/lib/api/accounting/receivables/customerApi';
 import { accountingProductApi } from '@/lib/api/accounting/catalog/productApi';
@@ -13,29 +13,92 @@ import { currencyApi } from '@/lib/api/accounting/configuration/currencyApi';
 import { paymentTermApi } from '@/lib/api/accounting/configuration/paymentTermApi';
 import { accountingPaymentMethodApi } from '@/lib/api/accounting/configuration/paymentMethodApi';
 import { customerReceiptApi } from '@/lib/api/accounting/receivables/customerReceiptApi';
+import { getAllServices, type ServiceRecord, type SubServiceRecord } from '@/lib/apis/serviceApi';
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import DashboardDataTable, { type DashboardTableColumn } from '@/components/Shared/DashboardDataTable';
 import AccountingConfirmDialog from './AccountingConfirmDialog';
 import AccountingPageShell from '@/components/accounting/AccountingPageShell';
+import InvoiceViewModal from './InvoiceViewModal';
+import A4InvoiceSheet, { type InvoiceLineItem } from './A4InvoiceSheet';
+import { useBranchTheme } from '@/components/branding/BranchThemeProvider';
+import { resolveBranchLogoUrl } from '@/lib/portfolio-branding';
 import { actionBtnDelete, actionBtnEdit, actionBtnView, btnCreatePage, dashboardSelectClass } from '@/lib/dashboard-ui';
 
 type Row = { id: number; [key: string]: unknown };
-type Line = Omit<CustomerInvoiceLine, 'id' | 'products' | 'subtotal'>;
+type Line = {
+  product_id: number | null;
+  service_type: string;
+  selected_subservice_ids: string[];
+  description: string;
+  quantity: number;
+  unit_price: number;
+  discount_percent: number;
+  tax_id: number | null;
+  is_free?: boolean;
+};
 type Form = {
-  customer_id: string; invoice_date: string; due_date: string; payment_term_id: string; notes: string; lines: Line[];
-  receive_payment_now: boolean; payment_method_id: string; amount_received: string; payment_reference: string;
+  customer_id: string;
+  contact_person: string;
+  contact_email: string;
+  contact_phone: string;
+  invoice_to: string;
+  invoice_date: string;
+  due_date: string;
+  payment_term_id: string;
+  payment_advance: string;
+  payment_completion: string;
+  nb: string;
+  notes: string;
+  lines: Line[];
+  receive_payment_now: boolean;
+  payment_method_id: string;
+  amount_received: string;
+  payment_reference: string;
 };
 const today = () => new Date().toISOString().slice(0, 10);
-const emptyLine = (): Line => ({ product_id: null, description: '', quantity: 1, unit_price: 0, discount_percent: 0, tax_id: null });
-const emptyForm = (): Form => ({ customer_id: '', invoice_date: today(), due_date: today(), payment_term_id: '', notes: '', lines: [emptyLine()], receive_payment_now: false, payment_method_id: '', amount_received: '', payment_reference: '' });
+const emptyLine = (): Line => ({
+  product_id: null,
+  service_type: 'Graphic design & Branding',
+  selected_subservice_ids: [],
+  description: '',
+  quantity: 1,
+  unit_price: 0,
+  discount_percent: 0,
+  tax_id: null,
+  is_free: false,
+});
+const emptyForm = (): Form => ({
+  customer_id: '',
+  contact_person: '',
+  contact_email: '',
+  contact_phone: '',
+  invoice_to: '',
+  invoice_date: today(),
+  due_date: today(),
+  payment_term_id: '',
+  payment_advance: '70% of charge paid in advance.',
+  payment_completion: '30% of charge paid after the project Completion',
+  nb: 'NB: the advance amount should be paid when you get the invoice.',
+  notes: '',
+  lines: [emptyLine()],
+  receive_payment_now: false,
+  payment_method_id: '',
+  amount_received: '',
+  payment_reference: '',
+});
 const apiDate = (value: string) => new Date(`${value}T00:00:00.000Z`).toISOString();
 const dateValue = (value: unknown) => value ? new Date(String(value)).toISOString().slice(0, 10) : '';
 const money = (value: unknown, code = '') => `${code ? `${code} ` : ''}${Number(value || 0).toFixed(2)}`;
 const errorMessage = (error: unknown) => axios.isAxiosError(error) ? error.response?.data?.message || error.message : error instanceof Error ? error.message : 'Something went wrong';
 
 export default function CustomerInvoicesPage() {
-  
+  const { primaryColor, secondaryColor, name: branchName, logoUrl: branchLogoUrl } = useBranchTheme();
+  const isRaadsan = Boolean(branchName?.toLowerCase().includes("raadsan") || primaryColor?.toLowerCase() === "#0166d2");
+  const brandPrimary = isRaadsan ? (primaryColor || "#0166d2") : (primaryColor || "#6e0002");
+  const brandSecondary = isRaadsan ? (secondaryColor || "#fdc210") : (secondaryColor || "#ea580c");
+  const brandLogo = resolveBranchLogoUrl(branchLogoUrl) || (isRaadsan ? "/logo-02.png" : "/deero-logo.png");
+
   const [invoices, setInvoices] = useState<CustomerInvoice[]>([]);
   const [customers, setCustomers] = useState<Row[]>([]);
   const [products, setProducts] = useState<Row[]>([]);
@@ -43,9 +106,13 @@ export default function CustomerInvoicesPage() {
   const [currencies, setCurrencies] = useState<Row[]>([]);
   const [terms, setTerms] = useState<Row[]>([]);
   const [paymentMethods, setPaymentMethods] = useState<Row[]>([]);
+  const [availableServices, setAvailableServices] = useState<ServiceRecord[]>([]);
   const [form, setForm] = useState<Form>(emptyForm);
   const [selected, setSelected] = useState<CustomerInvoice | null>(null);
   const [open, setOpen] = useState(false);
+  const [dialogTab, setDialogTab] = useState<'form' | 'preview'>('form');
+  const [viewInvoice, setViewInvoice] = useState<CustomerInvoice | null>(null);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [pendingAction, setPendingAction] = useState<{ type: 'post' | 'delete'; invoice: CustomerInvoice } | null>(null);
@@ -56,21 +123,22 @@ export default function CustomerInvoicesPage() {
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [viewOnly, setViewOnly] = useState(false);
-  const [printInvoice, setPrintInvoice] = useState<CustomerInvoice | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      // Product loading also backfills menu-item VAT mappings. Finish it before
-      // reading taxes so a newly discovered VAT rate is present in the dropdown.
       const productRows = await accountingProductApi.getAll();
-      const [invoiceRows, customerRows, taxRows, currencyRows, termRows, methodRows] = await Promise.all([
+      const [invoiceRows, customerRows, taxRows, currencyRows, termRows, methodRows, serviceRes] = await Promise.all([
         customerInvoiceApi.getAll(), accountingCustomerApi.getAll(), accountingTaxApi.getAll(),
         currencyApi.getAll(), paymentTermApi.getAll(), accountingPaymentMethodApi.getAll(),
+        getAllServices().catch(() => ({ success: false, data: [] as ServiceRecord[] })),
       ]);
       setInvoices(invoiceRows); setCustomers(customerRows); setProducts(productRows); setTaxes(taxRows); setCurrencies(currencyRows);
       setTerms(termRows);
       setPaymentMethods(methodRows);
+      if (serviceRes && (serviceRes as any).success && Array.isArray((serviceRes as any).data)) {
+        setAvailableServices((serviceRes as any).data);
+      }
     } catch (error) { accountingToast(errorMessage(error), 'error'); } finally { setLoading(false); }
   }, []);
   useEffect(() => { const timer = window.setTimeout(() => void load(), 0); return () => window.clearTimeout(timer); }, [load]);
@@ -100,49 +168,184 @@ export default function CustomerInvoicesPage() {
   function createInvoice() {
     setSelected(null);
     setViewOnly(false);
+    setDialogTab('form');
     const next = emptyForm();
     const immediate = terms.find((item) => /immediate/i.test(String(item.name)));
     if (immediate) next.payment_term_id = String(immediate.id);
     setForm(next); setOpen(true);
   }
+
   function editInvoice(invoice: CustomerInvoice) {
     setSelected(invoice);
     setViewOnly(invoice.state !== 'draft');
+    setDialogTab('form');
+
+    let meta: any = null;
+    try {
+      meta = invoice.notes ? JSON.parse(String(invoice.notes)) : null;
+    } catch {
+      meta = null;
+    }
+
+    const cust = customers.find((c) => c.id === Number(invoice.customer_id));
+    const invoiceLines = invoice.customer_invoice_lines || [];
+
+    const hydratedLines: Line[] = invoiceLines.map((line, idx) => {
+      const metaItem = Array.isArray(meta?.items) ? meta.items[idx] : null;
+      return {
+        product_id: line.product_id || null,
+        service_type: metaItem?.service_type || line.products?.name || 'Graphic design & Branding',
+        selected_subservice_ids: Array.isArray(metaItem?.selected_subservice_ids) ? metaItem.selected_subservice_ids : [],
+        description: metaItem?.description || line.description || '',
+        quantity: Number(line.quantity || 1),
+        unit_price: Number(line.unit_price || 0),
+        discount_percent: Number(line.discount_percent || 0),
+        tax_id: line.tax_id || null,
+        is_free: metaItem?.is_free ?? (Number(line.unit_price || 0) === 0),
+      };
+    });
+
+    if (hydratedLines.length === 0) {
+      hydratedLines.push(emptyLine());
+    }
+
     setForm({
-      customer_id: String(invoice.customer_id), invoice_date: dateValue(invoice.invoice_date), due_date: dateValue(invoice.due_date),
-      payment_term_id: String(invoice.payment_term_id || ''), notes: String(invoice.notes || ''),
-      lines: (invoice.customer_invoice_lines || []).map((line) => ({ product_id: line.product_id || null, description: line.description, quantity: Number(line.quantity), unit_price: Number(line.unit_price), discount_percent: Number(line.discount_percent), tax_id: line.tax_id || null })),
-      receive_payment_now: false, payment_method_id: '', amount_received: '', payment_reference: '',
+      customer_id: String(invoice.customer_id),
+      contact_person: meta?.contact_person || String((cust as any)?.contact_person || cust?.name || ''),
+      contact_email: meta?.contact_email || String((cust as any)?.email || ''),
+      contact_phone: meta?.contact_phone || String((cust as any)?.phone || ''),
+      invoice_to: meta?.invoice_to || meta?.quotation_to || String(cust?.name || ''),
+      invoice_date: dateValue(invoice.invoice_date),
+      due_date: dateValue(invoice.due_date),
+      payment_term_id: String(invoice.payment_term_id || ''),
+      payment_advance: meta?.payment_advance || '70% of charge paid in advance.',
+      payment_completion: meta?.payment_completion || '30% of charge paid after the project Completion',
+      nb: meta?.nb || meta?.nb_text || 'NB: the advance amount should be paid when you get the invoice.',
+      notes: meta?.notes_text || (typeof invoice.notes === 'string' && !meta ? invoice.notes : ''),
+      lines: hydratedLines,
+      receive_payment_now: false,
+      payment_method_id: '',
+      amount_received: '',
+      payment_reference: '',
     });
     setOpen(true);
   }
+
   function selectCustomer(value: string) {
     const nextCustomer = customers.find((item) => item.id === Number(value));
     const termId = nextCustomer?.payment_term_id || terms.find((item) => /immediate/i.test(String(item.name)))?.id || '';
-    const due = new Date(`${form.invoice_date}T00:00:00.000Z`); due.setUTCDate(due.getUTCDate() + paymentDays(String(termId)));
-    setForm((current) => ({ ...current, customer_id: value, payment_term_id: String(termId), due_date: due.toISOString().slice(0, 10) }));
+    const due = new Date(`${form.invoice_date}T00:00:00.000Z`);
+    due.setUTCDate(due.getUTCDate() + paymentDays(String(termId)));
+
+    const cName = String(nextCustomer?.name || '');
+    const cPerson = String((nextCustomer as any)?.contact_person || cName);
+    const cEmail = String((nextCustomer as any)?.email || '');
+    const cPhone = String((nextCustomer as any)?.phone || '');
+
+    setForm((current) => ({
+      ...current,
+      customer_id: value,
+      invoice_to: cName,
+      contact_person: cPerson,
+      contact_email: cEmail,
+      contact_phone: cPhone,
+      payment_term_id: String(termId),
+      due_date: due.toISOString().slice(0, 10),
+    }));
   }
+
   function paymentDays(termId: string) {
     const name = String(terms.find((item) => item.id === Number(termId))?.name || '');
     if (/immediate/i.test(name)) return 0;
     return Number(name.match(/\d+/)?.[0] || 0);
   }
+
   function setPaymentTerm(value: string) {
     const due = new Date(`${form.invoice_date}T00:00:00.000Z`);
     due.setUTCDate(due.getUTCDate() + paymentDays(value));
     setForm({ ...form, payment_term_id: value, due_date: due.toISOString().slice(0, 10) });
   }
+
   function setInvoiceDate(value: string) {
-    const due = new Date(`${value}T00:00:00.000Z`); due.setUTCDate(due.getUTCDate() + paymentDays(form.payment_term_id));
+    const due = new Date(`${value}T00:00:00.000Z`);
+    due.setUTCDate(due.getUTCDate() + paymentDays(form.payment_term_id));
     setForm({ ...form, invoice_date: value, due_date: due.toISOString().slice(0, 10) });
   }
+
   function updateLine(index: number, patch: Partial<Line>) {
-    setForm((current) => ({ ...current, lines: current.lines.map((line, lineIndex) => lineIndex === index ? { ...line, ...patch } : line) }));
+    setForm((current) => ({
+      ...current,
+      lines: current.lines.map((line, lineIndex) => lineIndex === index ? { ...line, ...patch } : line),
+    }));
   }
-  function chooseProduct(index: number, value: string) {
-    const product = products.find((item) => item.id === Number(value));
-    updateLine(index, product ? { product_id: product.id, description: String(product.name), unit_price: Number(product.list_price || 0), tax_id: Number(product.sale_tax_id) || null } : { product_id: null });
+
+  function handleServiceSelect(index: number, serviceName: string) {
+    const nextLines = [...form.lines];
+    const targetLine = { ...nextLines[index], service_type: serviceName };
+    const matched = availableServices.find((s) => s.serviceName.toLowerCase() === serviceName.toLowerCase());
+
+    if (matched && Array.isArray(matched.subService) && matched.subService.length > 0) {
+      const firstSub = matched.subService[0];
+      targetLine.selected_subservice_ids = [firstSub.id];
+      targetLine.description = `• ${firstSub.name}${firstSub.description ? `\n  (${firstSub.description})` : ''}`;
+      if (firstSub.price && !targetLine.is_free && Number(targetLine.unit_price) === 0) {
+        targetLine.unit_price = Number(firstSub.price);
+      }
+    } else {
+      targetLine.selected_subservice_ids = [];
+      if (!targetLine.description) {
+        targetLine.description = `• ${serviceName}`;
+      }
+    }
+    nextLines[index] = targetLine;
+    setForm((current) => ({ ...current, lines: nextLines }));
   }
+
+  function handleToggleSubService(index: number, sub: SubServiceRecord) {
+    const nextLines = [...form.lines];
+    const targetLine = { ...nextLines[index] };
+    const exists = targetLine.selected_subservice_ids.includes(sub.id);
+    const newSelected = exists
+      ? targetLine.selected_subservice_ids.filter((id) => id !== sub.id)
+      : [...targetLine.selected_subservice_ids, sub.id];
+
+    targetLine.selected_subservice_ids = newSelected;
+
+    const matched = availableServices.find((s) => s.serviceName.toLowerCase() === targetLine.service_type.toLowerCase());
+    if (matched && Array.isArray(matched.subService)) {
+      const selectedSubs = matched.subService.filter((s) => newSelected.includes(s.id));
+      if (selectedSubs.length > 0) {
+        const oldLines = targetLine.description.split('\n');
+        const timelineLine = oldLines.find((l) => l.toLowerCase().includes('timeline'));
+
+        const subLines = selectedSubs.map((s) => {
+          return `• ${s.name}${s.description ? `\n  (${s.description})` : ''}`;
+        }).join('\n');
+
+        targetLine.description = timelineLine ? `${subLines}\n\n${timelineLine}` : subLines;
+
+        if (selectedSubs.length === 1 && selectedSubs[0].price && !targetLine.is_free && Number(targetLine.unit_price) === 0) {
+          targetLine.unit_price = Number(selectedSubs[0].price);
+        }
+      }
+    }
+
+    nextLines[index] = targetLine;
+    setForm((current) => ({ ...current, lines: nextLines }));
+  }
+
+  function handleToggleFree(index: number) {
+    const nextLines = [...form.lines];
+    const item = { ...nextLines[index] };
+    const nowFree = !item.is_free;
+    item.is_free = nowFree;
+    if (nowFree) {
+      item.unit_price = 0;
+    }
+    nextLines[index] = item;
+    setForm((current) => ({ ...current, lines: nextLines }));
+  }
+
   async function save(postAfterSave = false) {
     const amountReceived = Number(form.amount_received || 0);
     if (postAfterSave && form.receive_payment_now) {
@@ -155,9 +358,44 @@ export default function CustomerInvoicesPage() {
       } catch (error) { return accountingToast(errorMessage(error), 'error'); }
     }
     setSaving(true);
+
+    const richNotesMeta = {
+      notes_text: form.notes,
+      contact_person: form.contact_person,
+      contact_email: form.contact_email,
+      contact_phone: form.contact_phone,
+      invoice_to: form.invoice_to,
+      payment_advance: form.payment_advance,
+      payment_completion: form.payment_completion,
+      nb: form.nb,
+      vat_percent: previewVatRate,
+      items: form.lines.map((l) => ({
+        service_type: l.service_type,
+        selected_subservice_ids: l.selected_subservice_ids,
+        description: l.description,
+        qty: Number(l.quantity || 1),
+        quantity: Number(l.quantity || 1),
+        rate: Number(l.unit_price || 0),
+        unit_price: Number(l.unit_price || 0),
+        is_free: Boolean(l.is_free),
+        amount: Number(l.quantity || 1) * Number(l.unit_price || 0) * (1 - Number(l.discount_percent || 0) / 100),
+      })),
+    };
+
     const payload = {
-      notes: form.notes, lines: form.lines.map((line) => ({ ...line, description: line.description || String(products.find((product) => product.id === Number(line.product_id))?.name || 'Custom line') })), customer_id: Number(form.customer_id),
-      invoice_date: apiDate(form.invoice_date), due_date: form.due_date ? apiDate(form.due_date) : null, payment_term_id: form.payment_term_id ? Number(form.payment_term_id) : null,
+      notes: JSON.stringify(richNotesMeta),
+      lines: form.lines.map((line) => ({
+        product_id: line.product_id,
+        description: line.description || line.service_type || 'Custom line',
+        quantity: Number(line.quantity || 1),
+        unit_price: Number(line.unit_price || 0),
+        discount_percent: Number(line.discount_percent || 0),
+        tax_id: line.tax_id || null,
+      })),
+      customer_id: Number(form.customer_id),
+      invoice_date: apiDate(form.invoice_date),
+      due_date: form.due_date ? apiDate(form.due_date) : null,
+      payment_term_id: form.payment_term_id ? Number(form.payment_term_id) : null,
     };
     try {
       const saved = selected ? await customerInvoiceApi.update(selected.id, payload) : await customerInvoiceApi.create(payload);
@@ -190,55 +428,861 @@ export default function CustomerInvoicesPage() {
     catch (error) { accountingToast(errorMessage(error), 'error'); }
     finally { setSaving(false); }
   }
-  function print(invoice: CustomerInvoice) {
-    setPrintInvoice(invoice);
-    window.setTimeout(() => window.print(), 100);
+
+  // Accept & Post with optional Customer Receipt
+  const [acceptInvoice, setAcceptInvoice] = useState<CustomerInvoice | null>(null);
+  const [createReceiptOnPost, setCreateReceiptOnPost] = useState(true);
+  const [receiptPaymentMethodId, setReceiptPaymentMethodId] = useState<string>('');
+
+  const openAcceptInvoice = (invoice: CustomerInvoice) => {
+    setAcceptInvoice(invoice);
+    setCreateReceiptOnPost(true);
+    const validMethod = paymentMethods.find((m) => m.is_active !== false && m.gl_account_id && ['inbound', 'both'].includes(String(m.payment_type)));
+    if (validMethod) setReceiptPaymentMethodId(String(validMethod.id));
+  };
+
+  async function handleConfirmPost() {
+    if (!acceptInvoice) return;
+    if (createReceiptOnPost && !receiptPaymentMethodId) {
+      return accountingToast('Select a payment method for the customer receipt.', 'error');
+    }
+    setSaving(true);
+    try {
+      const posted = await customerInvoiceApi.post(acceptInvoice.id);
+      if (createReceiptOnPost && receiptPaymentMethodId) {
+        const receipt = await customerReceiptApi.create({
+          customer_id: posted.customer_id,
+          payment_method_id: Number(receiptPaymentMethodId),
+          receipt_date: apiDate(today()),
+          amount: Number(posted.amount_total),
+          reference: `Receipt for ${posted.invoice_number}`,
+          memo: `Payment for invoice ${posted.invoice_number}`,
+          allocations: [{ invoice_id: posted.id, allocated_amount: Number(posted.amount_total) }],
+        });
+        await customerReceiptApi.post(receipt.id);
+        accountingToast(`Invoice posted & Customer Receipt created successfully!`);
+      } else {
+        accountingToast('Invoice and journal entry posted successfully');
+      }
+      setAcceptInvoice(null);
+      await load();
+    } catch (error) {
+      accountingToast(errorMessage(error), 'error');
+    } finally {
+      setSaving(false);
+    }
   }
+
+
   const columns: DashboardTableColumn<CustomerInvoice>[] = [
     { key: 'number', header: 'Invoice', cell: (row) => <span className="font-bold text-primary">{row.invoice_number}</span> },
     { key: 'customer', header: 'Customer', cell: (row) => row.customers?.name || `#${row.customer_id}` },
     { key: 'date', header: 'Invoice Date', cell: (row) => dateValue(row.invoice_date) },
     { key: 'due', header: 'Due Date', cell: (row) => dateValue(row.due_date) },
     { key: 'currency', header: 'Currency', cell: (row) => row.currencies?.code || '—' },
-    { key: 'status', header: 'Status', align: 'center', cell: (row) => <Status invoice={row} /> },
+    {
+      key: 'status',
+      header: 'Status',
+      align: 'center',
+      cell: (row) => (
+        <button
+          type="button"
+          disabled={row.state !== 'draft' || saving}
+          onClick={() => row.state === 'draft' && openAcceptInvoice(row)}
+          className={row.state === 'draft' ? "cursor-pointer hover:opacity-80 transition-opacity" : "cursor-default"}
+          title={row.state === 'draft' ? "Click to Accept / Post Invoice & Create Receipt" : undefined}
+        >
+          <Status invoice={row} />
+        </button>
+      ),
+    },
     { key: 'subtotal', header: 'Subtotal', align: 'right', cell: (row) => money(row.amount_untaxed) },
     { key: 'tax', header: 'Tax', align: 'right', cell: (row) => money(row.amount_tax) },
     { key: 'total', header: 'Total', align: 'right', cell: (row) => <span className="font-semibold">{money(row.amount_total)}</span> },
     { key: 'paid', header: 'Paid', align: 'right', cell: (row) => money(row.paid_amount ?? Number(row.amount_total) - Number(row.amount_due)) },
     { key: 'outstanding', header: 'Outstanding', align: 'right', cell: (row) => money(row.amount_due) },
-    { key: 'actions', header: 'Actions', align: 'right', cell: (row) => <div className="flex justify-end gap-1">{row.state === 'draft' ? <><button title="Edit" onClick={() => editInvoice(row)} className={actionBtnEdit}><SquarePen className="size-4" /></button><button title="Post" onClick={() => setPendingAction({ type: 'post', invoice: row })} className={actionBtnView}><Send className="size-4" /></button><button title="Delete" onClick={() => setPendingAction({ type: 'delete', invoice: row })} className={actionBtnDelete}><Trash2 className="size-4" /></button></> : <><button title="View" onClick={() => editInvoice(row)} className={actionBtnView}><Eye className="size-4" /></button><button title="Print" onClick={() => print(row)} className={actionBtnView}><Printer className="size-4" /></button></>}</div> },
+    {
+      key: 'actions',
+      header: 'Actions',
+      align: 'right',
+      cell: (row) => (
+        <div className="flex justify-end gap-1">
+          <button
+            title="View Invoice (Standard Template)"
+            onClick={() => {
+              setViewInvoice(row);
+              setViewModalOpen(true);
+            }}
+            className={actionBtnView}
+          >
+            <Eye className="size-4" />
+          </button>
+          {row.state === 'draft' && (
+            <>
+              <button title="Edit" onClick={() => editInvoice(row)} className={actionBtnEdit}>
+                <SquarePen className="size-4" />
+              </button>
+              <button title="Accept & Post (with Receipt)" onClick={() => openAcceptInvoice(row)} className={actionBtnView}>
+                <Send className="size-4" />
+              </button>
+              <button title="Delete" onClick={() => setPendingAction({ type: 'delete', invoice: row })} className={actionBtnDelete}>
+                <Trash2 className="size-4" />
+              </button>
+            </>
+          )}
+          <button
+            title="Print / View Invoice"
+            onClick={() => {
+              setViewInvoice(row);
+              setViewModalOpen(true);
+            }}
+            className={actionBtnView}
+          >
+            <Printer className="size-4" />
+          </button>
+        </div>
+      ),
+    },
   ];
+
+  // Live preview helpers for A4InvoiceSheet
+  const selectedCustomer = customers.find((c) => c.id === Number(form.customer_id));
+  const previewContactPerson = form.contact_person || (selectedCustomer ? String((selectedCustomer as any).contact_person || selectedCustomer.name || '—') : '—');
+  const previewInvoiceTo = form.invoice_to || (selectedCustomer ? String(selectedCustomer.name || 'Customer') : 'Customer');
+  const previewContactEmail = form.contact_email || (selectedCustomer ? String((selectedCustomer as any).email || '—') : '—');
+  const previewContactPhone = form.contact_phone || (selectedCustomer ? String((selectedCustomer as any).phone || '—') : '—');
+  const previewInvoiceNo = selected?.invoice_number || '#DADV-INV-DRAFT';
+  const previewDateStr = new Date(form.invoice_date || today()).toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+  const previewDueDateStr = form.due_date
+    ? new Date(form.due_date).toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : undefined;
+  const previewLines: InvoiceLineItem[] = form.lines.map((l, idx) => ({
+    id: idx + 1,
+    service_type: l.service_type || 'Service',
+    description: l.description || '',
+    quantity: Number(l.quantity || 1),
+    rate: Number(l.unit_price || 0),
+    is_free: Boolean(l.is_free || Number(l.unit_price || 0) === 0),
+    amount: Number(l.quantity || 1) * Number(l.unit_price || 0) * (1 - Number(l.discount_percent || 0) / 100),
+    selected_subservice_ids: l.selected_subservice_ids,
+  }));
+  const previewVatRate = totals.untaxed > 0 && totals.tax > 0 ? Math.round((totals.tax / totals.untaxed) * 100) : 5;
 
   return (
     <AccountingPageShell section="Receivables" title="Customer Invoices" description="Prepare and manage customer sales invoices.">
     <DashboardDataTable rows={filtered} columns={columns} loading={loading} searchValue={query} onSearchChange={setQuery} searchPlaceholder="Search invoices..." emptyText="No customer invoices found" minWidth="1350px" action={<button onClick={createInvoice} className={btnCreatePage}><Plus className="size-4" /> New invoice</button>} filters={<><select value={customerFilter} onChange={(event) => setCustomerFilter(event.target.value)} className={dashboardSelectClass}><option value="all">All customers</option>{customers.map((item) => <option key={item.id} value={item.id}>{String(item.name)}</option>)}</select><select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className={dashboardSelectClass}><option value="all">All statuses</option><option value="draft">Draft</option><option value="posted">Posted</option><option value="partial">Partially paid</option><option value="paid">Paid</option><option value="cancelled">Cancelled</option></select><select value={currencyFilter} onChange={(event) => setCurrencyFilter(event.target.value)} className={dashboardSelectClass}><option value="all">All currencies</option>{currencies.map((item) => <option key={item.id} value={item.id}>{String(item.code)}</option>)}</select><input type="date" value={dateFrom} onChange={(event) => setDateFrom(event.target.value)} className={dashboardSelectClass} /><input type="date" value={dateTo} onChange={(event) => setDateTo(event.target.value)} className={dashboardSelectClass} /><button onClick={() => void load()} className="flex size-[42px] items-center justify-center rounded-md border border-zinc-200 bg-white"><RefreshCw className={`size-4 ${loading ? 'animate-spin' : ''}`} /></button></>} />
-    <Dialog open={open} onOpenChange={(value) => !saving && setOpen(value)}><DialogContent className="max-h-[92vh] max-w-[calc(100vw-2rem)] overflow-y-auto sm:max-w-5xl"><DialogHeader className="flex-row items-center gap-3 text-left"><div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"><FileText className="size-5" /></div><div><DialogTitle>{viewOnly ? 'View' : selected ? 'Edit' : 'Prepare'} customer invoice</DialogTitle><DialogDescription className="mt-1">{viewOnly ? 'Posted invoices are read-only.' : 'Invoice number, company, and accounting defaults are applied automatically.'}</DialogDescription></div></DialogHeader><form onSubmit={(event) => { event.preventDefault(); void save(); }} className="space-y-4"><fieldset disabled={viewOnly} className="contents">
-      <div className="grid gap-x-4 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
-        <Select label="Customer" value={form.customer_id} set={selectCustomer} rows={customers} />
-        <Field label="Invoice date" type="date" value={form.invoice_date} set={setInvoiceDate} />
-        <Field label="Due date" type="date" value={form.due_date} set={(value) => setForm({ ...form, due_date: value })} />
-        <Select label="Payment term" value={form.payment_term_id} set={setPaymentTerm} rows={terms} optional />
-      </div>
-      <div className="rounded-xl border border-zinc-200"><div className="flex items-center justify-between border-b border-zinc-200 px-4 py-3"><h3 className="text-sm font-semibold">Invoice items</h3><button type="button" onClick={() => setForm({ ...form, lines: [...form.lines, emptyLine()] })} className="flex h-8 items-center gap-1 rounded-md border border-primary/30 px-3 text-xs font-semibold text-primary hover:bg-primary/5"><Plus className="size-3" /> Add line</button></div><div className="overflow-x-auto"><table className="w-full min-w-[900px] table-fixed text-xs"><colgroup><col className="w-[18%]" /><col className="w-[24%]" /><col className="w-[10%]" /><col className="w-[14%]" /><col className="w-[13%]" /><col className="w-[13%]" /><col className="w-[8%]" /><col className="w-[5%]" /></colgroup><thead className="bg-muted/50"><tr><th className="p-2.5 text-left">Product</th><th className="p-2.5 text-left">Description</th><th className="p-2.5">Qty</th><th className="p-2.5">Unit price</th><th className="p-2.5">Discount</th><th className="p-2.5">Tax</th><th className="p-2.5 text-right">Total</th><th className="w-9 text-center">Action</th></tr></thead><tbody>{form.lines.map((line, index) => <tr key={index} className="border-t">
-        <td className="p-2"><ProductPicker value={line.product_id} products={products.filter((item) => item.is_active !== false && item.can_be_sold !== false)} onChange={(value) => chooseProduct(index, value)} /></td>
-        <td className="p-2"><input required value={line.description} onChange={(event) => updateLine(index, { description: event.target.value })} className="h-9 w-full rounded-lg border px-2" placeholder="Product or service description" /></td>
-        <td className="p-2"><input required type="number" min="0.01" step="0.01" value={line.quantity} onChange={(event) => updateLine(index, { quantity: Number(event.target.value) })} className="h-9 w-full rounded-lg border px-2" /></td>
-        <td className="p-2"><input required type="number" min="0" step="0.01" value={line.unit_price} onChange={(event) => updateLine(index, { unit_price: Number(event.target.value) })} className="h-9 w-full rounded-lg border px-2" /></td>
-        <td className="p-2"><input type="number" min="0" max="100" step="0.01" value={line.discount_percent} onChange={(event) => updateLine(index, { discount_percent: Number(event.target.value) })} className="h-9 w-full rounded-lg border px-2" /></td>
-        <td className="p-2"><select value={line.tax_id || ''} onChange={(event) => updateLine(index, { tax_id: Number(event.target.value) || null })} className="h-9 w-full rounded-lg border px-2"><option value="">No tax</option>{taxes.filter((item) => item.is_active !== false && Number(item.rate_percent || 0) !== 0).map((item) => <option key={item.id} value={item.id}>{String(item.name)}</option>)}</select></td>
-        <td className="p-2 text-right font-semibold">{money(Number(line.quantity) * Number(line.unit_price) * (1 - Number(line.discount_percent || 0) / 100))}</td><td className="p-2 text-center"><button type="button" disabled={form.lines.length === 1} onClick={() => setForm({ ...form, lines: form.lines.filter((_, lineIndex) => lineIndex !== index) })} className="rounded p-1 text-rose-600 disabled:opacity-30"><X className="size-4" /></button></td>
-      </tr>)}</tbody></table></div></div>
-        <div className="grid items-stretch gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <div className="space-y-4">
-            {!viewOnly && <section className="rounded-xl border border-zinc-200 p-4"><div className="mb-3 flex items-center gap-2"><span className="flex size-8 items-center justify-center rounded-md bg-primary/10 text-primary"><CreditCard className="size-4" /></span><h3 className="text-sm font-semibold">Payment information</h3></div><label className="flex cursor-pointer items-center gap-2 text-sm font-medium"><input type="checkbox" checked={form.receive_payment_now} onChange={(event) => setForm((current) => ({ ...current, receive_payment_now: event.target.checked, payment_method_id: event.target.checked ? current.payment_method_id : '', amount_received: event.target.checked ? current.amount_received : '', payment_reference: event.target.checked ? current.payment_reference : '' }))} className="size-4 accent-primary" /> Receive Payment Now</label><p className="ml-6 mt-1 text-[11px] text-zinc-400">Mark this invoice as paid and record the payment.</p>{form.receive_payment_now && <div className="mt-4 grid gap-3 sm:grid-cols-3"><label className="text-xs font-semibold">Payment Method *<select required value={form.payment_method_id} onChange={(event) => setForm({ ...form, payment_method_id: event.target.value })} className="mt-1 h-10 w-full rounded-md border border-zinc-200 px-3"><option value="">Select method</option>{paymentMethods.filter((method) => method.is_active !== false && method.gl_account_id && ['inbound', 'both'].includes(String(method.payment_type))).map((method) => <option key={method.id} value={method.id}>{String(method.name)}</option>)}</select></label><label className="text-xs font-semibold">Amount *<input required type="number" min="0.01" max={totals.total || undefined} step="0.01" value={form.amount_received} onChange={(event) => setForm({ ...form, amount_received: event.target.value })} className="mt-1 h-10 w-full rounded-md border border-zinc-200 px-3" /></label><label className="text-xs font-semibold">Reference<input value={form.payment_reference} onChange={(event) => setForm({ ...form, payment_reference: event.target.value })} className="mt-1 h-10 w-full rounded-md border border-zinc-200 px-3" /></label></div>}</section>}
-            <section className="rounded-xl border border-zinc-200 p-4"><div className="mb-3 flex items-center gap-2"><span className="flex size-8 items-center justify-center rounded-md bg-primary/10 text-primary"><StickyNote className="size-4" /></span><h3 className="text-sm font-semibold">Notes</h3></div><textarea maxLength={500} value={form.notes} onChange={(event) => setForm({ ...form, notes: event.target.value })} className="min-h-[105px] w-full resize-none rounded-md border border-zinc-200 p-3 text-sm" placeholder="Add any notes for this invoice..." /><p className="mt-1 text-right text-[10px] text-zinc-400">{form.notes.length} / 500</p></section>
+    
+    <Dialog open={open} onOpenChange={(value) => !saving && setOpen(value)}>
+      <DialogContent className="max-h-[94vh] max-w-[calc(100vw-2rem)] overflow-y-auto sm:max-w-5xl">
+        <DialogHeader className="flex-row items-center justify-between text-left pb-2 border-b border-zinc-100">
+          <div className="flex items-center gap-3">
+            <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <FileText className="size-5" />
+            </div>
+            <div>
+              <DialogTitle>{viewOnly ? 'View' : selected ? 'Edit' : 'Prepare'} customer invoice</DialogTitle>
+              <DialogDescription className="mt-1">
+                {selected ? selected.invoice_number : 'New Customer Invoice'} • {viewOnly ? 'Posted invoices are read-only.' : 'Invoice number, company, and accounting defaults are applied automatically.'}
+              </DialogDescription>
+            </div>
           </div>
-          <aside className="h-full rounded-xl border border-zinc-200 p-4 text-sm"><div className="mb-4 flex items-center gap-2"><span className="flex size-8 items-center justify-center rounded-md bg-primary/10 text-primary"><FileText className="size-4" /></span><p className="font-semibold">Invoice summary</p></div><Total label="Subtotal" value={selected ? Number(selected.amount_untaxed) : totals.untaxed} /><Total label="Tax" value={selected ? Number(selected.amount_tax) : totals.tax} /><div className="my-3 border-t border-zinc-200" /><Total label="Grand total" value={selected ? Number(selected.amount_total) : totals.total} strong /><div className="my-3 border-t border-zinc-200" /><Total label="Paid" value={selected ? Number(selected.paid_amount || 0) : form.receive_payment_now ? Math.min(Number(form.amount_received || 0), totals.total) : 0} /><Total label="Balance" value={selected ? Number(selected.amount_due) : Math.max(0, totals.total - (form.receive_payment_now ? Number(form.amount_received || 0) : 0))} /><div className="mt-3 flex items-center justify-between border-t border-zinc-200 pt-3"><span>Status</span><span className="rounded-full bg-secondary/15 px-3 py-1 text-[11px] font-semibold text-secondary">{selected?.state === 'cancelled' ? 'Cancelled' : selected?.payment_state === 'paid' ? 'Paid' : selected?.payment_state === 'partial' ? 'Partially Paid' : selected?.state === 'posted' ? 'Posted' : 'Draft'}</span></div></aside>
-        </div>
-      </fieldset><DialogFooter className="border-t border-zinc-100 pt-4"><button type="button" onClick={() => setOpen(false)} className="h-9 rounded-md border border-zinc-200 px-4 text-sm font-semibold">{viewOnly ? 'Close' : 'Cancel'}</button>{!viewOnly && <><button disabled={saving} className="flex h-9 items-center gap-2 rounded-md border border-primary/30 px-4 text-sm font-semibold text-primary"><Save className="size-4" />{saving ? 'Saving...' : 'Save Draft'}</button><button type="button" disabled={saving} onClick={(event) => { if (event.currentTarget.form?.reportValidity()) void save(true); }} className="flex h-9 items-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-white"><Send className="size-4" /> Post Invoice</button></>}</DialogFooter>
-    </form></DialogContent></Dialog>
+          {/* Tabs */}
+          <div className="flex rounded-lg bg-zinc-100 p-1">
+            <button
+              type="button"
+              onClick={() => setDialogTab('form')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                dialogTab === 'form' ? 'bg-white text-zinc-900 shadow-sm font-bold' : 'text-zinc-500 hover:text-zinc-800'
+              }`}
+            >
+              <SquarePen className="size-3.5" /> Edit Form
+            </button>
+            <button
+              type="button"
+              onClick={() => setDialogTab('preview')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                dialogTab === 'preview' ? 'bg-white text-primary shadow-sm font-bold' : 'text-zinc-500 hover:text-zinc-800'
+              }`}
+            >
+              <Eye className="size-3.5" /> Live Preview
+            </button>
+          </div>
+        </DialogHeader>
+
+        {dialogTab === 'preview' ? (
+          <div className="space-y-4 py-2">
+            <div className="flex justify-between items-center bg-orange-50/70 border border-orange-200/60 rounded-xl px-4 py-2.5 text-xs text-orange-900">
+              <div className="flex items-center gap-2">
+                <FileText className="size-4 text-orange-600 shrink-0" />
+                <span>Standard Invoice Template live preview with Deero branding and official stamp.</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDialogTab('form')}
+                className="text-xs font-bold text-orange-700 underline hover:text-orange-950"
+              >
+                Back to Edit Form
+              </button>
+            </div>
+            <div className="bg-zinc-100 p-2 sm:p-4 rounded-xl flex justify-center max-h-[70vh] overflow-y-auto">
+              <div className="w-full max-w-[850px]">
+                <A4InvoiceSheet
+                  contactPerson={previewContactPerson}
+                  invoiceNo={previewInvoiceNo}
+                  contactEmail={previewContactEmail}
+                  invoiceTo={previewInvoiceTo}
+                  contactPhone={previewContactPhone}
+                  date={previewDateStr}
+                  dueDate={previewDueDateStr}
+                  lines={previewLines}
+                  subtotal={totals.untaxed}
+                  vatPercent={previewVatRate}
+                  taxAmount={totals.tax}
+                  paidAmount={selected ? (selected.paid_amount ?? Number(selected.amount_total) - Number(selected.amount_due)) : form.receive_payment_now ? Math.min(Number(form.amount_received || 0), totals.total) : 0}
+                  grandTotal={totals.total}
+                  paymentAdvance={form.payment_advance}
+                  paymentCompletion={form.payment_completion}
+                  nbText={form.nb}
+                  showStamp={true}
+                  brandPrimary={brandPrimary}
+                  brandSecondary={brandSecondary}
+                  brandLogo={brandLogo}
+                  onBackToEdit={() => setDialogTab('form')}
+                />
+              </div>
+            </div>
+            <DialogFooter className="border-t border-zinc-100 pt-3">
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="h-9 rounded-md border border-zinc-200 px-4 text-sm font-semibold"
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                onClick={() => setDialogTab('form')}
+                className="flex h-9 items-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-white"
+              >
+                <SquarePen className="size-4" /> Return to Form
+              </button>
+            </DialogFooter>
+          </div>
+        ) : (
+          <form onSubmit={(event) => { event.preventDefault(); void save(); }} className="space-y-4">
+            <fieldset disabled={viewOnly} className="contents">
+              {/* Customer & Invoice Dates Header Card */}
+              <div className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-4 space-y-3">
+                <div className="grid gap-x-4 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
+                  <Select label="Customer" value={form.customer_id} set={selectCustomer} rows={customers} />
+                  <Field label="Invoice date" type="date" value={form.invoice_date} set={setInvoiceDate} />
+                  <Field label="Due date" type="date" value={form.due_date} set={(value) => setForm({ ...form, due_date: value })} />
+                  <Select label="Payment term" value={form.payment_term_id} set={setPaymentTerm} rows={terms} optional />
+                </div>
+
+                {/* Editable Contact Info on Document */}
+                <div className="pt-2 border-t border-zinc-200/80 grid gap-x-4 gap-y-2 sm:grid-cols-2 lg:grid-cols-4 text-xs">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-500 mb-0.5">Contact Person</label>
+                    <input
+                      type="text"
+                      value={form.contact_person}
+                      onChange={(e) => setForm({ ...form, contact_person: e.target.value })}
+                      placeholder="e.g. Abdisalam Abdullahi"
+                      className="h-8 w-full rounded-md border border-zinc-200 bg-white px-2.5 text-xs text-zinc-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-500 mb-0.5">Invoice To (Company / Client)</label>
+                    <input
+                      type="text"
+                      value={form.invoice_to}
+                      onChange={(e) => setForm({ ...form, invoice_to: e.target.value })}
+                      placeholder="e.g. CARAF AND CO."
+                      className="h-8 w-full rounded-md border border-zinc-200 bg-white px-2.5 text-xs font-bold text-zinc-900"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-500 mb-0.5">Contact Email</label>
+                    <input
+                      type="text"
+                      value={form.contact_email}
+                      onChange={(e) => setForm({ ...form, contact_email: e.target.value })}
+                      placeholder="e.g. info@client.com"
+                      className="h-8 w-full rounded-md border border-zinc-200 bg-white px-2.5 text-xs text-zinc-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-500 mb-0.5">Contact Phone</label>
+                    <input
+                      type="text"
+                      value={form.contact_phone}
+                      onChange={(e) => setForm({ ...form, contact_phone: e.target.value })}
+                      placeholder="e.g. +252 61 5000000"
+                      className="h-8 w-full rounded-md border border-zinc-200 bg-white px-2.5 text-xs text-zinc-800"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Service & Items Builder (Quotation Style) */}
+              <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
+                <div className="flex items-center justify-between border-b border-zinc-200 px-4 py-3 bg-zinc-50/70">
+                  <div>
+                    <h3 className="text-sm font-bold text-zinc-900">Invoice Services & Items</h3>
+                    <p className="text-[11px] text-zinc-500">
+                      Dooro service-ka si subservice-yada ay toos ugu soo baxaan, kadibna calaamadee kuwa aad rabto.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setForm({ ...form, lines: [...form.lines, emptyLine()] })}
+                    className="flex h-8 items-center gap-1.5 rounded-md bg-primary px-3 text-xs font-bold text-white shadow-sm hover:opacity-90 transition-opacity"
+                  >
+                    <Plus className="size-3.5" /> Add Service Line
+                  </button>
+                </div>
+
+                <div className="p-4 space-y-4">
+                  {form.lines.map((line, index) => {
+                    const matchedService = availableServices.find(
+                      (s) => s.serviceName.toLowerCase() === line.service_type.toLowerCase()
+                    );
+                    const lineAmount = Number(line.quantity || 1) * Number(line.unit_price || 0) * (1 - Number(line.discount_percent || 0) / 100);
+
+                    return (
+                      <div
+                        key={index}
+                        className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm space-y-3 relative transition-all hover:border-zinc-300"
+                      >
+                        {/* Top Line: Service Selection & Title */}
+                        <div className="flex flex-wrap items-start justify-between gap-3">
+                          <div className="flex items-center gap-2">
+                            <span className="flex size-7 items-center justify-center rounded-lg bg-orange-100 text-orange-700 text-xs font-bold shrink-0">
+                              #{index + 1}
+                            </span>
+                            <span className="text-xs font-bold text-zinc-800">Service Line</span>
+                          </div>
+
+                          <button
+                            type="button"
+                            disabled={form.lines.length === 1}
+                            onClick={() => setForm({ ...form, lines: form.lines.filter((_, lineIndex) => lineIndex !== index) })}
+                            className="text-zinc-400 hover:text-rose-600 disabled:opacity-25 transition-colors p-1"
+                            title="Delete this line"
+                          >
+                            <Trash2 className="size-4" />
+                          </button>
+                        </div>
+
+                        {/* Service Type Pickers */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-semibold text-zinc-700 mb-1">
+                              Service Catalog *
+                            </label>
+                            <select
+                              value={
+                                availableServices.some((s) => s.serviceName.toLowerCase() === line.service_type.toLowerCase())
+                                  ? availableServices.find((s) => s.serviceName.toLowerCase() === line.service_type.toLowerCase())?.serviceName
+                                  : '__CUSTOM__'
+                              }
+                              onChange={(e) => {
+                                if (e.target.value === '__CUSTOM__') {
+                                  updateLine(index, { service_type: '' });
+                                } else {
+                                  handleServiceSelect(index, e.target.value);
+                                }
+                              }}
+                              className="w-full h-9 px-3 rounded-md border border-zinc-200 bg-zinc-50/70 text-xs font-semibold text-zinc-800"
+                            >
+                              <option value="__CUSTOM__">✍️ Custom Service (Gacanta ku qor)</option>
+                              {availableServices.map((s) => (
+                                <option key={s.id} value={s.serviceName}>
+                                  {s.serviceName}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-semibold text-zinc-700 mb-1">
+                              Service Name (Display in Invoice) *
+                            </label>
+                            <input
+                              required
+                              value={line.service_type}
+                              onChange={(e) => updateLine(index, { service_type: e.target.value })}
+                              placeholder="e.g. Graphic design & Branding"
+                              className="h-9 w-full rounded-md border border-zinc-200 px-3 text-xs font-bold text-zinc-900"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Subservice multi-select chips */}
+                        {matchedService && Array.isArray(matchedService.subService) && matchedService.subService.length > 0 && (
+                          <div className="bg-zinc-50 p-3 rounded-lg border border-zinc-200/80 space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-600">
+                                Sub-services (Click to include / exclude):
+                              </span>
+                              <span className="text-[10px] text-zinc-400">
+                                {line.selected_subservice_ids.length} selected
+                              </span>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {matchedService.subService.map((sub) => {
+                                const isChecked = line.selected_subservice_ids.includes(sub.id);
+                                return (
+                                  <button
+                                    key={sub.id}
+                                    type="button"
+                                    onClick={() => handleToggleSubService(index, sub)}
+                                    className={`text-xs px-3 py-1.5 rounded-lg font-medium border flex items-center gap-1.5 transition-all ${
+                                      isChecked
+                                        ? 'bg-[#ea580c] text-white border-orange-600 shadow-sm font-bold'
+                                        : 'bg-white text-zinc-700 border-zinc-200 hover:border-zinc-300'
+                                    }`}
+                                  >
+                                    {isChecked && <Check className="size-3.5 stroke-[3]" />}
+                                    <span>{sub.name}</span>
+                                    {sub.price != null && Number(sub.price) > 0 && (
+                                      <span className={`text-[10px] ${isChecked ? 'text-white/90 font-bold' : 'text-zinc-400'}`}>
+                                        (${sub.price})
+                                      </span>
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Item(s) Description textarea */}
+                        <div>
+                          <div className="flex items-center justify-between mb-1">
+                            <label className="text-xs font-semibold text-zinc-700">
+                              Item(s) Detailed Description *
+                            </label>
+                            <span className="text-[11px] text-zinc-400">
+                              Waad wax ka beddeli kartaa, wax ku dari kartaa, ama tirtiri kartaa
+                            </span>
+                          </div>
+                          <textarea
+                            rows={3}
+                            required
+                            value={line.description}
+                            onChange={(e) => updateLine(index, { description: e.target.value })}
+                            placeholder={`• Logo design\n• Stationery Design (Bc Card, ID Card, Letterhead & Stamp)\n\nTimeline 7 days`}
+                            className="w-full p-2.5 rounded-md border border-zinc-200 text-xs text-zinc-800 leading-relaxed font-mono focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                          />
+                        </div>
+
+                        {/* Pricing & Financials: Qua, Rate, Free, Discount, Tax, Amount */}
+                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 items-end pt-2 bg-zinc-50/50 p-3 rounded-lg border border-zinc-200/60">
+                          <div>
+                            <label className="block text-[11px] font-semibold text-zinc-600 mb-1">Qua (Qty)</label>
+                            <input
+                              required
+                              type="number"
+                              min="0.01"
+                              step="0.01"
+                              value={line.quantity}
+                              onChange={(e) => updateLine(index, { quantity: Number(e.target.value) })}
+                              className="h-8 w-full rounded-md border border-zinc-200 bg-white px-2.5 text-center text-xs font-bold"
+                            />
+                          </div>
+
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <label className="text-[11px] font-semibold text-zinc-600">Rate ($)</label>
+                              <button
+                                type="button"
+                                onClick={() => handleToggleFree(index)}
+                                className={`text-[10px] font-bold px-1.5 py-0.5 rounded border transition-colors ${
+                                  line.is_free
+                                    ? 'bg-emerald-600 text-white border-emerald-600'
+                                    : 'bg-zinc-100 text-zinc-600 border-zinc-200 hover:bg-zinc-200'
+                                }`}
+                              >
+                                {line.is_free ? 'FREE' : 'Free?'}
+                              </button>
+                            </div>
+                            <input
+                              required
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              disabled={line.is_free}
+                              value={line.is_free ? 0 : line.unit_price}
+                              onChange={(e) => updateLine(index, { unit_price: Number(e.target.value) })}
+                              className={`h-8 w-full rounded-md border px-2.5 text-center text-xs font-bold ${
+                                line.is_free ? 'bg-zinc-100 text-zinc-400' : 'border-zinc-200 bg-white text-orange-600'
+                              }`}
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[11px] font-semibold text-zinc-600 mb-1">Discount %</label>
+                            <input
+                              type="number"
+                              min="0"
+                              max="100"
+                              step="0.01"
+                              value={line.discount_percent}
+                              onChange={(e) => updateLine(index, { discount_percent: Number(e.target.value) })}
+                              className="h-8 w-full rounded-md border border-zinc-200 bg-white px-2.5 text-center text-xs font-medium"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[11px] font-semibold text-zinc-600 mb-1">Tax</label>
+                            <select
+                              value={line.tax_id || ''}
+                              onChange={(e) => updateLine(index, { tax_id: Number(e.target.value) || null })}
+                              className="h-8 w-full rounded-md border border-zinc-200 bg-white px-2 text-xs"
+                            >
+                              <option value="">No tax</option>
+                              {taxes
+                                .filter((item) => item.is_active !== false && Number(item.rate_percent || 0) !== 0)
+                                .map((item) => (
+                                  <option key={item.id} value={item.id}>
+                                    {String(item.name)}
+                                  </option>
+                                ))}
+                            </select>
+                          </div>
+
+                          <div className="text-right sm:text-right">
+                            <span className="block text-[10px] uppercase font-bold text-zinc-400 mb-1">Amount</span>
+                            <span className="text-sm font-extrabold text-orange-600">
+                              {line.is_free ? 'Free' : `$${lineAmount.toFixed(2)}`}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Payment Terms & Structure */}
+              <div className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-4 space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-700">
+                  Payment Structure & Notes Banner
+                </h4>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-600 mb-1">
+                      Advance Payment Text
+                    </label>
+                    <input
+                      type="text"
+                      value={form.payment_advance}
+                      onChange={(e) => setForm({ ...form, payment_advance: e.target.value })}
+                      placeholder="70% of charge paid in advance."
+                      className="h-8 w-full rounded-md border border-zinc-200 bg-white px-2.5 text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-600 mb-1">
+                      Completion Payment Text
+                    </label>
+                    <input
+                      type="text"
+                      value={form.payment_completion}
+                      onChange={(e) => setForm({ ...form, payment_completion: e.target.value })}
+                      placeholder="30% of charge paid after the project Completion"
+                      className="h-8 w-full rounded-md border border-zinc-200 bg-white px-2.5 text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-zinc-600 mb-1">
+                      NB Banner Text
+                    </label>
+                    <input
+                      type="text"
+                      value={form.nb}
+                      onChange={(e) => setForm({ ...form, nb: e.target.value })}
+                      placeholder="NB: the advance amount should be paid when you get the invoice."
+                      className="h-8 w-full rounded-md border border-zinc-200 bg-white px-2.5 text-xs"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid items-stretch gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+                <div className="space-y-4">
+                  {!viewOnly && (
+                    <section className="rounded-xl border border-zinc-200 p-4 bg-white">
+                      <div className="mb-3 flex items-center gap-2">
+                        <span className="flex size-8 items-center justify-center rounded-md bg-primary/10 text-primary">
+                          <CreditCard className="size-4" />
+                        </span>
+                        <h3 className="text-sm font-semibold">Immediate Payment (Optional)</h3>
+                      </div>
+                      <label className="flex cursor-pointer items-center gap-2 text-sm font-medium">
+                        <input
+                          type="checkbox"
+                          checked={form.receive_payment_now}
+                          onChange={(event) =>
+                            setForm((current) => ({
+                              ...current,
+                              receive_payment_now: event.target.checked,
+                              payment_method_id: event.target.checked ? current.payment_method_id : '',
+                              amount_received: event.target.checked ? current.amount_received : '',
+                              payment_reference: event.target.checked ? current.payment_reference : '',
+                            }))
+                          }
+                          className="size-4 accent-primary"
+                        />
+                        Receive Payment Now (Auto mark as paid)
+                      </label>
+                      <p className="ml-6 mt-1 text-[11px] text-zinc-400">
+                        Mark this invoice as paid upon saving and record the payment receipt.
+                      </p>
+                      {form.receive_payment_now && (
+                        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                          <label className="text-xs font-semibold">
+                            Payment Method *
+                            <select
+                              required
+                              value={form.payment_method_id}
+                              onChange={(event) => setForm({ ...form, payment_method_id: event.target.value })}
+                              className="mt-1 h-10 w-full rounded-md border border-zinc-200 px-3 bg-white"
+                            >
+                              <option value="">Select method</option>
+                              {paymentMethods
+                                .filter(
+                                  (method) =>
+                                    method.is_active !== false &&
+                                    method.gl_account_id &&
+                                    ['inbound', 'both'].includes(String(method.payment_type))
+                                )
+                                .map((method) => (
+                                  <option key={method.id} value={method.id}>
+                                    {String(method.name)}
+                                  </option>
+                                ))}
+                            </select>
+                          </label>
+                          <label className="text-xs font-semibold">
+                            Amount *
+                            <input
+                              required
+                              type="number"
+                              min="0.01"
+                              max={totals.total || undefined}
+                              step="0.01"
+                              value={form.amount_received}
+                              onChange={(event) => setForm({ ...form, amount_received: event.target.value })}
+                              className="mt-1 h-10 w-full rounded-md border border-zinc-200 px-3"
+                            />
+                          </label>
+                          <label className="text-xs font-semibold">
+                            Reference
+                            <input
+                              value={form.payment_reference}
+                              onChange={(event) => setForm({ ...form, payment_reference: event.target.value })}
+                              className="mt-1 h-10 w-full rounded-md border border-zinc-200 px-3"
+                            />
+                          </label>
+                        </div>
+                      )}
+                    </section>
+                  )}
+                  <section className="rounded-xl border border-zinc-200 p-4 bg-white">
+                    <div className="mb-3 flex items-center gap-2">
+                      <span className="flex size-8 items-center justify-center rounded-md bg-primary/10 text-primary">
+                        <StickyNote className="size-4" />
+                      </span>
+                      <h3 className="text-sm font-semibold">Additional Notes</h3>
+                    </div>
+                    <textarea
+                      maxLength={500}
+                      value={form.notes}
+                      onChange={(event) => setForm({ ...form, notes: event.target.value })}
+                      className="min-h-[90px] w-full resize-none rounded-md border border-zinc-200 p-3 text-sm"
+                      placeholder="Add any internal or invoice notes..."
+                    />
+                    <p className="mt-1 text-right text-[10px] text-zinc-400">{form.notes.length} / 500</p>
+                  </section>
+                </div>
+
+                <aside className="h-full rounded-xl border border-zinc-200 p-4 text-sm bg-white">
+                  <div className="mb-4 flex items-center gap-2">
+                    <span className="flex size-8 items-center justify-center rounded-md bg-primary/10 text-primary">
+                      <FileText className="size-4" />
+                    </span>
+                    <p className="font-semibold">Invoice summary</p>
+                  </div>
+                  <Total label="Subtotal" value={selected ? Number(selected.amount_untaxed) : totals.untaxed} />
+                  <Total label="Tax" value={selected ? Number(selected.amount_tax) : totals.tax} />
+                  <div className="my-3 border-t border-zinc-200" />
+                  <Total label="Grand total" value={selected ? Number(selected.amount_total) : totals.total} strong />
+                  <div className="my-3 border-t border-zinc-200" />
+                  <Total
+                    label="Paid"
+                    value={
+                      selected
+                        ? Number(selected.paid_amount || 0)
+                        : form.receive_payment_now
+                        ? Math.min(Number(form.amount_received || 0), totals.total)
+                        : 0
+                    }
+                  />
+                  <Total
+                    label="Balance"
+                    value={
+                      selected
+                        ? Number(selected.amount_due)
+                        : Math.max(0, totals.total - (form.receive_payment_now ? Number(form.amount_received || 0) : 0))
+                    }
+                  />
+                  <div className="mt-3 flex items-center justify-between border-t border-zinc-200 pt-3">
+                    <span>Status</span>
+                    <span className="rounded-full bg-secondary/15 px-3 py-1 text-[11px] font-semibold text-secondary">
+                      {selected?.state === 'cancelled'
+                        ? 'Cancelled'
+                        : selected?.payment_state === 'paid'
+                        ? 'Paid'
+                        : selected?.payment_state === 'partial'
+                        ? 'Partially Paid'
+                        : selected?.state === 'posted'
+                        ? 'Posted'
+                        : 'Draft'}
+                    </span>
+                  </div>
+                </aside>
+              </div>
+            </fieldset>
+            <DialogFooter className="border-t border-zinc-100 pt-4"><button type="button" onClick={() => setOpen(false)} className="h-9 rounded-md border border-zinc-200 px-4 text-sm font-semibold">{viewOnly ? 'Close' : 'Cancel'}</button>{!viewOnly && <><button disabled={saving} className="flex h-9 items-center gap-2 rounded-md border border-primary/30 px-4 text-sm font-semibold text-primary"><Save className="size-4" />{saving ? 'Saving...' : 'Save Draft'}</button><button type="button" disabled={saving} onClick={(event) => { if (event.currentTarget.form?.reportValidity()) void save(true); }} className="flex h-9 items-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-white"><Send className="size-4" /> Post Invoice</button></>}</DialogFooter>
+          </form>
+        )}
+      </DialogContent>
+    </Dialog>
     <AccountingConfirmDialog open={Boolean(pendingAction)} title={`${pendingAction?.type === 'delete' ? 'Delete' : 'Post'} Customer Invoice`} description={pendingAction?.type === 'delete' ? 'Confirm removal of this draft customer invoice.' : 'Confirm this invoice before posting its journal entry and locking it.'} confirmLabel={`${pendingAction?.type === 'delete' ? 'Delete' : 'Post'} Invoice`} destructive={pendingAction?.type === 'delete'} busy={saving} details={pendingAction && <div className="flex justify-between"><span className="text-muted-foreground">Invoice</span><b>{pendingAction.invoice.invoice_number}</b></div>} onCancel={() => setPendingAction(null)} onConfirm={() => pendingAction && void (pendingAction.type === 'delete' ? remove(pendingAction.invoice) : postInvoice(pendingAction.invoice))} />
-    {printInvoice && <PrintableInvoice invoice={printInvoice} />}
+
+    {/* Accept & Post Invoice Dialog with Automatic Customer Receipt Option */}
+    <Dialog open={Boolean(acceptInvoice)} onOpenChange={(val) => !saving && !val && setAcceptInvoice(null)}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-base font-bold text-zinc-900">
+            <Send className="size-4 text-primary" /> Accept & Post Customer Invoice
+          </DialogTitle>
+          <DialogDescription className="text-xs text-zinc-500">
+            Posting will recognize revenue in Accounting (Dr Accounts Receivable, Cr Sales Revenue).
+          </DialogDescription>
+        </DialogHeader>
+
+        {acceptInvoice && (
+          <div className="space-y-4 py-2">
+            {/* Invoice Info Summary */}
+            <div className="bg-zinc-50 rounded-xl p-3.5 border border-zinc-200 text-xs space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-zinc-500 font-medium">Invoice Number:</span>
+                <span className="font-bold text-primary">{acceptInvoice.invoice_number}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-zinc-500 font-medium">Customer:</span>
+                <span className="font-semibold text-zinc-800">{acceptInvoice.customers?.name || `#${acceptInvoice.customer_id}`}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-zinc-500 font-medium">Invoice Date:</span>
+                <span className="text-zinc-700">{dateValue(acceptInvoice.invoice_date)}</span>
+              </div>
+              <div className="flex justify-between items-center border-t border-zinc-200 pt-2">
+                <span className="text-zinc-700 font-bold">Total Amount:</span>
+                <span className="font-bold text-sm text-zinc-900">{money(acceptInvoice.amount_total, acceptInvoice.currencies?.code || '')}</span>
+              </div>
+            </div>
+
+            {/* Auto Customer Receipt Option */}
+            <div className="rounded-xl border border-zinc-200 p-3.5 bg-white space-y-3">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={createReceiptOnPost}
+                  onChange={(e) => setCreateReceiptOnPost(e.target.checked)}
+                  className="size-4 accent-primary rounded"
+                />
+                <span className="text-xs font-bold text-zinc-800">
+                  Create Customer Receipt (Mark as Paid)
+                </span>
+              </label>
+              <p className="text-[11px] text-zinc-500 ml-6">
+                Automatically generate and post a Customer Receipt in Accounting for this invoice.
+              </p>
+
+              {createReceiptOnPost && (
+                <div className="pt-2 border-t border-zinc-100">
+                  <label className="block text-xs font-semibold text-zinc-700 mb-1">
+                    Payment Method *
+                  </label>
+                  <select
+                    value={receiptPaymentMethodId}
+                    onChange={(e) => setReceiptPaymentMethodId(e.target.value)}
+                    className="h-9 w-full rounded-md border border-zinc-200 px-3 text-xs bg-white"
+                  >
+                    <option value="">Select payment method</option>
+                    {paymentMethods
+                      .filter((m) => m.is_active !== false && m.gl_account_id && ['inbound', 'both'].includes(String(m.payment_type)))
+                      .map((m) => (
+                        <option key={m.id} value={m.id}>
+                          {String(m.name)}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        <DialogFooter className="gap-2 sm:gap-0">
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => setAcceptInvoice(null)}
+            className="h-9 rounded-md border border-zinc-200 px-4 text-xs font-semibold hover:bg-zinc-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            disabled={saving}
+            onClick={handleConfirmPost}
+            className="flex h-9 items-center gap-1.5 rounded-md bg-primary px-4 text-xs font-bold text-white shadow-sm hover:opacity-90 disabled:opacity-50"
+          >
+            {saving ? (
+              <>
+                <RefreshCw className="size-3.5 animate-spin mr-1" /> Posting...
+              </>
+            ) : (
+              <>
+                <Send className="size-3.5" /> Accept & Post Invoice
+              </>
+            )}
+          </button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    <InvoiceViewModal
+      open={viewModalOpen}
+      onOpenChange={setViewModalOpen}
+      invoice={viewInvoice}
+    />
+
     </AccountingPageShell>
   );
 }

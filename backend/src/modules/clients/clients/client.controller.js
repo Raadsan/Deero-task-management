@@ -275,8 +275,10 @@ export const getBasicClients = async (req, res) => {
       select: {
         id: true,
         institution: true,
+        contactPerson: true,
         phone: true,
         email: true,
+        address: true,
       },
       orderBy: { createdAt: "desc" },
     });

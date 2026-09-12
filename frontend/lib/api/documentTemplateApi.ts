@@ -64,4 +64,11 @@ export const documentTemplateApi = {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:7003";
     return `${baseUrl}/api/document-templates/render/invoice/${id}`;
   },
+
+  previewPdf: async (data: any): Promise<Blob> => {
+    const res = await api.post("/document-templates/preview-pdf", data, {
+      responseType: "blob",
+    });
+    return res.data;
+  },
 };

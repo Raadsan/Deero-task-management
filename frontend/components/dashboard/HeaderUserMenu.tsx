@@ -42,6 +42,7 @@ function UserAvatar({
         "bg-primary flex shrink-0 items-center justify-center overflow-hidden rounded-full font-bold text-white",
         sizeClass,
       )}
+      style={{ backgroundColor: "var(--portfolio-primary)" }}
     >
       {image && !imageFailed ? (
         <img

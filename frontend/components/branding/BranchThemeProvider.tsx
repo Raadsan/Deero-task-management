@@ -1,11 +1,18 @@
 "use client";
 
-import { useLayoutEffect } from "react";
+import React, { createContext, useContext, useLayoutEffect, useMemo } from "react";
 import {
   applyBranchBranding,
   BranchBranding,
   clearBranchBranding,
+  DEFAULT_BRANCH_BRANDING,
 } from "@/lib/portfolio-branding";
+
+const BranchThemeContext = createContext<BranchBranding>(DEFAULT_BRANCH_BRANDING);
+
+export function useBranchTheme(): BranchBranding {
+  return useContext(BranchThemeContext);
+}
 
 type Props = {
   branding?: BranchBranding | null;
@@ -13,10 +20,20 @@ type Props = {
 };
 
 export function BranchThemeProvider({ branding, children }: Props) {
-  useLayoutEffect(() => {
-    applyBranchBranding(branding);
-    return () => clearBranchBranding();
-  }, [branding]);
+  const activeBranding = useMemo(
+    () => branding ?? DEFAULT_BRANCH_BRANDING,
+    [branding]
+  );
 
-  return <>{children}</>;
+  useLayoutEffect(() => {
+    applyBranchBranding(activeBranding);
+    return () => clearBranchBranding();
+  }, [activeBranding]);
+
+  return (
+    <BranchThemeContext.Provider value={activeBranding}>
+      {children}
+    </BranchThemeContext.Provider>
+  );
 }
+

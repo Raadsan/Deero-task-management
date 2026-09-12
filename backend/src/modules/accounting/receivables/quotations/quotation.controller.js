@@ -43,7 +43,7 @@ export const getAllQuotations = async (req, res) => {
     const items = await prisma.quotations.findMany({
       where,
       include: {
-        client: { select: { id: true, institution: true, email: true, phone: true } },
+        client: { select: { id: true, institution: true, contactPerson: true, email: true, phone: true } },
         customer: { select: { id: true, name: true, email: true, phone: true } },
         currencies: { select: { id: true, code: true, symbol: true } },
         converted_invoice: { select: { id: true, invoice_number: true, state: true, payment_state: true, amount_total: true } },
@@ -104,6 +104,11 @@ export const createQuotation = async (req, res) => {
     const {
       client_id,
       customer_id,
+      quotation_to,
+      client_name,
+      contact_person,
+      contact_email,
+      contact_phone,
       date,
       valid_until,
       currency_id,
@@ -111,11 +116,9 @@ export const createQuotation = async (req, res) => {
       terms,
       lines = [],
       status = "DRAFT",
+      quotation_number: customQuotationNumber,
     } = req.body;
 
-    if (!client_id && !customer_id) {
-      return res.status(400).json({ success: false, message: "Client is required for quotation" });
-    }
     if (!Array.isArray(lines) || lines.length === 0) {
       return res.status(400).json({ success: false, message: "At least one item is required" });
     }
@@ -126,7 +129,34 @@ export const createQuotation = async (req, res) => {
       let resolvedCustomerId = customer_id ? Number(customer_id) : null;
       let resolvedCompanyId = 1;
 
-      if (resolvedClientId && !resolvedCustomerId) {
+      // Check if a manual client name was provided (either directly or in notes JSON)
+      let manualClientName = (quotation_to || client_name || "").trim();
+      if (!manualClientName && notes) {
+        try {
+          const parsed = JSON.parse(notes);
+          if (parsed.quotation_to) manualClientName = parsed.quotation_to.trim();
+        } catch {}
+      }
+
+      if (!resolvedClientId && !resolvedCustomerId && manualClientName) {
+        const company = await tx.companies.findFirst({ where: { is_active: true } });
+        resolvedCompanyId = company ? company.id : 1;
+        let cust = await tx.customers.findFirst({
+          where: { name: manualClientName },
+        });
+        if (!cust) {
+          cust = await tx.customers.create({
+            data: {
+              company_id: resolvedCompanyId,
+              name: manualClientName,
+              email: contact_email?.trim() || null,
+              phone: contact_phone?.trim() || null,
+            },
+          });
+        }
+        resolvedCustomerId = cust.id;
+        resolvedCompanyId = cust.company_id;
+      } else if (resolvedClientId && !resolvedCustomerId) {
         const client = await tx.client.findUnique({ where: { id: resolvedClientId } });
         if (client) {
           // Look up or auto-provision accounting customer
@@ -158,7 +188,7 @@ export const createQuotation = async (req, res) => {
         }
       }
 
-      const quotation_number = await generateQuotationNumber(tx);
+      const quotation_number = customQuotationNumber?.trim() || (await generateQuotationNumber(tx));
 
       // Compute totals
       let subtotal = 0;
@@ -197,6 +227,18 @@ export const createQuotation = async (req, res) => {
           tax_id: item.tax_id ? Number(item.tax_id) : null,
           subtotal: lineSubtotal + taxAmount,
         });
+      }
+
+      // Check vat_percent from request body or notes metadata
+      let vatPercent = Number(req.body.vat_percent || 0);
+      if (!vatPercent && notes) {
+        try {
+          const parsed = JSON.parse(notes);
+          if (parsed.vat_percent) vatPercent = Number(parsed.vat_percent);
+        } catch {}
+      }
+      if (totalTax === 0 && vatPercent > 0) {
+        totalTax = Math.round(((subtotal - totalDiscount) * (vatPercent / 100)) * 100) / 100;
       }
 
       const total = subtotal - totalDiscount + totalTax;
@@ -260,6 +302,7 @@ export const updateQuotation = async (req, res) => {
       notes,
       terms,
       lines,
+      quotation_number: customQuotationNumber,
     } = req.body;
 
     const result = await prisma.$transaction(async (tx) => {
@@ -311,14 +354,58 @@ export const updateQuotation = async (req, res) => {
         }
 
         await tx.quotation_lines.createMany({ data: preparedLines });
+
+        // Check vat_percent from request body or notes metadata
+        let vatPercent = Number(req.body.vat_percent || 0);
+        if (!vatPercent && (notes || existing.notes)) {
+          try {
+            const parsed = JSON.parse(notes || existing.notes);
+            if (parsed.vat_percent) vatPercent = Number(parsed.vat_percent);
+          } catch {}
+        }
+        if (totalTax === 0 && vatPercent > 0) {
+          totalTax = Math.round(((subtotal - totalDiscount) * (vatPercent / 100)) * 100) / 100;
+        }
+
         total = subtotal - totalDiscount + totalTax;
+      }
+
+      let resolvedCustomerId = customer_id !== undefined ? (customer_id ? Number(customer_id) : null) : existing.customer_id;
+      let resolvedClientId = client_id !== undefined ? client_id : existing.client_id;
+
+      let manualClientName = (req.body.quotation_to || req.body.client_name || "").trim();
+      if (!manualClientName && notes) {
+        try {
+          const parsed = JSON.parse(notes);
+          if (parsed.quotation_to) manualClientName = parsed.quotation_to.trim();
+        } catch {}
+      }
+
+      if (!resolvedClientId && !resolvedCustomerId && manualClientName) {
+        const company = await tx.companies.findFirst({ where: { is_active: true } });
+        const resolvedCompanyId = company ? company.id : (existing.company_id || 1);
+        let cust = await tx.customers.findFirst({
+          where: { name: manualClientName },
+        });
+        if (!cust) {
+          cust = await tx.customers.create({
+            data: {
+              company_id: resolvedCompanyId,
+              name: manualClientName,
+              email: req.body.contact_email?.trim() || null,
+              phone: req.body.contact_phone?.trim() || null,
+            },
+          });
+        }
+        resolvedCustomerId = cust.id;
       }
 
       const updated = await tx.quotations.update({
         where: { id },
         data: {
-          client_id: client_id !== undefined ? client_id : existing.client_id,
-          customer_id: customer_id !== undefined ? (customer_id ? Number(customer_id) : null) : existing.customer_id,
+          client_id: resolvedClientId,
+          customer_id: resolvedCustomerId,
+          quotation_number: customQuotationNumber?.trim() || existing.quotation_number,
           date: date ? new Date(date) : existing.date,
           valid_until: valid_until !== undefined ? (valid_until ? new Date(valid_until) : null) : existing.valid_until,
           currency_id: currency_id ? Number(currency_id) : existing.currency_id,
@@ -493,9 +580,21 @@ export const convertQuotationToInvoice = async (req, res) => {
       }
       const invoice_number = `${prefix}${String(nextSeq).padStart(4, "0")}`;
 
-      const totalAmount = Number(quotation.total);
+      // Read VAT from quotation notes metadata if tax is 0
+      let vatPercent = 0;
+      if (quotation.notes) {
+        try {
+          const parsed = JSON.parse(quotation.notes);
+          if (parsed.vat_percent !== undefined) vatPercent = Number(parsed.vat_percent);
+        } catch {}
+      }
+
       const untaxedAmount = Number(quotation.subtotal) - Number(quotation.discount);
-      const taxAmount = Number(quotation.tax);
+      let taxAmount = Number(quotation.tax);
+      if (taxAmount <= 0 && vatPercent > 0) {
+        taxAmount = Math.round((untaxedAmount * (vatPercent / 100)) * 100) / 100;
+      }
+      const totalAmount = untaxedAmount + taxAmount;
 
       // 1. Create Invoice
       const invoice = await tx.customer_invoices.create({
@@ -512,7 +611,7 @@ export const convertQuotationToInvoice = async (req, res) => {
           currency_id: quotation.currency_id || 1,
           receivable_account_id: arAccount.id,
           customer_reference: quotation.quotation_number,
-          state: "posted",
+          state: "draft",
           payment_state: "not_paid",
           amount_untaxed: untaxedAmount,
           amount_tax: taxAmount,
@@ -520,7 +619,7 @@ export const convertQuotationToInvoice = async (req, res) => {
           paid_amount: 0,
           amount_due: totalAmount,
           notes: quotation.notes || `Converted from Quotation ${quotation.quotation_number}`,
-          posted_at: invoiceDate,
+          posted_at: null,
         },
       });
 
@@ -544,7 +643,7 @@ export const convertQuotationToInvoice = async (req, res) => {
       }
 
       // 3. Create Double-Entry Journal Entry
-      const entryNumber = `JE-INV-${invoice_number}`;
+      const entryNumber = invoice_number;
       const journalEntry = await tx.journal_entries.create({
         data: {
           company_id: companyId,
@@ -553,11 +652,11 @@ export const convertQuotationToInvoice = async (req, res) => {
           entry_date: invoiceDate,
           fiscal_period_id: fiscalPeriod?.id || null,
           reference: invoice_number,
-          narration: `Invoice ${invoice_number} for customer ${customer.name} (Quotation ${quotation.quotation_number})`,
-          state: "posted",
+          narration: `Draft customer invoice ${invoice_number} (Quotation ${quotation.quotation_number})`,
+          state: "draft",
           source_type: "customer_invoice",
           source_id: invoice.id,
-          posted_at: invoiceDate,
+          posted_at: null,
         },
       });
 
@@ -594,7 +693,7 @@ export const convertQuotationToInvoice = async (req, res) => {
         let taxAccount = await tx.chart_of_accounts.findFirst({
           where: {
             company_id: companyId,
-            code: { in: ["2200", "2300", "2000"] },
+            code: { in: ["2100", "2200", "2300", "2000"] },
             is_active: true,
           },
         });
@@ -624,11 +723,11 @@ export const convertQuotationToInvoice = async (req, res) => {
         data: { journal_entry_id: journalEntry.id },
       });
 
-      // 4. Update Quotation Status to CONVERTED
+      // 4. Update Quotation Status to ACCEPTED
       const updatedQuotation = await tx.quotations.update({
         where: { id },
         data: {
-          status: "CONVERTED",
+          status: "ACCEPTED",
           converted_invoice_id: invoice.id,
         },
       });

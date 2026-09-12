@@ -20,6 +20,7 @@ import { formatStatusLabel } from "@/lib/dashboard-ui";
 import { taskTitle } from "@/lib/my-task-filters";
 import { Task } from "@/lib/types";
 import { cn, formatTaskDeadline, getTaskTableLabels, resolveTaskDisplayStatus } from "@/lib/utils";
+import { useBranchTheme } from "@/components/branding/BranchThemeProvider";
 import { Clock, Lock, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -64,6 +65,7 @@ export default function ProcessTaskConfirmModal({
   loading = false,
   onConfirm,
 }: Props) {
+  const { primaryColor } = useBranchTheme();
   const [progress, setProgress] = useState(0);
   const [notes, setNotes] = useState("");
 
@@ -205,10 +207,10 @@ export default function ProcessTaskConfirmModal({
             <div className="rounded-xl border border-zinc-200/80 bg-white p-4 shadow-sm">
               <div className="mb-2.5 flex items-center justify-between gap-3">
                 <label className="text-xs font-bold uppercase tracking-wider text-zinc-600 flex items-center gap-1.5">
-                  <Sparkles className="size-3.5 text-primary" />
+                  <Sparkles className="size-3.5" style={{ color: primaryColor }} />
                   Completion Progress
                 </label>
-                <span className="text-base font-bold text-primary">
+                <span className="text-base font-bold" style={{ color: primaryColor }}>
                   {progress}%
                 </span>
               </div>
@@ -223,9 +225,10 @@ export default function ProcessTaskConfirmModal({
                   }
                   disabled={loading || isOverdue}
                   style={{
-                    background: `linear-gradient(to right, #7b1512 0%, #7b1512 ${progress}%, #e4e4e7 ${progress}%, #e4e4e7 100%)`,
+                    background: `linear-gradient(to right, ${primaryColor} 0%, ${primaryColor} ${progress}%, #e4e4e7 ${progress}%, #e4e4e7 100%)`,
+                    accentColor: primaryColor,
                   }}
-                  className="h-2 w-full cursor-pointer appearance-none rounded-full accent-[#7b1512] disabled:cursor-not-allowed"
+                  className="h-2 w-full cursor-pointer appearance-none rounded-full disabled:cursor-not-allowed"
                 />
                 <input
                   type="number"
@@ -269,15 +272,16 @@ export default function ProcessTaskConfirmModal({
           >
             Cancel
           </Button>
-          <Button
+          <button
             type="button"
             onClick={() => void onConfirm(isOverdue ? Number(task.progress ?? 0) : progress, notes)}
             disabled={loading || !task || (isOverdue && !notes.trim())}
             className={cn(
-              "h-10 min-w-[130px] px-6 text-xs font-bold text-white shadow-sm transition-all",
-              isCompleted ? "bg-emerald-600 hover:bg-emerald-700" : "bg-primary hover:bg-primary/90",
+              "h-10 min-w-[130px] px-6 text-xs font-bold text-white shadow-sm transition-all rounded-md",
+              isCompleted ? "bg-emerald-600 hover:bg-emerald-700" : "",
               (loading || !task || (isOverdue && !notes.trim())) && "cursor-not-allowed opacity-50",
             )}
+            style={!isCompleted ? { backgroundColor: primaryColor } : undefined}
           >
             {loading ? (
               <Loader />
@@ -288,7 +292,7 @@ export default function ProcessTaskConfirmModal({
             ) : (
               "Save Progress"
             )}
-          </Button>
+          </button>
         </div>
       </DialogContent>
     </Dialog>

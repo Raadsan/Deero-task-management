@@ -8,6 +8,7 @@ import {
   renderQuotationDocument,
   renderInvoiceDocument,
   uploadTemplateBackground,
+  previewQuotationPdf,
 } from "./documentTemplate.controller.js";
 import { protect } from "../../../../middlewares/authMiddleware.js";
 
@@ -16,6 +17,7 @@ const router = express.Router();
 // Document public rendering for printing / iframe / PDF download
 router.get("/render/quotation/:id", renderQuotationDocument);
 router.get("/render/invoice/:id", renderInvoiceDocument);
+router.post("/preview-pdf", previewQuotationPdf);
 
 router.use(protect);
 

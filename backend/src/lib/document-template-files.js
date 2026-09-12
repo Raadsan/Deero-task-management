@@ -12,6 +12,9 @@ const MIME_EXT = {
   "image/jpg": ".jpg",
   "image/webp": ".webp",
   "application/pdf": ".pdf",
+  "application/msword": ".doc",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
+  "application/vnd.ms-word": ".doc",
 };
 
 export async function ensureTemplateUploadDir() {
@@ -23,18 +26,28 @@ export async function saveTemplateBackground(dataUrl, originalName = "template")
 
   const match = String(dataUrl).match(/^data:([^;]+);base64,(.+)$/);
   if (!match) {
-    throw new Error("Invalid file data. Upload a PNG, JPG, or PDF image.");
+    throw new Error("Invalid file data. Upload a PDF, DOC, DOCX, PNG, or JPG file.");
   }
 
-  const mime = match[1];
-  const ext = MIME_EXT[mime];
+  const mime = match[1].toLowerCase();
+  let ext = MIME_EXT[mime];
   if (!ext) {
-    throw new Error("Unsupported file type. Use PNG, JPG, WEBP, or PDF.");
+    const lowerName = String(originalName || "").toLowerCase();
+    if (lowerName.endsWith(".docx")) ext = ".docx";
+    else if (lowerName.endsWith(".doc")) ext = ".doc";
+    else if (lowerName.endsWith(".pdf")) ext = ".pdf";
+    else if (lowerName.endsWith(".png")) ext = ".png";
+    else if (lowerName.endsWith(".jpg") || lowerName.endsWith(".jpeg")) ext = ".jpg";
+    else if (lowerName.endsWith(".webp")) ext = ".webp";
+  }
+
+  if (!ext) {
+    throw new Error("Unsupported file type. Please upload a PDF, DOC, DOCX, PNG, or JPG file.");
   }
 
   const buffer = Buffer.from(match[2], "base64");
-  if (buffer.length > 8 * 1024 * 1024) {
-    throw new Error("File is too large. Maximum size is 8MB.");
+  if (buffer.length > 16 * 1024 * 1024) {
+    throw new Error("File is too large. Maximum size is 16MB.");
   }
 
   const safeStem = String(originalName)

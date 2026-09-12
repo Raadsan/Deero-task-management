@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { getAdminDashboardBundle } from "@/lib/apis/dashboardApi";
 import { getTaskFormBranchOptions } from "@/lib/apis/sharedApi";
+import { useBranchTheme } from "@/components/branding/BranchThemeProvider";
 import { Task } from "@/lib/types";
 import {
   chartAxisTick,
@@ -121,6 +122,7 @@ export default function TaskManagementDashboard({
   isBranchDashboard?: boolean;
   userName?: string;
 }) {
+  const { primaryColor, secondaryColor } = useBranchTheme();
   const dashboardKey = ["dashboard-bundle", userId, portfolioId ?? "all"].join(":");
   const { data: bundleRes, isLoading, isValidating, mutate } = useSWR(
     dashboardKey,
@@ -284,11 +286,11 @@ export default function TaskManagementDashboard({
       else low += 1;
     });
     return [
-      { name: "High", value: high, color: BRAND_MAROON, count: `${high}` },
-      { name: "Medium", value: medium, color: BRAND_CORAL, count: `${medium}` },
+      { name: "High", value: high, color: primaryColor, count: `${high}` },
+      { name: "Medium", value: medium, color: secondaryColor, count: `${medium}` },
       { name: "Low", value: low, color: BRAND_AMBER, count: `${low}` },
     ];
-  }, [filteredTasks]);
+  }, [filteredTasks, primaryColor, secondaryColor]);
 
   // Upcoming Deadlines (Next 5 tasks sorted by deadline)
   const upcomingDeadlines = useMemo(() => {
@@ -303,8 +305,8 @@ export default function TaskManagementDashboard({
   }, [filteredTasks]);
 
   const taskStatusDonut = [
-    { name: "Completed", value: completedCount, color: BRAND_MAROON, count: `${completedCount}` },
-    { name: "In Progress", value: inProgressCount, color: BRAND_CORAL, count: `${inProgressCount}` },
+    { name: "Completed", value: completedCount, color: primaryColor, count: `${completedCount}` },
+    { name: "In Progress", value: inProgressCount, color: secondaryColor, count: `${inProgressCount}` },
     { name: "Pending", value: pendingCount, color: BRAND_AMBER, count: `${pendingCount}` },
     { name: "Overdue", value: overdueCount, color: BRAND_RED, count: `${overdueCount}` },
   ];
@@ -325,36 +327,7 @@ export default function TaskManagementDashboard({
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          {/* Left Pill Group: Portfolios / Branches */}
-          {!isBranchDashboard && allPortfolios.length > 0 && (
-            <div className="flex items-center gap-1.5 rounded-2xl border border-zinc-200 bg-white p-1.5 shadow-sm">
-              <button
-                type="button"
-                onClick={() => setPortfolioFilter(null)}
-                className={cn(
-                  "rounded-xl px-3 py-1.5 text-xs font-bold transition-colors",
-                  portfolioFilter === null ? "bg-[#5b1017] text-white shadow-sm" : "text-zinc-600 hover:bg-zinc-100",
-                )}
-              >
-                All
-              </button>
-              {allPortfolios.map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => setPortfolioFilter(portfolioFilter === p.id ? null : p.id)}
-                  className={cn(
-                    "rounded-xl px-3 py-1.5 text-xs font-bold transition-colors",
-                    portfolioFilter === p.id ? "bg-[#5b1017] text-white shadow-sm" : "text-zinc-600 hover:bg-zinc-100",
-                  )}
-                >
-                  {p.name}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Right Pill Group: Date Range Filter */}
+          {/* Date Range Filter only */}
           <div className="flex items-center gap-1.5 rounded-2xl border border-zinc-200 bg-white p-1.5 shadow-sm">
             {([
               ["today", "Today"],
@@ -369,8 +342,9 @@ export default function TaskManagementDashboard({
                 onClick={() => setPeriod(value)}
                 className={cn(
                   "rounded-xl px-3 py-1.5 text-xs font-bold transition-colors",
-                  period === value ? "bg-[#5b1017] text-white shadow-sm" : "text-zinc-600 hover:bg-zinc-100",
+                  period === value ? "text-white shadow-sm" : "text-zinc-600 hover:bg-zinc-100",
                 )}
+                style={period === value ? { backgroundColor: primaryColor } : undefined}
               >
                 {label}
               </button>
@@ -416,7 +390,10 @@ export default function TaskManagementDashboard({
         {/* TOTAL TASKS */}
         <div className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
           <div className="flex items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#5b1017] text-white">
+            <div
+              className="flex size-10 shrink-0 items-center justify-center rounded-xl text-white shadow-sm"
+              style={{ backgroundColor: primaryColor }}
+            >
               <Briefcase className="size-5" />
             </div>
             <div>
@@ -425,13 +402,16 @@ export default function TaskManagementDashboard({
               <p className="mt-1 text-[10px] font-medium text-emerald-600">↑ 12.5% vs last week</p>
             </div>
           </div>
-          <MiniSparkline color={BRAND_MAROON} />
+          <MiniSparkline color={primaryColor} />
         </div>
 
         {/* MY TASKS */}
         <div className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
           <div className="flex items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#5b1017] text-white">
+            <div
+              className="flex size-10 shrink-0 items-center justify-center rounded-xl text-white shadow-sm"
+              style={{ backgroundColor: primaryColor }}
+            >
               <Users className="size-5" />
             </div>
             <div>
@@ -440,12 +420,15 @@ export default function TaskManagementDashboard({
               <p className="mt-1 text-[10px] font-medium text-emerald-600">↑ 8.2% vs last week</p>
             </div>
           </div>
-          <MiniSparkline color={BRAND_MAROON} />
+          <MiniSparkline color={primaryColor} />
         </div>
 
         {/* IN PROGRESS */}
         <div className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#e85d3f] text-white">
+          <div
+            className="flex size-10 shrink-0 items-center justify-center rounded-xl text-white shadow-sm"
+            style={{ backgroundColor: secondaryColor }}
+          >
             <Clock className="size-5" />
           </div>
           <div>
@@ -458,7 +441,10 @@ export default function TaskManagementDashboard({
         {/* COMPLETED */}
         <div className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
           <div className="flex items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#5b1017] text-white">
+            <div
+              className="flex size-10 shrink-0 items-center justify-center rounded-xl text-white shadow-sm"
+              style={{ backgroundColor: primaryColor }}
+            >
               <CheckCircle2 className="size-5" />
             </div>
             <div>
@@ -467,7 +453,7 @@ export default function TaskManagementDashboard({
               <p className="mt-1 text-[10px] font-medium text-emerald-600">↑ 18.6% vs last week</p>
             </div>
           </div>
-          <MiniSparkline color={BRAND_MAROON} />
+          <MiniSparkline color={primaryColor} />
         </div>
 
         {/* OVERDUE TASKS */}
@@ -488,7 +474,10 @@ export default function TaskManagementDashboard({
         {/* STAFFS */}
         <div className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
           <div className="flex items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#5b1017] text-white">
+            <div
+              className="flex size-10 shrink-0 items-center justify-center rounded-xl text-white shadow-sm"
+              style={{ backgroundColor: primaryColor }}
+            >
               <Users className="size-5" />
             </div>
             <div>
@@ -497,7 +486,7 @@ export default function TaskManagementDashboard({
               <p className="mt-1 text-[10px] font-medium text-zinc-400">— 0% vs last week</p>
             </div>
           </div>
-          <MiniSparkline color={BRAND_MAROON} />
+          <MiniSparkline color={primaryColor} />
         </div>
       </div>
 
@@ -512,10 +501,10 @@ export default function TaskManagementDashboard({
             </div>
             <div className="flex items-center gap-3 text-xs">
               <span className="flex items-center gap-1.5 font-semibold text-zinc-700">
-                <span className="size-2 rounded-full bg-[#5b1017]" /> Created
+                <span className="size-2 rounded-full" style={{ backgroundColor: primaryColor }} /> Created
               </span>
               <span className="flex items-center gap-1.5 font-semibold text-zinc-700">
-                <span className="size-2 rounded-full bg-[#e85d3f]" /> Completed
+                <span className="size-2 rounded-full" style={{ backgroundColor: secondaryColor }} /> Completed
               </span>
             </div>
           </div>
@@ -530,17 +519,17 @@ export default function TaskManagementDashboard({
                 <Line
                   type="monotone"
                   dataKey="created"
-                  stroke="#5b1017"
+                  stroke={primaryColor}
                   strokeWidth={2.5}
-                  dot={{ r: 3.5, fill: "#5b1017", strokeWidth: 0 }}
+                  dot={{ r: 3.5, fill: primaryColor, strokeWidth: 0 }}
                   activeDot={{ r: 5 }}
                 />
                 <Line
                   type="monotone"
                   dataKey="completed"
-                  stroke="#e85d3f"
+                  stroke={secondaryColor}
                   strokeWidth={2.5}
-                  dot={{ r: 3.5, fill: "#e85d3f", strokeWidth: 0 }}
+                  dot={{ r: 3.5, fill: secondaryColor, strokeWidth: 0 }}
                   activeDot={{ r: 5 }}
                 />
               </LineChart>
@@ -557,10 +546,10 @@ export default function TaskManagementDashboard({
             </div>
             <div className="flex items-center gap-3 text-xs">
               <span className="flex items-center gap-1.5 font-semibold text-zinc-700">
-                <span className="size-2 rounded-full bg-[#5b1017]" /> Assigned
+                <span className="size-2 rounded-full" style={{ backgroundColor: primaryColor }} /> Assigned
               </span>
               <span className="flex items-center gap-1.5 font-semibold text-zinc-700">
-                <span className="size-2 rounded-full bg-[#e85d3f]" /> Completed
+                <span className="size-2 rounded-full" style={{ backgroundColor: secondaryColor }} /> Completed
               </span>
             </div>
           </div>
@@ -572,8 +561,8 @@ export default function TaskManagementDashboard({
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "#64748b" }} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: "#64748b" }} />
                 <Tooltip contentStyle={lightTooltipStyle} />
-                <Bar dataKey="assigned" fill="#5b1017" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="completed" fill="#e85d3f" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="assigned" fill={primaryColor} radius={[4, 4, 0, 0]} />
+                <Bar dataKey="completed" fill={secondaryColor} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -640,8 +629,11 @@ export default function TaskManagementDashboard({
                 <span className="w-24 truncate font-medium text-zinc-600">{item.name}</span>
                 <div className="h-2 flex-1 overflow-hidden rounded-full bg-zinc-100">
                   <div
-                    className="h-full rounded-full bg-[#5b1017]"
-                    style={{ width: `${Math.round((item.total / maxClientTasks) * 100)}%` }}
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${Math.round((item.total / maxClientTasks) * 100)}%`,
+                      backgroundColor: primaryColor,
+                    }}
                   />
                 </div>
                 <span className="w-5 text-right font-bold text-zinc-800">{item.total}</span>
@@ -770,7 +762,7 @@ export default function TaskManagementDashboard({
           </div>
 
           <div className="mt-3 border-t border-zinc-100 pt-2">
-            <Link href="/tasks" className="text-[11px] font-bold text-[#5b1017] hover:underline">
+            <Link href="/tasks" className="text-[11px] font-bold hover:underline" style={{ color: primaryColor }}>
               View All Tasks →
             </Link>
           </div>
@@ -809,7 +801,7 @@ export default function TaskManagementDashboard({
           </div>
 
           <div className="mt-3 border-t border-zinc-100 pt-2">
-            <Link href="/clients" className="text-[11px] font-bold text-[#5b1017] hover:underline">
+            <Link href="/clients" className="text-[11px] font-bold hover:underline" style={{ color: primaryColor }}>
               View All Clients →
             </Link>
           </div>

@@ -57,28 +57,105 @@ export default function DocumentTemplateDesigner({
 }: Props) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<string>("Uploading…");
   const [dragId, setDragId] = useState<string | null>(null);
 
+  const loadPdfJs = async (): Promise<any> => {
+    if (typeof window === "undefined") return null;
+    if ((window as any).pdfjsLib) return (window as any).pdfjsLib;
+
+    return new Promise((resolve, reject) => {
+      const existingScript = document.getElementById("pdfjs-script");
+      if (existingScript) {
+        existingScript.addEventListener("load", () => resolve((window as any).pdfjsLib));
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.id = "pdfjs-script";
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+      script.onload = () => {
+        const pdfjs = (window as any).pdfjsLib;
+        if (pdfjs) {
+          pdfjs.GlobalWorkerOptions.workerSrc =
+            "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+          resolve(pdfjs);
+        } else {
+          reject(new Error("PDF engine failed to initialize"));
+        }
+      };
+      script.onerror = () => reject(new Error("Failed to load PDF engine from CDN"));
+      document.head.appendChild(script);
+    });
+  };
+
+  const convertPdfToDataUrl = async (file: File): Promise<string> => {
+    const pdfjs = await loadPdfJs();
+    if (!pdfjs) throw new Error("PDF processing is only supported in browser");
+
+    const arrayBuffer = await file.arrayBuffer();
+    const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
+    const pdf = await loadingTask.promise;
+    const page = await pdf.getPage(1);
+
+    // Render at 2.0 scale for crisp, high-resolution rendering
+    const viewport = page.getViewport({ scale: 2.0 });
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("Unable to create canvas context");
+
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+
+    // Default white background
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    await page.render({
+      canvasContext: ctx,
+      viewport,
+    }).promise;
+
+    return canvas.toDataURL("image/png", 0.95);
+  };
+
   const uploadFile = useCallback(async (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      accountingToast("Please upload a PNG or JPG design image", "error");
+    const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+    const isImage = file.type.startsWith("image/");
+
+    if (!isPdf && !isImage) {
+      accountingToast("Please upload a PDF, PNG, or JPG design document", "error");
       return;
     }
-    const reader = new FileReader();
-    reader.onload = async () => {
-      try {
-        setUploading(true);
-        const dataUrl = String(reader.result || "");
-        const result = await documentTemplateApi.uploadBackground(dataUrl, file.name);
-        onFileUrlChange(result.file_url);
-        accountingToast("Design uploaded successfully");
-      } catch (error) {
-        accountingToast(error instanceof Error ? error.message : "Upload failed", "error");
-      } finally {
-        setUploading(false);
+
+    try {
+      setUploading(true);
+      let dataUrl: string;
+
+      if (isPdf) {
+        setUploadStatus("Converting PDF page to design…");
+        dataUrl = await convertPdfToDataUrl(file);
+      } else {
+        setUploadStatus("Reading design file…");
+        dataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result || ""));
+          reader.onerror = () => reject(new Error("Failed to read file"));
+          reader.readAsDataURL(file);
+        });
       }
-    };
-    reader.readAsDataURL(file);
+
+      setUploadStatus("Uploading design…");
+      const safeName = file.name.replace(/\.[^.]+$/, "") + ".png";
+      const result = await documentTemplateApi.uploadBackground(dataUrl, safeName);
+      onFileUrlChange(result.file_url);
+      accountingToast(isPdf ? "PDF design loaded and ready!" : "Design uploaded successfully!");
+    } catch (error) {
+      accountingToast(error instanceof Error ? error.message : "Upload failed", "error");
+    } finally {
+      setUploading(false);
+      setUploadStatus("Uploading…");
+    }
   }, [onFileUrlChange]);
 
   function addField(catalogKey: string) {
@@ -131,19 +208,19 @@ export default function DocumentTemplateDesigner({
         <div>
           <p className="text-sm font-semibold text-zinc-800">1. Upload design</p>
           <p className="mt-1 text-xs text-zinc-500">
-            Upload your blank quotation or invoice design (PNG/JPG). No coding required.
+            Upload your blank quotation or invoice design (PDF, PNG, JPG). No coding required.
           </p>
         </div>
 
-        <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-zinc-300 bg-zinc-50 px-4 py-6 text-center hover:bg-zinc-100">
+        <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-zinc-300 bg-zinc-50 px-4 py-6 text-center hover:bg-zinc-100 transition-colors">
           <Upload className="mb-2 size-5 text-primary" />
           <span className="text-xs font-semibold text-zinc-700">
-            {uploading ? "Uploading…" : "Choose design file"}
+            {uploading ? uploadStatus : "Choose PDF or image file"}
           </span>
-          <span className="mt-1 text-[11px] text-zinc-500">PNG or JPG, max 8MB</span>
+          <span className="mt-1 text-[11px] text-zinc-500">PDF, PNG or JPG, max 16MB</span>
           <input
             type="file"
-            accept="image/png,image/jpeg,image/jpg,image/webp"
+            accept="application/pdf,image/png,image/jpeg,image/jpg,image/webp,.pdf"
             className="hidden"
             disabled={uploading}
             onChange={(event) => {

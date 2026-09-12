@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState, useCallback, Suspense } from "react";
-import { Plus, Eye, SquarePen, Trash2, ArrowRight, Download, FileSpreadsheet, RefreshCw } from "lucide-react";
+import { Plus, Eye, SquarePen, Trash2, Download, FileSpreadsheet, RefreshCw, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { quotationApi, type Quotation } from "@/lib/api/quotationApi";
 import { documentTemplateApi } from "@/lib/api/documentTemplateApi";
 import QuotationModal from "@/components/quotations/QuotationModal";
@@ -106,12 +107,67 @@ function CustomerQuotationPageContent() {
       REJECTED: "bg-red-50 text-red-700 border-red-200",
       EXPIRED: "bg-amber-50 text-amber-700 border-amber-200",
       CONVERTED: "bg-purple-50 text-purple-700 border-purple-200",
+      CANCELED: "bg-red-50 text-red-600 border-red-200",
     };
     return (
       <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase border ${map[status] || "bg-zinc-100"}`}>
         {status}
       </span>
     );
+  };
+
+  // Status modal state (Pop up caadi ah)
+  const [statusModalQuotation, setStatusModalQuotation] = useState<Quotation | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<string>("DRAFT");
+  const [statusUpdating, setStatusUpdating] = useState(false);
+
+  const openStatusModal = (quotation: Quotation) => {
+    setStatusModalQuotation(quotation);
+    setSelectedStatus(quotation.status);
+  };
+
+  const handleSaveStatus = async () => {
+    if (!statusModalQuotation) return;
+    const quotation = statusModalQuotation;
+    const newStatus = selectedStatus;
+
+    if (newStatus === "ACCEPTED") {
+      try {
+        setStatusUpdating(true);
+        const res = await quotationApi.convertToInvoice(quotation.id);
+        accountingToast(`Quotation accepted! Draft Invoice ${res.invoice?.invoice_number || ""} created.`);
+        setStatusModalQuotation(null);
+        loadData();
+      } catch (err: unknown) {
+        const message =
+          err && typeof err === "object" && "response" in err
+            ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+            : err instanceof Error
+              ? err.message
+              : "Failed to accept quotation";
+        accountingToast(message || "Failed to accept quotation", "error");
+      } finally {
+        setStatusUpdating(false);
+      }
+    } else {
+      try {
+        setStatusUpdating(true);
+        await quotationApi.updateStatus(quotation.id, newStatus);
+        accountingToast(`Quotation status changed to ${newStatus}`);
+        setStatusModalQuotation(null);
+        loadData();
+      } catch (err: unknown) {
+        const message =
+          err && typeof err === "object" && "response" in err
+            ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+            : err instanceof Error
+              ? err.message
+              : "Failed to update status";
+        accountingToast(message || "Failed to update status", "error");
+      } finally {
+        setStatusUpdating(false);
+      }
+    }
   };
 
   const columns: DashboardTableColumn<Quotation>[] = [
@@ -148,12 +204,6 @@ function CustomerQuotationPageContent() {
       cell: (row) => (row.valid_until ? formatDate(row.valid_until) : "—"),
     },
     {
-      key: "currency",
-      header: "Currency",
-      align: "center",
-      cell: (row) => row.currencies?.code || "—",
-    },
-    {
       key: "total",
       header: "Total",
       align: "right",
@@ -163,7 +213,19 @@ function CustomerQuotationPageContent() {
       key: "status",
       header: "Status",
       align: "center",
-      cell: (row) => statusBadge(row.status),
+      cell: (row) => {
+        return (
+          <button
+            type="button"
+            disabled={statusUpdating}
+            onClick={() => openStatusModal(row)}
+            className="cursor-pointer hover:opacity-80 transition-opacity"
+            title="Click to view quotation info & change status"
+          >
+            {statusBadge(row.status)}
+          </button>
+        );
+      },
     },
     {
       key: "actions",
@@ -197,7 +259,7 @@ function CustomerQuotationPageContent() {
             <Download className="size-4 text-emerald-600" />
           </Button>
 
-          {row.status !== "CONVERTED" && (
+          {!["CONVERTED", "CANCELED"].includes(row.status) && (
             <>
               <Button
                 size="sm"
@@ -210,16 +272,6 @@ function CustomerQuotationPageContent() {
                 title="Edit Quotation"
               >
                 <SquarePen className="size-4" />
-              </Button>
-
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-8 px-2 text-xs font-semibold text-purple-600 hover:bg-purple-50 gap-1"
-                onClick={() => handleConvert(row)}
-                title="Approve and create invoice"
-              >
-                <ArrowRight className="size-3.5" /> Approve & Invoice
               </Button>
 
               <Button
@@ -284,6 +336,129 @@ function CustomerQuotationPageContent() {
             quotation={viewQuotation}
             onConverted={loadData}
           />
+
+          {/* Quotation Status Update Dialog (Pop up caadi ah) */}
+          <Dialog
+            open={Boolean(statusModalQuotation)}
+            onOpenChange={(open) => !statusUpdating && !open && setStatusModalQuotation(null)}
+          >
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-base font-bold text-zinc-900">
+                  <RefreshCw className="size-4 text-primary" /> Update Quotation Status
+                </DialogTitle>
+                <DialogDescription className="text-xs text-zinc-500">
+                  Select a new status for quotation <strong>{statusModalQuotation?.quotation_number}</strong>
+                </DialogDescription>
+              </DialogHeader>
+
+              {statusModalQuotation && (
+                <div className="space-y-4 py-2">
+                  {/* Quotation Information Summary */}
+                  <div className="bg-zinc-50 rounded-xl p-3.5 border border-zinc-200 text-xs space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-zinc-500 font-medium">Quotation #:</span>
+                      <span className="font-bold text-zinc-900 flex items-center gap-1.5">
+                        <FileSpreadsheet className="size-3.5 text-primary" />
+                        {statusModalQuotation.quotation_number}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-zinc-500 font-medium">Customer:</span>
+                      <span className="font-semibold text-zinc-800">
+                        {statusModalQuotation.client?.institution || statusModalQuotation.customer?.name || "—"}
+                      </span>
+                    </div>
+                    {(statusModalQuotation.client?.email || statusModalQuotation.customer?.email) && (
+                      <div className="flex justify-between items-center">
+                        <span className="text-zinc-500 font-medium">Email:</span>
+                        <span className="text-zinc-600">
+                          {statusModalQuotation.client?.email || statusModalQuotation.customer?.email}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex justify-between items-center">
+                      <span className="text-zinc-500 font-medium">Date:</span>
+                      <span className="text-zinc-700">{formatDate(statusModalQuotation.date)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-zinc-500 font-medium">Valid Until:</span>
+                      <span className="text-zinc-700">
+                        {statusModalQuotation.valid_until ? formatDate(statusModalQuotation.valid_until) : "—"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center border-t border-zinc-200 pt-2">
+                      <span className="text-zinc-700 font-bold">Total Amount:</span>
+                      <span className="font-bold text-sm text-zinc-900">
+                        {statusModalQuotation.currencies?.symbol || "$"} {Number(statusModalQuotation.total).toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-zinc-500 font-medium">Current Status:</span>
+                      {statusBadge(statusModalQuotation.status)}
+                    </div>
+                  </div>
+
+                  {/* Status Selection */}
+                  <div>
+                    <label className="block text-xs font-bold text-zinc-700 mb-1.5">
+                      New Status:
+                    </label>
+                    <select
+                      value={selectedStatus}
+                      onChange={(e) => setSelectedStatus(e.target.value)}
+                      className="w-full h-10 px-3 rounded-lg border border-zinc-300 bg-white text-xs font-semibold text-zinc-800 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    >
+                      <option value="DRAFT">Draft</option>
+                      <option value="SENT">Sent</option>
+                      <option value="ACCEPTED">Accept (Create Invoice)</option>
+                      <option value="EXPIRED">Expire</option>
+                      <option value="REJECTED">Reject</option>
+                    </select>
+                  </div>
+
+                  {/* Context notice when ACCEPTED is selected */}
+                  {selectedStatus === "ACCEPTED" && (
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-xs text-emerald-800 flex items-start gap-2">
+                      <CheckCircle2 className="size-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <div>
+                        <strong className="block font-semibold">Automatic Invoice Creation</strong>
+                        Quotation-kan waxaa loo beddeli doonaa <strong>Accepted</strong>, waxaana si toos ah loo abuuri doonaa Customer Invoice cusub oo <strong>Draft</strong> ah.
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <DialogFooter className="gap-2 sm:gap-0">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={statusUpdating}
+                  onClick={() => setStatusModalQuotation(null)}
+                  className="text-xs"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  disabled={statusUpdating || selectedStatus === statusModalQuotation?.status}
+                  onClick={handleSaveStatus}
+                  className="text-xs font-bold bg-primary text-white"
+                >
+                  {statusUpdating ? (
+                    <>
+                      <RefreshCw className="size-3.5 animate-spin mr-1.5" /> Updating...
+                    </>
+                  ) : (
+                    "Update Status"
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
       </>
     </AccountingPageShell>
   );

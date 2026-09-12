@@ -168,6 +168,8 @@ export async function getTaskFormBranchOptions(): Promise<
         portfolios: portfolios.map((portfolio) => ({
           id: portfolio.id,
           name: portfolio.name,
+          primaryColor: portfolio.primaryColor,
+          secondaryColor: portfolio.secondaryColor,
         })),
         defaultBranchId,
         singleBranch: portfolios.length <= 1,

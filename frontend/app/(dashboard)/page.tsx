@@ -18,6 +18,7 @@ import { authClient } from "@/lib/auth-client";
 import { isBranchScopedRole, normalizeRoleName } from "@/lib/portfolio-access";
 import { Task } from "@/lib/types";
 import { ROUTES } from "@/lib/constants";
+import { useBranchTheme } from "@/components/branding/BranchThemeProvider";
 import {
   dashboardPageClass,
   dashboardPageStyle,
@@ -138,6 +139,7 @@ function sameDay(a: Date, b: Date) {
 // Staff personal dashboard
 // ─────────────────────────────────────────────────────────────
 function StaffDashboard({ userId, userName }: { userId: string; userName: string }) {
+  const { primaryColor, secondaryColor } = useBranchTheme();
   const { data: bundleRes, isLoading, isValidating, mutate } = useSWR(
     ["staff-dashboard", userId],
     () => getMyDashboardBundle(),
@@ -176,14 +178,14 @@ function StaffDashboard({ userId, userName }: { userId: string; userName: string
   const statusData = useMemo(() => {
     const total = Math.max(tasks.length, 1);
     return [
-      { name: "Completed", value: metrics.completed, color: BRAND_MAROON },
-      { name: "Pending", value: metrics.pending, color: BRAND_CORAL },
+      { name: "Completed", value: metrics.completed, color: primaryColor },
+      { name: "Pending", value: metrics.pending, color: secondaryColor },
       { name: "Overdue", value: metrics.overdue, color: BRAND_RED },
     ].map((item) => ({
       ...item,
       count: `${item.value} (${Math.round((item.value / total) * 100)}%)`,
     }));
-  }, [metrics.completed, metrics.overdue, metrics.pending, tasks.length]);
+  }, [metrics.completed, metrics.overdue, metrics.pending, tasks.length, primaryColor, secondaryColor]);
 
   const priorityData = useMemo(() => {
     let normal = 0;
@@ -197,14 +199,14 @@ function StaffDashboard({ userId, userName }: { userId: string; userName: string
     });
     const total = Math.max(tasks.length, 1);
     return [
-      { name: "Normal", value: normal, color: BRAND_MAROON },
-      { name: "Medium", value: medium, color: BRAND_CORAL },
+      { name: "Normal", value: normal, color: primaryColor },
+      { name: "Medium", value: medium, color: secondaryColor },
       { name: "Urgent", value: urgent, color: BRAND_RED },
     ].map((item) => ({
       ...item,
       count: `${item.value} (${Math.round((item.value / total) * 100)}%)`,
     }));
-  }, [tasks]);
+  }, [tasks, primaryColor, secondaryColor]);
 
   const upcomingTasks = useMemo(() => {
     return tasks
@@ -256,7 +258,8 @@ function StaffDashboard({ userId, userName }: { userId: string; userName: string
             type="button"
             onClick={() => mutate()}
             disabled={isValidating}
-            className="flex items-center gap-2 rounded-lg bg-[#7a1414] px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-[#641010] disabled:opacity-60"
+            className="flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:opacity-90 disabled:opacity-60"
+            style={{ backgroundColor: primaryColor }}
           >
             <RefreshCw className={cn("size-4", isValidating && "animate-spin")} />
             Refresh
@@ -266,15 +269,15 @@ function StaffDashboard({ userId, userName }: { userId: string; userName: string
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
         {[
-          { label: "Assigned Tasks", value: metrics.assigned, caption: "Total tasks assigned to you", Icon: Briefcase, color: BRAND_MAROON },
-          { label: "Completed", value: metrics.completed, caption: "Tasks you have completed", Icon: CheckCircle, color: BRAND_RED },
-          { label: "Pending", value: metrics.pending, caption: "Tasks in progress", Icon: Clock, color: BRAND_CORAL },
+          { label: "Assigned Tasks", value: metrics.assigned, caption: "Total tasks assigned to you", Icon: Briefcase, color: primaryColor },
+          { label: "Completed", value: metrics.completed, caption: "Tasks you have completed", Icon: CheckCircle, color: primaryColor },
+          { label: "Pending", value: metrics.pending, caption: "Tasks in progress", Icon: Clock, color: secondaryColor },
           { label: "Overdue", value: metrics.overdue, caption: "Tasks past due date", Icon: AlertCircle, color: BRAND_RED },
         ].map(({ label, value, caption, Icon, color }) => (
           <div key={label} className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: `${color}14`, color }}>
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: `color-mix(in srgb, ${color} 14%, white)`, color }}>
                   <Icon className="size-5" />
                 </div>
                 <div>
@@ -294,8 +297,8 @@ function StaffDashboard({ userId, userName }: { userId: string; userName: string
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-[#0f172a]">Daily Performance (7 Days)</h3>
             <div className="flex items-center gap-3 text-xs">
-              <span className="flex items-center gap-1.5 text-zinc-700"><span className="size-2 rounded-full bg-[#5b1017]" /> Completed</span>
-              <span className="flex items-center gap-1.5 text-zinc-700"><span className="size-2 rounded-full bg-[#e85d3f]" /> Pending</span>
+              <span className="flex items-center gap-1.5 text-zinc-700"><span className="size-2 rounded-full" style={{ backgroundColor: primaryColor }} /> Completed</span>
+              <span className="flex items-center gap-1.5 text-zinc-700"><span className="size-2 rounded-full" style={{ backgroundColor: secondaryColor }} /> Pending</span>
             </div>
           </div>
           <div className="mt-4 h-[250px]">
@@ -305,8 +308,8 @@ function StaffDashboard({ userId, userName }: { userId: string; userName: string
                 <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "#64748b" }} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "#64748b" }} allowDecimals={false} />
                 <Tooltip contentStyle={lightTooltipStyle} />
-                <Line type="monotone" dataKey="completed" stroke={BRAND_MAROON} strokeWidth={3} dot={{ r: 4, fill: "#fff", stroke: BRAND_MAROON, strokeWidth: 2 }} />
-                <Line type="monotone" dataKey="pending" stroke={BRAND_CORAL} strokeWidth={3} dot={{ r: 4, fill: "#fff", stroke: BRAND_CORAL, strokeWidth: 2 }} />
+                <Line type="monotone" dataKey="completed" stroke={primaryColor} strokeWidth={3} dot={{ r: 4, fill: "#fff", stroke: primaryColor, strokeWidth: 2 }} />
+                <Line type="monotone" dataKey="pending" stroke={secondaryColor} strokeWidth={3} dot={{ r: 4, fill: "#fff", stroke: secondaryColor, strokeWidth: 2 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -382,11 +385,11 @@ function StaffDashboard({ userId, userName }: { userId: string; userName: string
         <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm xl:col-span-6">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-[#0f172a]">Upcoming Tasks</h3>
-            <Link href="/tasks/my-tasks" className="text-xs font-bold text-[#7a1414] hover:underline">View All</Link>
+            <Link href="/tasks/my-tasks" className="text-xs font-bold hover:underline" style={{ color: primaryColor }}>View All</Link>
           </div>
           <div className="mt-4 overflow-hidden rounded-lg border border-zinc-200">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#7a1414] text-white">
+              <thead className="text-white" style={{ backgroundColor: primaryColor }}>
                 <tr>
                   <th className="px-3 py-2 font-bold">Task</th>
                   <th className="px-3 py-2 font-bold">Priority</th>
@@ -426,6 +429,7 @@ function StaffDashboard({ userId, userName }: { userId: string; userName: string
 // Manager Dashboard
 // ─────────────────────────────────────────────────────────────
 function ManagerDashboard({ userId, userName }: { userId: string; userName: string }) {
+  const { primaryColor, secondaryColor } = useBranchTheme();
   const { data: bundleRes, isLoading, isValidating, mutate } = useSWR(
     ["manager-dashboard", userId],
     () => getManagerDashboardBundle(),
@@ -474,11 +478,11 @@ function ManagerDashboard({ userId, userName }: { userId: string; userName: stri
   const statusData = useMemo(() => {
     const total = Math.max(allTasks.length, 1);
     return [
-      { name: "Completed", value: staffMetrics.completed, color: BRAND_MAROON },
-      { name: "Pending", value: staffMetrics.pending, color: BRAND_CORAL },
+      { name: "Completed", value: staffMetrics.completed, color: primaryColor },
+      { name: "Pending", value: staffMetrics.pending, color: secondaryColor },
       { name: "Overdue", value: staffMetrics.overdue, color: BRAND_RED },
     ].map((item) => ({ ...item, count: `${item.value} (${Math.round((item.value / total) * 100)}%)` }));
-  }, [allTasks.length, staffMetrics.completed, staffMetrics.overdue, staffMetrics.pending]);
+  }, [allTasks.length, staffMetrics.completed, staffMetrics.overdue, staffMetrics.pending, primaryColor, secondaryColor]);
 
   const priorityData = useMemo(() => {
     let normal = 0;
@@ -492,11 +496,11 @@ function ManagerDashboard({ userId, userName }: { userId: string; userName: stri
     });
     const total = Math.max(allTasks.length, 1);
     return [
-      { name: "Normal", value: normal, color: BRAND_MAROON },
-      { name: "Medium", value: medium, color: BRAND_CORAL },
+      { name: "Normal", value: normal, color: primaryColor },
+      { name: "Medium", value: medium, color: secondaryColor },
       { name: "Urgent", value: urgent, color: BRAND_RED },
     ].map((item) => ({ ...item, count: `${item.value} (${Math.round((item.value / total) * 100)}%)` }));
-  }, [allTasks]);
+  }, [allTasks, primaryColor, secondaryColor]);
 
   const tableTasks = (items: Task[]) =>
     items
@@ -519,7 +523,7 @@ function ManagerDashboard({ userId, userName }: { userId: string; userName: stri
       const status = resolveTaskDisplayStatus(task);
       return (
         <tr key={task.id ?? index}>
-          <td className="px-3 py-2 font-bold text-[#7a1414]">{task.id?.slice(0, 8) || `TASK${index + 1}`}</td>
+          <td className="px-3 py-2 font-bold" style={{ color: primaryColor }}>{task.id?.slice(0, 8) || `TASK${index + 1}`}</td>
           <td className="px-3 py-2 font-semibold text-zinc-800">{taskTitle(task)}</td>
           {includeAssignee && <td className="px-3 py-2 text-zinc-700">{task.assignedTo?.name || "Unassigned"}</td>}
           <td className="px-3 py-2"><span className={cn(dashboardStatusBadgeClass, getTaskStatusBadgeClass(status))}>{formatStatusLabel(status)}</span></td>
@@ -565,14 +569,14 @@ function ManagerDashboard({ userId, userName }: { userId: string; userName: stri
       <p className="text-xs font-bold uppercase tracking-wider text-zinc-500">My Tasks</p>
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
         {[
-          { label: "Assigned to Me", value: myMetrics.assigned, Icon: Briefcase, color: BRAND_MAROON },
-          { label: "Completed", value: myMetrics.completed, Icon: CheckCircle, color: BRAND_MAROON },
-          { label: "Pending", value: myMetrics.pending, Icon: Clock, color: BRAND_CORAL },
+          { label: "Assigned to Me", value: myMetrics.assigned, Icon: Briefcase, color: primaryColor },
+          { label: "Completed", value: myMetrics.completed, Icon: CheckCircle, color: primaryColor },
+          { label: "Pending", value: myMetrics.pending, Icon: Clock, color: secondaryColor },
           { label: "Overdue", value: myMetrics.overdue, Icon: AlertCircle, color: BRAND_RED },
         ].map(({ label, value, Icon, color }) => (
           <div key={label} className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
             <div className="flex items-start justify-between gap-4">
-              <div className="flex items-center gap-4"><div className="flex size-10 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: `${color}14`, color }}><Icon className="size-5" /></div><div><p className="text-xs font-semibold text-zinc-600">{label}</p><h3 className="mt-1 text-3xl font-bold text-[#0f172a]">{value}</h3></div></div>
+              <div className="flex items-center gap-4"><div className="flex size-10 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: `color-mix(in srgb, ${color} 14%, white)`, color }}><Icon className="size-5" /></div><div><p className="text-xs font-semibold text-zinc-600">{label}</p><h3 className="mt-1 text-3xl font-bold text-[#0f172a]">{value}</h3></div></div>
               <MiniSparkline color={color} />
             </div>
           </div>
@@ -582,13 +586,13 @@ function ManagerDashboard({ userId, userName }: { userId: string; userName: stri
       <p className="text-xs font-bold uppercase tracking-wider text-zinc-500">Staff Tasks</p>
       <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
         {[
-          { label: "Total Staff Tasks", value: staffMetrics.assigned, Icon: Users, color: BRAND_CORAL },
-          { label: "Completed", value: staffMetrics.completed, Icon: CheckCircle, color: BRAND_MAROON },
-          { label: "Pending / Overdue", value: staffMetrics.pending + staffMetrics.overdue, Icon: Clock, color: BRAND_CORAL },
+          { label: "Total Staff Tasks", value: staffMetrics.assigned, Icon: Users, color: secondaryColor },
+          { label: "Completed", value: staffMetrics.completed, Icon: CheckCircle, color: primaryColor },
+          { label: "Pending / Overdue", value: staffMetrics.pending + staffMetrics.overdue, Icon: Clock, color: secondaryColor },
         ].map(({ label, value, Icon, color }) => (
           <div key={label} className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
             <div className="flex items-start justify-between gap-4">
-              <div className="flex items-center gap-4"><div className="flex size-10 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: `${color}14`, color }}><Icon className="size-5" /></div><div><p className="text-xs font-semibold text-zinc-600">{label}</p><h3 className="mt-1 text-3xl font-bold text-[#0f172a]">{value}</h3></div></div>
+              <div className="flex items-center gap-4"><div className="flex size-10 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: `color-mix(in srgb, ${color} 14%, white)`, color }}><Icon className="size-5" /></div><div><p className="text-xs font-semibold text-zinc-600">{label}</p><h3 className="mt-1 text-3xl font-bold text-[#0f172a]">{value}</h3></div></div>
               <MiniSparkline color={color} />
             </div>
           </div>
@@ -598,7 +602,7 @@ function ManagerDashboard({ userId, userName }: { userId: string; userName: stri
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
         <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm xl:col-span-4">
           <h3 className="text-sm font-bold text-[#0f172a]">Daily Performance (7 Days)</h3>
-          <div className="mt-4 h-[230px]"><ResponsiveContainer width="100%" height="100%"><LineChart data={dailyPerformance} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#edf2f7" /><XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "#64748b" }} /><YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "#64748b" }} allowDecimals={false} /><Tooltip contentStyle={lightTooltipStyle} /><Line type="monotone" dataKey="completed" stroke={BRAND_MAROON} strokeWidth={3} dot={{ r: 4 }} /><Line type="monotone" dataKey="pending" stroke={BRAND_CORAL} strokeWidth={3} dot={{ r: 4 }} /></LineChart></ResponsiveContainer></div>
+          <div className="mt-4 h-[230px]"><ResponsiveContainer width="100%" height="100%"><LineChart data={dailyPerformance} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}><CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#edf2f7" /><XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "#64748b" }} /><YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "#64748b" }} allowDecimals={false} /><Tooltip contentStyle={lightTooltipStyle} /><Line type="monotone" dataKey="completed" stroke={primaryColor} strokeWidth={3} dot={{ r: 4 }} /><Line type="monotone" dataKey="pending" stroke={secondaryColor} strokeWidth={3} dot={{ r: 4 }} /></LineChart></ResponsiveContainer></div>
         </div>
         <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm xl:col-span-4">
           <h3 className="text-sm font-bold text-[#0f172a]">Task Status</h3>
@@ -615,8 +619,8 @@ function ManagerDashboard({ userId, userName }: { userId: string; userName: stri
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
         {[{ title: "My Tasks", items: myTableTasks, href: "/tasks/my-tasks", assignee: false }, { title: "Staff Tasks", items: staffTableTasks, href: "/tasks", assignee: true }].map((table) => (
           <div key={table.title} className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-            <div className="flex items-center justify-between"><h3 className="text-sm font-bold text-[#0f172a]">{table.title}</h3><Link href={table.href} className="text-xs font-bold text-[#7a1414] hover:underline">View All</Link></div>
-            <div className="mt-4 overflow-hidden rounded-lg border border-zinc-200"><table className="w-full text-left text-xs"><thead className="bg-[#7a1414] text-white"><tr><th className="px-3 py-2">No</th><th className="px-3 py-2">Task</th>{table.assignee && <th className="px-3 py-2">Assigned To</th>}<th className="px-3 py-2">Status</th><th className="px-3 py-2">Priority</th><th className="px-3 py-2">Due Date</th></tr></thead><tbody className="divide-y divide-zinc-100 bg-white">{renderTaskRows(table.items, table.assignee)}</tbody></table></div>
+            <div className="flex items-center justify-between"><h3 className="text-sm font-bold text-[#0f172a]">{table.title}</h3><Link href={table.href} className="text-xs font-bold hover:underline" style={{ color: primaryColor }}>View All</Link></div>
+            <div className="mt-4 overflow-hidden rounded-lg border border-zinc-200"><table className="w-full text-left text-xs"><thead className="text-white" style={{ backgroundColor: primaryColor }}><tr><th className="px-3 py-2">No</th><th className="px-3 py-2">Task</th>{table.assignee && <th className="px-3 py-2">Assigned To</th>}<th className="px-3 py-2">Status</th><th className="px-3 py-2">Priority</th><th className="px-3 py-2">Due Date</th></tr></thead><tbody className="divide-y divide-zinc-100 bg-white">{renderTaskRows(table.items, table.assignee)}</tbody></table></div>
           </div>
         ))}
       </div>
@@ -639,6 +643,7 @@ function AdminDashboard({
   isBranchDashboard: boolean;
   userName?: string;
 }) {
+  const { primaryColor, secondaryColor } = useBranchTheme();
   const dashboardKey = ["dashboard-bundle", userId, portfolioId ?? "all"].join(":");
   const { data: bundleRes, isValidating, mutate } = useSWR(
     dashboardKey,
@@ -685,19 +690,19 @@ function AdminDashboard({
 
   // Donut 1: Task Status Breakdown
   const taskStatusDonut = useMemo(() => [
-    { name: "Completed", value: completedCount, color: BRAND_MAROON, count: "98 (63.2%)" },
-    { name: "In Progress", value: inProgressCount, color: BRAND_CORAL, count: "32 (20.6%)" },
+    { name: "Completed", value: completedCount, color: primaryColor, count: "98 (63.2%)" },
+    { name: "In Progress", value: inProgressCount, color: secondaryColor, count: "32 (20.6%)" },
     { name: "Pending", value: pendingCount, color: BRAND_AMBER, count: "17 (11.0%)" },
     { name: "Overdue", value: overdueCount, color: BRAND_RED, count: "8 (5.2%)" },
-  ], [completedCount, inProgressCount, pendingCount, overdueCount]);
+  ], [completedCount, inProgressCount, pendingCount, overdueCount, primaryColor, secondaryColor]);
 
   // Donut 2: Invoice Status Breakdown
   const invoiceStatusDonut = useMemo(() => [
-    { name: "Paid", value: 4500, count: "8 Invoices", color: BRAND_MAROON },
-    { name: "Partially Paid", value: 1200, count: "2 Invoices", color: BRAND_CORAL },
+    { name: "Paid", value: 4500, count: "8 Invoices", color: primaryColor },
+    { name: "Partially Paid", value: 1200, count: "2 Invoices", color: secondaryColor },
     { name: "Unpaid", value: 800, count: "1 Invoices", color: BRAND_AMBER },
     { name: "Overdue", value: 450, count: "1 Invoices", color: BRAND_RED },
-  ], []);
+  ], [primaryColor, secondaryColor]);
 
   // Team Performance Data
   const teamMembers = useMemo(() => [
@@ -769,7 +774,10 @@ function AdminDashboard({
         {/* Total Tasks */}
         <div className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
           <div className="flex items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-[#5b1017]">
+            <div
+              className="flex size-10 shrink-0 items-center justify-center rounded-xl"
+              style={{ backgroundColor: `color-mix(in srgb, ${primaryColor} 12%, white)`, color: primaryColor }}
+            >
               <FileText className="size-5" />
             </div>
             <div>
@@ -778,13 +786,16 @@ function AdminDashboard({
               <p className="mt-1 text-[10px] font-medium text-zinc-400">↑ 12.5% vs last week</p>
             </div>
           </div>
-          <MiniSparkline color={BRAND_MAROON} />
+          <MiniSparkline color={primaryColor} />
         </div>
 
         {/* Completed Tasks */}
         <div className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
           <div className="flex items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-[#5b1017]">
+            <div
+              className="flex size-10 shrink-0 items-center justify-center rounded-xl"
+              style={{ backgroundColor: `color-mix(in srgb, ${primaryColor} 12%, white)`, color: primaryColor }}
+            >
               <CheckCircle2 className="size-5" />
             </div>
             <div>
@@ -793,13 +804,16 @@ function AdminDashboard({
               <p className="mt-1 text-[10px] font-medium text-zinc-400">63% completion rate</p>
             </div>
           </div>
-          <MiniSparkline color={BRAND_MAROON} />
+          <MiniSparkline color={primaryColor} />
         </div>
 
         {/* In Progress Tasks */}
         <div className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
           <div className="flex items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-[#e85d3f]">
+            <div
+              className="flex size-10 shrink-0 items-center justify-center rounded-xl"
+              style={{ backgroundColor: `color-mix(in srgb, ${secondaryColor} 15%, white)`, color: secondaryColor }}
+            >
               <Clock className="size-5" />
             </div>
             <div>
@@ -808,7 +822,7 @@ function AdminDashboard({
               <p className="mt-1 text-[10px] font-medium text-zinc-400">20.6% of total</p>
             </div>
           </div>
-          <MiniSparkline color={BRAND_CORAL} />
+          <MiniSparkline color={secondaryColor} />
         </div>
 
         {/* Overdue Tasks */}
@@ -832,7 +846,10 @@ function AdminDashboard({
         {/* Total Revenue */}
         <div className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
           <div className="flex items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-[#5b1017]">
+            <div
+              className="flex size-10 shrink-0 items-center justify-center rounded-xl"
+              style={{ backgroundColor: `color-mix(in srgb, ${primaryColor} 12%, white)`, color: primaryColor }}
+            >
               <DollarSign className="size-5" />
             </div>
             <div>
@@ -841,13 +858,16 @@ function AdminDashboard({
               <p className="mt-1 text-[10px] font-medium text-emerald-600">↑ 8.2% vs last week</p>
             </div>
           </div>
-          <MiniSparkline color={BRAND_MAROON} />
+          <MiniSparkline color={primaryColor} />
         </div>
 
         {/* Total Expenses */}
         <div className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
           <div className="flex items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-[#e85d3f]">
+            <div
+              className="flex size-10 shrink-0 items-center justify-center rounded-xl"
+              style={{ backgroundColor: `color-mix(in srgb, ${secondaryColor} 15%, white)`, color: secondaryColor }}
+            >
               <Wallet className="size-5" />
             </div>
             <div>
@@ -856,13 +876,16 @@ function AdminDashboard({
               <p className="mt-1 text-[10px] font-medium text-zinc-400">↓ 3.4% vs last week</p>
             </div>
           </div>
-          <MiniSparkline color={BRAND_CORAL} />
+          <MiniSparkline color={secondaryColor} />
         </div>
 
         {/* Net Profit */}
         <div className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
           <div className="flex items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-[#5b1017]">
+            <div
+              className="flex size-10 shrink-0 items-center justify-center rounded-xl"
+              style={{ backgroundColor: `color-mix(in srgb, ${primaryColor} 12%, white)`, color: primaryColor }}
+            >
               <TrendingUp className="size-5" />
             </div>
             <div>
@@ -871,13 +894,16 @@ function AdminDashboard({
               <p className="mt-1 text-[10px] font-medium text-emerald-600">↑ 15.6% vs last week</p>
             </div>
           </div>
-          <MiniSparkline color={BRAND_MAROON} />
+          <MiniSparkline color={primaryColor} />
         </div>
 
         {/* Outstanding */}
         <div className="flex items-center justify-between rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
           <div className="flex items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-[#f59e0b]">
+            <div
+              className="flex size-10 shrink-0 items-center justify-center rounded-xl"
+              style={{ backgroundColor: `color-mix(in srgb, ${secondaryColor} 15%, white)`, color: secondaryColor }}
+            >
               <CreditCard className="size-5" />
             </div>
             <div>
@@ -886,7 +912,7 @@ function AdminDashboard({
               <p className="mt-1 text-[10px] font-medium text-zinc-400">5 unpaid invoices</p>
             </div>
           </div>
-          <MiniSparkline color={BRAND_AMBER} />
+          <MiniSparkline color={secondaryColor} />
         </div>
       </div>
 
@@ -901,10 +927,10 @@ function AdminDashboard({
             </div>
             <div className="flex items-center gap-3 text-xs">
               <span className="flex items-center gap-1.5 font-semibold text-zinc-700">
-                <span className="size-2 rounded-full bg-[#5b1017]" /> Revenue
+                <span className="size-2 rounded-full" style={{ backgroundColor: primaryColor }} /> Revenue
               </span>
               <span className="flex items-center gap-1.5 font-semibold text-zinc-700">
-                <span className="size-2 rounded-full bg-[#e85d3f]" /> Expenses
+                <span className="size-2 rounded-full" style={{ backgroundColor: secondaryColor }} /> Expenses
               </span>
               <select className="rounded-lg border border-zinc-200 bg-white px-2 py-1 text-[11px] font-semibold text-zinc-600 outline-none">
                 <option>Weekly</option>
@@ -928,17 +954,17 @@ function AdminDashboard({
                 <Line
                   type="monotone"
                   dataKey="revenue"
-                  stroke="#5b1017"
+                  stroke={primaryColor}
                   strokeWidth={2.5}
-                  dot={{ r: 3.5, fill: "#5b1017", strokeWidth: 0 }}
+                  dot={{ r: 3.5, fill: primaryColor, strokeWidth: 0 }}
                   activeDot={{ r: 5 }}
                 />
                 <Line
                   type="monotone"
                   dataKey="expenses"
-                  stroke="#e85d3f"
+                  stroke={secondaryColor}
                   strokeWidth={2}
-                  dot={{ r: 3.5, fill: "#e85d3f", strokeWidth: 0 }}
+                  dot={{ r: 3.5, fill: secondaryColor, strokeWidth: 0 }}
                   activeDot={{ r: 5 }}
                 />
               </LineChart>
@@ -1002,31 +1028,31 @@ function AdminDashboard({
             <div className="mt-4 space-y-3">
               <div className="flex items-center justify-between text-xs">
                 <span className="flex items-center gap-2 text-zinc-600">
-                  <Users className="size-4 text-rose-700" /> Total Clients
+                  <Users className="size-4" style={{ color: primaryColor }} /> Total Clients
                 </span>
                 <span className="font-bold text-[#0f172a]">5</span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="flex items-center gap-2 text-zinc-600">
-                  <UserCheck className="size-4 text-rose-700" /> Active Clients
+                  <UserCheck className="size-4" style={{ color: primaryColor }} /> Active Clients
                 </span>
                 <span className="font-bold text-[#0f172a]">4</span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="flex items-center gap-2 text-zinc-600">
-                  <FileText className="size-4 text-rose-700" /> Total Invoices
+                  <FileText className="size-4" style={{ color: primaryColor }} /> Total Invoices
                 </span>
                 <span className="font-bold text-[#0f172a]">12</span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="flex items-center gap-2 text-zinc-600">
-                  <Receipt className="size-4 text-rose-700" /> Paid Invoices
+                  <Receipt className="size-4" style={{ color: primaryColor }} /> Paid Invoices
                 </span>
                 <span className="font-bold text-[#0f172a]">8</span>
               </div>
               <div className="flex items-center justify-between border-t border-zinc-100 pt-2.5 text-xs">
                 <span className="flex items-center gap-2 font-bold text-zinc-700">
-                  <DollarSign className="size-4 text-rose-700" /> Outstanding
+                  <DollarSign className="size-4" style={{ color: primaryColor }} /> Outstanding
                 </span>
                 <span className="font-bold text-[#0f172a]">$1,250.00</span>
               </div>
@@ -1097,7 +1123,13 @@ function AdminDashboard({
             {teamMembers.map((member) => (
               <div key={member.name} className="grid grid-cols-12 items-center text-xs">
                 <div className="col-span-5 flex items-center gap-1.5 truncate font-semibold text-zinc-800">
-                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-rose-100 text-[9px] font-bold text-[#5b1017]">
+                  <span
+                    className="flex size-5 shrink-0 items-center justify-center rounded-full text-[9px] font-bold"
+                    style={{
+                      backgroundColor: `color-mix(in srgb, ${primaryColor} 15%, white)`,
+                      color: primaryColor,
+                    }}
+                  >
                     {member.avatar}
                   </span>
                   <span className="truncate">{member.name}</span>
@@ -1106,7 +1138,10 @@ function AdminDashboard({
                 <span className="col-span-2 text-center font-medium text-zinc-600">{member.completed}</span>
                 <div className="col-span-3 flex items-center justify-end gap-1.5">
                   <div className="h-1.5 w-10 overflow-hidden rounded-full bg-zinc-100">
-                    <div className="h-full rounded-full bg-[#5b1017]" style={{ width: `${member.percent}%` }} />
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{ width: `${member.percent}%`, backgroundColor: primaryColor }}
+                    />
                   </div>
                   <span className="text-[10px] font-bold text-zinc-700">{member.percent}%</span>
                 </div>
@@ -1114,7 +1149,7 @@ function AdminDashboard({
             ))}
           </div>
           <div className="mt-3 border-t border-zinc-100 pt-2 text-right">
-            <Link href="/staff" className="text-[11px] font-bold text-[#5b1017] hover:underline">
+            <Link href="/staff" className="text-[11px] font-bold hover:underline" style={{ color: primaryColor }}>
               View All Staff →
             </Link>
           </div>
@@ -1142,7 +1177,7 @@ function AdminDashboard({
             </div>
           </div>
           <div className="mt-3 border-t border-zinc-100 pt-2 text-right">
-            <Link href="/tasks" className="text-[11px] font-bold text-[#5b1017] hover:underline">
+            <Link href="/tasks" className="text-[11px] font-bold hover:underline" style={{ color: primaryColor }}>
               View All →
             </Link>
           </div>
@@ -1173,12 +1208,18 @@ function AdminDashboard({
                       <td className="py-2.5 pr-2 font-semibold text-zinc-800 truncate max-w-[120px]">{t.task}</td>
                       <td className="py-2.5 pr-2 text-zinc-500 truncate max-w-[90px]">{t.client}</td>
                       <td className="py-2.5 pr-2">
-                        <span className={cn(
-                          "rounded-full px-2 py-0.5 text-[9px] font-bold",
-                          t.statusTone === "maroon" ? "bg-rose-100 text-[#5b1017]" :
-                          t.statusTone === "coral" ? "bg-orange-50 text-orange-700" :
-                          t.statusTone === "amber" ? "bg-amber-50 text-amber-700" : "bg-red-50 text-red-700"
-                        )}>
+                        <span
+                          className="rounded-full px-2 py-0.5 text-[9px] font-bold"
+                          style={
+                            t.statusTone === "maroon"
+                              ? { backgroundColor: `color-mix(in srgb, ${primaryColor} 14%, white)`, color: primaryColor }
+                              : t.statusTone === "coral"
+                              ? { backgroundColor: `color-mix(in srgb, ${secondaryColor} 16%, white)`, color: secondaryColor }
+                              : t.statusTone === "amber"
+                              ? { backgroundColor: "#fef3c7", color: "#b45309" }
+                              : { backgroundColor: "#fee2e2", color: "#b91c1c" }
+                          }
+                        >
                           {t.status}
                         </span>
                       </td>
@@ -1190,7 +1231,7 @@ function AdminDashboard({
             </div>
           </div>
           <div className="mt-3 border-t border-zinc-100 pt-2 text-center">
-            <Link href="/tasks" className="text-[11px] font-bold text-[#5b1017] hover:underline">
+            <Link href="/tasks" className="text-[11px] font-bold hover:underline" style={{ color: primaryColor }}>
               View All Tasks →
             </Link>
           </div>
@@ -1234,7 +1275,7 @@ function AdminDashboard({
             </div>
           </div>
           <div className="mt-3 border-t border-zinc-100 pt-2 text-center">
-            <Link href="/accounting/reports" className="text-[11px] font-bold text-[#5b1017] hover:underline">
+            <Link href="/accounting/reports" className="text-[11px] font-bold hover:underline" style={{ color: primaryColor }}>
               View All Transactions →
             </Link>
           </div>
@@ -1246,44 +1287,44 @@ function AdminDashboard({
           <div className="mt-3 grid grid-cols-2 gap-2.5">
             <Link
               href="/tasks/create"
-              className="flex items-center gap-2 rounded-xl border border-zinc-200 p-2.5 text-xs font-bold text-zinc-700 transition hover:border-[#5b1017] hover:bg-rose-50/50 hover:text-[#5b1017]"
+              className="flex items-center gap-2 rounded-xl border border-zinc-200 p-2.5 text-xs font-bold text-zinc-700 transition hover:bg-zinc-50 hover:shadow-sm"
             >
-              <Plus className="size-4 text-[#5b1017]" />
+              <Plus className="size-4" style={{ color: primaryColor }} />
               <span>New Task</span>
             </Link>
             <Link
               href="/clients"
-              className="flex items-center gap-2 rounded-xl border border-zinc-200 p-2.5 text-xs font-bold text-zinc-700 transition hover:border-[#5b1017] hover:bg-rose-50/50 hover:text-[#5b1017]"
+              className="flex items-center gap-2 rounded-xl border border-zinc-200 p-2.5 text-xs font-bold text-zinc-700 transition hover:bg-zinc-50 hover:shadow-sm"
             >
-              <Plus className="size-4 text-[#5b1017]" />
+              <Plus className="size-4" style={{ color: primaryColor }} />
               <span>New Client</span>
             </Link>
             <Link
               href="/accounting/quotations"
-              className="flex items-center gap-2 rounded-xl border border-zinc-200 p-2.5 text-xs font-bold text-zinc-700 transition hover:border-[#5b1017] hover:bg-rose-50/50 hover:text-[#5b1017]"
+              className="flex items-center gap-2 rounded-xl border border-zinc-200 p-2.5 text-xs font-bold text-zinc-700 transition hover:bg-zinc-50 hover:shadow-sm"
             >
-              <FileSpreadsheet className="size-4 text-[#5b1017]" />
+              <FileSpreadsheet className="size-4" style={{ color: primaryColor }} />
               <span>New Quotation</span>
             </Link>
             <Link
               href="/accounting/customer-invoices"
-              className="flex items-center gap-2 rounded-xl border border-zinc-200 p-2.5 text-xs font-bold text-zinc-700 transition hover:border-[#5b1017] hover:bg-rose-50/50 hover:text-[#5b1017]"
+              className="flex items-center gap-2 rounded-xl border border-zinc-200 p-2.5 text-xs font-bold text-zinc-700 transition hover:bg-zinc-50 hover:shadow-sm"
             >
-              <FileText className="size-4 text-[#5b1017]" />
+              <FileText className="size-4" style={{ color: primaryColor }} />
               <span>New Invoice</span>
             </Link>
             <Link
               href="/accounting/customer-receipts"
-              className="flex items-center gap-2 rounded-xl border border-zinc-200 p-2.5 text-xs font-bold text-zinc-700 transition hover:border-[#5b1017] hover:bg-rose-50/50 hover:text-[#5b1017]"
+              className="flex items-center gap-2 rounded-xl border border-zinc-200 p-2.5 text-xs font-bold text-zinc-700 transition hover:bg-zinc-50 hover:shadow-sm"
             >
-              <CreditCard className="size-4 text-[#5b1017]" />
+              <CreditCard className="size-4" style={{ color: primaryColor }} />
               <span>Record Payment</span>
             </Link>
             <Link
               href="/accounting/vendor-bills"
-              className="flex items-center gap-2 rounded-xl border border-zinc-200 p-2.5 text-xs font-bold text-zinc-700 transition hover:border-[#5b1017] hover:bg-rose-50/50 hover:text-[#5b1017]"
+              className="flex items-center gap-2 rounded-xl border border-zinc-200 p-2.5 text-xs font-bold text-zinc-700 transition hover:bg-zinc-50 hover:shadow-sm"
             >
-              <Plus className="size-4 text-[#5b1017]" />
+              <Plus className="size-4" style={{ color: primaryColor }} />
               <span>Add Expense</span>
             </Link>
           </div>
