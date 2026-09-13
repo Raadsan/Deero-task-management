@@ -45,7 +45,6 @@ export const getAllQuotations = async (req, res) => {
       include: {
         client: { select: { id: true, institution: true, contactPerson: true, email: true, phone: true } },
         customer: { select: { id: true, name: true, email: true, phone: true } },
-        currencies: { select: { id: true, code: true, symbol: true } },
         converted_invoice: { select: { id: true, invoice_number: true, state: true, payment_state: true, amount_total: true } },
         lines: {
           include: {
@@ -74,7 +73,6 @@ export const getQuotationById = async (req, res) => {
       include: {
         client: true,
         customer: true,
-        currencies: true,
         converted_invoice: {
           include: {
             customer_invoice_lines: true,

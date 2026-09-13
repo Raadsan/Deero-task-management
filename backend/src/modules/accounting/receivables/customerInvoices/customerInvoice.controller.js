@@ -105,7 +105,16 @@ async function prepareInvoice(input) {
   if (!customer) throw inputError('Customer not found')
   const [company, journal, paymentTerm, fiscalPeriod, revenueAccount] = await Promise.all([
     prisma.companies.findUnique({ where: { id: customer.company_id } }),
-    prisma.journals.findUnique({ where: { company_id_code: { company_id: customer.company_id, code: 'INV' } } }),
+    id(input.journal_id)
+      ? prisma.journals.findUnique({ where: { id: id(input.journal_id) } })
+      : prisma.journals.findFirst({
+          where: {
+            company_id: customer.company_id,
+            journal_type: 'sale',
+            is_active: true,
+          },
+          orderBy: { id: 'asc' },
+        }),
     id(input.payment_term_id) ? prisma.payment_terms.findUnique({ where: { id: id(input.payment_term_id) }, include: { payment_term_lines: true } }) : null,
     prisma.fiscal_periods.findFirst({
       where: {
@@ -121,7 +130,7 @@ async function prepareInvoice(input) {
     }),
   ])
   if (!company?.is_active) throw inputError('Customer company is inactive or missing')
-  if (!journal?.is_active || journal.journal_type !== 'sale') throw inputError('Active Customer Invoices journal (INV) was not found')
+  if (!journal?.is_active || journal.journal_type !== 'sale') throw inputError('Active Customer Invoices sales journal was not found')
   if (!revenueAccount) throw inputError('Default Sales Revenue account 4000 was not found')
   if (!fiscalPeriod) throw inputError('No open fiscal period covers the invoice date')
 
@@ -213,6 +222,7 @@ async function prepareInvoice(input) {
   return {
     header: {
       company_id: customer.company_id,
+      client_id: customer.clientId || null,
       document_type: 'invoice',
       customer_id: customerId,
       journal_id: journal.id,
@@ -294,25 +304,7 @@ export const getAll = async (req, res) => {
   try {
     const data = await prisma.customer_invoices.findMany({
       where: { document_type: 'invoice' },
-      select: {
-        id: true,
-        invoice_number: true,
-        invoice_date: true,
-        due_date: true,
-        state: true,
-        payment_state: true,
-        amount_untaxed: true,
-        amount_tax: true,
-        amount_total: true,
-        paid_amount: true,
-        amount_due: true,
-        customer_reference: true,
-        created_at: true,
-        updated_at: true,
-        customers: { select: { id: true, name: true, phone: true, email: true } },
-        currencies: { select: { id: true, code: true, symbol: true } },
-        journals: { select: { id: true, name: true, code: true } },
-      },
+      include: invoiceInclude,
       orderBy: { created_at: 'desc' },
     })
     res.json({ success: true, data })

@@ -351,8 +351,10 @@ export default function A4InvoiceSheet({
                     <path d="M3.78,5.81v2.92c0,.07,0,.14-.01.2h0c-.07.61-.45,1.12-.99,1.38-.23.11-.48.17-.75.17-.97,0-1.75-.78-1.75-1.75s.78-1.75,1.75-1.75c.27,0,.52.06.75.17-.1-.02-.19-.03-.29-.03-.88,0-1.59.7-1.61,1.58,0,.01,0,.02,0,.03s0,.02,0,.03c.02.62.53,1.12,1.15,1.12s1.15-.52,1.15-1.15v-2.92c0-.08.03-.16.09-.21.05-.05.13-.09.21-.09.17,0,.3.13.3.3Z"/>
                     <path d="M5.54,8.44h1.36c-.13-.49-.58-.85-1.11-.85-.2,0-.39.05-.55.14-.36.2-.6.57-.6,1.01,0,.27.09.52.25.72.1.12.21.22.35.29.16.09.35.14.55.14.64,0,1.22-.23,1.67-.62-.22.71-.89,1.22-1.67,1.22s-1.44-.51-1.67-1.22c-.04-.14-.07-.28-.08-.43,0-.03,0-.06,0-.1,0-.97.78-1.75,1.75-1.75.86,0,1.58.63,1.73,1.45.02.1.03.2.03.3,0,.03,0,.07,0,.1-.06.07-.13.14-.2.2h-1.8c-.08,0-.16-.03-.21-.09-.05-.05-.09-.13-.09-.21,0-.17.13-.3.3-.3Z"/>
                     <path d="M9.22,8.44h1.36c-.13-.49-.58-.85-1.11-.85-.2,0-.39.05-.55.14-.36.2-.6.57-.6,1.01,0,.27.09.52.25.72.1.12.21.22.35.29.16.09.35.14.55.14.64,0,1.22-.23,1.67-.62-.22.71-.89,1.22-1.67,1.22s-1.44-.51-1.67-1.22c-.04-.14-.07-.28-.08-.43,0-.03,0-.06,0-.1,0-.97.78-1.75,1.75-1.75.86,0,1.58.63,1.73,1.45.02.1.03.2.03.3,0,.03,0,.07,0,.1-.06.07-.13.14-.2.2h-1.8c-.08,0-.16-.03-.21-.09-.05-.05-.09-.13-.09-.21,0-.17.13-.3.3-.3Z"/>
-                  </g>
-                  <text x="100" y="117" text-anchor="middle" fill="#0d3eb8" font-family="Arial, Helvetica, sans-serif" font-size="7" font-weight="bold" letter-spacing="0.8">Advertising Agency</text>
+                  <path id="agency-arc-p" d="M 68 116.5 A 36 36 0 0 0 132 116.5" fill="none" />
+                  <text fill="#0d3eb8" font-family="'Arial', Helvetica, sans-serif" font-size="6.8" font-weight="bold" letter-spacing="0.7">
+                    <textPath href="#agency-arc-p" startOffset="50%" text-anchor="middle">Advertising Agency</textPath>
+                  </text>
                 </g>
               </svg>`
             : ""
@@ -471,40 +473,14 @@ export default function A4InvoiceSheet({
   // ──────────────────── Screen Preview ────────────────────
   return (
     <div className="w-full flex flex-col items-center gap-3 py-2">
-      {/* Toolbar */}
-      <div className="w-full max-w-[850px] flex items-center justify-between bg-white px-4 py-2.5 rounded-xl border border-zinc-200 shadow-sm">
-        <div>
-          <span className="text-xs font-extrabold text-zinc-900 block leading-tight">
-            Standard Invoice (A4)
-          </span>
-          <span className="text-[11px] text-zinc-500">
-            Deero Advertising Agency official invoice template
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          {onBackToEdit && (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={onBackToEdit}
-              className="h-8 text-xs font-semibold gap-1.5"
-            >
-              <ArrowLeft className="size-3.5" /> Edit Form
-            </Button>
-          )}
-          <Button
-            id="a4-invoice-sheet-print-btn"
-            type="button"
-            size="sm"
-            onClick={handlePrint}
-            className="h-8 text-xs font-bold gap-1.5 text-white shadow-sm"
-            style={{ background: secondary }}
-          >
-            <Printer className="size-3.5" /> Print / Save as PDF
-          </Button>
-        </div>
-      </div>
+      {/* Hidden print trigger button for external modal dialog trigger */}
+      <button
+        id="a4-invoice-sheet-print-btn"
+        type="button"
+        onClick={handlePrint}
+        className="hidden"
+        style={{ display: "none" }}
+      />
 
       {/* A4 Sheet Preview */}
       <div className="w-full overflow-x-auto pb-4 flex justify-center">
@@ -877,9 +853,12 @@ export default function A4InvoiceSheet({
                         <path d="M9.22,8.44h1.36c-.13-.49-.58-.85-1.11-.85-.2,0-.39.05-.55.14-.36.2-.6.57-.6,1.01,0,.27.09.52.25.72.1.12.21.22.35.29.16.09.35.14.55.14.64,0,1.22-.23,1.67-.62-.22.71-.89,1.22-1.67,1.22s-1.44-.51-1.67-1.22c-.04-.14-.07-.28-.08-.43,0-.03,0-.06,0-.1,0-.97.78-1.75,1.75-1.75.86,0,1.58.63,1.73,1.45.02.1.03.2.03.3,0,.03,0,.07,0,.1-.06.07-.13.14-.2.2h-1.8c-.08,0-.16-.03-.21-.09-.05-.05-.09-.13-.09-.21,0-.17.13-.3.3-.3Z"/>
                       </g>
 
-                      {/* Center Subtitle: Advertising Agency */}
-                      <text x="100" y="117" textAnchor="middle" fill="#0d3eb8" fontFamily="Arial, Helvetica, sans-serif" fontSize="7" fontWeight="bold" letterSpacing="0.8">
-                        Advertising Agency
+                      {/* Center Subtitle: Advertising Agency along smile arc */}
+                      <path id="agency-arc-s" d="M 68 116.5 A 36 36 0 0 0 132 116.5" fill="none" />
+                      <text fill="#0d3eb8" fontFamily="'Arial', Helvetica, sans-serif" fontSize="6.8" fontWeight="bold" letterSpacing="0.7">
+                        <textPath href="#agency-arc-s" startOffset="50%" textAnchor="middle">
+                          Advertising Agency
+                        </textPath>
                       </text>
                     </g>
                   </svg>

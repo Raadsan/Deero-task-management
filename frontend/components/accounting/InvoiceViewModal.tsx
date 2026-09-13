@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { FileText, Printer, Download, X } from "lucide-react";
-import type { CustomerInvoice } from "@/lib/api/accounting/receivables/customerInvoiceApi";
+import { customerInvoiceApi, type CustomerInvoice } from "@/lib/api/accounting/receivables/customerInvoiceApi";
 import A4InvoiceSheet, { InvoiceLineItem, PaymentMethodEntry } from "./A4InvoiceSheet";
 import { useBranchTheme } from "@/components/branding/BranchThemeProvider";
 import { resolveBranchLogoUrl } from "@/lib/portfolio-branding";
@@ -22,47 +22,72 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice }: Props)
   const brandSecondary = isRaadsan ? (secondaryColor || "#fdc210") : (secondaryColor || "#ea580c");
   const brandLogo = resolveBranchLogoUrl(branchLogoUrl) || (isRaadsan ? "/logo-02.png" : "/deero-logo.png");
 
+  const [activeInvoice, setActiveInvoice] = useState<CustomerInvoice | null>(invoice);
+
+  useEffect(() => {
+    setActiveInvoice(invoice);
+    if (invoice?.id && open) {
+      customerInvoiceApi
+        .getById(invoice.id)
+        .then((fresh) => {
+          if (fresh) setActiveInvoice(fresh);
+        })
+        .catch(() => {});
+    }
+  }, [invoice, open]);
+
+  const currentInvoice = activeInvoice || invoice;
+
   // Parse invoice metadata if stored in notes as JSON
   const meta = useMemo(() => {
-    if (!invoice || !invoice.notes) return null;
+    if (!currentInvoice || !currentInvoice.notes) return null;
     try {
-      return JSON.parse(String(invoice.notes));
+      return JSON.parse(String(currentInvoice.notes));
     } catch {
       return null;
     }
-  }, [invoice]);
+  }, [currentInvoice]);
 
-  if (!invoice) return null;
+  if (!currentInvoice) return null;
 
-  const customerObj = invoice.customers as { name?: string; contact_person?: string; email?: string; phone?: string } | undefined;
+  const customerObj = (currentInvoice.customers || {}) as any;
+  const directClient = (currentInvoice as any).client || customerObj?.client;
 
   // Header & Contact mapping
   const contactPerson =
     meta?.contact_person ||
     customerObj?.contact_person ||
+    customerObj?.client?.contactPerson ||
+    directClient?.contactPerson ||
     customerObj?.name ||
     "—";
 
-  const invoiceNo = invoice.invoice_number || `INV-${invoice.id}`;
+  const invoiceNo = currentInvoice.invoice_number || `INV-${currentInvoice.id}`;
 
   const contactEmail =
     meta?.contact_email ||
     customerObj?.email ||
+    customerObj?.client?.email ||
+    directClient?.email ||
     "—";
 
   const invoiceTo =
     meta?.invoice_to ||
     meta?.quotation_to ||
+    customerObj?.client?.institution ||
+    directClient?.institution ||
     customerObj?.name ||
-    `Customer #${invoice.customer_id}`;
+    `Customer #${currentInvoice.customer_id}`;
 
   const contactPhone =
     meta?.contact_phone ||
     customerObj?.phone ||
+    customerObj?.client?.phone ||
+    directClient?.phone ||
     "—";
 
-  const dateStr = invoice.invoice_date
-    ? new Date(invoice.invoice_date).toLocaleDateString("en-US", {
+  const dateStr = currentInvoice.invoice_date
+    ? new Date(currentInvoice.invoice_date).toLocaleDateString("en-US", {
         weekday: "long",
         year: "numeric",
         month: "long",
@@ -70,8 +95,8 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice }: Props)
       })
     : "—";
 
-  const dueDateStr = invoice.due_date
-    ? new Date(invoice.due_date).toLocaleDateString("en-US", {
+  const dueDateStr = currentInvoice.due_date
+    ? new Date(currentInvoice.due_date).toLocaleDateString("en-US", {
         weekday: "long",
         year: "numeric",
         month: "long",
@@ -79,24 +104,48 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice }: Props)
       })
     : undefined;
 
-  // Lines mapping
-  const lines: InvoiceLineItem[] = (invoice.customer_invoice_lines || []).map((line, idx) => {
-    // Check if line metadata item exists in meta.items
-    const metaItem = Array.isArray(meta?.items) ? meta.items[idx] : null;
-    return {
-      id: line.id || idx + 1,
-      service_type: metaItem?.service_type || line.description?.split(" - ")[0] || "Service",
-      description: metaItem?.description || line.description || "",
-      quantity: Number(line.quantity || 1),
-      rate: Number(line.unit_price || 0),
-      is_free: Number(line.unit_price || 0) === 0,
-      amount: Number(line.subtotal || 0),
-    };
-  });
+  // Lines mapping: check meta.items first for full subservice details, then customer_invoice_lines
+  const lines: InvoiceLineItem[] = useMemo(() => {
+    if (Array.isArray(meta?.items) && meta.items.length > 0) {
+      return meta.items.map((item: any, idx: number) => ({
+        id: idx + 1,
+        service_type: item.service_type || "Service",
+        description: item.description || "",
+        quantity: Number(item.qty || item.quantity || 1),
+        rate: Number(item.rate || item.unit_price || 0),
+        is_free: Boolean(item.is_free || Number(item.rate || item.unit_price || 0) === 0),
+        amount: Number(item.qty || item.quantity || 1) * Number(item.rate || item.unit_price || 0) * (1 - Number(item.discount_percent || 0) / 100),
+      }));
+    }
+    return (currentInvoice.customer_invoice_lines || []).map((line, idx) => {
+      const metaItem = Array.isArray(meta?.items) ? meta.items[idx] : null;
+      let sType = metaItem?.service_type || line.products?.name || "Service";
+      let desc = metaItem?.description || line.description || "";
+      if (desc.includes(":") && !line.products?.name && !metaItem?.service_type) {
+        const parts = desc.split(":");
+        if (parts.length > 1) {
+          sType = parts[0].trim();
+          desc = parts.slice(1).join(":").trim();
+        }
+      }
+      return {
+        id: line.id || idx + 1,
+        service_type: sType,
+        description: desc,
+        quantity: Number(line.quantity || 1),
+        rate: Number(line.unit_price || 0),
+        is_free: Number(line.unit_price || 0) === 0,
+        amount: Number(line.subtotal || Number(line.quantity || 1) * Number(line.unit_price || 0)),
+      };
+    });
+  }, [currentInvoice, meta]);
 
-  const subtotal = Number(invoice.amount_untaxed || 0);
-  const taxAmount = Number(invoice.amount_tax || 0);
-  const grandTotal = Number(invoice.amount_total || 0);
+  const subtotal =
+    Number(currentInvoice.amount_untaxed || 0) ||
+    lines.reduce((acc, l) => acc + (l.is_free ? 0 : l.amount), 0);
+  const taxAmount = Number(currentInvoice.amount_tax || 0);
+  const grandTotal =
+    Number(currentInvoice.amount_total || 0) || (subtotal + taxAmount);
 
   const vatPercent =
     meta?.vat_percent !== undefined
@@ -136,17 +185,17 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice }: Props)
   };
 
   const currentStatus =
-    invoice.state === "cancelled"
+    currentInvoice.state === "cancelled"
       ? "cancelled"
-      : invoice.payment_state === "paid"
+      : currentInvoice.payment_state === "paid"
       ? "paid"
-      : invoice.payment_state === "partial"
+      : currentInvoice.payment_state === "partial"
       ? "partial"
-      : invoice.state || "draft";
+      : currentInvoice.state || "draft";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-7xl w-[99vw] max-h-[97vh] p-0 bg-zinc-100 flex flex-col overflow-hidden">
+      <DialogContent showCloseButton={false} className="!max-w-[880px] w-full max-h-[96vh] p-0 bg-zinc-100 flex flex-col overflow-hidden rounded-2xl">
         {/* Header bar */}
         <DialogHeader className="px-5 py-3.5 bg-white border-b flex flex-row items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
@@ -199,8 +248,8 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice }: Props)
         </DialogHeader>
 
         {/* Modal Body with A4 Invoice Template Sheet */}
-        <div className="flex-1 overflow-y-auto bg-zinc-100 p-3 sm:p-6 flex justify-center">
-          <div className="w-full max-w-[960px]">
+        <div className="flex-1 overflow-y-auto bg-zinc-100 p-2 sm:p-4 flex justify-center">
+          <div className="w-full">
             <A4InvoiceSheet
               contactPerson={contactPerson}
               invoiceNo={invoiceNo}

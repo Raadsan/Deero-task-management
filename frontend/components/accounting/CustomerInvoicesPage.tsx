@@ -21,7 +21,7 @@ import DashboardDataTable, { type DashboardTableColumn } from '@/components/Shar
 import AccountingConfirmDialog from './AccountingConfirmDialog';
 import AccountingPageShell from '@/components/accounting/AccountingPageShell';
 import InvoiceViewModal from './InvoiceViewModal';
-import A4InvoiceSheet, { type InvoiceLineItem } from './A4InvoiceSheet';
+import A4InvoiceSheet, { type InvoiceLineItem, type PaymentMethodEntry } from './A4InvoiceSheet';
 import { useBranchTheme } from '@/components/branding/BranchThemeProvider';
 import { resolveBranchLogoUrl } from '@/lib/portfolio-branding';
 import { actionBtnDelete, actionBtnEdit, actionBtnView, btnCreatePage, dashboardSelectClass } from '@/lib/dashboard-ui';
@@ -43,7 +43,7 @@ type Line = {
   unit_price: number;
   discount_percent: number;
   tax_id: number | null;
-  is_free?: boolean;
+  is_free: boolean;
 };
 type Form = {
   customer_id: string;
@@ -59,11 +59,21 @@ type Form = {
   nb: string;
   notes: string;
   lines: Line[];
+  payment_methods?: PaymentMethodEntry[];
+  customer_reference?: string;
   receive_payment_now: boolean;
   payment_method_id: string;
   amount_received: string;
   payment_reference: string;
 };
+const defaultPaymentMethods: PaymentMethodEntry[] = [
+  { label: 'SomBank', value: '1001572624' },
+  { label: 'Premier Bank', value: '020602086001' },
+  { label: 'Salaam Bank', value: '36122269' },
+  { label: 'IBS Bank', value: '59676' },
+  { label: 'EVC-Plus', value: '0618553839' },
+  { label: 'E-DAHAB', value: '0628553566' },
+];
 const today = () => new Date().toISOString().slice(0, 10);
 const emptyLine = (): Line => ({
   product_id: null,
@@ -90,6 +100,8 @@ const emptyForm = (): Form => ({
   nb: 'NB: the advance amount should be paid when you get the invoice.',
   notes: '',
   lines: [emptyLine()],
+  payment_methods: defaultPaymentMethods,
+  customer_reference: '',
   receive_payment_now: false,
   payment_method_id: '',
   amount_received: '',
@@ -250,64 +262,98 @@ export default function CustomerInvoicesPage() {
       payment_advance: qMeta?.payment_advance || current.payment_advance,
       payment_completion: qMeta?.payment_completion || current.payment_completion,
       nb: qMeta?.nb || current.nb,
+      payment_methods: Array.isArray(qMeta?.payment_methods) && qMeta.payment_methods.length > 0 ? qMeta.payment_methods : current.payment_methods || defaultPaymentMethods,
+      customer_reference: q.quotation_number,
       lines: importedLines,
     }));
 
     accountingToast(`Xogta Quotation-ka ${q.quotation_number} si guul leh ayaa loogu shubay invoice-ka!`, 'success');
   }
 
-  function editInvoice(invoice: CustomerInvoice) {
-    setSelected(invoice);
-    setViewOnly(invoice.state !== 'draft');
+  async function editInvoice(invoice: CustomerInvoice) {
+    let freshInvoice = invoice;
+    try {
+      const fetched = await customerInvoiceApi.getById(invoice.id);
+      if (fetched) freshInvoice = fetched;
+    } catch {}
+
+    setSelected(freshInvoice);
+    setViewOnly(freshInvoice.state !== 'draft');
     setDialogTab('form');
 
     let meta: any = null;
     try {
-      meta = invoice.notes ? JSON.parse(String(invoice.notes)) : null;
+      meta = freshInvoice.notes ? JSON.parse(String(freshInvoice.notes)) : null;
     } catch {
       meta = null;
     }
 
-    const cust = customers.find((c) => c.id === Number(invoice.customer_id)) || (invoice.customers as any);
-    const invoiceLines = invoice.customer_invoice_lines || [];
+    const cust = customers.find((c) => c.id === Number(freshInvoice.customer_id)) || (freshInvoice.customers as any);
+    const invoiceLines = freshInvoice.customer_invoice_lines || [];
 
-    const hydratedLines: Line[] = invoiceLines.map((line, idx) => {
-      const metaItem = Array.isArray(meta?.items) ? meta.items[idx] : null;
-      return {
-        product_id: line.product_id || null,
-        service_type: metaItem?.service_type || line.products?.name || 'Graphic design & Branding',
-        selected_subservice_ids: Array.isArray(metaItem?.selected_subservice_ids) ? metaItem.selected_subservice_ids : [],
-        description: metaItem?.description || line.description || '',
-        quantity: Number(line.quantity || 1),
-        unit_price: Number(line.unit_price || 0),
-        discount_percent: Number(line.discount_percent || 0),
-        tax_id: line.tax_id || null,
-        is_free: metaItem?.is_free ?? (Number(line.unit_price || 0) === 0),
-      };
-    });
+    let hydratedLines: Line[] = [];
+
+    if (Array.isArray(meta?.items) && meta.items.length > 0) {
+      hydratedLines = meta.items.map((item: any) => ({
+        product_id: null,
+        service_type: item.service_type || 'Graphic design & Branding',
+        selected_subservice_ids: Array.isArray(item.selected_subservice_ids) ? item.selected_subservice_ids : [],
+        description: item.description || '',
+        quantity: Number(item.qty || item.quantity || 1),
+        unit_price: Number(item.rate || item.unit_price || 0),
+        discount_percent: Number(item.discount_percent || 0),
+        tax_id: null,
+        is_free: Boolean(item.is_free || Number(item.rate || item.unit_price || 0) === 0),
+      }));
+    } else if (invoiceLines.length > 0) {
+      hydratedLines = invoiceLines.map((line) => {
+        let sType = line.products?.name || 'Graphic design & Branding';
+        let desc = line.description || '';
+        if (desc.includes(':') && !line.products?.name) {
+          const parts = desc.split(':');
+          if (parts.length > 1) {
+            sType = parts[0].trim();
+            desc = parts.slice(1).join(':').trim();
+          }
+        }
+        return {
+          product_id: line.product_id || null,
+          service_type: sType,
+          selected_subservice_ids: [],
+          description: desc,
+          quantity: Number(line.quantity || 1),
+          unit_price: Number(line.unit_price || 0),
+          discount_percent: Number(line.discount_percent || 0),
+          tax_id: line.tax_id || null,
+          is_free: Number(line.unit_price || 0) === 0,
+        };
+      });
+    }
 
     if (hydratedLines.length === 0) {
       hydratedLines.push(emptyLine());
     }
 
-    const cName = meta?.invoice_to || meta?.quotation_to || String(cust?.name || (invoice.customers as any)?.name || '');
-    const cPerson = meta?.contact_person || String((cust as any)?.contact_person || (cust as any)?.client?.contactPerson || cName);
-    const cEmail = meta?.contact_email || String((cust as any)?.email || (cust as any)?.client?.email || (invoice.customers as any)?.email || '');
-    const cPhone = meta?.contact_phone || String((cust as any)?.phone || (cust as any)?.client?.phone || (invoice.customers as any)?.phone || '');
+    const cName = meta?.invoice_to || meta?.quotation_to || String(cust?.name || (freshInvoice.customers as any)?.name || '');
+    const cPerson = meta?.contact_person || String((cust as any)?.contact_person || (cust as any)?.client?.contactPerson || (freshInvoice.customers as any)?.client?.contactPerson || (freshInvoice as any)?.client?.contactPerson || cName);
+    const cEmail = meta?.contact_email || String((cust as any)?.email || (cust as any)?.client?.email || (freshInvoice.customers as any)?.email || (freshInvoice.customers as any)?.client?.email || (freshInvoice as any)?.client?.email || '');
+    const cPhone = meta?.contact_phone || String((cust as any)?.phone || (cust as any)?.client?.phone || (freshInvoice.customers as any)?.phone || (freshInvoice.customers as any)?.client?.phone || (freshInvoice as any)?.client?.phone || '');
 
     setForm({
-      customer_id: String(invoice.customer_id),
+      customer_id: String(freshInvoice.customer_id),
       contact_person: cPerson,
       contact_email: cEmail,
       contact_phone: cPhone,
       invoice_to: cName,
-      invoice_date: dateValue(invoice.invoice_date),
-      due_date: dateValue(invoice.due_date),
-      payment_term_id: String(invoice.payment_term_id || ''),
+      invoice_date: dateValue(freshInvoice.invoice_date),
+      due_date: dateValue(freshInvoice.due_date),
+      payment_term_id: String(freshInvoice.payment_term_id || ''),
       payment_advance: meta?.payment_advance || '70% of charge paid in advance.',
       payment_completion: meta?.payment_completion || '30% of charge paid after the project Completion',
       nb: meta?.nb || meta?.nb_text || 'NB: the advance amount should be paid when you get the invoice.',
-      notes: meta?.notes_text || (typeof invoice.notes === 'string' && !meta ? invoice.notes : ''),
+      notes: meta?.notes_text || (typeof freshInvoice.notes === 'string' && !meta ? freshInvoice.notes : ''),
+      payment_methods: Array.isArray(meta?.payment_methods) && meta.payment_methods.length > 0 ? meta.payment_methods : defaultPaymentMethods,
+      customer_reference: freshInvoice.customer_reference || meta?.customer_reference || '',
       lines: hydratedLines,
       receive_payment_now: false,
       payment_method_id: '',
@@ -476,14 +522,17 @@ export default function CustomerInvoicesPage() {
       const firstSub = matched.subService[0];
       targetLine.selected_subservice_ids = [firstSub.id];
       const items = extractSubServiceItems(firstSub);
-      targetLine.description = items.join(', ');
+      const desc = items.length > 1
+        ? `1. ${firstSub.name}: ${items.join(', ')}`
+        : `1. ${firstSub.name}: ${firstSub.description || matched.description || "Professional service implementation."}`;
+      targetLine.description = desc;
       if (firstSub.price && !targetLine.is_free && Number(targetLine.unit_price) === 0) {
         targetLine.unit_price = Number(firstSub.price);
       }
     } else {
       targetLine.selected_subservice_ids = [];
       if (!targetLine.description) {
-        targetLine.description = serviceName;
+        targetLine.description = `1. ${serviceName}: Comprehensive service delivery.`;
       }
     }
     nextLines[index] = targetLine;
@@ -504,20 +553,20 @@ export default function CustomerInvoicesPage() {
     if (matched && Array.isArray(matched.subService)) {
       const selectedSubs = matched.subService.filter((s) => newSelected.includes(s.id));
       if (selectedSubs.length > 0) {
-        const oldLines = targetLine.description.split('\n');
-        const timelineLine = oldLines.find((l) => l.toLowerCase().includes('timeline'));
-
-        // Extract detailed items of clicked subservices separated by commas
-        const allItems = selectedSubs.flatMap((s) => extractSubServiceItems(s));
-        const itemsLine = allItems.join(', ');
-
-        targetLine.description = timelineLine ? `${itemsLine}\n\n${timelineLine}` : itemsLine;
+        targetLine.description = selectedSubs
+          .map((s, idx) => {
+            const items = extractSubServiceItems(s);
+            if (items.length > 1) {
+              return `${idx + 1}. ${s.name}: ${items.join(', ')}`;
+            }
+            return `${idx + 1}. ${s.name}: ${s.description || 'Effective implementation and delivery.'}`;
+          })
+          .join('\n');
 
         if (selectedSubs.length === 1 && selectedSubs[0].price && !targetLine.is_free && Number(targetLine.unit_price) === 0) {
           targetLine.unit_price = Number(selectedSubs[0].price);
         }
       } else {
-        // All deselected — clear description
         targetLine.description = '';
       }
     }
@@ -561,6 +610,8 @@ export default function CustomerInvoicesPage() {
       payment_advance: form.payment_advance,
       payment_completion: form.payment_completion,
       nb: form.nb,
+      payment_methods: form.payment_methods || defaultPaymentMethods,
+      customer_reference: form.customer_reference || undefined,
       vat_percent: previewVatRate,
       items: form.lines.map((l) => ({
         service_type: l.service_type,
@@ -577,6 +628,7 @@ export default function CustomerInvoicesPage() {
 
     const payload = {
       notes: JSON.stringify(richNotesMeta),
+      customer_reference: form.customer_reference || undefined,
       lines: form.lines.map((line) => ({
         product_id: line.product_id,
         description: line.description || line.service_type || 'Custom line',
@@ -712,7 +764,7 @@ export default function CustomerInvoicesPage() {
           </button>
           {row.state === 'draft' && (
             <>
-              <button title="Edit" onClick={() => editInvoice(row)} className={actionBtnEdit}>
+              <button title="Edit" onClick={() => void editInvoice(row)} className={actionBtnEdit}>
                 <SquarePen className="size-4" />
               </button>
               <button title="Accept & Post (with Receipt)" onClick={() => openAcceptInvoice(row)} className={actionBtnView}>
@@ -739,11 +791,12 @@ export default function CustomerInvoicesPage() {
   ];
 
   // Live preview helpers for A4InvoiceSheet
-  const selectedCustomer = customers.find((c) => c.id === Number(form.customer_id));
-  const previewContactPerson = form.contact_person || (selectedCustomer ? String((selectedCustomer as any).contact_person || selectedCustomer.name || '—') : '—');
-  const previewInvoiceTo = form.invoice_to || (selectedCustomer ? String(selectedCustomer.name || 'Customer') : 'Customer');
-  const previewContactEmail = form.contact_email || (selectedCustomer ? String((selectedCustomer as any).email || '—') : '—');
-  const previewContactPhone = form.contact_phone || (selectedCustomer ? String((selectedCustomer as any).phone || '—') : '—');
+  const selectedCustomer = customers.find((c) => c.id === Number(form.customer_id)) || (selected?.customers as any);
+  const selectedClient = (selectedCustomer as any)?.client || (selected as any)?.client;
+  const previewContactPerson = form.contact_person || (selectedCustomer ? String((selectedCustomer as any).contact_person || selectedClient?.contactPerson || selectedCustomer.name || '—') : '—');
+  const previewInvoiceTo = form.invoice_to || (selectedCustomer ? String((selectedCustomer as any).institution || selectedClient?.institution || selectedCustomer.name || 'Customer') : 'Customer');
+  const previewContactEmail = form.contact_email || (selectedCustomer ? String((selectedCustomer as any).email || selectedClient?.email || '—') : '—');
+  const previewContactPhone = form.contact_phone || (selectedCustomer ? String((selectedCustomer as any).phone || selectedClient?.phone || '—') : '—');
   const previewInvoiceNo = selected?.invoice_number || '#DADV-INV-DRAFT';
   const previewDateStr = new Date(form.invoice_date || today()).toLocaleDateString('en-US', {
     weekday: 'long',
@@ -776,7 +829,7 @@ export default function CustomerInvoicesPage() {
     <DashboardDataTable rows={filtered} columns={columns} loading={loading} searchValue={query} onSearchChange={setQuery} searchPlaceholder="Search invoices..." emptyText="No customer invoices found" minWidth="1350px" action={<button onClick={createInvoice} className={btnCreatePage}><Plus className="size-4" /> New invoice</button>} filters={<><select value={customerFilter} onChange={(event) => setCustomerFilter(event.target.value)} className={dashboardSelectClass}><option value="all">All customers</option>{customers.map((item) => <option key={item.id} value={item.id}>{String(item.name)}</option>)}</select><select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className={dashboardSelectClass}><option value="all">All statuses</option><option value="draft">Draft</option><option value="posted">Posted</option><option value="partial">Partially paid</option><option value="paid">Paid</option><option value="cancelled">Cancelled</option></select><select value={currencyFilter} onChange={(event) => setCurrencyFilter(event.target.value)} className={dashboardSelectClass}><option value="all">All currencies</option>{currencies.map((item) => <option key={item.id} value={item.id}>{String(item.code)}</option>)}</select><input type="date" value={dateFrom} onChange={(event) => setDateFrom(event.target.value)} className={dashboardSelectClass} /><input type="date" value={dateTo} onChange={(event) => setDateTo(event.target.value)} className={dashboardSelectClass} /><button onClick={() => void load()} className="flex size-[42px] items-center justify-center rounded-md border border-zinc-200 bg-white"><RefreshCw className={`size-4 ${loading ? 'animate-spin' : ''}`} /></button></>} />
     
     <Dialog open={open} onOpenChange={(value) => !saving && setOpen(value)}>
-      <DialogContent className="max-h-[94vh] max-w-[calc(100vw-2rem)] overflow-y-auto sm:max-w-5xl">
+      <DialogContent showCloseButton={false} className="max-h-[95vh] w-full !max-w-[980px] overflow-y-auto rounded-2xl">
         <DialogHeader className="flex-row items-center justify-between text-left pb-2 border-b border-zinc-100">
           <div className="flex items-center gap-3">
             <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -789,25 +842,35 @@ export default function CustomerInvoicesPage() {
               </DialogDescription>
             </div>
           </div>
-          {/* Tabs */}
-          <div className="flex rounded-lg bg-zinc-100 p-1">
+          {/* Tabs and Close Button */}
+          <div className="flex items-center gap-2">
+            <div className="flex rounded-lg bg-zinc-100 p-1">
+              <button
+                type="button"
+                onClick={() => setDialogTab('form')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                  dialogTab === 'form' ? 'bg-white text-zinc-900 shadow-sm font-bold' : 'text-zinc-500 hover:text-zinc-800'
+                }`}
+              >
+                <SquarePen className="size-3.5" /> Edit Form
+              </button>
+              <button
+                type="button"
+                onClick={() => setDialogTab('preview')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                  dialogTab === 'preview' ? 'bg-white text-primary shadow-sm font-bold' : 'text-zinc-500 hover:text-zinc-800'
+                }`}
+              >
+                <Eye className="size-3.5" /> Live Preview
+              </button>
+            </div>
             <button
               type="button"
-              onClick={() => setDialogTab('form')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
-                dialogTab === 'form' ? 'bg-white text-zinc-900 shadow-sm font-bold' : 'text-zinc-500 hover:text-zinc-800'
-              }`}
+              onClick={() => setOpen(false)}
+              className="size-8 flex items-center justify-center rounded-md text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors"
+              title="Close"
             >
-              <SquarePen className="size-3.5" /> Edit Form
-            </button>
-            <button
-              type="button"
-              onClick={() => setDialogTab('preview')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
-                dialogTab === 'preview' ? 'bg-white text-primary shadow-sm font-bold' : 'text-zinc-500 hover:text-zinc-800'
-              }`}
-            >
-              <Eye className="size-3.5" /> Live Preview
+              <X className="size-4" />
             </button>
           </div>
         </DialogHeader>
@@ -827,8 +890,8 @@ export default function CustomerInvoicesPage() {
                 Back to Edit Form
               </button>
             </div>
-            <div className="bg-zinc-100 p-2 sm:p-4 rounded-xl flex justify-center max-h-[70vh] overflow-y-auto">
-              <div className="w-full max-w-[850px]">
+            <div className="bg-zinc-100 p-2 sm:p-4 rounded-xl flex justify-center max-h-[75vh] overflow-y-auto">
+              <div className="w-full max-w-[850px] flex justify-center">
                 <A4InvoiceSheet
                   contactPerson={previewContactPerson}
                   invoiceNo={previewInvoiceNo}
@@ -846,6 +909,7 @@ export default function CustomerInvoicesPage() {
                   paymentAdvance={form.payment_advance}
                   paymentCompletion={form.payment_completion}
                   nbText={form.nb}
+                  paymentMethods={form.payment_methods || defaultPaymentMethods}
                   showStamp={true}
                   brandPrimary={brandPrimary}
                   brandSecondary={brandSecondary}
@@ -874,6 +938,48 @@ export default function CustomerInvoicesPage() {
         ) : (
           <form onSubmit={(event) => { event.preventDefault(); void save(); }} className="space-y-4">
             <fieldset disabled={viewOnly} className="contents">
+              {/* Prominent Import from Accepted Quotation Banner */}
+              {acceptedQuotations.length > 0 && !viewOnly && (
+                <div className="rounded-xl border border-primary/25 bg-gradient-to-r from-primary/5 via-orange-50/40 to-transparent p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary font-bold">
+                      <FileText className="size-4" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-zinc-900 block">
+                        Import from Accepted Quotation (Ka soo qaado Quotation la aqbalay)
+                      </span>
+                      <span className="text-[11px] text-zinc-500">
+                        Dooro quotation-ka la aqbalay si aad toos ugu soo shubto dhammaan xogta Macmiilka, Adeegyada, Xirmada & Lacagaha.
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <select
+                      onChange={(e) => {
+                        const qId = Number(e.target.value);
+                        const q = acceptedQuotations.find((item) => item.id === qId);
+                        if (q) importFromQuotation(q);
+                      }}
+                      defaultValue=""
+                      className="h-9 w-full sm:w-72 rounded-lg border border-primary/30 bg-white px-3 text-xs font-semibold text-zinc-800 shadow-xs focus:border-primary focus:outline-none"
+                    >
+                      <option value="" disabled>Dooro Quotation la aqbalay...</option>
+                      {acceptedQuotations.map((q) => {
+                        let qNotes: any = null;
+                        try { qNotes = q.notes ? JSON.parse(String(q.notes)) : null; } catch {}
+                        const clientName = qNotes?.quotation_to || q.client?.institution || q.customer?.name || 'Customer';
+                        return (
+                          <option key={q.id} value={q.id}>
+                            {q.quotation_number} — {clientName} (${Number(q.total || 0).toFixed(0)})
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
+                </div>
+              )}
+
               {/* Customer & Invoice Dates Header Card */}
               <div className="rounded-xl border border-zinc-200 bg-zinc-50/50 p-4 space-y-3">
                 <div className="grid gap-x-4 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
