@@ -2,7 +2,33 @@ import prisma from '../../../../config/db.js'
 import { logAudit } from '../../../../utils/auditHelper.js'
 
 const invoiceInclude = {
-  customers: { select: { id: true, name: true, phone: true, email: true } },
+  customers: {
+    select: {
+      id: true,
+      name: true,
+      phone: true,
+      email: true,
+      clientId: true,
+      client: {
+        select: {
+          id: true,
+          institution: true,
+          contactPerson: true,
+          email: true,
+          phone: true,
+        },
+      },
+    },
+  },
+  client: {
+    select: {
+      id: true,
+      institution: true,
+      contactPerson: true,
+      email: true,
+      phone: true,
+    },
+  },
   companies: { select: { id: true, name: true } },
   currencies: { select: { id: true, code: true, symbol: true } },
   journals: { select: { id: true, name: true, code: true } },
@@ -266,10 +292,33 @@ async function allocateInvoiceNumber(tx, journal) {
 
 export const getAll = async (req, res) => {
   try {
-    const data = await prisma.customer_invoices.findMany({ where: { document_type: 'invoice' }, include: invoiceInclude, orderBy: { created_at: 'desc' } })
+    const data = await prisma.customer_invoices.findMany({
+      where: { document_type: 'invoice' },
+      select: {
+        id: true,
+        invoice_number: true,
+        invoice_date: true,
+        due_date: true,
+        state: true,
+        payment_state: true,
+        amount_untaxed: true,
+        amount_tax: true,
+        amount_total: true,
+        paid_amount: true,
+        amount_due: true,
+        customer_reference: true,
+        created_at: true,
+        updated_at: true,
+        customers: { select: { id: true, name: true, phone: true, email: true } },
+        currencies: { select: { id: true, code: true, symbol: true } },
+        journals: { select: { id: true, name: true, code: true } },
+      },
+      orderBy: { created_at: 'desc' },
+    })
     res.json({ success: true, data })
   } catch (error) { fail(res, error, 'Failed to fetch customer invoices') }
 }
+
 
 export const getById = async (req, res) => {
   const invoiceId = id(req.params.id)

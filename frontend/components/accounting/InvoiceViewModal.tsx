@@ -146,7 +146,7 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice }: Props)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl w-[98vw] max-h-[96vh] p-0 bg-zinc-100 flex flex-col overflow-hidden">
+      <DialogContent className="max-w-7xl w-[99vw] max-h-[97vh] p-0 bg-zinc-100 flex flex-col overflow-hidden">
         {/* Header bar */}
         <DialogHeader className="px-5 py-3.5 bg-white border-b flex flex-row items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
@@ -200,7 +200,7 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice }: Props)
 
         {/* Modal Body with A4 Invoice Template Sheet */}
         <div className="flex-1 overflow-y-auto bg-zinc-100 p-3 sm:p-6 flex justify-center">
-          <div className="w-full max-w-[880px]">
+          <div className="w-full max-w-[960px]">
             <A4InvoiceSheet
               contactPerson={contactPerson}
               invoiceNo={invoiceNo}

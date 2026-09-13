@@ -117,41 +117,40 @@ model Verification {
 }
 
 model Client {
-  id                String                   @id
-  createdAt         DateTime?                @default(now())
-  updatedAt         DateTime?                @updatedAt
-  institution       String
-  email             String                   @unique
-  phone             String                   @unique
-  source            String
-  accountManagerId  String?
-  address           String?                  @db.Text
-  portfolioId       String?
-  clientType        ClientType               @default(ONE_TIME)
-  companyName       String?
-  contactPerson     String?
-  contractEndDate   DateTime?
-  contractStartDate DateTime?
-  isActive          Boolean                  @default(true)
-  monthlyBudget     Float?
-  notes             String?                  @db.Text
-  isDraft           Boolean                  @default(false)
-  clientSubService  ClientSubService[]
-  serviceAgreements IncomeServiceAgreement[]
-  clientService     ClientService[]
-  installments      ClientInstallment[]
-
-  accountManager     Staff?              @relation("ClientAccountManager", fields: [accountManagerId], references: [id])
-  portfolio          Portfolio?          @relation(fields: [portfolioId], references: [id], map: "clients_branchId_fkey")
+  id                 String                   @id
+  createdAt          DateTime?                @default(now())
+  updatedAt          DateTime?                @updatedAt
+  institution        String
+  email              String                   @unique
+  phone              String                   @unique
+  source             String
+  accountManagerId   String?
+  address            String?                  @db.Text
+  portfolioId        String?
+  clientType         ClientType               @default(ONE_TIME)
+  companyName        String?
+  contactPerson      String?
+  contractEndDate    DateTime?
+  contractStartDate  DateTime?
+  isActive           Boolean                  @default(true)
+  monthlyBudget      Float?
+  notes              String?                  @db.Text
+  isDraft            Boolean                  @default(false)
+  clientSubService   ClientSubService[]
+  serviceAgreements  IncomeServiceAgreement[]
+  clientService      ClientService[]
+  installments       ClientInstallment[]
+  accountManager     Staff?                   @relation("ClientAccountManager", fields: [accountManagerId], references: [id])
+  portfolio          Portfolio?               @relation(fields: [portfolioId], references: [id], map: "clients_branchId_fkey")
   clientTask         ClientTask[]
   contentCycles      ContentCycle[]
   contentRequests    ContentRequest[]
   contracts          Contract[]
-  projects           Project[]
-  recurringSchedules RecurringSchedule[]
-  accountingCustomer customers?
-  quotations         quotations[]
   customerInvoices   customer_invoices[]
+  accountingCustomer customers?
+  projects           Project[]
+  quotations         quotations[]
+  recurringSchedules RecurringSchedule[]
 
   @@index([clientType])
   @@index([isDraft])
@@ -201,23 +200,22 @@ model SubService {
 }
 
 model Portfolio {
-  id              String   @id
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  name            String   @unique(map: "branches_name_key")
-  location        String?
-  phone           String?
-  isActive        Boolean  @default(true)
-  description     String?
-  customDomain    String?  @unique(map: "branches_customDomain_key")
-  logoUrl         String?
-  primaryColor    String   @default("#651210")
-  secondaryColor  String   @default("#ec4724")
-  slug            String?  @unique(map: "branches_slug_key")
-  iconLogoUrl     String?
-  slugClearedOnce Boolean  @default(false)
-  usesRootLogin   Boolean  @default(false)
-
+  id                 String              @id
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  name               String              @unique(map: "branches_name_key")
+  location           String?
+  phone              String?
+  isActive           Boolean             @default(true)
+  description        String?
+  customDomain       String?             @unique(map: "branches_customDomain_key")
+  logoUrl            String?
+  primaryColor       String              @default("#651210")
+  secondaryColor     String              @default("#ec4724")
+  slug               String?             @unique(map: "branches_slug_key")
+  iconLogoUrl        String?
+  slugClearedOnce    Boolean             @default(false)
+  usesRootLogin      Boolean             @default(false)
   clients            Client[]
   contentRequests    ContentRequest[]
   contracts          Contract[]
@@ -804,11 +802,11 @@ model RecurringScheduleStep {
   department     String?
   templateId     String?
   assigneeId     String?
-  assigneeIds    Json?
-  startHour      String?                   @default("09:00")
-  estimatedHours Float?                    @default(2)
   intervalDays   Int?
   supervisor     String                    @default("")
+  assigneeIds    Json?
+  estimatedHours Float?                    @default(2)
+  startHour      String?                   @default("09:00")
   assignee       Staff?                    @relation("RecurringStepAssignee", fields: [assigneeId], references: [id])
   schedule       RecurringSchedule         @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
   template       WorkflowTemplate?         @relation(fields: [templateId], references: [id])
@@ -889,128 +887,6 @@ model WorkflowTemplateStep {
   @@map("workflow_template_steps")
 }
 
-enum TaskStatus {
-  pending
-  in_progress
-  overdue
-  completed
-}
-
-enum TaskPriority {
-  normal
-  medium
-  urgent
-}
-
-enum ClientServiceStatus {
-  pending
-  completed
-}
-
-enum ServiceType {
-  ONE_TIME
-  SUBSCRIPTION
-}
-
-enum ClientType {
-  ONE_TIME
-  MANAGED_ON_DEMAND
-  MANAGED_RECURRING
-}
-
-enum ProjectStatus {
-  LEAD
-  PENDING_PAYMENT
-  ACTIVE
-  REVIEW
-  COMPLETED
-  CANCELLED
-}
-
-enum ProjectPriority {
-  low
-  medium
-  high
-  urgent
-}
-
-enum ContentType {
-  VIDEO
-  GRAPHIC_DESIGN
-  PHOTOGRAPHY
-  SOCIAL_MEDIA_POST
-  MARKETING_CAMPAIGN
-  OTHER
-}
-
-enum ContentRequestStatus {
-  DRAFT
-  PLANNING
-  PRODUCTION
-  EDITING
-  REVIEW
-  APPROVED
-  SCHEDULED
-  PUBLISHED
-  COMPLETED
-}
-
-enum RecurrenceType {
-  DAILY
-  WEEKLY
-  MONTHLY
-  CUSTOM
-}
-
-enum ContractStatus {
-  DRAFT
-  ACTIVE
-  EXPIRED
-  TERMINATED
-  RENEWED
-}
-
-enum InstallmentStatus {
-  PENDING
-  PARTIAL
-  PAID
-  OVERDUE
-}
-
-enum ContentCycleStatus {
-  PLANNED
-  IN_PROGRESS
-  REVIEW
-  COMPLETED
-  SKIPPED
-}
-
-enum WorkflowStage {
-  pending
-  in_progress
-  completed
-  blocked
-}
-
-enum Counter_entity {
-  users
-  tasks
-  clients
-  services
-  subservices
-  payments
-  invoice
-  tax
-  branches
-  departments
-  projects
-  content_requests
-  recurring_schedules
-  content_cycles
-  workflow_templates
-  contracts
-}
-
 model account_types {
   id                Int                          @id @default(autoincrement()) @db.UnsignedInt
   name              String                       @unique(map: "uq_account_types_name") @db.VarChar(64)
@@ -1040,8 +916,8 @@ model bank_accounts {
   companies         companies          @relation(fields: [company_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_ba_company")
   currencies        currencies         @relation(fields: [currency_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_ba_currency")
   chart_of_accounts chart_of_accounts? @relation(fields: [gl_account_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_ba_gl")
-  payment_methods   payment_methods?   @relation(fields: [payment_method_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_ba_payment_method")
   journals          journals?          @relation(fields: [journal_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_ba_journal")
+  payment_methods   payment_methods?   @relation(fields: [payment_method_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_ba_payment_method")
   vendor_payments   vendor_payments[]
 
   @@unique([bank_id, account_number], map: "uq_bank_accounts_number")
@@ -1081,7 +957,6 @@ model chart_of_accounts {
   created_at                                                     DateTime                 @default(now()) @db.Timestamp(0)
   updated_at                                                     DateTime                 @default(now()) @db.Timestamp(0)
   bank_accounts                                                  bank_accounts[]
-  payment_methods                                                payment_methods[]
   companies                                                      companies                @relation(fields: [company_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_coa_company")
   currencies                                                     currencies?              @relation(fields: [currency_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_coa_currency")
   chart_of_accounts                                              chart_of_accounts?       @relation("chart_of_accountsTochart_of_accounts", fields: [parent_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_coa_parent")
@@ -1093,13 +968,14 @@ model chart_of_accounts {
   journal_items                                                  journal_items[]
   journals_journals_default_credit_account_idTochart_of_accounts journals[]               @relation("journals_default_credit_account_idTochart_of_accounts")
   journals_journals_default_debit_account_idTochart_of_accounts  journals[]               @relation("journals_default_debit_account_idTochart_of_accounts")
+  payment_methods                                                payment_methods[]
   products_products_expense_account_idTochart_of_accounts        products[]               @relation("products_expense_account_idTochart_of_accounts")
   products_products_income_account_idTochart_of_accounts         products[]               @relation("products_income_account_idTochart_of_accounts")
   taxes                                                          taxes[]
+  vendor_advances                                                vendor_advances[]
   vendor_bill_lines                                              vendor_bill_lines[]
   vendor_bills                                                   vendor_bills[]
   vendors                                                        vendors[]
-  vendor_advances                                                vendor_advances[]
 
   @@unique([company_id, code], map: "uq_coa_company_code")
   @@index([currency_id], map: "fk_coa_currency")
@@ -1130,9 +1006,9 @@ model companies {
   fiscal_years      fiscal_years[]
   journal_entries   journal_entries[]
   journals          journals[]
+  vendor_advances   vendor_advances[]
   vendor_bills      vendor_bills[]
   vendor_payments   vendor_payments[]
-  vendor_advances   vendor_advances[]
   vendors           vendors[]
 
   @@index([currency_id], map: "fk_companies_currency")
@@ -1155,11 +1031,10 @@ model currencies {
   customers         customers[]
   journal_items     journal_items[]
   journals          journals[]
+  vendor_advances   vendor_advances[]
   vendor_bills      vendor_bills[]
   vendor_payments   vendor_payments[]
-  vendor_advances   vendor_advances[]
   vendors           vendors[]
-  quotations        quotations[]
 }
 
 model customer_invoice_lines {
@@ -1213,7 +1088,9 @@ model customer_invoices {
   posted_at               DateTime?                       @db.Timestamp(0)
   created_at              DateTime                        @default(now()) @db.Timestamp(0)
   updated_at              DateTime                        @default(now()) @db.Timestamp(0)
+  client_id               String?
   customer_invoice_lines  customer_invoice_lines[]
+  client                  Client?                         @relation(fields: [client_id], references: [id])
   chart_of_accounts       chart_of_accounts               @relation(fields: [receivable_account_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_ci_ar")
   companies               companies                       @relation(fields: [company_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_ci_company")
   currencies              currencies                      @relation(fields: [currency_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_ci_currency")
@@ -1224,11 +1101,8 @@ model customer_invoices {
   customer_invoices       customer_invoices?              @relation("customer_invoicesTocustomer_invoices", fields: [reversed_invoice_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_ci_reversed")
   other_customer_invoices customer_invoices[]             @relation("customer_invoicesTocustomer_invoices")
   payment_terms           payment_terms?                  @relation(fields: [payment_term_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_ci_terms")
+  converted_quotations    quotations[]                    @relation("QuotationToInvoice")
   receipt_allocations     receipt_allocations[]
-
-  client_id            String?      @db.VarChar(191)
-  client               Client?      @relation(fields: [client_id], references: [id], onDelete: SetNull)
-  converted_quotations quotations[] @relation("QuotationToInvoice")
 
   @@unique([company_id, invoice_number], map: "uq_ci_company_number")
   @@index([receivable_account_id], map: "fk_ci_ar")
@@ -1241,6 +1115,7 @@ model customer_invoices {
   @@index([customer_id], map: "idx_ci_customer")
   @@index([invoice_date], map: "idx_ci_date")
   @@index([state, payment_state], map: "idx_ci_state")
+  @@index([client_id], map: "customer_invoices_client_id_fkey")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -1303,16 +1178,15 @@ model customers {
   is_active             Boolean                @default(true)
   created_at            DateTime               @default(now()) @db.Timestamp(0)
   updated_at            DateTime               @default(now()) @db.Timestamp(0)
+  clientId              String?                @unique
   customer_invoices     customer_invoices[]
   customer_receipts     customer_receipts[]
+  client                Client?                @relation(fields: [clientId], references: [id])
   chart_of_accounts     chart_of_accounts?     @relation(fields: [receivable_account_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_cust_ar")
   companies             companies              @relation(fields: [company_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_cust_company")
   currencies            currencies?            @relation(fields: [currency_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_cust_currency")
   payment_terms         payment_terms?         @relation(fields: [payment_term_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_cust_terms")
-
-  clientId   String?      @unique @db.VarChar(191)
-  client     Client?      @relation(fields: [clientId], references: [id], onDelete: SetNull)
-  quotations quotations[]
+  quotations            quotations[]
 
   @@unique([company_id, customer_code], map: "uq_customers_company_code")
   @@index([receivable_account_id], map: "fk_cust_ar")
@@ -1478,9 +1352,9 @@ model payment_methods {
   is_active               Boolean                      @default(true)
   created_at              DateTime                     @default(now()) @db.Timestamp(0)
   updated_at              DateTime                     @default(now()) @db.Timestamp(0)
-  chart_of_accounts       chart_of_accounts?           @relation(fields: [gl_account_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_pm_gl")
   bank_accounts           bank_accounts[]
   customer_receipts       customer_receipts[]
+  chart_of_accounts       chart_of_accounts?           @relation(fields: [gl_account_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_pm_gl")
   vendor_payments         vendor_payments[]
 
   @@index([gl_account_id], map: "fk_pm_gl")
@@ -1549,8 +1423,8 @@ model products {
   chart_of_accounts_products_income_account_idTochart_of_accounts  chart_of_accounts?       @relation("products_income_account_idTochart_of_accounts", fields: [income_account_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_prod_income")
   taxes_products_purchase_tax_idTotaxes                            taxes?                   @relation("products_purchase_tax_idTotaxes", fields: [purchase_tax_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_prod_pur_tax")
   taxes_products_sale_tax_idTotaxes                                taxes?                   @relation("products_sale_tax_idTotaxes", fields: [sale_tax_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_prod_sale_tax")
-  vendor_bill_lines                                                vendor_bill_lines[]
   quotation_lines                                                  quotation_lines[]
+  vendor_bill_lines                                                vendor_bill_lines[]
 
   @@index([category_id], map: "fk_prod_category")
   @@index([expense_account_id], map: "fk_prod_expense")
@@ -1587,9 +1461,9 @@ model taxes {
   customer_invoice_lines                   customer_invoice_lines[]
   products_products_purchase_tax_idTotaxes products[]               @relation("products_purchase_tax_idTotaxes")
   products_products_sale_tax_idTotaxes     products[]               @relation("products_sale_tax_idTotaxes")
+  quotation_lines                          quotation_lines[]
   chart_of_accounts                        chart_of_accounts?       @relation(fields: [tax_account_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_taxes_account")
   vendor_bill_lines                        vendor_bill_lines[]
-  quotation_lines                          quotation_lines[]
 
   @@index([tax_account_id], map: "fk_taxes_account")
 }
@@ -1697,7 +1571,7 @@ model vendor_payments {
   created_at          DateTime              @default(now()) @db.Timestamp(0)
   updated_at          DateTime              @default(now()) @db.Timestamp(0)
   payment_allocations payment_allocations[]
-  vendor_advances     vendor_advances[]
+  vendor_advances     vendor_advances?
   bank_accounts       bank_accounts?        @relation(fields: [bank_account_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_vp_bank")
   companies           companies             @relation(fields: [company_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_vp_company")
   currencies          currencies            @relation(fields: [currency_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_vp_currency")
@@ -1730,15 +1604,17 @@ model vendor_advances {
   state              String                        @default("open") @db.VarChar(16)
   created_at         DateTime                      @default(now()) @db.Timestamp(0)
   updated_at         DateTime                      @default(now()) @db.Timestamp(0)
+  applications       vendor_advance_applications[]
+  chart_of_accounts  chart_of_accounts             @relation(fields: [advance_account_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_va_account")
   companies          companies                     @relation(fields: [company_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_va_company")
-  vendors            vendors                       @relation(fields: [vendor_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_va_vendor")
   currencies         currencies                    @relation(fields: [currency_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_va_currency")
   vendor_payments    vendor_payments               @relation(fields: [payment_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_va_payment")
-  chart_of_accounts  chart_of_accounts             @relation(fields: [advance_account_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_va_account")
-  applications       vendor_advance_applications[]
+  vendors            vendors                       @relation(fields: [vendor_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_va_vendor")
 
   @@index([vendor_id, currency_id, state], map: "idx_va_available")
   @@index([advance_account_id], map: "fk_va_account")
+  @@index([company_id], map: "fk_va_company")
+  @@index([currency_id], map: "fk_va_currency")
 }
 
 model vendor_advance_applications {
@@ -1774,9 +1650,9 @@ model vendors {
   is_active            Boolean              @default(true)
   created_at           DateTime             @default(now()) @db.Timestamp(0)
   updated_at           DateTime             @default(now()) @db.Timestamp(0)
+  vendor_advances      vendor_advances[]
   vendor_bills         vendor_bills[]
   vendor_payments      vendor_payments[]
-  vendor_advances      vendor_advances[]
   chart_of_accounts    chart_of_accounts?   @relation(fields: [payable_account_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_ven_ap")
   companies            companies            @relation(fields: [company_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_ven_company")
   currencies           currencies?          @relation(fields: [currency_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_ven_currency")
@@ -1787,6 +1663,190 @@ model vendors {
   @@index([currency_id], map: "fk_ven_currency")
   @@index([payment_term_id], map: "fk_ven_terms")
   @@index([name], map: "idx_vendors_name")
+}
+
+model quotations {
+  id                   Int                @id @default(autoincrement()) @db.UnsignedInt
+  company_id           Int?               @db.UnsignedInt
+  quotation_number     String             @unique @db.VarChar(32)
+  client_id            String?
+  customer_id          Int?               @db.UnsignedInt
+  date                 DateTime           @db.Date
+  valid_until          DateTime?          @db.Date
+  currency_id          Int?               @db.UnsignedInt
+  status               quotation_status   @default(DRAFT)
+  subtotal             Decimal            @default(0.00) @db.Decimal(15, 2)
+  discount             Decimal            @default(0.00) @db.Decimal(15, 2)
+  tax                  Decimal            @default(0.00) @db.Decimal(15, 2)
+  total                Decimal            @default(0.00) @db.Decimal(15, 2)
+  notes                String?            @db.Text
+  terms                String?            @db.Text
+  converted_invoice_id Int?               @db.UnsignedInt
+  created_at           DateTime           @default(now()) @db.Timestamp(0)
+  updated_at           DateTime           @default(now()) @db.Timestamp(0)
+  lines                quotation_lines[]
+  client               Client?            @relation(fields: [client_id], references: [id])
+  converted_invoice    customer_invoices? @relation("QuotationToInvoice", fields: [converted_invoice_id], references: [id])
+  customer             customers?         @relation(fields: [customer_id], references: [id])
+
+  @@index([client_id])
+  @@index([customer_id])
+  @@index([status])
+  @@index([converted_invoice_id], map: "quotations_converted_invoice_id_fkey")
+}
+
+model quotation_lines {
+  id               Int        @id @default(autoincrement()) @db.UnsignedInt
+  quotation_id     Int        @db.UnsignedInt
+  sequence         Int        @default(10) @db.UnsignedInt
+  product_id       Int?       @db.UnsignedInt
+  description      String     @db.VarChar(255)
+  quantity         Decimal    @default(1.0000) @db.Decimal(15, 4)
+  unit_price       Decimal    @default(0.0000) @db.Decimal(15, 4)
+  discount_percent Decimal    @default(0.0000) @db.Decimal(7, 4)
+  tax_id           Int?       @db.UnsignedInt
+  subtotal         Decimal?   @db.Decimal(15, 2)
+  products         products?  @relation(fields: [product_id], references: [id], onDelete: NoAction)
+  quotation        quotations @relation(fields: [quotation_id], references: [id], onDelete: Cascade)
+  taxes            taxes?     @relation(fields: [tax_id], references: [id], onDelete: NoAction)
+
+  @@index([quotation_id])
+  @@index([product_id])
+  @@index([tax_id])
+}
+
+model document_templates {
+  id           Int      @id @default(autoincrement()) @db.UnsignedInt
+  name         String   @db.VarChar(128)
+  type         String   @db.VarChar(32)
+  file_url     String?  @db.Text
+  html_content String?  @db.LongText
+  is_default   Boolean  @default(false)
+  placeholders Json?
+  created_at   DateTime @default(now()) @db.Timestamp(0)
+  updated_at   DateTime @default(now()) @db.Timestamp(0)
+}
+
+enum TaskStatus {
+  pending
+  in_progress
+  overdue
+  completed
+}
+
+enum TaskPriority {
+  normal
+  medium
+  urgent
+}
+
+enum ClientServiceStatus {
+  pending
+  completed
+}
+
+enum ServiceType {
+  ONE_TIME
+  SUBSCRIPTION
+}
+
+enum ClientType {
+  ONE_TIME
+  MANAGED_ON_DEMAND
+  MANAGED_RECURRING
+}
+
+enum ProjectStatus {
+  LEAD
+  PENDING_PAYMENT
+  ACTIVE
+  REVIEW
+  COMPLETED
+  CANCELLED
+}
+
+enum ProjectPriority {
+  low
+  medium
+  high
+  urgent
+}
+
+enum ContentType {
+  VIDEO
+  GRAPHIC_DESIGN
+  PHOTOGRAPHY
+  SOCIAL_MEDIA_POST
+  MARKETING_CAMPAIGN
+  OTHER
+}
+
+enum ContentRequestStatus {
+  DRAFT
+  PLANNING
+  PRODUCTION
+  EDITING
+  REVIEW
+  APPROVED
+  SCHEDULED
+  PUBLISHED
+  COMPLETED
+}
+
+enum RecurrenceType {
+  DAILY
+  WEEKLY
+  MONTHLY
+  CUSTOM
+}
+
+enum ContractStatus {
+  DRAFT
+  ACTIVE
+  EXPIRED
+  TERMINATED
+  RENEWED
+}
+
+enum InstallmentStatus {
+  PENDING
+  PARTIAL
+  PAID
+  OVERDUE
+}
+
+enum ContentCycleStatus {
+  PLANNED
+  IN_PROGRESS
+  REVIEW
+  COMPLETED
+  SKIPPED
+}
+
+enum WorkflowStage {
+  pending
+  in_progress
+  completed
+  blocked
+}
+
+enum Counter_entity {
+  users
+  tasks
+  clients
+  services
+  subservices
+  payments
+  invoice
+  tax
+  branches
+  departments
+  projects
+  content_requests
+  recurring_schedules
+  content_cycles
+  workflow_templates
+  contracts
 }
 
 enum account_types_internal_group {
@@ -1931,59 +1991,6 @@ enum vendor_bills_payment_state {
   reversed
 }
 
-model quotations {
-  id                   Int              @id @default(autoincrement()) @db.UnsignedInt
-  company_id           Int?             @db.UnsignedInt
-  quotation_number     String           @unique @db.VarChar(32)
-  client_id            String?          @db.VarChar(191)
-  customer_id          Int?             @db.UnsignedInt
-  date                 DateTime         @db.Date
-  valid_until          DateTime?        @db.Date
-  currency_id          Int?             @db.UnsignedInt
-  status               quotation_status @default(DRAFT)
-  subtotal             Decimal          @default(0.00) @db.Decimal(15, 2)
-  discount             Decimal          @default(0.00) @db.Decimal(15, 2)
-  tax                  Decimal          @default(0.00) @db.Decimal(15, 2)
-  total                Decimal          @default(0.00) @db.Decimal(15, 2)
-  notes                String?          @db.Text
-  terms                String?          @db.Text
-  converted_invoice_id Int?             @db.UnsignedInt
-  created_at           DateTime         @default(now()) @db.Timestamp(0)
-  updated_at           DateTime         @default(now()) @db.Timestamp(0)
-
-  lines             quotation_lines[]
-  client            Client?            @relation(fields: [client_id], references: [id], onDelete: SetNull)
-  customer          customers?         @relation(fields: [customer_id], references: [id], onDelete: SetNull)
-  currencies        currencies?        @relation(fields: [currency_id], references: [id], onDelete: SetNull)
-  converted_invoice customer_invoices? @relation("QuotationToInvoice", fields: [converted_invoice_id], references: [id], onDelete: SetNull)
-
-  @@index([client_id])
-  @@index([customer_id])
-  @@index([currency_id])
-  @@index([status])
-}
-
-model quotation_lines {
-  id               Int      @id @default(autoincrement()) @db.UnsignedInt
-  quotation_id     Int      @db.UnsignedInt
-  sequence         Int      @default(10) @db.UnsignedInt
-  product_id       Int?     @db.UnsignedInt
-  description      String   @db.VarChar(255)
-  quantity         Decimal  @default(1.0000) @db.Decimal(15, 4)
-  unit_price       Decimal  @default(0.0000) @db.Decimal(15, 4)
-  discount_percent Decimal  @default(0.0000) @db.Decimal(7, 4)
-  tax_id           Int?     @db.UnsignedInt
-  subtotal         Decimal? @db.Decimal(15, 2)
-
-  quotation quotations @relation(fields: [quotation_id], references: [id], onDelete: Cascade)
-  products  products?  @relation(fields: [product_id], references: [id], onDelete: NoAction)
-  taxes     taxes?     @relation(fields: [tax_id], references: [id], onDelete: NoAction)
-
-  @@index([quotation_id])
-  @@index([product_id])
-  @@index([tax_id])
-}
-
 enum quotation_status {
   DRAFT
   SENT
@@ -1991,16 +1998,4 @@ enum quotation_status {
   REJECTED
   EXPIRED
   CONVERTED
-}
-
-model document_templates {
-  id           Int      @id @default(autoincrement()) @db.UnsignedInt
-  name         String   @db.VarChar(128)
-  type         String   @db.VarChar(32)
-  file_url     String?  @db.Text
-  html_content String?  @db.LongText
-  is_default   Boolean  @default(false)
-  placeholders Json?
-  created_at   DateTime @default(now()) @db.Timestamp(0)
-  updated_at   DateTime @default(now()) @db.Timestamp(0)
 }

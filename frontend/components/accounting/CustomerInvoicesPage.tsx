@@ -14,6 +14,7 @@ import { paymentTermApi } from '@/lib/api/accounting/configuration/paymentTermAp
 import { accountingPaymentMethodApi } from '@/lib/api/accounting/configuration/paymentMethodApi';
 import { customerReceiptApi } from '@/lib/api/accounting/receivables/customerReceiptApi';
 import { getAllServices, type ServiceRecord, type SubServiceRecord } from '@/lib/apis/serviceApi';
+import { quotationApi, type Quotation } from '@/lib/api/quotationApi';
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import DashboardDataTable, { type DashboardTableColumn } from '@/components/Shared/DashboardDataTable';
@@ -24,6 +25,13 @@ import A4InvoiceSheet, { type InvoiceLineItem } from './A4InvoiceSheet';
 import { useBranchTheme } from '@/components/branding/BranchThemeProvider';
 import { resolveBranchLogoUrl } from '@/lib/portfolio-branding';
 import { actionBtnDelete, actionBtnEdit, actionBtnView, btnCreatePage, dashboardSelectClass } from '@/lib/dashboard-ui';
+import {
+  GRAPHIC_DESIGN,
+  SOCIAL_MEDIA_MARKETING,
+  WEBSITE_DESIGN,
+  EVENT_BRANDING,
+  WEB_HOSTING,
+} from '@/lib/constants';
 
 type Row = { id: number; [key: string]: unknown };
 type Line = {
@@ -107,6 +115,7 @@ export default function CustomerInvoicesPage() {
   const [terms, setTerms] = useState<Row[]>([]);
   const [paymentMethods, setPaymentMethods] = useState<Row[]>([]);
   const [availableServices, setAvailableServices] = useState<ServiceRecord[]>([]);
+  const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [form, setForm] = useState<Form>(emptyForm);
   const [selected, setSelected] = useState<CustomerInvoice | null>(null);
   const [open, setOpen] = useState(false);
@@ -128,10 +137,11 @@ export default function CustomerInvoicesPage() {
     setLoading(true);
     try {
       const productRows = await accountingProductApi.getAll();
-      const [invoiceRows, customerRows, taxRows, currencyRows, termRows, methodRows, serviceRes] = await Promise.all([
+      const [invoiceRows, customerRows, taxRows, currencyRows, termRows, methodRows, serviceRes, quotationRows] = await Promise.all([
         customerInvoiceApi.getAll(), accountingCustomerApi.getAll(), accountingTaxApi.getAll(),
         currencyApi.getAll(), paymentTermApi.getAll(), accountingPaymentMethodApi.getAll(),
         getAllServices().catch(() => ({ success: false, data: [] as ServiceRecord[] })),
+        quotationApi.getAll().catch(() => [] as Quotation[]),
       ]);
       setInvoices(invoiceRows); setCustomers(customerRows); setProducts(productRows); setTaxes(taxRows); setCurrencies(currencyRows);
       setTerms(termRows);
@@ -139,6 +149,7 @@ export default function CustomerInvoicesPage() {
       if (serviceRes && (serviceRes as any).success && Array.isArray((serviceRes as any).data)) {
         setAvailableServices((serviceRes as any).data);
       }
+      setQuotations(Array.isArray(quotationRows) ? quotationRows : []);
     } catch (error) { accountingToast(errorMessage(error), 'error'); } finally { setLoading(false); }
   }, []);
   useEffect(() => { const timer = window.setTimeout(() => void load(), 0); return () => window.clearTimeout(timer); }, [load]);
@@ -175,6 +186,76 @@ export default function CustomerInvoicesPage() {
     setForm(next); setOpen(true);
   }
 
+  const acceptedQuotations = useMemo(() => {
+    return quotations.filter((q) => q.status === 'ACCEPTED' || q.status === 'CONVERTED');
+  }, [quotations]);
+
+  function importFromQuotation(q: Quotation) {
+    let qMeta: any = null;
+    try {
+      qMeta = q.notes ? JSON.parse(String(q.notes)) : null;
+    } catch {
+      qMeta = null;
+    }
+
+    const linkedCustomer = customers.find(
+      (c) => c.id === Number(q.customer_id) || (q.client_id && (c as any).clientId === q.client_id)
+    );
+
+    const custName = qMeta?.quotation_to || qMeta?.invoice_to || linkedCustomer?.name || q.client?.institution || q.customer?.name || '';
+    const custPerson = qMeta?.contact_person || q.client?.contactPerson || (linkedCustomer as any)?.contact_person || custName;
+    const custEmail = qMeta?.contact_email || q.client?.email || q.customer?.email || (linkedCustomer as any)?.email || '';
+    const custPhone = qMeta?.contact_phone || q.client?.phone || q.customer?.phone || (linkedCustomer as any)?.phone || '';
+
+    let importedLines: Line[] = [];
+
+    if (Array.isArray(qMeta?.items) && qMeta.items.length > 0) {
+      importedLines = qMeta.items.map((item: any) => ({
+        product_id: null,
+        service_type: item.service_type || 'Graphic design & Branding',
+        selected_subservice_ids: Array.isArray(item.selected_subservice_ids) ? item.selected_subservice_ids : [],
+        description: item.description || '',
+        quantity: Number(item.qty || item.quantity || 1),
+        unit_price: Number(item.rate || item.unit_price || 0),
+        discount_percent: Number(item.discount_percent || 0),
+        tax_id: null,
+        is_free: Boolean(item.is_free || Number(item.rate || 0) === 0),
+      }));
+    } else if (Array.isArray(q.lines) && q.lines.length > 0) {
+      importedLines = q.lines.map((line) => ({
+        product_id: line.product_id || null,
+        service_type: line.products?.name || 'Graphic design & Branding',
+        selected_subservice_ids: [],
+        description: line.description || '',
+        quantity: Number(line.quantity || 1),
+        unit_price: Number(line.unit_price || 0),
+        discount_percent: Number(line.discount_percent || 0),
+        tax_id: line.tax_id || null,
+        is_free: Number(line.unit_price || 0) === 0,
+      }));
+    }
+
+    if (importedLines.length === 0) {
+      importedLines = [emptyLine()];
+    }
+
+    setForm((current) => ({
+      ...current,
+      customer_id: linkedCustomer ? String(linkedCustomer.id) : (q.customer_id ? String(q.customer_id) : current.customer_id),
+      invoice_to: custName,
+      contact_person: custPerson,
+      contact_email: custEmail,
+      contact_phone: custPhone,
+      due_date: q.valid_until ? dateValue(q.valid_until) : current.due_date,
+      payment_advance: qMeta?.payment_advance || current.payment_advance,
+      payment_completion: qMeta?.payment_completion || current.payment_completion,
+      nb: qMeta?.nb || current.nb,
+      lines: importedLines,
+    }));
+
+    accountingToast(`Xogta Quotation-ka ${q.quotation_number} si guul leh ayaa loogu shubay invoice-ka!`, 'success');
+  }
+
   function editInvoice(invoice: CustomerInvoice) {
     setSelected(invoice);
     setViewOnly(invoice.state !== 'draft');
@@ -187,7 +268,7 @@ export default function CustomerInvoicesPage() {
       meta = null;
     }
 
-    const cust = customers.find((c) => c.id === Number(invoice.customer_id));
+    const cust = customers.find((c) => c.id === Number(invoice.customer_id)) || (invoice.customers as any);
     const invoiceLines = invoice.customer_invoice_lines || [];
 
     const hydratedLines: Line[] = invoiceLines.map((line, idx) => {
@@ -209,12 +290,17 @@ export default function CustomerInvoicesPage() {
       hydratedLines.push(emptyLine());
     }
 
+    const cName = meta?.invoice_to || meta?.quotation_to || String(cust?.name || (invoice.customers as any)?.name || '');
+    const cPerson = meta?.contact_person || String((cust as any)?.contact_person || (cust as any)?.client?.contactPerson || cName);
+    const cEmail = meta?.contact_email || String((cust as any)?.email || (cust as any)?.client?.email || (invoice.customers as any)?.email || '');
+    const cPhone = meta?.contact_phone || String((cust as any)?.phone || (cust as any)?.client?.phone || (invoice.customers as any)?.phone || '');
+
     setForm({
       customer_id: String(invoice.customer_id),
-      contact_person: meta?.contact_person || String((cust as any)?.contact_person || cust?.name || ''),
-      contact_email: meta?.contact_email || String((cust as any)?.email || ''),
-      contact_phone: meta?.contact_phone || String((cust as any)?.phone || ''),
-      invoice_to: meta?.invoice_to || meta?.quotation_to || String(cust?.name || ''),
+      contact_person: cPerson,
+      contact_email: cEmail,
+      contact_phone: cPhone,
+      invoice_to: cName,
       invoice_date: dateValue(invoice.invoice_date),
       due_date: dateValue(invoice.due_date),
       payment_term_id: String(invoice.payment_term_id || ''),
@@ -238,12 +324,17 @@ export default function CustomerInvoicesPage() {
     due.setUTCDate(due.getUTCDate() + paymentDays(String(termId)));
 
     const cName = String(nextCustomer?.name || '');
-    const cPerson = String((nextCustomer as any)?.contact_person || cName);
-    const cEmail = String((nextCustomer as any)?.email || '');
-    const cPhone = String((nextCustomer as any)?.phone || '');
+    const cPerson = String((nextCustomer as any)?.contact_person || (nextCustomer as any)?.client?.contactPerson || cName);
+    const cEmail = String((nextCustomer as any)?.email || (nextCustomer as any)?.client?.email || '');
+    const cPhone = String((nextCustomer as any)?.phone || (nextCustomer as any)?.client?.phone || '');
 
-    setForm((current) => ({
-      ...current,
+    // Check if customer has an accepted quotation
+    const customerQuotation = quotations.find(
+      (q) => (q.status === 'ACCEPTED' || q.status === 'CONVERTED') &&
+             (Number(q.customer_id) === Number(value) || (q.client_id && (nextCustomer as any)?.clientId === q.client_id))
+    );
+
+    let patch: Partial<Form> = {
       customer_id: value,
       invoice_to: cName,
       contact_person: cPerson,
@@ -251,6 +342,41 @@ export default function CustomerInvoicesPage() {
       contact_phone: cPhone,
       payment_term_id: String(termId),
       due_date: due.toISOString().slice(0, 10),
+    };
+
+    if (customerQuotation) {
+      let qMeta: any = null;
+      try { qMeta = customerQuotation.notes ? JSON.parse(String(customerQuotation.notes)) : null; } catch {}
+      if (qMeta?.contact_person) patch.contact_person = qMeta.contact_person;
+      if (qMeta?.quotation_to) patch.invoice_to = qMeta.quotation_to;
+      if (qMeta?.contact_email) patch.contact_email = qMeta.contact_email;
+      if (qMeta?.contact_phone) patch.contact_phone = qMeta.contact_phone;
+      if (qMeta?.payment_advance) patch.payment_advance = qMeta.payment_advance;
+      if (qMeta?.payment_completion) patch.payment_completion = qMeta.payment_completion;
+      if (qMeta?.nb) patch.nb = qMeta.nb;
+
+      // If form lines are still empty default, copy quotation lines too
+      if (form.lines.length === 1 && !form.lines[0].description && Number(form.lines[0].unit_price) === 0) {
+        if (Array.isArray(qMeta?.items) && qMeta.items.length > 0) {
+          patch.lines = qMeta.items.map((item: any) => ({
+            product_id: null,
+            service_type: item.service_type || 'Graphic design & Branding',
+            selected_subservice_ids: Array.isArray(item.selected_subservice_ids) ? item.selected_subservice_ids : [],
+            description: item.description || '',
+            quantity: Number(item.qty || item.quantity || 1),
+            unit_price: Number(item.rate || item.unit_price || 0),
+            discount_percent: Number(item.discount_percent || 0),
+            tax_id: null,
+            is_free: Boolean(item.is_free || Number(item.rate || 0) === 0),
+          }));
+        }
+      }
+      accountingToast(`Xogta Quotation-ka (${customerQuotation.quotation_number}) ayaa toos loo soo qaatay!`, 'info');
+    }
+
+    setForm((current) => ({
+      ...current,
+      ...patch,
     }));
   }
 
@@ -279,6 +405,68 @@ export default function CustomerInvoicesPage() {
     }));
   }
 
+  function extractSubServiceItems(sub: SubServiceRecord): string[] {
+    if (Array.isArray(sub.features) && sub.features.length > 0) {
+      const list = sub.features.map((f) => String(f).trim()).filter(Boolean);
+      if (list.length > 0) return list;
+    }
+    if (typeof sub.features === 'string') {
+      try {
+        const parsed = JSON.parse(sub.features);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const list = parsed.map((f) => String(f).trim()).filter(Boolean);
+          if (list.length > 0) return list;
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    const allPackages: Record<string, string[]> = {
+      ...GRAPHIC_DESIGN,
+      ...SOCIAL_MEDIA_MARKETING,
+      ...WEBSITE_DESIGN,
+      ...EVENT_BRANDING,
+      ...WEB_HOSTING,
+    };
+
+    const clean = (s: string) =>
+      (s || '')
+        .toLowerCase()
+        .replace(/^(xirmada\s+|package\s+)/, '')
+        .replace(/\s+package$/, '')
+        .replace(/\s+hosting$/, '')
+        .trim();
+
+    const subClean = clean(sub.name);
+
+    for (const [pkgName, items] of Object.entries(allPackages)) {
+      const pkgClean = clean(pkgName);
+      if (pkgClean === subClean || pkgName.toLowerCase() === (sub.name || '').toLowerCase()) {
+        return items;
+      }
+    }
+
+    for (const [pkgName, items] of Object.entries(allPackages)) {
+      const pkgClean = clean(pkgName);
+      if (subClean.includes(pkgClean) || pkgClean.includes(subClean)) {
+        return items;
+      }
+    }
+
+    if (sub.description && sub.description.trim()) {
+      const descItems = sub.description
+        .split('\n')
+        .map((line) => line.replace(/^[•\-\*\d\.\)]\s*/, '').trim())
+        .filter(Boolean);
+      if (descItems.length > 1) {
+        return descItems;
+      }
+    }
+
+    return [sub.name];
+  }
+
   function handleServiceSelect(index: number, serviceName: string) {
     const nextLines = [...form.lines];
     const targetLine = { ...nextLines[index], service_type: serviceName };
@@ -287,14 +475,15 @@ export default function CustomerInvoicesPage() {
     if (matched && Array.isArray(matched.subService) && matched.subService.length > 0) {
       const firstSub = matched.subService[0];
       targetLine.selected_subservice_ids = [firstSub.id];
-      targetLine.description = `• ${firstSub.name}${firstSub.description ? `\n  (${firstSub.description})` : ''}`;
+      const items = extractSubServiceItems(firstSub);
+      targetLine.description = items.join(', ');
       if (firstSub.price && !targetLine.is_free && Number(targetLine.unit_price) === 0) {
         targetLine.unit_price = Number(firstSub.price);
       }
     } else {
       targetLine.selected_subservice_ids = [];
       if (!targetLine.description) {
-        targetLine.description = `• ${serviceName}`;
+        targetLine.description = serviceName;
       }
     }
     nextLines[index] = targetLine;
@@ -318,21 +507,25 @@ export default function CustomerInvoicesPage() {
         const oldLines = targetLine.description.split('\n');
         const timelineLine = oldLines.find((l) => l.toLowerCase().includes('timeline'));
 
-        const subLines = selectedSubs.map((s) => {
-          return `• ${s.name}${s.description ? `\n  (${s.description})` : ''}`;
-        }).join('\n');
+        // Extract detailed items of clicked subservices separated by commas
+        const allItems = selectedSubs.flatMap((s) => extractSubServiceItems(s));
+        const itemsLine = allItems.join(', ');
 
-        targetLine.description = timelineLine ? `${subLines}\n\n${timelineLine}` : subLines;
+        targetLine.description = timelineLine ? `${itemsLine}\n\n${timelineLine}` : itemsLine;
 
         if (selectedSubs.length === 1 && selectedSubs[0].price && !targetLine.is_free && Number(targetLine.unit_price) === 0) {
           targetLine.unit_price = Number(selectedSubs[0].price);
         }
+      } else {
+        // All deselected — clear description
+        targetLine.description = '';
       }
     }
 
     nextLines[index] = targetLine;
     setForm((current) => ({ ...current, lines: nextLines }));
   }
+
 
   function handleToggleFree(index: number) {
     const nextLines = [...form.lines];

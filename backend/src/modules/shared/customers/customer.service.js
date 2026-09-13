@@ -18,6 +18,7 @@ const defaultCompanyId = async () => {
 
 const present = (record) => record && ({
   ...record,
+  contact_person: record.client?.contactPerson || record.name,
   currency: record.currencies?.code || null,
   receivable_balance: (record.customer_invoices || []).filter((invoice) => invoice.state === 'posted' && invoice.document_type === 'invoice').reduce((sum, invoice) => sum + Number(invoice.amount_due || 0), 0),
   fullName: record.name,
@@ -63,6 +64,7 @@ export const listCustomers = async ({ lightweight = false } = {}) => {
       include: {
         currencies: { select: { code: true } },
         customer_invoices: { select: { amount_due: true, state: true, document_type: true } },
+        client: { select: { id: true, institution: true, contactPerson: true, phone: true, email: true } },
       },
     }),
     orderBy: lightweight ? { name: 'asc' } : { created_at: 'desc' },

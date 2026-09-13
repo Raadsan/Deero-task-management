@@ -623,11 +623,11 @@ exports.Prisma.RecurringScheduleStepScalarFieldEnum = {
   department: 'department',
   templateId: 'templateId',
   assigneeId: 'assigneeId',
-  assigneeIds: 'assigneeIds',
-  startHour: 'startHour',
-  estimatedHours: 'estimatedHours',
   intervalDays: 'intervalDays',
-  supervisor: 'supervisor'
+  supervisor: 'supervisor',
+  assigneeIds: 'assigneeIds',
+  estimatedHours: 'estimatedHours',
+  startHour: 'startHour'
 };
 
 exports.Prisma.RecurringTaskOccurrenceScalarFieldEnum = {
