@@ -101,7 +101,18 @@ async function prepareBill(input, documentType = 'bill') {
   if (!vendor || !vendor.is_active) throw inputError('Active vendor not found')
   const [company, journal, paymentTerm, fiscalPeriod] = await Promise.all([
     prisma.companies.findUnique({ where: { id: vendor.company_id } }),
-    prisma.journals.findFirst({ where: { company_id: vendor.company_id, code: 'BILL', is_active: true } }),
+    prisma.journals.findFirst({
+      where: {
+        company_id: vendor.company_id,
+        is_active: true,
+        OR: [
+          { code: 'BILL' },
+          { code: 'PUR' },
+          { journal_type: 'purchase' },
+        ],
+      },
+      orderBy: { id: 'asc' },
+    }),
     parseId(input.payment_term_id) ? prisma.payment_terms.findUnique({ where: { id: parseId(input.payment_term_id) }, include: { payment_term_lines: true } }) : null,
     prisma.fiscal_periods.findFirst({
       where: { state: 'open', fiscal_years: { company_id: vendor.company_id, state: 'open' }, start_date: { lte: billDate }, end_date: { gte: billDate } },
@@ -109,7 +120,7 @@ async function prepareBill(input, documentType = 'bill') {
     }),
   ])
   if (!company?.is_active) throw inputError('Vendor company is inactive or missing')
-  if (!journal || journal.journal_type !== 'purchase') throw inputError('Active Vendor Bills journal (BILL) was not found')
+  if (!journal || journal.journal_type !== 'purchase') throw inputError('Active Purchase / Vendor Bills journal was not found')
   if (!fiscalPeriod) throw inputError('No open fiscal period covers the bill date')
 
   const currencyId = parseId(input.currency_id) || company.currency_id
@@ -125,10 +136,16 @@ async function prepareBill(input, documentType = 'bill') {
     }),
     prisma.chart_of_accounts.findFirst({
       where: {
-        company_id: vendor.company_id, code: '5005', is_active: true,
+        company_id: vendor.company_id, is_active: true,
         allow_manual_entry: true, account_types: { internal_group: 'expense' },
         other_chart_of_accounts: { none: {} },
+        OR: [
+          { code: '5000' },
+          { code: '5100' },
+          { code: '5005' },
+        ],
       },
+      orderBy: { code: 'asc' },
     }),
   ])
   if (!currency?.is_active) throw inputError('Bill currency is inactive or missing')
@@ -204,7 +221,7 @@ async function prepareBill(input, documentType = 'bill') {
   }
 }
 
-async function allocateNumber(tx, journal, prefix = journal.code) {
+async function allocateNumber(tx, journal, prefix = journal.sequence_prefix || journal.code || 'BILL-') {
   for (;;) {
     const updated = await tx.journals.update({ where: { id: journal.id }, data: { next_sequence: { increment: 1 } }, select: { next_sequence: true } })
     const number = `${prefix}${String(updated.next_sequence - 1).padStart(4, '0')}`

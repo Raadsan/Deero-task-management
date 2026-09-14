@@ -185,17 +185,23 @@ export default function TaskManagementDashboard({
     return allTasks.filter((task) => inRange(task.createdAt ?? task.deadline));
   }, [allTasks, range.start, range.end]);
 
+  const isTaskInProgress = (t: any) => {
+    const s = String(resolveTaskDisplayStatus(t) || "").toLowerCase().trim();
+    return s === "in_progress" || s === "in progress" || s === "inprocess" || s === "in process";
+  };
+
   // Status breakdown
   const statusData = useMemo(() => {
-    const statuses = ["completed", "in progress", "pending", "overdue"];
-    return statuses.map((status) => ({
-      name: formatStatusLabel(status),
-      value: filteredTasks.filter((task) => resolveTaskDisplayStatus(task) === status).length,
-    }));
+    return [
+      { name: "Complete", value: filteredTasks.filter((task) => resolveTaskDisplayStatus(task) === "completed").length },
+      { name: "In Process", value: filteredTasks.filter(isTaskInProgress).length },
+      { name: "Pending", value: filteredTasks.filter((task) => resolveTaskDisplayStatus(task) === "pending").length },
+      { name: "Overdue", value: filteredTasks.filter((task) => resolveTaskDisplayStatus(task) === "overdue").length },
+    ];
   }, [filteredTasks]);
 
   const completedCount = filteredTasks.filter((t) => resolveTaskDisplayStatus(t) === "completed").length;
-  const inProgressCount = filteredTasks.filter((t) => resolveTaskDisplayStatus(t) === "in progress").length;
+  const inProgressCount = filteredTasks.filter(isTaskInProgress).length;
   const pendingCount = filteredTasks.filter((t) => resolveTaskDisplayStatus(t) === "pending").length;
   const overdueCount = filteredTasks.filter((t) => resolveTaskDisplayStatus(t) === "overdue").length;
 
@@ -226,6 +232,7 @@ export default function TaskManagementDashboard({
         const status = resolveTaskDisplayStatus(task);
         if (status === "completed") row.completed += 1;
         else if (status === "overdue") row.overdue += 1;
+        else if (isTaskInProgress(task)) row.inProgress += 1;
         else row.inProgress += 1;
         clients.set(id, row);
       });

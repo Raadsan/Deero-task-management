@@ -3,6 +3,56 @@
 import React from "react";
 import { Printer, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  GRAPHIC_DESIGN,
+  SOCIAL_MEDIA_MARKETING,
+  WEBSITE_DESIGN,
+  EVENT_BRANDING,
+  WEB_HOSTING,
+} from "@/lib/constants";
+
+const ALL_PACKAGES: Record<string, string[]> = {
+  ...GRAPHIC_DESIGN,
+  ...SOCIAL_MEDIA_MARKETING,
+  ...WEBSITE_DESIGN,
+  ...EVENT_BRANDING,
+  ...WEB_HOSTING,
+};
+
+const cleanPkgName = (s: string) =>
+  (s || "")
+    .toLowerCase()
+    .replace(/^(xirmada\s+|package\s+)/, "")
+    .replace(/\s+package$/, "")
+    .replace(/\s+hosting$/, "")
+    .replace(/\s+event$/, "")
+    .trim();
+
+function formatDisplayDescription(raw: string): string {
+  if (!raw) return "";
+  const lines = raw.split("\n");
+  return lines
+    .map((line) => {
+      let cleaned = line.replace(/^\d+\.\s*/, "").trim();
+      const parts = cleaned.split(":");
+      const pkgName = parts[0].trim();
+      const rest = parts.slice(1).join(":").trim();
+
+      const isGeneric = !rest || /professional service|effective implementation|comprehensive service/i.test(rest);
+
+      if (isGeneric) {
+        const cleanedKey = cleanPkgName(pkgName);
+        for (const [key, items] of Object.entries(ALL_PACKAGES)) {
+          const kClean = cleanPkgName(key);
+          if (kClean === cleanedKey || key.toLowerCase().includes(cleanedKey) || (cleanedKey && cleanedKey.includes(kClean))) {
+            return `${pkgName}: ${items.join(", ")}`;
+          }
+        }
+      }
+      return cleaned;
+    })
+    .join("\n");
+}
 
 export interface InvoiceLineItem {
   id?: string | number;
@@ -111,7 +161,7 @@ export default function A4InvoiceSheet({
 
   // Helper to format item description lines (highlight Timeline in red)
   const renderDescription = (text: string) => {
-    const rawLines = (text || "").split("\n");
+    const rawLines = formatDisplayDescription(text || "").split("\n");
     return rawLines.map((line, idx) => {
       const isTimeline = line.toLowerCase().includes("timeline");
       return (
@@ -141,7 +191,7 @@ export default function A4InvoiceSheet({
             : Number(item.quantity || 1) * Number(item.rate || 0);
         const amountText = isFree ? "Free" : `$${Number(lineAmt).toFixed(0)}`;
 
-        const descLines = (item.description || "")
+        const descLines = formatDisplayDescription(item.description || "")
           .split("\n")
           .map((l) => {
             const isTimeline = l.toLowerCase().includes("timeline");

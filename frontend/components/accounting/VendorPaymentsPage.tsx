@@ -6,6 +6,7 @@ import { FormEvent, useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { SquarePen, Eye, Plus, Printer, RefreshCw, Send, Trash2 } from 'lucide-react';
 import { vendorPaymentApi, type VendorPayment } from '@/lib/api/accounting/payables/vendorPaymentApi';
+import VendorPaymentViewModal from './VendorPaymentViewModal';
 import { vendorBillApi, type VendorBill } from '@/lib/api/accounting/payables/vendorBillApi';
 import { vendorApi } from '@/lib/api/accounting/payables/vendorApi';
 import { accountingPaymentMethodApi } from '@/lib/api/accounting/configuration/paymentMethodApi';
@@ -46,6 +47,7 @@ export default function VendorPaymentsPage() {
   const [vendorFilter, setVendorFilter] = useState('all');
   const [pendingAction, setPendingAction] = useState<{ type: 'post' | 'delete'; payment: VendorPayment } | null>(null);
   const [printTarget, setPrintTarget] = useState<VendorPayment | null>(null);
+  const [viewModalPayment, setViewModalPayment] = useState<VendorPayment | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -153,7 +155,24 @@ export default function VendorPaymentsPage() {
     { key: 'allocated', header: 'Allocated', align: 'right', cell: (row) => money(Number(row.amount) - Number(row.unallocated_amount)) },
     { key: 'advance', header: 'Vendor Advance', align: 'right', cell: (row) => money(row.vendor_advances?.reduce((sum, advance) => sum + Number(advance.original_amount || 0), 0) || 0) },
     { key: 'state', header: 'Status', align: 'center', cell: (row) => <span className={`${dashboardStatusBadgeClass} ${row.state === 'posted' ? 'bg-emerald-600 text-white' : 'bg-secondary/100 text-white'}`}>{row.state}</span> },
-    { key: 'actions', header: 'Actions', align: 'right', cell: (row) => <div className="flex justify-end gap-1"><button title="View" onClick={() => edit(row, true)} className={actionBtnView}><Eye className="size-4" /></button>{row.state === 'draft' ? <><button title="Edit" onClick={() => edit(row)} className={actionBtnEdit}><SquarePen className="size-4" /></button><button title="Post" onClick={() => setPendingAction({ type: 'post', payment: row })} className={actionBtnView}><Send className="size-4" /></button><button title="Delete" onClick={() => setPendingAction({ type: 'delete', payment: row })} className={actionBtnDelete}><Trash2 className="size-4" /></button></> : <button title="Print" onClick={() => void printPayment(row)} className={actionBtnView}><Printer className="size-4" /></button>}</div> },
+    { key: 'actions', header: 'Actions', align: 'right', cell: (row) => (
+      <div className="flex justify-end gap-1">
+        <button title="View Voucher" onClick={() => setViewModalPayment(row)} className={actionBtnView}>
+          <Eye className="size-4" />
+        </button>
+        {row.state === 'draft' ? (
+          <>
+            <button title="Edit" onClick={() => edit(row)} className={actionBtnEdit}><SquarePen className="size-4" /></button>
+            <button title="Post" onClick={() => setPendingAction({ type: 'post', payment: row })} className={actionBtnView}><Send className="size-4" /></button>
+            <button title="Delete" onClick={() => setPendingAction({ type: 'delete', payment: row })} className={actionBtnDelete}><Trash2 className="size-4" /></button>
+          </>
+        ) : (
+          <button title="Print Voucher" onClick={() => setViewModalPayment(row)} className={actionBtnView}>
+            <Printer className="size-4" />
+          </button>
+        )}
+      </div>
+    ) },
   ];
 
   return (
@@ -175,7 +194,25 @@ export default function VendorPaymentsPage() {
       {Number(form.amount) > 0 && unallocated > 0.005 && <div className="rounded-xl border border-secondary/30 bg-secondary/10 p-3 text-sm text-secondary">The unallocated amount will be recorded as a Vendor Advance. It will not be applied to any unselected bill.</div>}
       <DialogFooter><button type="button" onClick={() => setOpen(false)} className="h-10 rounded-xl border px-5">{readonly ? 'Close' : 'Cancel'}</button>{!readonly && <><button disabled={saving || allocated <= 0.005 || allocated > Number(form.amount || 0) + 0.005} className="h-10 rounded-xl border px-5 font-semibold disabled:opacity-50">{saving ? 'Saving...' : 'Save Draft'}</button><button type="button" disabled={!canPostPayment} onClick={(event) => { if (event.currentTarget.form?.reportValidity()) void save(undefined, true); }} className="h-10 rounded-xl bg-primary px-5 font-semibold text-white disabled:opacity-50">Post Payment</button></>}</DialogFooter>
     </form></DialogContent></Dialog>
-    <AccountingConfirmDialog open={Boolean(pendingAction)} title={pendingAction?.type === 'delete' ? 'Delete Vendor Payment' : 'Post Vendor Payment'} description={pendingAction?.type === 'delete' ? 'Confirm removal of this draft vendor payment.' : 'Confirm the payment before updating the selected bill balances.'} confirmLabel={pendingAction?.type === 'delete' ? 'Delete Payment' : 'Post Payment'} destructive={pendingAction?.type === 'delete'} busy={saving} details={pendingAction && <div className="flex justify-between"><span className="text-muted-foreground">Payment</span><b>{pendingAction.payment.payment_number}</b></div>} onCancel={() => setPendingAction(null)} onConfirm={() => pendingAction && void (pendingAction.type === 'delete' ? remove(pendingAction.payment) : post(pendingAction.payment))} />
+    <AccountingConfirmDialog
+      open={Boolean(pendingAction)}
+      title={pendingAction?.type === 'delete' ? 'Delete Vendor Payment' : 'Post Vendor Payment'}
+      description={pendingAction?.type === 'delete' ? 'Confirm removal of this draft vendor payment.' : 'Confirm the payment before updating the selected bill balances.'}
+      confirmLabel={pendingAction?.type === 'delete' ? 'Delete Payment' : 'Post Payment'}
+      destructive={pendingAction?.type === 'delete'}
+      busy={saving}
+      details={pendingAction && <div className="flex justify-between"><span className="text-muted-foreground">Payment</span><b>{pendingAction.payment.payment_number}</b></div>}
+      onCancel={() => setPendingAction(null)}
+      onConfirm={() => pendingAction && void (pendingAction.type === 'delete' ? remove(pendingAction.payment) : post(pendingAction.payment))}
+    />
+    {viewModalPayment && (
+      <VendorPaymentViewModal
+        open={Boolean(viewModalPayment)}
+        onOpenChange={(val) => !val && setViewModalPayment(null)}
+        payment={viewModalPayment}
+        onPostPayment={(payment) => setPendingAction({ type: 'post', payment })}
+      />
+    )}
     {printTarget && <PrintableVendorPayment payment={printTarget} bills={bills} />}
     </AccountingPageShell>
   );

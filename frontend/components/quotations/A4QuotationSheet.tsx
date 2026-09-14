@@ -108,7 +108,7 @@ export default function A4QuotationSheet({
         <tr>
           <td style="border:1px solid #ddd;padding:8px 6px;text-align:center;font-weight:700;font-size:12px;vertical-align:top;">${idx + 1}.</td>
           <td style="border:1px solid #ddd;padding:8px 10px;font-weight:700;font-size:12px;vertical-align:top;">${item.service_type || ""}</td>
-          <td style="border:1px solid #ddd;padding:8px 10px;font-size:11.5px;line-height:1.5;vertical-align:top;white-space:pre-wrap;word-break:break-word;">${item.description || ""}</td>
+          <td style="border:1px solid #ddd;padding:8px 10px;font-size:11.5px;line-height:1.5;vertical-align:top;white-space:pre-wrap;word-break:break-word;">${item.description || "—"}</td>
           <td style="border:1px solid #ddd;padding:8px 6px;text-align:center;font-weight:700;font-size:12px;vertical-align:top;">${item.quantity || 1}</td>
           <td style="border:1px solid #ddd;padding:8px 6px;text-align:center;font-weight:700;font-size:12px;vertical-align:top;">${rateText}</td>
           <td style="border:1px solid #ddd;padding:8px 6px;text-align:center;font-weight:700;font-size:12px;vertical-align:top;">${amountText}</td>
@@ -375,6 +375,14 @@ export default function A4QuotationSheet({
   // ──────────────────── Screen Preview ────────────────────
   return (
     <div className="w-full flex flex-col items-center gap-3 py-2">
+      {/* Hidden print trigger button for external modal dialog trigger */}
+      <button
+        id="a4-quotation-sheet-print-btn"
+        type="button"
+        onClick={handlePrint}
+        className="hidden"
+        style={{ display: "none" }}
+      />
       {/* Toolbar */}
       <div className="w-full max-w-[820px] flex items-center justify-between bg-white px-4 py-2.5 rounded-xl border border-zinc-200 shadow-sm">
         <div>

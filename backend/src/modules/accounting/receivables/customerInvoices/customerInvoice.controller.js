@@ -126,28 +126,37 @@ async function prepareInvoice(input) {
       orderBy: { period_number: 'asc' },
     }),
     prisma.chart_of_accounts.findFirst({
-      where: { company_id: customer.company_id, code: '4000', is_active: true, allow_manual_entry: true, account_types: { internal_group: 'income' }, other_chart_of_accounts: { none: {} } },
+      where: { company_id: customer.company_id, code: '4100', is_active: true },
     }),
   ])
   if (!company?.is_active) throw inputError('Customer company is inactive or missing')
   if (!journal?.is_active || journal.journal_type !== 'sale') throw inputError('Active Customer Invoices sales journal was not found')
-  if (!revenueAccount) throw inputError('Default Sales Revenue account 4000 was not found')
+  if (!revenueAccount) {
+    revenueAccount = await prisma.chart_of_accounts.findFirst({
+      where: { company_id: customer.company_id, code: '4000', is_active: true },
+    }) || await prisma.chart_of_accounts.findFirst({
+      where: { company_id: customer.company_id, account_types: { internal_group: 'income' }, is_active: true },
+    })
+  }
+  if (!revenueAccount) throw inputError('Service Revenue account (4100 / 4000) was not found')
   if (!fiscalPeriod) throw inputError('No open fiscal period covers the invoice date')
 
   const currencyId = id(input.currency_id) || company.currency_id
-  const receivableAccount = await prisma.chart_of_accounts.findFirst({
-    where: {
-      company_id: customer.company_id,
-      code: '1100',
-      is_active: true,
-      allow_manual_entry: true,
-      account_types: { internal_group: 'asset' },
-      other_chart_of_accounts: { none: {} },
-    },
-  })
+  let receivableAccount = customer.receivable_account_id
+    ? await prisma.chart_of_accounts.findUnique({ where: { id: customer.receivable_account_id } })
+    : null
+  if (!receivableAccount) {
+    receivableAccount = await prisma.chart_of_accounts.findFirst({
+      where: { company_id: customer.company_id, code: '1200', is_active: true },
+    }) || await prisma.chart_of_accounts.findFirst({
+      where: { company_id: customer.company_id, name: { contains: 'Receivable' }, is_active: true },
+    }) || await prisma.chart_of_accounts.findFirst({
+      where: { company_id: customer.company_id, code: '1100', is_active: true },
+    })
+  }
   const currency = await prisma.currencies.findUnique({ where: { id: currencyId } })
   if (!currency?.is_active) throw inputError('Invoice currency is inactive or missing')
-  if (!receivableAccount) throw inputError('Accounts Receivable account 1100 was not found')
+  if (!receivableAccount) throw inputError('Accounts Receivable account (1200) was not found')
 
   const dueDays = paymentTerm?.payment_term_lines?.length
     ? Math.max(...paymentTerm.payment_term_lines.map((line) => Number(line.due_days || 0)))
@@ -167,6 +176,15 @@ async function prepareInvoice(input) {
   ])
   const productMap = new Map(products.map((item) => [item.id, item]))
   const taxMap = new Map(taxes.map((item) => [item.id, item]))
+
+  let defaultTaxAccount = null
+  if (taxIds.length > 0) {
+    defaultTaxAccount = await prisma.chart_of_accounts.findFirst({
+      where: { company_id: customer.company_id, OR: [{ code: '2100' }, { name: { contains: 'Tax' } }], is_active: true }
+    }) || await prisma.chart_of_accounts.findFirst({
+      where: { OR: [{ code: '2100' }, { name: { contains: 'Tax' } }], is_active: true }
+    })
+  }
 
   let amountUntaxed = 0
   let amountTax = 0
@@ -200,8 +218,9 @@ async function prepareInvoice(input) {
     amountTax += roundedTax
     journalCredits.push({ account_id: incomeAccountId, amount: roundedUntaxed, label: description })
     if (roundedTax) {
-      if (!tax.tax_account_id) throw inputError(`Line ${index + 1}: selected tax has no tax account`)
-      journalCredits.push({ account_id: tax.tax_account_id, amount: roundedTax, label: tax.name })
+      const taxAccId = tax?.tax_account_id || defaultTaxAccount?.id
+      if (!taxAccId) throw inputError(`Line ${index + 1}: selected tax has no tax account`)
+      journalCredits.push({ account_id: taxAccId, amount: roundedTax, label: tax?.name || 'Tax' })
     }
     return {
       sequence: (index + 1) * 10,

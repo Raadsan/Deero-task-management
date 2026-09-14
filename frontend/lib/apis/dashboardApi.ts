@@ -8,19 +8,23 @@ function mapAssignedTo(user: {
   id?: string;
   name?: string;
   portfolioId?: string | null;
+  image?: string | null;
+  jobTitle?: string | null;
 } | null | undefined) {
   if (!user?.id) {
-    return { id: "", name: "Unassigned", portfolioId: null };
+    return { id: "", name: "Unassigned", portfolioId: null, image: null, jobTitle: null };
   }
   return {
     id: user.id,
     name: user.name ?? "Unassigned",
     portfolioId: user.portfolioId ?? null,
+    image: user.image ?? null,
+    jobTitle: user.jobTitle ?? null,
   };
 }
 
 function mapTask(task: {
-  user?: { id?: string; name?: string; portfolioId?: string | null };
+  user?: { id?: string; name?: string; portfolioId?: string | null; image?: string | null; jobTitle?: string | null };
   clientTask?: Array<{ Client?: { id?: string; institution?: string } }>;
   [key: string]: unknown;
 }) {

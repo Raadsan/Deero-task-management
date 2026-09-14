@@ -4,7 +4,7 @@ import { accountingToast } from '@/lib/accounting-ui';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
-import { CreditCard, Eye, FileText, Plus, Printer, RefreshCw, Save, Send, StickyNote, Trash2, SquarePen, X, Check } from 'lucide-react';
+import { CreditCard, Eye, FileText, Plus, Printer, RefreshCw, Save, Send, StickyNote, Trash2, SquarePen, X, Check, Calculator } from 'lucide-react';
 import { customerInvoiceApi, type CustomerInvoice, type CustomerInvoiceLine } from '@/lib/api/accounting/receivables/customerInvoiceApi';
 import { accountingCustomerApi } from '@/lib/api/accounting/receivables/customerApi';
 import { accountingProductApi } from '@/lib/api/accounting/catalog/productApi';
@@ -21,6 +21,7 @@ import DashboardDataTable, { type DashboardTableColumn } from '@/components/Shar
 import AccountingConfirmDialog from './AccountingConfirmDialog';
 import AccountingPageShell from '@/components/accounting/AccountingPageShell';
 import InvoiceViewModal from './InvoiceViewModal';
+import InvoicePaymentDialog from './InvoicePaymentDialog';
 import A4InvoiceSheet, { type InvoiceLineItem, type PaymentMethodEntry } from './A4InvoiceSheet';
 import { useBranchTheme } from '@/components/branding/BranchThemeProvider';
 import { resolveBranchLogoUrl } from '@/lib/portfolio-branding';
@@ -65,6 +66,8 @@ type Form = {
   payment_method_id: string;
   amount_received: string;
   payment_reference: string;
+  tax_id: number | null;
+  vat_percent: number;
 };
 const defaultPaymentMethods: PaymentMethodEntry[] = [
   { label: 'SomBank', value: '1001572624' },
@@ -106,6 +109,8 @@ const emptyForm = (): Form => ({
   payment_method_id: '',
   amount_received: '',
   payment_reference: '',
+  tax_id: null,
+  vat_percent: 5,
 });
 const apiDate = (value: string) => new Date(`${value}T00:00:00.000Z`).toISOString();
 const dateValue = (value: unknown) => value ? new Date(String(value)).toISOString().slice(0, 10) : '';
@@ -143,15 +148,31 @@ export default function CustomerInvoicesPage() {
   const [customerFilter, setCustomerFilter] = useState('all');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
+  const [includeVat, setIncludeVat] = useState<boolean>(true);
+  const [vatPercent, setVatPercent] = useState<number>(5);
   const [viewOnly, setViewOnly] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const productRows = await accountingProductApi.getAll();
-      const [invoiceRows, customerRows, taxRows, currencyRows, termRows, methodRows, serviceRes, quotationRows] = await Promise.all([
-        customerInvoiceApi.getAll(), accountingCustomerApi.getAll(), accountingTaxApi.getAll(),
-        currencyApi.getAll(), paymentTermApi.getAll(), accountingPaymentMethodApi.getAll(),
+      const [
+        productRows,
+        invoiceRows,
+        customerRows,
+        taxRows,
+        currencyRows,
+        termRows,
+        methodRows,
+        serviceRes,
+        quotationRows,
+      ] = await Promise.all([
+        accountingProductApi.getAll(),
+        customerInvoiceApi.getAll(),
+        accountingCustomerApi.getAll(),
+        accountingTaxApi.getAll(),
+        currencyApi.getAll(),
+        paymentTermApi.getAll(),
+        accountingPaymentMethodApi.getAll(),
         getAllServices().catch(() => ({ success: false, data: [] as ServiceRecord[] })),
         quotationApi.getAll().catch(() => [] as Quotation[]),
       ]);
@@ -166,20 +187,76 @@ export default function CustomerInvoicesPage() {
   }, []);
   useEffect(() => { const timer = window.setTimeout(() => void load(), 0); return () => window.clearTimeout(timer); }, [load]);
 
-  const totals = useMemo(() => form.lines.reduce((sum, line) => {
-    const gross = Number(line.quantity || 0) * Number(line.unit_price || 0);
-    const discounted = gross * (1 - Number(line.discount_percent || 0) / 100);
-    const tax = taxes.find((item) => item.id === Number(line.tax_id));
-    const rate = Number(tax?.rate_percent || 0) / 100;
-    const untaxed = tax?.price_includes_tax && rate ? discounted / (1 + rate) : discounted;
-    const taxAmount = tax ? (tax.price_includes_tax ? discounted - untaxed : untaxed * rate) : 0;
-    return { untaxed: sum.untaxed + untaxed, discount: sum.discount + gross - discounted, tax: sum.tax + taxAmount, total: sum.total + untaxed + taxAmount };
-  }, { untaxed: 0, discount: 0, tax: 0, total: 0 }), [form.lines, taxes]);
+  const salesTaxes = useMemo(() => {
+    return taxes.filter(
+      (item) => item.is_active !== false && (item.tax_scope === 'sale' || item.tax_scope === 'both' || !item.tax_scope)
+    );
+  }, [taxes]);
+
+  const totals = useMemo(() => {
+    let untaxed = 0;
+    let discount = 0;
+    form.lines.forEach((line) => {
+      const qty = Number(line.quantity || 0);
+      const price = Number(line.unit_price || 0);
+      const gross = qty * price;
+      const disc = gross * (Number(line.discount_percent || 0) / 100);
+      const net = gross - disc;
+      untaxed += net;
+      discount += disc;
+    });
+
+    const effRate = includeVat ? (Number(vatPercent) || 0) / 100 : 0;
+    const taxAmount = untaxed * effRate;
+    const total = untaxed + taxAmount;
+
+    return { untaxed, discount, tax: taxAmount, total };
+  }, [form.lines, includeVat, vatPercent]);
+
+  const previewVatRate = useMemo(() => (includeVat ? Number(vatPercent) || 0 : 0), [includeVat, vatPercent]);
+
+  function handleInvoiceTaxChange(value: string) {
+    if (value === 'none') {
+      setForm((current) => ({
+        ...current,
+        tax_id: null,
+        vat_percent: 0,
+        lines: current.lines.map((l) => ({ ...l, tax_id: null })),
+      }));
+      return;
+    }
+
+    if (value === 'vat5') {
+      const tax5 = taxes.find((t) => Number(t.rate_percent || 0) === 5 && (t.tax_scope === 'sale' || t.tax_scope === 'both'));
+      setForm((current) => ({
+        ...current,
+        tax_id: tax5 ? Number(tax5.id) : null,
+        vat_percent: 5,
+        lines: current.lines.map((l) => ({ ...l, tax_id: tax5 ? Number(tax5.id) : null })),
+      }));
+      return;
+    }
+
+    const selectedTax = taxes.find((t) => t.id === Number(value));
+    if (selectedTax) {
+      setForm((current) => ({
+        ...current,
+        tax_id: Number(selectedTax.id),
+        vat_percent: Number(selectedTax.rate_percent || 0),
+        lines: current.lines.map((l) => ({ ...l, tax_id: Number(selectedTax.id) })),
+      }));
+    }
+  }
 
   const filtered = invoices.filter((invoice) => {
     const needle = query.trim().toLowerCase();
     const searchable = !needle || [invoice.invoice_number, invoice.customers?.name, invoice.state, invoice.payment_state].some((value) => String(value || '').toLowerCase().includes(needle));
-    const effectiveStatus = invoice.state === 'cancelled' ? 'cancelled' : invoice.payment_state === 'paid' ? 'paid' : invoice.payment_state === 'partial' ? 'partial' : invoice.state;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const dueDate = invoice.due_date ? new Date(invoice.due_date) : null;
+    if (dueDate) dueDate.setHours(0, 0, 0, 0);
+    const isOverdue = invoice.state === 'posted' && invoice.payment_state === 'not_paid' && dueDate !== null && dueDate < today;
+    const effectiveStatus = invoice.state === 'cancelled' ? 'cancelled' : invoice.payment_state === 'paid' ? 'paid' : invoice.payment_state === 'partial' ? 'partial' : isOverdue ? 'overdue' : invoice.state;
     const invoiceDay = dateValue(invoice.invoice_date);
     return searchable &&
       (statusFilter === 'all' || effectiveStatus === statusFilter) &&
@@ -195,6 +272,15 @@ export default function CustomerInvoicesPage() {
     const next = emptyForm();
     const immediate = terms.find((item) => /immediate/i.test(String(item.name)));
     if (immediate) next.payment_term_id = String(immediate.id);
+    const defaultTax = taxes.find((t) => (t.tax_scope === 'sale' || t.tax_scope === 'both') && t.is_active !== false && Number(t.rate_percent || 0) === 5)
+      || taxes.find((t) => (t.tax_scope === 'sale' || t.tax_scope === 'both') && t.is_active !== false);
+    if (defaultTax) {
+      next.tax_id = Number(defaultTax.id);
+      next.vat_percent = Number(defaultTax.rate_percent || 5);
+      next.lines = next.lines.map((l) => ({ ...l, tax_id: Number(defaultTax.id) }));
+    }
+    setIncludeVat(true);
+    setVatPercent(5);
     setForm(next); setOpen(true);
   }
 
@@ -219,6 +305,16 @@ export default function CustomerInvoicesPage() {
     const custEmail = qMeta?.contact_email || q.client?.email || q.customer?.email || (linkedCustomer as any)?.email || '';
     const custPhone = qMeta?.contact_phone || q.client?.phone || q.customer?.phone || (linkedCustomer as any)?.phone || '';
 
+    const quotationVat = qMeta?.vat_percent !== undefined
+      ? Number(qMeta.vat_percent)
+      : (Number(q.tax || 0) > 0 ? 5 : 0);
+
+    const matchedTax = taxes.find(
+      (t) => Number(t.rate_percent || 0) === quotationVat && t.is_active !== false && (t.tax_scope === 'sale' || t.tax_scope === 'both')
+    ) || (quotationVat > 0 ? taxes.find((t) => /vat|tax/i.test(String(t.name)) && t.is_active !== false) : null);
+
+    const autoTaxId = matchedTax ? Number(matchedTax.id) : null;
+
     let importedLines: Line[] = [];
 
     if (Array.isArray(qMeta?.items) && qMeta.items.length > 0) {
@@ -230,7 +326,7 @@ export default function CustomerInvoicesPage() {
         quantity: Number(item.qty || item.quantity || 1),
         unit_price: Number(item.rate || item.unit_price || 0),
         discount_percent: Number(item.discount_percent || 0),
-        tax_id: null,
+        tax_id: autoTaxId,
         is_free: Boolean(item.is_free || Number(item.rate || 0) === 0),
       }));
     } else if (Array.isArray(q.lines) && q.lines.length > 0) {
@@ -242,7 +338,7 @@ export default function CustomerInvoicesPage() {
         quantity: Number(line.quantity || 1),
         unit_price: Number(line.unit_price || 0),
         discount_percent: Number(line.discount_percent || 0),
-        tax_id: line.tax_id || null,
+        tax_id: line.tax_id || autoTaxId,
         is_free: Number(line.unit_price || 0) === 0,
       }));
     }
@@ -250,6 +346,9 @@ export default function CustomerInvoicesPage() {
     if (importedLines.length === 0) {
       importedLines = [emptyLine()];
     }
+
+    setIncludeVat(quotationVat > 0);
+    setVatPercent(quotationVat > 0 ? quotationVat : 5);
 
     setForm((current) => ({
       ...current,
@@ -264,6 +363,8 @@ export default function CustomerInvoicesPage() {
       nb: qMeta?.nb || current.nb,
       payment_methods: Array.isArray(qMeta?.payment_methods) && qMeta.payment_methods.length > 0 ? qMeta.payment_methods : current.payment_methods || defaultPaymentMethods,
       customer_reference: q.quotation_number,
+      tax_id: autoTaxId,
+      vat_percent: quotationVat,
       lines: importedLines,
     }));
 
@@ -291,10 +392,28 @@ export default function CustomerInvoicesPage() {
     const cust = customers.find((c) => c.id === Number(freshInvoice.customer_id)) || (freshInvoice.customers as any);
     const invoiceLines = freshInvoice.customer_invoice_lines || [];
 
+    const firstLineTaxId = invoiceLines.find((l) => l.tax_id)?.tax_id;
+    const invoiceVat = meta?.vat_percent !== undefined
+      ? Number(meta.vat_percent)
+      : firstLineTaxId
+      ? Number(taxes.find((t) => t.id === Number(firstLineTaxId))?.rate_percent || 5)
+      : (Number(freshInvoice.amount_tax || 0) > 0 && Number(freshInvoice.amount_untaxed || 0) > 0)
+      ? Math.round((Number(freshInvoice.amount_tax) / Number(freshInvoice.amount_untaxed)) * 100)
+      : (Number(freshInvoice.amount_tax || 0) > 0 ? 5 : 0);
+
+    setIncludeVat(invoiceVat > 0);
+    setVatPercent(invoiceVat > 0 ? invoiceVat : 5);
+
+    const matchedTax = firstLineTaxId
+      ? taxes.find((t) => t.id === Number(firstLineTaxId))
+      : taxes.find((t) => Number(t.rate_percent || 0) === invoiceVat && t.is_active !== false && (t.tax_scope === 'sale' || t.tax_scope === 'both')) ||
+        (invoiceVat > 0 ? taxes.find((t) => /vat|tax/i.test(String(t.name)) && t.is_active !== false) : null);
+    const activeTaxId = matchedTax ? Number(matchedTax.id) : (firstLineTaxId ? Number(firstLineTaxId) : null);
+
     let hydratedLines: Line[] = [];
 
     if (Array.isArray(meta?.items) && meta.items.length > 0) {
-      hydratedLines = meta.items.map((item: any) => ({
+      hydratedLines = meta.items.map((item: any, idx: number) => ({
         product_id: null,
         service_type: item.service_type || 'Graphic design & Branding',
         selected_subservice_ids: Array.isArray(item.selected_subservice_ids) ? item.selected_subservice_ids : [],
@@ -302,7 +421,7 @@ export default function CustomerInvoicesPage() {
         quantity: Number(item.qty || item.quantity || 1),
         unit_price: Number(item.rate || item.unit_price || 0),
         discount_percent: Number(item.discount_percent || 0),
-        tax_id: null,
+        tax_id: invoiceLines[idx]?.tax_id ?? activeTaxId,
         is_free: Boolean(item.is_free || Number(item.rate || item.unit_price || 0) === 0),
       }));
     } else if (invoiceLines.length > 0) {
@@ -324,7 +443,7 @@ export default function CustomerInvoicesPage() {
           quantity: Number(line.quantity || 1),
           unit_price: Number(line.unit_price || 0),
           discount_percent: Number(line.discount_percent || 0),
-          tax_id: line.tax_id || null,
+          tax_id: line.tax_id ?? activeTaxId,
           is_free: Number(line.unit_price || 0) === 0,
         };
       });
@@ -354,6 +473,8 @@ export default function CustomerInvoicesPage() {
       notes: meta?.notes_text || (typeof freshInvoice.notes === 'string' && !meta ? freshInvoice.notes : ''),
       payment_methods: Array.isArray(meta?.payment_methods) && meta.payment_methods.length > 0 ? meta.payment_methods : defaultPaymentMethods,
       customer_reference: freshInvoice.customer_reference || meta?.customer_reference || '',
+      tax_id: activeTaxId,
+      vat_percent: invoiceVat,
       lines: hydratedLines,
       receive_payment_now: false,
       payment_method_id: '',
@@ -401,6 +522,14 @@ export default function CustomerInvoicesPage() {
       if (qMeta?.payment_completion) patch.payment_completion = qMeta.payment_completion;
       if (qMeta?.nb) patch.nb = qMeta.nb;
 
+      const customerQuotationVat = qMeta?.vat_percent !== undefined ? Number(qMeta.vat_percent) : 5;
+      const matchedTax = taxes.find((t) => Number(t.rate_percent || 0) === customerQuotationVat && t.is_active !== false && (t.tax_scope === 'sale' || t.tax_scope === 'both')) ||
+                         (customerQuotationVat > 0 ? taxes.find((t) => /vat|tax/i.test(String(t.name)) && t.is_active !== false) : null);
+      patch.tax_id = matchedTax ? Number(matchedTax.id) : null;
+      patch.vat_percent = customerQuotationVat;
+      setIncludeVat(customerQuotationVat > 0);
+      setVatPercent(customerQuotationVat > 0 ? customerQuotationVat : 5);
+
       // If form lines are still empty default, copy quotation lines too
       if (form.lines.length === 1 && !form.lines[0].description && Number(form.lines[0].unit_price) === 0) {
         if (Array.isArray(qMeta?.items) && qMeta.items.length > 0) {
@@ -412,12 +541,12 @@ export default function CustomerInvoicesPage() {
             quantity: Number(item.qty || item.quantity || 1),
             unit_price: Number(item.rate || item.unit_price || 0),
             discount_percent: Number(item.discount_percent || 0),
-            tax_id: null,
+            tax_id: patch.tax_id ?? null,
             is_free: Boolean(item.is_free || Number(item.rate || 0) === 0),
           }));
         }
       }
-      accountingToast(`Xogta Quotation-ka (${customerQuotation.quotation_number}) ayaa toos loo soo qaatay!`, 'info');
+      accountingToast(`Xogta Quotation-ka (${customerQuotation.quotation_number}) ayaa toos loo soo qaatay!`, 'success');
     }
 
     setForm((current) => ({
@@ -505,12 +634,25 @@ export default function CustomerInvoicesPage() {
         .split('\n')
         .map((line) => line.replace(/^[•\-\*\d\.\)]\s*/, '').trim())
         .filter(Boolean);
-      if (descItems.length > 1) {
+      if (descItems.length > 0 && !descItems.some((d) => /effective implementation|professional service|comprehensive service/i.test(d))) {
         return descItems;
       }
     }
 
-    return [sub.name];
+    return [];
+  }
+
+  function formatSubServiceDescription(selectedSubs: SubServiceRecord[]): string {
+    if (!selectedSubs || selectedSubs.length === 0) return '';
+    return selectedSubs
+      .map((sub) => {
+        const items = extractSubServiceItems(sub);
+        if (items.length > 0) {
+          return `${sub.name}: ${items.join(', ')}`;
+        }
+        return sub.description ? `${sub.name}: ${sub.description}` : sub.name;
+      })
+      .join('\n');
   }
 
   function handleServiceSelect(index: number, serviceName: string) {
@@ -521,18 +663,14 @@ export default function CustomerInvoicesPage() {
     if (matched && Array.isArray(matched.subService) && matched.subService.length > 0) {
       const firstSub = matched.subService[0];
       targetLine.selected_subservice_ids = [firstSub.id];
-      const items = extractSubServiceItems(firstSub);
-      const desc = items.length > 1
-        ? `1. ${firstSub.name}: ${items.join(', ')}`
-        : `1. ${firstSub.name}: ${firstSub.description || matched.description || "Professional service implementation."}`;
-      targetLine.description = desc;
+      targetLine.description = formatSubServiceDescription([firstSub]);
       if (firstSub.price && !targetLine.is_free && Number(targetLine.unit_price) === 0) {
         targetLine.unit_price = Number(firstSub.price);
       }
     } else {
       targetLine.selected_subservice_ids = [];
       if (!targetLine.description) {
-        targetLine.description = `1. ${serviceName}: Comprehensive service delivery.`;
+        targetLine.description = serviceName;
       }
     }
     nextLines[index] = targetLine;
@@ -553,15 +691,7 @@ export default function CustomerInvoicesPage() {
     if (matched && Array.isArray(matched.subService)) {
       const selectedSubs = matched.subService.filter((s) => newSelected.includes(s.id));
       if (selectedSubs.length > 0) {
-        targetLine.description = selectedSubs
-          .map((s, idx) => {
-            const items = extractSubServiceItems(s);
-            if (items.length > 1) {
-              return `${idx + 1}. ${s.name}: ${items.join(', ')}`;
-            }
-            return `${idx + 1}. ${s.name}: ${s.description || 'Effective implementation and delivery.'}`;
-          })
-          .join('\n');
+        targetLine.description = formatSubServiceDescription(selectedSubs);
 
         if (selectedSubs.length === 1 && selectedSubs[0].price && !targetLine.is_free && Number(targetLine.unit_price) === 0) {
           targetLine.unit_price = Number(selectedSubs[0].price);
@@ -601,6 +731,14 @@ export default function CustomerInvoicesPage() {
     }
     setSaving(true);
 
+    const effVat = includeVat ? (Number(vatPercent) || 0) : 0;
+    const matchedTax = effVat > 0
+      ? (taxes.find((t) => Number(t.rate_percent || 0) === effVat && t.is_active !== false && (t.tax_scope === 'sale' || t.tax_scope === 'both'))
+         || taxes.find((t) => /vat|tax/i.test(String(t.name)) && t.is_active !== false)
+         || null)
+      : null;
+    const activeTaxId = matchedTax ? Number(matchedTax.id) : null;
+
     const richNotesMeta = {
       notes_text: form.notes,
       contact_person: form.contact_person,
@@ -612,7 +750,8 @@ export default function CustomerInvoicesPage() {
       nb: form.nb,
       payment_methods: form.payment_methods || defaultPaymentMethods,
       customer_reference: form.customer_reference || undefined,
-      vat_percent: previewVatRate,
+      vat_percent: effVat,
+      tax_id: activeTaxId,
       items: form.lines.map((l) => ({
         service_type: l.service_type,
         selected_subservice_ids: l.selected_subservice_ids,
@@ -635,7 +774,7 @@ export default function CustomerInvoicesPage() {
         quantity: Number(line.quantity || 1),
         unit_price: Number(line.unit_price || 0),
         discount_percent: Number(line.discount_percent || 0),
-        tax_id: line.tax_id || null,
+        tax_id: activeTaxId,
       })),
       customer_id: Number(form.customer_id),
       invoice_date: apiDate(form.invoice_date),
@@ -724,7 +863,11 @@ export default function CustomerInvoicesPage() {
     { key: 'customer', header: 'Customer', cell: (row) => row.customers?.name || `#${row.customer_id}` },
     { key: 'date', header: 'Invoice Date', cell: (row) => dateValue(row.invoice_date) },
     { key: 'due', header: 'Due Date', cell: (row) => dateValue(row.due_date) },
-    { key: 'currency', header: 'Currency', cell: (row) => row.currencies?.code || '—' },
+    { key: 'subtotal', header: 'Subtotal', align: 'right', cell: (row) => money(row.amount_untaxed) },
+    { key: 'tax', header: 'Tax', align: 'right', cell: (row) => money(row.amount_tax) },
+    { key: 'total', header: 'Total', align: 'right', cell: (row) => <span className="font-semibold">{money(row.amount_total)}</span> },
+    { key: 'paid', header: 'Paid', align: 'right', cell: (row) => money(row.paid_amount ?? Number(row.amount_total) - Number(row.amount_due)) },
+    { key: 'outstanding', header: 'Outstanding', align: 'right', cell: (row) => money(row.amount_due) },
     {
       key: 'status',
       header: 'Status',
@@ -732,20 +875,19 @@ export default function CustomerInvoicesPage() {
       cell: (row) => (
         <button
           type="button"
-          disabled={row.state !== 'draft' || saving}
-          onClick={() => row.state === 'draft' && openAcceptInvoice(row)}
-          className={row.state === 'draft' ? "cursor-pointer hover:opacity-80 transition-opacity" : "cursor-default"}
-          title={row.state === 'draft' ? "Click to Accept / Post Invoice & Create Receipt" : undefined}
+          disabled={row.state === 'cancelled' || row.payment_state === 'paid' || saving}
+          onClick={() => {
+            if (row.state === 'draft' || (row.state === 'posted' && row.payment_state !== 'paid')) {
+              openAcceptInvoice(row);
+            }
+          }}
+          className={row.state === 'draft' || (row.state === 'posted' && row.payment_state !== 'paid') ? "cursor-pointer hover:opacity-80 transition-opacity" : "cursor-default"}
+          title={row.state === 'draft' ? "Click to Accept / Post Invoice" : (row.state === 'posted' && row.payment_state !== 'paid') ? "Click to Register Payment" : undefined}
         >
           <Status invoice={row} />
         </button>
       ),
     },
-    { key: 'subtotal', header: 'Subtotal', align: 'right', cell: (row) => money(row.amount_untaxed) },
-    { key: 'tax', header: 'Tax', align: 'right', cell: (row) => money(row.amount_tax) },
-    { key: 'total', header: 'Total', align: 'right', cell: (row) => <span className="font-semibold">{money(row.amount_total)}</span> },
-    { key: 'paid', header: 'Paid', align: 'right', cell: (row) => money(row.paid_amount ?? Number(row.amount_total) - Number(row.amount_due)) },
-    { key: 'outstanding', header: 'Outstanding', align: 'right', cell: (row) => money(row.amount_due) },
     {
       key: 'actions',
       header: 'Actions',
@@ -774,6 +916,15 @@ export default function CustomerInvoicesPage() {
                 <Trash2 className="size-4" />
               </button>
             </>
+          )}
+          {row.state === 'posted' && row.payment_state !== 'paid' && (
+            <button
+              title="Register Payment (Create Receipt)"
+              onClick={() => openAcceptInvoice(row)}
+              className="inline-flex size-8 items-center justify-center rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors"
+            >
+              <CreditCard className="size-4" />
+            </button>
           )}
           <button
             title="Print / View Invoice"
@@ -822,11 +973,10 @@ export default function CustomerInvoicesPage() {
     amount: Number(l.quantity || 1) * Number(l.unit_price || 0) * (1 - Number(l.discount_percent || 0) / 100),
     selected_subservice_ids: l.selected_subservice_ids,
   }));
-  const previewVatRate = totals.untaxed > 0 && totals.tax > 0 ? Math.round((totals.tax / totals.untaxed) * 100) : 5;
 
   return (
     <AccountingPageShell section="Receivables" title="Customer Invoices" description="Prepare and manage customer sales invoices.">
-    <DashboardDataTable rows={filtered} columns={columns} loading={loading} searchValue={query} onSearchChange={setQuery} searchPlaceholder="Search invoices..." emptyText="No customer invoices found" minWidth="1350px" action={<button onClick={createInvoice} className={btnCreatePage}><Plus className="size-4" /> New invoice</button>} filters={<><select value={customerFilter} onChange={(event) => setCustomerFilter(event.target.value)} className={dashboardSelectClass}><option value="all">All customers</option>{customers.map((item) => <option key={item.id} value={item.id}>{String(item.name)}</option>)}</select><select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className={dashboardSelectClass}><option value="all">All statuses</option><option value="draft">Draft</option><option value="posted">Posted</option><option value="partial">Partially paid</option><option value="paid">Paid</option><option value="cancelled">Cancelled</option></select><select value={currencyFilter} onChange={(event) => setCurrencyFilter(event.target.value)} className={dashboardSelectClass}><option value="all">All currencies</option>{currencies.map((item) => <option key={item.id} value={item.id}>{String(item.code)}</option>)}</select><input type="date" value={dateFrom} onChange={(event) => setDateFrom(event.target.value)} className={dashboardSelectClass} /><input type="date" value={dateTo} onChange={(event) => setDateTo(event.target.value)} className={dashboardSelectClass} /><button onClick={() => void load()} className="flex size-[42px] items-center justify-center rounded-md border border-zinc-200 bg-white"><RefreshCw className={`size-4 ${loading ? 'animate-spin' : ''}`} /></button></>} />
+    <DashboardDataTable rows={filtered} columns={columns} loading={loading} searchValue={query} onSearchChange={setQuery} searchPlaceholder="Search invoices..." emptyText="No customer invoices found" minWidth="1350px" action={<button onClick={createInvoice} className={btnCreatePage}><Plus className="size-4" /> New invoice</button>} filters={<><select value={customerFilter} onChange={(event) => setCustomerFilter(event.target.value)} className={dashboardSelectClass}><option value="all">All customers</option>{customers.map((item) => <option key={item.id} value={item.id}>{String(item.name)}</option>)}</select><select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className={dashboardSelectClass}><option value="all">All statuses</option><option value="draft">Draft</option><option value="posted">Posted</option><option value="overdue">Overdue</option><option value="partial">Partially paid</option><option value="paid">Paid</option><option value="cancelled">Cancelled</option></select><select value={currencyFilter} onChange={(event) => setCurrencyFilter(event.target.value)} className={dashboardSelectClass}><option value="all">All currencies</option>{currencies.map((item) => <option key={item.id} value={item.id}>{String(item.code)}</option>)}</select><input type="date" value={dateFrom} onChange={(event) => setDateFrom(event.target.value)} className={dashboardSelectClass} /><input type="date" value={dateTo} onChange={(event) => setDateTo(event.target.value)} className={dashboardSelectClass} /><button onClick={() => void load()} className="flex size-[42px] items-center justify-center rounded-md border border-zinc-200 bg-white"><RefreshCw className={`size-4 ${loading ? 'animate-spin' : ''}`} /></button></>} />
     
     <Dialog open={open} onOpenChange={(value) => !saving && setOpen(value)}>
       <DialogContent showCloseButton={false} className="max-h-[95vh] w-full !max-w-[980px] overflow-y-auto rounded-2xl">
@@ -942,8 +1092,8 @@ export default function CustomerInvoicesPage() {
               {acceptedQuotations.length > 0 && !viewOnly && (
                 <div className="rounded-xl border border-primary/25 bg-gradient-to-r from-primary/5 via-orange-50/40 to-transparent p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
                   <div className="flex items-center gap-3">
-                    <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary font-bold">
-                      <FileText className="size-4" />
+                    <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#ea580c] text-white font-bold shadow-xs">
+                      <FileText className="size-4 text-white" />
                     </div>
                     <div>
                       <span className="text-xs font-bold text-zinc-900 block">
@@ -1067,7 +1217,7 @@ export default function CustomerInvoicesPage() {
                         {/* Top Line: Service Selection & Title */}
                         <div className="flex flex-wrap items-start justify-between gap-3">
                           <div className="flex items-center gap-2">
-                            <span className="flex size-7 items-center justify-center rounded-lg bg-orange-100 text-orange-700 text-xs font-bold shrink-0">
+                            <span className="flex size-7 items-center justify-center rounded-lg bg-[#ea580c] text-white text-xs font-bold shrink-0 shadow-xs">
                               #{index + 1}
                             </span>
                             <span className="text-xs font-bold text-zinc-800">Service Line</span>
@@ -1153,10 +1303,10 @@ export default function CustomerInvoicesPage() {
                                         : 'bg-white text-zinc-700 border-zinc-200 hover:border-zinc-300'
                                     }`}
                                   >
-                                    {isChecked && <Check className="size-3.5 stroke-[3]" />}
-                                    <span>{sub.name}</span>
+                                    {isChecked && <Check className="size-3.5 stroke-[3] text-white" />}
+                                    <span className={isChecked ? 'text-white font-bold' : 'text-zinc-800'}>{sub.name}</span>
                                     {sub.price != null && Number(sub.price) > 0 && (
-                                      <span className={`text-[10px] ${isChecked ? 'text-white/90 font-bold' : 'text-zinc-400'}`}>
+                                      <span className={`text-[10px] ${isChecked ? 'text-white font-bold' : 'text-zinc-400'}`}>
                                         (${sub.price})
                                       </span>
                                     )}
@@ -1187,8 +1337,8 @@ export default function CustomerInvoicesPage() {
                           />
                         </div>
 
-                        {/* Pricing & Financials: Qua, Rate, Free, Discount, Tax, Amount */}
-                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 items-end pt-2 bg-zinc-50/50 p-3 rounded-lg border border-zinc-200/60">
+                        {/* Pricing & Financials: Qua, Rate, Free, Discount, Amount (Quotation Style) */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 items-end pt-2 bg-zinc-50/50 p-3 rounded-lg border border-zinc-200/60">
                           <div>
                             <label className="block text-[11px] font-semibold text-zinc-600 mb-1">Qua (Qty)</label>
                             <input
@@ -1242,24 +1392,6 @@ export default function CustomerInvoicesPage() {
                               onChange={(e) => updateLine(index, { discount_percent: Number(e.target.value) })}
                               className="h-8 w-full rounded-md border border-zinc-200 bg-white px-2.5 text-center text-xs font-medium"
                             />
-                          </div>
-
-                          <div>
-                            <label className="block text-[11px] font-semibold text-zinc-600 mb-1">Tax</label>
-                            <select
-                              value={line.tax_id || ''}
-                              onChange={(e) => updateLine(index, { tax_id: Number(e.target.value) || null })}
-                              className="h-8 w-full rounded-md border border-zinc-200 bg-white px-2 text-xs"
-                            >
-                              <option value="">No tax</option>
-                              {taxes
-                                .filter((item) => item.is_active !== false && Number(item.rate_percent || 0) !== 0)
-                                .map((item) => (
-                                  <option key={item.id} value={item.id}>
-                                    {String(item.name)}
-                                  </option>
-                                ))}
-                            </select>
                           </div>
 
                           <div className="text-right sm:text-right">
@@ -1317,6 +1449,61 @@ export default function CustomerInvoicesPage() {
                       className="h-8 w-full rounded-md border border-zinc-200 bg-white px-2.5 text-xs"
                     />
                   </div>
+                </div>
+              </div>
+
+              {/* Financial Summary (Quotation Style) */}
+              <div className="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm">
+                <div className="flex items-center justify-between border-b pb-2 mb-3">
+                  <h4 className="font-bold text-xs text-zinc-800 uppercase tracking-wider flex items-center gap-1.5">
+                    <Calculator className="size-4 text-[#ea580c]" /> Financial Summary
+                  </h4>
+                  {!viewOnly && (
+                    <label className="text-xs font-semibold text-zinc-700 flex items-center gap-2 cursor-pointer bg-zinc-50 px-2.5 py-1 rounded-md border border-zinc-200 hover:bg-zinc-100 transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={includeVat}
+                        onChange={(e) => setIncludeVat(e.target.checked)}
+                        className="size-3.5 rounded text-[#ea580c] focus:ring-[#ea580c]"
+                      />
+                      Apply VAT
+                    </label>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+                  <div className="bg-zinc-50 p-3 rounded-lg border border-zinc-100 flex justify-between items-center">
+                    <span className="font-semibold text-xs text-zinc-600">Subtotal:</span>
+                    <span className="font-bold text-base text-zinc-900">${totals.untaxed.toFixed(2)}</span>
+                  </div>
+
+                  <div className="bg-orange-50/70 p-3 rounded-lg border border-orange-100 flex justify-between items-center">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-semibold text-xs text-zinc-700">VAT:</span>
+                      <div className="flex items-center gap-1">
+                        <input
+                          type="number"
+                          min="0"
+                          max="100"
+                          disabled={!includeVat || viewOnly}
+                          value={vatPercent}
+                          onChange={(e) => setVatPercent(Number(e.target.value))}
+                          className="w-14 h-7 text-xs text-center font-bold px-1 rounded border border-zinc-300 disabled:opacity-50"
+                        />
+                        <span className="font-bold text-xs text-zinc-600">%</span>
+                      </div>
+                    </div>
+                    <span className="font-bold text-base text-[#6e0002]">${includeVat ? totals.tax.toFixed(2) : '0.00'}</span>
+                  </div>
+
+                  <div className="bg-[#ea580c] text-white p-3 rounded-lg font-bold flex justify-between items-center shadow-sm">
+                    <span className="text-xs uppercase tracking-wide">Grand Total:</span>
+                    <span className="text-lg font-extrabold">${totals.total.toFixed(2)}</span>
+                  </div>
+                </div>
+
+                <div className="mt-2.5 text-[11px] text-zinc-500 text-right">
+                  * Subtotal ${totals.untaxed.toFixed(2)} + VAT {includeVat ? `${vatPercent}%` : '0%'} (${totals.tax.toFixed(2)}) = ${totals.total.toFixed(2)}
                 </div>
               </div>
 
@@ -1425,27 +1612,28 @@ export default function CustomerInvoicesPage() {
                     </span>
                     <p className="font-semibold">Invoice summary</p>
                   </div>
-                  <Total label="Subtotal" value={selected ? Number(selected.amount_untaxed) : totals.untaxed} />
-                  <Total label="Tax" value={selected ? Number(selected.amount_tax) : totals.tax} />
+
+                  <Total label="Subtotal" value={viewOnly && selected ? Number(selected.amount_untaxed) : totals.untaxed} />
+                  <Total label={`Tax${previewVatRate ? ` (${previewVatRate}%)` : ''}`} value={viewOnly && selected ? Number(selected.amount_tax) : totals.tax} />
                   <div className="my-3 border-t border-zinc-200" />
-                  <Total label="Grand total" value={selected ? Number(selected.amount_total) : totals.total} strong />
+                  <Total label="Grand total" value={viewOnly && selected ? Number(selected.amount_total) : totals.total} strong />
                   <div className="my-3 border-t border-zinc-200" />
                   <Total
                     label="Paid"
                     value={
-                      selected
+                      viewOnly && selected
                         ? Number(selected.paid_amount || 0)
                         : form.receive_payment_now
                         ? Math.min(Number(form.amount_received || 0), totals.total)
-                        : 0
+                        : Number(selected?.paid_amount || 0)
                     }
                   />
                   <Total
                     label="Balance"
                     value={
-                      selected
+                      viewOnly && selected
                         ? Number(selected.amount_due)
-                        : Math.max(0, totals.total - (form.receive_payment_now ? Number(form.amount_received || 0) : 0))
+                        : Math.max(0, totals.total - (form.receive_payment_now ? Number(form.amount_received || 0) : Number(selected?.paid_amount || 0)))
                     }
                   />
                   <div className="mt-3 flex items-center justify-between border-t border-zinc-200 pt-3">
@@ -1472,115 +1660,24 @@ export default function CustomerInvoicesPage() {
     </Dialog>
     <AccountingConfirmDialog open={Boolean(pendingAction)} title={`${pendingAction?.type === 'delete' ? 'Delete' : 'Post'} Customer Invoice`} description={pendingAction?.type === 'delete' ? 'Confirm removal of this draft customer invoice.' : 'Confirm this invoice before posting its journal entry and locking it.'} confirmLabel={`${pendingAction?.type === 'delete' ? 'Delete' : 'Post'} Invoice`} destructive={pendingAction?.type === 'delete'} busy={saving} details={pendingAction && <div className="flex justify-between"><span className="text-muted-foreground">Invoice</span><b>{pendingAction.invoice.invoice_number}</b></div>} onCancel={() => setPendingAction(null)} onConfirm={() => pendingAction && void (pendingAction.type === 'delete' ? remove(pendingAction.invoice) : postInvoice(pendingAction.invoice))} />
 
-    {/* Accept & Post Invoice Dialog with Automatic Customer Receipt Option */}
-    <Dialog open={Boolean(acceptInvoice)} onOpenChange={(val) => !saving && !val && setAcceptInvoice(null)}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-base font-bold text-zinc-900">
-            <Send className="size-4 text-primary" /> Accept & Post Customer Invoice
-          </DialogTitle>
-          <DialogDescription className="text-xs text-zinc-500">
-            Posting will recognize revenue in Accounting (Dr Accounts Receivable, Cr Sales Revenue).
-          </DialogDescription>
-        </DialogHeader>
+    {/* Invoice Payment & Accept Dialog */}
+    {acceptInvoice && (
+      <InvoicePaymentDialog
+        open={Boolean(acceptInvoice)}
+        onOpenChange={(val) => !val && setAcceptInvoice(null)}
+        invoice={acceptInvoice}
+        onSuccess={load}
+      />
+    )}
 
-        {acceptInvoice && (
-          <div className="space-y-4 py-2">
-            {/* Invoice Info Summary */}
-            <div className="bg-zinc-50 rounded-xl p-3.5 border border-zinc-200 text-xs space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-zinc-500 font-medium">Invoice Number:</span>
-                <span className="font-bold text-primary">{acceptInvoice.invoice_number}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-zinc-500 font-medium">Customer:</span>
-                <span className="font-semibold text-zinc-800">{acceptInvoice.customers?.name || `#${acceptInvoice.customer_id}`}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-zinc-500 font-medium">Invoice Date:</span>
-                <span className="text-zinc-700">{dateValue(acceptInvoice.invoice_date)}</span>
-              </div>
-              <div className="flex justify-between items-center border-t border-zinc-200 pt-2">
-                <span className="text-zinc-700 font-bold">Total Amount:</span>
-                <span className="font-bold text-sm text-zinc-900">{money(acceptInvoice.amount_total, acceptInvoice.currencies?.code || '')}</span>
-              </div>
-            </div>
-
-            {/* Auto Customer Receipt Option */}
-            <div className="rounded-xl border border-zinc-200 p-3.5 bg-white space-y-3">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={createReceiptOnPost}
-                  onChange={(e) => setCreateReceiptOnPost(e.target.checked)}
-                  className="size-4 accent-primary rounded"
-                />
-                <span className="text-xs font-bold text-zinc-800">
-                  Create Customer Receipt (Mark as Paid)
-                </span>
-              </label>
-              <p className="text-[11px] text-zinc-500 ml-6">
-                Automatically generate and post a Customer Receipt in Accounting for this invoice.
-              </p>
-
-              {createReceiptOnPost && (
-                <div className="pt-2 border-t border-zinc-100">
-                  <label className="block text-xs font-semibold text-zinc-700 mb-1">
-                    Payment Method *
-                  </label>
-                  <select
-                    value={receiptPaymentMethodId}
-                    onChange={(e) => setReceiptPaymentMethodId(e.target.value)}
-                    className="h-9 w-full rounded-md border border-zinc-200 px-3 text-xs bg-white"
-                  >
-                    <option value="">Select payment method</option>
-                    {paymentMethods
-                      .filter((m) => m.is_active !== false && m.gl_account_id && ['inbound', 'both'].includes(String(m.payment_type)))
-                      .map((m) => (
-                        <option key={m.id} value={m.id}>
-                          {String(m.name)}
-                        </option>
-                      ))}
-                  </select>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        <DialogFooter className="gap-2 sm:gap-0">
-          <button
-            type="button"
-            disabled={saving}
-            onClick={() => setAcceptInvoice(null)}
-            className="h-9 rounded-md border border-zinc-200 px-4 text-xs font-semibold hover:bg-zinc-50"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            disabled={saving}
-            onClick={handleConfirmPost}
-            className="flex h-9 items-center gap-1.5 rounded-md bg-primary px-4 text-xs font-bold text-white shadow-sm hover:opacity-90 disabled:opacity-50"
-          >
-            {saving ? (
-              <>
-                <RefreshCw className="size-3.5 animate-spin mr-1" /> Posting...
-              </>
-            ) : (
-              <>
-                <Send className="size-3.5" /> Accept & Post Invoice
-              </>
-            )}
-          </button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-    <InvoiceViewModal
-      open={viewModalOpen}
-      onOpenChange={setViewModalOpen}
-      invoice={viewInvoice}
-    />
+    {viewInvoice && (
+      <InvoiceViewModal
+        open={viewModalOpen}
+        onOpenChange={setViewModalOpen}
+        invoice={viewInvoice}
+        onInvoiceUpdated={load}
+      />
+    )}
 
     </AccountingPageShell>
   );
@@ -1637,8 +1734,13 @@ function Field({ label, value, set, type = 'text', optional, disabled }: { label
 }
 function Total({ label, value, strong }: { label: string; value: number; strong?: boolean }) { return <div className={`flex justify-between py-1 ${strong ? 'text-base font-bold' : ''}`}><span>{label}</span><span>{value.toFixed(2)}</span></div>; }
 function Status({ invoice }: { invoice: CustomerInvoice }) {
-  const key = invoice.state === 'cancelled' ? 'cancelled' : invoice.payment_state === 'paid' ? 'paid' : invoice.payment_state === 'partial' ? 'partial' : invoice.state;
-  const styles: Record<string, string> = { draft: 'bg-zinc-100 text-zinc-700', posted: 'bg-blue-50 text-blue-700', partial: 'bg-orange-50 text-orange-700', paid: 'bg-emerald-50 text-emerald-700', cancelled: 'bg-rose-50 text-rose-700' };
-  const labels: Record<string, string> = { draft: 'DRAFT', posted: 'POSTED', partial: 'PARTIALLY PAID', paid: 'PAID', cancelled: 'CANCELLED' };
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dueDate = invoice.due_date ? new Date(invoice.due_date) : null;
+  if (dueDate) dueDate.setHours(0, 0, 0, 0);
+  const isOverdue = invoice.state === 'posted' && invoice.payment_state === 'not_paid' && dueDate !== null && dueDate < today;
+  const key = invoice.state === 'cancelled' ? 'cancelled' : invoice.payment_state === 'paid' ? 'paid' : invoice.payment_state === 'partial' ? 'partial' : isOverdue ? 'overdue' : invoice.state;
+  const styles: Record<string, string> = { draft: 'bg-zinc-100 text-zinc-700', posted: 'bg-blue-50 text-blue-700', partial: 'bg-orange-50 text-orange-700', paid: 'bg-emerald-50 text-emerald-700', cancelled: 'bg-rose-50 text-rose-700', overdue: 'bg-red-100 text-red-700 ring-1 ring-red-300' };
+  const labels: Record<string, string> = { draft: 'DRAFT', posted: 'POSTED', partial: 'PARTIALLY PAID', paid: 'PAID', cancelled: 'CANCELLED', overdue: 'OVERDUE' };
   return <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${styles[key] || styles.draft}`}>{labels[key] || key.toUpperCase()}</span>;
 }

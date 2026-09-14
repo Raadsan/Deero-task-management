@@ -25,12 +25,14 @@ import {
   notificationRoutes,
 } from "./staff/staff.routes.js";
 import utilRoutes from "./shared/utils/util.routes.js";
+import vendorsRoutes from "./shared/vendors/vendor.routes.js";
 
 export {
   // Accounting Module (includes Quotations & Document Templates)
   accountingRoutes,
   quotationRoutes,
   documentTemplateRoutes,
+  vendorsRoutes,
   // Tasks Module
   taskRoutes,
   recurringRoutes,

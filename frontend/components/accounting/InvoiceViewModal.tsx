@@ -3,9 +3,10 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { FileText, Printer, Download, X } from "lucide-react";
+import { FileText, Printer, Download, X, CreditCard, Send } from "lucide-react";
 import { customerInvoiceApi, type CustomerInvoice } from "@/lib/api/accounting/receivables/customerInvoiceApi";
 import A4InvoiceSheet, { InvoiceLineItem, PaymentMethodEntry } from "./A4InvoiceSheet";
+import InvoicePaymentDialog from "./InvoicePaymentDialog";
 import { useBranchTheme } from "@/components/branding/BranchThemeProvider";
 import { resolveBranchLogoUrl } from "@/lib/portfolio-branding";
 
@@ -13,9 +14,10 @@ interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   invoice: CustomerInvoice | null;
+  onInvoiceUpdated?: () => void;
 }
 
-export default function InvoiceViewModal({ open, onOpenChange, invoice }: Props) {
+export default function InvoiceViewModal({ open, onOpenChange, invoice, onInvoiceUpdated }: Props) {
   const { primaryColor, secondaryColor, name: branchName, logoUrl: branchLogoUrl } = useBranchTheme();
   const isRaadsan = Boolean(branchName?.toLowerCase().includes("raadsan") || primaryColor?.toLowerCase() === "#0166d2");
   const brandPrimary = isRaadsan ? (primaryColor || "#0166d2") : (primaryColor || "#6e0002");
@@ -23,6 +25,19 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice }: Props)
   const brandLogo = resolveBranchLogoUrl(branchLogoUrl) || (isRaadsan ? "/logo-02.png" : "/deero-logo.png");
 
   const [activeInvoice, setActiveInvoice] = useState<CustomerInvoice | null>(invoice);
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+
+  const refreshInvoice = () => {
+    if (invoice?.id) {
+      customerInvoiceApi
+        .getById(invoice.id)
+        .then((fresh) => {
+          if (fresh) setActiveInvoice(fresh);
+        })
+        .catch(() => {});
+    }
+    if (onInvoiceUpdated) onInvoiceUpdated();
+  };
 
   useEffect(() => {
     setActiveInvoice(invoice);
@@ -48,10 +63,8 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice }: Props)
     }
   }, [currentInvoice]);
 
-  if (!currentInvoice) return null;
-
-  const customerObj = (currentInvoice.customers || {}) as any;
-  const directClient = (currentInvoice as any).client || customerObj?.client;
+  const customerObj = (currentInvoice?.customers || {}) as any;
+  const directClient = (currentInvoice as any)?.client || customerObj?.client;
 
   // Header & Contact mapping
   const contactPerson =
@@ -62,7 +75,7 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice }: Props)
     customerObj?.name ||
     "—";
 
-  const invoiceNo = currentInvoice.invoice_number || `INV-${currentInvoice.id}`;
+  const invoiceNo = currentInvoice?.invoice_number || (currentInvoice?.id ? `INV-${currentInvoice.id}` : "INV-0000");
 
   const contactEmail =
     meta?.contact_email ||
@@ -77,7 +90,7 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice }: Props)
     customerObj?.client?.institution ||
     directClient?.institution ||
     customerObj?.name ||
-    `Customer #${currentInvoice.customer_id}`;
+    (currentInvoice?.customer_id ? `Customer #${currentInvoice.customer_id}` : "—");
 
   const contactPhone =
     meta?.contact_phone ||
@@ -86,7 +99,7 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice }: Props)
     directClient?.phone ||
     "—";
 
-  const dateStr = currentInvoice.invoice_date
+  const dateStr = currentInvoice?.invoice_date
     ? new Date(currentInvoice.invoice_date).toLocaleDateString("en-US", {
         weekday: "long",
         year: "numeric",
@@ -95,7 +108,7 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice }: Props)
       })
     : "—";
 
-  const dueDateStr = currentInvoice.due_date
+  const dueDateStr = currentInvoice?.due_date
     ? new Date(currentInvoice.due_date).toLocaleDateString("en-US", {
         weekday: "long",
         year: "numeric",
@@ -106,6 +119,7 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice }: Props)
 
   // Lines mapping: check meta.items first for full subservice details, then customer_invoice_lines
   const lines: InvoiceLineItem[] = useMemo(() => {
+    if (!currentInvoice) return [];
     if (Array.isArray(meta?.items) && meta.items.length > 0) {
       return meta.items.map((item: any, idx: number) => ({
         id: idx + 1,
@@ -117,7 +131,7 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice }: Props)
         amount: Number(item.qty || item.quantity || 1) * Number(item.rate || item.unit_price || 0) * (1 - Number(item.discount_percent || 0) / 100),
       }));
     }
-    return (currentInvoice.customer_invoice_lines || []).map((line, idx) => {
+    return (currentInvoice?.customer_invoice_lines || []).map((line, idx) => {
       const metaItem = Array.isArray(meta?.items) ? meta.items[idx] : null;
       let sType = metaItem?.service_type || line.products?.name || "Service";
       let desc = metaItem?.description || line.description || "";
@@ -141,11 +155,11 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice }: Props)
   }, [currentInvoice, meta]);
 
   const subtotal =
-    Number(currentInvoice.amount_untaxed || 0) ||
+    Number(currentInvoice?.amount_untaxed || 0) ||
     lines.reduce((acc, l) => acc + (l.is_free ? 0 : l.amount), 0);
-  const taxAmount = Number(currentInvoice.amount_tax || 0);
+  const taxAmount = Number(currentInvoice?.amount_tax || 0);
   const grandTotal =
-    Number(currentInvoice.amount_total || 0) || (subtotal + taxAmount);
+    Number(currentInvoice?.amount_total || 0) || (subtotal + taxAmount);
 
   const vatPercent =
     meta?.vat_percent !== undefined
@@ -182,16 +196,31 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice }: Props)
     partial: "bg-orange-50 text-orange-700 border-orange-200",
     paid: "bg-emerald-50 text-emerald-700 border-emerald-200",
     cancelled: "bg-rose-50 text-rose-700 border-rose-200",
+    overdue: "bg-red-100 text-red-700 border-red-300 ring-1 ring-red-200",
   };
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dueDate = currentInvoice?.due_date ? new Date(currentInvoice.due_date) : null;
+  if (dueDate) dueDate.setHours(0, 0, 0, 0);
+  const isOverdue =
+    currentInvoice?.state === "posted" &&
+    currentInvoice?.payment_state === "not_paid" &&
+    dueDate !== null &&
+    dueDate < today;
+
   const currentStatus =
-    currentInvoice.state === "cancelled"
+    currentInvoice?.state === "cancelled"
       ? "cancelled"
-      : currentInvoice.payment_state === "paid"
+      : currentInvoice?.payment_state === "paid"
       ? "paid"
-      : currentInvoice.payment_state === "partial"
+      : currentInvoice?.payment_state === "partial"
       ? "partial"
-      : currentInvoice.state || "draft";
+      : isOverdue
+      ? "overdue"
+      : currentInvoice?.state || "draft";
+
+  if (!currentInvoice) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -291,9 +320,36 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice }: Props)
             >
               Close
             </Button>
+            {currentInvoice.state === "draft" && (
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => setPaymentDialogOpen(true)}
+                className="bg-[#ea580c] hover:bg-orange-700 text-white text-xs font-bold gap-1.5 shadow-sm"
+              >
+                <Send className="size-3.5" /> Accept & Post
+              </Button>
+            )}
+            {currentInvoice.state === "posted" && currentInvoice.payment_state !== "paid" && (
+              <Button
+                type="button"
+                size="sm"
+                onClick={() => setPaymentDialogOpen(true)}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold gap-1.5 shadow-sm"
+              >
+                <CreditCard className="size-3.5" /> Register Payment
+              </Button>
+            )}
           </div>
         </DialogFooter>
       </DialogContent>
+
+      <InvoicePaymentDialog
+        open={paymentDialogOpen}
+        onOpenChange={setPaymentDialogOpen}
+        invoice={currentInvoice}
+        onSuccess={refreshInvoice}
+      />
     </Dialog>
   );
 }

@@ -32,19 +32,38 @@ import { actionBtnDelete, actionBtnEdit, actionBtnView, btnCreatePage, dashboard
 type Row = { id: number; [key: string]: unknown };
 type Kind = 'journals' | 'journal-entries';
 type JournalForm = { company_id: string; name: string; code: string; journal_type: string; default_debit_account_id: string; default_credit_account_id: string; currency_id: string; sequence_prefix: string; next_sequence: string; is_active: boolean; allow_manual_entries: boolean };
-type Line = { account_id: string; label: string; debit: string; credit: string };
+type Line = { account_id: string; category?: string; label: string; debit: string; credit: string };
 type EntryForm = { company_id: string; journal_id: string; entry_number: string; entry_date: string; fiscal_period_id: string; reference: string; narration: string; state: string; lines: Line[] };
 
 const blankJournal: JournalForm = { company_id: '', name: '', code: '', journal_type: 'general', default_debit_account_id: '', default_credit_account_id: '', currency_id: '', sequence_prefix: '', next_sequence: '1', is_active: true, allow_manual_entries: false };
-const blankLine = (): Line => ({ account_id: '', label: '', debit: '', credit: '' });
+const blankLine = (): Line => ({ account_id: '', category: '', label: '', debit: '', credit: '' });
 const blankEntry: EntryForm = { company_id: '', journal_id: '', entry_number: '', entry_date: new Date().toISOString().slice(0, 10), fiscal_period_id: '', reference: '', narration: '', state: 'draft', lines: [blankLine(), blankLine()] };
 
 
 function message(error: unknown) { if (axios.isAxiosError(error)) return error.response?.data?.message || error.message; return error instanceof Error ? error.message : 'Something went wrong'; }
-function isoDate(value: string) { return new Date(`${value}T00:00:00.000Z`).toISOString(); }
+function isoDate(value: string) {
+  if (!value) return new Date().toISOString();
+  const d = new Date(value.includes('T') ? value : `${value}T00:00:00.000Z`);
+  return !isNaN(d.getTime()) ? d.toISOString() : new Date().toISOString();
+}
 function dateValue(value: unknown) { return value ? new Date(String(value)).toISOString().slice(0, 10) : ''; }
 function money(value: number) { return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value); }
 function title(value: unknown) { return String(value ?? '').replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase()); }
+
+function getNextEntryNumber(records: Row[], dateStr: string) {
+  const year = (dateStr ? dateStr.slice(0, 4) : '') || new Date().getFullYear().toString();
+  const prefix = `JE-${year}-`;
+  let maxSeq = 0;
+  for (const r of records) {
+    const raw = String(r.entry_number || '').trim();
+    const match = raw.match(/(\d+)$/);
+    if (match) {
+      const n = parseInt(match[1], 10);
+      if (n > maxSeq) maxSeq = n;
+    }
+  }
+  return `${prefix}${String(maxSeq + 1).padStart(6, '0')}`;
+}
 
 export default function GeneralLedgerPage({ kind }: { kind: Kind }) {
   const isJournals = kind === 'journals';
@@ -78,21 +97,40 @@ export default function GeneralLedgerPage({ kind }: { kind: Kind }) {
     setSelected(null);
     if (isJournals) setJournalForm({ ...blankJournal, company_id: companies.length === 1 ? String(companies[0].id) : '' });
     else {
-      const companyId = companies.length === 1 ? String(companies[0].id) : '';
+      const companyId = companies.length === 1 ? String(companies[0].id) : (companies[0] ? String(companies[0].id) : '');
       const today = new Date().toISOString().slice(0, 10);
       const manualJournals = journals.filter((row) => row.allow_manual_entries && row.is_active && (!companyId || String(row.company_id) === companyId));
+      const generalJournals = manualJournals.filter((row) => row.journal_type === 'general' || String(row.name).toLowerCase().includes('general') || String(row.code).toLowerCase() === 'gen');
+      const selectedJournal = generalJournals[0] || manualJournals[0];
       const openPeriod = periods.find((period) => period.state === 'open' && dateValue(period.start_date) <= today && dateValue(period.end_date) >= today && (!companyId || String(fiscalYearMap.get(Number(period.fiscal_year_id))?.company_id) === companyId));
-      const year = today.slice(0, 4);
-      const prefix = `JE-${year}-`;
-      const next = Math.max(0, ...rows.map((row) => String(row.entry_number || '').startsWith(prefix) ? Number(String(row.entry_number).slice(prefix.length)) || 0 : 0)) + 1;
-      setEntryForm({ ...blankEntry, company_id: companyId, journal_id: manualJournals.length === 1 ? String(manualJournals[0].id) : '', entry_number: `${prefix}${String(next).padStart(6, '0')}`, entry_date: today, fiscal_period_id: openPeriod ? String(openPeriod.id) : '', state: 'draft', lines: [blankLine(), blankLine()] });
+      const nextNum = getNextEntryNumber(rows, today);
+      setEntryForm({ ...blankEntry, company_id: companyId, journal_id: selectedJournal ? String(selectedJournal.id) : '', entry_number: nextNum, entry_date: today, fiscal_period_id: openPeriod ? String(openPeriod.id) : '', state: 'draft', lines: [blankLine(), blankLine()] });
     }
     setFormOpen(true);
   }
   function openEdit(row: Row) {
     setSelected(row);
     if (isJournals) setJournalForm({ company_id: String(row.company_id), name: String(row.name), code: String(row.code), journal_type: String(row.journal_type), default_debit_account_id: String(row.default_debit_account_id ?? ''), default_credit_account_id: String(row.default_credit_account_id ?? ''), currency_id: String(row.currency_id ?? ''), sequence_prefix: String(row.sequence_prefix ?? ''), next_sequence: String(row.next_sequence), is_active: Boolean(row.is_active), allow_manual_entries: Boolean(row.allow_manual_entries) });
-    else setEntryForm({ company_id: String(row.company_id), journal_id: String(row.journal_id), entry_number: String(row.entry_number ?? ''), entry_date: dateValue(row.entry_date), fiscal_period_id: String(row.fiscal_period_id ?? ''), reference: String(row.reference ?? ''), narration: String(row.narration ?? ''), state: String(row.state), lines: ((row.journal_items as Row[]) || []).map((line) => ({ account_id: String(line.account_id), label: String(line.label ?? ''), debit: String(Number(line.debit || 0)), credit: String(Number(line.credit || 0)) })) });
+    else setEntryForm({
+      company_id: String(row.company_id),
+      journal_id: String(row.journal_id),
+      entry_number: String(row.entry_number ?? ''),
+      entry_date: dateValue(row.entry_date),
+      fiscal_period_id: String(row.fiscal_period_id ?? ''),
+      reference: String(row.reference ?? ''),
+      narration: String(row.narration ?? ''),
+      state: String(row.state),
+      lines: ((row.journal_items as Row[]) || []).map((line) => {
+        const acc = accounts.find((a) => a.id === line.account_id);
+        return {
+          account_id: String(line.account_id),
+          category: acc ? getAccountCategory(acc) : '',
+          label: String(line.label ?? ''),
+          debit: String(Number(line.debit || 0)),
+          credit: String(Number(line.credit || 0)),
+        };
+      }),
+    });
     setFormOpen(true);
   }
   async function save(event: FormEvent) {
@@ -108,6 +146,8 @@ export default function GeneralLedgerPage({ kind }: { kind: Kind }) {
   const parentAccountIds = new Set(accounts.map((row) => Number(row.parent_id)).filter(Boolean));
   const postingAccounts = companyAccounts.filter((row) => row.is_active && row.allow_manual_entry && !parentAccountIds.has(row.id));
   const companyJournals = journals.filter((row) => String(row.company_id) === entryForm.company_id && row.is_active && row.allow_manual_entries);
+  const manualGeneralJournals = companyJournals.filter((row) => row.journal_type === 'general' || String(row.name).toLowerCase().includes('general') || String(row.code).toLowerCase() === 'gen');
+  const visibleJournals = manualGeneralJournals.length > 0 ? manualGeneralJournals : companyJournals;
   const openPeriods = periods.filter((row) => row.state === 'open' && String(fiscalYearMap.get(Number(row.fiscal_year_id))?.company_id) === entryForm.company_id);
   const entryValid = Boolean(entryForm.company_id && entryForm.journal_id && entryForm.entry_date && entryForm.fiscal_period_id && entryForm.lines.length >= 2 && balanced && entryForm.lines.every((line) => line.account_id && Number(line.debit || 0) >= 0 && Number(line.credit || 0) >= 0 && (Number(line.debit || 0) > 0 || Number(line.credit || 0) > 0) && !(Number(line.debit || 0) > 0 && Number(line.credit || 0) > 0) && postingAccounts.some((account) => String(account.id) === line.account_id)) && openPeriods.some((period) => String(period.id) === entryForm.fiscal_period_id));
   const columns: DashboardTableColumn<Row>[] = isJournals ? [
@@ -144,7 +184,7 @@ export default function GeneralLedgerPage({ kind }: { kind: Kind }) {
         </DialogHeader>
         <form onSubmit={save}>
           <div className={configDialogBodyClass}>
-            {isJournals ? <JournalFields form={journalForm} setForm={setJournalForm} companies={companies} accounts={companyAccounts} currencies={currencies} /> : <EntryFields form={entryForm} setForm={setEntryForm} companies={companies} journals={companyJournals} periods={openPeriods} accounts={postingAccounts} debit={debit} credit={credit} balanced={balanced} noManualJournal={!companyJournals.length} />}
+            {isJournals ? <JournalFields form={journalForm} setForm={setJournalForm} companies={companies} accounts={companyAccounts} currencies={currencies} /> : <EntryFields form={entryForm} setForm={setEntryForm} companies={companies} journals={visibleJournals} periods={openPeriods} accounts={postingAccounts} debit={debit} credit={credit} balanced={balanced} noManualJournal={!visibleJournals.length} rows={rows} />}
           </div>
           <DialogFooter className={configDialogFooterClass}>
             <Button type="button" variant="outline" onClick={() => setFormOpen(false)} disabled={saving} className={btnFormCancel}>Cancel</Button>
@@ -159,8 +199,366 @@ export default function GeneralLedgerPage({ kind }: { kind: Kind }) {
   );
 }
 
+const ACCOUNT_CATEGORIES = [
+  { key: 'asset', label: 'Asset (Hantida / Bank & Cash)' },
+  { key: 'liability', label: 'Liability (Daymaha / Payables)' },
+  { key: 'equity', label: 'Equity (Raasumaalka)' },
+  { key: 'expense', label: 'Expense (Kharashaadka)' },
+  { key: 'revenue', label: 'Revenue / Income (Dakhliga)' },
+] as const;
+
+function getAccountCategory(account: Row): string {
+  const code = String(account?.code || '');
+  const typeId = Number(account?.account_type_id);
+  const name = String(account?.name || '').toLowerCase();
+  if (code.startsWith('5') || typeId === 5 || name.includes('expense') || name.includes('cost') || name.includes('salary') || name.includes('rent') || name.includes('utility') || name.includes('kharash')) {
+    return 'expense';
+  }
+  if (code.startsWith('2') || typeId === 2 || name.includes('liability') || name.includes('payable') || name.includes('tax') || name.includes('dayn')) {
+    return 'liability';
+  }
+  if (code.startsWith('3') || typeId === 3 || name.includes('equity') || name.includes('capital') || name.includes('retained') || name.includes('share')) {
+    return 'equity';
+  }
+  if (code.startsWith('4') || typeId === 4 || name.includes('revenue') || name.includes('income') || name.includes('sale') || name.includes('dakhli')) {
+    return 'revenue';
+  }
+  if (code.startsWith('1') || typeId === 1 || name.includes('cash') || name.includes('bank') || name.includes('asset') || name.includes('receivable') || name.includes('hanti')) {
+    return 'asset';
+  }
+  return 'asset';
+}
+
 function JournalFields({ form, setForm, companies, accounts, currencies }: { form: JournalForm; setForm: React.Dispatch<React.SetStateAction<JournalForm>>; companies: Row[]; accounts: Row[]; currencies: Row[] }) { const set = (key: keyof JournalForm, value: string | boolean) => setForm((current) => ({ ...current, [key]: value })); return <div className="grid gap-4 sm:grid-cols-2"><Select label="Company" value={form.company_id} set={(v) => { set('company_id', v); set('default_debit_account_id', ''); set('default_credit_account_id', ''); }} rows={companies} /><Input label="Journal Name" value={form.name} set={(v) => set('name', v)} /><Input label="Code" value={form.code} set={(v) => set('code', v)} max={8} /><Select label="Journal Type" value={form.journal_type} set={(v) => set('journal_type', v)} custom={['sale', 'purchase', 'cash', 'bank', 'general', 'opening_balance', 'adjustment', 'closing']} /><Select label="Default Debit Account" value={form.default_debit_account_id} set={(v) => set('default_debit_account_id', v)} rows={accounts} optional account /><Select label="Default Credit Account" value={form.default_credit_account_id} set={(v) => set('default_credit_account_id', v)} rows={accounts} optional account /><Select label="Currency" value={form.currency_id} set={(v) => set('currency_id', v)} rows={currencies} optional /><Input label="Sequence Prefix" value={form.sequence_prefix} set={(v) => set('sequence_prefix', v)} /><Input label="Next Sequence" value={form.next_sequence} set={(v) => set('next_sequence', v)} type="number" /><Toggle checked={form.is_active} set={(v) => set('is_active', v)} label="Active Journal" /><Toggle checked={form.allow_manual_entries} set={(v) => set('allow_manual_entries', v)} label="Allow Manual Entries" /></div>; }
-function EntryFields({ form, setForm, companies, journals, periods, accounts, debit, credit, balanced, noManualJournal }: { form: EntryForm; setForm: React.Dispatch<React.SetStateAction<EntryForm>>; companies: Row[]; journals: Row[]; periods: Row[]; accounts: Row[]; debit: number; credit: number; balanced: boolean; noManualJournal: boolean }) { const set = (key: keyof EntryForm, value: string) => setForm((current) => ({ ...current, [key]: value })); const updateLine = (index: number, key: keyof Line, value: string) => setForm((current) => ({ ...current, lines: current.lines.map((line, i) => i === index ? { ...line, [key]: value, ...(key === 'debit' ? { credit: '0' } : {}), ...(key === 'credit' ? { debit: '0' } : {}) } : line) })); const selectAccount = (index: number, accountId: string) => { const account = accounts.find((item) => String(item.id) === accountId); setForm((current) => ({ ...current, lines: current.lines.map((line, i) => i === index ? { ...line, account_id: accountId, label: account ? String(account.name) : '' } : line) })); }; return <><div className="grid gap-4 sm:grid-cols-3"><Select label="Company" value={form.company_id} set={(v) => { set('company_id', v); set('journal_id', ''); set('fiscal_period_id', ''); }} rows={companies} autoFocus /><Select label="Manual Journal" value={form.journal_id} set={(v) => set('journal_id', v)} rows={journals} /><Input label="Entry Date" value={form.entry_date} set={(v) => set('entry_date', v)} type="date" /><ReadOnlyField label="Entry Number" value={form.entry_number} /><Select label="Fiscal Period" value={form.fiscal_period_id} set={(v) => set('fiscal_period_id', v)} rows={periods} /><ReadOnlyField label="Status" value="Draft" /><Input label="Reference" value={form.reference} set={(v) => set('reference', v)} optional /><div className="sm:col-span-2"><Input label="Narration" value={form.narration} set={(v) => set('narration', v)} optional /></div></div>{noManualJournal && form.company_id && <div className="flex items-center justify-between rounded-xl border border-secondary/30 bg-secondary/10 p-3 text-xs text-secondary "><span>No active journal is configured for manual entries.</span><a href="/accounting/journals" className="font-semibold underline hover:text-secondary ">Configure Journal</a></div>}<div className="overflow-hidden rounded-xl border"><table className="w-full min-w-[700px] text-xs"><thead className="bg-muted/50"><tr><th className="px-3 py-2 text-left">Account</th><th className="px-3 py-2 text-left">Label</th><th className="px-3 py-2 text-right">Debit</th><th className="px-3 py-2 text-right">Credit</th><th className="w-10" /></tr></thead><tbody>{form.lines.map((line, index) => <tr key={index} className="border-t"><td className="p-2"><select required value={line.account_id} onChange={(e) => selectAccount(index, e.target.value)} className="h-9 w-full rounded-lg border bg-background px-2"><option value="">Select posting account</option>{accounts.map((row) => <option key={row.id} value={row.id}>{String(row.code)} — {String(row.name)}</option>)}</select></td><td className="p-2"><input value={line.label} onChange={(e) => updateLine(index, 'label', e.target.value)} className="h-9 w-full rounded-lg border bg-background px-2" /></td><td className="p-2"><input type="number" min="0" step="0.01" value={line.debit} onChange={(e) => updateLine(index, 'debit', e.target.value)} className="h-9 w-full rounded-lg border bg-background px-2 text-right" /></td><td className="p-2"><input type="number" min="0" step="0.01" value={line.credit} onChange={(e) => updateLine(index, 'credit', e.target.value)} className="h-9 w-full rounded-lg border bg-background px-2 text-right" /></td><td><button type="button" disabled={form.lines.length <= 2} onClick={() => setForm((current) => ({ ...current, lines: current.lines.filter((_, i) => i !== index) }))} className="p-2 text-muted-foreground disabled:opacity-30"><X className="size-4" /></button></td></tr>)}</tbody><tfoot className="border-t bg-muted/20 font-semibold"><tr><td colSpan={2} className="p-3"><button type="button" onClick={() => setForm((current) => ({ ...current, lines: [...current.lines, blankLine()] }))} className="text-primary">+ Add line</button></td><td className="p-3 text-right"><span className="block text-[9px] uppercase text-muted-foreground">Total Debit</span>${money(debit)}</td><td className="p-3 text-right"><span className="block text-[9px] uppercase text-muted-foreground">Total Credit</span>${money(credit)}</td><td /></tr></tfoot></table></div><div className={`rounded-xl border p-3 text-xs font-semibold ${balanced ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-secondary/30 bg-secondary/10 text-secondary'}`}>{balanced ? 'Balanced' : `Out of Balance — Difference: $${money(Math.abs(debit - credit))}`}</div></>; }
+
+function EntryFields({
+  form,
+  setForm,
+  companies,
+  journals,
+  periods,
+  accounts,
+  debit,
+  credit,
+  balanced,
+  noManualJournal,
+  rows,
+}: {
+  form: EntryForm;
+  setForm: React.Dispatch<React.SetStateAction<EntryForm>>;
+  companies: Row[];
+  journals: Row[];
+  periods: Row[];
+  accounts: Row[];
+  debit: number;
+  credit: number;
+  balanced: boolean;
+  noManualJournal: boolean;
+  rows?: Row[];
+}) {
+  const set = (key: keyof EntryForm, value: string) => setForm((current) => ({ ...current, [key]: value }));
+
+  const updateLine = (index: number, key: keyof Line, value: string) =>
+    setForm((current) => ({
+      ...current,
+      lines: current.lines.map((line, i) => {
+        if (i !== index) return line;
+        const numVal = Number(value || 0);
+        if (key === 'debit') {
+          return { ...line, debit: value, credit: numVal > 0 ? '0' : line.credit };
+        }
+        if (key === 'credit') {
+          return { ...line, credit: value, debit: numVal > 0 ? '0' : line.debit };
+        }
+        return { ...line, [key]: value };
+      }),
+    }));
+
+  const selectAccount = (index: number, accountId: string, forcedCat?: string) => {
+    const account = accounts.find((item) => String(item.id) === accountId);
+    if (!account) {
+      setForm((current) => ({
+        ...current,
+        lines: current.lines.map((line, i) => (i === index ? { ...line, account_id: '', label: '' } : line)),
+      }));
+      return;
+    }
+    const cat = forcedCat || getAccountCategory(account);
+    const isExpense = cat === 'expense';
+    const isLiability = cat === 'liability';
+
+    setForm((current) => {
+      const prevLine = current.lines[index];
+      let newDebit = prevLine.debit;
+      let newCredit = prevLine.credit;
+
+      if (isExpense && Number(prevLine.credit || 0) > 0 && Number(prevLine.debit || 0) === 0) {
+        newDebit = prevLine.credit;
+        newCredit = '0';
+      }
+      if (isLiability && Number(prevLine.debit || 0) > 0 && Number(prevLine.credit || 0) === 0) {
+        newCredit = prevLine.debit;
+        newDebit = '0';
+      }
+
+      return {
+        ...current,
+        lines: current.lines.map((line, i) =>
+          i === index
+            ? {
+                ...line,
+                account_id: accountId,
+                category: cat,
+                label: line.label ? line.label : String(account.name),
+                debit: newDebit,
+                credit: newCredit,
+              }
+            : line
+        ),
+      };
+    });
+  };
+
+  const autoBalanceRemaining = () => {
+    const diff = Number((debit - credit).toFixed(2));
+    if (diff === 0) return;
+    setForm((current) => {
+      const lines = [...current.lines];
+      const targetIdx = lines.findIndex((l) =>
+        diff > 0
+          ? Number(l.debit || 0) === 0 && Number(l.credit || 0) === 0
+          : Number(l.credit || 0) === 0 && Number(l.debit || 0) === 0
+      );
+      if (targetIdx !== -1) {
+        if (diff > 0) {
+          lines[targetIdx] = { ...lines[targetIdx], credit: String(diff), debit: '0' };
+        } else {
+          lines[targetIdx] = { ...lines[targetIdx], debit: String(Math.abs(diff)), credit: '0' };
+        }
+      }
+      return { ...current, lines };
+    });
+  };
+
+  return (
+    <>
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Select label="Company" value={form.company_id} set={(v) => {
+          const manualJournals = journals.filter((row) => row.allow_manual_entries && row.is_active && String(row.company_id) === v);
+          const gen = manualJournals.find((row) => row.journal_type === 'general' || String(row.name).toLowerCase().includes('general') || String(row.code).toLowerCase() === 'gen') || manualJournals[0];
+          const openPeriod = periods.find((period) => dateValue(period.start_date) <= form.entry_date && dateValue(period.end_date) >= form.entry_date) || periods[0];
+          set('company_id', v);
+          set('journal_id', gen ? String(gen.id) : '');
+          set('fiscal_period_id', openPeriod ? String(openPeriod.id) : '');
+          if (rows) set('entry_number', getNextEntryNumber(rows, form.entry_date));
+        }} rows={companies} autoFocus />
+        <Select label="Manual Journal" value={form.journal_id} set={(v) => set('journal_id', v)} rows={journals} />
+        <Input label="Entry Date" value={form.entry_date} set={(v) => {
+          set('entry_date', v);
+          if (rows) set('entry_number', getNextEntryNumber(rows, v));
+        }} type="date" />
+        <ReadOnlyField label="Entry Number" value={form.entry_number} />
+        <Select label="Fiscal Period" value={form.fiscal_period_id} set={(v) => set('fiscal_period_id', v)} rows={periods} />
+        <ReadOnlyField label="Status" value="Draft" />
+        <Input label="Reference" value={form.reference} set={(v) => set('reference', v)} optional />
+        <div className="sm:col-span-2"><Input label="Narration" value={form.narration} set={(v) => set('narration', v)} optional /></div>
+      </div>
+      {noManualJournal && form.company_id && (
+        <div className="flex items-center justify-between rounded-xl border border-secondary/30 bg-secondary/10 p-3 text-xs text-secondary">
+          <span>No active general journal is configured for manual entries.</span>
+          <a href="/accounting/journals" className="font-semibold underline hover:text-secondary">Configure Journal</a>
+        </div>
+      )}
+      <div className="overflow-hidden rounded-xl border">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[820px] text-xs">
+            <thead className="bg-muted/50">
+              <tr>
+                <th className="px-3 py-2 text-left w-48">1. Account Category</th>
+                <th className="px-3 py-2 text-left w-60">2. Posting Account</th>
+                <th className="px-3 py-2 text-left">Label / Description</th>
+                <th className="px-3 py-2 text-right w-32">Debit ($)</th>
+                <th className="px-3 py-2 text-right w-32">Credit ($)</th>
+                <th className="w-10" />
+              </tr>
+            </thead>
+            <tbody>
+              {form.lines.map((line, index) => {
+                const debitActive = Number(line.debit || 0) > 0;
+                const creditActive = Number(line.credit || 0) > 0;
+                const acc = accounts.find((a) => String(a.id) === line.account_id);
+                const activeCat = line.category || (acc ? getAccountCategory(acc) : '');
+                const categoryAccounts = activeCat
+                  ? accounts.filter((acc) => getAccountCategory(acc) === activeCat)
+                  : [];
+
+                return (
+                  <tr key={index} className="border-t">
+                    <td className="p-2">
+                      <select
+                        value={activeCat}
+                        onChange={(e) => {
+                          const newCat = e.target.value;
+                          setForm((current) => ({
+                            ...current,
+                            lines: current.lines.map((l, i) =>
+                              i === index
+                                ? {
+                                    ...l,
+                                    category: newCat,
+                                    account_id: '',
+                                    label: '',
+                                  }
+                                : l
+                            ),
+                          }));
+                        }}
+                        className="h-9 w-full rounded-lg border bg-background px-2 text-xs font-semibold"
+                      >
+                        <option value="">Select Category</option>
+                        {ACCOUNT_CATEGORIES.map((cat) => (
+                          <option key={cat.key} value={cat.key}>
+                            {cat.label}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="p-2">
+                      <select
+                        required
+                        disabled={!activeCat}
+                        value={line.account_id}
+                        onChange={(e) => selectAccount(index, e.target.value, activeCat)}
+                        className={`h-9 w-full rounded-lg border px-2 text-xs ${
+                          !activeCat ? 'bg-zinc-100 text-zinc-400 cursor-not-allowed' : 'bg-background font-medium'
+                        }`}
+                      >
+                        <option value="">
+                          {!activeCat ? '← Choose Category' : `Select account (${categoryAccounts.length})`}
+                        </option>
+                        {categoryAccounts.map((row) => (
+                          <option key={row.id} value={row.id}>
+                            {String(row.code)} — {String(row.name)}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="p-2">
+                      <input
+                        value={line.label}
+                        onChange={(e) => updateLine(index, 'label', e.target.value)}
+                        placeholder="Line description / narration"
+                        className="h-9 w-full rounded-lg border bg-background px-2"
+                      />
+                    </td>
+                    <td className="p-2">
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        disabled={creditActive}
+                        value={line.debit}
+                        onChange={(e) => updateLine(index, 'debit', e.target.value)}
+                        className={`h-9 w-full rounded-lg border px-2 text-right ${
+                          creditActive ? 'bg-zinc-100 text-zinc-400 cursor-not-allowed' : 'bg-background'
+                        }`}
+                        placeholder="0.00"
+                      />
+                    </td>
+                    <td className="p-2">
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        disabled={debitActive}
+                        value={line.credit}
+                        onChange={(e) => updateLine(index, 'credit', e.target.value)}
+                        className={`h-9 w-full rounded-lg border px-2 text-right ${
+                          debitActive ? 'bg-zinc-100 text-zinc-400 cursor-not-allowed' : 'bg-background'
+                        }`}
+                        placeholder="0.00"
+                      />
+                    </td>
+                    <td>
+                      <button
+                        type="button"
+                        disabled={form.lines.length <= 2}
+                        onClick={() => setForm((current) => ({ ...current, lines: current.lines.filter((_, i) => i !== index) }))}
+                        className="p-2 text-muted-foreground disabled:opacity-30"
+                      >
+                        <X className="size-4" />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+            <tfoot className="border-t bg-muted/20 font-semibold">
+              <tr>
+                <td colSpan={2} className="p-3">
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setForm((current) => ({ ...current, lines: [...current.lines, blankLine()] }))}
+                      className="text-primary font-bold hover:underline"
+                    >
+                      + Add line
+                    </button>
+                    {!balanced && debit !== credit && debit > 0 && (
+                      <button
+                        type="button"
+                        onClick={autoBalanceRemaining}
+                        className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors"
+                      >
+                        Auto-balance remaining
+                      </button>
+                    )}
+                  </div>
+                </td>
+                <td className="p-3 text-right text-muted-foreground">Totals</td>
+                <td className="p-3 text-right">
+                  <span className="block text-[9px] uppercase text-muted-foreground">Total Debit</span>
+                  ${money(debit)}
+                </td>
+                <td className="p-3 text-right">
+                  <span className="block text-[9px] uppercase text-muted-foreground">Total Credit</span>
+                  ${money(credit)}
+                </td>
+                <td />
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+      <div
+        className={`rounded-xl border p-3 text-xs font-semibold flex items-center justify-between ${
+          balanced
+            ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+            : 'border-secondary/30 bg-secondary/10 text-secondary'
+        }`}
+      >
+        <span>{balanced ? '✓ Balanced (Total Debits = Total Credits)' : `⚠ Out of Balance — Difference: $${money(Math.abs(debit - credit))}`}</span>
+        {!balanced && debit > 0 && credit === 0 && form.lines.length >= 2 && (
+          <button
+            type="button"
+            onClick={() => {
+              // Quick auto-balance credit line
+              setForm((current) => ({
+                ...current,
+                lines: current.lines.map((l, i) =>
+                  i === 1 && Number(l.debit || 0) === 0 ? { ...l, credit: String(debit) } : l
+                ),
+              }));
+            }}
+            className="rounded-md border border-secondary/40 bg-white px-2.5 py-1 text-xs font-bold text-secondary hover:bg-secondary/10"
+          >
+            Auto-balance Credit
+          </button>
+        )}
+      </div>
+    </>
+  );
+}
 function Summary({ label, value }: { label: string; value: number }) { return <div className={`${dashboardCardClass} p-4`}><p className="text-xs text-zinc-500">{label}</p><p className="mt-2 text-2xl font-bold">{value}</p></div>; }
 function State({ active, on, off }: { active: boolean; on: string; off: string }) { return <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${active ? 'bg-emerald-50 text-emerald-700' : 'bg-muted text-muted-foreground'}`}>{active ? on : off}</span>; }
 function EntryState({ state }: { state: string }) { return <span className={`${dashboardStatusBadgeClass} ${state === 'posted' ? 'bg-emerald-600 text-white' : state === 'cancelled' ? 'bg-rose-600 text-white' : 'bg-secondary text-white'}`}>{title(state)}</span>; }

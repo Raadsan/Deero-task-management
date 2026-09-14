@@ -44,8 +44,28 @@ function isoDate(date: Date) {
   return date.toISOString().slice(0, 10);
 }
 
-function periodRange(period = 'This Month') {
+function periodRange(period = 'This Month', customStart?: string, customEnd?: string) {
   const now = new Date();
+  if (period === 'Today') {
+    return {
+      startDate: isoDate(now),
+      endDate: isoDate(now),
+    };
+  }
+  if (period === 'Yesterday') {
+    const y = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+    return {
+      startDate: isoDate(y),
+      endDate: isoDate(y),
+    };
+  }
+  if (period === '1 Week' || period === 'This Week') {
+    const weekAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6);
+    return {
+      startDate: isoDate(weekAgo),
+      endDate: isoDate(now),
+    };
+  }
   if (period === 'Last Month') {
     return {
       startDate: isoDate(new Date(now.getFullYear(), now.getMonth() - 1, 1)),
@@ -57,6 +77,12 @@ function periodRange(period = 'This Month') {
     return {
       startDate: isoDate(new Date(now.getFullYear(), quarterStartMonth, 1)),
       endDate: isoDate(new Date(now.getFullYear(), quarterStartMonth + 3, 0)),
+    };
+  }
+  if (period === 'Custom' && customStart && customEnd) {
+    return {
+      startDate: customStart,
+      endDate: customEnd,
     };
   }
   return {
@@ -107,7 +133,7 @@ function chartLabel(dateValue: unknown) {
 }
 
 export const accountingDashboardApi = {
-  getSummary: async (period = 'This Month'): Promise<AccountingDashboardData> => {
+  getSummary: async (period = 'This Month', customStart?: string, customEnd?: string): Promise<AccountingDashboardData> => {
     const companies = await companyApi.getAll();
     const company = companies.find((item) => item.is_active !== false) ?? companies[0];
     if (!company) {
@@ -115,7 +141,7 @@ export const accountingDashboardApi = {
     }
 
     const companyId = Number(company.id);
-    const range = periodRange(period);
+    const range = periodRange(period, customStart, customEnd);
     const [profitAndLoss, cashFlow, journalReport] = await Promise.all([
       accountingReportApi.getProfitAndLoss({ companyId, ...range }),
       accountingReportApi.getCashFlow({ companyId, ...range }),

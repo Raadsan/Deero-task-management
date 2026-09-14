@@ -25,6 +25,7 @@ import {
   projectRoutes,
   quotationRoutes,
   documentTemplateRoutes,
+  vendorsRoutes,
   staffRoutes,
   roleRoutes,
   navMenuRoutes,
@@ -122,6 +123,7 @@ app.use("/api/nav-menus", attachSessionScope, navMenuRoutes);
 app.use("/api/tracking", attachSessionScope, trackingRoutes);
 app.use("/api/quotations", attachSessionScope, quotationRoutes);
 app.use("/api/document-templates", attachSessionScope, documentTemplateRoutes);
+app.use("/api/vendors", attachSessionScope, vendorsRoutes);
 app.use("/api/accounting", attachSessionScope, accountingRoutes);
 app.use("/api/roles", roleRoutes);
 app.use("/api/utils", utilRoutes);

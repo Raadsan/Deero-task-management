@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import DashboardDataTable, { type DashboardTableColumn } from '@/components/Shared/DashboardDataTable';
 import AccountingConfirmDialog from './AccountingConfirmDialog';
 import AccountingPageShell from '@/components/accounting/AccountingPageShell';
+import ReceiptViewModal from './ReceiptViewModal';
 import { actionBtnDelete, actionBtnEdit, actionBtnView, btnCreatePage, dashboardSelectClass, dashboardStatusBadgeClass } from '@/lib/dashboard-ui';
 
 type Row = { id: number; [key: string]: unknown };
@@ -61,7 +62,8 @@ export default function CustomerReceiptsPage() {
   const [methodFilter, setMethodFilter] = useState('all');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
-  const [printTarget, setPrintTarget] = useState<CustomerReceipt | null>(null);
+  const [viewTarget, setViewTarget] = useState<CustomerReceipt | null>(null);
+  const [viewOpen, setViewOpen] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -182,12 +184,43 @@ export default function CustomerReceiptsPage() {
   async function printReceipt(receipt: CustomerReceipt) {
     try {
       const fullReceipt = await customerReceiptApi.getById(receipt.id);
-      setPrintTarget(fullReceipt);
-      window.setTimeout(() => window.print(), 100);
-    } catch (error) { accountingToast(message(error), 'error'); }
+      setViewTarget(fullReceipt || receipt);
+      setViewOpen(true);
+      setTimeout(() => {
+        const printBtn = document.querySelector('#a4-receipt-sheet-print-btn') as HTMLButtonElement | null;
+        if (printBtn) {
+          printBtn.click();
+        } else {
+          window.print();
+        }
+      }, 400);
+    } catch (error) {
+      accountingToast(message(error), 'error');
+    }
   }
+
   const columns: DashboardTableColumn<CustomerReceipt>[] = [
-    { key: 'number', header: 'Receipt', cell: (row) => <span className="font-bold text-primary">{row.receipt_number || `#${row.id}`}</span> },
+    {
+      key: 'number',
+      header: 'Receipt',
+      cell: (row) => (
+        <button
+          type="button"
+          onClick={async () => {
+            try {
+              const full = await customerReceiptApi.getById(row.id);
+              setViewTarget(full || row);
+            } catch {
+              setViewTarget(row);
+            }
+            setViewOpen(true);
+          }}
+          className="font-bold text-primary hover:underline text-left cursor-pointer"
+        >
+          {row.receipt_number || `#${row.id}`}
+        </button>
+      ),
+    },
     { key: 'date', header: 'Date', cell: (row) => dateValue(row.receipt_date) },
     { key: 'customer', header: 'Customer', cell: (row) => row.customers?.name || '—' },
     { key: 'method', header: 'Method', cell: (row) => row.payment_methods?.name || '—' },
@@ -198,7 +231,48 @@ export default function CustomerReceiptsPage() {
     { key: 'allocated', header: 'Allocated', align: 'right', cell: (row) => money(Number(row.amount) - Number(row.unallocated_amount)) },
     { key: 'status', header: 'Status', align: 'center', cell: (row) => <span className={`${dashboardStatusBadgeClass} ${row.state === 'posted' ? 'bg-emerald-600 text-white' : row.state === 'cancelled' ? 'bg-rose-600 text-white' : 'bg-secondary/100 text-white'}`}>{row.state}</span> },
     { key: 'reference', header: 'Reference', cell: (row) => row.reference || '—' },
-    { key: 'actions', header: 'Actions', align: 'right', cell: (row) => <div className="flex justify-end gap-1"><button title="View" onClick={() => void edit(row, true)} className={actionBtnView}><Eye className="size-4" /></button>{row.state === 'draft' && <><button title="Edit" onClick={() => void edit(row)} className={actionBtnEdit}><SquarePen className="size-4" /></button><button title="Post" onClick={() => setPostTarget(row)} className={actionBtnView}><Send className="size-4" /></button><button title="Delete" onClick={() => setDeleteTarget(row)} className={actionBtnDelete}><Trash2 className="size-4" /></button></>}{row.state === 'posted' && <button title="Print" onClick={() => void printReceipt(row)} className={actionBtnView}><Printer className="size-4" /></button>}</div> },
+    {
+      key: 'actions',
+      header: 'Actions',
+      align: 'right',
+      cell: (row) => (
+        <div className="flex justify-end gap-1">
+          <button
+            title="View Receipt Voucher"
+            onClick={async () => {
+              try {
+                const fullReceipt = await customerReceiptApi.getById(row.id);
+                setViewTarget(fullReceipt || row);
+              } catch {
+                setViewTarget(row);
+              }
+              setViewOpen(true);
+            }}
+            className={actionBtnView}
+          >
+            <Eye className="size-4" />
+          </button>
+          {row.state === 'draft' && (
+            <>
+              <button title="Edit" onClick={() => void edit(row)} className={actionBtnEdit}>
+                <SquarePen className="size-4" />
+              </button>
+              <button title="Post" onClick={() => setPostTarget(row)} className={actionBtnView}>
+                <Send className="size-4" />
+              </button>
+              <button title="Delete" onClick={() => setDeleteTarget(row)} className={actionBtnDelete}>
+                <Trash2 className="size-4" />
+              </button>
+            </>
+          )}
+          {row.state === 'posted' && (
+            <button title="Print Receipt Voucher" onClick={() => void printReceipt(row)} className={actionBtnView}>
+              <Printer className="size-4" />
+            </button>
+          )}
+        </div>
+      ),
+    },
   ];
 
   return (
@@ -221,32 +295,59 @@ export default function CustomerReceiptsPage() {
           {allocationInvalid && <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">The allocated amount cannot exceed the invoice outstanding balance or the receipt amount.</div>}
           {!allocationInvalid && unallocated > 0.005 && <div className="rounded-xl border border-secondary/30 bg-secondary/10 p-3 text-sm text-secondary">The remaining amount is unallocated and will not be applied to any unselected invoice.</div>}
           <div className="ml-auto w-full rounded-2xl border p-4 sm:max-w-sm"><h3 className="mb-3 font-semibold">Summary</h3><div className="space-y-2 text-sm"><div className="flex justify-between"><span>Receipt Amount</span><b>{money(form.amount)}</b></div><div className="flex justify-between"><span>Outstanding Before</span><b>{money(selectedOutstandingBefore)}</b></div><div className="flex justify-between"><span>Allocated</span><b>{money(allocated)}</b></div><div className={`flex justify-between ${unallocated < -0.005 ? 'text-rose-600' : ''}`}><span>Remaining</span><b>{money(unallocated)}</b></div><div className="flex justify-between border-t pt-2"><span>Outstanding After Payment</span><b>{money(outstandingAfterPayment)}</b></div></div></div>
-          <DialogFooter><button type="button" onClick={() => setOpen(false)} className="rounded-xl border px-5 py-2.5">{viewOnly ? 'Close' : 'Cancel'}</button>{!viewOnly && <><button disabled={saving || allocationInvalid || allocated <= 0.005} className="rounded-xl border px-5 py-2.5 font-semibold disabled:opacity-50">{saving ? 'Saving…' : 'Save Draft'}</button><button type="button" disabled={saving || allocationInvalid || allocated <= 0.005} onClick={(event) => { if (event.currentTarget.form?.reportValidity()) void save(undefined, true); }} className="rounded-xl bg-primary px-5 py-2.5 font-semibold text-primary-foreground disabled:opacity-50">Post Receipt</button></>}</DialogFooter>
+          <DialogFooter className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              {form.customer_id && form.amount && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const cust = customers.find((c) => String(c.id) === String(form.customer_id));
+                    const previewReceipt: CustomerReceipt = {
+                      id: selected?.id || 0,
+                      receipt_number: selected?.receipt_number || '#DADVRV-PREVIEW',
+                      customer_id: Number(form.customer_id),
+                      journal_id: Number(form.journal_id) || 0,
+                      payment_method_id: Number(form.payment_method_id) || 0,
+                      receipt_date: form.receipt_date,
+                      currency_id: Number(form.currency_id) || 1,
+                      exchange_rate: Number(form.exchange_rate) || 1,
+                      amount: Number(form.amount) || 0,
+                      unallocated_amount: unallocated,
+                      reference: form.reference,
+                      memo: form.memo,
+                      state: selected?.state || 'draft',
+                      customers: cust ? { id: Number(cust.id), name: String(cust.name), phone: String(cust.phone || '') } : undefined,
+                      currencies: { id: 1, code: 'USD', symbol: '$' },
+                    };
+                    setViewTarget(previewReceipt);
+                    setViewOpen(true);
+                  }}
+                  className="rounded-xl border border-secondary/30 bg-secondary/10 px-4 py-2.5 text-xs font-semibold text-secondary hover:bg-secondary/20"
+                >
+                  Preview Voucher
+                </button>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <button type="button" onClick={() => setOpen(false)} className="rounded-xl border px-5 py-2.5">{viewOnly ? 'Close' : 'Cancel'}</button>
+              {!viewOnly && <>
+                <button disabled={saving || allocationInvalid || allocated <= 0.005} className="rounded-xl border px-5 py-2.5 font-semibold disabled:opacity-50">{saving ? 'Saving…' : 'Save Draft'}</button>
+                <button type="button" disabled={saving || allocationInvalid || allocated <= 0.005} onClick={(event) => { if (event.currentTarget.form?.reportValidity()) void save(undefined, true); }} className="rounded-xl bg-primary px-5 py-2.5 font-semibold text-primary-foreground disabled:opacity-50">Post Receipt</button>
+              </>}
+            </div>
+          </DialogFooter>
         </form>
       </DialogContent></Dialog>
       <Dialog open={Boolean(postTarget)} onOpenChange={(value) => !saving && !value && setPostTarget(null)}><DialogContent className="sm:max-w-lg"><DialogHeader><div className="mb-2 flex size-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700"><Send className="size-5" /></div><DialogTitle>Post Customer Receipt</DialogTitle><DialogDescription>Confirm the receipt before updating the selected invoice balances.</DialogDescription></DialogHeader>{postTarget && <div className="grid gap-3 rounded-xl border bg-muted/20 p-4 text-sm sm:grid-cols-2"><div><p className="text-xs text-muted-foreground">Receipt</p><p className="mt-1 font-semibold">{postTarget.receipt_number}</p></div><div><p className="text-xs text-muted-foreground">Customer</p><p className="mt-1 font-semibold">{postTarget.customers?.name || '—'}</p></div><div><p className="text-xs text-muted-foreground">Receipt Date</p><p className="mt-1 font-semibold">{dateValue(postTarget.receipt_date)}</p></div><div><p className="text-xs text-muted-foreground">Amount</p><p className="mt-1 font-semibold">{money(postTarget.amount, postTarget.currencies?.code)}</p></div></div>}<div className="rounded-xl border border-secondary/30 bg-secondary/10 p-3 text-xs text-secondary">Posting updates invoice balances and locks this receipt from further editing.</div><DialogFooter><button type="button" disabled={saving} onClick={() => setPostTarget(null)} className="h-10 rounded-xl border px-5 font-semibold disabled:opacity-50">Cancel</button><button type="button" disabled={saving || !postTarget} onClick={() => postTarget && void post(postTarget)} className="h-10 rounded-xl bg-primary px-5 font-semibold text-primary-foreground disabled:opacity-50">{saving ? 'Posting…' : 'Post Receipt'}</button></DialogFooter></DialogContent></Dialog>
       <AccountingConfirmDialog open={Boolean(deleteTarget)} title="Delete Customer Receipt" description="Confirm removal of this draft customer receipt." confirmLabel="Delete Receipt" destructive busy={saving} details={deleteTarget && <div className="flex justify-between"><span className="text-muted-foreground">Receipt</span><b>{deleteTarget.receipt_number}</b></div>} onCancel={() => setDeleteTarget(null)} onConfirm={() => deleteTarget && void remove(deleteTarget)} />
-      {printTarget && <PrintableCustomerReceipt receipt={printTarget} />}
+      <ReceiptViewModal
+        open={viewOpen}
+        onOpenChange={setViewOpen}
+        receipt={viewTarget}
+        onReceiptUpdated={load}
+        onPostReceipt={(r) => setPostTarget(r)}
+      />
     </AccountingPageShell>
   );
-}
-
-function PrintableCustomerReceipt({ receipt }: { receipt: CustomerReceipt }) {
-  const currency = receipt.currencies?.code || '';
-  const allocated = Number(receipt.amount) - Number(receipt.unallocated_amount || 0);
-  return <section id="printable-customer-receipt" className="hidden bg-white text-slate-950 print:block">
-    <header className="flex items-start justify-between border-b-2 border-slate-900 pb-6">
-      <div><h1 className="text-3xl font-bold text-[#6f0d18]">Bloom Cafe</h1><p className="mt-1 text-sm text-slate-500">Customer payment receipt</p></div>
-      <div className="text-right"><h2 className="text-3xl font-semibold">RECEIPT</h2><p className="mt-2 font-bold">{receipt.receipt_number || `#${receipt.id}`}</p></div>
-    </header>
-    <div className="grid grid-cols-2 gap-10 py-7 text-sm">
-      <div><p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Received from</p><p className="mt-2 text-base font-bold">{receipt.customers?.name || `Customer #${receipt.customer_id}`}</p>{receipt.customers?.phone && <p>{receipt.customers.phone}</p>}</div>
-      <dl className="grid grid-cols-2 gap-x-5 gap-y-2 text-right"><dt className="text-slate-500">Receipt date</dt><dd className="font-semibold">{dateValue(receipt.receipt_date)}</dd><dt className="text-slate-500">Payment method</dt><dd className="font-semibold">{receipt.payment_methods?.name || '—'}</dd><dt className="text-slate-500">Account</dt><dd className="font-semibold">{receipt.journals?.name || '—'}</dd><dt className="text-slate-500">Reference</dt><dd className="font-semibold">{receipt.reference || '—'}</dd></dl>
-    </div>
-    <div className="rounded-xl border border-slate-300 bg-slate-50 p-5"><p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Amount received</p><p className="mt-2 text-3xl font-bold">{money(receipt.amount, currency)}</p></div>
-    <h3 className="mb-3 mt-8 text-sm font-bold uppercase tracking-wider">Invoice allocation</h3>
-    <table className="w-full border-collapse text-sm"><thead><tr className="bg-[#6f0d18] text-white"><th className="p-3 text-left">Invoice</th><th className="p-3 text-right">Invoice total</th><th className="p-3 text-right">Amount applied</th></tr></thead><tbody>{(receipt.receipt_allocations || []).map((allocation, index) => <tr key={allocation.id || index} className="border-b"><td className="p-3 font-medium">{allocation.customer_invoices?.invoice_number || `Invoice #${allocation.invoice_id}`}</td><td className="p-3 text-right">{money(allocation.customer_invoices?.amount_total, currency)}</td><td className="p-3 text-right font-semibold">{money(allocation.allocated_amount, currency)}</td></tr>)}</tbody></table>
-    <div className="ml-auto mt-7 w-80 text-sm"><div className="flex justify-between py-1"><span>Receipt</span><b>{money(receipt.amount, currency)}</b></div><div className="flex justify-between py-1"><span>Allocated</span><b>{money(allocated, currency)}</b></div><div className="my-2 border-t border-slate-400" /><div className="flex justify-between py-2 text-base font-bold"><span>Remaining</span><span>{money(receipt.unallocated_amount, currency)}</span></div></div>
-  </section>;
 }
 

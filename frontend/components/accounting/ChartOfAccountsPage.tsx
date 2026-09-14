@@ -131,7 +131,9 @@ export default function ChartOfAccountsPage() {
   async function deleteAccount() {
     if (!selected) return; setSaving(true);
     try {
-      await chartOfAccountApi.remove(selected.id); accountingToast('Account deleted successfully'); setDeleteOpen(false); setSelected(null); await loadData();
+      const res = (await chartOfAccountApi.remove(selected.id)) as unknown as { message?: string } | undefined;
+      accountingToast(res?.message || 'Account processed successfully');
+      setDeleteOpen(false); setSelected(null); await loadData();
     } catch (error) { accountingToast(apiError(error), 'error'); }
     finally { setSaving(false); }
   }

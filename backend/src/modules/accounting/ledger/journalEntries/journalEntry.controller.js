@@ -7,7 +7,11 @@ class JournalEntryError extends Error {
 const safeError = (res, error, operation) => {
     if (error instanceof JournalEntryError) return res.status(error.status).json({ success: false, message: error.message })
     console.error(`Journal entry ${operation} error:`, error)
-    return res.status(500).json({ success: false, message: `Unable to ${operation} journal entry` })
+    if (error?.code === 'P2002') {
+        const target = Array.isArray(error.meta?.target) ? error.meta.target.join(', ') : (error.meta?.target || 'field')
+        return res.status(409).json({ success: false, message: `A journal entry with this ${target} already exists.` })
+    }
+    return res.status(500).json({ success: false, message: error?.message || `Unable to ${operation} journal entry` })
 }
 
 const entryInclude = { journal_items: { orderBy: { sequence: 'asc' } } }
@@ -32,6 +36,44 @@ export const create = async (req, res) => {
         const { items = [], ...input } = req.body
         if (input.source_type && input.source_type !== 'manual') throw new JournalEntryError(403, 'Source-controlled entries cannot be created from the manual journal module')
         if (!Array.isArray(items) || items.length < 2) throw new JournalEntryError(400, 'A journal entry requires at least two lines')
+
+        // Ensure unique entry_number
+        let entryNumber = input.entry_number ? String(input.entry_number).trim() : ''
+        const dateObj = input.entry_date ? new Date(input.entry_date) : new Date()
+        const year = !isNaN(dateObj.getTime()) ? dateObj.getFullYear() : new Date().getFullYear()
+        const prefix = `JE-${year}-`
+
+        if (!entryNumber) {
+            const existing = await prisma.journal_entries.findMany({
+                where: { company_id: Number(input.company_id), entry_number: { startsWith: prefix } },
+                select: { entry_number: true },
+            })
+            const maxSeq = existing.reduce((max, e) => {
+                const match = String(e.entry_number || '').match(/(\d+)$/)
+                const num = match ? parseInt(match[1], 10) : 0
+                return num > max ? num : max
+            }, 0)
+            entryNumber = `${prefix}${String(maxSeq + 1).padStart(6, '0')}`
+        } else {
+            const duplicate = await prisma.journal_entries.findFirst({
+                where: { company_id: Number(input.company_id), entry_number: entryNumber },
+                select: { id: true },
+            })
+            if (duplicate) {
+                const existing = await prisma.journal_entries.findMany({
+                    where: { company_id: Number(input.company_id), entry_number: { startsWith: prefix } },
+                    select: { entry_number: true },
+                })
+                const maxSeq = existing.reduce((max, e) => {
+                    const match = String(e.entry_number || '').match(/(\d+)$/)
+                    const num = match ? parseInt(match[1], 10) : 0
+                    return num > max ? num : max
+                }, 0)
+                entryNumber = `${prefix}${String(maxSeq + 1).padStart(6, '0')}`
+            }
+        }
+        input.entry_number = entryNumber
+
         const data = await prisma.journal_entries.create({
             data: { ...input, state: 'draft', source_type: 'manual', posted_at: null, journal_items: { create: items.map((item, index) => ({ ...item, sequence: item.sequence || (index + 1) * 10 })) } },
             include: entryInclude,

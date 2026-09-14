@@ -109,7 +109,7 @@ export function formatStatusLabel(status: string): string {
   if (!status) return "—";
   const lower = status.toLowerCase();
   if (lower === "pending") return "Pending";
-  if (lower === "in_progress" || lower === "in process" || lower === "inprogres" || lower === "inprocess") return "In Process";
+  if (lower === "in_progress" || lower === "in progress" || lower === "in process" || lower === "inprogres" || lower === "inprocess") return "In Process";
   if (lower === "completed" || lower === "complete" || lower === "done") return "Complete";
   if (lower === "overdue") return "Overdue";
   return status.charAt(0).toUpperCase() + status.slice(1);

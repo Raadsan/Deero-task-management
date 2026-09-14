@@ -189,8 +189,15 @@ export default function DynamicSidebarNav({ data }: Props) {
     {
       id: "acc-reports",
       title: "Financial Reports",
-      url: "/accounting/reports",
       icon: BarChart3,
+      items: [
+        { id: "acc-rep-gl", title: "General Ledger", url: "/accounting/general-ledger" },
+        { id: "acc-rep-tb", title: "Trial Balance", url: "/accounting/trial-balance" },
+        { id: "acc-rep-pl", title: "Profit & Loss", url: "/accounting/profit-and-loss" },
+        { id: "acc-rep-bs", title: "Balance Sheet", url: "/accounting/balance-sheet" },
+        { id: "acc-rep-cf", title: "Cash Flow", url: "/accounting/cash-flow" },
+        { id: "acc-rep-jr", title: "Journal Report", url: "/accounting/journal-report" },
+      ],
     },
   ], []);
 
@@ -330,6 +337,13 @@ export default function DynamicSidebarNav({ data }: Props) {
     "/accounting/credit-notes": ["/accounting/customer-invoices", "/accounting/dashboard"],
     "/accounting/vendors": ["/accounting/vendor-bills", "/accounting/dashboard"],
     "/accounting/vendor-refunds": ["/accounting/vendor-bills", "/accounting/dashboard"],
+    "/accounting/reports": ["/accounting/dashboard"],
+    "/accounting/general-ledger": ["/accounting/reports", "/accounting/dashboard"],
+    "/accounting/trial-balance": ["/accounting/reports", "/accounting/dashboard"],
+    "/accounting/profit-and-loss": ["/accounting/reports", "/accounting/dashboard"],
+    "/accounting/balance-sheet": ["/accounting/reports", "/accounting/dashboard"],
+    "/accounting/cash-flow": ["/accounting/reports", "/accounting/dashboard"],
+    "/accounting/journal-report": ["/accounting/reports", "/accounting/dashboard"],
   };
 
   const mayViewUrl = (url: string) => {

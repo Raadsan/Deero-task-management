@@ -18,17 +18,21 @@ function mapAssignedTo(
         id?: string;
         name?: string;
         portfolioId?: string | null;
+        image?: string | null;
+        jobTitle?: string | null;
       }
     | null
     | undefined,
 ) {
   if (!user?.id) {
-    return { id: "", name: "Unassigned", portfolioId: null };
+    return { id: "", name: "Unassigned", portfolioId: null, image: null, jobTitle: null };
   }
   return {
     id: user.id,
     name: user.name ?? "Unassigned",
     portfolioId: user.portfolioId ?? null,
+    image: user.image ?? null,
+    jobTitle: user.jobTitle ?? null,
   };
 }
 

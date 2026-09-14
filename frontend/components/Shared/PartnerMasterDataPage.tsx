@@ -12,8 +12,8 @@ import DashboardDataTable, { type DashboardTableColumn } from '@/components/Shar
 import { actionBtnDelete, actionBtnEdit, btnCreatePage, dashboardStatusBadgeClass } from '@/lib/dashboard-ui';
 
 type Kind = 'customer' | 'vendor';
-type Record = AccountingRecord & { name?: string; fullName?: string; phone?: string; email?: string; address?: string; is_active?: boolean; currency?: string | null; receivable_balance?: number; payable_balance?: number; advance_balance?: number; vendor_balance?: number };
-const EMPTY = { name: '', phone: '', email: '', address: '', is_active: true };
+type Record = AccountingRecord & { name?: string; fullName?: string; notes?: string; phone?: string; email?: string; address?: string; is_active?: boolean; currency?: string | null; receivable_balance?: number; payable_balance?: number; advance_balance?: number; vendor_balance?: number };
+const EMPTY = { name: '', notes: '', phone: '', email: '', address: '', is_active: true };
 
 function message(error: unknown) {
   if (axios.isAxiosError(error)) return error.response?.data?.message || error.message;
@@ -49,13 +49,13 @@ export default function PartnerMasterDataPage({ kind, restaurantLabel = false, e
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    return rows.filter((row) => !needle || [row.name, row.fullName, row.phone, row.email].some((value) => String(value || '').toLowerCase().includes(needle)));
+    return rows.filter((row) => !needle || [row.name, row.fullName, row.phone, row.email, row.notes].some((value) => String(value || '').toLowerCase().includes(needle)));
   }, [query, rows]);
 
   function beginCreate() { setSelected(null); setForm(EMPTY); setOpen(true); }
   function beginEdit(row: Record) {
     setSelected(row);
-    setForm({ name: String(row.name || row.fullName || ''), phone: String(row.phone || ''), email: String(row.email || ''), address: String(row.address || ''), is_active: row.is_active !== false });
+    setForm({ name: String(row.name || row.fullName || ''), notes: String(row.notes || ''), phone: String(row.phone || ''), email: String(row.email || ''), address: String(row.address || ''), is_active: row.is_active !== false });
     setOpen(true);
   }
   async function submit(event: FormEvent) {
@@ -74,7 +74,10 @@ export default function PartnerMasterDataPage({ kind, restaurantLabel = false, e
   }
   const columns: DashboardTableColumn<Record>[] = [
     { key: 'id', header: 'ID', cell: (row) => <span className="font-bold text-primary">#{row.id}</span> },
-    { key: 'name', header: 'Name', cell: (row) => <span className="font-medium">{row.name || row.fullName}</span> },
+    { key: 'name', header: 'Name', cell: (row) => <span className="font-semibold text-zinc-900">{row.name || row.fullName}</span> },
+    ...(kind === 'vendor' ? [
+      { key: 'notes', header: 'Service / Waxa laga qaato', cell: (row: Record) => <span className="text-sm font-medium text-zinc-700">{row.notes || '—'}</span> },
+    ] : []),
     { key: 'phone', header: 'Phone', cell: (row) => row.phone || '—' },
     { key: 'email', header: 'Email', cell: (row) => row.email || '—' },
     ...(kind === 'customer' ? [
@@ -94,13 +97,31 @@ export default function PartnerMasterDataPage({ kind, restaurantLabel = false, e
     <>
     <DashboardDataTable rows={filtered} columns={columns} loading={loading} searchValue={query} onSearchChange={setQuery} searchPlaceholder={`Search ${plural}...`} emptyText={`No ${plural} found`} minWidth="800px" action={canAdd ? <button onClick={beginCreate} className={btnCreatePage}><Plus className="size-4" /> Add {singular}</button> : undefined} filters={<button onClick={() => void revalidate()} aria-label="Refresh" className="flex size-[42px] items-center justify-center rounded-md border border-zinc-200 bg-white"><RefreshCw className={`size-4 ${loading ? 'animate-spin' : ''}`} /></button>} />
     <AccountingFormDialog open={open} onOpenChange={setOpen} saving={saving} onSubmit={submit} title={`${selected ? 'Edit' : 'Add'} ${singular}`} description="This record is available across accounting workflows." submitLabel={selected ? 'Save changes' : `Add ${singular}`}>
-      <AccountingFieldLabel label="Name *"><input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={accountingFormFieldClass} /></AccountingFieldLabel>
+      <AccountingFieldLabel label={kind === 'vendor' ? 'Vendor Name *' : 'Name *'}>
+        <input
+          required
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+          placeholder={kind === 'vendor' ? 'e.g. Hormuud Telecom, Somali Power, SomNet, etc.' : undefined}
+          className={accountingFormFieldClass}
+        />
+      </AccountingFieldLabel>
+      {kind === 'vendor' && (
+        <AccountingFieldLabel label="Service / What we get (Waxa laga qaato)">
+          <input
+            value={form.notes}
+            onChange={(e) => setForm({ ...form, notes: e.target.value })}
+            placeholder="e.g. Internet Provider, Korontada Xafiiska, Agabka Xafiiska, etc."
+            className={accountingFormFieldClass}
+          />
+        </AccountingFieldLabel>
+      )}
       <div className="grid gap-4 sm:grid-cols-2">
-        <AccountingFieldLabel label="Phone"><input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={accountingFormFieldClass} /></AccountingFieldLabel>
-        <AccountingFieldLabel label="Email"><input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={accountingFormFieldClass} /></AccountingFieldLabel>
+        <AccountingFieldLabel label="Phone"><input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+252..." className={accountingFormFieldClass} /></AccountingFieldLabel>
+        <AccountingFieldLabel label="Email"><input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="vendor@company.com" className={accountingFormFieldClass} /></AccountingFieldLabel>
       </div>
-      <AccountingFieldLabel label="Address"><input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className={accountingFormFieldClass} /></AccountingFieldLabel>
-      <label className="flex items-center gap-2 text-sm text-zinc-700"><input type="checkbox" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} /> Active</label>
+      <AccountingFieldLabel label="Address"><input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="e.g. Digfer, Hodan, Mogadishu" className={accountingFormFieldClass} /></AccountingFieldLabel>
+      <label className="flex items-center gap-2 text-sm text-zinc-700 cursor-pointer"><input type="checkbox" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} className="size-4 rounded border-zinc-300 accent-primary" /> Active</label>
     </AccountingFormDialog>
     </>
   );

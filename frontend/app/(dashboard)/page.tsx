@@ -9,6 +9,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   getAdminDashboardBundle,
   getMyDashboardBundle,
   getManagerDashboardBundle,
@@ -36,6 +44,10 @@ import {
 } from "@/lib/dashboard-ui";
 import { cn, resolveTaskDisplayStatus } from "@/lib/utils";
 import { accountingDashboardApi } from "@/lib/api/accounting/accountingDashboardApi";
+import { customerInvoiceApi, type CustomerInvoice } from "@/lib/api/accounting/receivables/customerInvoiceApi";
+import { vendorBillApi, type VendorBill } from "@/lib/api/accounting/payables/vendorBillApi";
+import { quotationApi, type Quotation } from "@/lib/api/quotationApi";
+import { getAllUsers } from "@/lib/apis/userApi";
 import {
   AlertCircle,
   AlertTriangle,
@@ -70,7 +82,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import {
   Area,
@@ -645,127 +657,571 @@ function AdminDashboard({
 }) {
   const { primaryColor, secondaryColor } = useBranchTheme();
   const dashboardKey = ["dashboard-bundle", userId, portfolioId ?? "all"].join(":");
-  const { data: bundleRes, isValidating, mutate } = useSWR(
+  const { data: bundleRes, isValidating, mutate: mutateBundle } = useSWR(
     dashboardKey,
     getAdminDashboardBundle,
     { revalidateOnFocus: false, revalidateOnMount: true },
   );
 
-  const { data: accountingData } = useSWR(
-    "accounting-executive-summary",
-    () => accountingDashboardApi.getSummary("This Month"),
+  type DashboardTimePeriod = "Today" | "Yesterday" | "1 Week" | "Last Month" | "Custom";
+  const [periodFilter, setPeriodFilter] = useState<DashboardTimePeriod>("Today");
+  const [customStart, setCustomStart] = useState("");
+  const [customEnd, setCustomEnd] = useState("");
+  const [showCustomModal, setShowCustomModal] = useState(false);
+
+  const { data: accountingData, mutate: mutateAccounting } = useSWR(
+    ["accounting-executive-summary", periodFilter, customStart, customEnd],
+    () => accountingDashboardApi.getSummary(periodFilter, customStart, customEnd),
     { revalidateOnFocus: false, revalidateOnMount: true },
   );
 
-  const allTasks = useMemo(() => {
+  const { data: usersRes, mutate: mutateUsers } = useSWR(
+    "dashboard-all-staff",
+    getAllUsers,
+    { revalidateOnFocus: false, revalidateOnMount: true },
+  );
+
+  const { data: invoicesRes, mutate: mutateInvoices } = useSWR(
+    "dashboard-customer-invoices",
+    () => customerInvoiceApi.getAll(),
+    { revalidateOnFocus: false, revalidateOnMount: true },
+  );
+
+  const { data: vendorBillsRes, mutate: mutateBills } = useSWR(
+    "dashboard-vendor-bills",
+    () => vendorBillApi.getAll(),
+    { revalidateOnFocus: false, revalidateOnMount: true },
+  );
+
+  const { data: quotationsRes, mutate: mutateQuotations } = useSWR(
+    "dashboard-quotations",
+    () => quotationApi.getAll(),
+    { revalidateOnFocus: false, revalidateOnMount: true },
+  );
+
+  const [chartPeriod, setChartPeriod] = useState<"Weekly" | "Monthly">("Weekly");
+
+  const handleRefresh = async () => {
+    await Promise.all([
+      mutateBundle(),
+      mutateAccounting(),
+      mutateUsers(),
+      mutateInvoices(),
+      mutateBills(),
+      mutateQuotations(),
+    ]);
+  };
+
+  const isDateInFilter = useCallback((rawDate?: string | Date | null) => {
+    if (!rawDate) return false;
+    const d = asDate(rawDate);
+    if (!d) return false;
+
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+    const tomorrowStart = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
+    const yesterdayStart = new Date(todayStart.getTime() - 24 * 60 * 60 * 1000);
+    const time = d.getTime();
+
+    if (periodFilter === "Today") {
+      return time >= todayStart.getTime() && time < tomorrowStart.getTime();
+    }
+    if (periodFilter === "Yesterday") {
+      return time >= yesterdayStart.getTime() && time < todayStart.getTime();
+    }
+    if (periodFilter === "1 Week") {
+      const weekStart = new Date(todayStart.getTime() - 6 * 24 * 60 * 60 * 1000);
+      return time >= weekStart.getTime() && time < tomorrowStart.getTime();
+    }
+    if (periodFilter === "Last Month") {
+      const monthStart = new Date(todayStart.getTime() - 30 * 24 * 60 * 60 * 1000);
+      return time >= monthStart.getTime() && time < tomorrowStart.getTime();
+    }
+    if (periodFilter === "Custom") {
+      if (!customStart && !customEnd) return true;
+      const start = customStart ? new Date(`${customStart}T00:00:00`).getTime() : 0;
+      const end = customEnd ? new Date(`${customEnd}T23:59:59`).getTime() : Infinity;
+      return time >= start && time <= end;
+    }
+    return true;
+  }, [periodFilter, customStart, customEnd]);
+
+  const rawTasks = useMemo(() => {
     const tasks = (bundleRes?.data?.tasks ?? []) as Task[];
     return isBranchDashboard && portfolioId
       ? tasks.filter((task) => task.assignedTo?.portfolioId === portfolioId)
       : tasks;
   }, [bundleRes?.data?.tasks, isBranchDashboard, portfolioId]);
 
+  const allTasks = useMemo(() => {
+    return rawTasks.filter((task) => {
+      if (periodFilter === "Today") {
+        const deadlineDate = task.deadline ? asDate(task.deadline) : null;
+        const createdDate = task.createdAt ? asDate(task.createdAt) : null;
+        const completedDate = (task as any).completedAt ? asDate((task as any).completedAt) : null;
+
+        const isDueToday = deadlineDate ? isDateInFilter(deadlineDate) : false;
+        const isCreatedToday = createdDate ? isDateInFilter(createdDate) : false;
+        const isCompletedToday = completedDate ? isDateInFilter(completedDate) : false;
+
+        return isDueToday || isCreatedToday || isCompletedToday;
+      }
+
+      const taskDate = asDate(task.deadline ?? task.createdAt ?? task.updatedAt);
+      return isDateInFilter(taskDate);
+    });
+  }, [rawTasks, isDateInFilter, periodFilter]);
+
   const allClients = (bundleRes?.data?.clients ?? []) as Array<{ id?: string; institution?: string; companyName?: string }>;
 
-  const completedCount = allTasks.filter((t) => resolveTaskDisplayStatus(t) === "completed").length || 98;
-  const inProgressCount = allTasks.filter((t) => ["in progress", "pending"].includes(resolveTaskDisplayStatus(t))).length || 32;
-  const pendingCount = allTasks.filter((t) => resolveTaskDisplayStatus(t) === "pending").length || 17;
-  const overdueCount = allTasks.filter((t) => resolveTaskDisplayStatus(t) === "overdue").length || 8;
-  const totalTasksCount = allTasks.length || 155;
+  const isTaskInProgress = (t: any) => {
+    const s = resolveTaskDisplayStatus(t);
+    return s === "in_progress" || s === "in progress" || s === "inprocess" || s === "in process";
+  };
 
-  const totalRevenue = accountingData?.totalRevenue || 6038.62;
-  const totalExpenses = accountingData?.expenses || 2340.0;
-  const netProfit = accountingData?.netProfit || 3698.62;
-  const outstandingAmount = 1250.0;
+  const totalTasksCount = allTasks.length;
+  const completedCount = allTasks.filter((t) => resolveTaskDisplayStatus(t) === "completed").length;
+  const inProgressCount = allTasks.filter(isTaskInProgress).length;
+  const pendingCount = allTasks.filter((t) => resolveTaskDisplayStatus(t) === "pending").length;
+  const overdueCount = allTasks.filter((t) => resolveTaskDisplayStatus(t) === "overdue").length;
+
+  const completionRate = totalTasksCount > 0 ? Math.round((completedCount / totalTasksCount) * 100) : 0;
+  const inProgressPercent = totalTasksCount > 0 ? ((inProgressCount / totalTasksCount) * 100).toFixed(1) : "0.0";
+
+  const rawInvoices = useMemo(() => (invoicesRes ?? []) as CustomerInvoice[], [invoicesRes]);
+  const rawVendorBills = useMemo(() => (vendorBillsRes ?? []) as VendorBill[], [vendorBillsRes]);
+  const rawQuotations = useMemo(() => (quotationsRes ?? []) as Quotation[], [quotationsRes]);
+
+  const invoices = useMemo(() => {
+    const filtered = rawInvoices.filter((inv) => isDateInFilter((inv.invoice_date || inv.created_at) as string | Date));
+    return filtered.length > 0 ? filtered : rawInvoices;
+  }, [rawInvoices, isDateInFilter]);
+
+  const vendorBills = useMemo(() => {
+    const filtered = rawVendorBills.filter((b) => isDateInFilter((b.bill_date || b.created_at) as string | Date));
+    return filtered.length > 0 ? filtered : rawVendorBills;
+  }, [rawVendorBills, isDateInFilter]);
+
+  const quotations = useMemo(() => {
+    const filtered = rawQuotations.filter((q) => {
+      const row = q as unknown as Record<string, unknown>;
+      return isDateInFilter((row.quotation_date || row.issue_date || row.created_at || row.createdAt) as string | Date);
+    });
+    return filtered.length > 0 ? filtered : rawQuotations;
+  }, [rawQuotations, isDateInFilter]);
+
+  const invoiceRevenue = useMemo(() => {
+    return invoices.reduce((sum, inv) => sum + Number(inv.paid_amount || 0), 0);
+  }, [invoices]);
+
+  const billExpenses = useMemo(() => {
+    return vendorBills.reduce((sum, b) => sum + Number(b.amount_paid || 0), 0);
+  }, [vendorBills]);
+
+  const totalRevenue = accountingData?.totalRevenue ? Number(accountingData.totalRevenue) : invoiceRevenue;
+  const totalExpenses = accountingData?.expenses ? Number(accountingData.expenses) : billExpenses;
+  const netProfit = totalRevenue - totalExpenses;
+
+  const outstandingAmount = useMemo(() => {
+    return invoices.reduce((sum, inv) => sum + Number(inv.amount_due || 0), 0);
+  }, [invoices]);
+
+  const unpaidInvoicesCount = useMemo(() => {
+    return invoices.filter((inv) => Number(inv.amount_due || 0) > 0).length;
+  }, [invoices]);
 
   // Chart Data: Revenue vs Expenses over time
-  const revenueExpensesChart = useMemo(() => [
-    { date: "Aug 19", revenue: 1800, expenses: 1400 },
-    { date: "Aug 20", revenue: 3800, expenses: 2200 },
-    { date: "Aug 21", revenue: 4200, expenses: 2600 },
-    { date: "Aug 22", revenue: 7800, expenses: 4500 },
-    { date: "Aug 23", revenue: 5200, expenses: 3100 },
-    { date: "Aug 24", revenue: 4700, expenses: 2700 },
-    { date: "Aug 25", revenue: 4500, expenses: 2900 },
-  ], []);
+  const revenueExpensesChart = useMemo(() => {
+    if (accountingData?.chartData && accountingData.chartData.length >= 3) {
+      return accountingData.chartData.map((pt) => ({
+        date: pt.date,
+        revenue: pt.revenue,
+        expenses: pt.expense,
+      }));
+    }
+
+    const pointsCount = chartPeriod === "Weekly" ? 7 : 6;
+    const now = new Date();
+    const result = [];
+
+    for (let i = pointsCount - 1; i >= 0; i--) {
+      const d = new Date();
+      if (chartPeriod === "Weekly") {
+        d.setDate(now.getDate() - i);
+      } else {
+        d.setMonth(now.getMonth() - i);
+      }
+      const dateStr = d.toISOString().slice(0, 10);
+      const label =
+        chartPeriod === "Weekly"
+          ? d.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+          : d.toLocaleDateString("en-US", { month: "short" });
+
+      let dayRev = 0;
+      let dayExp = 0;
+
+      invoices.forEach((inv) => {
+        const invDate = String(inv.invoice_date || inv.created_at || "").slice(0, 10);
+        if (chartPeriod === "Weekly" ? invDate === dateStr : invDate.slice(0, 7) === dateStr.slice(0, 7)) {
+          dayRev += Number(inv.paid_amount || inv.amount_total || 0);
+        }
+      });
+
+      vendorBills.forEach((b) => {
+        const bDate = String(b.bill_date || b.created_at || "").slice(0, 10);
+        if (chartPeriod === "Weekly" ? bDate === dateStr : bDate.slice(0, 7) === dateStr.slice(0, 7)) {
+          dayExp += Number(b.amount_paid || b.amount_total || 0);
+        }
+      });
+
+      result.push({
+        date: label,
+        revenue: dayRev,
+        expenses: dayExp,
+      });
+    }
+
+    return result;
+  }, [accountingData?.chartData, chartPeriod, invoices, vendorBills]);
 
   // Donut 1: Task Status Breakdown
-  const taskStatusDonut = useMemo(() => [
-    { name: "Completed", value: completedCount, color: primaryColor, count: "98 (63.2%)" },
-    { name: "In Progress", value: inProgressCount, color: secondaryColor, count: "32 (20.6%)" },
-    { name: "Pending", value: pendingCount, color: BRAND_AMBER, count: "17 (11.0%)" },
-    { name: "Overdue", value: overdueCount, color: BRAND_RED, count: "8 (5.2%)" },
-  ], [completedCount, inProgressCount, pendingCount, overdueCount, primaryColor, secondaryColor]);
+  const taskStatusDonut = useMemo(() => {
+    const total = Math.max(totalTasksCount, 1);
+    return [
+      { name: "Completed", value: completedCount, color: primaryColor, count: `${completedCount} (${Math.round((completedCount / total) * 100)}%)` },
+      { name: "In Progress", value: inProgressCount, color: secondaryColor, count: `${inProgressCount} (${Math.round((inProgressCount / total) * 100)}%)` },
+      { name: "Pending", value: pendingCount, color: BRAND_AMBER, count: `${pendingCount} (${Math.round((pendingCount / total) * 100)}%)` },
+      { name: "Overdue", value: overdueCount, color: BRAND_RED, count: `${overdueCount} (${Math.round((overdueCount / total) * 100)}%)` },
+    ];
+  }, [completedCount, inProgressCount, pendingCount, overdueCount, totalTasksCount, primaryColor, secondaryColor]);
 
   // Donut 2: Invoice Status Breakdown
-  const invoiceStatusDonut = useMemo(() => [
-    { name: "Paid", value: 4500, count: "8 Invoices", color: primaryColor },
-    { name: "Partially Paid", value: 1200, count: "2 Invoices", color: secondaryColor },
-    { name: "Unpaid", value: 800, count: "1 Invoices", color: BRAND_AMBER },
-    { name: "Overdue", value: 450, count: "1 Invoices", color: BRAND_RED },
-  ], [primaryColor, secondaryColor]);
+  const invoiceStatusBreakdown = useMemo(() => {
+    let paidTotal = 0;
+    let partialTotal = 0;
+    let unpaidTotal = 0;
+    let overdueTotal = 0;
+    let paidCount = 0;
+    let partialCount = 0;
+    let unpaidCount = 0;
+    let overdueCount = 0;
 
-  // Team Performance Data
-  const teamMembers = useMemo(() => [
-    { name: "Ahmed Ali", avatar: "AA", tasks: 32, completed: 25, pending: 7, percent: 78 },
-    { name: "Hassan Yusuf", avatar: "HY", tasks: 28, completed: 22, pending: 6, percent: 79 },
-    { name: "Ali Mohamed", avatar: "AM", tasks: 21, completed: 18, pending: 3, percent: 86 },
-    { name: "Mohamed Omar", avatar: "MO", tasks: 18, completed: 12, pending: 6, percent: 67 },
-    { name: "Sara Abdullahi", avatar: "SA", tasks: 16, completed: 10, pending: 6, percent: 63 },
-  ], []);
+    const now = new Date();
+
+    invoices.forEach((inv) => {
+      const due = Number(inv.amount_due || 0);
+      const total = Number(inv.amount_total || 0);
+      const isPastDue = inv.due_date ? new Date(inv.due_date) < now : false;
+
+      if (inv.payment_state === "paid" || due <= 0) {
+        paidTotal += total;
+        paidCount += 1;
+      } else if (inv.payment_state === "partial") {
+        partialTotal += due;
+        partialCount += 1;
+      } else if (isPastDue) {
+        overdueTotal += due;
+        overdueCount += 1;
+      } else {
+        unpaidTotal += due;
+        unpaidCount += 1;
+      }
+    });
+
+    const grandTotal = paidTotal + partialTotal + unpaidTotal + overdueTotal;
+
+    const donut = [
+      { name: "Paid", value: paidTotal, count: `${paidCount} Invoice${paidCount === 1 ? "" : "s"}`, color: primaryColor },
+      { name: "Partially Paid", value: partialTotal, count: `${partialCount} Invoice${partialCount === 1 ? "" : "s"}`, color: secondaryColor },
+      { name: "Unpaid", value: unpaidTotal, count: `${unpaidCount} Invoice${unpaidCount === 1 ? "" : "s"}`, color: BRAND_AMBER },
+      { name: "Overdue", value: overdueTotal, count: `${overdueCount} Invoice${overdueCount === 1 ? "" : "s"}`, color: BRAND_RED },
+    ];
+
+    return { donut, grandTotal, paidCount, partialCount, unpaidCount, overdueCount };
+  }, [invoices, primaryColor, secondaryColor]);
+
+  // Team Performance Data (100% Dynamic from Staff Users in DB)
+  const teamMembers = useMemo(() => {
+    const rawUsers = (usersRes?.data ?? []) as Array<{ id: string; name?: string; email?: string; jobTitle?: string; image?: string; avatar?: string }>;
+
+    const userById = new Map<string, (typeof rawUsers)[0]>();
+    const userByName = new Map<string, (typeof rawUsers)[0]>();
+    rawUsers.forEach((u) => {
+      if (u.id) userById.set(u.id, u);
+      if (u.name) userByName.set(u.name.trim().toLowerCase(), u);
+    });
+
+    const staffMap = new Map<
+      string,
+      { id: string; name: string; avatar: string; image: string | null; tasks: number; completed: number; pending: number; percent: number }
+    >();
+
+    rawUsers.forEach((u) => {
+      const name = u.name?.trim() || "Staff Member";
+      const initials =
+        name
+          .split(" ")
+          .filter(Boolean)
+          .map((part) => part[0])
+          .join("")
+          .slice(0, 2)
+          .toUpperCase() || "ST";
+      staffMap.set(u.id, {
+        id: u.id,
+        name,
+        avatar: initials,
+        image: u.image || (u as any).avatar || null,
+        tasks: 0,
+        completed: 0,
+        pending: 0,
+        percent: 0,
+      });
+    });
+
+    allTasks.forEach((task) => {
+      const assigneeId = task.assignedTo?.id || task.assignedToId;
+      const assigneeName = task.assignedTo?.name || "Unassigned";
+      if (!assigneeId && assigneeName === "Unassigned") return;
+
+      const matchedUser = (assigneeId ? userById.get(assigneeId) : null) || (assigneeName ? userByName.get(assigneeName.trim().toLowerCase()) : null);
+      const effectiveId = assigneeId || matchedUser?.id || assigneeName;
+      const effectiveName = matchedUser?.name || assigneeName;
+      const effectiveImage = matchedUser?.image || (matchedUser as any)?.avatar || (task.assignedTo as any)?.image || (task.assignedTo as any)?.avatar || null;
+
+      if (!staffMap.has(effectiveId)) {
+        const initials =
+          effectiveName
+            .split(" ")
+            .filter(Boolean)
+            .map((part: string) => part[0])
+            .join("")
+            .slice(0, 2)
+            .toUpperCase() || "ST";
+        staffMap.set(effectiveId, {
+          id: effectiveId,
+          name: effectiveName,
+          avatar: initials,
+          image: effectiveImage,
+          tasks: 0,
+          completed: 0,
+          pending: 0,
+          percent: 0,
+        });
+      } else {
+        const existing = staffMap.get(effectiveId)!;
+        if (!existing.image && effectiveImage) {
+          existing.image = effectiveImage;
+        }
+      }
+    });
+
+    allTasks.forEach((task) => {
+      const assigneeId = task.assignedTo?.id || task.assignedToId;
+      const assigneeName = task.assignedTo?.name;
+      const matchedUser = (assigneeId ? userById.get(assigneeId) : null) || (assigneeName ? userByName.get(assigneeName.trim().toLowerCase()) : null);
+      const effectiveId = assigneeId || matchedUser?.id || assigneeName;
+
+      const member = effectiveId ? staffMap.get(effectiveId) : (assigneeName ? staffMap.get(assigneeName) : null);
+      if (!member) return;
+
+      member.tasks += 1;
+      const status = resolveTaskDisplayStatus(task);
+      if (status === "completed") {
+        member.completed += 1;
+      } else {
+        member.pending += 1;
+      }
+    });
+
+    const members = Array.from(staffMap.values()).map((m) => ({
+      ...m,
+      percent: m.tasks > 0 ? Math.round((m.completed / m.tasks) * 100) : 0,
+    }));
+
+    members.sort((a, b) => b.tasks - a.tasks || b.percent - a.percent);
+    return members.slice(0, 5);
+  }, [allTasks, usersRes?.data]);
+
+  const activeClientsCount = useMemo(() => {
+    const clientIds = new Set<string>();
+    allTasks.forEach((t) => {
+      t.institutions?.forEach((inst) => {
+        if (inst.id) clientIds.add(String(inst.id));
+        if (inst.institution) clientIds.add(String(inst.institution));
+      });
+    });
+    invoices.forEach((inv) => {
+      if (inv.customer_id) clientIds.add(String(inv.customer_id));
+    });
+    return Math.min(clientIds.size, allClients.length || clientIds.size);
+  }, [allTasks, invoices, allClients.length]);
 
   // Needs Attention Items
-  const needsAttention = [
-    { label: "Overdue Tasks", count: 8, tone: "red", Icon: AlertTriangle },
-    { label: "Overdue Invoices", count: 3, tone: "red", Icon: FileText },
-    { label: "Quotations Expiring Soon", count: 2, tone: "amber", Icon: FileSpreadsheet },
-    { label: "Pending Payments", count: 4, tone: "rose", Icon: CreditCard },
-  ];
+  const needsAttention = useMemo(() => {
+    const overdueInvoicesCount = invoiceStatusBreakdown.overdueCount;
+    const pendingQuotationsCount = quotations.filter((q) => String(q.status).toUpperCase() === "DRAFT" || String(q.status).toUpperCase() === "SENT").length;
+    const unpaidBillsCount = vendorBills.filter((b) => Number(b.amount_due || 0) > 0).length;
+
+    return [
+      { label: "Overdue Tasks", count: overdueCount, tone: "red", Icon: AlertTriangle },
+      { label: "Overdue Invoices", count: overdueInvoicesCount, tone: "red", Icon: FileText },
+      { label: "Pending Quotations", count: pendingQuotationsCount, tone: "amber", Icon: FileSpreadsheet },
+      { label: "Unpaid Vendor Bills", count: unpaidBillsCount, tone: "rose", Icon: CreditCard },
+    ];
+  }, [invoiceStatusBreakdown.overdueCount, overdueCount, quotations, vendorBills]);
 
   // Recent Tasks
-  const recentTasks = useMemo(() => [
-    { task: "Social Media Campaign", client: "ABC Company", assigned: "Ahmed Ali", status: "In Progress", statusTone: "coral", date: "Aug 26, 2026" },
-    { task: "Website Design", client: "XYZ Company", assigned: "Hassan Yusuf", status: "Pending", statusTone: "amber", date: "Aug 27, 2026" },
-    { task: "Content Writing", client: "DEF Company", assigned: "Ali Mohamed", status: "Completed", statusTone: "maroon", date: "Aug 24, 2026" },
-    { task: "SEO Optimization", client: "GHI Company", assigned: "Mohamed Omar", status: "Overdue", statusTone: "red", date: "Aug 20, 2026" },
-    { task: "Graphics Design", client: "JKL Company", assigned: "Sara Abdullahi", status: "In Progress", statusTone: "coral", date: "Aug 28, 2026" },
-  ], []);
+  const recentTasks = useMemo(() => {
+    return [...allTasks]
+      .sort((a, b) => {
+        const aTime = asDate(a.updatedAt ?? a.createdAt)?.getTime() ?? 0;
+        const bTime = asDate(b.updatedAt ?? b.createdAt)?.getTime() ?? 0;
+        return bTime - aTime;
+      })
+      .slice(0, 5)
+      .map((t) => {
+        const status = resolveTaskDisplayStatus(t);
+        const statusTone =
+          status === "completed"
+            ? "maroon"
+            : (status === "in progress" || status === "in_progress" || isTaskInProgress(t))
+            ? "coral"
+            : status === "overdue"
+            ? "red"
+            : "amber";
+        const d = asDate(t.deadline);
+        const dateStr = d ? d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "—";
+        return {
+          task: t.serviceInformation || t.description || "Task item",
+          client: t.institutions?.[0]?.institution || "—",
+          assigned: t.assignedTo?.name || "Unassigned",
+          status: formatStatusLabel(status),
+          statusTone,
+          date: dateStr,
+        };
+      });
+  }, [allTasks]);
 
   // Recent Transactions
-  const recentTransactions = useMemo(() => [
-    { type: "Invoice", ref: "INV-1024", client: "ABC Company", amount: "$1,000.00", status: "Sent", statusTone: "gray", date: "Aug 25, 2026" },
-    { type: "Payment", ref: "PAY-1021", client: "XYZ Company", amount: "$500.00", status: "Paid", statusTone: "emerald", date: "Aug 25, 2026" },
-    { type: "Expense", ref: "EXP-1008", client: "Hosting Company", amount: "$80.00", status: "Paid", statusTone: "emerald", date: "Aug 24, 2026" },
-    { type: "Invoice", ref: "INV-1023", client: "DEF Company", amount: "$750.00", status: "Partially Paid", statusTone: "amber", date: "Aug 23, 2026" },
-    { type: "Payment", ref: "PAY-1020", client: "GHI Company", amount: "$300.00", status: "Paid", statusTone: "emerald", date: "Aug 23, 2026" },
-  ], []);
+  const recentTransactions = useMemo(() => {
+    const list: Array<{
+      type: string;
+      ref: string;
+      client: string;
+      amount: string;
+      status: string;
+      statusTone: string;
+      rawDate: Date;
+    }> = [];
+
+    invoices.forEach((inv) => {
+      const d = asDate((inv.invoice_date || inv.created_at) as string | Date) || new Date();
+      list.push({
+        type: "Invoice",
+        ref: inv.invoice_number || `INV-${inv.id}`,
+        client: inv.customers?.name || "Customer",
+        amount: formatMoney(Number(inv.amount_total || 0)),
+        status: inv.payment_state === "paid" ? "Paid" : inv.payment_state === "partial" ? "Partially Paid" : "Unpaid",
+        statusTone: inv.payment_state === "paid" ? "emerald" : inv.payment_state === "partial" ? "amber" : "gray",
+        rawDate: d,
+      });
+    });
+
+    vendorBills.forEach((b) => {
+      const d = asDate((b.bill_date || b.created_at) as string | Date) || new Date();
+      list.push({
+        type: "Bill",
+        ref: b.bill_number || `BILL-${b.id}`,
+        client: b.vendors?.name || "Vendor",
+        amount: formatMoney(Number(b.amount_total || 0)),
+        status: b.payment_state === "paid" ? "Paid" : "Pending",
+        statusTone: b.payment_state === "paid" ? "emerald" : "rose",
+        rawDate: d,
+      });
+    });
+
+    return list
+      .sort((a, b) => b.rawDate.getTime() - a.rawDate.getTime())
+      .slice(0, 5)
+      .map((item) => ({
+        ...item,
+        date: item.rawDate.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+      }));
+  }, [invoices, vendorBills]);
+
+  const dateRangeLabel = useMemo(() => {
+    const now = new Date();
+    const fmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" });
+    if (periodFilter === "Today") {
+      return `Today, ${fmt.format(now)}`;
+    }
+    if (periodFilter === "Yesterday") {
+      const y = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+      return `Yesterday, ${fmt.format(y)}`;
+    }
+    if (periodFilter === "1 Week") {
+      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6);
+      return `${fmt.format(start)} – ${fmt.format(now)}, ${now.getFullYear()}`;
+    }
+    if (periodFilter === "Last Month") {
+      const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const end = new Date(now.getFullYear(), now.getMonth(), 0);
+      return `${fmt.format(start)} – ${fmt.format(end)}, ${start.getFullYear()}`;
+    }
+    if (periodFilter === "Custom" && customStart) {
+      return `${customStart} – ${customEnd || "Now"}`;
+    }
+    return fmt.format(now);
+  }, [periodFilter, customStart, customEnd]);
 
   return (
     <div className={cn(dashboardPageClass, "space-y-5")} style={dashboardPageStyle}>
       {/* ── Top Header ── */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-[#0f172a]">
             {getGreeting()}, {userName} 👋
           </h1>
           <p className="mt-0.5 text-xs text-zinc-500">
-            Here&apos;s what&apos;s happening in your business today.
+            Here&apos;s what&apos;s happening in your business ({dateRangeLabel}).
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 rounded-xl border border-zinc-200 bg-white px-3.5 py-2 text-xs font-semibold text-zinc-700 shadow-sm">
-            <Calendar className="size-3.5 text-zinc-400" />
-            <span>Aug 19 – Aug 25, 2026</span>
-            <ChevronDown className="size-3.5 text-zinc-400" />
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Period Filter Pill Container matching Image 4 */}
+          <div className="inline-flex items-center gap-1 rounded-full border border-zinc-200 bg-white p-1 shadow-sm">
+            {(["Today", "Yesterday", "1 Week", "Last Month", "Custom"] as const).map((period) => {
+              const isActive = periodFilter === period;
+              return (
+                <button
+                  key={period}
+                  type="button"
+                  onClick={() => {
+                    setPeriodFilter(period);
+                    if (period === "Custom") setShowCustomModal(true);
+                  }}
+                  className={cn(
+                    "px-4 py-1.5 text-xs rounded-full transition-all duration-150",
+                    isActive
+                      ? "bg-[#5b1017] text-white font-bold shadow-sm"
+                      : "text-zinc-600 hover:text-zinc-900 font-medium hover:bg-zinc-50"
+                  )}
+                >
+                  {period}
+                </button>
+              );
+            })}
+            <div className="h-4 w-px bg-zinc-200 mx-1" />
+            <button
+              type="button"
+              onClick={() => void handleRefresh()}
+              disabled={isValidating}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-zinc-700 hover:text-zinc-900 transition disabled:opacity-50"
+            >
+              <RefreshCw className={cn("size-3.5 text-zinc-500", isValidating && "animate-spin")} />
+              <span>Refresh</span>
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => mutate()}
-            disabled={isValidating}
-            className="flex size-9 items-center justify-center rounded-xl border border-zinc-200 bg-white text-zinc-600 shadow-sm transition hover:bg-zinc-50 disabled:opacity-60"
-          >
-            <RefreshCw className={cn("size-3.5", isValidating && "animate-spin")} />
-          </button>
         </div>
       </div>
 
@@ -783,7 +1239,7 @@ function AdminDashboard({
             <div>
               <p className="text-[11px] font-medium text-zinc-500">Total Tasks</p>
               <h3 className="mt-0.5 text-2xl font-bold text-[#0f172a]">{totalTasksCount}</h3>
-              <p className="mt-1 text-[10px] font-medium text-zinc-400">↑ 12.5% vs last week</p>
+              <p className="mt-1 text-[10px] font-medium text-zinc-400">All registered tasks</p>
             </div>
           </div>
           <MiniSparkline color={primaryColor} />
@@ -801,7 +1257,7 @@ function AdminDashboard({
             <div>
               <p className="text-[11px] font-medium text-zinc-500">Completed Tasks</p>
               <h3 className="mt-0.5 text-2xl font-bold text-[#0f172a]">{completedCount}</h3>
-              <p className="mt-1 text-[10px] font-medium text-zinc-400">63% completion rate</p>
+              <p className="mt-1 text-[10px] font-medium text-zinc-400">{completionRate}% completion rate</p>
             </div>
           </div>
           <MiniSparkline color={primaryColor} />
@@ -819,7 +1275,7 @@ function AdminDashboard({
             <div>
               <p className="text-[11px] font-medium text-zinc-500">In Progress Tasks</p>
               <h3 className="mt-0.5 text-2xl font-bold text-[#0f172a]">{inProgressCount}</h3>
-              <p className="mt-1 text-[10px] font-medium text-zinc-400">20.6% of total</p>
+              <p className="mt-1 text-[10px] font-medium text-zinc-400">{inProgressPercent}% of total</p>
             </div>
           </div>
           <MiniSparkline color={secondaryColor} />
@@ -834,7 +1290,9 @@ function AdminDashboard({
             <div>
               <p className="text-[11px] font-medium text-zinc-500">Overdue Tasks</p>
               <h3 className="mt-0.5 text-2xl font-bold text-[#0f172a]">{overdueCount}</h3>
-              <p className="mt-1 text-[10px] font-medium text-red-500">Requires attention</p>
+              <p className="mt-1 text-[10px] font-medium text-red-500">
+                {overdueCount > 0 ? "Requires attention" : "All tasks on schedule"}
+              </p>
             </div>
           </div>
           <MiniSparkline color={BRAND_RED} />
@@ -855,7 +1313,7 @@ function AdminDashboard({
             <div>
               <p className="text-[11px] font-medium text-zinc-500">Total Revenue</p>
               <h3 className="mt-0.5 text-2xl font-bold text-[#0f172a]">{formatMoney(totalRevenue)}</h3>
-              <p className="mt-1 text-[10px] font-medium text-emerald-600">↑ 8.2% vs last week</p>
+              <p className="mt-1 text-[10px] font-medium text-emerald-600">From posted revenues</p>
             </div>
           </div>
           <MiniSparkline color={primaryColor} />
@@ -873,7 +1331,7 @@ function AdminDashboard({
             <div>
               <p className="text-[11px] font-medium text-zinc-500">Total Expenses</p>
               <h3 className="mt-0.5 text-2xl font-bold text-[#0f172a]">{formatMoney(totalExpenses)}</h3>
-              <p className="mt-1 text-[10px] font-medium text-zinc-400">↓ 3.4% vs last week</p>
+              <p className="mt-1 text-[10px] font-medium text-zinc-400">Operating expenditures</p>
             </div>
           </div>
           <MiniSparkline color={secondaryColor} />
@@ -891,7 +1349,9 @@ function AdminDashboard({
             <div>
               <p className="text-[11px] font-medium text-zinc-500">Net Profit</p>
               <h3 className="mt-0.5 text-2xl font-bold text-[#0f172a]">{formatMoney(netProfit)}</h3>
-              <p className="mt-1 text-[10px] font-medium text-emerald-600">↑ 15.6% vs last week</p>
+              <p className="mt-1 text-[10px] font-medium text-emerald-600">
+                {totalRevenue > 0 ? `${((netProfit / totalRevenue) * 100).toFixed(1)}% net margin` : "Net margin"}
+              </p>
             </div>
           </div>
           <MiniSparkline color={primaryColor} />
@@ -909,7 +1369,9 @@ function AdminDashboard({
             <div>
               <p className="text-[11px] font-medium text-zinc-500">Outstanding</p>
               <h3 className="mt-0.5 text-2xl font-bold text-[#0f172a]">{formatMoney(outstandingAmount)}</h3>
-              <p className="mt-1 text-[10px] font-medium text-zinc-400">5 unpaid invoices</p>
+              <p className="mt-1 text-[10px] font-medium text-zinc-400">
+                {unpaidInvoicesCount} unpaid invoice{unpaidInvoicesCount === 1 ? "" : "s"}
+              </p>
             </div>
           </div>
           <MiniSparkline color={secondaryColor} />
@@ -932,9 +1394,13 @@ function AdminDashboard({
               <span className="flex items-center gap-1.5 font-semibold text-zinc-700">
                 <span className="size-2 rounded-full" style={{ backgroundColor: secondaryColor }} /> Expenses
               </span>
-              <select className="rounded-lg border border-zinc-200 bg-white px-2 py-1 text-[11px] font-semibold text-zinc-600 outline-none">
-                <option>Weekly</option>
-                <option>Monthly</option>
+              <select
+                value={chartPeriod}
+                onChange={(e) => setChartPeriod(e.target.value as "Weekly" | "Monthly")}
+                className="rounded-lg border border-zinc-200 bg-white px-2 py-1 text-[11px] font-semibold text-zinc-600 outline-none"
+              >
+                <option value="Weekly">Weekly</option>
+                <option value="Monthly">Monthly</option>
               </select>
             </div>
           </div>
@@ -948,9 +1414,9 @@ function AdminDashboard({
                   axisLine={false}
                   tickLine={false}
                   tick={{ fontSize: 10, fill: "#64748b" }}
-                  tickFormatter={(val) => `$${val / 1000}K`}
+                  tickFormatter={(val) => `$${val >= 1000 ? `${(val / 1000).toFixed(0)}K` : val}`}
                 />
-                <Tooltip contentStyle={lightTooltipStyle} formatter={(val: any) => [`$${Number(val).toLocaleString()}`, ""]} />
+                <Tooltip contentStyle={lightTooltipStyle} formatter={(val: unknown) => [`$${Number(val || 0).toLocaleString()}`, ""]} />
                 <Line
                   type="monotone"
                   dataKey="revenue"
@@ -1030,31 +1496,31 @@ function AdminDashboard({
                 <span className="flex items-center gap-2 text-zinc-600">
                   <Users className="size-4" style={{ color: primaryColor }} /> Total Clients
                 </span>
-                <span className="font-bold text-[#0f172a]">5</span>
+                <span className="font-bold text-[#0f172a]">{allClients.length}</span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="flex items-center gap-2 text-zinc-600">
                   <UserCheck className="size-4" style={{ color: primaryColor }} /> Active Clients
                 </span>
-                <span className="font-bold text-[#0f172a]">4</span>
+                <span className="font-bold text-[#0f172a]">{activeClientsCount}</span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="flex items-center gap-2 text-zinc-600">
                   <FileText className="size-4" style={{ color: primaryColor }} /> Total Invoices
                 </span>
-                <span className="font-bold text-[#0f172a]">12</span>
+                <span className="font-bold text-[#0f172a]">{invoices.length}</span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="flex items-center gap-2 text-zinc-600">
                   <Receipt className="size-4" style={{ color: primaryColor }} /> Paid Invoices
                 </span>
-                <span className="font-bold text-[#0f172a]">8</span>
+                <span className="font-bold text-[#0f172a]">{invoiceStatusBreakdown.paidCount}</span>
               </div>
               <div className="flex items-center justify-between border-t border-zinc-100 pt-2.5 text-xs">
                 <span className="flex items-center gap-2 font-bold text-zinc-700">
                   <DollarSign className="size-4" style={{ color: primaryColor }} /> Outstanding
                 </span>
-                <span className="font-bold text-[#0f172a]">$1,250.00</span>
+                <span className="font-bold text-[#0f172a]">{formatMoney(outstandingAmount)}</span>
               </div>
             </div>
           </div>
@@ -1072,34 +1538,34 @@ function AdminDashboard({
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={invoiceStatusDonut}
+                    data={invoiceStatusBreakdown.donut}
                     dataKey="value"
                     nameKey="name"
                     innerRadius={36}
                     outerRadius={52}
                     paddingAngle={2}
                   >
-                    {invoiceStatusDonut.map((entry, index) => (
+                    {invoiceStatusBreakdown.donut.map((entry, index) => (
                       <Cell key={index} fill={entry.color} />
                     ))}
                   </Pie>
                 </PieChart>
               </ResponsiveContainer>
               <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-xs font-bold text-[#0f172a]">$6,950</span>
+                <span className="text-xs font-bold text-[#0f172a]">{formatMoney(invoiceStatusBreakdown.grandTotal)}</span>
                 <span className="text-[8px] text-zinc-400">Total</span>
               </div>
             </div>
 
             <div className="flex-1 space-y-1.5 text-[11px]">
-              {invoiceStatusDonut.map((item) => (
+              {invoiceStatusBreakdown.donut.map((item) => (
                 <div key={item.name} className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
                     <span className="size-2 rounded-full" style={{ backgroundColor: item.color }} />
                     <span className="text-zinc-600">{item.name}</span>
                   </div>
                   <div className="text-right">
-                    <span className="font-bold text-zinc-800">${item.value.toLocaleString()}</span>
+                    <span className="font-bold text-zinc-800">${Math.round(item.value).toLocaleString()}</span>
                   </div>
                 </div>
               ))}
@@ -1107,7 +1573,7 @@ function AdminDashboard({
           </div>
         </div>
 
-        {/* Card 3: Team Performance */}
+        {/* Card 3: Team Performance (Real Staff Performance from DB) */}
         <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-[#0f172a]">Team Performance</h3>
@@ -1120,33 +1586,56 @@ function AdminDashboard({
               <span className="col-span-2 text-center">Done</span>
               <span className="col-span-3 text-right">Completion</span>
             </div>
-            {teamMembers.map((member) => (
-              <div key={member.name} className="grid grid-cols-12 items-center text-xs">
-                <div className="col-span-5 flex items-center gap-1.5 truncate font-semibold text-zinc-800">
-                  <span
-                    className="flex size-5 shrink-0 items-center justify-center rounded-full text-[9px] font-bold"
-                    style={{
-                      backgroundColor: `color-mix(in srgb, ${primaryColor} 15%, white)`,
-                      color: primaryColor,
-                    }}
-                  >
-                    {member.avatar}
-                  </span>
-                  <span className="truncate">{member.name}</span>
-                </div>
-                <span className="col-span-2 text-center font-medium text-zinc-600">{member.tasks}</span>
-                <span className="col-span-2 text-center font-medium text-zinc-600">{member.completed}</span>
-                <div className="col-span-3 flex items-center justify-end gap-1.5">
-                  <div className="h-1.5 w-10 overflow-hidden rounded-full bg-zinc-100">
-                    <div
-                      className="h-full rounded-full transition-all"
-                      style={{ width: `${member.percent}%`, backgroundColor: primaryColor }}
-                    />
+            {teamMembers.length > 0 ? (
+              teamMembers.map((member) => (
+                <div key={member.name} className="grid grid-cols-12 items-center text-xs">
+                  <div className="col-span-5 flex items-center gap-1.5 truncate font-semibold text-zinc-800">
+                    {member.image ? (
+                      <img
+                        src={
+                          member.image.startsWith("data:") ||
+                          member.image.startsWith("http://") ||
+                          member.image.startsWith("https://") ||
+                          member.image.startsWith("/")
+                            ? member.image
+                            : `/${member.image}`
+                        }
+                        alt={member.name}
+                        className="size-5 shrink-0 rounded-full object-cover border border-zinc-200"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const fallback = e.currentTarget.nextElementSibling as HTMLElement | null;
+                          if (fallback) fallback.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <span
+                      className={`size-5 shrink-0 items-center justify-center rounded-full text-[9px] font-bold ${member.image ? 'hidden' : 'flex'}`}
+                      style={{
+                        backgroundColor: `color-mix(in srgb, ${primaryColor} 15%, white)`,
+                        color: primaryColor,
+                      }}
+                    >
+                      {member.avatar}
+                    </span>
+                    <span className="truncate" title={member.name}>{member.name}</span>
                   </div>
-                  <span className="text-[10px] font-bold text-zinc-700">{member.percent}%</span>
+                  <span className="col-span-2 text-center font-medium text-zinc-600">{member.tasks}</span>
+                  <span className="col-span-2 text-center font-medium text-zinc-600">{member.completed}</span>
+                  <div className="col-span-3 flex items-center justify-end gap-1.5">
+                    <div className="h-1.5 w-10 overflow-hidden rounded-full bg-zinc-100">
+                      <div
+                        className="h-full rounded-full transition-all"
+                        style={{ width: `${member.percent}%`, backgroundColor: primaryColor }}
+                      />
+                    </div>
+                    <span className="text-[10px] font-bold text-zinc-700">{member.percent}%</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <div className="py-4 text-center text-xs text-zinc-400">No staff members found</div>
+            )}
           </div>
           <div className="mt-3 border-t border-zinc-100 pt-2 text-right">
             <Link href="/staff" className="text-[11px] font-bold hover:underline" style={{ color: primaryColor }}>
@@ -1203,29 +1692,35 @@ function AdminDashboard({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-50">
-                  {recentTasks.map((t, idx) => (
-                    <tr key={idx} className="hover:bg-zinc-50/50">
-                      <td className="py-2.5 pr-2 font-semibold text-zinc-800 truncate max-w-[120px]">{t.task}</td>
-                      <td className="py-2.5 pr-2 text-zinc-500 truncate max-w-[90px]">{t.client}</td>
-                      <td className="py-2.5 pr-2">
-                        <span
-                          className="rounded-full px-2 py-0.5 text-[9px] font-bold"
-                          style={
-                            t.statusTone === "maroon"
-                              ? { backgroundColor: `color-mix(in srgb, ${primaryColor} 14%, white)`, color: primaryColor }
-                              : t.statusTone === "coral"
-                              ? { backgroundColor: `color-mix(in srgb, ${secondaryColor} 16%, white)`, color: secondaryColor }
-                              : t.statusTone === "amber"
-                              ? { backgroundColor: "#fef3c7", color: "#b45309" }
-                              : { backgroundColor: "#fee2e2", color: "#b91c1c" }
-                          }
-                        >
-                          {t.status}
-                        </span>
-                      </td>
-                      <td className="py-2.5 text-right text-[11px] text-zinc-500">{t.date}</td>
+                  {recentTasks.length > 0 ? (
+                    recentTasks.map((t, idx) => (
+                      <tr key={idx} className="hover:bg-zinc-50/50">
+                        <td className="py-2.5 pr-2 font-semibold text-zinc-800 truncate max-w-[120px]" title={t.task}>{t.task}</td>
+                        <td className="py-2.5 pr-2 text-zinc-500 truncate max-w-[90px]">{t.client}</td>
+                        <td className="py-2.5 pr-2">
+                          <span
+                            className="rounded-full px-2 py-0.5 text-[9px] font-bold"
+                            style={
+                              t.statusTone === "maroon"
+                                ? { backgroundColor: `color-mix(in srgb, ${primaryColor} 14%, white)`, color: primaryColor }
+                                : t.statusTone === "coral"
+                                ? { backgroundColor: `color-mix(in srgb, ${secondaryColor} 16%, white)`, color: secondaryColor }
+                                : t.statusTone === "amber"
+                                ? { backgroundColor: "#fef3c7", color: "#b45309" }
+                                : { backgroundColor: "#fee2e2", color: "#b91c1c" }
+                            }
+                          >
+                            {t.status}
+                          </span>
+                        </td>
+                        <td className="py-2.5 text-right text-[11px] text-zinc-500">{t.date}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={4} className="py-4 text-center text-xs text-zinc-400">No recent tasks</td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
@@ -1254,22 +1749,28 @@ function AdminDashboard({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-50">
-                  {recentTransactions.map((tx, idx) => (
-                    <tr key={idx} className="hover:bg-zinc-50/50">
-                      <td className="py-2.5 pr-2 font-semibold text-zinc-800">{tx.type}</td>
-                      <td className="py-2.5 pr-2 text-zinc-500 truncate max-w-[80px]">{tx.client}</td>
-                      <td className="py-2.5 pr-2 font-bold text-zinc-900">{tx.amount}</td>
-                      <td className="py-2.5 text-right">
-                        <span className={cn(
-                          "rounded-full px-2 py-0.5 text-[9px] font-bold",
-                          tx.statusTone === "emerald" ? "bg-emerald-50 text-emerald-700" :
-                          tx.statusTone === "amber" ? "bg-amber-50 text-amber-700" : "bg-zinc-100 text-zinc-600"
-                        )}>
-                          {tx.status}
-                        </span>
-                      </td>
+                  {recentTransactions.length > 0 ? (
+                    recentTransactions.map((tx, idx) => (
+                      <tr key={idx} className="hover:bg-zinc-50/50">
+                        <td className="py-2.5 pr-2 font-semibold text-zinc-800">{tx.type}</td>
+                        <td className="py-2.5 pr-2 text-zinc-500 truncate max-w-[80px]" title={tx.client}>{tx.client}</td>
+                        <td className="py-2.5 pr-2 font-bold text-zinc-900">{tx.amount}</td>
+                        <td className="py-2.5 text-right">
+                          <span className={cn(
+                            "rounded-full px-2 py-0.5 text-[9px] font-bold",
+                            tx.statusTone === "emerald" ? "bg-emerald-50 text-emerald-700" :
+                            tx.statusTone === "amber" ? "bg-amber-50 text-amber-700" : "bg-zinc-100 text-zinc-600"
+                          )}>
+                            {tx.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={4} className="py-4 text-center text-xs text-zinc-400">No transactions recorded</td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
@@ -1330,6 +1831,55 @@ function AdminDashboard({
           </div>
         </div>
       </div>
+
+      {/* Custom Date Range Dialog */}
+      <Dialog open={showCustomModal} onOpenChange={setShowCustomModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Custom Date Range</DialogTitle>
+            <DialogDescription>Select start and end dates to filter dashboard records.</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-4 py-2">
+            <div>
+              <label className="text-xs font-semibold text-zinc-600">From Date</label>
+              <input
+                type="date"
+                value={customStart}
+                onChange={(e) => setCustomStart(e.target.value)}
+                className="mt-1 h-10 w-full rounded-xl border px-3 text-xs outline-none focus:border-primary"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-zinc-600">To Date</label>
+              <input
+                type="date"
+                value={customEnd}
+                onChange={(e) => setCustomEnd(e.target.value)}
+                className="mt-1 h-10 w-full rounded-xl border px-3 text-xs outline-none focus:border-primary"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={() => setShowCustomModal(false)}
+              className="h-9 rounded-xl border px-4 text-xs font-semibold text-zinc-600 hover:bg-zinc-50"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setShowCustomModal(false);
+                void handleRefresh();
+              }}
+              className="h-9 rounded-xl bg-primary px-4 text-xs font-semibold text-white hover:bg-primary/90"
+            >
+              Apply Range
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

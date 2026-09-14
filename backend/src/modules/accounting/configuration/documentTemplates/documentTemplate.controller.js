@@ -502,12 +502,12 @@ export const renderQuotationDocument = async (req, res) => {
       const rateStr = isFree ? "Free" : `$${Number(item.rate || item.unit_price || 0).toFixed(0)}`;
       const amountStr = isFree ? "Free" : `$${(Number(item.amount || item.subtotal) || Number(item.qty || item.quantity || 1) * Number(item.rate || item.unit_price || 0)).toFixed(0)}`;
       return `<tr style="background:#ffffff;">
-        <td style="border:1.5px solid #222;padding:8px 4px;text-align:center;font-weight:700;vertical-align:top;font-size:12px;">${i + 1}.</td>
-        <td style="border:1.5px solid #222;padding:8px 10px;font-weight:700;vertical-align:top;line-height:1.4;font-size:12px;">${escapeHtml(item.service_type || "")}</td>
-        <td style="border:1.5px solid #222;padding:8px 10px;white-space:pre-wrap;word-break:break-word;line-height:1.45;font-size:11.5px;vertical-align:top;">${escapeHtml(item.description || "")}</td>
-        <td style="border:1.5px solid #222;padding:8px 4px;text-align:center;font-weight:700;vertical-align:top;font-size:12px;">${item.qty || item.quantity || 1}</td>
-        <td style="border:1.5px solid #222;padding:8px 4px;text-align:center;font-weight:700;vertical-align:top;font-size:12px;">${rateStr}</td>
-        <td style="border:1.5px solid #222;padding:8px 4px;text-align:center;font-weight:700;vertical-align:top;font-size:12px;">${amountStr}</td>
+        <td style="border:1px solid #ddd;padding:8px 6px;text-align:center;font-weight:700;font-size:12px;vertical-align:top;">${i + 1}.</td>
+        <td style="border:1px solid #ddd;padding:8px 10px;font-weight:700;font-size:12px;vertical-align:top;line-height:1.4;">${escapeHtml(item.service_type || "")}</td>
+        <td style="border:1px solid #ddd;padding:8px 10px;white-space:pre-wrap;word-break:break-word;line-height:1.5;font-size:11.5px;vertical-align:top;">${escapeHtml(item.description || "—")}</td>
+        <td style="border:1px solid #ddd;padding:8px 6px;text-align:center;font-weight:700;font-size:12px;vertical-align:top;">${item.qty || item.quantity || 1}</td>
+        <td style="border:1px solid #ddd;padding:8px 6px;text-align:center;font-weight:700;font-size:12px;vertical-align:top;">${rateStr}</td>
+        <td style="border:1px solid #ddd;padding:8px 6px;text-align:center;font-weight:700;font-size:12px;vertical-align:top;">${amountStr}</td>
       </tr>`;
     }).join("");
 
@@ -593,53 +593,95 @@ export const renderQuotationDocument = async (req, res) => {
       return res.setHeader("Content-Type", "text/html").send(rendered);
     }
 
+    const DEFAULT_PAYMENT_METHODS = [
+      { label: "SomBank", value: "1001572624" },
+      { label: "Premier Bank", value: "020602086001" },
+      { label: "Salaam Bank", value: "36122269" },
+      { label: "IBS Bank", value: "59676" },
+      { label: "EVC-Plus", value: "0618553839" },
+      { label: "E-DAHAB", value: "0628553566" },
+    ];
+    const pms = Array.isArray(meta?.payment_methods) && meta.payment_methods.length > 0
+      ? meta.payment_methods
+      : DEFAULT_PAYMENT_METHODS;
+    const methodRows = [];
+    for (let i = 0; i < pms.length; i += 3) {
+      methodRows.push(pms.slice(i, i + 3));
+    }
+    if (methodRows.length === 0) methodRows.push([]);
+    const padRowTo3 = (row) => {
+      const copy = [...row];
+      while (copy.length < 3) copy.push({ label: "", value: "" });
+      return copy;
+    };
+    const methodRowspan = Math.max(1, methodRows.length) * 2;
+
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Quotation ${escapeHtml(quotationNo)} - Deero Advertising Agency</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       color: #111;
-      background: #f4f4f4;
-      font-size: 13px;
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
     .no-print { display: block; }
-
-    /* Screen wrapper */
-    .page-outer {
-      padding: 20px;
-    }
     .print-btn-bar {
-      max-width: 820px;
-      margin: 0 auto 12px;
+      max-width: 210mm;
+      margin: 16px auto 10px;
       display: flex;
       justify-content: flex-end;
     }
-    .page-sheet {
-      max-width: 820px;
-      margin: 0 auto;
+    .sheet-page {
+      position: relative;
+      width: 100%;
+      max-width: 210mm;
+      height: 297mm;
+      max-height: 297mm;
+      margin: 0 auto 30px;
+      padding: 30px 36px 24px 36px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       background: #fff;
-      border-radius: 3px;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
       overflow: hidden;
     }
-
-    /* The wrapper table makes header/footer repeat on every print page */
-    table.pw {
+    .header-box {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
       width: 100%;
-      border-collapse: collapse;
     }
-    table.pw > thead > tr > td { padding: 20px 32px 14px 32px; }
-    table.pw > tfoot > tr > td { padding: 14px 32px 18px 32px; }
-    table.pw > tbody > tr > td { padding: 0 32px 20px 32px; }
-
-    /* Quotation badge */
-    .badge-wrap { display: inline-flex; align-items: stretch; margin-right: -32px; height: 42px; line-height: 1; }
+    .badge-wrap {
+      display: inline-flex;
+      align-items: stretch;
+      margin-right: -36px;
+      height: 42px;
+      line-height: 1;
+      gap: 8px;
+    }
     .badge-pill {
       background: ${primaryColor};
       color: #fff;
@@ -655,182 +697,177 @@ export const renderQuotationDocument = async (req, res) => {
       margin: 0;
       border: 0;
     }
-    .badge-sq { background: ${secondaryColor}; width: 28px; height: 42px; display: block; margin: 0; border: 0; }
-
-    /* Info table */
-    table.info-tbl { width: 100%; border-collapse: collapse; margin-bottom: 14px; border: 1px solid #ddd; }
-    table.info-tbl th { padding: 6px 10px; font-size: 11.5px; font-weight: 600; color: #fff; text-align: left; border: 1px solid #ddd; }
-    table.info-tbl td { padding: 6px 10px; font-size: 11.5px; border: 1px solid #ddd; background: #fff; }
-    .th-m { background: ${primaryColor}; }
-    .th-o { background: ${secondaryColor}; }
-
-    /* Items table */
-    table.items-tbl { width: 100%; border-collapse: collapse; border: 1px solid #ddd; margin-bottom: 0; }
-    table.items-tbl thead th { background: ${secondaryColor}; color: #fff; padding: 6px 6px; font-size: 11.5px; font-weight: 600; text-align: center; border: 1px solid #ddd; }
-    table.items-tbl tbody td { border: 1px solid #ddd; background: #fff; vertical-align: top; padding: 6px 8px; font-size: 11.5px; }
-
-    /* Totals */
-    .totals-wrap { display: flex; justify-content: flex-end; margin-top: -1px; margin-bottom: 16px; }
-    table.totals-tbl { border-collapse: collapse; width: 38%; min-width: 210px; border: 1px solid #ddd; }
-    table.totals-tbl td { padding: 5px 12px; font-size: 11.5px; font-weight: 600; border: 1px solid #ddd; background: ${primaryColor}; color: #fff; }
-
-    /* Payment table */
-    table.pay-tbl { width: 100%; border-collapse: collapse; margin-bottom: 12px; border: 1px solid #ddd; }
-    table.pay-tbl th { padding: 6px 8px; font-size: 11.5px; font-weight: 600; text-align: center; border: 1px solid #ddd; }
-    table.pay-tbl td { padding: 6px 8px; font-size: 11px; border: 1px solid #ddd; background: #fff; }
-    .pay-th-m { background: ${primaryColor}; color: #fff; }
-    .pay-th-o { background: ${secondaryColor}; color: #fff; }
-    .pay-th-sub { background: #fafafa; color: #111; font-weight: 600; font-size: 11px; }
-
-    /* NB */
-    .nb-banner { background: ${primaryColor}; color: #fff; text-align: center; padding: 7px 12px; font-size: 11.5px; font-weight: 600; }
-
+    .badge-sq {
+      background: ${secondaryColor};
+      width: 32px;
+      height: 42px;
+      display: block;
+      margin: 0;
+      border: 0;
+    }
+    .footer-box {
+      margin-top: auto;
+      padding-top: 14px;
+      text-align: center;
+      width: 100%;
+    }
+    .footer-img {
+      max-width: 84%;
+      height: auto;
+      object-fit: contain;
+      display: inline-block;
+      margin: 0 auto;
+    }
     @media print {
-      @page { size: A4 portrait; margin: 0mm; }
       body { background: #fff !important; }
-      .page-outer { padding: 14mm 14mm 12mm 14mm !important; }
       .print-btn-bar { display: none !important; }
-      .page-sheet { box-shadow: none !important; border-radius: 0 !important; max-width: 100% !important; }
-      /* The repeating header/footer magic */
-      thead { display: table-header-group; }
-      tfoot { display: table-footer-group; }
-      tbody { display: table-row-group; }
+      .sheet-page {
+        margin: 0 auto !important;
+        box-shadow: none !important;
+        page-break-after: always;
+        page-break-inside: avoid;
+      }
     }
   </style>
 </head>
 <body>
-<div class="page-outer">
   <div class="print-btn-bar no-print">
-    <button onclick="window.print()" style="background:${secondaryColor};color:#fff;border:none;padding:8px 18px;border-radius:6px;font-weight:bold;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px;">
+    <button onclick="window.print()" style="background:${secondaryColor};color:#fff;border:none;padding:9px 20px;border-radius:6px;font-weight:bold;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:7px;box-shadow:0 2px 6px rgba(0,0,0,0.15);">
       <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
       Print / Download PDF
     </button>
   </div>
 
-  <div class="page-sheet">
-    <table class="pw">
-      <!-- ===== HEADER (repeats on every print page) ===== -->
-      <thead>
-        <tr><td>
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <img src="${logoUrl}" alt="${escapeHtml(companyTitle)}" style="height:74px;width:auto;object-fit:contain;" onerror="this.style.display='none'" />
-            <div class="badge-wrap">
-              <div class="badge-pill">Quotation</div>
-              <div class="badge-sq"></div>
-            </div>
-          </div>
-        </td></tr>
-      </thead>
+  <div class="sheet-page">
+    <div>
+      <!-- HEADER: Logo + Quotation Badge (Flush to right) -->
+      <div class="header-box">
+        <img src="${logoUrl}" alt="${escapeHtml(companyTitle)}" style="height:74px;width:auto;object-fit:contain;" onerror="this.style.display='none'" />
+        <div class="badge-wrap">
+          <div class="badge-pill">Quotation</div>
+          <div class="badge-sq"></div>
+        </div>
+      </div>
 
-      <!-- ===== FOOTER (repeats on every print page) ===== -->
-      <tfoot>
-        <tr><td style="text-align:center;padding-top:16px;">
-          <img src="${footerUrl}" alt="Deero Contact Footer" style="max-width:84%;height:auto;object-fit:contain;display:inline-block;margin:0 auto;" onerror="this.style.display='none'" />
-        </td></tr>
-      </tfoot>
+      <!-- CONTACT META TABLE -->
+      <table style="width:100%;border-collapse:collapse;margin-bottom:14px;border:1px solid #ddd;">
+        <thead>
+          <tr>
+            <th style="background:${primaryColor};color:#fff;text-align:left;padding:6px 10px;font-size:11.5px;font-weight:600;width:50%;border:1px solid #ddd;">Contact Person</th>
+            <th style="background:${secondaryColor};color:#fff;text-align:left;padding:6px 10px;font-size:11.5px;font-weight:600;width:50%;border:1px solid #ddd;">Quotation No</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:6px 10px;font-size:11.5px;font-weight:500;border:1px solid #ddd;">${escapeHtml(contactPerson || "—")}</td>
+            <td style="padding:6px 10px;font-size:11.5px;font-weight:600;border:1px solid #ddd;">${escapeHtml(quotationNo || "#DADVQT0000")}</td>
+          </tr>
+        </tbody>
+        <thead>
+          <tr>
+            <th style="background:${primaryColor};color:#fff;text-align:left;padding:6px 10px;font-size:11.5px;font-weight:600;border:1px solid #ddd;">Contact Email</th>
+            <th style="background:${secondaryColor};color:#fff;text-align:left;padding:6px 10px;font-size:11.5px;font-weight:600;border:1px solid #ddd;">Quotation To</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:6px 10px;font-size:11.5px;color:#444;border:1px solid #ddd;">${escapeHtml(contactEmail || "—")}</td>
+            <td style="padding:6px 10px;font-size:11.5px;font-weight:600;border:1px solid #ddd;">${escapeHtml(quotationTo || "—")}</td>
+          </tr>
+        </tbody>
+        <thead>
+          <tr>
+            <th style="background:${primaryColor};color:#fff;text-align:left;padding:6px 10px;font-size:11.5px;font-weight:600;border:1px solid #ddd;">Contact Phone</th>
+            <th style="background:${secondaryColor};color:#fff;text-align:left;padding:6px 10px;font-size:11.5px;font-weight:600;border:1px solid #ddd;">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:6px 10px;font-size:11.5px;font-weight:500;border:1px solid #ddd;">${escapeHtml(contactPhone || "—")}</td>
+            <td style="padding:6px 10px;font-size:11.5px;border:1px solid #ddd;">${escapeHtml(quotationDate || "")}</td>
+          </tr>
+        </tbody>
+      </table>
 
-      <!-- ===== MAIN CONTENT ===== -->
-      <tbody>
-        <tr><td>
+      <!-- SERVICES TABLE -->
+      <table style="width:100%;border-collapse:collapse;border:1px solid #ddd;margin-bottom:0;">
+        <thead>
+          <tr style="background:${secondaryColor};color:#fff;">
+            <th style="padding:6px 4px;font-size:11.5px;font-weight:600;text-align:center;border:1px solid #ddd;width:5%;">#</th>
+            <th style="padding:6px 8px;font-size:11.5px;font-weight:600;text-align:center;border:1px solid #ddd;width:23%;">Service Type</th>
+            <th style="padding:6px 8px;font-size:11.5px;font-weight:600;text-align:center;border:1px solid #ddd;width:43%;">Item(s)</th>
+            <th style="padding:6px 4px;font-size:11.5px;font-weight:600;text-align:center;border:1px solid #ddd;width:8%;">Qty</th>
+            <th style="padding:6px 4px;font-size:11.5px;font-weight:600;text-align:center;border:1px solid #ddd;width:10%;">Rate</th>
+            <th style="padding:6px 4px;font-size:11.5px;font-weight:600;text-align:center;border:1px solid #ddd;width:11%;">Amount</th>
+          </tr>
+        </thead>
+        <tbody>${itemsRows || `<tr><td colspan="6" style="padding:14px;text-align:center;font-size:11.5px;color:#888;border:1px solid #ddd;">No services added.</td></tr>`}</tbody>
+      </table>
 
-          <!-- Contact & Meta -->
-          <table class="info-tbl">
-            <thead><tr>
-              <th class="th-m" style="width:50%;">Contact Person</th>
-              <th class="th-o" style="width:50%;">Quotation No</th>
-            </tr></thead>
-            <tbody><tr>
-              <td style="font-weight:600;">${escapeHtml(contactPerson)}</td>
-              <td style="font-weight:700;">${escapeHtml(quotationNo)}</td>
-            </tr></tbody>
-            <thead><tr>
-              <th class="th-m">Contact Email</th>
-              <th class="th-o">Quotation To</th>
-            </tr></thead>
-            <tbody><tr>
-              <td style="color:#555;">${escapeHtml(contactEmail)}</td>
-              <td style="font-weight:700;">${escapeHtml(quotationTo)}</td>
-            </tr></tbody>
-            <thead><tr>
-              <th class="th-m">Contact Phone</th>
-              <th class="th-o">Date</th>
-            </tr></thead>
-            <tbody><tr>
-              <td style="font-weight:600;">${escapeHtml(contactPhone)}</td>
-              <td>${escapeHtml(quotationDate)}</td>
-            </tr></tbody>
-          </table>
+      <!-- TOTALS -->
+      <div style="display:flex;justify-content:flex-end;margin-top:-1px;margin-bottom:16px;">
+        <table style="border-collapse:collapse;width:38%;min-width:210px;border:1px solid #ddd;">
+          <tr>
+            <td style="background:${primaryColor};color:#fff;padding:5px 12px;font-size:11.5px;font-weight:600;border:1px solid #ddd;width:60%;">Subtotal</td>
+            <td style="background:${primaryColor};color:#fff;padding:5px 12px;font-size:11.5px;font-weight:600;text-align:right;border:1px solid #ddd;">$${subtotal}</td>
+          </tr>
+          <tr>
+            <td style="background:${primaryColor};color:#fff;padding:5px 12px;font-size:11.5px;font-weight:600;border:1px solid #ddd;">VAT ${vatRate}%</td>
+            <td style="background:${primaryColor};color:#fff;padding:5px 12px;font-size:11.5px;font-weight:600;text-align:right;border:1px solid #ddd;">$${tax}</td>
+          </tr>
+          <tr>
+            <td style="background:${primaryColor};color:#fff;padding:6px 12px;font-size:12px;font-weight:700;border:1px solid #ddd;">Grand. Total</td>
+            <td style="background:${primaryColor};color:#fff;padding:6px 12px;font-size:12px;font-weight:700;text-align:right;border:1px solid #ddd;">$${grandTotal}</td>
+          </tr>
+        </table>
+      </div>
 
-          <!-- Services / Items -->
-          <table class="items-tbl">
-            <thead><tr>
-              <th style="width:5%;">#</th>
-              <th style="width:23%;">Service Type</th>
-              <th style="width:43%;">Item(s)</th>
-              <th style="width:8%;">Qty</th>
-              <th style="width:10%;">Rate</th>
-              <th style="width:11%;">Amount</th>
-            </tr></thead>
-            <tbody>${itemsRows}</tbody>
-          </table>
-
-          <!-- Totals -->
-          <div class="totals-wrap">
-            <table class="totals-tbl">
+      <!-- PAYMENT TABLE (rows of 3 methods) -->
+      <table style="width:100%;border-collapse:collapse;margin-bottom:12px;border:1px solid #ddd;">
+        <thead>
+          <tr>
+            <th style="background:${primaryColor};color:#fff;text-align:center;padding:6px 8px;font-size:11.5px;font-weight:600;border:1px solid #ddd;width:35%;">Payment Structure</th>
+            <th colspan="3" style="background:${secondaryColor};color:#fff;text-align:center;padding:6px 8px;font-size:11.5px;font-weight:600;border:1px solid #ddd;width:65%;">Payment Method</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${methodRows.map((rawRow, rIdx) => {
+            const row = padRowTo3(rawRow);
+            const isFirst = rIdx === 0;
+            return `
               <tr>
-                <td style="width:60%;">Subtotal</td>
-                <td style="text-align:right;">$${subtotal}</td>
+                ${isFirst ? `
+                  <td rowspan="${methodRowspan}" style="padding:8px 10px;font-size:11px;line-height:1.6;border:1px solid #ddd;vertical-align:top;background:#fff;width:35%;">
+                    <div>&bull; ${escapeHtml(paymentAdvance)}</div>
+                    <div>&bull; ${escapeHtml(paymentCompletion)}</div>
+                  </td>` : ''}
+                ${row.map(pm => `
+                  <th style="border:1px solid #ddd;background:#fafafa;color:#111;font-size:11px;font-weight:600;padding:4px 6px;text-align:center;width:21.67%;">
+                    ${escapeHtml(pm.label || '&nbsp;')}
+                  </th>`).join('')}
               </tr>
               <tr>
-                <td>VAT ${vatRate}%</td>
-                <td style="text-align:right;">$${tax}</td>
+                ${row.map(pm => `
+                  <td style="text-align:center;font-weight:600;font-size:11px;padding:5px;border:1px solid #ddd;color:#111;height:24px;">
+                    ${escapeHtml(pm.value || '&nbsp;')}
+                  </td>`).join('')}
               </tr>
-              <tr>
-                <td style="font-size:13px;">Grand. Total</td>
-                <td style="text-align:right;font-size:13px;">$${grandTotal}</td>
-              </tr>
-            </table>
-          </div>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
 
-          <!-- Payment -->
-          <table class="pay-tbl">
-            <thead>
-              <tr>
-                <th class="pay-th-m" style="width:40%;">Payment Structure</th>
-                <th class="pay-th-o" colspan="3">Payment Method</th>
-              </tr>
-              <tr>
-                <th class="pay-th-sub" style="border:1px solid #ddd;"></th>
-                <th class="pay-th-sub" style="border:1px solid #ddd;">Premier Bank</th>
-                <th class="pay-th-sub" style="border:1px solid #ddd;">Salaam Bank</th>
-                <th class="pay-th-sub" style="border:1px solid #ddd;">IBS Bank</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td rowspan="2" style="vertical-align:top;line-height:1.7;padding:8px 12px;">
-                  <div>• ${escapeHtml(paymentAdvance)}</div>
-                  <div>• ${escapeHtml(paymentCompletion)}</div>
-                </td>
-                <td style="text-align:center;font-weight:700;">020602086001</td>
-                <td style="text-align:center;font-weight:700;">36122269</td>
-                <td style="text-align:center;font-weight:700;">59676</td>
-              </tr>
-              <tr>
-                <td colspan="2" style="text-align:center;">EVC-Plus: <strong>0618553839</strong></td>
-                <td style="text-align:center;">E-DAHAB: <strong>0628553566</strong></td>
-              </tr>
-            </tbody>
-          </table>
+      <!-- NB BANNER -->
+      <div style="background:${primaryColor};color:#fff;text-align:center;padding:7px 12px;font-size:11.5px;font-weight:600;border:1px solid #ddd;margin-bottom:0;">
+        ${escapeHtml(nbText)}
+      </div>
+    </div>
 
-          <!-- NB Banner -->
-          <div class="nb-banner">${escapeHtml(nbText)}</div>
-
-        </td></tr>
-      </tbody>
-    </table>
+    <!-- FOOTER: Pinned to bottom of the A4 page -->
+    <div class="footer-box">
+      <img src="${footerUrl}" alt="Deero Contact Information" class="footer-img" onerror="this.style.display='none'" />
+    </div>
   </div>
-</div>
 </body>
 </html>`;
 

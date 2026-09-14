@@ -2,6 +2,7 @@
 
 import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import {
   dashboardCardClass,
   dashboardControlsRowClass,
@@ -38,6 +39,7 @@ type Props<T extends { id: number | string }> = {
   minWidth?: string;
   pageSizes?: number[];
   footer?: ReactNode;
+  className?: string;
 };
 
 export default function DashboardDataTable<T extends { id: number | string }>({
@@ -53,6 +55,7 @@ export default function DashboardDataTable<T extends { id: number | string }>({
   minWidth = '900px',
   pageSizes = [10, 25, 50, 100],
   footer,
+  className,
 }: Props<T>) {
   const [pageSize, setPageSize] = useState(pageSizes[0] || 10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -70,7 +73,7 @@ export default function DashboardDataTable<T extends { id: number | string }>({
   const align = (value?: 'left' | 'center' | 'right') => value === 'right' ? 'text-right' : value === 'center' ? 'text-center' : 'text-left';
 
   return (
-    <section className={dashboardCardClass}>
+    <section className={cn(dashboardCardClass, className)}>
       <div className={dashboardControlsRowClass}>
         <div className="flex items-center gap-2">
           <span className={dashboardLabelClass}>Show</span>

@@ -21,7 +21,18 @@ export type CustomerReceipt = AccountingRecord & {
   reference?: string | null;
   memo?: string | null;
   state: string;
-  customers?: { id: number; name: string; phone?: string };
+  customers?: {
+    id: number;
+    name: string;
+    phone?: string;
+    email?: string;
+    client?: {
+      contactPerson?: string;
+      phone?: string;
+      email?: string;
+      institution?: string;
+    };
+  };
   currencies?: { id: number; code: string; symbol?: string };
   journals?: { id: number; name: string; code: string };
   payment_methods?: { id: number; name: string; code: string };

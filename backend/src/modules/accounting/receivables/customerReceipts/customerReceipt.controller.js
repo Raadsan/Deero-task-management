@@ -3,7 +3,15 @@ import { logAudit } from '../../../../utils/auditHelper.js'
 
 const transactionOptions = { maxWait: 10000, timeout: 30000 }
 const include = {
-  customers: { select: { id: true, name: true, phone: true } },
+  customers: {
+    select: {
+      id: true,
+      name: true,
+      phone: true,
+      email: true,
+      client: { select: { contactPerson: true, phone: true, email: true, institution: true } },
+    },
+  },
   companies: { select: { id: true, name: true } },
   currencies: { select: { id: true, code: true, symbol: true } },
   journals: { select: { id: true, name: true, code: true } },
@@ -155,13 +163,19 @@ async function prepare(input) {
   if (!setup) throw inputError('The selected payment method has no compatible active GL account and journal')
   const journal = setup.journal
 
-  const receivable = await prisma.chart_of_accounts.findFirst({
-    where: {
-      company_id: customer.company_id, code: '1100', is_active: true, allow_manual_entry: true,
-      account_types: { internal_group: 'asset' }, other_chart_of_accounts: { none: {} },
-    },
-  })
-  if (!receivable) throw inputError('Accounts Receivable account 1100 was not found')
+  let receivable = customer.receivable_account_id
+    ? await prisma.chart_of_accounts.findUnique({ where: { id: customer.receivable_account_id } })
+    : null
+  if (!receivable) {
+    receivable = await prisma.chart_of_accounts.findFirst({
+      where: { company_id: customer.company_id, code: '1200', is_active: true },
+    }) || await prisma.chart_of_accounts.findFirst({
+      where: { company_id: customer.company_id, name: { contains: 'Receivable' }, is_active: true },
+    }) || await prisma.chart_of_accounts.findFirst({
+      where: { company_id: customer.company_id, code: '1100', is_active: true },
+    })
+  }
+  if (!receivable) throw inputError('Accounts Receivable account (1200) was not found')
 
   const requested = Array.isArray(input.allocations) ? input.allocations : []
   const normalized = requested

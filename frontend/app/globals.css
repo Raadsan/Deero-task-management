@@ -67,6 +67,12 @@
   .table-head-brand {
     background-color: var(--portfolio-primary);
     border-color: var(--portfolio-primary);
+    color: #ffffff !important;
+  }
+
+  .table-head-brand th,
+  .table-head-brand tr th {
+    color: #ffffff !important;
   }
 
   .action-icon-view {

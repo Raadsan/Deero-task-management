@@ -29,11 +29,14 @@ export const getGeneralLedger = async (req, res) => {
     const items = await prisma.journal_items.findMany({
       where,
       orderBy: [
-        { account_id: 'asc' },
-        { journal_entries: { entry_date: 'asc' } }
+        { journal_entries: { entry_date: 'desc' } },
+        { entry_id: 'desc' },
+        { debit: 'desc' },
+        { sequence: 'asc' },
+        { id: 'asc' }
       ],
       include: {
-        journal_entries: { select: { entry_date: true, entry_number: true, reference: true, narration: true } },
+        journal_entries: { select: { id: true, entry_date: true, entry_number: true, reference: true, narration: true } },
         chart_of_accounts: { select: { code: true, name: true, account_types: { select: { normal_balance: true } } } },
         currencies: { select: { code: true, symbol: true } }
       }
