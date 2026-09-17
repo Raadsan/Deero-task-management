@@ -38,6 +38,7 @@ type Field = {
   options?: Array<{ label: string; value: string | number }>;
   relation?: 'currencies' | 'categories' | 'accounts';
   placeholder?: string;
+  hint?: string;
   min?: number;
   max?: number;
   step?: number;
@@ -94,17 +95,17 @@ const CONFIGS: Record<string, Config> = {
   },
   'payment-methods': {
     title: 'Payment Methods', singular: 'payment method', resource: '/accounting/configuration/payment-methods',
-    description: 'Configure the ways customer receipts and vendor payments are recorded.',
+    description: 'Configure where money is received or paid (Cash, Bank, Mobile Money). Separate from Payment Terms (when money is due).',
     columns: ['name', 'code', 'payment_type', 'gl_account_id', 'allow_multiple_accounts', 'requires_reference', 'is_active'],
     defaults: { name: '', code: '', payment_type: 'both', gl_account_id: null, allow_multiple_accounts: false, requires_reference: false, is_active: true },
     fields: [
-      { key: 'name', label: 'Name', required: true, placeholder: 'e.g. Mobile Money' },
-      { key: 'code', label: 'Code', required: true, placeholder: 'e.g. MOBILE' },
-      { key: 'payment_type', label: 'Payment Type', type: 'select', required: true, options: options(['inbound', 'outbound', 'both']) },
-      { key: 'gl_account_id', label: 'Linked GL Account', type: 'select', relation: 'accounts', required: true },
-      { key: 'allow_multiple_accounts', label: 'Allow Multiple Accounts', type: 'boolean' },
-      { key: 'requires_reference', label: 'Requires Reference', type: 'boolean' },
-      { key: 'is_active', label: 'Active', type: 'boolean' },
+      { key: 'name', label: 'Payment Method Name', required: true, placeholder: 'e.g. SomBank' },
+      { key: 'code', label: 'Code', required: true, placeholder: 'e.g. SOMBANK' },
+      { key: 'payment_type', label: 'Payment Type', type: 'select', required: true, options: options(['inbound', 'outbound', 'both']), hint: 'Both = usable for customer receipts and vendor payments' },
+      { key: 'gl_account_id', label: 'GL Account', type: 'select', relation: 'accounts', required: true, hint: 'Only active posting Cash, Bank, or Mobile Money accounts are listed' },
+      { key: 'allow_multiple_accounts', label: 'Allow Multiple Accounts', type: 'boolean', hint: 'Allow this payment method to be split across multiple GL accounts.' },
+      { key: 'requires_reference', label: 'Requires Reference', type: 'boolean', hint: 'Require a transaction/reference number when this payment method is used.' },
+      { key: 'is_active', label: 'Active', type: 'boolean', hint: 'Inactive methods stay in history but cannot be selected for new transactions.' },
     ],
   },
   'payment-terms': {
@@ -157,9 +158,10 @@ function errorMessage(error: unknown) {
 function displayValue(key: string, value: unknown, relations: RelationMaps) {
   if (key === 'currency_id') return relations.currencies.get(Number(value)) || '—';
   if (key === 'parent_id') return value ? relations.categories.get(Number(value)) || `#${value}` : 'Top level';
-  if (key === 'gl_account_id') return value ? relations.accounts.get(Number(value)) || `#${value}` : '---';
-  if (key === 'allow_multiple_accounts') return value ? 'Yes' : 'No';
-  if (typeof value === 'boolean') return value ? 'Active' : 'Inactive';
+  if (key === 'gl_account_id') return value ? relations.accounts.get(Number(value)) || `#${value}` : '—';
+  if (key === 'allow_multiple_accounts' || key === 'requires_reference') return value ? 'Yes' : 'No';
+  if (key === 'is_active') return value ? 'Active' : 'Inactive';
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
   if (key === 'rate_percent') return `${Number(value).toFixed(2)}%`;
   if (value === null || value === undefined || value === '') return '—';
   return humanize(String(value));
@@ -242,7 +244,8 @@ export default function ConfigurationCrudPage({ section }: { section: string }) 
   async function confirmDelete() {
     if (!selected) return; setSaving(true);
     try {
-      await api.remove(selected.id); accountingToast(`${humanize(config.singular)} deleted successfully`);
+      const response = await api.remove(selected.id);
+      accountingToast(response?.message || `${humanize(config.singular)} deleted successfully`);
       setDeleteOpen(false); setSelected(null); await loadRows();
     } catch (error) { accountingToast(errorMessage(error), 'error'); }
     finally { setSaving(false); }
@@ -321,8 +324,8 @@ export default function ConfigurationCrudPage({ section }: { section: string }) 
 }
 
 function FormField({ field, value, onChange, relations, currentId }: { field: Field; value: Value | undefined; onChange: (value: Value) => void; relations: RelationMaps; currentId?: number }) {
-  if (field.type === 'boolean') return <label className="flex min-h-11 items-center justify-between gap-3 rounded-md border border-zinc-200 bg-zinc-50 p-3 sm:col-span-2"><div><span className="text-sm font-medium text-zinc-700">{field.label}</span><p className="mt-0.5 text-xs text-zinc-500">Enable this option for the record</p></div><button type="button" role="switch" aria-checked={Boolean(value)} onClick={() => onChange(!value)} className={`relative h-6 w-11 rounded-full transition ${value ? 'bg-primary' : 'bg-zinc-300'}`}><span className={`absolute top-1 size-4 rounded-full bg-white shadow transition ${value ? 'left-6' : 'left-1'}`} /></button></label>;
+  if (field.type === 'boolean') return <label className="flex min-h-11 items-center justify-between gap-3 rounded-md border border-zinc-200 bg-zinc-50 p-3 sm:col-span-2"><div><span className="text-sm font-medium text-zinc-700">{field.label}</span><p className="mt-0.5 text-xs text-zinc-500">{field.hint || 'Enable this option for the record'}</p></div><button type="button" role="switch" aria-checked={Boolean(value)} onClick={() => onChange(!value)} className={`relative h-6 w-11 rounded-full transition ${value ? 'bg-primary' : 'bg-zinc-300'}`}><span className={`absolute top-1 size-4 rounded-full bg-white shadow transition ${value ? 'left-6' : 'left-1'}`} /></button></label>;
   const relationOptions = field.relation === 'currencies' ? [...relations.currencies.entries()].map(([optionValue, label]) => ({ value: optionValue, label })) : field.relation === 'categories' ? [...relations.categories.entries()].filter(([id]) => id !== currentId).map(([optionValue, label]) => ({ value: optionValue, label })) : field.relation === 'accounts' ? [...relations.accounts.entries()].map(([optionValue, label]) => ({ value: optionValue, label })) : field.options;
-  return <label className={field.type === 'textarea' ? 'sm:col-span-2' : ''}><span className="mb-1 block text-sm font-medium text-zinc-700">{field.label}{field.required && <span className="ml-0.5 text-rose-500">*</span>}</span>{field.type === 'select' ? <select required={field.required} value={value === null ? '' : String(value ?? '')} onChange={(event) => onChange(event.target.value === '' ? null : field.relation ? Number(event.target.value) : event.target.value)} className={accountingFormSelectClass}><option value="">Select {field.label.toLowerCase()}</option>{relationOptions?.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select> : field.type === 'textarea' ? <textarea required={field.required} value={String(value ?? '')} onChange={(event) => onChange(event.target.value)} placeholder={field.placeholder} rows={3} className={accountingFormTextareaClass} /> : <input required={field.required} type={field.type || 'text'} value={String(value ?? '')} onChange={(event) => onChange(event.target.value)} placeholder={field.placeholder} min={field.min} max={field.max} step={field.step} className={accountingFormFieldClass} />}</label>;
+  return <label className={field.type === 'textarea' ? 'sm:col-span-2' : ''}><span className="mb-1 block text-sm font-medium text-zinc-700">{field.label}{field.required && <span className="ml-0.5 text-rose-500">*</span>}</span>{field.type === 'select' ? <select required={field.required} value={value === null ? '' : String(value ?? '')} onChange={(event) => onChange(event.target.value === '' ? null : field.relation ? Number(event.target.value) : event.target.value)} className={accountingFormSelectClass}><option value="">Select {field.label.toLowerCase()}</option>{relationOptions?.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select> : field.type === 'textarea' ? <textarea required={field.required} value={String(value ?? '')} onChange={(event) => onChange(event.target.value)} placeholder={field.placeholder} rows={3} className={accountingFormTextareaClass} /> : <input required={field.required} type={field.type || 'text'} value={String(value ?? '')} onChange={(event) => onChange(event.target.value)} placeholder={field.placeholder} min={field.min} max={field.max} step={field.step} className={accountingFormFieldClass} />}{field.hint && field.type !== 'boolean' ? <p className="mt-1 text-[11px] text-zinc-500">{field.hint}</p> : null}</label>;
 }
 

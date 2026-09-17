@@ -144,25 +144,18 @@ async function resolveRouting(tx, order, company) {
   } else if (matchedPaymentMethod?.gl_account_id && !matchedPaymentMethod.allow_multiple_accounts) {
     const journalType = paymentKind === 'cash' ? 'cash' : 'bank'
     settlementAccountId = matchedPaymentMethod.gl_account_id
-    const settlementAccount = matchedPaymentMethod.chart_of_accounts
-    const isMobileWallet = /^100[3-9]/.test(String(settlementAccount?.code || '')) || /mobile\s*wallet|evc|edahab|merchant|\bibs\b|waafi/.test(normalize(`${matchedPaymentMethod.code} ${matchedPaymentMethod.name} ${settlementAccount?.name}`))
-    if (isMobileWallet) {
-      const walletCode = String(matchedPaymentMethod.code || `W${settlementAccount?.code || 'ALLET'}`).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 16)
-      journal = await tx.journals.upsert({
-        where: { company_id_code: { company_id: company.id, code: walletCode } },
-        update: { name: settlementAccount.name, journal_type: 'bank', default_debit_account_id: settlementAccountId, default_credit_account_id: settlementAccountId, is_active: true },
-        create: { company_id: company.id, code: walletCode, name: settlementAccount.name, journal_type: 'bank', default_debit_account_id: settlementAccountId, default_credit_account_id: settlementAccountId, currency_id: company.currency_id, sequence_prefix: walletCode, is_active: true },
-      })
-    } else {
-      journal = journals.find((row) => row.journal_type === journalType && row.default_debit_account_id === matchedPaymentMethod.gl_account_id)
-        || journals.find((row) => row.journal_type === journalType)
-    }
+    const preferredCodes = journalType === 'cash' ? ['CSH', 'CASH'] : ['BNK', 'BANK']
+    // Always use the company Cash/Bank journal — never create per-wallet journals.
+    // Payment Method → GL Account determines the settlement account.
+    journal = journals.find((row) => row.journal_type === journalType && preferredCodes.includes(String(row.code || '').toUpperCase()))
+      || journals.find((row) => row.journal_type === journalType && String(row.code || '').toUpperCase() !== 'WALLET')
+      || journals.find((row) => row.journal_type === journalType)
     if (!journal) throw new POSAccountingError(`Configure an active ${journalType === 'cash' ? 'Cash' : 'Bank'} journal for payment method ${matchedPaymentMethod.name}`)
   } else if (paymentKind === 'cash') {
-    journal = journals.find((row) => row.journal_type === 'cash' && row.code.toUpperCase() === 'CASH')
+    journal = journals.find((row) => row.journal_type === 'cash' && ['CSH', 'CASH'].includes(String(row.code || '').toUpperCase()))
       || journals.find((row) => row.journal_type === 'cash')
-    settlementAccountId = journal?.default_debit_account_id
-    if (!journal || !settlementAccountId) throw new POSAccountingError('Configure an active Cash journal with a default debit Cash account')
+    settlementAccountId = matchedPaymentMethod?.gl_account_id || journal?.default_debit_account_id
+    if (!journal || !settlementAccountId) throw new POSAccountingError('Configure an active Cash journal and Cash payment method GL account')
   } else {
     const method = normalize(order.payment?.method)
     const provider = normalize(order.payment?.providerName)

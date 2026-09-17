@@ -64895,6 +64895,7 @@ export namespace Prisma {
     payment_term_id: number | null
     receivable_account_id: number | null
     credit_limit: Decimal | null
+    opening_balance: Decimal | null
   }
 
   export type CustomersSumAggregateOutputType = {
@@ -64904,6 +64905,7 @@ export namespace Prisma {
     payment_term_id: number | null
     receivable_account_id: number | null
     credit_limit: Decimal | null
+    opening_balance: Decimal | null
   }
 
   export type CustomersMinAggregateOutputType = {
@@ -64922,6 +64924,7 @@ export namespace Prisma {
     payment_term_id: number | null
     receivable_account_id: number | null
     credit_limit: Decimal | null
+    opening_balance: Decimal | null
     notes: string | null
     is_active: boolean | null
     created_at: Date | null
@@ -64945,6 +64948,7 @@ export namespace Prisma {
     payment_term_id: number | null
     receivable_account_id: number | null
     credit_limit: Decimal | null
+    opening_balance: Decimal | null
     notes: string | null
     is_active: boolean | null
     created_at: Date | null
@@ -64968,6 +64972,7 @@ export namespace Prisma {
     payment_term_id: number
     receivable_account_id: number
     credit_limit: number
+    opening_balance: number
     notes: number
     is_active: number
     created_at: number
@@ -64984,6 +64989,7 @@ export namespace Prisma {
     payment_term_id?: true
     receivable_account_id?: true
     credit_limit?: true
+    opening_balance?: true
   }
 
   export type CustomersSumAggregateInputType = {
@@ -64993,6 +64999,7 @@ export namespace Prisma {
     payment_term_id?: true
     receivable_account_id?: true
     credit_limit?: true
+    opening_balance?: true
   }
 
   export type CustomersMinAggregateInputType = {
@@ -65011,6 +65018,7 @@ export namespace Prisma {
     payment_term_id?: true
     receivable_account_id?: true
     credit_limit?: true
+    opening_balance?: true
     notes?: true
     is_active?: true
     created_at?: true
@@ -65034,6 +65042,7 @@ export namespace Prisma {
     payment_term_id?: true
     receivable_account_id?: true
     credit_limit?: true
+    opening_balance?: true
     notes?: true
     is_active?: true
     created_at?: true
@@ -65057,6 +65066,7 @@ export namespace Prisma {
     payment_term_id?: true
     receivable_account_id?: true
     credit_limit?: true
+    opening_balance?: true
     notes?: true
     is_active?: true
     created_at?: true
@@ -65167,6 +65177,7 @@ export namespace Prisma {
     payment_term_id: number | null
     receivable_account_id: number | null
     credit_limit: Decimal
+    opening_balance: Decimal
     notes: string | null
     is_active: boolean
     created_at: Date
@@ -65209,6 +65220,7 @@ export namespace Prisma {
     payment_term_id?: boolean
     receivable_account_id?: boolean
     credit_limit?: boolean
+    opening_balance?: boolean
     notes?: boolean
     is_active?: boolean
     created_at?: boolean
@@ -65242,6 +65254,7 @@ export namespace Prisma {
     payment_term_id?: boolean
     receivable_account_id?: boolean
     credit_limit?: boolean
+    opening_balance?: boolean
     notes?: boolean
     is_active?: boolean
     created_at?: boolean
@@ -65289,6 +65302,7 @@ export namespace Prisma {
       payment_term_id: number | null
       receivable_account_id: number | null
       credit_limit: Prisma.Decimal
+      opening_balance: Prisma.Decimal
       notes: string | null
       is_active: boolean
       created_at: Date
@@ -65686,6 +65700,7 @@ export namespace Prisma {
     readonly payment_term_id: FieldRef<"customers", 'Int'>
     readonly receivable_account_id: FieldRef<"customers", 'Int'>
     readonly credit_limit: FieldRef<"customers", 'Decimal'>
+    readonly opening_balance: FieldRef<"customers", 'Decimal'>
     readonly notes: FieldRef<"customers", 'String'>
     readonly is_active: FieldRef<"customers", 'Boolean'>
     readonly created_at: FieldRef<"customers", 'DateTime'>
@@ -90832,6 +90847,7 @@ export namespace Prisma {
     payment_term_id: 'payment_term_id',
     receivable_account_id: 'receivable_account_id',
     credit_limit: 'credit_limit',
+    opening_balance: 'opening_balance',
     notes: 'notes',
     is_active: 'is_active',
     created_at: 'created_at',
@@ -96524,6 +96540,7 @@ export namespace Prisma {
     payment_term_id?: IntNullableFilter<"customers"> | number | null
     receivable_account_id?: IntNullableFilter<"customers"> | number | null
     credit_limit?: DecimalFilter<"customers"> | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFilter<"customers"> | Decimal | DecimalJsLike | number | string
     notes?: StringNullableFilter<"customers"> | string | null
     is_active?: BoolFilter<"customers"> | boolean
     created_at?: DateTimeFilter<"customers"> | Date | string
@@ -96555,6 +96572,7 @@ export namespace Prisma {
     payment_term_id?: SortOrderInput | SortOrder
     receivable_account_id?: SortOrderInput | SortOrder
     credit_limit?: SortOrder
+    opening_balance?: SortOrder
     notes?: SortOrderInput | SortOrder
     is_active?: SortOrder
     created_at?: SortOrder
@@ -96591,6 +96609,7 @@ export namespace Prisma {
     payment_term_id?: IntNullableFilter<"customers"> | number | null
     receivable_account_id?: IntNullableFilter<"customers"> | number | null
     credit_limit?: DecimalFilter<"customers"> | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFilter<"customers"> | Decimal | DecimalJsLike | number | string
     notes?: StringNullableFilter<"customers"> | string | null
     is_active?: BoolFilter<"customers"> | boolean
     created_at?: DateTimeFilter<"customers"> | Date | string
@@ -96621,6 +96640,7 @@ export namespace Prisma {
     payment_term_id?: SortOrderInput | SortOrder
     receivable_account_id?: SortOrderInput | SortOrder
     credit_limit?: SortOrder
+    opening_balance?: SortOrder
     notes?: SortOrderInput | SortOrder
     is_active?: SortOrder
     created_at?: SortOrder
@@ -96652,6 +96672,7 @@ export namespace Prisma {
     payment_term_id?: IntNullableWithAggregatesFilter<"customers"> | number | null
     receivable_account_id?: IntNullableWithAggregatesFilter<"customers"> | number | null
     credit_limit?: DecimalWithAggregatesFilter<"customers"> | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalWithAggregatesFilter<"customers"> | Decimal | DecimalJsLike | number | string
     notes?: StringNullableWithAggregatesFilter<"customers"> | string | null
     is_active?: BoolWithAggregatesFilter<"customers"> | boolean
     created_at?: DateTimeWithAggregatesFilter<"customers"> | Date | string
@@ -104188,6 +104209,7 @@ export namespace Prisma {
     city?: string | null
     country?: string | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -104218,6 +104240,7 @@ export namespace Prisma {
     payment_term_id?: number | null
     receivable_account_id?: number | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -104239,6 +104262,7 @@ export namespace Prisma {
     city?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -104269,6 +104293,7 @@ export namespace Prisma {
     payment_term_id?: NullableIntFieldUpdateOperationsInput | number | null
     receivable_account_id?: NullableIntFieldUpdateOperationsInput | number | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -104295,6 +104320,7 @@ export namespace Prisma {
     payment_term_id?: number | null
     receivable_account_id?: number | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -104313,6 +104339,7 @@ export namespace Prisma {
     city?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -104335,6 +104362,7 @@ export namespace Prisma {
     payment_term_id?: NullableIntFieldUpdateOperationsInput | number | null
     receivable_account_id?: NullableIntFieldUpdateOperationsInput | number | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -110827,6 +110855,7 @@ export namespace Prisma {
     payment_term_id?: SortOrder
     receivable_account_id?: SortOrder
     credit_limit?: SortOrder
+    opening_balance?: SortOrder
     notes?: SortOrder
     is_active?: SortOrder
     created_at?: SortOrder
@@ -110841,6 +110870,7 @@ export namespace Prisma {
     payment_term_id?: SortOrder
     receivable_account_id?: SortOrder
     credit_limit?: SortOrder
+    opening_balance?: SortOrder
   }
 
   export type customersMaxOrderByAggregateInput = {
@@ -110859,6 +110889,7 @@ export namespace Prisma {
     payment_term_id?: SortOrder
     receivable_account_id?: SortOrder
     credit_limit?: SortOrder
+    opening_balance?: SortOrder
     notes?: SortOrder
     is_active?: SortOrder
     created_at?: SortOrder
@@ -110882,6 +110913,7 @@ export namespace Prisma {
     payment_term_id?: SortOrder
     receivable_account_id?: SortOrder
     credit_limit?: SortOrder
+    opening_balance?: SortOrder
     notes?: SortOrder
     is_active?: SortOrder
     created_at?: SortOrder
@@ -110896,6 +110928,7 @@ export namespace Prisma {
     payment_term_id?: SortOrder
     receivable_account_id?: SortOrder
     credit_limit?: SortOrder
+    opening_balance?: SortOrder
   }
 
   export type Enumcustomers_partner_typeWithAggregatesFilter<$PrismaModel = never> = {
@@ -126439,6 +126472,7 @@ export namespace Prisma {
     city?: string | null
     country?: string | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -126468,6 +126502,7 @@ export namespace Prisma {
     payment_term_id?: number | null
     receivable_account_id?: number | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -127061,6 +127096,7 @@ export namespace Prisma {
     city?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -127090,6 +127126,7 @@ export namespace Prisma {
     payment_term_id?: NullableIntFieldUpdateOperationsInput | number | null
     receivable_account_id?: NullableIntFieldUpdateOperationsInput | number | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -138947,6 +138984,7 @@ export namespace Prisma {
     city?: string | null
     country?: string | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -138975,6 +139013,7 @@ export namespace Prisma {
     currency_id?: number | null
     payment_term_id?: number | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -139870,6 +139909,7 @@ export namespace Prisma {
     payment_term_id?: IntNullableFilter<"customers"> | number | null
     receivable_account_id?: IntNullableFilter<"customers"> | number | null
     credit_limit?: DecimalFilter<"customers"> | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFilter<"customers"> | Decimal | DecimalJsLike | number | string
     notes?: StringNullableFilter<"customers"> | string | null
     is_active?: BoolFilter<"customers"> | boolean
     created_at?: DateTimeFilter<"customers"> | Date | string
@@ -140543,6 +140583,7 @@ export namespace Prisma {
     city?: string | null
     country?: string | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -140571,6 +140612,7 @@ export namespace Prisma {
     payment_term_id?: number | null
     receivable_account_id?: number | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -141582,6 +141624,7 @@ export namespace Prisma {
     city?: string | null
     country?: string | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -141610,6 +141653,7 @@ export namespace Prisma {
     payment_term_id?: number | null
     receivable_account_id?: number | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -142924,6 +142968,7 @@ export namespace Prisma {
     city?: string | null
     country?: string | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -142953,6 +142998,7 @@ export namespace Prisma {
     payment_term_id?: number | null
     receivable_account_id?: number | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -143659,6 +143705,7 @@ export namespace Prisma {
     city?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -143688,6 +143735,7 @@ export namespace Prisma {
     payment_term_id?: NullableIntFieldUpdateOperationsInput | number | null
     receivable_account_id?: NullableIntFieldUpdateOperationsInput | number | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -144137,6 +144185,7 @@ export namespace Prisma {
     city?: string | null
     country?: string | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -144166,6 +144215,7 @@ export namespace Prisma {
     payment_term_id?: number | null
     receivable_account_id?: number | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -144509,6 +144559,7 @@ export namespace Prisma {
     city?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -144538,6 +144589,7 @@ export namespace Prisma {
     payment_term_id?: NullableIntFieldUpdateOperationsInput | number | null
     receivable_account_id?: NullableIntFieldUpdateOperationsInput | number | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -149125,6 +149177,7 @@ export namespace Prisma {
     city?: string | null
     country?: string | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -149153,6 +149206,7 @@ export namespace Prisma {
     currency_id?: number | null
     receivable_account_id?: number | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -155156,6 +155210,7 @@ export namespace Prisma {
     city?: string | null
     country?: string | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -155185,6 +155240,7 @@ export namespace Prisma {
     payment_term_id?: number | null
     receivable_account_id?: number | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -155394,6 +155450,7 @@ export namespace Prisma {
     city?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -155423,6 +155480,7 @@ export namespace Prisma {
     payment_term_id?: NullableIntFieldUpdateOperationsInput | number | null
     receivable_account_id?: NullableIntFieldUpdateOperationsInput | number | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -160662,6 +160720,7 @@ export namespace Prisma {
     currency_id?: number | null
     payment_term_id?: number | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -161127,6 +161186,7 @@ export namespace Prisma {
     city?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -161155,6 +161215,7 @@ export namespace Prisma {
     currency_id?: NullableIntFieldUpdateOperationsInput | number | null
     payment_term_id?: NullableIntFieldUpdateOperationsInput | number | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -161180,6 +161241,7 @@ export namespace Prisma {
     currency_id?: NullableIntFieldUpdateOperationsInput | number | null
     payment_term_id?: NullableIntFieldUpdateOperationsInput | number | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -161902,6 +161964,7 @@ export namespace Prisma {
     payment_term_id?: number | null
     receivable_account_id?: number | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -162335,6 +162398,7 @@ export namespace Prisma {
     city?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -162363,6 +162427,7 @@ export namespace Prisma {
     payment_term_id?: NullableIntFieldUpdateOperationsInput | number | null
     receivable_account_id?: NullableIntFieldUpdateOperationsInput | number | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -162388,6 +162453,7 @@ export namespace Prisma {
     payment_term_id?: NullableIntFieldUpdateOperationsInput | number | null
     receivable_account_id?: NullableIntFieldUpdateOperationsInput | number | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -162933,6 +162999,7 @@ export namespace Prisma {
     payment_term_id?: number | null
     receivable_account_id?: number | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -163422,6 +163489,7 @@ export namespace Prisma {
     city?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -163450,6 +163518,7 @@ export namespace Prisma {
     payment_term_id?: NullableIntFieldUpdateOperationsInput | number | null
     receivable_account_id?: NullableIntFieldUpdateOperationsInput | number | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -163475,6 +163544,7 @@ export namespace Prisma {
     payment_term_id?: NullableIntFieldUpdateOperationsInput | number | null
     receivable_account_id?: NullableIntFieldUpdateOperationsInput | number | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -166451,6 +166521,7 @@ export namespace Prisma {
     currency_id?: number | null
     receivable_account_id?: number | null
     credit_limit?: Decimal | DecimalJsLike | number | string
+    opening_balance?: Decimal | DecimalJsLike | number | string
     notes?: string | null
     is_active?: boolean
     created_at?: Date | string
@@ -166626,6 +166697,7 @@ export namespace Prisma {
     city?: NullableStringFieldUpdateOperationsInput | string | null
     country?: NullableStringFieldUpdateOperationsInput | string | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -166654,6 +166726,7 @@ export namespace Prisma {
     currency_id?: NullableIntFieldUpdateOperationsInput | number | null
     receivable_account_id?: NullableIntFieldUpdateOperationsInput | number | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -166679,6 +166752,7 @@ export namespace Prisma {
     currency_id?: NullableIntFieldUpdateOperationsInput | number | null
     receivable_account_id?: NullableIntFieldUpdateOperationsInput | number | null
     credit_limit?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    opening_balance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     is_active?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string

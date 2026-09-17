@@ -68,14 +68,21 @@ async function compatibleSetups({ companyId, currencyId, method }) {
     })
     if (!account) return []
     const journalType = channel === 'cash' ? 'cash' : 'bank'
+    const preferredCodes = journalType === 'cash' ? ['CSH', 'CASH'] : ['BNK', 'BANK']
     const journal = await prisma.journals.findFirst({
       where: {
-        company_id: companyId, journal_type: journalType, is_active: true,
+        company_id: companyId, journal_type: journalType, is_active: true, code: { in: preferredCodes },
         OR: [{ default_debit_account_id: account.id }, { default_debit_account_id: null }],
       },
-      orderBy: [{ default_debit_account_id: 'desc' }, { code: 'asc' }, { id: 'asc' }],
+      orderBy: [{ code: 'asc' }, { id: 'asc' }],
     }) || await prisma.journals.findFirst({
-      where: { company_id: companyId, journal_type: journalType, is_active: true },
+      where: {
+        company_id: companyId, journal_type: journalType, is_active: true, NOT: { code: 'WALLET' },
+        OR: [{ default_debit_account_id: account.id }, { default_debit_account_id: null }],
+      },
+      orderBy: [{ code: 'asc' }, { id: 'asc' }],
+    }) || await prisma.journals.findFirst({
+      where: { company_id: companyId, journal_type: journalType, is_active: true, NOT: { code: 'WALLET' } },
       orderBy: [{ code: 'asc' }, { id: 'asc' }],
     })
     if (!journal) return []
@@ -144,6 +151,10 @@ async function prepare(input) {
   if (!customer.companies?.is_active) throw inputError('Customer company is inactive or missing')
   if (!method?.is_active || !['inbound', 'both'].includes(method.payment_type)) throw inputError('Select an active inbound payment method')
   if (!method.gl_account_id) throw inputError('The selected payment method must have a linked Cash, Bank, or Mobile Wallet GL account')
+  const reference = String(input.reference || '').trim()
+  if (method.requires_reference && !reference) {
+    throw inputError('Reference number is required for this payment method.')
+  }
   const fiscalPeriod = await prisma.fiscal_periods.findFirst({
     where: {
       state: 'open', start_date: { lte: receiptDate }, end_date: { gte: receiptDate },
@@ -193,21 +204,48 @@ async function prepare(input) {
   }
   const allocated = Math.round(normalized.reduce((sum, row) => sum + row.allocated_amount, 0) * 100) / 100
   if (allocated > amount + 0.005) throw inputError('The allocated amount cannot exceed the invoice outstanding balance or the receipt amount.')
+  const unallocated = Math.round((amount - allocated) * 100) / 100
+  let advanceAccountId = null
+  if (unallocated > 0.005) {
+    const advanceAccount = await ensureCustomerAdvanceAccount(customer.company_id)
+    if (!advanceAccount) throw inputError('Customer Advances account (2140) was not found')
+    advanceAccountId = advanceAccount.id
+  }
 
   return {
     header: {
       company_id: customer.company_id, customer_id: customerId, journal_id: journal.id,
       payment_method_id: paymentMethodId, fiscal_period_id: fiscalPeriod.id, receipt_date: receiptDate,
       currency_id: currencyId, exchange_rate: exchangeRate, amount,
-      unallocated_amount: Math.round((amount - allocated) * 100) / 100,
-      reference: String(input.reference || '').trim() || null,
-      memo: String(input.memo || '').trim() || null, state: 'draft',
+      unallocated_amount: unallocated,
+      reference: reference || null,
+      memo: String(input.memo || '').trim() || (unallocated > 0.005 && allocated <= 0.005 ? 'Customer advance payment' : null), state: 'draft',
     },
     allocations: normalized,
     journal,
     paymentAccountId: setup.account.id,
     receivableAccountId: receivable.id,
+    advanceAccountId,
   }
+}
+
+async function ensureCustomerAdvanceAccount(companyId, db = prisma) {
+  let account = await db.chart_of_accounts.findFirst({
+    where: { company_id: companyId, code: '2140', is_active: true, allow_manual_entry: true },
+  })
+  if (account) return account
+  account = await db.chart_of_accounts.findFirst({
+    where: {
+      company_id: companyId,
+      is_active: true,
+      allow_manual_entry: true,
+      name: { contains: 'Customer Advance' },
+      account_types: { internal_group: 'liability' },
+      other_chart_of_accounts: { none: {} },
+    },
+    orderBy: { code: 'asc' },
+  })
+  return account
 }
 
 async function allocateNumber(tx, journal) {
@@ -221,20 +259,53 @@ async function allocateNumber(tx, journal) {
 }
 
 function entryData(prepared, receiptNumber, receiptId) {
-  // Only the amount applied to selected invoices affects Accounts Receivable.
-  // Any remaining receipt amount stays unallocated and is not silently applied.
-  const baseAmount = Math.round(prepared.allocations.reduce((sum, row) => sum + Number(row.allocated_amount), 0) * prepared.header.exchange_rate * 100) / 100
+  const rate = Number(prepared.header.exchange_rate)
   const allocatedAmount = Math.round(prepared.allocations.reduce((sum, row) => sum + Number(row.allocated_amount), 0) * 100) / 100
+  const unallocatedAmount = Math.round(Number(prepared.header.unallocated_amount || 0) * 100) / 100
+  const totalAmount = Math.round(Number(prepared.header.amount) * 100) / 100
+  const debitBase = Math.round(totalAmount * rate * 100) / 100
+  const allocatedBase = Math.round(allocatedAmount * rate * 100) / 100
+  const unallocatedBase = Math.round(unallocatedAmount * rate * 100) / 100
+  const items = [
+    { sequence: 10, account_id: prepared.paymentAccountId, label: 'Customer receipt', debit: debitBase, credit: 0, currency_id: prepared.header.currency_id, amount_currency: totalAmount },
+  ]
+  let sequence = 20
+  if (allocatedAmount > 0.005) {
+    items.push({
+      sequence,
+      account_id: prepared.receivableAccountId,
+      label: 'Accounts Receivable',
+      partner_type: 'customer',
+      partner_id: prepared.header.customer_id,
+      debit: 0,
+      credit: allocatedBase,
+      currency_id: prepared.header.currency_id,
+      amount_currency: -allocatedAmount,
+    })
+    sequence += 10
+  }
+  if (unallocatedAmount > 0.005) {
+    if (!prepared.advanceAccountId) throw inputError('Customer Advances account (2140) was not found')
+    items.push({
+      sequence,
+      account_id: prepared.advanceAccountId,
+      label: 'Customer Advance',
+      partner_type: 'customer',
+      partner_id: prepared.header.customer_id,
+      debit: 0,
+      credit: unallocatedBase,
+      currency_id: prepared.header.currency_id,
+      amount_currency: -unallocatedAmount,
+    })
+  }
+  const isPureAdvance = allocatedAmount <= 0.005 && unallocatedAmount > 0.005
   return {
     company_id: prepared.header.company_id, journal_id: prepared.header.journal_id,
     entry_number: receiptNumber, entry_date: prepared.header.receipt_date,
     fiscal_period_id: prepared.header.fiscal_period_id, reference: prepared.header.reference || receiptNumber,
-    narration: `Draft customer receipt ${receiptNumber}`, state: 'draft',
+    narration: isPureAdvance ? `Draft customer advance ${receiptNumber}` : `Draft customer receipt ${receiptNumber}`, state: 'draft',
     source_type: 'customer_receipt', source_id: receiptId,
-    journal_items: { create: [
-      { sequence: 10, account_id: prepared.paymentAccountId, label: 'Customer receipt', debit: baseAmount, credit: 0, currency_id: prepared.header.currency_id, amount_currency: allocatedAmount },
-      { sequence: 20, account_id: prepared.receivableAccountId, label: 'Accounts Receivable', partner_type: 'customer', partner_id: prepared.header.customer_id, debit: 0, credit: baseAmount, currency_id: prepared.header.currency_id, amount_currency: -allocatedAmount },
-    ] },
+    journal_items: { create: items },
   }
 }
 
@@ -279,17 +350,85 @@ export const getOutstandingInvoices = async (req, res) => {
   const customerId = asId(req.query.customer_id)
   if (!customerId) return res.status(400).json({ success: false, message: 'Customer is required' })
   try {
-    const data = await prisma.customer_invoices.findMany({
+    const invoices = await prisma.customer_invoices.findMany({
       where: { customer_id: customerId, document_type: 'invoice', state: 'posted', payment_state: { in: ['not_paid', 'partial'] }, amount_due: { gt: 0 } },
       select: {
         id: true, customer_id: true, currency_id: true, invoice_number: true, invoice_date: true,
         due_date: true, amount_total: true, paid_amount: true, amount_due: true, state: true,
         payment_state: true, currencies: { select: { code: true, symbol: true } },
+        receipt_allocations: {
+          where: { customer_receipts: { state: 'posted' } },
+          select: {
+            allocated_amount: true,
+            customer_receipts: { select: { id: true, amount: true, unallocated_amount: true, memo: true, journal_entry_id: true } },
+          },
+        },
       },
       orderBy: [{ invoice_date: 'asc' }, { id: 'asc' }],
     })
+    const advanceAccount = invoices.length
+      ? await (async () => {
+          const customer = await prisma.customers.findUnique({ where: { id: customerId }, select: { company_id: true } })
+          if (!customer?.company_id) return null
+          return ensureCustomerAdvanceAccount(customer.company_id)
+        })()
+      : null
+    let advanceReceiptIds = new Set()
+    if (advanceAccount) {
+      const creditLines = await prisma.journal_items.findMany({
+        where: {
+          account_id: advanceAccount.id,
+          credit: { gt: 0 },
+          journal_entries: { source_type: 'customer_receipt', state: 'posted' },
+        },
+        select: { journal_entries: { select: { source_id: true } } },
+      })
+      advanceReceiptIds = new Set(creditLines.map((row) => row.journal_entries?.source_id).filter(Boolean))
+    }
+    const data = invoices.map((invoice) => {
+      const advancePaid = Math.round(
+        (invoice.receipt_allocations || [])
+          .filter((row) => advanceReceiptIds.has(row.customer_receipts?.id))
+          .reduce((sum, row) => sum + Number(row.allocated_amount || 0), 0) * 100
+      ) / 100
+      const paidAmount = Number(invoice.paid_amount || 0)
+      const previouslyPaid = Math.max(0, Math.round((paidAmount - advancePaid) * 100) / 100)
+      const { receipt_allocations, ...rest } = invoice
+      return {
+        ...rest,
+        advance_paid: advancePaid,
+        previously_paid: previouslyPaid,
+        remaining_balance: Number(invoice.amount_due || 0),
+      }
+    })
     res.json({ success: true, data })
   } catch (error) { fail(res, error, 'Failed to fetch outstanding invoices') }
+}
+
+export const getAvailableAdvances = async (req, res) => {
+  const customerId = asId(req.query.customer_id)
+  const currencyId = asId(req.query.currency_id)
+  if (!customerId) return res.status(400).json({ success: false, message: 'Customer is required' })
+  try {
+    const where = {
+      customer_id: customerId,
+      state: 'posted',
+      unallocated_amount: { gt: 0 },
+    }
+    if (currencyId) where.currency_id = currencyId
+    const data = await prisma.customer_receipts.findMany({
+      where,
+      select: {
+        id: true, receipt_number: true, receipt_date: true, amount: true, unallocated_amount: true,
+        reference: true, memo: true, currency_id: true, payment_method_id: true,
+        currencies: { select: { code: true, symbol: true } },
+        payment_methods: { select: { id: true, name: true, code: true } },
+      },
+      orderBy: [{ receipt_date: 'asc' }, { id: 'asc' }],
+    })
+    const advance_balance = Math.round(data.reduce((sum, row) => sum + Number(row.unallocated_amount || 0), 0) * 100) / 100
+    res.json({ success: true, data, summary: { advance_balance } })
+  } catch (error) { fail(res, error, 'Failed to fetch customer advances') }
 }
 
 export const getById = async (req, res) => {
@@ -384,7 +523,21 @@ export const post = async (req, res) => {
       if (Number(receipt.amount) <= 0) throw inputError('Receipt amount must be greater than zero')
       const allocatedTotal = Math.round(receipt.receipt_allocations.reduce((sum, row) => sum + Number(row.allocated_amount), 0) * 100) / 100
       if (allocatedTotal > Number(receipt.amount) + 0.005) throw inputError('The allocated amount cannot exceed the invoice outstanding balance or the receipt amount.')
-      if (!receipt.receipt_allocations.length || allocatedTotal <= 0.005) throw inputError('Select at least one invoice and enter an allocation greater than zero.')
+      const unallocated = Math.round((Number(receipt.amount) - allocatedTotal) * 100) / 100
+      if (allocatedTotal <= 0.005 && unallocated <= 0.005) {
+        throw inputError('Enter a receipt amount greater than zero. Allocate to invoices or leave it unallocated as a customer advance.')
+      }
+      if (unallocated > 0.005) {
+        const advanceAccount = await ensureCustomerAdvanceAccount(receipt.company_id, tx)
+        if (!advanceAccount) throw inputError('Customer Advances account (2140) was not found')
+        const advanceCredit = receipt.journal_entries.journal_items.find(
+          (row) => Number(row.credit) > 0 && row.account_id === advanceAccount.id
+        )
+        if (!advanceCredit) throw inputError('Advance receipt journal entry must credit Customer Advances (2140)')
+      }
+      if (allocatedTotal > 0.005 && !receipt.receipt_allocations.length) {
+        throw inputError('Select at least one invoice and enter an allocation greater than zero.')
+      }
       const debit = receipt.journal_entries.journal_items.reduce((sum, row) => sum + Number(row.debit), 0)
       const credit = receipt.journal_entries.journal_items.reduce((sum, row) => sum + Number(row.credit), 0)
       if (debit <= 0 || Math.abs(debit - credit) > 0.005) throw inputError('Receipt journal entry is unbalanced')
@@ -399,7 +552,7 @@ export const post = async (req, res) => {
       const postedAt = new Date()
       const claimed = await tx.customer_receipts.updateMany({
         where: { id: receiptId, state: 'draft' },
-        data: { state: 'posted', posted_at: postedAt, updated_at: postedAt },
+        data: { state: 'posted', unallocated_amount: unallocated, posted_at: postedAt, updated_at: postedAt },
       })
       if (claimed.count !== 1) throw inputError('Receipt was already posted or changed by another request')
       for (const allocation of receipt.receipt_allocations) {
@@ -420,7 +573,17 @@ export const post = async (req, res) => {
         const paidAmount = Math.max(0, Math.round((Number(invoice.amount_total) - due) * 100) / 100)
         await tx.customer_invoices.update({ where: { id: invoice.id }, data: { paid_amount: paidAmount, amount_due: due, payment_state: due <= 0.005 ? 'paid' : due < Number(invoice.amount_total) ? 'partial' : 'not_paid', updated_at: postedAt } })
       }
-      await tx.journal_entries.update({ where: { id: receipt.journal_entries.id }, data: { state: 'posted', posted_at: postedAt, narration: `Customer receipt ${receipt.receipt_number}` } })
+      const isPureAdvance = allocatedTotal <= 0.005 && unallocated > 0.005
+      await tx.journal_entries.updateMany({
+        where: { id: receipt.journal_entries.id, state: 'draft', source_type: 'customer_receipt', source_id: receiptId },
+        data: {
+          state: 'posted',
+          posted_at: postedAt,
+          narration: isPureAdvance
+            ? `Customer advance ${receipt.receipt_number}`
+            : `Customer receipt ${receipt.receipt_number}`,
+        },
+      })
     }, transactionOptions)
     const data = await prisma.customer_receipts.findUnique({ where: { id: receiptId }, include })
     await logAudit({ userId: req.user?.id, action: 'Posted', entity: 'CustomerReceipt', entityId: receiptId, description: `Posted receipt "${data.receipt_number}"` })

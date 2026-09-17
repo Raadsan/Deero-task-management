@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, CreditCard, DollarSign, Loader2, Send, Wallet } from "lucide-react";
+import { CheckCircle2, CreditCard, Loader2, Send } from "lucide-react";
 import { customerInvoiceApi, type CustomerInvoice } from "@/lib/api/accounting/receivables/customerInvoiceApi";
 import { customerReceiptApi } from "@/lib/api/accounting/receivables/customerReceiptApi";
 import { accountingPaymentMethodApi, type AccountingPaymentMethod } from "@/lib/api/accounting/configuration/paymentMethodApi";
@@ -19,6 +19,7 @@ interface Props {
 }
 
 const DEFAULT_PAPER_METHODS = [
+  { label: "Cash", value: "" },
   { label: "SomBank", value: "1001572624" },
   { label: "Premier Bank", value: "020602086001" },
   { label: "Salaam Bank", value: "36122269" },
@@ -31,16 +32,16 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
   const [submitting, setSubmitting] = useState(false);
   const [accountingMethods, setAccountingMethods] = useState<AccountingPaymentMethod[]>([]);
   const [loadingMethods, setLoadingMethods] = useState(false);
+  const [availableAdvance, setAvailableAdvance] = useState(0);
 
-  // Form states
-  const [createReceipt, setCreateReceipt] = useState(true);
+  // Form states — Receive Payment Now is OFF by default (Post Invoice ≠ Receive Payment)
+  const [createReceipt, setCreateReceipt] = useState(false);
   const [paymentDate, setPaymentDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [amount, setAmount] = useState<string>("");
   const [selectedPaperMethodIdx, setSelectedPaperMethodIdx] = useState<number>(0);
   const [accountingMethodId, setAccountingMethodId] = useState<string>("");
   const [reference, setReference] = useState("");
 
-  // Load accounting payment methods
   useEffect(() => {
     if (!open) return;
     setLoadingMethods(true);
@@ -56,7 +57,21 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
       .finally(() => setLoadingMethods(false));
   }, [open]);
 
-  // Parse paper payment methods from invoice notes
+  useEffect(() => {
+    if (!open || !invoice?.customer_id) {
+      setAvailableAdvance(0);
+      return;
+    }
+    if (invoice.state !== "draft") {
+      setAvailableAdvance(Number(invoice.paid_amount || 0));
+      return;
+    }
+    customerReceiptApi
+      .availableAdvances(Number(invoice.customer_id), Number(invoice.currency_id))
+      .then((result) => setAvailableAdvance(Number(result.summary?.advance_balance || 0)))
+      .catch(() => setAvailableAdvance(0));
+  }, [open, invoice]);
+
   const paperMethods = useMemo(() => {
     if (!invoice?.notes) return DEFAULT_PAPER_METHODS;
     try {
@@ -73,29 +88,33 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
     return DEFAULT_PAPER_METHODS;
   }, [invoice]);
 
-  // Set default amount and date when invoice opens
   useEffect(() => {
     if (invoice && open) {
-      const due = Number(invoice.amount_due ?? invoice.amount_total ?? 0);
-      setAmount(due > 0 ? due.toFixed(2) : Number(invoice.amount_total || 0).toFixed(2));
+      const advance = invoice.state === "draft"
+        ? availableAdvance
+        : Number(invoice.paid_amount || 0);
+      const total = Number(invoice.amount_total || 0);
+      const due = invoice.state === "draft"
+        ? Math.max(0, Math.round((total - Math.min(advance, total)) * 100) / 100)
+        : Number(invoice.amount_due ?? total);
+      setAmount(due > 0 ? due.toFixed(2) : "0.00");
       setPaymentDate(new Date().toISOString().slice(0, 10));
       setReference("");
       setSelectedPaperMethodIdx(0);
-      setCreateReceipt(true);
+      setCreateReceipt(false);
     }
-  }, [invoice, open]);
+  }, [invoice, open, availableAdvance]);
 
-  // Automatically sync Accounting method with selected Paper method
   useEffect(() => {
     if (!accountingMethods.length) return;
     const selectedPaper = paperMethods[selectedPaperMethodIdx];
     const paperName = selectedPaper ? selectedPaper.label.toLowerCase() : "";
     const paperVal = selectedPaper ? selectedPaper.value.toLowerCase() : "";
 
-    // 1. Direct match with specific registered bank / payment method
     const directMatch = accountingMethods.find((m) => {
       const n = String(m.name || "").toLowerCase();
       const c = String(m.code || "").toLowerCase();
+      if (paperName.includes("cash") && (n.includes("cash") || c.includes("cash"))) return true;
       if (paperName.includes("sombank") && (n.includes("sombank") || c.includes("sombank"))) return true;
       if (paperName.includes("premier") && (n.includes("premier") || c.includes("premier"))) return true;
       if (paperName.includes("salaam") && (n.includes("salaam") || c.includes("salaam"))) return true;
@@ -115,32 +134,6 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
       return;
     }
 
-    // 2. Fallback to generic cash/bank
-    if (paperName.includes("evc") || paperName.includes("dahab") || paperName.includes("cash") || paperName.includes("mobile")) {
-      const cashMatch = accountingMethods.find((m) => {
-        const n = String(m.name || "").toLowerCase();
-        const c = String(m.code || "").toLowerCase();
-        return n.includes("cash") || c.includes("cash");
-      });
-      if (cashMatch) {
-        setAccountingMethodId(String(cashMatch.id));
-        return;
-      }
-    }
-
-    if (paperName.includes("bank")) {
-      const bankMatch = accountingMethods.find((m) => {
-        const n = String(m.name || "").toLowerCase();
-        const c = String(m.code || "").toLowerCase();
-        return n.includes("bank") || c.includes("bank");
-      });
-      if (bankMatch) {
-        setAccountingMethodId(String(bankMatch.id));
-        return;
-      }
-    }
-
-    // Default to first accounting method
     if (!accountingMethodId && accountingMethods.length > 0) {
       setAccountingMethodId(String(accountingMethods[0].id));
     }
@@ -150,7 +143,21 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
 
   const isDraft = invoice.state === "draft";
   const selectedPaper = paperMethods[selectedPaperMethodIdx] || paperMethods[0];
-  const maxPayable = Number(invoice.amount_due ?? invoice.amount_total ?? 0);
+  const invoiceTotal = Number(invoice.amount_total || 0);
+  const advancePaid = isDraft
+    ? Math.min(availableAdvance, invoiceTotal)
+    : Math.min(Number((invoice as any).advance_paid ?? invoice.paid_amount ?? 0), invoiceTotal);
+  const outstandingBalance = isDraft
+    ? Math.max(0, Math.round((invoiceTotal - advancePaid) * 100) / 100)
+    : Number(invoice.amount_due ?? invoiceTotal);
+  const maxPayable = outstandingBalance;
+  const selectedAccountingMethod = accountingMethods.find((m) => String(m.id) === String(accountingMethodId));
+  const requiresReference = Boolean(selectedAccountingMethod?.requires_reference);
+  const glLabel = selectedAccountingMethod?.chart_of_accounts
+    ? `${(selectedAccountingMethod as any).chart_of_accounts.code} — ${(selectedAccountingMethod as any).chart_of_accounts.name}`
+    : selectedAccountingMethod
+      ? `${selectedAccountingMethod.name} (${selectedAccountingMethod.code})`
+      : "—";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -165,7 +172,10 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
         return accountingToast(`Amount cannot exceed the balance of ${money(maxPayable)}`, "error");
       }
       if (!accountingMethodId) {
-        return accountingToast("Please select an Accounting Deposit Account.", "error");
+        return accountingToast("Please select a payment method.", "error");
+      }
+      if (requiresReference && !reference.trim()) {
+        return accountingToast("Transaction reference is required for this payment method.", "error");
       }
     }
 
@@ -173,37 +183,49 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
     try {
       let activeInvoice = invoice;
 
-      // If draft, post the invoice first
       if (isDraft) {
         activeInvoice = await customerInvoiceApi.post(invoice.id);
       }
 
-      // If creating receipt, post it into accounting
       if (createReceipt) {
-        const methodDesc = selectedPaper ? `${selectedPaper.label} (${selectedPaper.value})` : "Direct Payment";
-        const refString = reference.trim() ? `${reference.trim()} - ${methodDesc}` : methodDesc;
+        const methodDesc = selectedPaper ? `${selectedPaper.label}${selectedPaper.value ? ` (${selectedPaper.value})` : ""}` : "Direct Payment";
+        const refString = reference.trim()
+          ? `${reference.trim()} - ${methodDesc}`
+          : requiresReference
+            ? ""
+            : methodDesc;
 
-        const receipt = await customerReceiptApi.create({
-          customer_id: activeInvoice.customer_id,
-          payment_method_id: Number(accountingMethodId),
-          receipt_date: paymentDate,
-          amount: numAmount,
-          reference: refString,
-          memo: `Payment for invoice ${activeInvoice.invoice_number} via ${methodDesc}`,
-          allocations: [{ invoice_id: activeInvoice.id, allocated_amount: numAmount }],
-        });
-
-        // Post the receipt to trigger accounting entries
-        await customerReceiptApi.post(receipt.id);
-        accountingToast(`Payment registered & Receipt #${receipt.receipt_number || ""} posted in Accounting!`, "success");
+        const receiptAmount = Math.min(numAmount, Number(activeInvoice.amount_due ?? maxPayable));
+        if (receiptAmount <= 0.005) {
+          accountingToast(`Invoice ${activeInvoice.invoice_number} posted. No remaining balance to collect.`, "success");
+        } else {
+          const receipt = await customerReceiptApi.create({
+            customer_id: activeInvoice.customer_id,
+            payment_method_id: Number(accountingMethodId),
+            receipt_date: paymentDate,
+            amount: receiptAmount,
+            reference: refString || undefined,
+            memo: `Payment for invoice ${activeInvoice.invoice_number} via ${methodDesc}`,
+            allocations: [{ invoice_id: activeInvoice.id, allocated_amount: receiptAmount }],
+          });
+          await customerReceiptApi.post(receipt.id);
+          accountingToast(`Invoice posted and receipt #${receipt.receipt_number || ""} recorded.`, "success");
+        }
       } else {
-        accountingToast(`Invoice ${activeInvoice.invoice_number} posted successfully!`, "success");
+        const paid = Number(activeInvoice.paid_amount || 0);
+        const due = Number(activeInvoice.amount_due ?? activeInvoice.amount_total);
+        accountingToast(
+          paid > 0.005
+            ? `Invoice ${activeInvoice.invoice_number} posted. Advance $${paid.toFixed(2)} applied. Balance $${due.toFixed(2)}.`
+            : `Invoice ${activeInvoice.invoice_number} posted successfully.`,
+          "success"
+        );
       }
 
       if (onSuccess) onSuccess();
       onOpenChange(false);
     } catch (err: any) {
-      accountingToast(err?.response?.data?.message || err.message || "Failed to process payment", "error");
+      accountingToast(err?.response?.data?.message || err.message || "Failed to process invoice", "error");
     } finally {
       setSubmitting(false);
     }
@@ -219,19 +241,18 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
             </div>
             <div>
               <DialogTitle className="text-base font-bold text-zinc-900">
-                {isDraft ? "Accept & Post Invoice" : "Register Invoice Payment"}
+                {isDraft ? "Post Invoice" : "Register Invoice Payment"}
               </DialogTitle>
               <DialogDescription className="text-xs text-zinc-500">
                 {isDraft
-                  ? "Post this invoice and optionally record an immediate customer payment."
-                  : "Record customer payment and post a Customer Receipt in Accounting."}
+                  ? "Post this invoice without requiring a new payment. Existing advances are applied automatically."
+                  : "Record an additional customer payment against this posted invoice."}
               </DialogDescription>
             </div>
           </div>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Invoice Summary Card */}
           <div className="bg-zinc-50 rounded-xl p-3.5 border border-zinc-200 text-xs space-y-2">
             <div className="flex justify-between items-center">
               <span className="text-zinc-500 font-medium">Invoice Number:</span>
@@ -242,16 +263,19 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
               <span className="font-semibold text-zinc-800">{invoice.customers?.name || `#${invoice.customer_id}`}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-zinc-500 font-medium">Total Amount:</span>
-              <span className="font-semibold text-zinc-800">{money(invoice.amount_total)}</span>
+              <span className="text-zinc-500 font-medium">Invoice Total:</span>
+              <span className="font-semibold text-zinc-800">{money(invoiceTotal)}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-zinc-500 font-medium">{isDraft ? "Advance Paid:" : "Paid to Date:"}</span>
+              <span className="font-semibold text-zinc-800">{money(advancePaid)}</span>
             </div>
             <div className="flex justify-between items-center border-t border-zinc-200 pt-2">
               <span className="text-zinc-700 font-bold">Outstanding Balance:</span>
-              <span className="font-bold text-sm text-emerald-600">{money(maxPayable)}</span>
+              <span className="font-bold text-sm text-emerald-600">{money(outstandingBalance)}</span>
             </div>
           </div>
 
-          {/* If draft: option to toggle immediate receipt */}
           {isDraft && (
             <div className="rounded-xl border border-zinc-200 p-3 bg-white">
               <label className="flex items-center gap-2.5 cursor-pointer">
@@ -262,22 +286,20 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
                   className="size-4 rounded text-orange-600 border-zinc-300 focus:ring-orange-500"
                 />
                 <div className="text-xs">
-                  <span className="font-bold text-zinc-800">Mark as Paid (Create Customer Receipt)</span>
+                  <span className="font-bold text-zinc-800">Receive Payment Now</span>
                   <p className="text-[11px] text-zinc-500">
-                    Immediately mark the invoice as paid and post journal entries into Accounting.
+                    Optional. Leave unchecked to post the invoice only. Existing advances are still applied automatically.
                   </p>
                 </div>
               </label>
             </div>
           )}
 
-          {createReceipt && (
+          {(createReceipt || !isDraft) && (
             <div className="space-y-4">
-              {/* Payment Methods from Invoice Paper */}
               <div>
-                <label className="block text-xs font-bold text-zinc-700 mb-1.5 flex items-center justify-between">
-                  <span>Payment Method (from Invoice Paper) *</span>
-                  <span className="text-[10px] text-zinc-400 font-normal">Specified on invoice</span>
+                <label className="block text-xs font-bold text-zinc-700 mb-1.5">
+                  Payment Method *
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {paperMethods.map((pm, idx) => {
@@ -296,16 +318,17 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
                         <div className={`text-xs font-semibold leading-snug truncate ${isSelected ? "text-white font-bold" : "text-zinc-800"}`}>
                           {pm.label}
                         </div>
-                        <div className={`text-[10.5px] truncate ${isSelected ? "text-white/90 font-medium" : "text-zinc-500"}`}>
-                          {pm.value}
-                        </div>
+                        {pm.value ? (
+                          <div className={`text-[10.5px] truncate ${isSelected ? "text-white/90 font-medium" : "text-zinc-500"}`}>
+                            {pm.value}
+                          </div>
+                        ) : null}
                       </button>
                     );
                   })}
                 </div>
               </div>
 
-              {/* Amount & Date */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-zinc-700 mb-1">
@@ -318,7 +341,7 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
                     max={maxPayable}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
-                    required
+                    required={createReceipt || !isDraft}
                     className="w-full h-9 rounded-lg border border-zinc-300 px-3 text-xs font-bold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
@@ -331,16 +354,15 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
                     type="date"
                     value={paymentDate}
                     onChange={(e) => setPaymentDate(e.target.value)}
-                    required
+                    required={createReceipt || !isDraft}
                     className="w-full h-9 rounded-lg border border-zinc-300 px-3 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
               </div>
 
-              {/* Accounting Deposit GL Account */}
               <div>
                 <label className="block text-xs font-semibold text-zinc-700 mb-1">
-                  Accounting Deposit Account (General Ledger) *
+                  GL Account *
                 </label>
                 <select
                   value={accountingMethodId}
@@ -350,22 +372,26 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
                   {accountingMethods.map((m) => (
                     <option key={m.id} value={m.id}>
                       {String(m.name || "")} ({String(m.code || "")})
+                      {(m as any).chart_of_accounts ? ` → ${(m as any).chart_of_accounts.code}` : ""}
                     </option>
                   ))}
                 </select>
                 <p className="text-[10px] text-zinc-400 mt-1">
-                  Debits this asset account and credits Accounts Receivable.
+                  Debits {glLabel}; credits Accounts Receivable. Does not credit revenue.
                 </p>
+                {loadingMethods && <p className="text-[10px] text-zinc-400 mt-1">Loading payment methods…</p>}
               </div>
 
-              {/* Reference / Transaction ID */}
               <div>
                 <label className="block text-xs font-semibold text-zinc-700 mb-1">
-                  Transaction Reference / Notes (Optional)
+                  Transaction Reference
+                  {requiresReference && <span className="text-rose-500"> *</span>}
+                  {!requiresReference && <span className="text-zinc-400 font-normal"> (optional for Cash)</span>}
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Tx ID #4829104, Cheque #004, etc."
+                  required={requiresReference}
+                  placeholder="e.g. Tx ID #4829104"
                   value={reference}
                   onChange={(e) => setReference(e.target.value)}
                   className="w-full h-9 rounded-lg border border-zinc-300 px-3 text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -389,7 +415,7 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
             <Button
               type="submit"
               size="sm"
-              disabled={submitting || (createReceipt && !accountingMethodId)}
+              disabled={submitting || ((createReceipt || !isDraft) && !accountingMethodId)}
               className="bg-[#ea580c] hover:bg-orange-700 text-white text-xs font-bold gap-1.5 shadow-sm"
             >
               {submitting ? (
@@ -398,7 +424,7 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
                 </>
               ) : isDraft ? (
                 <>
-                  <Send className="size-3.5" /> Accept & Post {createReceipt ? "with Payment" : ""}
+                  <Send className="size-3.5" /> {createReceipt ? "Post Invoice + Payment" : "Post Invoice"}
                 </>
               ) : (
                 <>

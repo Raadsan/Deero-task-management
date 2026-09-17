@@ -72,10 +72,10 @@ function CustomerQuotationPageContent() {
   };
 
   const handleConvert = async (quotation: Quotation) => {
-    if (!confirm(`Approve quotation ${quotation.quotation_number} and create its invoice?`)) return;
+    if (!confirm(`Accept quotation ${quotation.quotation_number}? No invoice will be created yet — import it from the Invoice form when ready.`)) return;
     try {
-      const res = await quotationApi.convertToInvoice(quotation.id);
-      accountingToast(`Quotation approved and Invoice ${res.invoice?.invoice_number || ""}`);
+      await quotationApi.accept(quotation.id);
+      accountingToast(`Quotation ${quotation.quotation_number} accepted. Import it from Customer Invoices when ready.`);
       loadData();
     } catch (err: unknown) {
       const message =
@@ -83,8 +83,8 @@ function CustomerQuotationPageContent() {
           ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
           : err instanceof Error
             ? err.message
-            : "Failed to convert quotation";
-      accountingToast(message || "Failed to convert quotation", "error");
+            : "Failed to accept quotation";
+      accountingToast(message || "Failed to accept quotation", "error");
     }
   };
 
@@ -134,8 +134,8 @@ function CustomerQuotationPageContent() {
     if (newStatus === "ACCEPTED") {
       try {
         setStatusUpdating(true);
-        const res = await quotationApi.convertToInvoice(quotation.id);
-        accountingToast(`Quotation accepted! Draft Invoice ${res.invoice?.invoice_number || ""} created.`);
+        await quotationApi.accept(quotation.id);
+        accountingToast(`Quotation accepted. Import it from Customer Invoices when ready — no invoice was created yet.`);
         setStatusModalQuotation(null);
         loadData();
       } catch (err: unknown) {
@@ -295,7 +295,7 @@ function CustomerQuotationPageContent() {
     <AccountingPageShell
       section="Quotations"
       title="Customer Quotations"
-      description="Prepare customer quotations and turn approved quotations into invoices."
+      description="Prepare customer quotations. Accept them first, then import into Customer Invoices."
     >
 
       <>
@@ -411,7 +411,7 @@ function CustomerQuotationPageContent() {
                     >
                       <option value="DRAFT">Draft</option>
                       <option value="SENT">Sent</option>
-                      <option value="ACCEPTED">Accept (Create Invoice)</option>
+                      <option value="ACCEPTED">Accept (available for invoice)</option>
                       <option value="EXPIRED">Expire</option>
                       <option value="REJECTED">Reject</option>
                     </select>
@@ -422,8 +422,9 @@ function CustomerQuotationPageContent() {
                     <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-xs text-emerald-800 flex items-start gap-2">
                       <CheckCircle2 className="size-4 text-emerald-600 shrink-0 mt-0.5" />
                       <div>
-                        <strong className="block font-semibold">Automatic Invoice Creation</strong>
-                        Quotation-kan waxaa loo beddeli doonaa <strong>Accepted</strong>, waxaana si toos ah loo abuuri doonaa Customer Invoice cusub oo <strong>Draft</strong> ah.
+                        <strong className="block font-semibold">No automatic invoice</strong>
+                        Quotation status becomes <strong>Accepted</strong>. Create the invoice later from{" "}
+                        <strong>Customer Invoices → Import from Accepted Quotation</strong>.
                       </div>
                     </div>
                   )}

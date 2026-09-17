@@ -840,6 +840,7 @@ exports.Prisma.CustomersScalarFieldEnum = {
   payment_term_id: 'payment_term_id',
   receivable_account_id: 'receivable_account_id',
   credit_limit: 'credit_limit',
+  opening_balance: 'opening_balance',
   notes: 'notes',
   is_active: 'is_active',
   created_at: 'created_at',

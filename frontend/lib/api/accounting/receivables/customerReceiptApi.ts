@@ -54,7 +54,21 @@ export const customerReceiptApi = {
   },
   outstandingInvoices: async (customerId: number) => {
     const response = await api.get('/accounting/customer-receipts/outstanding-invoices', { params: { customer_id: customerId } });
-    return response.data.data as import('./customerInvoiceApi').CustomerInvoice[];
+    return response.data.data as Array<import('./customerInvoiceApi').CustomerInvoice & {
+      advance_paid?: number;
+      previously_paid?: number;
+      remaining_balance?: number;
+    }>;
+  },
+  availableAdvances: async (customerId: number, currencyId?: number) => {
+    const response = await api.get('/accounting/customer-receipts/advances/available', {
+      params: { customer_id: customerId, ...(currencyId ? { currency_id: currencyId } : {}) },
+    });
+    return response.data as {
+      success: boolean;
+      data: CustomerReceipt[];
+      summary: { advance_balance: number };
+    };
   },
   post: async (id: number): Promise<CustomerReceipt> => {
     const response = await api.patch(`/accounting/customer-receipts/${id}/post`);

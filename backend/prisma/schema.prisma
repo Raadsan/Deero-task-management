@@ -1174,6 +1174,7 @@ model customers {
   payment_term_id       Int?                   @db.UnsignedInt
   receivable_account_id Int?                   @db.UnsignedInt
   credit_limit          Decimal                @default(0.00) @db.Decimal(15, 2)
+  opening_balance       Decimal                @default(0.00) @db.Decimal(15, 2)
   notes                 String?                @db.Text
   is_active             Boolean                @default(true)
   created_at            DateTime               @default(now()) @db.Timestamp(0)

@@ -50,12 +50,13 @@ function dateValue(value: unknown) { return value ? new Date(String(value)).toIS
 function money(value: number) { return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value); }
 function title(value: unknown) { return String(value ?? '').replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase()); }
 
-function getNextEntryNumber(records: Row[], dateStr: string) {
-  const year = (dateStr ? dateStr.slice(0, 4) : '') || new Date().getFullYear().toString();
-  const prefix = `JE-${year}-`;
-  let maxSeq = 0;
+function getNextEntryNumber(journal: Row | undefined, records: Row[]) {
+  const prefix = String(journal?.sequence_prefix || journal?.code || 'JE-');
+  const fromJournal = Number(journal?.next_sequence);
+  let maxSeq = Number.isFinite(fromJournal) && fromJournal > 0 ? fromJournal - 1 : 0;
   for (const r of records) {
     const raw = String(r.entry_number || '').trim();
+    if (!raw.startsWith(prefix)) continue;
     const match = raw.match(/(\d+)$/);
     if (match) {
       const n = parseInt(match[1], 10);
@@ -71,7 +72,7 @@ export default function GeneralLedgerPage({ kind }: { kind: Kind }) {
   const [rows, setRows] = useState<Row[]>([]); const [journals, setJournals] = useState<Row[]>([]); const [companies, setCompanies] = useState<Row[]>([]);
   const [accounts, setAccounts] = useState<Row[]>([]); const [currencies, setCurrencies] = useState<Row[]>([]); const [periods, setPeriods] = useState<Row[]>([]);
   const [fiscalYears, setFiscalYears] = useState<Row[]>([]);
-  const [loading, setLoading] = useState(true); const [saving, setSaving] = useState(false); const [query, setQuery] = useState(''); const [filter, setFilter] = useState('all');
+  const [loading, setLoading] = useState(true); const [saving, setSaving] = useState(false); const [query, setQuery] = useState(''); const [filter, setFilter] = useState(isJournals ? 'active' : 'all');
   const [selected, setSelected] = useState<Row | null>(null); const [formOpen, setFormOpen] = useState(false); const [deleteOpen, setDeleteOpen] = useState(false);
   const [viewOpen, setViewOpen] = useState(false); const [postOpen, setPostOpen] = useState(false);
   const [journalForm, setJournalForm] = useState<JournalForm>(blankJournal); const [entryForm, setEntryForm] = useState<EntryForm>(blankEntry);
@@ -86,11 +87,20 @@ export default function GeneralLedgerPage({ kind }: { kind: Kind }) {
     } catch (error) { accountingToast(message(error), 'error'); } finally { setLoading(false); }
   }, [isJournals]);
   useEffect(() => { const timer = window.setTimeout(() => void load(), 0); return () => clearTimeout(timer); }, [load]);
+  useEffect(() => { setFilter(isJournals ? 'active' : 'all'); }, [isJournals]);
 
   const companyMap = useMemo(() => new Map(companies.map((row) => [row.id, String(row.name)])), [companies]);
   const journalMap = useMemo(() => new Map(journals.map((row) => [row.id, row])), [journals]);
   const fiscalYearMap = useMemo(() => new Map(fiscalYears.map((row) => [row.id, row])), [fiscalYears]);
-  const filtered = useMemo(() => rows.filter((row) => filter === 'all' || String(row[isJournals ? 'journal_type' : 'state']) === filter).filter((row) => [row.name, row.code, row.entry_number, row.reference, row.narration].some((value) => String(value ?? '').toLowerCase().includes(query.toLowerCase()))), [filter, isJournals, query, rows]);
+  const filtered = useMemo(() => rows.filter((row) => {
+    if (isJournals) {
+      if (filter === 'active') return Boolean(row.is_active);
+      if (filter === 'inactive') return !row.is_active;
+      if (filter !== 'all') return String(row.journal_type) === filter;
+      return true;
+    }
+    return filter === 'all' || String(row.state) === filter;
+  }).filter((row) => [row.name, row.code, row.entry_number, row.reference, row.narration].some((value) => String(value ?? '').toLowerCase().includes(query.toLowerCase()))), [filter, isJournals, query, rows]);
   const debit = entryForm.lines.reduce((sum, line) => sum + Number(line.debit || 0), 0); const credit = entryForm.lines.reduce((sum, line) => sum + Number(line.credit || 0), 0); const balanced = Math.abs(debit - credit) < 0.005 && debit > 0;
 
   function openCreate() {
@@ -103,7 +113,7 @@ export default function GeneralLedgerPage({ kind }: { kind: Kind }) {
       const generalJournals = manualJournals.filter((row) => row.journal_type === 'general' || String(row.name).toLowerCase().includes('general') || String(row.code).toLowerCase() === 'gen');
       const selectedJournal = generalJournals[0] || manualJournals[0];
       const openPeriod = periods.find((period) => period.state === 'open' && dateValue(period.start_date) <= today && dateValue(period.end_date) >= today && (!companyId || String(fiscalYearMap.get(Number(period.fiscal_year_id))?.company_id) === companyId));
-      const nextNum = getNextEntryNumber(rows, today);
+      const nextNum = getNextEntryNumber(selectedJournal, rows);
       setEntryForm({ ...blankEntry, company_id: companyId, journal_id: selectedJournal ? String(selectedJournal.id) : '', entry_number: nextNum, entry_date: today, fiscal_period_id: openPeriod ? String(openPeriod.id) : '', state: 'draft', lines: [blankLine(), blankLine()] });
     }
     setFormOpen(true);
@@ -140,7 +150,20 @@ export default function GeneralLedgerPage({ kind }: { kind: Kind }) {
     const payload = isJournals ? { ...journalForm, company_id: Number(journalForm.company_id), default_debit_account_id: journalForm.default_debit_account_id ? Number(journalForm.default_debit_account_id) : null, default_credit_account_id: journalForm.default_credit_account_id ? Number(journalForm.default_credit_account_id) : null, currency_id: journalForm.currency_id ? Number(journalForm.currency_id) : null, next_sequence: Number(journalForm.next_sequence) } : { company_id: Number(entryForm.company_id), journal_id: Number(entryForm.journal_id), entry_number: entryForm.entry_number || null, entry_date: isoDate(entryForm.entry_date), fiscal_period_id: entryForm.fiscal_period_id ? Number(entryForm.fiscal_period_id) : null, reference: entryForm.reference || null, narration: entryForm.narration || null, state: entryForm.state, source_type: 'manual', items: entryForm.lines.map((line, index) => ({ sequence: (index + 1) * 10, account_id: Number(line.account_id), label: line.label || null, debit: Number(line.debit || 0), credit: Number(line.credit || 0), is_reconciled: false })) };
     try { if (selected) await (isJournals ? journalApi : journalEntryApi).update(selected.id, payload); else await (isJournals ? journalApi : journalEntryApi).create(payload); accountingToast(`${isJournals ? 'Journal' : 'Journal entry'} ${selected ? 'updated' : 'created'} successfully`); setFormOpen(false); await load(); } catch (error) { accountingToast(message(error), 'error'); } finally { setSaving(false); }
   }
-  async function remove() { if (!selected) return; setSaving(true); try { await (isJournals ? journalApi : journalEntryApi).remove(selected.id); accountingToast(`${isJournals ? 'Journal' : 'Journal entry'} deleted successfully`); setDeleteOpen(false); await load(); } catch (error) { accountingToast(message(error), 'error'); } finally { setSaving(false); } }
+  async function remove() {
+    if (!selected) return;
+    setSaving(true);
+    try {
+      const response = await (isJournals ? journalApi : journalEntryApi).remove(selected.id) as { message?: string };
+      accountingToast(response?.message || `${isJournals ? 'Journal' : 'Journal entry'} deleted successfully`);
+      setDeleteOpen(false);
+      await load();
+    } catch (error) {
+      accountingToast(message(error), 'error');
+    } finally {
+      setSaving(false);
+    }
+  }
   async function postEntry() { if (!selected) return; setSaving(true); try { await journalEntryApi.post(selected.id); accountingToast('Journal entry posted successfully.'); setPostOpen(false); setSelected(null); await load(); } catch (error) { accountingToast(message(error), 'error'); } finally { setSaving(false); } }
   const companyAccounts = accounts.filter((row) => String(row.company_id) === (isJournals ? journalForm.company_id : entryForm.company_id));
   const parentAccountIds = new Set(accounts.map((row) => Number(row.parent_id)).filter(Boolean));
@@ -172,7 +195,7 @@ export default function GeneralLedgerPage({ kind }: { kind: Kind }) {
   return (
     <AccountingPageShell section="General Ledger" title={isJournals ? 'Journals' : 'Journal Entries'} description={isJournals ? 'Configure the books used to group and sequence accounting entries.' : 'Record balanced debit and credit transactions in the general ledger.'}>
     <div className="mb-5 grid gap-3 sm:grid-cols-3"><Summary label={`Total ${isJournals ? 'Journals' : 'Entries'}`} value={rows.length} /><Summary label={isJournals ? 'Active' : 'Posted'} value={rows.filter((row) => isJournals ? row.is_active : row.state === 'posted').length} /><Summary label={isJournals ? 'Journal Types' : 'Draft'} value={isJournals ? new Set(rows.map((row) => row.journal_type)).size : rows.filter((row) => row.state === 'draft').length} /></div>
-    <DashboardDataTable rows={filtered} columns={columns} loading={loading} searchValue={query} onSearchChange={setQuery} searchPlaceholder={`Search ${isJournals ? 'journals' : 'entries'}...`} emptyText="No records found" minWidth="1000px" action={<button onClick={openCreate} className={btnCreatePage}><Plus className="size-4" /> Add {isJournals ? 'Journal' : 'Entry'}</button>} filters={<><select value={filter} onChange={(event) => setFilter(event.target.value)} className={dashboardSelectClass}><option value="all">All {isJournals ? 'types' : 'states'}</option>{(isJournals ? ['sale', 'purchase', 'cash', 'bank', 'general', 'opening_balance', 'adjustment', 'closing'] : ['draft', 'posted', 'cancelled']).map((value) => <option key={value} value={value}>{title(value)}</option>)}</select><button onClick={() => void load()} className="flex size-[42px] items-center justify-center rounded-md border"><RefreshCw className={`size-4 ${loading ? 'animate-spin' : ''}`} /></button></>} />
+    <DashboardDataTable rows={filtered} columns={columns} loading={loading} searchValue={query} onSearchChange={setQuery} searchPlaceholder={`Search ${isJournals ? 'journals' : 'entries'}...`} emptyText="No records found" minWidth="1000px" action={<button onClick={openCreate} className={btnCreatePage}><Plus className="size-4" /> Add {isJournals ? 'Journal' : 'Entry'}</button>} filters={<><select value={filter} onChange={(event) => setFilter(event.target.value)} className={dashboardSelectClass}>{isJournals ? (<><option value="active">Active</option><option value="inactive">Inactive</option><option value="all">All statuses</option>{['sale', 'purchase', 'cash', 'bank', 'general'].map((value) => <option key={value} value={value}>{title(value)}</option>)}</>) : (<><option value="all">All states</option>{['draft', 'posted', 'cancelled'].map((value) => <option key={value} value={value}>{title(value)}</option>)}</>)}</select><button onClick={() => void load()} className="flex size-[42px] items-center justify-center rounded-md border"><RefreshCw className={`size-4 ${loading ? 'animate-spin' : ''}`} /></button></>} />
     <section className="hidden"><div className="grid gap-3 border-b p-4 sm:grid-cols-[1fr_180px_auto]"><div className="relative"><Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={`Search ${isJournals ? 'journals' : 'entries'}...`} className="h-10 w-full rounded-xl border bg-background pl-9 pr-3 text-sm outline-none focus:border-primary" /></div><select value={filter} onChange={(event) => setFilter(event.target.value)} className="h-10 rounded-xl border bg-background px-3 text-xs"><option value="all">All {isJournals ? 'types' : 'states'}</option>{(isJournals ? ['sale', 'purchase', 'cash', 'bank', 'general', 'opening_balance', 'adjustment', 'closing'] : ['draft', 'posted', 'cancelled']).map((value) => <option key={value} value={value}>{title(value)}</option>)}</select><button onClick={() => void load()} className="rounded-lg border p-2 text-muted-foreground"><RefreshCw className={`size-4 ${loading ? 'animate-spin' : ''}`} /></button></div>
       <div className="overflow-x-auto"><table className="w-full min-w-[850px] text-left text-xs"><thead className="bg-muted/50 text-[10px] uppercase text-muted-foreground"><tr>{(isJournals ? ['Code', 'Journal Name', 'Type', 'Company', 'Next Number', 'Status'] : ['Entry Number', 'Date', 'Journal', 'Reference', 'Narration', 'Total', 'State']).map((head) => <th key={head} className="px-4 py-3 font-semibold first:pl-5">{head}</th>)}<th className="px-5 py-3 text-right">Actions</th></tr></thead><tbody className="divide-y">{loading ? <tr><td colSpan={9} className="p-12 text-center text-muted-foreground">Loading...</td></tr> : filtered.map((row) => isJournals ? <tr key={row.id} className="hover:bg-muted/30"><td className="px-5 py-4 font-mono font-bold text-primary">{String(row.code)}</td><td className="px-4 py-4 font-semibold">{String(row.name)}</td><td className="px-4 py-4">{title(row.journal_type)}</td><td className="px-4 py-4 text-muted-foreground">{companyMap.get(Number(row.company_id)) || '—'}</td><td className="px-4 py-4 font-mono">{String(row.sequence_prefix)}{String(row.next_sequence).padStart(4, '0')}</td><td className="px-4 py-4"><State active={Boolean(row.is_active)} on="Active" off="Inactive" /></td><Actions row={row} edit={openEdit} askDelete={(item) => { setSelected(item); setDeleteOpen(true); }} /></tr> : <tr key={row.id} className="hover:bg-muted/30"><td className="px-5 py-4 font-mono font-bold text-primary">{String(row.entry_number || `Draft #${row.id}`)}</td><td className="px-4 py-4">{dateValue(row.entry_date)}</td><td className="px-4 py-4 font-medium">{String(journalMap.get(Number(row.journal_id))?.name || '—')}</td><td className="px-4 py-4 text-muted-foreground">{String(row.reference || '—')}</td><td className="max-w-[220px] truncate px-4 py-4">{String(row.narration || '—')}</td><td className="px-4 py-4 font-semibold tabular-nums">${money(((row.journal_items as Row[]) || []).reduce((sum, item) => sum + Number(item.debit), 0))}</td><td className="px-4 py-4"><EntryState state={String(row.state)} /></td><EntryActions row={row} view={(item) => { setSelected(item); setViewOpen(true); }} edit={openEdit} post={(item) => { setSelected(item); setPostOpen(true); }} askDelete={(item) => { setSelected(item); setDeleteOpen(true); }} /></tr>)}</tbody></table>{!loading && !filtered.length && <div className="p-16 text-center text-sm text-muted-foreground">No records found.</div>}</div>
     </section>
@@ -193,7 +216,7 @@ export default function GeneralLedgerPage({ kind }: { kind: Kind }) {
         </form>
       </DialogContent>
     </Dialog>
-    <AccountingConfirmDialog open={deleteOpen} title="Delete this record?" description="This action cannot be undone. Posted or linked records may be protected." confirmLabel="Delete Record" destructive busy={saving} onCancel={() => setDeleteOpen(false)} onConfirm={() => void remove()} />
+    <AccountingConfirmDialog open={deleteOpen} title={isJournals ? 'Delete journal?' : 'Delete this record?'} description={isJournals ? 'Journals linked to historical entries are deactivated instead of deleted.' : 'This action cannot be undone. Posted or linked records may be protected.'} confirmLabel={isJournals ? 'Delete / Deactivate' : 'Delete Record'} destructive busy={saving} onCancel={() => setDeleteOpen(false)} onConfirm={() => void remove()} />
     {!isJournals && <EntryDialogs selected={selected} journal={selected ? journalMap.get(Number(selected.journal_id)) : undefined} accountMap={new Map(accounts.map((account) => [account.id, account]))} viewOpen={viewOpen} setViewOpen={setViewOpen} postOpen={postOpen} setPostOpen={setPostOpen} saving={saving} confirmPost={postEntry} />}
     </AccountingPageShell>
   );
@@ -229,7 +252,26 @@ function getAccountCategory(account: Row): string {
   return 'asset';
 }
 
-function JournalFields({ form, setForm, companies, accounts, currencies }: { form: JournalForm; setForm: React.Dispatch<React.SetStateAction<JournalForm>>; companies: Row[]; accounts: Row[]; currencies: Row[] }) { const set = (key: keyof JournalForm, value: string | boolean) => setForm((current) => ({ ...current, [key]: value })); return <div className="grid gap-4 sm:grid-cols-2"><Select label="Company" value={form.company_id} set={(v) => { set('company_id', v); set('default_debit_account_id', ''); set('default_credit_account_id', ''); }} rows={companies} /><Input label="Journal Name" value={form.name} set={(v) => set('name', v)} /><Input label="Code" value={form.code} set={(v) => set('code', v)} max={8} /><Select label="Journal Type" value={form.journal_type} set={(v) => set('journal_type', v)} custom={['sale', 'purchase', 'cash', 'bank', 'general', 'opening_balance', 'adjustment', 'closing']} /><Select label="Default Debit Account" value={form.default_debit_account_id} set={(v) => set('default_debit_account_id', v)} rows={accounts} optional account /><Select label="Default Credit Account" value={form.default_credit_account_id} set={(v) => set('default_credit_account_id', v)} rows={accounts} optional account /><Select label="Currency" value={form.currency_id} set={(v) => set('currency_id', v)} rows={currencies} optional /><Input label="Sequence Prefix" value={form.sequence_prefix} set={(v) => set('sequence_prefix', v)} /><Input label="Next Sequence" value={form.next_sequence} set={(v) => set('next_sequence', v)} type="number" /><Toggle checked={form.is_active} set={(v) => set('is_active', v)} label="Active Journal" /><Toggle checked={form.allow_manual_entries} set={(v) => set('allow_manual_entries', v)} label="Allow Manual Entries" /></div>; }
+function JournalFields({ form, setForm, companies, accounts, currencies }: { form: JournalForm; setForm: React.Dispatch<React.SetStateAction<JournalForm>>; companies: Row[]; accounts: Row[]; currencies: Row[] }) {
+  const set = (key: keyof JournalForm, value: string | boolean) => setForm((current) => ({ ...current, [key]: value }));
+  const postingAccounts = accounts.filter((row) => row.is_active !== false && row.allow_manual_entry !== false && !accounts.some((other) => Number(other.parent_id) === row.id));
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      <Select label="Company" value={form.company_id} set={(v) => { set('company_id', v); set('default_debit_account_id', ''); set('default_credit_account_id', ''); }} rows={companies} />
+      <Input label="Journal Name" value={form.name} set={(v) => set('name', v)} />
+      <Input label="Code" value={form.code} set={(v) => set('code', v)} max={8} />
+      <Select label="Journal Type" value={form.journal_type} set={(v) => set('journal_type', v)} custom={['sale', 'purchase', 'cash', 'bank', 'general']} />
+      <Select label="Default Debit Account" value={form.default_debit_account_id} set={(v) => set('default_debit_account_id', v)} rows={postingAccounts} optional account />
+      <Select label="Default Credit Account" value={form.default_credit_account_id} set={(v) => set('default_credit_account_id', v)} rows={postingAccounts} optional account />
+      <Select label="Currency" value={form.currency_id} set={(v) => set('currency_id', v)} rows={currencies} optional />
+      <Input label="Sequence Prefix" value={form.sequence_prefix} set={(v) => set('sequence_prefix', v)} />
+      <Input label="Next Sequence" value={form.next_sequence} set={(v) => set('next_sequence', v)} type="number" />
+      <Toggle checked={form.is_active} set={(v) => set('is_active', v)} label="Active Journal" />
+      <Toggle checked={form.allow_manual_entries} set={(v) => set('allow_manual_entries', v)} label="Allow Manual Entries" />
+      <p className="sm:col-span-2 text-[11px] text-zinc-500">Bank and Cash journals should not hard-code a money GL account. Payment Methods map to GL accounts (e.g. SomBank → 1121, EVC-Plus → 1131).</p>
+    </div>
+  );
+}
 
 function EntryFields({
   form,
@@ -350,12 +392,15 @@ function EntryFields({
           set('company_id', v);
           set('journal_id', gen ? String(gen.id) : '');
           set('fiscal_period_id', openPeriod ? String(openPeriod.id) : '');
-          if (rows) set('entry_number', getNextEntryNumber(rows, form.entry_date));
+          if (rows) set('entry_number', getNextEntryNumber(gen, rows));
         }} rows={companies} autoFocus />
-        <Select label="Manual Journal" value={form.journal_id} set={(v) => set('journal_id', v)} rows={journals} />
+        <Select label="Manual Journal" value={form.journal_id} set={(v) => {
+          const journal = journals.find((row) => String(row.id) === v);
+          set('journal_id', v);
+          if (rows) set('entry_number', getNextEntryNumber(journal, rows));
+        }} rows={journals} />
         <Input label="Entry Date" value={form.entry_date} set={(v) => {
           set('entry_date', v);
-          if (rows) set('entry_number', getNextEntryNumber(rows, v));
         }} type="date" />
         <ReadOnlyField label="Entry Number" value={form.entry_number} />
         <Select label="Fiscal Period" value={form.fiscal_period_id} set={(v) => set('fiscal_period_id', v)} rows={periods} />

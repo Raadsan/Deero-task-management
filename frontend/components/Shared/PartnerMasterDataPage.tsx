@@ -12,8 +12,8 @@ import DashboardDataTable, { type DashboardTableColumn } from '@/components/Shar
 import { actionBtnDelete, actionBtnEdit, btnCreatePage, dashboardStatusBadgeClass } from '@/lib/dashboard-ui';
 
 type Kind = 'customer' | 'vendor';
-type Record = AccountingRecord & { name?: string; fullName?: string; notes?: string; phone?: string; email?: string; address?: string; is_active?: boolean; currency?: string | null; receivable_balance?: number; payable_balance?: number; advance_balance?: number; vendor_balance?: number };
-const EMPTY = { name: '', notes: '', phone: '', email: '', address: '', is_active: true };
+type Record = AccountingRecord & { name?: string; fullName?: string; notes?: string; phone?: string; email?: string; address?: string; is_active?: boolean; currency?: string | null; opening_balance?: number; openingBalance?: number; receivable_balance?: number; currentBalance?: number; payable_balance?: number; advance_balance?: number; vendor_balance?: number };
+const EMPTY = { name: '', notes: '', phone: '', email: '', address: '', opening_balance: '0', is_active: true };
 
 function message(error: unknown) {
   if (axios.isAxiosError(error)) return error.response?.data?.message || error.message;
@@ -55,21 +55,36 @@ export default function PartnerMasterDataPage({ kind, restaurantLabel = false, e
   function beginCreate() { setSelected(null); setForm(EMPTY); setOpen(true); }
   function beginEdit(row: Record) {
     setSelected(row);
-    setForm({ name: String(row.name || row.fullName || ''), notes: String(row.notes || ''), phone: String(row.phone || ''), email: String(row.email || ''), address: String(row.address || ''), is_active: row.is_active !== false });
+    setForm({
+      name: String(row.name || row.fullName || ''),
+      notes: String(row.notes || ''),
+      phone: String(row.phone || ''),
+      email: String(row.email || ''),
+      address: String(row.address || ''),
+      opening_balance: String(row.opening_balance ?? row.openingBalance ?? 0),
+      is_active: row.is_active !== false,
+    });
     setOpen(true);
   }
   async function submit(event: FormEvent) {
     event.preventDefault(); setSaving(true);
     try {
-      if (selected) await api.update(selected.id, form); else await api.create(form);
+      const payload = kind === 'customer'
+        ? { ...form, opening_balance: Number(form.opening_balance || 0) }
+        : { name: form.name, notes: form.notes, phone: form.phone, email: form.email, address: form.address, is_active: form.is_active };
+      if (selected) await api.update(selected.id, payload); else await api.create(payload);
       accountingToast(`${singular[0].toUpperCase()}${singular.slice(1)} ${selected ? 'updated' : 'created'} successfully`);
       setOpen(false);
       await revalidate();
     } catch (error) { accountingToast(message(error), 'error'); } finally { setSaving(false); }
   }
   async function remove(row: Record) {
-    if (!window.confirm(`Delete ${row.name || row.fullName || singular}?`)) return;
-    try { await api.remove(row.id); accountingToast(`${singular[0].toUpperCase()}${singular.slice(1)} deleted successfully`); await revalidate(); }
+    if (!window.confirm(`Delete ${row.name || row.fullName || singular}? If this record has accounting history it will be deactivated instead.`)) return;
+    try {
+      await api.remove(row.id);
+      accountingToast(`${singular[0].toUpperCase()}${singular.slice(1)} removed successfully`);
+      await revalidate();
+    }
     catch (error) { accountingToast(message(error), 'error'); }
   }
   const columns: DashboardTableColumn<Record>[] = [
@@ -82,7 +97,8 @@ export default function PartnerMasterDataPage({ kind, restaurantLabel = false, e
     { key: 'email', header: 'Email', cell: (row) => row.email || '—' },
     ...(kind === 'customer' ? [
       { key: 'currency', header: 'Currency', align: 'center' as const, cell: (row: Record) => row.currency || '—' },
-      { key: 'balance', header: 'Balance', align: 'right' as const, cell: (row: Record) => Number(row.receivable_balance || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
+      { key: 'opening', header: 'Opening', align: 'right' as const, cell: (row: Record) => Number(row.opening_balance ?? row.openingBalance ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
+      { key: 'balance', header: 'Balance', align: 'right' as const, cell: (row: Record) => Number(row.currentBalance ?? row.receivable_balance ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
     ] : []),
     ...(kind === 'vendor' ? [
       { key: 'payable', header: 'Payable', align: 'right' as const, cell: (row: Record) => Number(row.payable_balance || 0).toFixed(2) },
@@ -121,6 +137,19 @@ export default function PartnerMasterDataPage({ kind, restaurantLabel = false, e
         <AccountingFieldLabel label="Email"><input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="vendor@company.com" className={accountingFormFieldClass} /></AccountingFieldLabel>
       </div>
       <AccountingFieldLabel label="Address"><input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="e.g. Digfer, Hodan, Mogadishu" className={accountingFormFieldClass} /></AccountingFieldLabel>
+      {kind === 'customer' && (
+        <AccountingFieldLabel label="Opening Balance">
+          <input
+            type="number"
+            min={0}
+            step="0.01"
+            value={form.opening_balance}
+            onChange={(e) => setForm({ ...form, opening_balance: e.target.value })}
+            placeholder="0.00"
+            className={accountingFormFieldClass}
+          />
+        </AccountingFieldLabel>
+      )}
       <label className="flex items-center gap-2 text-sm text-zinc-700 cursor-pointer"><input type="checkbox" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} className="size-4 rounded border-zinc-300 accent-primary" /> Active</label>
     </AccountingFormDialog>
     </>

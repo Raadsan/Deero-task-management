@@ -43,6 +43,7 @@ const invoiceInclude = {
   payment_terms: { select: { id: true, name: true } },
   fiscal_periods: { select: { id: true, name: true, start_date: true, end_date: true, state: true } },
   journal_entries: { select: { id: true, entry_number: true, state: true } },
+  converted_quotations: { select: { id: true, quotation_number: true, status: true, total: true } },
 }
 
 // The database can be remote, and invoice transactions create the invoice,
@@ -344,11 +345,30 @@ export const getById = async (req, res) => {
 export const create = async (req, res) => {
   try {
     const prepared = await prepareInvoice(req.body)
+    const quotationId = id(req.body.quotation_id)
     const data = await prisma.$transaction(async (tx) => {
+      if (quotationId) {
+        const quotation = await tx.quotations.findUnique({ where: { id: quotationId } })
+        if (!quotation) throw inputError('Selected quotation was not found')
+        if (quotation.status !== 'ACCEPTED') throw inputError('Only ACCEPTED quotations can be imported')
+        if (quotation.converted_invoice_id) throw inputError('This quotation already has an invoice')
+        if (quotation.company_id && quotation.company_id !== prepared.header.company_id) {
+          throw inputError('Quotation belongs to a different company')
+        }
+        if (quotation.customer_id && quotation.customer_id !== prepared.header.customer_id) {
+          throw inputError('Invoice customer must match the quotation customer')
+        }
+      }
+
       const journal = await tx.journals.findUnique({ where: { id: prepared.header.journal_id } })
       const invoiceNumber = await allocateInvoiceNumber(tx, journal)
+      const header = {
+        ...prepared.header,
+        customer_reference: prepared.header.customer_reference
+          || (quotationId ? (await tx.quotations.findUnique({ where: { id: quotationId }, select: { quotation_number: true } }))?.quotation_number : null),
+      }
       const invoice = await tx.customer_invoices.create({
-        data: { ...prepared.header, invoice_number: invoiceNumber, customer_invoice_lines: { create: prepared.lines } },
+        data: { ...header, invoice_number: invoiceNumber, customer_invoice_lines: { create: prepared.lines } },
       })
       const entry = await tx.journal_entries.create({
         data: {
@@ -358,18 +378,27 @@ export const create = async (req, res) => {
           entry_date: prepared.header.invoice_date,
           fiscal_period_id: prepared.header.fiscal_period_id,
           reference: invoiceNumber,
-          narration: `Draft customer invoice ${invoiceNumber}`,
+          narration: quotationId
+            ? `Draft customer invoice ${invoiceNumber} (Quotation ${header.customer_reference || quotationId})`
+            : `Draft customer invoice ${invoiceNumber}`,
           state: 'draft',
           source_type: 'customer_invoice',
           source_id: invoice.id,
           journal_items: { create: journalItems(prepared) },
         },
       })
-      return tx.customer_invoices.update({
+      await tx.customer_invoices.update({
         where: { id: invoice.id },
         data: { journal_entry_id: entry.id },
-        include: invoiceInclude,
       })
+      if (quotationId) {
+        const linked = await tx.quotations.updateMany({
+          where: { id: quotationId, status: 'ACCEPTED', converted_invoice_id: null },
+          data: { converted_invoice_id: invoice.id, updated_at: new Date() },
+        })
+        if (linked.count !== 1) throw inputError('This quotation was already invoiced by another request')
+      }
+      return tx.customer_invoices.findUnique({ where: { id: invoice.id }, include: invoiceInclude })
     }, invoiceTransactionOptions)
     await logAudit({ userId: req.user?.id, action: 'Created', entity: 'CustomerInvoice', entityId: data.id, description: `Created draft invoice "${data.invoice_number}"` })
     res.status(201).json({ success: true, message: 'Draft invoice created successfully', data })
@@ -440,6 +469,11 @@ export const remove = async (req, res) => {
     if (!existing) return res.status(404).json({ success: false, message: 'Customer invoice not found' })
     if (existing.state !== 'draft') throw inputError('Only draft invoices can be deleted')
     await prisma.$transaction(async (tx) => {
+      // Free the quotation link so it can be imported again if the draft is discarded.
+      await tx.quotations.updateMany({
+        where: { converted_invoice_id: invoiceId },
+        data: { converted_invoice_id: null, updated_at: new Date() },
+      })
       await tx.customer_invoices.delete({ where: { id: invoiceId } })
       if (existing.journal_entry_id) {
         await tx.journal_entries.deleteMany({ where: { id: existing.journal_entry_id, state: 'draft', source_type: 'customer_invoice' } })
@@ -474,11 +508,167 @@ export const post = async (req, res) => {
       const credit = invoice.journal_entries.journal_items.reduce((sum, line) => sum + Number(line.credit), 0)
       if (debit <= 0 || Math.abs(debit - credit) > 0.005) throw inputError('Invoice journal entry is unbalanced')
       const postedAt = new Date()
-      await tx.journal_entries.update({ where: { id: invoice.journal_entries.id }, data: { state: 'posted', posted_at: postedAt } })
-      await tx.customer_invoices.update({ where: { id: invoiceId }, data: { state: 'posted', payment_state: 'not_paid', paid_amount: 0, amount_due: invoice.amount_total, posted_at: postedAt, updated_at: postedAt } })
+      const quotationRef = invoice.customer_reference ? ` (Quotation ${invoice.customer_reference})` : ''
+      const narration = `Posted customer invoice ${invoice.invoice_number}${quotationRef}`
+      const claimedEntry = await tx.journal_entries.updateMany({
+        where: { id: invoice.journal_entries.id, state: 'draft', source_type: 'customer_invoice', source_id: invoiceId },
+        data: { state: 'posted', posted_at: postedAt, narration },
+      })
+      if (claimedEntry.count !== 1) throw inputError('Invoice journal entry has already been posted')
+      const claimedInvoice = await tx.customer_invoices.updateMany({
+        where: { id: invoiceId, state: 'draft' },
+        data: { state: 'posted', payment_state: 'not_paid', paid_amount: 0, amount_due: invoice.amount_total, posted_at: postedAt, updated_at: postedAt },
+      })
+      if (claimedInvoice.count !== 1) throw inputError('Only draft invoices can be posted')
+
+      // Auto-apply real posted customer advances (unallocated receipts). Never invent advances from quotation text.
+      const appliedAdvance = await applyCustomerAdvances(tx, { ...invoice, state: 'posted', payment_state: 'not_paid', paid_amount: 0, amount_due: invoice.amount_total }, postedAt)
+      if (appliedAdvance > 0.005) {
+        const paidAmount = Math.round(appliedAdvance * 100) / 100
+        const amountDue = Math.max(0, Math.round((Number(invoice.amount_total) - paidAmount) * 100) / 100)
+        await tx.customer_invoices.update({
+          where: { id: invoiceId },
+          data: {
+            paid_amount: paidAmount,
+            amount_due: amountDue,
+            payment_state: amountDue <= 0.005 ? 'paid' : paidAmount > 0.005 ? 'partial' : 'not_paid',
+            updated_at: postedAt,
+          },
+        })
+      }
+
       return tx.customer_invoices.findUnique({ where: { id: invoiceId }, include: invoiceInclude })
     }, invoiceTransactionOptions)
     await logAudit({ userId: req.user?.id, action: 'Posted', entity: 'CustomerInvoice', entityId: invoiceId, description: `Posted invoice "${data.invoice_number}"` })
     res.json({ success: true, message: 'Customer invoice posted successfully', data })
   } catch (error) { fail(res, error, 'Failed to post customer invoice') }
+}
+
+async function ensureCustomerAdvanceAccount(tx, companyId) {
+  let account = await tx.chart_of_accounts.findFirst({
+    where: { company_id: companyId, code: '2140', is_active: true, allow_manual_entry: true },
+  })
+  if (account) return account
+  return tx.chart_of_accounts.findFirst({
+    where: {
+      company_id: companyId,
+      is_active: true,
+      allow_manual_entry: true,
+      name: { contains: 'Customer Advance' },
+      account_types: { internal_group: 'liability' },
+      other_chart_of_accounts: { none: {} },
+    },
+    orderBy: { code: 'asc' },
+  })
+}
+
+/**
+ * Apply posted unallocated customer receipts (real advances) to a newly posted invoice.
+ * Creates receipt_allocations + Dr Customer Advance / Cr AR journal entries.
+ * Does NOT create a new cash receipt.
+ */
+async function applyCustomerAdvances(tx, invoice, postedAt) {
+  const advances = await tx.customer_receipts.findMany({
+    where: {
+      customer_id: invoice.customer_id,
+      company_id: invoice.company_id,
+      currency_id: invoice.currency_id,
+      state: 'posted',
+      unallocated_amount: { gt: 0 },
+    },
+    orderBy: [{ receipt_date: 'asc' }, { id: 'asc' }],
+  })
+  if (!advances.length) return 0
+
+  const quoteRef = String(invoice.customer_reference || '').trim().toLowerCase()
+  const sorted = [...advances].sort((a, b) => {
+    if (!quoteRef) return 0
+    const aHay = `${a.reference || ''} ${a.memo || ''}`.toLowerCase()
+    const bHay = `${b.reference || ''} ${b.memo || ''}`.toLowerCase()
+    const aMatch = aHay.includes(quoteRef) ? 0 : 1
+    const bMatch = bHay.includes(quoteRef) ? 0 : 1
+    return aMatch - bMatch
+  })
+
+  const advanceAccount = await ensureCustomerAdvanceAccount(tx, invoice.company_id)
+  if (!advanceAccount) throw inputError('Customer Advances account (2140) was not found')
+
+  let remainingDue = Math.round(Number(invoice.amount_total) * 100) / 100
+  let totalApplied = 0
+
+  for (const receipt of sorted) {
+    if (remainingDue <= 0.005) break
+    const available = Math.round(Number(receipt.unallocated_amount) * 100) / 100
+    if (available <= 0.005) continue
+    const applied = Math.min(available, remainingDue)
+
+    // Prevent applying the same receipt+invoice twice
+    const existingAllocation = await tx.receipt_allocations.findFirst({
+      where: { receipt_id: receipt.id, invoice_id: invoice.id },
+    })
+    if (existingAllocation) continue
+
+    const reserved = await tx.customer_receipts.updateMany({
+      where: { id: receipt.id, state: 'posted', unallocated_amount: { gte: applied } },
+      data: { unallocated_amount: { decrement: applied }, updated_at: postedAt },
+    })
+    if (reserved.count !== 1) continue
+
+    const allocation = await tx.receipt_allocations.create({
+      data: { receipt_id: receipt.id, invoice_id: invoice.id, allocated_amount: applied },
+    })
+
+    const baseAmount = Math.round(applied * Number(invoice.exchange_rate) * 100) / 100
+    // Use a reserved source_id range so we never collide with the original receipt JE (source_id = receipt.id).
+    const applicationSourceId = 2000000000 + allocation.id
+    await tx.journal_entries.create({
+      data: {
+        company_id: invoice.company_id,
+        journal_id: invoice.journal_id,
+        entry_number: `CADV${String(allocation.id).padStart(6, '0')}`,
+        entry_date: invoice.invoice_date,
+        fiscal_period_id: invoice.fiscal_period_id,
+        reference: invoice.invoice_number,
+        narration: `Advance ${receipt.receipt_number} applied to ${invoice.invoice_number}`,
+        state: 'posted',
+        source_type: 'customer_receipt',
+        source_id: applicationSourceId,
+        posted_at: postedAt,
+        journal_items: {
+          create: [
+            {
+              sequence: 10,
+              account_id: advanceAccount.id,
+              label: 'Customer Advance applied',
+              partner_type: 'customer',
+              partner_id: invoice.customer_id,
+              debit: baseAmount,
+              credit: 0,
+              currency_id: invoice.currency_id,
+              amount_currency: applied,
+            },
+            {
+              sequence: 20,
+              account_id: invoice.receivable_account_id,
+              label: 'Accounts Receivable',
+              partner_type: 'customer',
+              partner_id: invoice.customer_id,
+              debit: 0,
+              credit: baseAmount,
+              currency_id: invoice.currency_id,
+              amount_currency: -applied,
+            },
+          ],
+        },
+      },
+    })
+
+    totalApplied = Math.round((totalApplied + applied) * 100) / 100
+    remainingDue = Math.round((remainingDue - applied) * 100) / 100
+  }
+
+  if (totalApplied > Number(invoice.amount_total) + 0.005) {
+    throw inputError('Applied advance cannot exceed invoice total')
+  }
+  return totalApplied
 }

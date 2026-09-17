@@ -1,7 +1,7 @@
 const writableFields = new Set([
   'company_id', 'customer_code', 'name', 'fullName', 'partner_type', 'tax_id',
   'email', 'phone', 'address', 'city', 'country', 'currency_id',
-  'payment_term_id', 'receivable_account_id', 'credit_limit', 'notes', 'is_active',
+  'payment_term_id', 'receivable_account_id', 'credit_limit', 'opening_balance', 'notes', 'is_active',
 ])
 
 export const validateCustomer = (body, { partial = false } = {}) => {
@@ -21,6 +21,11 @@ export const validateCustomer = (body, { partial = false } = {}) => {
   if (!partial && !data.name) return { error: 'name (or fullName) is required' }
   if (data.name !== undefined && !data.name) return { error: 'Customer name cannot be empty' }
   if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) return { error: 'Invalid email address' }
+  if (data.opening_balance !== undefined && data.opening_balance !== null && data.opening_balance !== '') {
+    const opening = Number(data.opening_balance)
+    if (!Number.isFinite(opening) || opening < 0) return { error: 'Opening balance must be a non-negative number' }
+    data.opening_balance = opening
+  }
   return { data }
 }
 

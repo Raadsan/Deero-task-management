@@ -20,14 +20,42 @@ const fail = (res, error, fallback) => {
 function paymentChannel(method, account) {
   const code = String(account.code || '')
   const identity = `${method.code || ''} ${method.name || ''} ${account.name || ''}`.toLowerCase()
-  if (code === '1001' || /\bcash\b/.test(identity)) return { journalCode: 'CASH', journalName: 'Cash', journalType: 'cash', label: 'Cash Payment' }
-  if (code === '1002' || /\bbank\b|transfer/.test(identity)) return { journalCode: 'BANK', journalName: 'Bank', journalType: 'bank', label: 'Bank Payment' }
-  const label = /edahab/.test(identity) ? 'eDahab Payment'
-    : /merchant/.test(identity) ? 'Merchant Payment'
-      : /\bibs\b/.test(identity) ? 'IBS Payment'
-        : /evc/.test(identity) ? 'EVC Payment'
-          : `${method.name || 'Mobile Wallet'} Payment`
-  return { journalCode: 'WALLET', journalName: 'Mobile Wallet', journalType: 'bank', label }
+  if (code.startsWith('111') || /\bcash\b/.test(identity)) {
+    return { journalCode: 'CSH', journalName: 'Cash Journal', journalType: 'cash', label: 'Cash Payment' }
+  }
+  // Bank accounts (112x) and mobile money (113x) all post through Bank Journal.
+  // Payment Method → GL Account determines the money account; journal is only the book.
+  const label = /edahab|e-dahab/.test(identity) ? 'E-Dahab Payment'
+    : /evc/.test(identity) ? 'EVC-Plus Payment'
+      : /\bibs\b/.test(identity) ? 'IBS Bank Payment'
+        : /salaam/.test(identity) ? 'Salaam Bank Payment'
+          : /premier/.test(identity) ? 'Premier Bank Payment'
+            : /sombank/.test(identity) ? 'SomBank Payment'
+              : `${method.name || 'Bank'} Payment`
+  return { journalCode: 'BNK', journalName: 'Bank Journal', journalType: 'bank', label }
+}
+
+async function resolveCompanyJournal(companyId, channel, bankJournalId = null) {
+  if (bankJournalId) {
+    const linked = await prisma.journals.findFirst({
+      where: { id: bankJournalId, company_id: companyId, is_active: true, journal_type: channel.journalType },
+    })
+    if (linked) return linked
+  }
+  const preferredCodes = channel.journalType === 'cash' ? ['CSH', 'CASH'] : ['BNK', 'BANK']
+  return (
+    await prisma.journals.findFirst({
+      where: { company_id: companyId, code: channel.journalCode, journal_type: channel.journalType, is_active: true },
+    })
+    || await prisma.journals.findFirst({
+      where: { company_id: companyId, code: { in: preferredCodes }, journal_type: channel.journalType, is_active: true },
+      orderBy: { code: 'asc' },
+    })
+    || await prisma.journals.findFirst({
+      where: { company_id: companyId, journal_type: channel.journalType, is_active: true, NOT: { code: 'WALLET' } },
+      orderBy: { code: 'asc' },
+    })
+  )
 }
 async function resolvePaymentAccount({ vendor, method, bankAccountId, currencyId }) {
   let bank = null
@@ -54,21 +82,10 @@ async function resolvePaymentAccount({ vendor, method, bankAccountId, currencyId
   })
   if (!account) throw inputError('The selected payment method GL account is inactive, a parent, or incompatible')
   const channel = paymentChannel(method, account)
-  let journal = bank?.journal_id ? await prisma.journals.findUnique({ where: { id: bank.journal_id } }) : null
-  if (journal) journal = await prisma.journals.update({ where: { id: journal.id }, data: { name: channel.journalName, journal_type: channel.journalType, default_credit_account_id: account.id, is_active: true } })
-  if (!journal) journal = await prisma.journals.upsert({
-    where: { company_id_code: { company_id: vendor.company_id, code: channel.journalCode } },
-    update: { name: channel.journalName, journal_type: channel.journalType, default_credit_account_id: account.id, is_active: true },
-    create: {
-      company_id: vendor.company_id, code: channel.journalCode, name: channel.journalName,
-      journal_type: channel.journalType, default_credit_account_id: account.id,
-      currency_id: currencyId, sequence_prefix: channel.journalCode, is_active: true,
-    },
-  })
-  if (!journal?.is_active || journal.company_id !== vendor.company_id) throw inputError('Configure an active payment journal for this company')
-  if (bank && journal.id !== bank.journal_id) throw inputError('The selected bank account journal is inactive or invalid')
-  if (channel.journalCode === 'CASH' && journal.journal_type !== 'cash') throw inputError('The Cash journal is not configured as a cash journal')
-  if (channel.journalCode !== 'CASH' && journal.journal_type !== 'bank') throw inputError(`The ${channel.journalName} journal is not configured as a bank-type journal`)
+  const journal = await resolveCompanyJournal(vendor.company_id, channel, bank?.journal_id || null)
+  if (!journal?.is_active || journal.company_id !== vendor.company_id) throw inputError('Configure an active Cash or Bank journal for this company')
+  if (channel.journalType === 'cash' && journal.journal_type !== 'cash') throw inputError('The Cash journal is not configured as a cash journal')
+  if (channel.journalType === 'bank' && journal.journal_type !== 'bank') throw inputError('The Bank journal is not configured as a bank journal')
   return { bank, journal, account, channel }
 }
 async function prepare(input) {
@@ -86,6 +103,10 @@ async function prepare(input) {
   if (!vendor?.is_active) throw inputError('Active vendor not found')
   if (!vendor.companies?.is_active) throw inputError('Vendor company is inactive or missing')
   if (!method?.is_active || !['outbound', 'both'].includes(method.payment_type)) throw inputError('Select an active outbound payment method')
+  const reference = String(input.reference || '').trim()
+  if (method.requires_reference && !reference) {
+    throw inputError('Reference number is required for this payment method.')
+  }
   const fiscalPeriod = await prisma.fiscal_periods.findFirst({ where: { state: 'open', fiscal_years: { company_id: vendor.company_id, state: 'open' }, start_date: { lte: paymentDate }, end_date: { gte: paymentDate } } })
   if (!fiscalPeriod) throw inputError('No open fiscal period covers the payment date')
   const currencyId = id(input.currency_id) || vendor.currency_id || vendor.companies.currency_id
@@ -118,7 +139,7 @@ async function prepare(input) {
   if (!payableAccount) throw inputError('Accounts Payable account 2000 was not found')
   if (allocated < amount - 0.005 && !advanceAccount) throw inputError('Vendor Advances account 1400 was not found')
   return {
-    header: { company_id: vendor.company_id, vendor_id: vendorId, journal_id: journal.id, payment_method_id: paymentMethodId, bank_account_id: bank?.id || null, fiscal_period_id: fiscalPeriod.id, payment_date: paymentDate, currency_id: currencyId, exchange_rate: exchangeRate, amount, unallocated_amount: Math.round((amount - allocated) * 100) / 100, reference: String(input.reference || '').trim() || null, memo: String(input.memo || '').trim() || null, state: 'draft' },
+    header: { company_id: vendor.company_id, vendor_id: vendorId, journal_id: journal.id, payment_method_id: paymentMethodId, bank_account_id: bank?.id || null, fiscal_period_id: fiscalPeriod.id, payment_date: paymentDate, currency_id: currencyId, exchange_rate: exchangeRate, amount, unallocated_amount: Math.round((amount - allocated) * 100) / 100, reference: reference || null, memo: String(input.memo || '').trim() || null, state: 'draft' },
     allocations,
     payableAccountId: payableAccount.id,
     advanceAccountId: advanceAccount?.id || null,

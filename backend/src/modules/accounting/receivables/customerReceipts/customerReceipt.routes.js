@@ -1,5 +1,5 @@
 import express from 'express'
-import { getAll, getById, getOptions, getOutstandingInvoices, create, update, remove, post } from './customerReceipt.controller.js'
+import { getAll, getById, getOptions, getOutstandingInvoices, getAvailableAdvances, create, update, remove, post } from './customerReceipt.controller.js'
 import { protect, checkPermission } from '../../../../middlewares/authMiddleware.js'
 
 const router = express.Router()
@@ -12,6 +12,7 @@ router.route('/')
 
 router.get('/options', checkPermission('/customer-receipts', 'canView'), getOptions)
 router.get('/outstanding-invoices', checkPermission('/customer-receipts', 'canView'), getOutstandingInvoices)
+router.get('/advances/available', checkPermission('/customer-receipts', 'canView'), getAvailableAdvances)
 router.route('/:id')
     .get(checkPermission('/customer-receipts', 'canView'), getById)
     .put(checkPermission('/customer-receipts', 'canEdit'), update)

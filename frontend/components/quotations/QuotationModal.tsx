@@ -412,7 +412,7 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
     }
     item.selected_subservice_ids = newSelected;
 
-    // Recompute description based on selected subservices
+    // Recompute description and rate from selected subservices (sum prices; qty stays independent)
     const foundService = availableServices.find((s) => s.serviceName === item.service_type);
     if (foundService && Array.isArray(foundService.subService)) {
       const selectedSubs = foundService.subService.filter((s: any) => newSelected.includes(s.id));
@@ -420,6 +420,11 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
         item.description = selectedSubs
           .map((s: any, idx: number) => `${idx + 1}. ${s.name}: ${s.description || "Effective implementation and delivery."}`)
           .join("\n");
+        if (!item.is_free) {
+          item.rate = selectedSubs.reduce((sum: number, s: any) => sum + Number(s.price || 0), 0);
+        }
+      } else if (!item.is_free) {
+        item.rate = 0;
       }
     }
 

@@ -440,8 +440,8 @@ export const deleteQuotation = async (req, res) => {
     const existing = await prisma.quotations.findUnique({ where: { id } });
     if (!existing) return res.status(404).json({ success: false, message: "Quotation not found" });
 
-    if (existing.status === "CONVERTED") {
-      return res.status(400).json({ success: false, message: "Cannot delete a converted quotation" });
+    if (existing.status === "CONVERTED" || existing.converted_invoice_id) {
+      return res.status(400).json({ success: false, message: "Cannot delete a quotation that has been invoiced" });
     }
 
     await prisma.quotations.delete({ where: { id } });
@@ -452,305 +452,109 @@ export const deleteQuotation = async (req, res) => {
   }
 };
 
-// STEP 9 & STEP 20: ATOMIC CONVERSION TO INVOICE WITH JOURNAL ENTRY
-export const convertQuotationToInvoice = async (req, res) => {
+/** Accepted quotations available for invoice import (not yet linked to an invoice). */
+export const getAcceptedForInvoice = async (req, res) => {
   try {
-    const id = Number(req.params.id);
-    if (!id) return res.status(400).json({ success: false, message: "Invalid quotation ID" });
-
-    const result = await prisma.$transaction(async (tx) => {
-      const quotation = await tx.quotations.findUnique({
-        where: { id },
-        include: {
-          lines: {
-            include: { products: true, taxes: true },
-            orderBy: { sequence: "asc" },
+    const companyId = req.query.company_id ? Number(req.query.company_id) : null
+    const where = {
+      status: 'ACCEPTED',
+      converted_invoice_id: null,
+      ...(companyId ? { company_id: companyId } : {}),
+    }
+    const items = await prisma.quotations.findMany({
+      where,
+      include: {
+        client: { select: { id: true, institution: true, contactPerson: true, email: true, phone: true } },
+        customer: { select: { id: true, name: true, email: true, phone: true, company_id: true } },
+        lines: {
+          include: {
+            products: { select: { id: true, name: true, sku: true } },
+            taxes: { select: { id: true, name: true, rate_percent: true } },
           },
-          customer: true,
-          client: true,
+          orderBy: { sequence: 'asc' },
         },
-      });
+      },
+      orderBy: { created_at: 'desc' },
+    })
+    res.json({ success: true, data: items })
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message })
+  }
+}
 
-      if (!quotation) throw new Error("Quotation not found");
-      if (quotation.status === "CONVERTED" && quotation.converted_invoice_id) {
-        throw new Error("This quotation has already been converted to an invoice");
-      }
+/**
+ * Accept a quotation for later invoicing.
+ * Does NOT create an invoice, journal entry, or receipt.
+ */
+export const acceptQuotation = async (req, res) => {
+  try {
+    const id = Number(req.params.id)
+    if (!id) return res.status(400).json({ success: false, message: 'Invalid quotation ID' })
 
-      let customerId = quotation.customer_id;
-      let companyId = quotation.company_id || 1;
+    const quotation = await prisma.quotations.findUnique({
+      where: { id },
+      include: {
+        client: true,
+        customer: true,
+        converted_invoice: { select: { id: true, invoice_number: true, state: true } },
+      },
+    })
+    if (!quotation) return res.status(404).json({ success: false, message: 'Quotation not found' })
+    if (quotation.converted_invoice_id) {
+      return res.status(400).json({
+        success: false,
+        message: 'This quotation is already linked to invoice ' + (quotation.converted_invoice?.invoice_number || quotation.converted_invoice_id),
+      })
+    }
+    if (['REJECTED', 'EXPIRED'].includes(quotation.status)) {
+      return res.status(400).json({ success: false, message: 'Cannot accept a ' + quotation.status.toLowerCase() + ' quotation' })
+    }
 
-      // Ensure customer exists
-      if (!customerId && quotation.client) {
-        let cust = await tx.customers.findFirst({
-          where: { OR: [{ clientId: quotation.client.id }, { email: quotation.client.email }] },
-        });
-        if (!cust) {
-          cust = await tx.customers.create({
-            data: {
-              company_id: companyId,
-              name: quotation.client.institution || quotation.client.companyName || "Client",
-              email: quotation.client.email || null,
-              phone: quotation.client.phone || null,
-              address: quotation.client.address || null,
-              clientId: quotation.client.id,
-            },
-          });
-        }
-        customerId = cust.id;
-        companyId = cust.company_id;
-      }
-
-      if (!customerId) {
-        throw new Error("No linked accounting customer found for this quotation");
-      }
-
-      const customer = await tx.customers.findUnique({ where: { id: customerId } });
-      if (!customer) throw new Error("Customer not found in accounting");
-
-      // Find active sales journal (INV), receivable account (1200 / default), revenue account (4000)
-      let journal = await tx.journals.findFirst({
-        where: { company_id: companyId, journal_type: "sale", is_active: true },
-      });
-      if (!journal) {
-        journal = await tx.journals.findFirst({
-          where: { company_id: companyId, code: "INV" },
-        });
-      }
-      if (!journal) {
-        journal = await tx.journals.findFirst({ where: { is_active: true } });
-      }
-      if (!journal) throw new Error("No active sales journal found. Please configure journals first.");
-
-      let arAccount = await tx.chart_of_accounts.findFirst({
-        where: {
-          company_id: companyId,
-          code: { in: ["1200", "1100", "1000"] },
-          is_active: true,
-        },
-      });
-      if (!arAccount) {
-        arAccount = await tx.chart_of_accounts.findFirst({
-          where: { company_id: companyId, account_types: { internal_group: "asset" }, is_active: true },
-        });
-      }
-      if (!arAccount) throw new Error("Accounts Receivable account not found in Chart of Accounts");
-
-      let revenueAccount = await tx.chart_of_accounts.findFirst({
-        where: {
-          company_id: companyId,
-          code: { in: ["4000", "4100", "4200"] },
-          is_active: true,
-        },
-      });
-      if (!revenueAccount) {
-        revenueAccount = await tx.chart_of_accounts.findFirst({
-          where: { company_id: companyId, account_types: { internal_group: "income" }, is_active: true },
-        });
-      }
-      if (!revenueAccount) throw new Error("Sales Revenue account (4000) not found in Chart of Accounts");
-
-      // Find open fiscal period
-      const invoiceDate = new Date();
-      let fiscalPeriod = await tx.fiscal_periods.findFirst({
-        where: {
-          state: "open",
-          fiscal_years: { company_id: companyId, state: "open" },
-          start_date: { lte: invoiceDate },
-          end_date: { gte: invoiceDate },
-        },
-        orderBy: { period_number: "asc" },
-      });
-
-      // Generate invoice number INV-YYYY-MM-XXXX
-      const year = invoiceDate.getFullYear();
-      const month = String(invoiceDate.getMonth() + 1).padStart(2, "0");
-      const prefix = `INV-${year}${month}-`;
-      const lastInv = await tx.customer_invoices.findFirst({
-        where: { invoice_number: { startsWith: prefix } },
-        orderBy: { invoice_number: "desc" },
-        select: { invoice_number: true },
-      });
-      let nextSeq = 1;
-      if (lastInv?.invoice_number) {
-        const parts = lastInv.invoice_number.split("-");
-        const parsed = parseInt(parts[parts.length - 1], 10);
-        if (!isNaN(parsed)) nextSeq = parsed + 1;
-      }
-      const invoice_number = `${prefix}${String(nextSeq).padStart(4, "0")}`;
-
-      // Read VAT from quotation notes metadata if tax is 0
-      let vatPercent = 0;
-      if (quotation.notes) {
-        try {
-          const parsed = JSON.parse(quotation.notes);
-          if (parsed.vat_percent !== undefined) vatPercent = Number(parsed.vat_percent);
-        } catch {}
-      }
-
-      const untaxedAmount = Number(quotation.subtotal) - Number(quotation.discount);
-      let taxAmount = Number(quotation.tax);
-      if (taxAmount <= 0 && vatPercent > 0) {
-        taxAmount = Math.round((untaxedAmount * (vatPercent / 100)) * 100) / 100;
-      }
-      const totalAmount = untaxedAmount + taxAmount;
-
-      // 1. Create Invoice
-      const invoice = await tx.customer_invoices.create({
-        data: {
-          company_id: companyId,
-          document_type: "invoice",
-          invoice_number,
-          customer_id: customerId,
-          client_id: quotation.client_id || null,
-          journal_id: journal.id,
-          fiscal_period_id: fiscalPeriod?.id || null,
-          invoice_date: invoiceDate,
-          due_date: quotation.valid_until || invoiceDate,
-          currency_id: quotation.currency_id || 1,
-          receivable_account_id: arAccount.id,
-          customer_reference: quotation.quotation_number,
-          state: "draft",
-          payment_state: "not_paid",
-          amount_untaxed: untaxedAmount,
-          amount_tax: taxAmount,
-          amount_total: totalAmount,
-          paid_amount: 0,
-          amount_due: totalAmount,
-          notes: quotation.notes || `Converted from Quotation ${quotation.quotation_number}`,
-          posted_at: null,
-        },
-      });
-
-      // 2. Create Invoice Lines
-      for (let i = 0; i < quotation.lines.length; i++) {
-        const line = quotation.lines[i];
-        await tx.customer_invoice_lines.create({
+    // Ensure an accounting customer exists so the invoice form can select it later.
+    let customerId = quotation.customer_id
+    const companyId = quotation.company_id || quotation.customer?.company_id || 1
+    if (!customerId && quotation.client) {
+      const orFilters = [{ clientId: quotation.client.id }]
+      if (quotation.client.email) orFilters.push({ email: quotation.client.email })
+      let cust = await prisma.customers.findFirst({ where: { OR: orFilters } })
+      if (!cust) {
+        cust = await prisma.customers.create({
           data: {
-            invoice_id: invoice.id,
-            sequence: line.sequence || (i + 1) * 10,
-            product_id: line.product_id || null,
-            description: line.description,
-            quantity: line.quantity,
-            unit_price: line.unit_price,
-            discount_percent: line.discount_percent,
-            tax_id: line.tax_id || null,
-            income_account_id: revenueAccount.id,
-            subtotal: line.subtotal,
-          },
-        });
-      }
-
-      // 3. Create Double-Entry Journal Entry
-      const entryNumber = invoice_number;
-      const journalEntry = await tx.journal_entries.create({
-        data: {
-          company_id: companyId,
-          journal_id: journal.id,
-          entry_number: entryNumber,
-          entry_date: invoiceDate,
-          fiscal_period_id: fiscalPeriod?.id || null,
-          reference: invoice_number,
-          narration: `Draft customer invoice ${invoice_number} (Quotation ${quotation.quotation_number})`,
-          state: "draft",
-          source_type: "customer_invoice",
-          source_id: invoice.id,
-          posted_at: null,
-        },
-      });
-
-      // Dr Accounts Receivable
-      await tx.journal_items.create({
-        data: {
-          entry_id: journalEntry.id,
-          sequence: 10,
-          account_id: arAccount.id,
-          partner_type: "customer",
-          partner_id: customer.id,
-          label: `Receivable for ${invoice_number}`,
-          debit: totalAmount,
-          credit: 0,
-          currency_id: quotation.currency_id || 1,
-        },
-      });
-
-      // Cr Sales Revenue
-      await tx.journal_items.create({
-        data: {
-          entry_id: journalEntry.id,
-          sequence: 20,
-          account_id: revenueAccount.id,
-          label: `Sales Revenue for ${invoice_number}`,
-          debit: 0,
-          credit: untaxedAmount,
-          currency_id: quotation.currency_id || 1,
-        },
-      });
-
-      // Cr Tax Payable (if tax > 0)
-      if (taxAmount > 0) {
-        let taxAccount = await tx.chart_of_accounts.findFirst({
-          where: {
             company_id: companyId,
-            code: { in: ["2100", "2200", "2300", "2000"] },
-            is_active: true,
+            name: quotation.client.institution || quotation.client.companyName || 'Client',
+            email: quotation.client.email || null,
+            phone: quotation.client.phone || null,
+            address: quotation.client.address || null,
+            clientId: quotation.client.id,
           },
-        });
-        if (!taxAccount) {
-          taxAccount = await tx.chart_of_accounts.findFirst({
-            where: { company_id: companyId, account_types: { internal_group: "liability" }, is_active: true },
-          });
-        }
-        if (taxAccount) {
-          await tx.journal_items.create({
-            data: {
-              entry_id: journalEntry.id,
-              sequence: 30,
-              account_id: taxAccount.id,
-              label: `Tax Payable for ${invoice_number}`,
-              debit: 0,
-              credit: taxAmount,
-              currency_id: quotation.currency_id || 1,
-            },
-          });
-        }
+        })
       }
+      customerId = cust.id
+    }
 
-      // Link Journal Entry to Invoice
-      await tx.customer_invoices.update({
-        where: { id: invoice.id },
-        data: { journal_entry_id: journalEntry.id },
-      });
+    const updated = await prisma.quotations.update({
+      where: { id },
+      data: {
+        status: 'ACCEPTED',
+        ...(customerId ? { customer_id: customerId } : {}),
+      },
+      include: {
+        client: { select: { id: true, institution: true, contactPerson: true, email: true, phone: true } },
+        customer: { select: { id: true, name: true, email: true, phone: true } },
+        lines: true,
+      },
+    })
 
-      // 4. Update Quotation Status to ACCEPTED
-      const updatedQuotation = await tx.quotations.update({
-        where: { id },
-        data: {
-          status: "ACCEPTED",
-          converted_invoice_id: invoice.id,
-        },
-      });
-
-      return {
-        quotation: updatedQuotation,
-        invoice,
-        journalEntry,
-      };
-    }, { maxWait: 10000, timeout: 30000 });
-
-    await logAudit(
-      req,
-      "CONVERT",
-      "quotations",
-      id,
-      `Converted Quotation ${id} to Invoice ${result.invoice.invoice_number}`
-    );
-
+    await logAudit(req, 'ACCEPT', 'quotations', id, 'Accepted quotation ' + updated.quotation_number + ' (available for invoice import)')
     res.json({
       success: true,
-      message: `Quotation converted to Invoice ${result.invoice.invoice_number}`,
-      data: result,
-    });
+      message: 'Quotation accepted. Import it from the Invoice form when ready — no invoice was created yet.',
+      data: updated,
+    })
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message })
   }
-};
+}
+
+/** @deprecated Use acceptQuotation — kept as alias so old clients do not auto-create invoices. */
+export const convertQuotationToInvoice = acceptQuotation

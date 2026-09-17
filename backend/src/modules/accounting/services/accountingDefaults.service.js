@@ -8,21 +8,51 @@ const ACCOUNT_TYPES = [
   { name: 'Expenses', internal_group: 'expense', normal_balance: 'debit', report_type: 'profit_loss', sequence: 50 },
 ]
 
+/** Hierarchical default CoA. parentCode null = root. posting=false ⇒ parent/header. */
 const ACCOUNTS = [
-  { code: '1000', name: 'Cash and Cash Equivalents', type: 'Assets', reconcilable: true },
-  { code: '1100', name: 'Bank', type: 'Assets', reconcilable: true },
-  { code: '1200', name: 'Accounts Receivable', type: 'Assets', reconcilable: true },
-  { code: '1300', name: 'Inventory', type: 'Assets' },
-  { code: '1400', name: 'Vendor Advances', type: 'Assets', reconcilable: true },
-  { code: '2000', name: 'Accounts Payable', type: 'Liabilities', reconcilable: true },
-  { code: '2100', name: 'Taxes Payable', type: 'Liabilities' },
-  { code: '3000', name: 'Owner Equity', type: 'Equity' },
-  { code: '3100', name: 'Retained Earnings', type: 'Equity' },
-  { code: '4000', name: 'Sales Revenue', type: 'Income' },
-  { code: '4100', name: 'Service Revenue', type: 'Income' },
-  { code: '5000', name: 'Cost of Sales', type: 'Expenses' },
-  { code: '5100', name: 'Operating Expenses', type: 'Expenses' },
-  { code: '5200', name: 'Bank Charges', type: 'Expenses' },
+  { code: '1000', name: 'Assets', type: 'Assets', parentCode: null, posting: false },
+  { code: '1100', name: 'Current Assets', type: 'Assets', parentCode: '1000', posting: false },
+  { code: '1110', name: 'Cash and Cash Equivalents', type: 'Assets', parentCode: '1100', posting: true, reconcilable: true },
+  { code: '1120', name: 'Bank Accounts', type: 'Assets', parentCode: '1100', posting: false },
+  { code: '1121', name: 'SomBank', type: 'Assets', parentCode: '1120', posting: true, reconcilable: true },
+  { code: '1122', name: 'Premier Bank', type: 'Assets', parentCode: '1120', posting: true, reconcilable: true },
+  { code: '1123', name: 'Salaam Bank', type: 'Assets', parentCode: '1120', posting: true, reconcilable: true },
+  { code: '1124', name: 'IBS Bank', type: 'Assets', parentCode: '1120', posting: true, reconcilable: true },
+  { code: '1130', name: 'Mobile Money', type: 'Assets', parentCode: '1100', posting: false },
+  { code: '1131', name: 'EVC-Plus', type: 'Assets', parentCode: '1130', posting: true, reconcilable: true },
+  { code: '1132', name: 'E-Dahab', type: 'Assets', parentCode: '1130', posting: true, reconcilable: true },
+  { code: '1200', name: 'Accounts Receivable', type: 'Assets', parentCode: '1100', posting: true, reconcilable: true },
+  { code: '1300', name: 'Inventory', type: 'Assets', parentCode: '1100', posting: true },
+  { code: '1400', name: 'Vendor Advances', type: 'Assets', parentCode: '1100', posting: true, reconcilable: true },
+
+  { code: '2000', name: 'Liabilities', type: 'Liabilities', parentCode: null, posting: false },
+  { code: '2100', name: 'Current Liabilities', type: 'Liabilities', parentCode: '2000', posting: false },
+  { code: '2110', name: 'Accounts Payable', type: 'Liabilities', parentCode: '2100', posting: true, reconcilable: true },
+  { code: '2120', name: 'Taxes Payable', type: 'Liabilities', parentCode: '2100', posting: true },
+  { code: '2130', name: 'Accrued Expenses', type: 'Liabilities', parentCode: '2100', posting: true },
+  { code: '2140', name: 'Customer Advances', type: 'Liabilities', parentCode: '2100', posting: true, reconcilable: true },
+
+  { code: '3000', name: 'Equity', type: 'Equity', parentCode: null, posting: false },
+  { code: '3100', name: "Owner's Equity", type: 'Equity', parentCode: '3000', posting: true },
+  { code: '3200', name: 'Retained Earnings', type: 'Equity', parentCode: '3000', posting: true },
+
+  { code: '4000', name: 'Revenue', type: 'Income', parentCode: null, posting: false },
+  { code: '4100', name: 'Sales Revenue', type: 'Income', parentCode: '4000', posting: true },
+  { code: '4200', name: 'Service Revenue', type: 'Income', parentCode: '4000', posting: true },
+  { code: '4300', name: 'Other Revenue', type: 'Income', parentCode: '4000', posting: true },
+
+  { code: '5000', name: 'Expenses', type: 'Expenses', parentCode: null, posting: false },
+  { code: '5050', name: 'Cost of Sales', type: 'Expenses', parentCode: '5000', posting: true },
+  { code: '5100', name: 'Operating Expenses', type: 'Expenses', parentCode: '5000', posting: false },
+  { code: '5110', name: 'Internet Expense', type: 'Expenses', parentCode: '5100', posting: true },
+  { code: '5120', name: 'Electricity Expense', type: 'Expenses', parentCode: '5100', posting: true },
+  { code: '5130', name: 'Rent Expense', type: 'Expenses', parentCode: '5100', posting: true },
+  { code: '5140', name: 'Office Supplies', type: 'Expenses', parentCode: '5100', posting: true },
+  { code: '5150', name: 'Salaries and Wages', type: 'Expenses', parentCode: '5100', posting: true },
+  { code: '5160', name: 'Transportation Expense', type: 'Expenses', parentCode: '5100', posting: true },
+  { code: '5170', name: 'Advertising Expense', type: 'Expenses', parentCode: '5100', posting: true },
+  { code: '5180', name: 'Other Operating Expenses', type: 'Expenses', parentCode: '5100', posting: true },
+  { code: '5200', name: 'Bank Charges', type: 'Expenses', parentCode: '5000', posting: true },
 ]
 
 const JOURNALS = [
@@ -64,14 +94,51 @@ async function initialize() {
 
   const accountByCode = new Map()
   for (const definition of ACCOUNTS) {
-    const account = await findOrCreate(prisma.chart_of_accounts, {
-      company_id: company.id, code: definition.code,
-    }, {
-      company_id: company.id, code: definition.code, name: definition.name,
-      account_type_id: typeByName.get(definition.type).id, currency_id: currency.id,
-      is_reconcilable: Boolean(definition.reconcilable), allow_manual_entry: true, is_active: true,
+    const parentId = definition.parentCode ? accountByCode.get(definition.parentCode)?.id : null
+    const existing = await prisma.chart_of_accounts.findFirst({
+      where: { company_id: company.id, code: definition.code },
     })
+    let account
+    if (existing) {
+      // Never rename/repurpose an existing coded account (may hold journal history).
+      // Only fill missing parent links and enforce parent non-posting flags.
+      const patch = {}
+      if (existing.parent_id == null && parentId) patch.parent_id = parentId
+      if (definition.posting === false && existing.allow_manual_entry) patch.allow_manual_entry = false
+      account = Object.keys(patch).length
+        ? await prisma.chart_of_accounts.update({ where: { id: existing.id }, data: patch })
+        : existing
+    } else {
+      account = await prisma.chart_of_accounts.create({
+        data: {
+          company_id: company.id,
+          code: definition.code,
+          name: definition.name,
+          account_type_id: typeByName.get(definition.type).id,
+          parent_id: parentId || null,
+          currency_id: currency.id,
+          is_reconcilable: Boolean(definition.reconcilable),
+          allow_manual_entry: definition.posting !== false,
+          is_active: true,
+          notes: definition.posting === false
+            ? 'Parent / grouping account — do not post journal entries here.'
+            : null,
+        },
+      })
+    }
     accountByCode.set(definition.code, account)
+  }
+
+  // Ensure parents with children cannot post
+  const parents = await prisma.chart_of_accounts.findMany({
+    where: { company_id: company.id, other_chart_of_accounts: { some: {} } },
+    select: { id: true },
+  })
+  if (parents.length) {
+    await prisma.chart_of_accounts.updateMany({
+      where: { id: { in: parents.map((p) => p.id) } },
+      data: { allow_manual_entry: false },
+    })
   }
 
   const year = new Date().getUTCFullYear()
@@ -108,14 +175,39 @@ async function initialize() {
     create: { name: 'Net 30', description: 'Payment is due within 30 days', is_active: true },
   })
 
+  // Seed default payment methods for new installs only (never overwrite existing mappings).
   const methods = [
-    { name: 'Cash', code: 'CASH', payment_type: 'both', gl_account_id: accountByCode.get('1000').id },
-    { name: 'Bank Transfer', code: 'BANK', payment_type: 'both', gl_account_id: accountByCode.get('1100').id, requires_reference: true },
+    { name: 'Cash', code: 'CASH', payment_type: 'both', glCode: '1110', requires_reference: false },
+    { name: 'SomBank', code: 'SOMBANK', payment_type: 'both', glCode: '1121', requires_reference: true },
+    { name: 'Premier Bank', code: 'PREMIER', payment_type: 'both', glCode: '1122', requires_reference: true },
+    { name: 'Salaam Bank', code: 'SALAAM', payment_type: 'both', glCode: '1123', requires_reference: true },
+    { name: 'IBS Bank', code: 'IBS', payment_type: 'both', glCode: '1124', requires_reference: true },
+    { name: 'EVC-Plus', code: 'EVC', payment_type: 'both', glCode: '1131', requires_reference: true },
+    { name: 'E-Dahab', code: 'EDAHAB', payment_type: 'both', glCode: '1132', requires_reference: true },
   ]
   for (const method of methods) {
-    await prisma.payment_methods.upsert({
-      where: { code: method.code }, update: { ...method, is_active: true },
-      create: { ...method, allow_multiple_accounts: false, is_active: true },
+    const gl = accountByCode.get(method.glCode)
+    const existingMethod = await prisma.payment_methods.findUnique({ where: { code: method.code } })
+    if (existingMethod) {
+      if (!existingMethod.gl_account_id && gl) {
+        await prisma.payment_methods.update({
+          where: { id: existingMethod.id },
+          data: { gl_account_id: gl.id, is_active: true },
+        })
+      }
+      continue
+    }
+    if (!gl) continue
+    await prisma.payment_methods.create({
+      data: {
+        name: method.name,
+        code: method.code,
+        payment_type: method.payment_type,
+        gl_account_id: gl.id,
+        requires_reference: Boolean(method.requires_reference),
+        allow_multiple_accounts: false,
+        is_active: true,
+      },
     })
   }
 

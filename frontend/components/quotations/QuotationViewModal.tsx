@@ -120,18 +120,18 @@ export default function QuotationViewModal({ open, onOpenChange, quotation, onCo
     if (!quotation) return;
     if (
       !confirm(
-        `Are you sure you want to convert Quotation ${quotation.quotation_number} into an Accounting Invoice? This will post the appropriate Journal Entries.`
+        `Accept Quotation ${quotation.quotation_number}? No invoice will be created yet. Import it later from Customer Invoices → Import from Accepted Quotation.`
       )
     ) return;
 
     try {
       setConverting(true);
-      const res = await quotationApi.convertToInvoice(quotation.id);
-      accountingToast(`Successfully converted to Invoice ${res.invoice?.invoice_number || ""}`, "success");
+      await quotationApi.accept(quotation.id);
+      accountingToast(`Quotation ${quotation.quotation_number} accepted — available for invoice import`, "success");
       if (onConverted) onConverted();
       onOpenChange(false);
     } catch (err: any) {
-      accountingToast(err?.response?.data?.message || err.message || "Failed to convert quotation", "error");
+      accountingToast(err?.response?.data?.message || err.message || "Failed to accept quotation", "error");
     } finally {
       setConverting(false);
     }
@@ -214,7 +214,7 @@ export default function QuotationViewModal({ open, onOpenChange, quotation, onCo
             <Button type="button" variant="outline" size="sm" onClick={() => onOpenChange(false)} className="text-xs font-semibold">
               Close
             </Button>
-            {quotation.status !== "CONVERTED" && (
+            {quotation.status !== "ACCEPTED" && quotation.status !== "CONVERTED" && !quotation.converted_invoice_id && (
               <Button
                 type="button"
                 size="sm"
@@ -223,8 +223,16 @@ export default function QuotationViewModal({ open, onOpenChange, quotation, onCo
                 className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold gap-1.5"
               >
                 {converting ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
-                {converting ? "Converting..." : "Convert to Invoice"}
+                {converting ? "Accepting..." : "Accept Quotation"}
               </Button>
+            )}
+            {quotation.status === "ACCEPTED" && !quotation.converted_invoice_id && (
+              <span className="text-xs font-semibold text-emerald-700">Accepted — import from Invoice form</span>
+            )}
+            {Boolean(quotation.converted_invoice_id) && (
+              <span className="text-xs font-semibold text-purple-700">
+                Invoiced{quotation.converted_invoice?.invoice_number ? `: ${quotation.converted_invoice.invoice_number}` : ""}
+              </span>
             )}
           </div>
         </DialogFooter>

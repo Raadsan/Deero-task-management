@@ -71,9 +71,19 @@ export const quotationApi = {
     await api.delete(`/accounting/quotations/${id}`);
   },
 
-  convertToInvoice: async (id: number): Promise<{ quotation: Quotation; invoice: any; journalEntry: any }> => {
-    const res = await api.post(`/accounting/quotations/${id}/convert-to-invoice`);
+  convertToInvoice: async (id: number): Promise<Quotation> => {
+    const res = await api.post(`/accounting/quotations/${id}/accept`);
     return res.data.data;
+  },
+
+  accept: async (id: number): Promise<Quotation> => {
+    const res = await api.post(`/accounting/quotations/${id}/accept`);
+    return res.data.data;
+  },
+
+  getAcceptedForInvoice: async (params?: { company_id?: number }): Promise<Quotation[]> => {
+    const res = await api.get("/accounting/quotations/accepted-for-invoice", { params });
+    return res.data.data || [];
   },
 
   updateStatus: async (id: number, status: string): Promise<Quotation> => {

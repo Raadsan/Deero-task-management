@@ -232,10 +232,17 @@ async function allocateNumber(tx, journal, prefix = journal.sequence_prefix || j
 
 function paymentChannel(method, account) {
   const identity = `${method.code || ''} ${method.name || ''} ${account.code || ''} ${account.name || ''}`.toLowerCase()
-  if (account.code === '1001' || /\bcash\b/.test(identity)) return { code: 'CASH', name: 'Cash', type: 'cash', label: 'Cash Payment' }
-  if (account.code === '1002' || /\bbank\b|transfer/.test(identity)) return { code: 'BANK', name: 'Bank', type: 'bank', label: 'Bank Payment' }
-  const label = /edahab/.test(identity) ? 'eDahab Payment' : /merchant/.test(identity) ? 'Merchant Payment' : /\bibs\b/.test(identity) ? 'IBS Payment' : /evc/.test(identity) ? 'EVC Payment' : `${method.name || 'Mobile Wallet'} Payment`
-  return { code: 'WALLET', name: 'Mobile Wallet', type: 'bank', label }
+  if (String(account.code || '').startsWith('111') || /\bcash\b/.test(identity)) {
+    return { code: 'CSH', name: 'Cash Journal', type: 'cash', label: 'Cash Payment' }
+  }
+  const label = /edahab|e-dahab/.test(identity) ? 'E-Dahab Payment'
+    : /evc/.test(identity) ? 'EVC-Plus Payment'
+      : /\bibs\b/.test(identity) ? 'IBS Bank Payment'
+        : /salaam/.test(identity) ? 'Salaam Bank Payment'
+          : /premier/.test(identity) ? 'Premier Bank Payment'
+            : /sombank/.test(identity) ? 'SomBank Payment'
+              : `${method.name || 'Bank'} Payment`
+  return { code: 'BNK', name: 'Bank Journal', type: 'bank', label }
 }
 
 async function postImmediatePayment(tx, bill, input, postedAt) {
@@ -247,6 +254,10 @@ async function postImmediatePayment(tx, bill, input, postedAt) {
   if (amount > Number(bill.amount_total) + 0.005) throw inputError('Amount paid cannot exceed the vendor bill total')
   const method = await tx.payment_methods.findUnique({ where: { id: methodId } })
   if (!method?.is_active || !['outbound', 'both'].includes(method.payment_type)) throw inputError('Select an active outbound payment method')
+  const paymentReference = String(input.payment_reference || '').trim()
+  if (method.requires_reference && !paymentReference) {
+    throw inputError('Reference number is required for this payment method.')
+  }
   let bank = bankId ? await tx.bank_accounts.findUnique({ where: { id: bankId } }) : null
   if (method.allow_multiple_accounts && !bank) {
     const matches = await tx.bank_accounts.findMany({ where: { company_id: bill.company_id, currency_id: bill.currency_id, is_active: true, gl_account_id: { not: null }, journal_id: { not: null } } })
@@ -259,9 +270,28 @@ async function postImmediatePayment(tx, bill, input, postedAt) {
   const paymentAccount = await tx.chart_of_accounts.findFirst({ where: { id: paymentAccountId, company_id: bill.company_id, is_active: true, allow_manual_entry: true, account_types: { internal_group: 'asset' }, other_chart_of_accounts: { none: {} } } })
   if (!paymentAccount) throw inputError('The payment method GL account is not an active cash, bank, or wallet posting account')
   const channel = paymentChannel(method, paymentAccount)
-  let journal = bank?.journal_id ? await tx.journals.findUnique({ where: { id: bank.journal_id } }) : null
-  if (!journal) journal = await tx.journals.upsert({ where: { company_id_code: { company_id: bill.company_id, code: channel.code } }, update: { name: channel.name, journal_type: channel.type, default_credit_account_id: paymentAccount.id, is_active: true }, create: { company_id: bill.company_id, code: channel.code, name: channel.name, journal_type: channel.type, default_credit_account_id: paymentAccount.id, currency_id: bill.currency_id, sequence_prefix: channel.code, is_active: true } })
-  if (!journal?.is_active || journal.company_id !== bill.company_id) throw inputError('Configure an active journal for the selected payment method')
+  let journal = bank?.journal_id
+    ? await tx.journals.findFirst({ where: { id: bank.journal_id, company_id: bill.company_id, is_active: true, journal_type: channel.type } })
+    : null
+  if (!journal) {
+    journal = await tx.journals.findFirst({
+      where: { company_id: bill.company_id, code: channel.code, journal_type: channel.type, is_active: true },
+    })
+  }
+  if (!journal) {
+    const preferred = channel.type === 'cash' ? ['CSH', 'CASH'] : ['BNK', 'BANK']
+    journal = await tx.journals.findFirst({
+      where: { company_id: bill.company_id, code: { in: preferred }, journal_type: channel.type, is_active: true },
+      orderBy: { code: 'asc' },
+    })
+  }
+  if (!journal) {
+    journal = await tx.journals.findFirst({
+      where: { company_id: bill.company_id, journal_type: channel.type, is_active: true, NOT: { code: 'WALLET' } },
+      orderBy: { code: 'asc' },
+    })
+  }
+  if (!journal?.is_active || journal.company_id !== bill.company_id) throw inputError('Configure an active Cash or Bank journal for the selected payment method')
   const existing = await tx.vendor_payments.findMany({ where: { company_id: bill.company_id, payment_number: { startsWith: 'PAY' } }, select: { payment_number: true } })
   let sequence = Math.max(Number(journal.next_sequence || 1), ...existing.map((row) => Number(String(row.payment_number).slice(3)) + 1).filter(Number.isFinite))
   let paymentNumber = `PAY${String(sequence).padStart(4, '0')}`
@@ -271,7 +301,7 @@ async function postImmediatePayment(tx, bill, input, postedAt) {
     company_id: bill.company_id, payment_number: paymentNumber, vendor_id: bill.vendor_id, journal_id: journal.id,
     payment_method_id: method.id, bank_account_id: bank?.id || null, fiscal_period_id: bill.fiscal_period_id,
     payment_date: bill.bill_date, currency_id: bill.currency_id, exchange_rate: bill.exchange_rate, amount,
-    unallocated_amount: 0, reference: String(input.payment_reference || '').trim() || null,
+    unallocated_amount: 0, reference: paymentReference || null,
     memo: `Immediate payment for ${bill.bill_number}`, state: 'posted', posted_at: postedAt,
     payment_allocations: { create: [{ bill_id: bill.id, allocated_amount: amount }] },
   } })
@@ -368,7 +398,11 @@ export const post = async (req, res) => {
       if (!bill.fiscal_periods || bill.fiscal_periods.state !== 'open' || bill.fiscal_periods.fiscal_years.state !== 'open') throw inputError('Bill fiscal period is closed or invalid')
       const postedAt = new Date()
       if (!bill.journal_entry_id || !bill.journal_entries || bill.journal_entries.state !== 'draft') throw inputError('Linked draft journal entry is missing or invalid')
-      await tx.journal_entries.update({ where: { id: bill.journal_entry_id }, data: { state: 'posted', posted_at: postedAt, narration: `Posted vendor bill ${bill.bill_number}` } })
+      const claimedEntry = await tx.journal_entries.updateMany({
+        where: { id: bill.journal_entry_id, state: 'draft', source_type: 'vendor_bill', source_id: billId },
+        data: { state: 'posted', posted_at: postedAt, narration: `Posted vendor bill ${bill.bill_number}` },
+      })
+      if (claimedEntry.count !== 1) throw inputError('Vendor bill journal entry has already been posted')
       const requestedAdvance = Math.max(0, Math.round(Number(req.body?.advance_amount || 0) * 100) / 100)
       const advances = requestedAdvance > 0 ? await tx.vendor_advances.findMany({ where: { vendor_id: bill.vendor_id, currency_id: bill.currency_id, state: { in: ['open', 'partial'] }, remaining_amount: { gt: 0 } }, orderBy: { created_at: 'asc' } }) : []
       const availableAdvance = advances.reduce((sum, advance) => sum + Number(advance.remaining_amount), 0)
@@ -397,7 +431,11 @@ export const post = async (req, res) => {
       if (appliedAdvance + immediatePaid > Number(bill.amount_total) + 0.005) throw inputError('Immediate payment plus vendor advance cannot exceed the bill total')
       const paidAmount = Math.round((appliedAdvance + immediatePaid) * 100) / 100
       const amountDue = Math.max(0, Math.round((Number(bill.amount_total) - paidAmount) * 100) / 100)
-      await tx.vendor_bills.update({ where: { id: billId }, data: { state: 'posted', payment_state: amountDue <= 0.005 ? 'paid' : paidAmount > 0.005 ? 'partial' : 'not_paid', amount_paid: paidAmount, amount_due: amountDue, posted_at: postedAt, updated_at: postedAt } })
+      const claimedBill = await tx.vendor_bills.updateMany({
+        where: { id: billId, state: 'draft' },
+        data: { state: 'posted', payment_state: amountDue <= 0.005 ? 'paid' : paidAmount > 0.005 ? 'partial' : 'not_paid', amount_paid: paidAmount, amount_due: amountDue, posted_at: postedAt, updated_at: postedAt },
+      })
+      if (claimedBill.count !== 1) throw inputError('Only draft vendor bills can be posted')
       return tx.vendor_bills.findUnique({ where: { id: billId }, include })
     }, { maxWait: 10000, timeout: 30000 })
     await logAudit({ userId: req.user?.id, action: 'Posted', entity: 'VendorBill', entityId: billId, description: `Posted vendor bill "${data.bill_number}"` })

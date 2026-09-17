@@ -62,6 +62,8 @@ type Form = {
   lines: Line[];
   payment_methods?: PaymentMethodEntry[];
   customer_reference?: string;
+  quotation_id: string;
+  advance_paid: string;
   receive_payment_now: boolean;
   payment_method_id: string;
   amount_received: string;
@@ -105,6 +107,8 @@ const emptyForm = (): Form => ({
   lines: [emptyLine()],
   payment_methods: defaultPaymentMethods,
   customer_reference: '',
+  quotation_id: '',
+  advance_paid: '0',
   receive_payment_now: false,
   payment_method_id: '',
   amount_received: '',
@@ -174,7 +178,7 @@ export default function CustomerInvoicesPage() {
         paymentTermApi.getAll(),
         accountingPaymentMethodApi.getAll(),
         getAllServices().catch(() => ({ success: false, data: [] as ServiceRecord[] })),
-        quotationApi.getAll().catch(() => [] as Quotation[]),
+        quotationApi.getAcceptedForInvoice().catch(() => [] as Quotation[]),
       ]);
       setInvoices(invoiceRows); setCustomers(customerRows); setProducts(productRows); setTaxes(taxRows); setCurrencies(currencyRows);
       setTerms(termRows);
@@ -285,10 +289,42 @@ export default function CustomerInvoicesPage() {
   }
 
   const acceptedQuotations = useMemo(() => {
-    return quotations.filter((q) => q.status === 'ACCEPTED' || q.status === 'CONVERTED');
+    // Only ACCEPTED quotations that are not yet linked to an invoice.
+    return quotations.filter((q) => q.status === 'ACCEPTED' && !q.converted_invoice_id);
   }, [quotations]);
 
-  function importFromQuotation(q: Quotation) {
+  async function resolveAdvancePaid(customerId: number | null | undefined, quotationNumber?: string) {
+    if (!customerId) return 0;
+    try {
+      const receipts = await customerReceiptApi.getAll();
+      const list = Array.isArray(receipts) ? receipts : [];
+      const advance = list
+        .filter((receipt) =>
+          Number(receipt.customer_id) === Number(customerId)
+          && receipt.state === 'posted'
+          && Number(receipt.unallocated_amount || 0) > 0.005
+        )
+        .reduce((sum, receipt) => {
+          // Prefer advances whose memo/reference mentions this quotation when present.
+          if (quotationNumber) {
+            const hay = `${receipt.reference || ''} ${receipt.memo || ''}`.toLowerCase();
+            if (hay && !hay.includes(String(quotationNumber).toLowerCase()) && Number(receipt.unallocated_amount) > 0) {
+              // Still count unallocated cash as available customer advance.
+            }
+          }
+          return sum + Number(receipt.unallocated_amount || 0);
+        }, 0);
+      return Math.round(advance * 100) / 100;
+    } catch {
+      return 0;
+    }
+  }
+
+  async function importFromQuotation(q: Quotation) {
+    if (q.converted_invoice_id) {
+      accountingToast('This quotation already has an invoice', 'error');
+      return;
+    }
     let qMeta: any = null;
     try {
       qMeta = q.notes ? JSON.parse(String(q.notes)) : null;
@@ -347,12 +383,15 @@ export default function CustomerInvoicesPage() {
       importedLines = [emptyLine()];
     }
 
+    const customerId = linkedCustomer ? Number(linkedCustomer.id) : (q.customer_id ? Number(q.customer_id) : null);
+    const advancePaid = await resolveAdvancePaid(customerId, q.quotation_number);
+
     setIncludeVat(quotationVat > 0);
     setVatPercent(quotationVat > 0 ? quotationVat : 5);
 
     setForm((current) => ({
       ...current,
-      customer_id: linkedCustomer ? String(linkedCustomer.id) : (q.customer_id ? String(q.customer_id) : current.customer_id),
+      customer_id: customerId ? String(customerId) : current.customer_id,
       invoice_to: custName,
       contact_person: custPerson,
       contact_email: custEmail,
@@ -363,12 +402,14 @@ export default function CustomerInvoicesPage() {
       nb: qMeta?.nb || current.nb,
       payment_methods: Array.isArray(qMeta?.payment_methods) && qMeta.payment_methods.length > 0 ? qMeta.payment_methods : current.payment_methods || defaultPaymentMethods,
       customer_reference: q.quotation_number,
+      quotation_id: String(q.id),
+      advance_paid: String(advancePaid),
       tax_id: autoTaxId,
       vat_percent: quotationVat,
       lines: importedLines,
     }));
 
-    accountingToast(`Xogta Quotation-ka ${q.quotation_number} si guul leh ayaa loogu shubay invoice-ka!`, 'success');
+    accountingToast(`Quotation ${q.quotation_number} imported into the invoice form`, 'success');
   }
 
   async function editInvoice(invoice: CustomerInvoice) {
@@ -473,6 +514,8 @@ export default function CustomerInvoicesPage() {
       notes: meta?.notes_text || (typeof freshInvoice.notes === 'string' && !meta ? freshInvoice.notes : ''),
       payment_methods: Array.isArray(meta?.payment_methods) && meta.payment_methods.length > 0 ? meta.payment_methods : defaultPaymentMethods,
       customer_reference: freshInvoice.customer_reference || meta?.customer_reference || '',
+      quotation_id: String((freshInvoice as any).converted_quotations?.[0]?.id || ''),
+      advance_paid: String(Number(freshInvoice.paid_amount || 0)),
       tax_id: activeTaxId,
       vat_percent: invoiceVat,
       lines: hydratedLines,
@@ -497,7 +540,7 @@ export default function CustomerInvoicesPage() {
 
     // Check if customer has an accepted quotation
     const customerQuotation = quotations.find(
-      (q) => (q.status === 'ACCEPTED' || q.status === 'CONVERTED') &&
+      (q) => q.status === 'ACCEPTED' && !q.converted_invoice_id &&
              (Number(q.customer_id) === Number(value) || (q.client_id && (nextCustomer as any)?.clientId === q.client_id))
     );
 
@@ -511,6 +554,7 @@ export default function CustomerInvoicesPage() {
       due_date: due.toISOString().slice(0, 10),
     };
 
+    // Soft contact prefill only — full import must use "Import from Accepted Quotation".
     if (customerQuotation) {
       let qMeta: any = null;
       try { qMeta = customerQuotation.notes ? JSON.parse(String(customerQuotation.notes)) : null; } catch {}
@@ -518,35 +562,6 @@ export default function CustomerInvoicesPage() {
       if (qMeta?.quotation_to) patch.invoice_to = qMeta.quotation_to;
       if (qMeta?.contact_email) patch.contact_email = qMeta.contact_email;
       if (qMeta?.contact_phone) patch.contact_phone = qMeta.contact_phone;
-      if (qMeta?.payment_advance) patch.payment_advance = qMeta.payment_advance;
-      if (qMeta?.payment_completion) patch.payment_completion = qMeta.payment_completion;
-      if (qMeta?.nb) patch.nb = qMeta.nb;
-
-      const customerQuotationVat = qMeta?.vat_percent !== undefined ? Number(qMeta.vat_percent) : 5;
-      const matchedTax = taxes.find((t) => Number(t.rate_percent || 0) === customerQuotationVat && t.is_active !== false && (t.tax_scope === 'sale' || t.tax_scope === 'both')) ||
-                         (customerQuotationVat > 0 ? taxes.find((t) => /vat|tax/i.test(String(t.name)) && t.is_active !== false) : null);
-      patch.tax_id = matchedTax ? Number(matchedTax.id) : null;
-      patch.vat_percent = customerQuotationVat;
-      setIncludeVat(customerQuotationVat > 0);
-      setVatPercent(customerQuotationVat > 0 ? customerQuotationVat : 5);
-
-      // If form lines are still empty default, copy quotation lines too
-      if (form.lines.length === 1 && !form.lines[0].description && Number(form.lines[0].unit_price) === 0) {
-        if (Array.isArray(qMeta?.items) && qMeta.items.length > 0) {
-          patch.lines = qMeta.items.map((item: any) => ({
-            product_id: null,
-            service_type: item.service_type || 'Graphic design & Branding',
-            selected_subservice_ids: Array.isArray(item.selected_subservice_ids) ? item.selected_subservice_ids : [],
-            description: item.description || '',
-            quantity: Number(item.qty || item.quantity || 1),
-            unit_price: Number(item.rate || item.unit_price || 0),
-            discount_percent: Number(item.discount_percent || 0),
-            tax_id: patch.tax_id ?? null,
-            is_free: Boolean(item.is_free || Number(item.rate || 0) === 0),
-          }));
-        }
-      }
-      accountingToast(`Xogta Quotation-ka (${customerQuotation.quotation_number}) ayaa toos loo soo qaatay!`, 'success');
     }
 
     setForm((current) => ({
@@ -720,10 +735,18 @@ export default function CustomerInvoicesPage() {
 
   async function save(postAfterSave = false) {
     const amountReceived = Number(form.amount_received || 0);
+    const advancePreview = Math.min(Number(form.advance_paid || 0), totals.total);
+    const outstandingAfterAdvance = Math.max(0, Math.round((totals.total - advancePreview) * 100) / 100);
     if (postAfterSave && form.receive_payment_now) {
       if (!form.payment_method_id) return accountingToast('Select a payment method for the immediate payment.', 'error');
       if (!Number.isFinite(amountReceived) || amountReceived <= 0) return accountingToast('Amount received must be greater than zero.', 'error');
-      if (amountReceived > totals.total + 0.005) return accountingToast('Amount received cannot exceed the invoice total.', 'error');
+      if (amountReceived > outstandingAfterAdvance + 0.005) {
+        return accountingToast(`Amount received cannot exceed the remaining balance of ${outstandingAfterAdvance.toFixed(2)} after advances.`, 'error');
+      }
+      const selectedPayMethod = paymentMethods.find((m) => m.id === Number(form.payment_method_id));
+      if (selectedPayMethod?.requires_reference && !form.payment_reference.trim()) {
+        return accountingToast('Reference number is required for this payment method.', 'error');
+      }
       try {
         const options = await customerReceiptApi.options({ customer_id: Number(form.customer_id), payment_method_id: Number(form.payment_method_id) });
         if (!options.accounts.length) return accountingToast('The selected payment method has no compatible active money account and journal.', 'error');
@@ -768,6 +791,7 @@ export default function CustomerInvoicesPage() {
     const payload = {
       notes: JSON.stringify(richNotesMeta),
       customer_reference: form.customer_reference || undefined,
+      quotation_id: form.quotation_id ? Number(form.quotation_id) : undefined,
       lines: form.lines.map((line) => ({
         product_id: line.product_id,
         description: line.description || line.service_type || 'Custom line',
@@ -786,16 +810,20 @@ export default function CustomerInvoicesPage() {
       if (postAfterSave) {
         const postedInvoice = await customerInvoiceApi.post(saved.id);
         if (form.receive_payment_now) {
-          const receipt = await customerReceiptApi.create({
-            customer_id: postedInvoice.customer_id,
-            payment_method_id: Number(form.payment_method_id),
-            receipt_date: apiDate(form.invoice_date),
-            amount: amountReceived,
-            reference: form.payment_reference.trim() || undefined,
-            memo: `Immediate payment for invoice ${postedInvoice.invoice_number}`,
-            allocations: [{ invoice_id: postedInvoice.id, allocated_amount: amountReceived }],
-          });
-          await customerReceiptApi.post(receipt.id);
+          const due = Number(postedInvoice.amount_due || 0);
+          const payNow = Math.min(amountReceived, due);
+          if (payNow > 0.005) {
+            const receipt = await customerReceiptApi.create({
+              customer_id: postedInvoice.customer_id,
+              payment_method_id: Number(form.payment_method_id),
+              receipt_date: apiDate(form.invoice_date),
+              amount: payNow,
+              reference: form.payment_reference.trim() || undefined,
+              memo: `Immediate payment for invoice ${postedInvoice.invoice_number}`,
+              allocations: [{ invoice_id: postedInvoice.id, allocated_amount: payNow }],
+            });
+            await customerReceiptApi.post(receipt.id);
+          }
         }
       }
       accountingToast(postAfterSave ? form.receive_payment_now ? 'Invoice and payment posted successfully' : 'Invoice posted successfully' : `Draft invoice ${selected ? 'updated' : 'created'} successfully`);
@@ -820,7 +848,7 @@ export default function CustomerInvoicesPage() {
 
   const openAcceptInvoice = (invoice: CustomerInvoice) => {
     setAcceptInvoice(invoice);
-    setCreateReceiptOnPost(true);
+    setCreateReceiptOnPost(false);
     const validMethod = paymentMethods.find((m) => m.is_active !== false && m.gl_account_id && ['inbound', 'both'].includes(String(m.payment_type)));
     if (validMethod) setReceiptPaymentMethodId(String(validMethod.id));
   };
@@ -861,6 +889,14 @@ export default function CustomerInvoicesPage() {
   const columns: DashboardTableColumn<CustomerInvoice>[] = [
     { key: 'number', header: 'Invoice', cell: (row) => <span className="font-bold text-primary">{row.invoice_number}</span> },
     { key: 'customer', header: 'Customer', cell: (row) => row.customers?.name || `#${row.customer_id}` },
+    {
+      key: 'quotation',
+      header: 'Quotation',
+      cell: (row) => {
+        const linked = (row as any).converted_quotations?.[0]?.quotation_number || row.customer_reference;
+        return linked ? <span className="font-mono text-xs text-zinc-600">{String(linked)}</span> : <span className="text-zinc-300">—</span>;
+      },
+    },
     { key: 'date', header: 'Invoice Date', cell: (row) => dateValue(row.invoice_date) },
     { key: 'due', header: 'Due Date', cell: (row) => dateValue(row.due_date) },
     { key: 'subtotal', header: 'Subtotal', align: 'right', cell: (row) => money(row.amount_untaxed) },
@@ -1106,15 +1142,19 @@ export default function CustomerInvoicesPage() {
                   </div>
                   <div className="flex items-center gap-2 w-full sm:w-auto">
                     <select
+                      value={form.quotation_id || ''}
                       onChange={(e) => {
                         const qId = Number(e.target.value);
+                        if (!qId) {
+                          setForm((current) => ({ ...current, quotation_id: '', advance_paid: '0', customer_reference: '' }));
+                          return;
+                        }
                         const q = acceptedQuotations.find((item) => item.id === qId);
-                        if (q) importFromQuotation(q);
+                        if (q) void importFromQuotation(q);
                       }}
-                      defaultValue=""
                       className="h-9 w-full sm:w-72 rounded-lg border border-primary/30 bg-white px-3 text-xs font-semibold text-zinc-800 shadow-xs focus:border-primary focus:outline-none"
                     >
-                      <option value="" disabled>Dooro Quotation la aqbalay...</option>
+                      <option value="">Select accepted quotation...</option>
                       {acceptedQuotations.map((q) => {
                         let qNotes: any = null;
                         try { qNotes = q.notes ? JSON.parse(String(q.notes)) : null; } catch {}
@@ -1532,10 +1572,10 @@ export default function CustomerInvoicesPage() {
                           }
                           className="size-4 accent-primary"
                         />
-                        Receive Payment Now (Auto mark as paid)
+                        Receive Payment Now
                       </label>
                       <p className="ml-6 mt-1 text-[11px] text-zinc-400">
-                        Mark this invoice as paid upon saving and record the payment receipt.
+                        Optional. Leave unchecked to post the invoice only. Existing advances are applied automatically.
                       </p>
                       {form.receive_payment_now && (
                         <div className="mt-4 grid gap-3 sm:grid-cols-3">
@@ -1568,7 +1608,7 @@ export default function CustomerInvoicesPage() {
                               required
                               type="number"
                               min="0.01"
-                              max={totals.total || undefined}
+                              max={Math.max(0, totals.total - Math.min(Number(form.advance_paid || 0), totals.total)) || undefined}
                               step="0.01"
                               value={form.amount_received}
                               onChange={(event) => setForm({ ...form, amount_received: event.target.value })}
@@ -1576,10 +1616,12 @@ export default function CustomerInvoicesPage() {
                             />
                           </label>
                           <label className="text-xs font-semibold">
-                            Reference
+                            Reference{Boolean(paymentMethods.find((m) => m.id === Number(form.payment_method_id))?.requires_reference) && <span className="text-rose-500"> *</span>}
                             <input
+                              required={Boolean(paymentMethods.find((m) => m.id === Number(form.payment_method_id))?.requires_reference)}
                               value={form.payment_reference}
                               onChange={(event) => setForm({ ...form, payment_reference: event.target.value })}
+                              placeholder={Boolean(paymentMethods.find((m) => m.id === Number(form.payment_method_id))?.requires_reference) ? 'e.g. SOM-TRX-123456' : 'Optional'}
                               className="mt-1 h-10 w-full rounded-md border border-zinc-200 px-3"
                             />
                           </label>
@@ -1619,21 +1661,35 @@ export default function CustomerInvoicesPage() {
                   <Total label="Grand total" value={viewOnly && selected ? Number(selected.amount_total) : totals.total} strong />
                   <div className="my-3 border-t border-zinc-200" />
                   <Total
+                    label="Advance Paid"
+                    value={
+                      viewOnly && selected
+                        ? Number(selected.paid_amount || 0)
+                        : Math.min(Number(form.advance_paid || 0), totals.total)
+                    }
+                  />
+                  <Total
                     label="Paid"
                     value={
                       viewOnly && selected
                         ? Number(selected.paid_amount || 0)
                         : form.receive_payment_now
                         ? Math.min(Number(form.amount_received || 0), totals.total)
-                        : Number(selected?.paid_amount || 0)
+                        : Math.min(Number(form.advance_paid || 0), totals.total)
                     }
                   />
                   <Total
-                    label="Balance"
+                    label="Balance Due"
                     value={
                       viewOnly && selected
                         ? Number(selected.amount_due)
-                        : Math.max(0, totals.total - (form.receive_payment_now ? Number(form.amount_received || 0) : Number(selected?.paid_amount || 0)))
+                        : Math.max(
+                          0,
+                          totals.total
+                            - (form.receive_payment_now
+                              ? Number(form.amount_received || 0)
+                              : Math.min(Number(form.advance_paid || 0), totals.total))
+                        )
                     }
                   />
                   <div className="mt-3 flex items-center justify-between border-t border-zinc-200 pt-3">

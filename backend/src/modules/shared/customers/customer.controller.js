@@ -58,6 +58,14 @@ export const remove = async (req, res) => {
   try {
     const data = await deleteCustomerRecord(id)
     if (!data) return res.status(404).json({ success: false, message: 'Customer not found' })
+    if (data._deactivated) {
+      await logAudit({ userId: req.user?.id, action: 'Deactivated', entity: 'Customer', entityId: id, description: `Deactivated customer "${data.name}" (has accounting history)` })
+      return res.json({
+        success: true,
+        message: 'Customer has accounting history and was deactivated instead of deleted',
+        data,
+      })
+    }
     await logAudit({ userId: req.user?.id, action: 'Deleted', entity: 'Customer', entityId: id, description: `Deleted customer "${data.name}"` })
     res.json({ success: true, message: 'Customer deleted successfully' })
   } catch (error) { fail(res, error, 'Failed to delete customer') }

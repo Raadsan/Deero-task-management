@@ -23,8 +23,9 @@ export function createAccountingCrudApi<T extends AccountingRecord = AccountingR
       const response = await api.put(`${resource}/${id}`, data);
       return response.data.data;
     },
-    remove: async (id: number): Promise<void> => {
-      await api.delete(`${resource}/${id}`);
+    remove: async (id: number): Promise<{ message?: string }> => {
+      const response = await api.delete(`${resource}/${id}`);
+      return response.data;
     },
   };
 }

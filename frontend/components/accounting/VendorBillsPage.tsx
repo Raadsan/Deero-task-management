@@ -592,7 +592,7 @@ export default function VendorBillsPage({ kind = 'bill' }: { kind?: 'bill' | 're
                       label="Reference"
                       value={form.payment_reference}
                       set={(value) => setForm((current) => ({ ...current, payment_reference: value }))}
-                      optional
+                      optional={!Boolean(selectedPaymentMethod?.requires_reference)}
                     />
                   </div>
                 )}

@@ -282,7 +282,10 @@ export const post = async (req, res) => {
           updated_at: postedAt,
         },
       })
-      await tx.journal_entries.update({ where: { id: credit.journal_entries.id }, data: { state: 'posted', posted_at: postedAt, narration: `Credit note ${credit.invoice_number} for ${original.invoice_number}` } })
+      await tx.journal_entries.updateMany({
+        where: { id: credit.journal_entries.id, state: 'draft', source_type: 'customer_invoice', source_id: creditId },
+        data: { state: 'posted', posted_at: postedAt, narration: `Credit note ${credit.invoice_number} for ${original.invoice_number}` },
+      })
     }, transactionOptions)
     const data = await prisma.customer_invoices.findUnique({ where: { id: creditId }, include })
     await logAudit({ userId: req.user?.id, action: 'Posted', entity: 'CreditNote', entityId: creditId, description: `Posted credit note "${data.invoice_number}"` })

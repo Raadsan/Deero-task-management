@@ -24,6 +24,12 @@ export type CustomerInvoice = AccountingRecord & {
   amount_total: number;
   paid_amount: number;
   amount_due: number;
+  advance_paid?: number;
+  previously_paid?: number;
+  remaining_balance?: number;
+  currency_id?: number;
+  customer_reference?: string | null;
+  notes?: string | null;
   customers?: { id: number; name: string; phone?: string };
   currencies?: { id: number; code: string; symbol?: string };
   customer_invoice_lines?: CustomerInvoiceLine[];
