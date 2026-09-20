@@ -8,7 +8,7 @@ import { ArrowRight, FileText, Loader2 } from "lucide-react";
 import { quotationApi, type Quotation } from "@/lib/api/quotationApi";
 import A4QuotationSheet, { type QuotationLineItem, type PaymentMethodEntry } from "./A4QuotationSheet";
 import { useBranchTheme } from "@/components/branding/BranchThemeProvider";
-import { resolveBranchLogoUrl } from "@/lib/portfolio-branding";
+import AccountingConfirmDialog from "@/components/accounting/AccountingConfirmDialog";
 
 interface Props {
   open: boolean;
@@ -19,50 +19,41 @@ interface Props {
 
 export default function QuotationViewModal({ open, onOpenChange, quotation, onConverted }: Props) {
   const [converting, setConverting] = useState(false);
+  const [confirmAccept, setConfirmAccept] = useState(false);
 
-  const { primaryColor, secondaryColor, name: branchName, logoUrl: branchLogoUrl } = useBranchTheme();
+  const { primaryColor, secondaryColor, name: branchName } = useBranchTheme();
   const isRaadsan = Boolean(branchName?.toLowerCase().includes("raadsan") || primaryColor?.toLowerCase() === "#0166d2");
   const brandPrimary = isRaadsan ? (primaryColor || "#0166d2") : (primaryColor || "#6e0002");
   const brandSecondary = isRaadsan ? (secondaryColor || "#fdc210") : (secondaryColor || "#ea580c");
 
-  // Parse rich metadata stored in notes JSON
   const meta = useMemo(() => {
     if (!quotation?.notes) return null;
-    try { return JSON.parse(String(quotation.notes)); } catch { return null; }
+    try {
+      return JSON.parse(String(quotation.notes));
+    } catch {
+      return null;
+    }
   }, [quotation]);
 
-  // Contact info
   const contactPerson =
-    meta?.contact_person ||
-    quotation?.client?.contactPerson ||
-    quotation?.customer?.name ||
-    "—";
+    meta?.contact_person || quotation?.client?.contactPerson || quotation?.customer?.name || "—";
 
-  const contactEmail =
-    meta?.contact_email ||
-    quotation?.client?.email ||
-    quotation?.customer?.email ||
-    "—";
+  const contactEmail = meta?.contact_email || quotation?.client?.email || quotation?.customer?.email || "—";
 
-  const contactPhone =
-    meta?.contact_phone ||
-    quotation?.client?.phone ||
-    quotation?.customer?.phone ||
-    "—";
+  const contactPhone = meta?.contact_phone || quotation?.client?.phone || quotation?.customer?.phone || "—";
 
   const quotationTo =
-    meta?.quotation_to ||
-    quotation?.client?.institution ||
-    quotation?.customer?.name ||
-    "—";
+    meta?.quotation_to || quotation?.client?.institution || quotation?.customer?.name || "—";
 
   const dateStr = quotation?.date
     ? new Date(quotation.date).toLocaleDateString("en-US", {
-        weekday: "long", year: "numeric", month: "long", day: "numeric",
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
       })
     : "—";
 
-  // Build line items from meta.items or fallback to quotation.lines
   const lines: QuotationLineItem[] = useMemo(() => {
     if (Array.isArray(meta?.items) && meta.items.length > 0) {
       return meta.items.map((item: any, idx: number) => {
@@ -101,7 +92,10 @@ export default function QuotationViewModal({ open, onOpenChange, quotation, onCo
 
   const paymentMethods: PaymentMethodEntry[] =
     Array.isArray(meta?.payment_methods) && meta.payment_methods.length > 0
-      ? meta.payment_methods.map((pm: any) => ({ label: pm.label || pm.name || "", value: pm.value || pm.account_number || "" }))
+      ? meta.payment_methods.map((pm: any) => ({
+          label: pm.label || pm.name || "",
+          value: pm.value || pm.account_number || "",
+        }))
       : [
           { label: "SomBank", value: "1001572624" },
           { label: "Premier Bank", value: "020602086001" },
@@ -122,16 +116,11 @@ export default function QuotationViewModal({ open, onOpenChange, quotation, onCo
 
   const handleConvert = async () => {
     if (!quotation) return;
-    if (
-      !confirm(
-        `Accept Quotation ${quotation.quotation_number}? No invoice will be created yet. Import it later from Customer Invoices → Import from Accepted Quotation.`
-      )
-    ) return;
-
     try {
       setConverting(true);
       await quotationApi.accept(quotation.id);
       accountingToast(`Quotation ${quotation.quotation_number} accepted — available for invoice import`, "success");
+      setConfirmAccept(false);
       if (onConverted) onConverted();
       onOpenChange(false);
     } catch (err: any) {
@@ -144,103 +133,139 @@ export default function QuotationViewModal({ open, onOpenChange, quotation, onCo
   if (!quotation) return null;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={false} className="!max-w-[880px] w-full max-h-[96vh] p-0 bg-zinc-100 flex flex-col overflow-hidden rounded-2xl">
-        {/* Header bar — same layout as InvoiceViewModal */}
-        <DialogHeader className="px-5 py-3.5 bg-white border-b flex flex-row items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-lg bg-orange-50 text-orange-600">
-              <FileText className="size-5" />
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent
+          showCloseButton={false}
+          className="!max-w-[880px] w-full max-h-[96vh] p-0 bg-zinc-100 flex flex-col overflow-hidden rounded-2xl"
+        >
+          <DialogHeader className="px-5 py-3.5 bg-white border-b flex flex-row items-center justify-between shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="flex size-9 items-center justify-center rounded-lg bg-orange-50 text-orange-600">
+                <FileText className="size-5" />
+              </div>
+              <div>
+                <DialogTitle className="text-base font-bold text-zinc-900 flex items-center gap-2">
+                  {quotation.quotation_number}
+                </DialogTitle>
+                <p className="text-xs text-zinc-500">Standard Customer Quotation</p>
+              </div>
+              <span
+                className={`ml-2 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider rounded-full border ${
+                  statusColors[quotation.status] || "bg-zinc-100"
+                }`}
+              >
+                {quotation.status}
+              </span>
             </div>
-            <div>
-              <DialogTitle className="text-base font-bold text-zinc-900 flex items-center gap-2">
-                {quotation.quotation_number}
-              </DialogTitle>
-              <p className="text-xs text-zinc-500">Standard Customer Quotation</p>
-            </div>
-            <span
-              className={`ml-2 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider rounded-full border ${
-                statusColors[quotation.status] || "bg-zinc-100"
-              }`}
-            >
-              {quotation.status}
-            </span>
-          </div>
 
-          <div className="flex items-center gap-2">
-            {/* Print button triggers A4 print via hidden button inside A4QuotationSheet */}
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                const btn = document.querySelector("#a4-quotation-sheet-print-btn") as HTMLButtonElement | null;
-                if (btn) btn.click(); else window.print();
-              }}
-              className="gap-1.5 text-xs font-bold text-white bg-[#ea580c] hover:bg-orange-700 border-none shadow-sm"
-            >
-              Print / Download PDF
-            </Button>
-          </div>
-        </DialogHeader>
-
-        {/* A4 Sheet Body — same as InvoiceViewModal */}
-        <div className="flex-1 overflow-y-auto bg-zinc-100 p-2 sm:p-4 flex justify-center">
-          <div className="w-full">
-            <A4QuotationSheet
-              contactPerson={contactPerson}
-              quotationNo={quotation.quotation_number}
-              contactEmail={contactEmail}
-              quotationTo={quotationTo}
-              contactPhone={contactPhone}
-              date={dateStr}
-              lines={lines}
-              subtotal={subtotal}
-              vatPercent={vatPercent}
-              taxAmount={taxAmount}
-              grandTotal={grandTotal}
-              paymentAdvance={paymentAdvance}
-              paymentCompletion={paymentCompletion}
-              nbText={nbText}
-              paymentMethods={paymentMethods}
-              brandPrimary={brandPrimary}
-              brandSecondary={brandSecondary}
-            />
-          </div>
-        </div>
-
-        {/* Footer */}
-        <DialogFooter className="px-5 py-3 bg-white border-t flex items-center justify-between shrink-0">
-          <div className="text-xs text-zinc-500 font-medium">
-            Customer: <strong className="text-zinc-800">{quotationTo}</strong>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={() => onOpenChange(false)} className="text-xs font-semibold">
-              Close
-            </Button>
-            {quotation.status !== "ACCEPTED" && quotation.status !== "CONVERTED" && !quotation.converted_invoice_id && (
+            <div className="flex items-center gap-2">
               <Button
                 type="button"
+                variant="outline"
                 size="sm"
-                onClick={handleConvert}
-                disabled={converting}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold gap-1.5"
+                onClick={() => {
+                  const btn = document.querySelector("#a4-quotation-sheet-print-btn") as HTMLButtonElement | null;
+                  if (btn) btn.click();
+                  else window.print();
+                }}
+                className="gap-1.5 text-xs font-bold text-white bg-[#ea580c] hover:bg-orange-700 border-none shadow-sm"
               >
-                {converting ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
-                {converting ? "Accepting..." : "Accept Quotation"}
+                Print / Download PDF
               </Button>
-            )}
-            {quotation.status === "ACCEPTED" && !quotation.converted_invoice_id && (
-              <span className="text-xs font-semibold text-emerald-700">Accepted — import from Invoice form</span>
-            )}
-            {Boolean(quotation.converted_invoice_id) && (
-              <span className="text-xs font-semibold text-purple-700">
-                Invoiced{quotation.converted_invoice?.invoice_number ? `: ${quotation.converted_invoice.invoice_number}` : ""}
-              </span>
-            )}
+            </div>
+          </DialogHeader>
+
+          <div className="flex-1 overflow-y-auto bg-zinc-100 p-2 sm:p-4 flex justify-center">
+            <div className="w-full">
+              <A4QuotationSheet
+                contactPerson={contactPerson}
+                quotationNo={quotation.quotation_number}
+                contactEmail={contactEmail}
+                quotationTo={quotationTo}
+                contactPhone={contactPhone}
+                date={dateStr}
+                lines={lines}
+                subtotal={subtotal}
+                vatPercent={vatPercent}
+                taxAmount={taxAmount}
+                grandTotal={grandTotal}
+                paymentAdvance={paymentAdvance}
+                paymentCompletion={paymentCompletion}
+                nbText={nbText}
+                paymentMethods={paymentMethods}
+                brandPrimary={brandPrimary}
+                brandSecondary={brandSecondary}
+              />
+            </div>
           </div>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+
+          <DialogFooter className="px-5 py-3 bg-white border-t flex items-center justify-between shrink-0">
+            <div className="text-xs text-zinc-500 font-medium">
+              Customer: <strong className="text-zinc-800">{quotationTo}</strong>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => onOpenChange(false)}
+                className="text-xs font-semibold"
+              >
+                Close
+              </Button>
+              {quotation.status !== "ACCEPTED" &&
+                quotation.status !== "CONVERTED" &&
+                !quotation.converted_invoice_id && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => setConfirmAccept(true)}
+                    disabled={converting}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold gap-1.5"
+                  >
+                    {converting ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
+                    {converting ? "Accepting..." : "Accept Quotation"}
+                  </Button>
+                )}
+              {quotation.status === "ACCEPTED" && !quotation.converted_invoice_id && (
+                <span className="text-xs font-semibold text-emerald-700">Accepted — import from Invoice form</span>
+              )}
+              {Boolean(quotation.converted_invoice_id) && (
+                <span className="text-xs font-semibold text-purple-700">
+                  Invoiced
+                  {quotation.converted_invoice?.invoice_number
+                    ? `: ${quotation.converted_invoice.invoice_number}`
+                    : ""}
+                </span>
+              )}
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <AccountingConfirmDialog
+        open={confirmAccept}
+        title="Accept Quotation"
+        description={`Accept quotation ${quotation.quotation_number}?`}
+        confirmLabel="Accept Quotation"
+        busy={converting}
+        notice="No invoice will be created yet. Import it later from Customer Invoices → Import from Accepted Quotation."
+        details={
+          <div className="space-y-1 text-sm">
+            <div className="flex justify-between gap-4">
+              <span className="text-zinc-500">Customer</span>
+              <span className="font-semibold text-zinc-900">{quotationTo}</span>
+            </div>
+            <div className="flex justify-between gap-4">
+              <span className="text-zinc-500">Total</span>
+              <span className="font-semibold text-zinc-900">${grandTotal.toFixed(2)}</span>
+            </div>
+          </div>
+        }
+        onCancel={() => !converting && setConfirmAccept(false)}
+        onConfirm={() => void handleConvert()}
+      />
+    </>
   );
 }

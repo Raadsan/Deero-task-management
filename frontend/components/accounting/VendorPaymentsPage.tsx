@@ -27,6 +27,15 @@ const empty = (): Form => ({ vendor_id: '', bank_account_id: '', payment_method_
 const day = (value: unknown) => value ? new Date(String(value)).toISOString().slice(0, 10) : '';
 const money = (value: unknown, code = '') => `${code ? `${code} ` : ''}${Number(value || 0).toFixed(2)}`;
 const message = (error: unknown) => axios.isAxiosError(error) ? error.response?.data?.message || error.message : error instanceof Error ? error.message : 'Something went wrong';
+/** vendor_advances is a 1:1 relation (object), not an array. */
+const vendorAdvanceAmount = (payment: VendorPayment) => {
+  const advance = payment.vendor_advances;
+  if (!advance) return 0;
+  if (Array.isArray(advance)) {
+    return advance.reduce((sum, row) => sum + Number(row.original_amount || 0), 0);
+  }
+  return Number(advance.original_amount || 0);
+};
 
 export default function VendorPaymentsPage() {
   
@@ -153,7 +162,7 @@ export default function VendorPaymentsPage() {
     { key: 'account', header: 'Payment Account', cell: (row) => row.bank_accounts?.account_name || row.payment_methods?.chart_of_accounts?.name || '—' },
     { key: 'amount', header: 'Amount', align: 'right', cell: (row) => <span className="font-semibold">{money(row.amount, row.currencies?.code)}</span> },
     { key: 'allocated', header: 'Allocated', align: 'right', cell: (row) => money(Number(row.amount) - Number(row.unallocated_amount)) },
-    { key: 'advance', header: 'Vendor Advance', align: 'right', cell: (row) => money(row.vendor_advances?.reduce((sum, advance) => sum + Number(advance.original_amount || 0), 0) || 0) },
+    { key: 'advance', header: 'Vendor Advance', align: 'right', cell: (row) => money(vendorAdvanceAmount(row)) },
     { key: 'state', header: 'Status', align: 'center', cell: (row) => <span className={`${dashboardStatusBadgeClass} ${row.state === 'posted' ? 'bg-emerald-600 text-white' : 'bg-secondary/100 text-white'}`}>{row.state}</span> },
     { key: 'actions', header: 'Actions', align: 'right', cell: (row) => (
       <div className="flex justify-end gap-1">
@@ -221,7 +230,7 @@ export default function VendorPaymentsPage() {
 function PrintableVendorPayment({ payment, bills }: { payment: VendorPayment; bills: VendorBill[] }) {
   const currency = payment.currencies?.code || '';
   const allocated = Number(payment.amount) - Number(payment.unallocated_amount || 0);
-  const advance = payment.vendor_advances?.reduce((sum, row) => sum + Number(row.original_amount || 0), 0) || 0;
+  const advance = vendorAdvanceAmount(payment);
   return <section id="printable-vendor-payment" className="hidden bg-white text-slate-950 print:block"><header className="flex items-start justify-between border-b-2 border-slate-900 pb-6"><div><h1 className="text-3xl font-bold text-[#6f0d18]">Bloom Cafe</h1><p className="mt-1 text-sm text-slate-500">Vendor payment voucher</p></div><div className="text-right"><h2 className="text-3xl font-semibold">PAYMENT</h2><p className="mt-2 font-bold">{payment.payment_number}</p></div></header><div className="grid grid-cols-2 gap-10 py-7 text-sm"><div><p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Paid to</p><p className="mt-2 text-base font-bold">{payment.vendors?.name || `Vendor #${payment.vendor_id}`}</p></div><dl className="grid grid-cols-2 gap-x-5 gap-y-2 text-right"><dt className="text-slate-500">Payment date</dt><dd className="font-semibold">{day(payment.payment_date)}</dd><dt className="text-slate-500">Method</dt><dd className="font-semibold">{payment.payment_methods?.name || '—'}</dd><dt className="text-slate-500">Account</dt><dd className="font-semibold">{payment.bank_accounts?.account_name || '—'}</dd><dt className="text-slate-500">Reference</dt><dd className="font-semibold">{payment.reference || '—'}</dd></dl></div><div className="rounded-xl border border-slate-300 bg-slate-50 p-5"><p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Amount paid</p><p className="mt-2 text-3xl font-bold">{money(payment.amount, currency)}</p></div><h3 className="mb-3 mt-8 text-sm font-bold uppercase tracking-wider">Bill allocation</h3><table className="w-full border-collapse text-sm"><thead><tr className="bg-[#6f0d18] text-white"><th className="p-3 text-left">Bill</th><th className="p-3 text-right">Amount applied</th></tr></thead><tbody>{(payment.payment_allocations || []).map((allocation, index) => <tr key={index} className="border-b"><td className="p-3 font-medium">{bills.find((bill) => bill.id === allocation.bill_id)?.bill_number || `Bill #${allocation.bill_id}`}</td><td className="p-3 text-right font-semibold">{money(allocation.allocated_amount, currency)}</td></tr>)}</tbody></table><div className="ml-auto mt-7 w-80 text-sm"><div className="flex justify-between py-1"><span>Payment</span><b>{money(payment.amount, currency)}</b></div><div className="flex justify-between py-1"><span>Allocated</span><b>{money(allocated, currency)}</b></div>{advance > 0 && <div className="flex justify-between py-1"><span>Vendor Advance</span><b>{money(advance, currency)}</b></div>}<div className="my-2 border-t border-slate-400" /><div className="flex justify-between py-2 text-base font-bold"><span>Remaining</span><span>{money(payment.unallocated_amount, currency)}</span></div></div></section>;
 }
 function Select({ label, value, set, rows, labelKey = 'name' }: { label: string; value: string; set: (value: string) => void; rows: Row[]; labelKey?: string }) { return <label className="text-xs font-semibold">{label} *<select required value={value} onChange={(event) => set(event.target.value)} className="mt-1.5 h-10 w-full rounded-xl border bg-background px-3"><option value="">Select {label.toLowerCase()}</option>{rows.map((row) => <option key={row.id} value={row.id}>{String(row[labelKey] || row.name || '')}</option>)}</select></label>; }

@@ -21,6 +21,8 @@ type Props = {
   confirmLabel: string;
   busy?: boolean;
   destructive?: boolean;
+  /** Override the footer notice. Pass null to hide it. */
+  notice?: string | null;
   details?: ReactNode;
   onCancel: () => void;
   onConfirm: () => void;
@@ -33,11 +35,20 @@ export default function AccountingConfirmDialog({
   confirmLabel,
   busy,
   destructive,
+  notice,
   details,
   onCancel,
   onConfirm,
 }: Props) {
   const Icon = destructive ? AlertTriangle : Send;
+  const footerNotice =
+    notice === null
+      ? null
+      : notice !== undefined
+        ? notice
+        : destructive
+          ? 'This action cannot be undone.'
+          : 'Posting locks this record from further editing.';
   return (
     <Dialog open={open} onOpenChange={(value) => !busy && !value && onCancel()}>
       <DialogContent className={accountingDialogClass}>
@@ -50,9 +61,11 @@ export default function AccountingConfirmDialog({
         </DialogHeader>
         <div className={configDialogBodyClass}>
           {details ? <div className="rounded-lg border border-zinc-100 bg-zinc-50 p-4 text-sm">{details}</div> : null}
-          <div className={`rounded-lg border p-3 text-xs ${destructive ? 'border-rose-200 bg-rose-50 text-rose-800' : 'border-secondary/30 bg-secondary/10 text-secondary'}`}>
-            {destructive ? 'This action cannot be undone.' : 'Posting locks this record from further editing.'}
-          </div>
+          {footerNotice ? (
+            <div className={`rounded-lg border p-3 text-xs ${destructive ? 'border-rose-200 bg-rose-50 text-rose-800' : 'border-secondary/30 bg-secondary/10 text-secondary'}`}>
+              {footerNotice}
+            </div>
+          ) : null}
         </div>
         <DialogFooter className={configDialogFooterClass}>
           <Button type="button" variant="outline" disabled={busy} onClick={onCancel} className={btnFormCancel}>

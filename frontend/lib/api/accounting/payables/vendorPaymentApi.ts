@@ -7,7 +7,8 @@ export type VendorPayment = AccountingRecord & {
   currencies?: { id: number; code: string }; payment_methods?: { id: number; name: string; allow_multiple_accounts?: boolean; chart_of_accounts?: { id: number; name: string } };
   journals?: { id: number; name: string; code: string }; bank_accounts?: { id: number; account_name: string; account_number: string };
   payment_allocations?: Array<{ bill_id: number; allocated_amount: number }>;
-  vendor_advances?: VendorAdvance[];
+  /** Prisma one-to-one on payment; list endpoints may still return null/object. */
+  vendor_advances?: VendorAdvance | VendorAdvance[] | null;
 };
 export type VendorAdvance = AccountingRecord & { vendor_id: number; currency_id: number; original_amount: number; remaining_amount: number; state: string };
 const crud = createAccountingCrudApi<VendorPayment>('/accounting/vendor-payments');

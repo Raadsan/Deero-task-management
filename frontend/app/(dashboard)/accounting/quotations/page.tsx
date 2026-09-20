@@ -11,6 +11,7 @@ import QuotationViewModal from "@/components/quotations/QuotationViewModal";
 import DashboardDataTable from "@/components/Shared/DashboardDataTable";
 import type { DashboardTableColumn } from "@/components/Shared/DashboardDataTable";
 import AccountingPageShell from "@/components/accounting/AccountingPageShell";
+import AccountingConfirmDialog from "@/components/accounting/AccountingConfirmDialog";
 import { accountingToast } from "@/lib/accounting-ui";
 import {
   actionBtnDelete,
@@ -33,6 +34,10 @@ function CustomerQuotationPageContent() {
 
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [viewQuotation, setViewQuotation] = useState<Quotation | null>(null);
+  const [pendingAction, setPendingAction] = useState<
+    null | { type: "accept" | "delete"; quotation: Quotation }
+  >(null);
+  const [actionBusy, setActionBusy] = useState(false);
 
 
   const loadData = useCallback(async () => {
@@ -55,10 +60,11 @@ function CustomerQuotationPageContent() {
   }, [loadData]);
 
   const handleDelete = async (quotation: Quotation) => {
-    if (!confirm(`Are you sure you want to delete quotation ${quotation.quotation_number}?`)) return;
     try {
+      setActionBusy(true);
       await quotationApi.delete(quotation.id);
       accountingToast("Quotation deleted");
+      setPendingAction(null);
       loadData();
     } catch (err: unknown) {
       const message =
@@ -68,14 +74,17 @@ function CustomerQuotationPageContent() {
             ? err.message
             : "Failed to delete quotation";
       accountingToast(message || "Failed to delete quotation", "error");
+    } finally {
+      setActionBusy(false);
     }
   };
 
   const handleConvert = async (quotation: Quotation) => {
-    if (!confirm(`Accept quotation ${quotation.quotation_number}? No invoice will be created yet — import it from the Invoice form when ready.`)) return;
     try {
+      setActionBusy(true);
       await quotationApi.accept(quotation.id);
       accountingToast(`Quotation ${quotation.quotation_number} accepted. Import it from Customer Invoices when ready.`);
+      setPendingAction(null);
       loadData();
     } catch (err: unknown) {
       const message =
@@ -85,6 +94,8 @@ function CustomerQuotationPageContent() {
             ? err.message
             : "Failed to accept quotation";
       accountingToast(message || "Failed to accept quotation", "error");
+    } finally {
+      setActionBusy(false);
     }
   };
 
@@ -278,7 +289,7 @@ function CustomerQuotationPageContent() {
                 size="sm"
                 variant="ghost"
                 className={actionBtnDelete}
-                onClick={() => handleDelete(row)}
+                onClick={() => setPendingAction({ type: "delete", quotation: row })}
                 title="Delete"
               >
                 <Trash2 className="size-4" />
@@ -335,6 +346,30 @@ function CustomerQuotationPageContent() {
             onOpenChange={setViewModalOpen}
             quotation={viewQuotation}
             onConverted={loadData}
+          />
+
+          <AccountingConfirmDialog
+            open={Boolean(pendingAction)}
+            title={pendingAction?.type === "delete" ? "Delete Quotation" : "Accept Quotation"}
+            description={
+              pendingAction?.type === "delete"
+                ? `Delete quotation ${pendingAction.quotation.quotation_number}?`
+                : `Accept quotation ${pendingAction?.quotation.quotation_number}?`
+            }
+            confirmLabel={pendingAction?.type === "delete" ? "Delete" : "Accept Quotation"}
+            busy={actionBusy}
+            destructive={pendingAction?.type === "delete"}
+            notice={
+              pendingAction?.type === "delete"
+                ? "This action cannot be undone."
+                : "No invoice will be created yet. Import it later from Customer Invoices → Import from Accepted Quotation."
+            }
+            onCancel={() => !actionBusy && setPendingAction(null)}
+            onConfirm={() => {
+              if (!pendingAction) return;
+              if (pendingAction.type === "delete") void handleDelete(pendingAction.quotation);
+              else void handleConvert(pendingAction.quotation);
+            }}
           />
 
           {/* Quotation Status Update Dialog (Pop up caadi ah) */}

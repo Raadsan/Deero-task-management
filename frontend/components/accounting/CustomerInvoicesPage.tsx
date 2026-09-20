@@ -145,6 +145,7 @@ export default function CustomerInvoicesPage() {
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [posting, setPosting] = useState(false);
   const [pendingAction, setPendingAction] = useState<{ type: 'post' | 'delete'; invoice: CustomerInvoice } | null>(null);
   const [query, setQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -803,7 +804,8 @@ export default function CustomerInvoicesPage() {
         } catch (error) { return accountingToast(errorMessage(error), 'error'); }
       }
     }
-    setSaving(true);
+    if (postAfterSave) setPosting(true);
+    else setSaving(true);
 
     const effVat = includeVat ? (Number(vatPercent) || 0) : 0;
     const matchedTax = effVat > 0
@@ -873,17 +875,25 @@ export default function CustomerInvoicesPage() {
     try {
       const saved = selected ? await customerInvoiceApi.update(selected.id, payload) : await customerInvoiceApi.create(payload);
       if (postAfterSave) {
-        // Save draft with pending payment, then open the simple Post confirmation (no second payment form).
-        setSelected(saved);
+        const posted = await customerInvoiceApi.post(saved.id);
+        const paid = Number(posted.paid_amount || 0);
+        accountingToast(
+          paid > 0.005
+            ? `Invoice posted. Paid $${paid.toFixed(2)}. Balance $${Number(posted.amount_due || 0).toFixed(2)}.`
+            : `Invoice ${posted.invoice_number || saved.invoice_number} posted successfully`
+        );
         setOpen(false);
-        setPendingAction({ type: 'post', invoice: saved });
-        accountingToast(`Draft invoice ${selected ? 'updated' : 'created'} successfully`);
+        setSelected(null);
         await load();
         return;
       }
       accountingToast(`Draft invoice ${selected ? 'updated' : 'created'} successfully`);
       setOpen(false); await load();
-    } catch (error) { accountingToast(errorMessage(error), 'error'); } finally { setSaving(false); }
+    } catch (error) { accountingToast(errorMessage(error), 'error'); }
+    finally {
+      setSaving(false);
+      setPosting(false);
+    }
   }
   async function remove(invoice: CustomerInvoice) {
     setSaving(true); try { await customerInvoiceApi.remove(invoice.id); accountingToast('Draft invoice deleted successfully'); setPendingAction(null); await load(); }
@@ -1770,7 +1780,34 @@ export default function CustomerInvoicesPage() {
                 </aside>
               </div>
             </fieldset>
-            <DialogFooter className="border-t border-zinc-100 pt-4"><button type="button" onClick={() => setOpen(false)} className="h-9 rounded-md border border-zinc-200 px-4 text-sm font-semibold">{viewOnly ? 'Close' : 'Cancel'}</button>{!viewOnly && <><button disabled={saving} className="flex h-9 items-center gap-2 rounded-md border border-primary/30 px-4 text-sm font-semibold text-primary"><Save className="size-4" />{saving ? 'Saving...' : 'Save Draft'}</button><button type="button" disabled={saving} onClick={(event) => { if (event.currentTarget.form?.reportValidity()) void save(true); }} className="flex h-9 items-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-white"><Send className="size-4" /> Post Invoice</button></>}</DialogFooter>
+            <DialogFooter className="border-t border-zinc-100 pt-4">
+              <button type="button" onClick={() => setOpen(false)} disabled={saving || posting} className="h-9 rounded-md border border-zinc-200 px-4 text-sm font-semibold">
+                {viewOnly ? 'Close' : 'Cancel'}
+              </button>
+              {!viewOnly && (
+                <>
+                  <button
+                    type="submit"
+                    disabled={saving || posting}
+                    className="flex h-9 items-center gap-2 rounded-md border border-primary/30 px-4 text-sm font-semibold text-primary"
+                  >
+                    <Save className="size-4" />
+                    {saving ? 'Saving…' : 'Save Draft'}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={saving || posting}
+                    onClick={(event) => {
+                      if (event.currentTarget.form?.reportValidity()) void save(true);
+                    }}
+                    className="flex h-9 items-center gap-2 rounded-md bg-primary px-4 text-sm font-semibold text-white"
+                  >
+                    <Send className="size-4" />
+                    {posting ? 'Posting…' : 'Post Invoice'}
+                  </button>
+                </>
+              )}
+            </DialogFooter>
           </form>
         )}
       </DialogContent>
