@@ -65,15 +65,19 @@ export default function QuotationViewModal({ open, onOpenChange, quotation, onCo
   // Build line items from meta.items or fallback to quotation.lines
   const lines: QuotationLineItem[] = useMemo(() => {
     if (Array.isArray(meta?.items) && meta.items.length > 0) {
-      return meta.items.map((item: any, idx: number) => ({
-        id: idx + 1,
-        service_type: item.service_type || "Service",
-        description: item.description || "",
-        quantity: Number(item.qty || item.quantity || 1),
-        rate: Number(item.rate || item.unit_price || 0),
-        is_free: Boolean(item.is_free || Number(item.rate || item.unit_price || 0) === 0),
-        amount: Number(item.qty || item.quantity || 1) * Number(item.rate || item.unit_price || 0),
-      }));
+      return meta.items.map((item: any, idx: number) => {
+        const packageName = String(item.package_name || "").trim();
+        const serviceType = String(item.service_type || "Service").trim();
+        return {
+          id: idx + 1,
+          service_type: packageName || serviceType,
+          description: item.description || (packageName && serviceType !== packageName ? serviceType : ""),
+          quantity: Number(item.qty || item.quantity || 1),
+          rate: Number(item.rate || item.unit_price || 0),
+          is_free: Boolean(item.is_free || Number(item.rate || item.unit_price || 0) === 0),
+          amount: Number(item.qty || item.quantity || 1) * Number(item.rate || item.unit_price || 0),
+        };
+      });
     }
     return (quotation?.lines || []).map((line, idx) => ({
       id: idx + 1,

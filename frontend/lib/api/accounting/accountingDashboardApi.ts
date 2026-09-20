@@ -154,7 +154,11 @@ export const accountingDashboardApi = {
     const bankBalance = Array.isArray(cashFlow?.accounts)
       ? cashFlow.accounts.reduce((sum: number, account: { closing_balance?: number | string }) => sum + Number(account.closing_balance || 0), 0)
       : cashBalance;
-    const entries = array(journalReport).map(record);
+    // Journal report now returns { entries, warnings }; keep array fallback for safety
+    const journalPayload = journalReport as { entries?: unknown[] } | unknown[];
+    const entries = array(
+      Array.isArray(journalPayload) ? journalPayload : (journalPayload as { entries?: unknown[] })?.entries
+    ).map(record);
     const chartByDate = new Map<string, AccountingChartPoint>();
 
     entries.forEach((entry) => {

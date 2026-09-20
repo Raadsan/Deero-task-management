@@ -54,7 +54,7 @@ export default function VendorBillViewModal({
   if (!current) return null;
 
   const vendorObj = (current.vendors || {}) as any;
-  const billNo = current.bill_number || `BILL-${String(current.id || 0).padStart(4, "0")}`;
+  const billNo = current.bill_number || `VB-${String(current.id || 0).padStart(6, "0")}`;
 
   const rawBillDate = current.bill_date ? new Date(current.bill_date) : new Date();
   const formattedBillDate = !isNaN(rawBillDate.getTime())
@@ -106,7 +106,7 @@ export default function VendorBillViewModal({
             </div>
             <div>
               <DialogTitle className="text-base font-bold text-zinc-900 leading-tight">
-                Vendor Bill Preview &bull; {billNo}
+                Vendor Bill No.: {billNo}
               </DialogTitle>
               <p className="text-xs text-zinc-500 font-medium">
                 Vendor: <span className="font-semibold text-zinc-800">{vendorObj.name || "Vendor"}</span>
@@ -152,8 +152,22 @@ export default function VendorBillViewModal({
               grandTotal={current.amount_total || 0}
               paidAmount={current.amount_paid || 0}
               balanceDue={current.amount_due || 0}
-              notes={current.notes ? String(current.notes) : undefined}
-              status={current.state}
+              notes={(() => {
+                const meta = (current as { notes_text?: string }).notes_text
+                if (meta) return String(meta)
+                const raw = String(current.notes || '')
+                if (raw.trim() && !raw.trim().startsWith('{')) return raw
+                return undefined
+              })()}
+              status={
+                current.state === 'draft'
+                  ? 'draft'
+                  : current.payment_state === 'paid'
+                    ? 'paid'
+                    : current.payment_state === 'partial'
+                      ? 'partial'
+                      : current.state
+              }
               currencySymbol={current.currencies?.symbol || "$"}
               currencyCode={current.currencies?.code || "USD"}
               brandPrimary={brandPrimary}

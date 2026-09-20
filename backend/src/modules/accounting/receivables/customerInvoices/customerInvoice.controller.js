@@ -70,6 +70,213 @@ const inputError = (message) => {
   return error
 }
 
+function money2(value) {
+  return Math.round(Number(value || 0) * 100) / 100
+}
+
+function parseInvoiceNotes(notes) {
+  if (!notes) return null
+  try {
+    return typeof notes === 'string' ? JSON.parse(notes) : notes
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Draft invoices keep Receive Payment Now in notes.pending_payment until post.
+ * Expose that amount as paid/outstanding/payment_state so list/detail UIs stay correct.
+ */
+function enrichInvoicePaymentDisplay(invoice) {
+  if (!invoice) return invoice
+  const total = money2(invoice.amount_total)
+  if (invoice.state === 'draft') {
+    const meta = parseInvoiceNotes(invoice.notes)
+    const pending = meta?.pending_payment
+    if (pending?.enabled && Number(pending.amount || 0) > 0.005) {
+      const paid = money2(Math.min(Number(pending.amount || 0), total))
+      const due = money2(Math.max(0, total - paid))
+      return {
+        ...invoice,
+        paid_amount: paid,
+        amount_due: due,
+        payment_state: paid >= total - 0.005 && total > 0.005 ? 'paid' : paid > 0.005 ? 'partial' : 'not_paid',
+      }
+    }
+    return {
+      ...invoice,
+      paid_amount: 0,
+      amount_due: total,
+      payment_state: 'not_paid',
+    }
+  }
+  const paid = money2(invoice.paid_amount ?? Math.max(0, total - Number(invoice.amount_due || 0)))
+  const due = money2(invoice.amount_due ?? Math.max(0, total - paid))
+  return {
+    ...invoice,
+    paid_amount: paid,
+    amount_due: due,
+    payment_state:
+      invoice.payment_state ||
+      (due <= 0.005 && total > 0.005 ? 'paid' : paid > 0.005 ? 'partial' : 'not_paid'),
+  }
+}
+
+async function clearPendingPaymentNotes(invoiceId, meta) {
+  if (!meta || typeof meta !== 'object') return
+  const next = { ...meta, pending_payment: null }
+  await prisma.customer_invoices.update({
+    where: { id: invoiceId },
+    data: { notes: JSON.stringify(next), updated_at: new Date() },
+  })
+}
+
+/**
+ * After invoice post, create+post the Receive Payment Now receipt exactly once.
+ */
+async function settlePendingReceivePaymentNow(invoice, userId) {
+  const meta = parseInvoiceNotes(invoice.notes)
+  const pending = meta?.pending_payment
+  if (!pending?.enabled || !pending.payment_method_id || Number(pending.amount || 0) <= 0.005) {
+    return invoice
+  }
+
+  const marker = `Immediate payment for invoice ${invoice.invoice_number}`
+  const existing = await prisma.customer_receipts.findFirst({
+    where: {
+      state: 'posted',
+      memo: { contains: marker },
+      receipt_allocations: { some: { invoice_id: invoice.id } },
+    },
+    select: { id: true },
+  })
+  if (existing) {
+    await clearPendingPaymentNotes(invoice.id, meta)
+    return prisma.customer_invoices.findUnique({ where: { id: invoice.id }, include: invoiceInclude })
+  }
+
+  const due = money2(invoice.amount_due)
+  const payNow = money2(Math.min(Number(pending.amount || 0), due, Number(invoice.amount_total || 0)))
+  if (payNow <= 0.005) {
+    await clearPendingPaymentNotes(invoice.id, meta)
+    return invoice
+  }
+
+  const { create: createReceipt, post: postReceipt } = await import('../customerReceipts/customerReceipt.controller.js')
+  const mockRes = () => {
+    const box = { statusCode: 200, body: null }
+    return {
+      status(code) { box.statusCode = code; return this },
+      json(body) { box.body = body; return box },
+      _box: box,
+    }
+  }
+
+  const createRes = mockRes()
+  await createReceipt(
+    {
+      user: { id: userId },
+      body: {
+        customer_id: invoice.customer_id,
+        payment_method_id: Number(pending.payment_method_id),
+        receipt_date: invoice.invoice_date || new Date().toISOString(),
+        amount: payNow,
+        reference: pending.reference ? String(pending.reference) : undefined,
+        memo: marker,
+        allocations: [{ invoice_id: invoice.id, allocated_amount: payNow }],
+      },
+    },
+    createRes
+  )
+  if (!createRes._box.body?.success || !createRes._box.body?.data?.id) {
+    throw inputError(createRes._box.body?.message || 'Failed to create the pending invoice payment receipt')
+  }
+
+  const postRes = mockRes()
+  await postReceipt(
+    { user: { id: userId }, params: { id: String(createRes._box.body.data.id) } },
+    postRes
+  )
+  if (!postRes._box.body?.success) {
+    throw inputError(postRes._box.body?.message || 'Failed to post the pending invoice payment receipt')
+  }
+
+  await clearPendingPaymentNotes(invoice.id, meta)
+  return prisma.customer_invoices.findUnique({ where: { id: invoice.id }, include: invoiceInclude })
+}
+
+function parseVatPercent(input) {
+  const direct = Number(input?.vat_percent)
+  if (Number.isFinite(direct) && direct >= 0) return direct
+  try {
+    const notes = typeof input?.notes === 'string' ? JSON.parse(input.notes || '{}') : input?.notes
+    const fromNotes = Number(notes?.vat_percent)
+    if (Number.isFinite(fromNotes) && fromNotes >= 0) return fromNotes
+  } catch {
+    // ignore malformed notes
+  }
+  return 0
+}
+
+async function findTaxPayableAccount(companyId) {
+  return (
+    await prisma.chart_of_accounts.findFirst({
+      where: { company_id: companyId, code: '2120', is_active: true, allow_manual_entry: true },
+    })
+    || await prisma.chart_of_accounts.findFirst({
+      where: {
+        company_id: companyId,
+        is_active: true,
+        allow_manual_entry: true,
+        name: { contains: 'Tax' },
+        account_types: { internal_group: 'liability' },
+        other_chart_of_accounts: { none: {} },
+      },
+      orderBy: { code: 'asc' },
+    })
+  )
+}
+
+/** Ensure an active sales VAT tax exists for the given rate (e.g. 5). */
+async function ensureSaleVatTax(ratePercent, companyId) {
+  const rate = money2(ratePercent)
+  if (!(rate > 0)) return null
+
+  const candidates = await prisma.taxes.findMany({
+    where: { is_active: true, tax_scope: { in: ['sale', 'both'] } },
+    orderBy: { id: 'asc' },
+  })
+  let tax = candidates.find((row) => Math.abs(Number(row.rate_percent) - rate) < 0.0001) || null
+
+  const taxAccount = await findTaxPayableAccount(companyId)
+  if (!taxAccount) throw inputError('Taxes Payable account (2120) was not found for VAT posting')
+
+  if (tax) {
+    if (!tax.tax_account_id) {
+      tax = await prisma.taxes.update({
+        where: { id: tax.id },
+        data: { tax_account_id: taxAccount.id, updated_at: new Date() },
+      })
+    }
+    return tax
+  }
+
+  const preferredName = rate === 5 ? 'VAT 5%' : `VAT ${rate}%`
+  const existingName = await prisma.taxes.findFirst({ where: { name: preferredName } })
+  const name = existingName ? `Sales VAT ${rate}%` : preferredName
+
+  return prisma.taxes.create({
+    data: {
+      name,
+      tax_scope: 'both',
+      rate_percent: rate,
+      tax_account_id: taxAccount.id,
+      price_includes_tax: false,
+      is_active: true,
+    },
+  })
+}
+
 export async function ensureCustomerInvoiceDefaults() {
   const defaults = [
     ['Immediate', 0],
@@ -104,7 +311,7 @@ async function prepareInvoice(input) {
 
   const customer = await prisma.customers.findUnique({ where: { id: customerId } })
   if (!customer) throw inputError('Customer not found')
-  const [company, journal, paymentTerm, fiscalPeriod, revenueAccount] = await Promise.all([
+  let [company, journal, paymentTerm, fiscalPeriod, revenueAccount] = await Promise.all([
     prisma.companies.findUnique({ where: { id: customer.company_id } }),
     id(input.journal_id)
       ? prisma.journals.findUnique({ where: { id: id(input.journal_id) } })
@@ -169,8 +376,18 @@ async function prepareInvoice(input) {
   const exchangeRate = currencyId === company.currency_id ? 1 : Number(input.exchange_rate)
   if (!Number.isFinite(exchangeRate) || exchangeRate <= 0) throw inputError('A positive exchange rate is required')
 
-  const productIds = [...new Set(lines.map((line) => id(line.product_id)).filter(Boolean))]
-  const taxIds = [...new Set(lines.map((line) => id(line.tax_id)).filter(Boolean))]
+  // Invoice-level VAT from form (Apply VAT). Persist via line tax_id + amount_tax / amount_total.
+  const vatPercent = parseVatPercent(input)
+  const invoiceVatTax = vatPercent > 0 ? await ensureSaleVatTax(vatPercent, customer.company_id) : null
+  const normalizedLines = lines.map((line) => {
+    const existingTaxId = id(line.tax_id)
+    if (vatPercent <= 0) return { ...line, tax_id: null }
+    if (existingTaxId) return line
+    return { ...line, tax_id: invoiceVatTax?.id || null }
+  })
+
+  const productIds = [...new Set(normalizedLines.map((line) => id(line.product_id)).filter(Boolean))]
+  const taxIds = [...new Set(normalizedLines.map((line) => id(line.tax_id)).filter(Boolean))]
   const [products, taxes] = await Promise.all([
     prisma.products.findMany({ where: { id: { in: productIds } } }),
     prisma.taxes.findMany({ where: { id: { in: taxIds } } }),
@@ -180,18 +397,14 @@ async function prepareInvoice(input) {
 
   let defaultTaxAccount = null
   if (taxIds.length > 0) {
-    defaultTaxAccount = await prisma.chart_of_accounts.findFirst({
-      where: { company_id: customer.company_id, OR: [{ code: '2100' }, { name: { contains: 'Tax' } }], is_active: true }
-    }) || await prisma.chart_of_accounts.findFirst({
-      where: { OR: [{ code: '2100' }, { name: { contains: 'Tax' } }], is_active: true }
-    })
+    defaultTaxAccount = await findTaxPayableAccount(customer.company_id)
   }
 
   let amountUntaxed = 0
   let amountTax = 0
   let amountDiscount = 0
   const journalCredits = []
-  const preparedLines = lines.map((line, index) => {
+  const preparedLines = normalizedLines.map((line, index) => {
     const productId = id(line.product_id)
     const product = productId ? productMap.get(productId) : null
     const taxId = id(line.tax_id)
@@ -213,8 +426,8 @@ async function prepareInvoice(input) {
     const rate = tax ? Number(tax.rate_percent) / 100 : 0
     const untaxed = tax?.price_includes_tax && rate ? discounted / (1 + rate) : discounted
     const taxAmount = tax ? (tax.price_includes_tax ? discounted - untaxed : untaxed * rate) : 0
-    const roundedUntaxed = Math.round(untaxed * 100) / 100
-    const roundedTax = Math.round(taxAmount * 100) / 100
+    const roundedUntaxed = money2(untaxed)
+    const roundedTax = money2(taxAmount)
     amountUntaxed += roundedUntaxed
     amountTax += roundedTax
     journalCredits.push({ account_id: incomeAccountId, amount: roundedUntaxed, label: description })
@@ -236,9 +449,43 @@ async function prepareInvoice(input) {
     }
   })
 
-  amountUntaxed = Math.round(amountUntaxed * 100) / 100
-  amountTax = Math.round(amountTax * 100) / 100
-  const amountTotal = Math.round((amountUntaxed + amountTax) * 100) / 100
+  amountUntaxed = money2(amountUntaxed)
+  amountTax = money2(amountTax)
+
+  // Safety net: VAT requested but line taxes produced $0 — apply on subtotal.
+  if (vatPercent > 0 && amountTax <= 0.005 && amountUntaxed > 0) {
+    amountTax = money2(amountUntaxed * (vatPercent / 100))
+    if (amountTax > 0) {
+      const taxAccId = invoiceVatTax?.tax_account_id || (await findTaxPayableAccount(customer.company_id))?.id
+      if (!taxAccId) throw inputError('Taxes Payable account (2120) was not found for VAT posting')
+      journalCredits.push({ account_id: taxAccId, amount: amountTax, label: invoiceVatTax?.name || `VAT ${vatPercent}%` })
+      if (invoiceVatTax?.id) {
+        for (const line of preparedLines) {
+          if (!line.tax_id) line.tax_id = invoiceVatTax.id
+        }
+      }
+    }
+  }
+
+  const amountTotal = money2(amountUntaxed + amountTax)
+
+  let notesValue = String(input.notes || '').trim() || null
+  if (notesValue) {
+    try {
+      const parsed = JSON.parse(notesValue)
+      if (parsed && typeof parsed === 'object') {
+        parsed.vat_percent = vatPercent
+        parsed.tax_id = invoiceVatTax?.id || parsed.tax_id || null
+        parsed.amount_untaxed = amountUntaxed
+        parsed.amount_tax = amountTax
+        parsed.amount_total = amountTotal
+        notesValue = JSON.stringify(parsed)
+      }
+    } catch {
+      // keep original notes string
+    }
+  }
+
   return {
     header: {
       company_id: customer.company_id,
@@ -261,12 +508,13 @@ async function prepareInvoice(input) {
       amount_total: amountTotal,
       paid_amount: 0,
       amount_due: amountTotal,
-      notes: String(input.notes || '').trim() || null,
+      notes: notesValue,
     },
     lines: preparedLines,
-    amountDiscount: Math.round(amountDiscount * 100) / 100,
+    amountDiscount: money2(amountDiscount),
     journalCredits,
     companyCurrencyId: company.currency_id,
+    vatPercent,
   }
 }
 
@@ -327,7 +575,7 @@ export const getAll = async (req, res) => {
       include: invoiceInclude,
       orderBy: { created_at: 'desc' },
     })
-    res.json({ success: true, data })
+    res.json({ success: true, data: data.map(enrichInvoicePaymentDisplay) })
   } catch (error) { fail(res, error, 'Failed to fetch customer invoices') }
 }
 
@@ -338,7 +586,7 @@ export const getById = async (req, res) => {
   try {
     const data = await prisma.customer_invoices.findUnique({ where: { id: invoiceId }, include: invoiceInclude })
     if (!data) return res.status(404).json({ success: false, message: 'Customer invoice not found' })
-    res.json({ success: true, data })
+    res.json({ success: true, data: enrichInvoicePaymentDisplay(data) })
   } catch (error) { fail(res, error, 'Failed to fetch customer invoice') }
 }
 
@@ -401,7 +649,7 @@ export const create = async (req, res) => {
       return tx.customer_invoices.findUnique({ where: { id: invoice.id }, include: invoiceInclude })
     }, invoiceTransactionOptions)
     await logAudit({ userId: req.user?.id, action: 'Created', entity: 'CustomerInvoice', entityId: data.id, description: `Created draft invoice "${data.invoice_number}"` })
-    res.status(201).json({ success: true, message: 'Draft invoice created successfully', data })
+    res.status(201).json({ success: true, message: 'Draft invoice created successfully', data: enrichInvoicePaymentDisplay(data) })
   } catch (error) { fail(res, error, 'Failed to create customer invoice') }
 }
 
@@ -457,7 +705,7 @@ export const update = async (req, res) => {
       return tx.customer_invoices.update({ where: { id: invoiceId }, data: { journal_entry_id: entryId }, include: invoiceInclude })
     }, invoiceTransactionOptions)
     await logAudit({ userId: req.user?.id, action: 'Updated', entity: 'CustomerInvoice', entityId: data.id, description: `Updated draft invoice "${data.invoice_number}"` })
-    res.json({ success: true, message: 'Draft invoice updated successfully', data })
+    res.json({ success: true, message: 'Draft invoice updated successfully', data: enrichInvoicePaymentDisplay(data) })
   } catch (error) { fail(res, error, 'Failed to update customer invoice') }
 }
 
@@ -539,8 +787,24 @@ export const post = async (req, res) => {
 
       return tx.customer_invoices.findUnique({ where: { id: invoiceId }, include: invoiceInclude })
     }, invoiceTransactionOptions)
-    await logAudit({ userId: req.user?.id, action: 'Posted', entity: 'CustomerInvoice', entityId: invoiceId, description: `Posted invoice "${data.invoice_number}"` })
-    res.json({ success: true, message: 'Customer invoice posted successfully', data })
+
+    // Apply Receive Payment Now (notes.pending_payment) exactly once after the invoice JE is posted.
+    let settled = data
+    try {
+      settled = await settlePendingReceivePaymentNow(data, req.user?.id)
+    } catch (paymentError) {
+      // Invoice is already posted — surface the payment failure so the user can register the receipt manually.
+      console.error('Pending invoice payment failed after post', paymentError)
+      await logAudit({ userId: req.user?.id, action: 'Posted', entity: 'CustomerInvoice', entityId: invoiceId, description: `Posted invoice "${data.invoice_number}" (pending payment failed)` })
+      return res.status(400).json({
+        success: false,
+        message: paymentError.message || 'Invoice posted, but the pending payment could not be applied',
+        data: enrichInvoicePaymentDisplay(data),
+      })
+    }
+
+    await logAudit({ userId: req.user?.id, action: 'Posted', entity: 'CustomerInvoice', entityId: invoiceId, description: `Posted invoice "${settled.invoice_number}"` })
+    res.json({ success: true, message: 'Customer invoice posted successfully', data: enrichInvoicePaymentDisplay(settled) })
   } catch (error) { fail(res, error, 'Failed to post customer invoice') }
 }
 

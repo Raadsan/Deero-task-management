@@ -90,23 +90,72 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
 
   useEffect(() => {
     if (invoice && open) {
-      const advance = invoice.state === "draft"
-        ? availableAdvance
-        : Number(invoice.paid_amount || 0);
+      let pending: any = null;
+      try {
+        const meta = invoice.notes ? JSON.parse(String(invoice.notes)) : null;
+        pending = meta?.pending_payment || null;
+      } catch {
+        pending = null;
+      }
+
+      const hasPending =
+        invoice.state === "draft" &&
+        pending?.enabled &&
+        Number(pending.amount || 0) > 0 &&
+        pending.payment_method_id;
+
       const total = Number(invoice.amount_total || 0);
-      const due = invoice.state === "draft"
-        ? Math.max(0, Math.round((total - Math.min(advance, total)) * 100) / 100)
-        : Number(invoice.amount_due ?? total);
-      setAmount(due > 0 ? due.toFixed(2) : "0.00");
+      const due = Number(invoice.amount_due ?? total);
+
+      if (hasPending) {
+        const pendingAmount = Math.min(Number(pending.amount || 0), total);
+        setCreateReceipt(true);
+        setAmount(pendingAmount > 0 ? pendingAmount.toFixed(2) : "");
+        setAccountingMethodId(String(pending.payment_method_id));
+        setReference(pending.reference ? String(pending.reference) : "");
+
+        const pendingMethod = accountingMethods.find((m) => String(m.id) === String(pending.payment_method_id));
+        const pendingName = String(pendingMethod?.name || "").toLowerCase();
+        const matchIdx = paperMethods.findIndex((pm) => {
+          const label = String(pm.label || "").toLowerCase();
+          if (!pendingName) return false;
+          if (pendingName.includes("cash") && label.includes("cash")) return true;
+          if (pendingName.includes("sombank") && label.includes("sombank")) return true;
+          if (pendingName.includes("premier") && label.includes("premier")) return true;
+          if (pendingName.includes("salaam") && label.includes("salaam")) return true;
+          if (pendingName.includes("ibs") && label.includes("ibs")) return true;
+          if (pendingName.includes("evc") && label.includes("evc")) return true;
+          if (pendingName.includes("dahab") && label.includes("dahab")) return true;
+          return label && pendingName.includes(label);
+        });
+        setSelectedPaperMethodIdx(matchIdx >= 0 ? matchIdx : 0);
+      } else {
+        setCreateReceipt(false);
+        setAmount(due > 0 ? Math.min(due, total).toFixed(2) : "0.00");
+        setReference("");
+        setSelectedPaperMethodIdx(0);
+      }
       setPaymentDate(new Date().toISOString().slice(0, 10));
-      setReference("");
-      setSelectedPaperMethodIdx(0);
-      setCreateReceipt(false);
     }
-  }, [invoice, open, availableAdvance]);
+  }, [invoice, open, accountingMethods, paperMethods]);
 
   useEffect(() => {
     if (!accountingMethods.length) return;
+
+    // Prefer a pending payment method already restored onto the form.
+    let pendingId: string | null = null;
+    try {
+      const meta = invoice?.notes ? JSON.parse(String(invoice.notes)) : null;
+      if (meta?.pending_payment?.enabled && meta.pending_payment.payment_method_id) {
+        pendingId = String(meta.pending_payment.payment_method_id);
+      }
+    } catch {
+      pendingId = null;
+    }
+    if (pendingId && accountingMethods.some((m) => String(m.id) === pendingId) && String(accountingMethodId) === pendingId) {
+      return;
+    }
+
     const selectedPaper = paperMethods[selectedPaperMethodIdx];
     const paperName = selectedPaper ? selectedPaper.label.toLowerCase() : "";
     const paperVal = selectedPaper ? selectedPaper.value.toLowerCase() : "";
@@ -137,20 +186,29 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
     if (!accountingMethodId && accountingMethods.length > 0) {
       setAccountingMethodId(String(accountingMethods[0].id));
     }
-  }, [selectedPaperMethodIdx, paperMethods, accountingMethods]);
+  }, [selectedPaperMethodIdx, paperMethods, accountingMethods, invoice, accountingMethodId]);
 
   if (!invoice) return null;
 
   const isDraft = invoice.state === "draft";
   const selectedPaper = paperMethods[selectedPaperMethodIdx] || paperMethods[0];
   const invoiceTotal = Number(invoice.amount_total || 0);
-  const advancePaid = isDraft
-    ? Math.min(availableAdvance, invoiceTotal)
-    : Math.min(Number((invoice as any).advance_paid ?? invoice.paid_amount ?? 0), invoiceTotal);
-  const outstandingBalance = isDraft
-    ? Math.max(0, Math.round((invoiceTotal - advancePaid) * 100) / 100)
-    : Number(invoice.amount_due ?? invoiceTotal);
-  const maxPayable = outstandingBalance;
+  let pendingPayment: any = null;
+  try {
+    const meta = invoice.notes ? JSON.parse(String(invoice.notes)) : null;
+    pendingPayment = meta?.pending_payment || null;
+  } catch {
+    pendingPayment = null;
+  }
+  const pendingPaidPreview =
+    isDraft && pendingPayment?.enabled
+      ? Math.min(Number(pendingPayment.amount || 0), invoiceTotal)
+      : 0;
+  const paidToDate = isDraft
+    ? Math.min(createReceipt ? Number(amount || 0) || pendingPaidPreview : pendingPaidPreview, invoiceTotal)
+    : Math.min(Number(invoice.paid_amount || 0), invoiceTotal);
+  const outstandingBalance = Math.max(0, Math.round((invoiceTotal - paidToDate) * 100) / 100);
+  const maxPayable = isDraft ? invoiceTotal : Number(invoice.amount_due ?? invoiceTotal);
   const selectedAccountingMethod = accountingMethods.find((m) => String(m.id) === String(accountingMethodId));
   const requiresReference = Boolean(selectedAccountingMethod?.requires_reference);
   const glLabel = selectedAccountingMethod?.chart_of_accounts
@@ -164,12 +222,14 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
     if (submitting) return;
 
     const numAmount = Number(amount);
-    if (createReceipt) {
+    const willCreateReceipt = createReceipt || !isDraft;
+
+    if (willCreateReceipt) {
       if (!Number.isFinite(numAmount) || numAmount <= 0) {
         return accountingToast("Payment amount must be greater than zero.", "error");
       }
       if (numAmount > maxPayable + 0.01) {
-        return accountingToast(`Amount cannot exceed the balance of ${money(maxPayable)}`, "error");
+        return accountingToast(`Paid amount cannot exceed the invoice total of ${money(maxPayable)}`, "error");
       }
       if (!accountingMethodId) {
         return accountingToast("Please select a payment method.", "error");
@@ -187,26 +247,30 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
         activeInvoice = await customerInvoiceApi.post(invoice.id);
       }
 
-      if (createReceipt) {
+      if (willCreateReceipt) {
         const methodDesc = selectedPaper ? `${selectedPaper.label}${selectedPaper.value ? ` (${selectedPaper.value})` : ""}` : "Direct Payment";
+        const payAmount = Math.min(
+          numAmount,
+          Number(activeInvoice.amount_due ?? maxPayable),
+          Number(activeInvoice.amount_total || invoiceTotal)
+        );
         const refString = reference.trim()
           ? `${reference.trim()} - ${methodDesc}`
           : requiresReference
             ? ""
             : methodDesc;
 
-        const receiptAmount = Math.min(numAmount, Number(activeInvoice.amount_due ?? maxPayable));
-        if (receiptAmount <= 0.005) {
+        if (payAmount <= 0.005) {
           accountingToast(`Invoice ${activeInvoice.invoice_number} posted. No remaining balance to collect.`, "success");
         } else {
           const receipt = await customerReceiptApi.create({
             customer_id: activeInvoice.customer_id,
             payment_method_id: Number(accountingMethodId),
             receipt_date: paymentDate,
-            amount: receiptAmount,
+            amount: payAmount,
             reference: refString || undefined,
             memo: `Payment for invoice ${activeInvoice.invoice_number} via ${methodDesc}`,
-            allocations: [{ invoice_id: activeInvoice.id, allocated_amount: receiptAmount }],
+            allocations: [{ invoice_id: activeInvoice.id, allocated_amount: payAmount }],
           });
           await customerReceiptApi.post(receipt.id);
           accountingToast(`Invoice posted and receipt #${receipt.receipt_number || ""} recorded.`, "success");
@@ -216,7 +280,7 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
         const due = Number(activeInvoice.amount_due ?? activeInvoice.amount_total);
         accountingToast(
           paid > 0.005
-            ? `Invoice ${activeInvoice.invoice_number} posted. Advance $${paid.toFixed(2)} applied. Balance $${due.toFixed(2)}.`
+            ? `Invoice ${activeInvoice.invoice_number} posted. $${paid.toFixed(2)} applied. Balance $${due.toFixed(2)}.`
             : `Invoice ${activeInvoice.invoice_number} posted successfully.`,
           "success"
         );
@@ -267,11 +331,11 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
               <span className="font-semibold text-zinc-800">{money(invoiceTotal)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-zinc-500 font-medium">{isDraft ? "Advance Paid:" : "Paid to Date:"}</span>
-              <span className="font-semibold text-zinc-800">{money(advancePaid)}</span>
+              <span className="text-zinc-500 font-medium">Paid:</span>
+              <span className="font-semibold text-zinc-800">{money(paidToDate)}</span>
             </div>
             <div className="flex justify-between items-center border-t border-zinc-200 pt-2">
-              <span className="text-zinc-700 font-bold">Outstanding Balance:</span>
+              <span className="text-zinc-700 font-bold">Balance Due:</span>
               <span className="font-bold text-sm text-emerald-600">{money(outstandingBalance)}</span>
             </div>
           </div>
@@ -340,7 +404,14 @@ export default function InvoicePaymentDialog({ open, onOpenChange, invoice, onSu
                     min="0.01"
                     max={maxPayable}
                     value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
+                    onChange={(e) => {
+                      const raw = Number(e.target.value);
+                      if (!Number.isFinite(raw) || e.target.value === "") {
+                        setAmount(e.target.value);
+                        return;
+                      }
+                      setAmount(String(Math.min(Math.max(0, raw), maxPayable)));
+                    }}
                     required={createReceipt || !isDraft}
                     className="w-full h-9 rounded-lg border border-zinc-300 px-3 text-xs font-bold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />

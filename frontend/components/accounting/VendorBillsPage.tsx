@@ -5,7 +5,7 @@ import { accountingToast } from '@/lib/accounting-ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { SquarePen, Eye, Plus, Printer, RefreshCw, Send, Trash2, X, CreditCard, Receipt } from 'lucide-react';
-import { vendorBillApi, vendorRefundApi, type VendorBill, type VendorBillLine } from '@/lib/api/accounting/payables/vendorBillApi';
+import { vendorBillApi, vendorRefundApi, type VendorBill, type VendorBillLine, type VendorRefundable } from '@/lib/api/accounting/payables/vendorBillApi';
 import VendorBillViewModal from './VendorBillViewModal';
 import { vendorApi } from '@/lib/api/accounting/payables/vendorApi';
 import { vendorPaymentApi } from '@/lib/api/accounting/payables/vendorPaymentApi';
@@ -33,12 +33,28 @@ type Form = {
   payment_method_id: string; bank_account_id: string; amount_paid: string; payment_reference: string;
 };
 const today = () => new Date().toISOString().slice(0, 10);
-const emptyLine = (): Line => ({ line_type: 'product', product_id: null, expense_account_id: null, description: '', quantity: 1, unit_price: 0, discount_percent: 0, tax_id: null, amount: 0 });
+const emptyLine = (): Line => ({ line_type: 'expense', product_id: null, expense_account_id: null, description: '', quantity: 1, unit_price: 0, discount_percent: 0, tax_id: null, amount: 0 });
 const emptyForm = (): Form => ({ vendor_id: '', reversed_bill_id: '', bill_date: today(), received_date: today(), currency_id: '', exchange_rate: '1', payment_term_id: '', vendor_reference: '', notes: '', lines: [emptyLine()], pay_vendor_now: false, payment_method_id: '', bank_account_id: '', amount_paid: '', payment_reference: '' });
 const dateValue = (value: unknown) => value ? new Date(String(value)).toISOString().slice(0, 10) : '';
 const apiDate = (value: string) => new Date(`${value}T00:00:00.000Z`).toISOString();
 const money = (value: unknown) => Number(value || 0).toFixed(2);
 const errorMessage = (error: unknown) => axios.isAxiosError(error) ? error.response?.data?.message || error.message : error instanceof Error ? error.message : 'Something went wrong';
+const termDueDays = (term: Row | undefined) => {
+  if (!term) return 0;
+  const lines = Array.isArray(term.payment_term_lines) ? term.payment_term_lines as Array<{ due_days?: number }> : [];
+  if (lines.length) return Math.max(...lines.map((line) => Number(line.due_days || 0)));
+  const name = String(term.name || '');
+  const netMatch = name.match(/net\s*(\d+)/i);
+  if (netMatch) return Number(netMatch[1]);
+  if (/immediate|receipt|due on receipt|net\s*0/i.test(name)) return 0;
+  return 0;
+};
+const addDays = (isoDate: string, days: number) => {
+  if (!isoDate) return '';
+  const next = new Date(`${isoDate}T00:00:00.000Z`);
+  next.setUTCDate(next.getUTCDate() + days);
+  return next.toISOString().slice(0, 10);
+};
 
 export default function VendorBillsPage({ kind = 'bill' }: { kind?: 'bill' | 'refund' }) {
   const isRefund = kind === 'refund';
@@ -69,8 +85,10 @@ export default function VendorBillsPage({ kind = 'bill' }: { kind?: 'bill' | 're
   const [advanceAmount, setAdvanceAmount] = useState(0);
   const [refundMode, setRefundMode] = useState<'full' | 'partial'>('full');
   const [refundReason, setRefundReason] = useState('');
+  const [refundAmount, setRefundAmount] = useState('');
+  const [refundable, setRefundable] = useState<VendorRefundable | null>(null);
   const [moreNotes, setMoreNotes] = useState('');
-  const [pendingAction, setPendingAction] = useState<{ type: 'post' | 'delete'; bill: VendorBill } | null>(null);
+  const [pendingAction, setPendingAction] = useState<{ type: 'post' | 'delete' | 'post-form'; bill?: VendorBill } | null>(null);
   const [printTarget, setPrintTarget] = useState<VendorBill | null>(null);
   const [viewModalBill, setViewModalBill] = useState<VendorBill | null>(null);
 
@@ -120,10 +138,18 @@ export default function VendorBillsPage({ kind = 'bill' }: { kind?: 'bill' | 're
     const matchesCurrency = !form.currency_id || Number(row.currency_id) === Number(form.currency_id);
     return matchesCompany && matchesCurrency && row.is_active !== false && row.gl_account_id;
   });
-  const paymentNow = form.pay_vendor_now ? Math.max(0, Number(form.amount_paid) || 0) : 0;
+  const maxRefundable = Number(refundable?.max_refundable || 0);
+  const currentRefundAmount = isRefund
+    ? (refundMode === 'full' ? maxRefundable : Math.max(0, Number(refundAmount) || 0))
+    : 0;
+  const remainingAfterRefund = Math.max(0, maxRefundable - currentRefundAmount);
+  const paymentNow = form.pay_vendor_now ? Math.max(0, Math.min(Number(form.amount_paid) || 0, totals.total)) : 0;
   const summaryPaid = viewOnly && selected ? Number(selected.amount_paid || 0) : paymentNow + Math.min(advanceAmount, totals.total);
   const summaryBalance = Math.max(0, totals.total - summaryPaid);
-  const summaryStatus = summaryPaid <= 0.005 ? 'Posted' : summaryBalance <= 0.005 ? 'Paid' : 'Partially Paid';
+  const summaryStatus = (!selected || selected.state === 'draft' || !viewOnly)
+    ? 'Draft'
+    : (summaryPaid <= 0.005 ? 'Unpaid' : summaryBalance <= 0.005 ? 'Paid' : 'Partially Paid');
+  const computedDueDate = addDays(form.bill_date, termDueDays(terms.find((row) => row.id === Number(form.payment_term_id))));
   const filtered = bills.filter((bill) => {
     const needle = query.trim().toLowerCase();
     return (!needle || [bill.bill_number, bill.vendor_reference, bill.vendors?.name, bill.state].some((value) => String(value || '').toLowerCase().includes(needle))) &&
@@ -134,24 +160,63 @@ export default function VendorBillsPage({ kind = 'bill' }: { kind?: 'bill' | 're
   function prepareBill() {
     const next = emptyForm();
     if (currencies.length === 1) next.currency_id = String(currencies[0].id);
-    const immediate = terms.find((row) => /immediate/i.test(String(row.name)));
-    if (immediate) next.payment_term_id = String(immediate.id);
-    setSelected(null); setViewOnly(false); setAvailableAdvance(0); setAdvanceAmount(0); setRefundMode('full'); setRefundReason(''); setMoreNotes(''); setForm(next); setOpen(true);
+    const immediate = terms.find((row) => /immediate|receipt/i.test(String(row.name)));
+    if (immediate && !isRefund) next.payment_term_id = String(immediate.id);
+    setSelected(null); setViewOnly(false); setAvailableAdvance(0); setAdvanceAmount(0);
+    setRefundMode('full'); setRefundReason(''); setRefundAmount(''); setRefundable(null); setMoreNotes('');
+    setForm(next); setOpen(true);
+  }
+  async function loadRefundable(billId: number, excludeRefundId?: number, opts?: { mode?: 'full' | 'partial'; preferAmount?: number }) {
+    if (!billId) { setRefundable(null); return; }
+    try {
+      const info = await vendorRefundApi.getRefundable(billId, excludeRefundId);
+      setRefundable(info);
+      const mode = opts?.mode || refundMode;
+      if (mode === 'full') setRefundAmount(String(info.max_refundable));
+      else if (opts?.preferAmount != null) setRefundAmount(String(Math.min(Number(opts.preferAmount) || 0, info.max_refundable)));
+    } catch (error) {
+      setRefundable(null);
+      accountingToast(errorMessage(error), 'error');
+    }
   }
   function openBill(bill: VendorBill, readonly = false) {
     setSelected(bill); setViewOnly(readonly || bill.state !== 'draft');
+    const pending = bill.pending_payment;
+    const pendingEnabled = Boolean(pending?.enabled && Number(pending.amount || 0) > 0);
     setForm({
       vendor_id: String(bill.vendor_id), reversed_bill_id: String(bill.reversed_bill_id || ''), bill_date: dateValue(bill.bill_date), received_date: dateValue(bill.received_date),
       currency_id: String(bill.currency_id || ''), exchange_rate: String(bill.exchange_rate || 1),
       payment_term_id: String(bill.payment_term_id || ''), vendor_reference: String(bill.vendor_reference || ''),
-      notes: '', pay_vendor_now: false, payment_method_id: '', bank_account_id: '', amount_paid: '', payment_reference: '', lines: (bill.vendor_bill_lines || []).map((line) => ({
+      notes: bill.notes_text
+        ? String(bill.notes_text)
+        : (typeof bill.notes === 'string' && !String(bill.notes).trim().startsWith('{') ? String(bill.notes) : ''),
+      pay_vendor_now: pendingEnabled,
+      payment_method_id: pendingEnabled ? String(pending?.payment_method_id || '') : '',
+      bank_account_id: pendingEnabled ? String(pending?.bank_account_id || '') : '',
+      amount_paid: pendingEnabled ? String(pending?.amount ?? '') : '',
+      payment_reference: pendingEnabled ? String(pending?.payment_reference || '') : '',
+      lines: (bill.vendor_bill_lines || []).map((line) => ({
         product_id: line.product_id || null, description: line.description, quantity: Number(line.quantity),
         unit_price: Number(line.unit_price), discount_percent: Number(line.discount_percent),
         tax_id: line.tax_id || null, line_type: (line.product_id ? 'product' : 'expense') as 'product' | 'expense', expense_account_id: line.expense_account_id || null, amount: Number(line.unit_price),
       })),
     });
-    if (isRefund) { setRefundMode('partial'); setRefundReason(''); setMoreNotes(String(bill.notes || '')); }
-    if (!isRefund) void loadVendorAdvance(bill.vendor_id, bill.currency_id);
+    if (isRefund) {
+      setRefundMode(bill.refund_type === 'partial' ? 'partial' : 'full');
+      setRefundReason(String(bill.refund_reason || ''));
+      setRefundAmount(String(bill.amount_total || ''));
+      setMoreNotes(String(bill.notes_text || ''));
+      if (bill.reversed_bill_id) {
+        void loadRefundable(bill.reversed_bill_id, bill.id, {
+          mode: bill.refund_type === 'partial' ? 'partial' : 'full',
+          preferAmount: Number(bill.amount_total || 0),
+        });
+      }
+    }
+    if (!isRefund) {
+      setAdvanceAmount(Number(pending?.advance_amount || 0));
+      void loadVendorAdvance(bill.vendor_id, bill.currency_id);
+    }
     setOpen(true);
   }
   async function loadVendorAdvance(vendorId: number, currencyId: number) {
@@ -168,18 +233,25 @@ export default function VendorBillsPage({ kind = 'bill' }: { kind?: 'bill' | 're
       ...(isRefund ? { reversed_bill_id: '', payment_term_id: '' } : {}),
       lines: isRefund ? [emptyLine()] : current.lines,
     }));
-    if (isRefund) { setRefundMode('full'); setRefundReason(''); setMoreNotes(''); }
+    if (isRefund) { setRefundMode('full'); setRefundReason(''); setRefundAmount(''); setRefundable(null); setMoreNotes(''); }
     if (!isRefund) void loadVendorAdvance(Number(value), Number(nextVendor?.currency_id || nextCompany?.currency_id || 0));
   }
   function selectOriginalBill(value: string) {
     const original = sourceBills.find((row) => row.id === Number(value));
-    if (!original) { setForm((current) => ({ ...current, reversed_bill_id: value })); return; }
-    const lines = (original.vendor_bill_lines || []).map((line) => ({
-      product_id: line.product_id || null, description: line.description, quantity: Number(line.quantity), unit_price: Number(line.unit_price),
-      discount_percent: Number(line.discount_percent), tax_id: line.tax_id || null, line_type: (line.product_id ? 'product' : 'expense') as 'product' | 'expense', expense_account_id: line.expense_account_id || null, amount: Number(line.unit_price),
+    if (!original) { setForm((current) => ({ ...current, reversed_bill_id: value })); setRefundable(null); return; }
+    setForm((current) => ({
+      ...current,
+      vendor_id: String(original.vendor_id),
+      reversed_bill_id: value,
+      currency_id: String(original.currency_id),
+      exchange_rate: String(original.exchange_rate || 1),
+      payment_term_id: '',
+      bill_date: today(),
+      received_date: today(),
+      lines: [],
     }));
-    setForm((current) => ({ ...current, vendor_id: String(original.vendor_id), reversed_bill_id: value, currency_id: String(original.currency_id), exchange_rate: String(original.exchange_rate || 1), payment_term_id: '', bill_date: today(), received_date: today(), lines }));
     setRefundMode('full'); setRefundReason(''); setMoreNotes('');
+    void loadRefundable(original.id, selected?.id, { mode: 'full' });
   }
   function updateLine(index: number, patch: Partial<Line>) {
     setForm((current) => ({ ...current, lines: current.lines.map((line, lineIndex) => lineIndex === index ? { ...line, ...patch } : line) }));
@@ -191,31 +263,100 @@ export default function VendorBillsPage({ kind = 'bill' }: { kind?: 'bill' | 're
       tax_id: Number(product.purchase_tax_id) || null,
     } : { product_id: null });
   }
-  async function save(postAfterSave = false) {
-    setSaving(true);
-    const { pay_vendor_now: _payNow, payment_method_id: _paymentMethod, bank_account_id: _bankAccount, amount_paid: _amountPaid, payment_reference: _paymentReference, ...billForm } = form;
-    const payload = {
-      ...billForm, notes: isRefund ? [`Refund reason: ${refundReason.trim()}`, moreNotes.trim()].filter(Boolean).join('\n') : form.notes,
-      lines: form.lines.map((line) => ({ ...line, ...(isRefund ? { line_type: undefined } : {}), description: line.description || String(products.find((product) => product.id === Number(line.product_id))?.name || 'Expense') })), vendor_id: Number(form.vendor_id), bill_date: apiDate(form.bill_date),
-      received_date: form.received_date ? apiDate(form.received_date) : null, currency_id: Number(form.currency_id),
-      exchange_rate: Number(form.exchange_rate), payment_term_id: form.payment_term_id ? Number(form.payment_term_id) : null,
-      reversed_bill_id: form.reversed_bill_id ? Number(form.reversed_bill_id) : null,
-    };
-    try {
-      const saved = selected ? await recordsApi.update(selected.id, payload) : await recordsApi.create(payload);
-      if (postAfterSave) {
-        if (isRefund) await vendorRefundApi.post(saved.id); else await vendorBillApi.post(saved.id, {
-          advance_amount: Math.min(advanceAmount, totals.total), pay_vendor_now: form.pay_vendor_now,
-          payment_method_id: form.payment_method_id ? Number(form.payment_method_id) : undefined,
-          bank_account_id: form.bank_account_id ? Number(form.bank_account_id) : undefined,
-          amount_paid: form.pay_vendor_now ? Number(form.amount_paid) : undefined,
-          payment_reference: form.payment_reference,
-        });
-      }
-      accountingToast(postAfterSave ? `Vendor ${kind} posted successfully` : `Draft vendor ${kind} ${selected ? 'updated' : 'prepared'} successfully`);
-      setOpen(false); await load();
-    } catch (error) { accountingToast(errorMessage(error), 'error'); } finally { setSaving(false); }
+  function buildSavePayload() {
+    return isRefund
+      ? {
+          vendor_id: Number(form.vendor_id),
+          reversed_bill_id: Number(form.reversed_bill_id),
+          bill_date: apiDate(form.bill_date),
+          refund_type: refundMode,
+          refund_reason: refundReason.trim(),
+          refund_amount: currentRefundAmount,
+          notes: moreNotes,
+        }
+      : {
+          vendor_id: Number(form.vendor_id),
+          bill_date: apiDate(form.bill_date),
+          received_date: form.received_date ? apiDate(form.received_date) : null,
+          currency_id: Number(form.currency_id),
+          exchange_rate: Number(form.exchange_rate),
+          payment_term_id: form.payment_term_id ? Number(form.payment_term_id) : null,
+          reversed_bill_id: null,
+          notes: form.notes,
+          lines: form.lines.map((line) => ({
+            ...line,
+            description: line.description || String(products.find((product) => product.id === Number(line.product_id))?.name || 'Expense'),
+          })),
+          pay_vendor_now: form.pay_vendor_now,
+          payment_method_id: form.pay_vendor_now && form.payment_method_id ? Number(form.payment_method_id) : undefined,
+          bank_account_id: form.pay_vendor_now && form.bank_account_id ? Number(form.bank_account_id) : undefined,
+          amount_paid: form.pay_vendor_now ? Math.min(Number(form.amount_paid) || 0, totals.total) : undefined,
+          payment_reference: form.pay_vendor_now ? form.payment_reference : undefined,
+          advance_amount: Math.min(advanceAmount, totals.total),
+        };
   }
+
+  function validateBeforeSave(forPost = false) {
+    if (isRefund) {
+      if (!form.reversed_bill_id) { accountingToast('Original vendor bill is required', 'error'); return false; }
+      if (!refundReason.trim()) { accountingToast('Refund reason is required', 'error'); return false; }
+      if (!(currentRefundAmount > 0) || currentRefundAmount > maxRefundable + 0.005) {
+        accountingToast(`Refund amount must be greater than 0 and at most $${money(maxRefundable)}`, 'error');
+        return false;
+      }
+    }
+    if (!isRefund && form.pay_vendor_now) {
+      if (!form.payment_method_id || !(Number(form.amount_paid) > 0)) {
+        accountingToast('Pay Vendor Now requires a payment method and amount paid', 'error');
+        return false;
+      }
+      if (selectedPaymentMethod?.requires_reference && !String(form.payment_reference || '').trim()) {
+        accountingToast('Reference number is required for this payment method', 'error');
+        return false;
+      }
+    }
+    if (forPost && !isRefund && !(totals.total > 0)) {
+      accountingToast('Add at least one bill line with a positive amount', 'error');
+      return false;
+    }
+    return true;
+  }
+
+  async function save() {
+    if (!validateBeforeSave(false)) return;
+    setSaving(true);
+    try {
+      const payload = buildSavePayload();
+      await (selected ? recordsApi.update(selected.id, payload) : recordsApi.create(payload));
+      accountingToast(`Draft vendor ${kind} ${selected ? 'updated' : 'prepared'} successfully`);
+      setOpen(false);
+      await load();
+    } catch (error) { accountingToast(errorMessage(error), 'error'); }
+    finally { setSaving(false); }
+  }
+
+  /** One-shot: save draft then post. Used after the single confirmation from the form. */
+  async function saveThenPost() {
+    if (!validateBeforeSave(true)) { setPendingAction(null); return; }
+    setSaving(true);
+    try {
+      const payload = buildSavePayload();
+      const saved = selected ? await recordsApi.update(selected.id, payload) : await recordsApi.create(payload);
+      await recordsApi.post(saved.id, isRefund ? undefined : {});
+      accountingToast(`Vendor ${kind} posted successfully`);
+      setPendingAction(null);
+      setOpen(false);
+      await load();
+    } catch (error) { accountingToast(errorMessage(error), 'error'); }
+    finally { setSaving(false); }
+  }
+
+  function requestPostFromForm(formEl?: HTMLFormElement | null) {
+    if (formEl && !formEl.reportValidity()) return;
+    if (!validateBeforeSave(true)) return;
+    setPendingAction({ type: 'post-form' });
+  }
+
   async function remove(bill: VendorBill) {
     setSaving(true); try { await recordsApi.remove(bill.id); accountingToast(`Draft vendor ${kind} deleted`); setPendingAction(null); await load(); }
     catch (error) { accountingToast(errorMessage(error), 'error'); }
@@ -232,9 +373,8 @@ export default function VendorBillsPage({ kind = 'bill' }: { kind?: 'bill' | 're
   }
 
   const columns: DashboardTableColumn<VendorBill>[] = [
-    { key: 'number', header: 'Bill', cell: (row) => <span className="font-bold text-primary">{row.bill_number}</span> },
+    { key: 'number', header: 'Bill No.', cell: (row) => <span className="font-bold text-primary">{row.bill_number || '—'}</span> },
     { key: 'vendor', header: 'Vendor', cell: (row) => row.vendors?.name || `#${row.vendor_id}` },
-    { key: 'reference', header: 'Vendor Reference', cell: (row) => String(row.vendor_reference || '—') },
     { key: 'date', header: 'Bill Date', cell: (row) => dateValue(row.bill_date) },
     { key: 'due', header: 'Due Date', cell: (row) => dateValue(row.due_date) },
     { key: 'status', header: 'Status', align: 'center', cell: (row) => <Status bill={row} /> },
@@ -275,9 +415,14 @@ export default function VendorBillsPage({ kind = 'bill' }: { kind?: 'bill' | 're
             <div>
               <DialogTitle className="text-lg font-bold text-foreground">
                 {viewOnly ? 'View' : selected ? 'Edit' : 'Prepare'} Vendor {isRefund ? 'Refund' : 'Bill'}
+                {selected?.bill_number ? ` · ${selected.bill_number}` : ''}
               </DialogTitle>
               <DialogDescription className="text-xs text-muted-foreground">
-                {viewOnly ? `This vendor ${kind} is read-only.` : 'Vendor details, currency, lines, and optional immediate payment.'}
+                {viewOnly
+                  ? `Vendor Bill No.: ${selected?.bill_number || '—'}`
+                  : selected?.bill_number
+                    ? `Vendor Bill No.: ${selected.bill_number} (assigned by the system)`
+                    : 'Vendor details, currency, lines, and optional immediate payment. Bill number is assigned on save.'}
               </DialogDescription>
             </div>
           </div>
@@ -286,11 +431,11 @@ export default function VendorBillsPage({ kind = 'bill' }: { kind?: 'bill' | 're
         <form onSubmit={(event) => { event.preventDefault(); void save(); }} className="mt-4 space-y-5">
           <fieldset disabled={viewOnly} className="contents">
             {/* Top metadata grid */}
-            <div className={`grid gap-4 sm:grid-cols-2 ${isRefund ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} rounded-2xl border border-border/60 bg-muted/20 p-4`}>
+            <div className={`grid gap-4 sm:grid-cols-2 ${isRefund ? 'lg:grid-cols-3' : 'lg:grid-cols-3'} rounded-2xl border border-border/60 bg-muted/20 p-4`}>
               <Select label="Vendor" value={form.vendor_id} set={selectVendor} rows={vendors} />
               {isRefund ? (
                 <>
-                  <Select label="Original bill" value={form.reversed_bill_id} set={selectOriginalBill} rows={sourceBills.filter((row) => row.vendor_id === Number(form.vendor_id) && row.state === 'posted')} labelKey="bill_number" />
+                  <Select label="Original bill" value={form.reversed_bill_id} set={selectOriginalBill} rows={sourceBills.filter((row) => row.vendor_id === Number(form.vendor_id) && row.state === 'posted' && Number(row.amount_paid || 0) > 0.005)} labelKey="bill_number" />
                   <Field label="Refund date" type="date" value={form.bill_date} set={(value) => setForm({ ...form, bill_date: value, received_date: value })} />
                 </>
               ) : (
@@ -298,27 +443,59 @@ export default function VendorBillsPage({ kind = 'bill' }: { kind?: 'bill' | 're
                   <Field label="Bill date" type="date" value={form.bill_date} set={(value) => setForm({ ...form, bill_date: value })} />
                   <Field label="Received date" type="date" value={form.received_date} set={(value) => setForm({ ...form, received_date: value })} />
                   <Select label="Payment term" value={form.payment_term_id} set={(value) => setForm({ ...form, payment_term_id: value })} rows={terms} optional />
+                  <Field label="Due date" type="date" value={computedDueDate} set={() => undefined} disabled />
                 </>
               )}
             </div>
 
             {isRefund && form.reversed_bill_id && (
-              <div className="grid gap-4 rounded-2xl border bg-muted/20 p-4 sm:grid-cols-[220px_1fr]">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  <span>Refund Type <span className="text-rose-500">*</span></span>
-                  <select value={refundMode} onChange={(event) => setRefundMode(event.target.value as 'full' | 'partial')} className="mt-1.5 h-10 w-full rounded-xl border border-border bg-background px-3 text-sm focus:ring-1 focus:ring-primary">
-                    <option value="full">Full Refund</option>
-                    <option value="partial">Partial Refund</option>
-                  </select>
-                </label>
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  <span>Refund Reason <span className="text-rose-500">*</span></span>
-                  <input required value={refundReason} onChange={(event) => setRefundReason(event.target.value)} className="mt-1.5 h-10 w-full rounded-xl border border-border bg-background px-3 text-sm focus:ring-1 focus:ring-primary" placeholder="Reason for this refund" />
-                </label>
-                {refundMode === 'full' && (
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 sm:col-span-2">
+              <div className="space-y-4 rounded-2xl border bg-muted/20 p-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    <span>Refund Type <span className="text-rose-500">*</span></span>
+                    <select
+                      value={refundMode}
+                      onChange={(event) => {
+                        const mode = event.target.value as 'full' | 'partial';
+                        setRefundMode(mode);
+                        if (mode === 'full') setRefundAmount(String(maxRefundable));
+                      }}
+                      className="mt-1.5 h-10 w-full rounded-xl border border-border bg-background px-3 text-sm focus:ring-1 focus:ring-primary"
+                    >
+                      <option value="full">Full Refund</option>
+                      <option value="partial">Partial Refund</option>
+                    </select>
+                  </label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    <span>Refund Reason <span className="text-rose-500">*</span></span>
+                    <input required value={refundReason} onChange={(event) => setRefundReason(event.target.value)} className="mt-1.5 h-10 w-full rounded-xl border border-border bg-background px-3 text-sm focus:ring-1 focus:ring-primary" placeholder="Reason for this refund" />
+                  </label>
+                </div>
+                <div className="grid gap-3 rounded-xl border border-border/60 bg-background/80 p-3 text-xs sm:grid-cols-2 lg:grid-cols-5">
+                  <div><span className="text-muted-foreground">Original Bill Total</span><p className="font-mono font-semibold">${money(refundable?.original_total)}</p></div>
+                  <div><span className="text-muted-foreground">Previously Refunded</span><p className="font-mono font-semibold">${money(refundable?.previously_refunded)}</p></div>
+                  <div><span className="text-muted-foreground">Maximum Refundable</span><p className="font-mono font-semibold text-primary">${money(maxRefundable)}</p></div>
+                  <div><span className="text-muted-foreground">Current Refund</span><p className="font-mono font-semibold">${money(currentRefundAmount)}</p></div>
+                  <div><span className="text-muted-foreground">Remaining Refundable</span><p className="font-mono font-semibold">${money(remainingAfterRefund)}</p></div>
+                </div>
+                {refundMode === 'full' ? (
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
                     <span>Refund Amount</span>
-                    <input readOnly value={money(totals.total)} className="mt-1.5 h-10 w-full rounded-xl border bg-muted px-3 font-semibold font-mono" />
+                    <input readOnly value={money(maxRefundable)} className="mt-1.5 h-10 w-full rounded-xl border bg-muted px-3 font-semibold font-mono" />
+                  </label>
+                ) : (
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block max-w-xs">
+                    <span>Refund Amount <span className="text-rose-500">*</span></span>
+                    <input
+                      required
+                      type="number"
+                      min="0.01"
+                      max={maxRefundable}
+                      step="0.01"
+                      value={refundAmount}
+                      onChange={(event) => setRefundAmount(event.target.value)}
+                      className="mt-1.5 h-10 w-full rounded-xl border border-border bg-background px-3 font-mono text-sm focus:ring-1 focus:ring-primary"
+                    />
                   </label>
                 )}
               </div>
@@ -342,7 +519,7 @@ export default function VendorBillsPage({ kind = 'bill' }: { kind?: 'bill' | 're
             )}
 
             {/* Line items table */}
-            {(!isRefund || refundMode === 'partial') && (
+            {!isRefund && (
               <div className="overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm">
                 <table className="w-full table-fixed text-xs">
                   <colgroup>
@@ -514,7 +691,7 @@ export default function VendorBillsPage({ kind = 'bill' }: { kind?: 'bill' | 're
               </div>
             )}
 
-            {/* Payment Information section */}
+            {/* Payment Information section (vendor bills only) */}
             {!isRefund && !viewOnly && (
               <section className="rounded-2xl border border-border/80 bg-muted/20 p-4 transition-all">
                 <div className="flex flex-wrap items-center justify-between gap-3">
@@ -690,21 +867,20 @@ export default function VendorBillsPage({ kind = 'bill' }: { kind?: 'bill' | 're
             {!viewOnly && (
               <>
                 <button
+                  type="submit"
                   disabled={saving}
                   className="h-10 rounded-xl border border-border bg-background px-4 text-xs font-semibold text-foreground hover:bg-muted/40 shadow-xs transition-all disabled:opacity-50"
                 >
-                  {saving ? 'Saving...' : 'Save Draft'}
+                  {saving && !pendingAction ? 'Saving...' : 'Save Draft'}
                 </button>
                 <button
                   type="button"
                   disabled={saving}
-                  onClick={(event) => {
-                    if (event.currentTarget.form?.reportValidity()) void save(true);
-                  }}
+                  onClick={(event) => requestPostFromForm(event.currentTarget.form)}
                   className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-primary px-5 text-xs font-bold text-white shadow-sm hover:bg-primary/90 transition-all disabled:opacity-50"
                 >
                   <Send className="size-3.5" />
-                  {saving ? 'Posting...' : `Post ${isRefund ? 'Refund' : 'Bill'}`}
+                  {`Post ${isRefund ? 'Refund' : 'Bill'}`}
                 </button>
               </>
             )}
@@ -715,13 +891,52 @@ export default function VendorBillsPage({ kind = 'bill' }: { kind?: 'bill' | 're
     <AccountingConfirmDialog
       open={Boolean(pendingAction)}
       title={`${pendingAction?.type === 'delete' ? 'Delete' : 'Post'} Vendor ${isRefund ? 'Refund' : 'Bill'}`}
-      description={pendingAction?.type === 'delete' ? `Confirm removal of this draft vendor ${kind}.` : `Confirm this vendor ${kind} before updating accounting balances.`}
-      confirmLabel={`${pendingAction?.type === 'delete' ? 'Delete' : 'Post'} ${isRefund ? 'Refund' : 'Bill'}`}
+      description={pendingAction?.type === 'delete'
+        ? `Confirm removal of this draft vendor ${kind}.`
+        : pendingAction?.type === 'post-form'
+          ? (form.pay_vendor_now && Number(form.amount_paid) > 0
+            ? `This will save and post the bill with the $${money(form.amount_paid)} payment in one step.`
+            : `This will save and post the vendor ${kind} in one step.`)
+          : pendingAction?.bill?.pending_payment?.enabled
+            ? `Post this vendor bill and apply the saved payment of $${money(pendingAction.bill.pending_payment.amount)} automatically.`
+            : `Confirm this vendor ${kind} before updating accounting balances.`}
+      confirmLabel={pendingAction?.type === 'delete' ? `Delete ${isRefund ? 'Refund' : 'Bill'}` : `Post ${isRefund ? 'Refund' : 'Bill'}`}
       destructive={pendingAction?.type === 'delete'}
       busy={saving}
-      details={pendingAction && <div className="flex justify-between"><span className="text-muted-foreground">Document</span><b>{pendingAction.bill.bill_number}</b></div>}
-      onCancel={() => setPendingAction(null)}
-      onConfirm={() => pendingAction && void (pendingAction.type === 'delete' ? remove(pendingAction.bill) : postRecord(pendingAction.bill))}
+      details={pendingAction && (
+        <div className="space-y-1">
+          {pendingAction.type === 'post-form' ? (
+            <>
+              <div className="flex justify-between"><span className="text-muted-foreground">Vendor</span><b>{selectedVendor ? String(selectedVendor.name) : '—'}</b></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">{isRefund ? 'Refund Total' : 'Bill Total'}</span><b>${money(isRefund ? currentRefundAmount : totals.total)}</b></div>
+              {!isRefund && (
+                <>
+                  <div className="flex justify-between"><span className="text-muted-foreground">Paid</span><b>${money(summaryPaid)}</b></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">Balance Due</span><b>${money(summaryBalance)}</b></div>
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              <div className="flex justify-between"><span className="text-muted-foreground">Vendor Bill No.</span><b>{pendingAction.bill?.bill_number}</b></div>
+              {pendingAction.type === 'post' && pendingAction.bill && (
+                <>
+                  <div className="flex justify-between"><span className="text-muted-foreground">Bill Total</span><b>${money(pendingAction.bill.amount_total)}</b></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">Paid</span><b>${money(pendingAction.bill.amount_paid)}</b></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">Balance Due</span><b>${money(pendingAction.bill.amount_due)}</b></div>
+                </>
+              )}
+            </>
+          )}
+        </div>
+      )}
+      onCancel={() => !saving && setPendingAction(null)}
+      onConfirm={() => {
+        if (!pendingAction) return;
+        if (pendingAction.type === 'delete' && pendingAction.bill) void remove(pendingAction.bill);
+        else if (pendingAction.type === 'post-form') void saveThenPost();
+        else if (pendingAction.type === 'post' && pendingAction.bill) void postRecord(pendingAction.bill);
+      }}
     />
     {viewModalBill && (
       <VendorBillViewModal
@@ -738,7 +953,7 @@ export default function VendorBillsPage({ kind = 'bill' }: { kind?: 'bill' | 're
 
 function PrintableVendorDocument({ record, refund }: { record: VendorBill; refund: boolean }) {
   const currency = record.currencies?.code || '';
-  return <section id="printable-vendor-document" className="hidden bg-white text-slate-950 print:block"><header className="flex items-start justify-between border-b-2 border-slate-900 pb-6"><div><h1 className="text-3xl font-bold text-[#6f0d18]">Bloom Cafe</h1><p className="mt-1 text-sm text-slate-500">{refund ? 'Vendor refund' : 'Vendor bill'}</p></div><div className="text-right"><h2 className="text-3xl font-semibold">{refund ? 'VENDOR REFUND' : 'VENDOR BILL'}</h2><p className="mt-2 font-bold">{record.bill_number}</p></div></header><div className="grid grid-cols-2 gap-10 py-7 text-sm"><div><p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Vendor</p><p className="mt-2 text-base font-bold">{record.vendors?.name || `Vendor #${record.vendor_id}`}</p>{record.vendors?.phone && <p>{record.vendors.phone}</p>}{record.vendors?.email && <p>{record.vendors.email}</p>}</div><dl className="grid grid-cols-2 gap-x-5 gap-y-2 text-right"><dt className="text-slate-500">{refund ? 'Refund date' : 'Bill date'}</dt><dd className="font-semibold">{dateValue(record.bill_date)}</dd>{!refund && <><dt className="text-slate-500">Due date</dt><dd className="font-semibold">{dateValue(record.due_date) || '—'}</dd></>}<dt className="text-slate-500">Status</dt><dd className="font-semibold uppercase">{record.state}</dd></dl></div><table className="w-full border-collapse text-sm"><thead><tr className="bg-[#6f0d18] text-white"><th className="p-3 text-left">Description</th><th className="p-3 text-right">Qty</th><th className="p-3 text-right">Unit cost</th><th className="p-3 text-right">Discount</th><th className="p-3 text-right">Amount</th></tr></thead><tbody>{(record.vendor_bill_lines || []).map((line, index) => { const amount = Number(line.quantity) * Number(line.unit_price) * (1 - Number(line.discount_percent || 0) / 100); return <tr key={line.id || index} className="border-b"><td className="p-3">{line.description}</td><td className="p-3 text-right">{Number(line.quantity)}</td><td className="p-3 text-right">{money(line.unit_price)}</td><td className="p-3 text-right">{Number(line.discount_percent || 0).toFixed(2)}%</td><td className="p-3 text-right font-medium">{money(amount)}</td></tr>; })}</tbody></table><div className="ml-auto mt-7 w-72 text-sm"><div className="flex justify-between py-1"><span>Subtotal</span><span>{money(record.amount_untaxed)}</span></div><div className="flex justify-between py-1"><span>Tax</span><span>{money(record.amount_tax)}</span></div><div className="my-2 border-t border-slate-400" /><div className="flex justify-between py-2 text-lg font-bold"><span>Total</span><span>{currency} {money(record.amount_total)}</span></div></div></section>;
+  return <section id="printable-vendor-document" className="hidden bg-white text-slate-950 print:block"><header className="flex items-start justify-between border-b-2 border-slate-900 pb-6"><div><h1 className="text-3xl font-bold text-[#6f0d18]">Bloom Cafe</h1><p className="mt-1 text-sm text-slate-500">{refund ? 'Vendor refund' : 'Vendor bill'}</p></div><div className="text-right"><h2 className="text-3xl font-semibold">{refund ? 'VENDOR REFUND' : 'VENDOR BILL'}</h2><p className="mt-2 font-bold">Vendor Bill No.: {record.bill_number}</p></div></header><div className="grid grid-cols-2 gap-10 py-7 text-sm"><div><p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Vendor</p><p className="mt-2 text-base font-bold">{record.vendors?.name || `Vendor #${record.vendor_id}`}</p>{record.vendors?.phone && <p>{record.vendors.phone}</p>}{record.vendors?.email && <p>{record.vendors.email}</p>}</div><dl className="grid grid-cols-2 gap-x-5 gap-y-2 text-right"><dt className="text-slate-500">{refund ? 'Refund date' : 'Bill date'}</dt><dd className="font-semibold">{dateValue(record.bill_date)}</dd>{!refund && <><dt className="text-slate-500">Due date</dt><dd className="font-semibold">{dateValue(record.due_date) || '—'}</dd></>}<dt className="text-slate-500">Status</dt><dd className="font-semibold uppercase">{record.state}</dd></dl></div><table className="w-full border-collapse text-sm"><thead><tr className="bg-[#6f0d18] text-white"><th className="p-3 text-left">Description</th><th className="p-3 text-right">Qty</th><th className="p-3 text-right">Unit cost</th><th className="p-3 text-right">Discount</th><th className="p-3 text-right">Amount</th></tr></thead><tbody>{(record.vendor_bill_lines || []).map((line, index) => { const amount = Number(line.quantity) * Number(line.unit_price) * (1 - Number(line.discount_percent || 0) / 100); return <tr key={line.id || index} className="border-b"><td className="p-3">{line.description}</td><td className="p-3 text-right">{Number(line.quantity)}</td><td className="p-3 text-right">{money(line.unit_price)}</td><td className="p-3 text-right">{Number(line.discount_percent || 0).toFixed(2)}%</td><td className="p-3 text-right font-medium">{money(amount)}</td></tr>; })}</tbody></table><div className="ml-auto mt-7 w-72 text-sm"><div className="flex justify-between py-1"><span>Subtotal</span><span>{money(record.amount_untaxed)}</span></div><div className="flex justify-between py-1"><span>Tax</span><span>{money(record.amount_tax)}</span></div><div className="my-2 border-t border-slate-400" /><div className="flex justify-between py-2 text-lg font-bold"><span>Total</span><span>{currency} {money(record.amount_total)}</span></div></div></section>;
 }
 
 function Select({ label, value, set, rows, labelKey = 'name', optional }: { label: string; value: string; set: (value: string) => void; rows: Row[]; labelKey?: string; optional?: boolean }) {
@@ -787,14 +1002,52 @@ function Total({ label, value, strong }: { label: string; value: number; strong?
   );
 }
 
+function dateOnlyKey(value: unknown, utc = false) {
+  const d = value instanceof Date ? value : new Date(String(value || ''));
+  if (Number.isNaN(d.getTime())) return null;
+  const y = utc ? d.getUTCFullYear() : d.getFullYear();
+  const m = String((utc ? d.getUTCMonth() : d.getMonth()) + 1).padStart(2, '0');
+  const day = String(utc ? d.getUTCDate() : d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+/** Overdue only when calendar today is strictly after due date (due date itself is still current). */
+function isVendorBillOverdue(bill: VendorBill) {
+  if (bill.state !== 'posted') return false;
+  if (Number(bill.amount_due || 0) <= 0.005) return false;
+  if (!bill.due_date) return false;
+  const dueKey = dateOnlyKey(bill.due_date, true);
+  const todayKey = dateOnlyKey(new Date(), false);
+  return Boolean(dueKey && todayKey && todayKey > dueKey);
+}
+
 function Status({ bill }: { bill: VendorBill }) {
-  const key = bill.state === 'cancelled' ? 'cancelled' : bill.payment_state === 'paid' ? 'paid' : bill.payment_state === 'partial' ? 'partial' : bill.state;
+  const isRefundDoc = String((bill as { document_type?: string }).document_type || '') === 'refund';
+  const apiStatus = String((bill as { display_status?: string }).display_status || '').toLowerCase();
+  const key = apiStatus && ['draft', 'posted', 'unpaid', 'partial', 'paid', 'overdue', 'cancelled'].includes(apiStatus)
+    ? apiStatus
+    : bill.state === 'cancelled'
+      ? 'cancelled'
+      : bill.state === 'draft'
+        ? 'draft'
+        : isRefundDoc
+          ? 'posted'
+          : bill.payment_state === 'paid' || Number(bill.amount_due || 0) <= 0.005
+            ? 'paid'
+            : isVendorBillOverdue(bill)
+              ? 'overdue'
+              : bill.payment_state === 'partial' || Number(bill.amount_paid || 0) > 0.005
+                ? 'partial'
+                : 'unpaid';
   const styles: Record<string, string> = {
     draft: 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300',
     posted: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
+    unpaid: 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
     partial: 'bg-orange-50 text-orange-700 dark:bg-orange-950 dark:text-orange-300',
     paid: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
+    overdue: 'bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300',
     cancelled: 'bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300',
   };
-  return <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${styles[key] || styles.draft}`}>{key.replace('_', ' ').toUpperCase()}</span>;
+  const label = key === 'partial' ? 'PARTIALLY PAID' : key.replace('_', ' ').toUpperCase();
+  return <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${styles[key] || styles.draft}`}>{label}</span>;
 }

@@ -2,7 +2,10 @@ import prisma from '../../../../config/db.js'
 
 export const getAll = async (req, res) => {
     try {
-        const data = await prisma.payment_terms.findMany()
+        const data = await prisma.payment_terms.findMany({
+            include: { payment_term_lines: { orderBy: { sequence: 'asc' } } },
+            orderBy: { name: 'asc' },
+        })
         res.status(200).json({ success: true, data })
     } catch (error) {
         res.status(500).json({ success: false, message: error.message })

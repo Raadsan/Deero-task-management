@@ -128,7 +128,7 @@ async function prepare(input) {
   if (allocated > amount + 0.005) throw inputError('Total allocation cannot exceed the payment amount')
   const [payableAccount, advanceAccount] = await Promise.all([
     prisma.chart_of_accounts.findFirst({ where: {
-      company_id: vendor.company_id, code: '2000', is_active: true, allow_manual_entry: true,
+      company_id: vendor.company_id, code: '2110', is_active: true, allow_manual_entry: true,
       account_types: { internal_group: 'liability' }, other_chart_of_accounts: { none: {} },
     } }),
     allocated < amount - 0.005 ? prisma.chart_of_accounts.findFirst({ where: {
@@ -136,7 +136,7 @@ async function prepare(input) {
       account_types: { internal_group: 'asset' }, other_chart_of_accounts: { none: {} },
     } }) : Promise.resolve(null),
   ])
-  if (!payableAccount) throw inputError('Accounts Payable account 2000 was not found')
+  if (!payableAccount) throw inputError('Accounts Payable account 2110 was not found')
   if (allocated < amount - 0.005 && !advanceAccount) throw inputError('Vendor Advances account 1400 was not found')
   return {
     header: { company_id: vendor.company_id, vendor_id: vendorId, journal_id: journal.id, payment_method_id: paymentMethodId, bank_account_id: bank?.id || null, fiscal_period_id: fiscalPeriod.id, payment_date: paymentDate, currency_id: currencyId, exchange_rate: exchangeRate, amount, unallocated_amount: Math.round((amount - allocated) * 100) / 100, reference: reference || null, memo: String(input.memo || '').trim() || null, state: 'draft' },
@@ -281,8 +281,11 @@ export const post = async (req, res) => {
         tx.chart_of_accounts.findFirst({
           where: {
             company_id: payment.company_id,
+            code: '2110',
             is_active: true,
-            code: '2000',
+            allow_manual_entry: true,
+            account_types: { internal_group: 'liability' },
+            other_chart_of_accounts: { none: {} },
           },
           orderBy: { code: 'asc' },
         }),
@@ -304,7 +307,7 @@ export const post = async (req, res) => {
       const channel = paymentChannel(payment.payment_methods, paymentAccount)
       if (bank && (!bank.is_active || bank.company_id !== payment.company_id || bank.gl_account_id !== paymentAccountId)) throw inputError('The selected bank account is inactive or inconsistent with the payment method')
       if (!journal?.is_active || journal.company_id !== payment.company_id || (bank && journal.id !== bank.journal_id)) throw inputError('The selected payment journal is inactive or invalid')
-      if (!payableAccount) throw inputError('Accounts Payable account 2000 was not found')
+      if (!payableAccount) throw inputError('Accounts Payable account 2110 was not found')
       if (unallocated > 0.005 && !advanceAccount) throw inputError('Vendor Advances account 1400 was not found')
       const fiscalPeriod = await tx.fiscal_periods.findUnique({ where: { id: payment.fiscal_period_id } })
       if (!fiscalPeriod || fiscalPeriod.state !== 'open') throw inputError('Payment fiscal period is closed or invalid')

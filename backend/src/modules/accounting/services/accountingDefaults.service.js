@@ -174,6 +174,19 @@ async function initialize() {
     where: { name: 'Net 30' }, update: { is_active: true },
     create: { name: 'Net 30', description: 'Payment is due within 30 days', is_active: true },
   })
+  for (const [name, dueDays] of [['Due on Receipt', 0], ['Net 7', 7], ['Net 15', 15], ['Net 30', 30], ['Net 60', 60]]) {
+    const term = await prisma.payment_terms.upsert({
+      where: { name },
+      update: { is_active: true },
+      create: { name, description: dueDays ? `Payment due in ${dueDays} days` : 'Payment due immediately', is_active: true },
+      include: { payment_term_lines: true },
+    })
+    if (!term.payment_term_lines.length) {
+      await prisma.payment_term_lines.create({
+        data: { payment_term_id: term.id, sequence: 10, value_type: 'balance', value_amount: 0, due_days: dueDays },
+      })
+    }
+  }
 
   // Seed default payment methods for new installs only (never overwrite existing mappings).
   const methods = [

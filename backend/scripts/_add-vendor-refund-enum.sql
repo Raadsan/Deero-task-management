@@ -1,0 +1,1 @@
+ALTER TABLE journal_entries MODIFY COLUMN source_type ENUM('manual','customer_invoice','customer_receipt','vendor_bill','vendor_payment','vendor_refund','pos_order','restaurant_purchase','vendor_advance') NOT NULL DEFAULT 'manual';

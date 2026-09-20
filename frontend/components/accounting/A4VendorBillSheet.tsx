@@ -94,7 +94,7 @@ export default function A4VendorBillSheet({
       {/* Top Action Bar (hidden when printing) */}
       <div className="w-full max-w-[210mm] mb-3 flex items-center justify-between print:hidden px-1">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-zinc-600">Vendor Bill:</span>
+          <span className="text-xs font-semibold text-zinc-600">Vendor Bill No.:</span>
           <span className="font-mono text-xs font-bold text-zinc-900">{billNumber}</span>
           <span
             className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider ${
@@ -160,7 +160,7 @@ export default function A4VendorBillSheet({
               >
                 VENDOR BILL
               </div>
-              <p className="font-mono text-sm font-bold text-zinc-900">{billNumber}</p>
+              <p className="font-mono text-sm font-bold text-zinc-900">Vendor Bill No.: {billNumber}</p>
               {vendorReference && (
                 <p className="text-[11px] text-zinc-500">
                   Ref: <span className="font-semibold text-zinc-700">{vendorReference}</span>

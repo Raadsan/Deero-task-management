@@ -1949,6 +1949,7 @@ enum journal_entries_source_type {
   customer_receipt
   vendor_bill
   vendor_payment
+  vendor_refund
   pos_order
   restaurant_purchase
   vendor_advance

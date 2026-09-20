@@ -290,7 +290,89 @@ export default function CustomerReceiptsPage() {
             <label className="text-sm font-medium md:col-span-3">Notes<textarea value={form.memo} onChange={(e) => setForm({ ...form, memo: e.target.value })} className="mt-1 min-h-24 w-full rounded-xl border bg-background p-3" /></label>
           </fieldset>
           <div className="rounded-2xl border"><div className="flex items-center justify-between gap-4 border-b p-4"><div><h3 className="font-semibold">Outstanding Invoices</h3><p className="text-xs text-muted-foreground">Select invoices, then control each allocation manually.</p></div>{openInvoices.length > 0 && <button disabled={viewOnly || !form.amount || !form.allocations.length} type="button" onClick={autoAllocate} className="rounded-lg border px-3 py-2 text-sm font-medium disabled:opacity-50">Recalculate</button>}</div>
-            <div className="max-h-64 overflow-auto">{!form.customer_id ? <p className="p-6 text-center text-sm text-muted-foreground">Select a customer first.</p> : openInvoices.length === 0 ? <p className="p-6 text-center text-sm text-muted-foreground">No outstanding posted invoices found for this customer.</p> : <><div className="grid min-w-[980px] grid-cols-[auto_1.3fr_repeat(6,auto)] items-center gap-3 bg-muted/40 px-3 py-2 text-xs font-semibold"><span>Select</span><span>Invoice</span><span className="text-right">Invoice Total</span><span className="text-right">Advance Paid</span><span className="text-right">Previously Paid</span><span className="text-right">Remaining Balance</span><span>Status</span><span className="w-32 text-right">Amount to Receive</span></div>{openInvoices.map((invoice) => { const allocation = form.allocations.find((row) => row.invoice_id === invoice.id); const isSelected = Boolean(allocation); const transactionOutstanding = Number(invoice.amount_due) + (viewOnly && selected?.state === 'posted' && allocation ? Number(allocation.allocated_amount) : 0); const advancePaid = Number((invoice as any).advance_paid || 0); const previouslyPaid = Number((invoice as any).previously_paid ?? Math.max(0, Number(invoice.paid_amount || 0) - advancePaid)); return <div key={invoice.id} className="grid min-w-[980px] grid-cols-[auto_1.3fr_repeat(6,auto)] items-center gap-3 border-t p-3 text-sm"><input aria-label={`Select ${invoice.invoice_number}`} disabled={viewOnly} type="checkbox" checked={isSelected} onChange={(event) => toggleInvoice(invoice, event.target.checked)} className="size-4 accent-primary" /><div><b>{invoice.invoice_number}</b><p className="text-xs text-muted-foreground">Invoice {dateValue(invoice.invoice_date)} · Due {dateValue(invoice.due_date)}</p></div><div className="text-right"><b>{money(invoice.amount_total, invoice.currencies?.code)}</b></div><div className="text-right"><b>{money(advancePaid)}</b></div><div className="text-right"><b>{money(previouslyPaid)}</b></div><div className="text-right"><b>{money(transactionOutstanding)}</b></div><span className="capitalize">{invoice.payment_state === 'partial' ? 'Partially Paid' : invoice.payment_state === 'paid' ? 'Paid' : 'Unpaid'}</span><input aria-label={`Allocate to ${invoice.invoice_number}`} disabled={viewOnly || !isSelected} type="number" min="0" max={transactionOutstanding} step=".01" value={allocation?.allocated_amount ?? ''} onChange={(event) => setAllocation(invoice, event.target.value)} className="h-10 w-32 rounded-lg border px-3 text-right disabled:bg-muted" placeholder="0.00" /></div>; })}</>}</div>
+            <div className="max-h-64 overflow-auto">
+              {!form.customer_id ? (
+                <p className="p-6 text-center text-sm text-muted-foreground">Select a customer first.</p>
+              ) : openInvoices.length === 0 ? (
+                <p className="p-6 text-center text-sm text-muted-foreground">No outstanding posted invoices found for this customer.</p>
+              ) : (
+                <table className="w-full min-w-[900px] border-collapse text-sm">
+                  <thead>
+                    <tr className="bg-muted/40 text-xs font-semibold">
+                      <th className="w-12 px-3 py-2 text-left font-semibold">Select</th>
+                      <th className="min-w-[160px] px-3 py-2 text-left font-semibold">Invoice</th>
+                      <th className="w-[120px] px-3 py-2 text-right font-semibold">Invoice Total</th>
+                      <th className="w-[120px] px-3 py-2 text-right font-semibold">Previously Paid</th>
+                      <th className="w-[130px] px-3 py-2 text-right font-semibold">Remaining Balance</th>
+                      <th className="w-[120px] px-3 py-2 text-left font-semibold">Status</th>
+                      <th className="w-[140px] px-3 py-2 text-right font-semibold">Amount to Receive</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {openInvoices.map((invoice) => {
+                      const allocation = form.allocations.find((row) => row.invoice_id === invoice.id);
+                      const isSelected = Boolean(allocation);
+                      const transactionOutstanding =
+                        Number(invoice.amount_due) +
+                        (viewOnly && selected?.state === 'posted' && allocation ? Number(allocation.allocated_amount) : 0);
+                      const previouslyPaid = Number(
+                        (invoice as any).previously_paid ?? Number(invoice.paid_amount || 0)
+                      );
+                      return (
+                        <tr key={invoice.id} className="border-t">
+                          <td className="px-3 py-3 align-middle">
+                            <input
+                              aria-label={`Select ${invoice.invoice_number}`}
+                              disabled={viewOnly}
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={(event) => toggleInvoice(invoice, event.target.checked)}
+                              className="size-4 accent-primary"
+                            />
+                          </td>
+                          <td className="px-3 py-3 align-middle">
+                            <b>{invoice.invoice_number}</b>
+                            <p className="text-xs text-muted-foreground">
+                              Invoice {dateValue(invoice.invoice_date)} · Due {dateValue(invoice.due_date)}
+                            </p>
+                          </td>
+                          <td className="px-3 py-3 text-right align-middle">
+                            <b>{money(invoice.amount_total, invoice.currencies?.code)}</b>
+                          </td>
+                          <td className="px-3 py-3 text-right align-middle">
+                            <b>{money(previouslyPaid)}</b>
+                          </td>
+                          <td className="px-3 py-3 text-right align-middle">
+                            <b>{money(transactionOutstanding)}</b>
+                          </td>
+                          <td className="px-3 py-3 align-middle capitalize">
+                            {invoice.payment_state === 'partial'
+                              ? 'Partially Paid'
+                              : invoice.payment_state === 'paid'
+                              ? 'Paid'
+                              : 'Unpaid'}
+                          </td>
+                          <td className="px-3 py-3 text-right align-middle">
+                            <input
+                              aria-label={`Allocate to ${invoice.invoice_number}`}
+                              disabled={viewOnly || !isSelected}
+                              type="number"
+                              min="0"
+                              max={transactionOutstanding}
+                              step=".01"
+                              value={allocation?.allocated_amount ?? ''}
+                              onChange={(event) => setAllocation(invoice, event.target.value)}
+                              className="ml-auto h-10 w-32 rounded-lg border px-3 text-right disabled:bg-muted"
+                              placeholder="0.00"
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
           </div>
           {allocationInvalid && <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">The allocated amount cannot exceed the invoice outstanding balance or the receipt amount.</div>}
           {!allocationInvalid && unallocated > 0.005 && <div className="rounded-xl border border-secondary/30 bg-secondary/10 p-3 text-sm text-secondary">Unallocated amount will be recorded as a customer advance (credit Customer Advances 2140). It will not debit Accounts Receivable until applied to an invoice.</div>}

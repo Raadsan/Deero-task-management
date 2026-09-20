@@ -57,12 +57,55 @@ interface PaymentMethodItem {
 
 interface ServiceItem {
   id: string;
+  /** Lines that share a service-type picker / package checklist */
+  group_id: string;
   service_type: string;
-  selected_subservice_ids: string[];
+  /** Catalog sub-service / package id when known */
+  package_id: string | null;
+  package_name: string;
   description: string;
   quantity: number;
   rate: number;
   is_free: boolean;
+  /**
+   * Legacy quotations stored multiple packages as one combined rate.
+   * Preserve as-is until the user edits package selection.
+   */
+  legacy_combined?: boolean;
+  selected_subservice_ids?: string[];
+}
+
+function newLineId() {
+  return `item-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
+function newGroupId() {
+  return `grp-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
+function emptyServiceLine(partial?: Partial<ServiceItem>): ServiceItem {
+  return {
+    id: newLineId(),
+    group_id: newGroupId(),
+    service_type: "",
+    package_id: null,
+    package_name: "",
+    description: "",
+    quantity: 1,
+    rate: 0,
+    is_free: false,
+    ...partial,
+  };
+}
+
+function packageDescription(sub: { name?: string; description?: string }, fallbackService?: string) {
+  const name = String(sub?.name || "Package").trim();
+  const detail = String(sub?.description || "Effective implementation and delivery.").trim();
+  return `${name}: ${detail || `${fallbackService || "Service"} delivery.`}`;
+}
+
+function money2(value: number) {
+  return Math.round(Number(value || 0) * 100) / 100;
 }
 
 interface Props {
@@ -120,18 +163,8 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
   const [validUntil, setValidUntil] = useState("");
   const [status, setStatus] = useState<"DRAFT" | "SENT" | "ACCEPTED" | "REJECTED" | "EXPIRED" | "CONVERTED">("DRAFT");
 
-  // Items
-  const [lines, setLines] = useState<ServiceItem[]>([
-    {
-      id: "item-1",
-      service_type: "",
-      selected_subservice_ids: [],
-      description: "",
-      quantity: 1,
-      rate: 0,
-      is_free: false,
-    },
-  ]);
+  // Items — one package = one line item
+  const [lines, setLines] = useState<ServiceItem[]>([emptyServiceLine({ id: "item-1", group_id: "grp-1" })]);
 
   // VAT & Totals
   const [includeVat, setIncludeVat] = useState(true);
@@ -249,17 +282,64 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
           }
 
           if (Array.isArray(parsedNotes.items) && parsedNotes.items.length > 0) {
-            setLines(
-              parsedNotes.items.map((it: any, idx: number) => ({
+            const mapped: ServiceItem[] = [];
+            parsedNotes.items.forEach((it: any, idx: number) => {
+              const subIds = Array.isArray(it.selected_subservice_ids)
+                ? it.selected_subservice_ids.map(String)
+                : [];
+              const hasPackageId = it.package_id != null && String(it.package_id).trim() !== "";
+              const isLegacyCombined = !hasPackageId && subIds.length > 1;
+
+              if (isLegacyCombined) {
+                // Preserve historical combined package/rate rows as-is.
+                mapped.push({
+                  id: `item-${idx}-${Date.now()}`,
+                  group_id: `grp-legacy-${idx}-${Date.now()}`,
+                  service_type: it.service_type || "Service",
+                  package_id: null,
+                  package_name: it.package_name || it.service_type || "Combined packages",
+                  description: it.description || "",
+                  quantity: Math.max(1, Number(it.qty || it.quantity || 1)),
+                  rate: Math.max(0, Number(it.rate || 0)),
+                  is_free: Boolean(it.is_free || Number(it.rate || 0) === 0),
+                  legacy_combined: true,
+                  selected_subservice_ids: subIds,
+                });
+                return;
+              }
+
+              const packageId = hasPackageId
+                ? String(it.package_id)
+                : subIds.length === 1
+                  ? String(subIds[0])
+                  : null;
+              mapped.push({
                 id: `item-${idx}-${Date.now()}`,
+                group_id: it.group_id || `grp-${idx}-${Date.now()}`,
                 service_type: it.service_type || "Service",
-                selected_subservice_ids: it.selected_subservice_ids || [],
+                package_id: packageId,
+                package_name: it.package_name || "",
                 description: it.description || "",
-                quantity: Number(it.qty || 1),
-                rate: Number(it.rate || 0),
+                quantity: Math.max(1, Number(it.qty || it.quantity || 1)),
+                rate: Math.max(0, Number(it.rate || 0)),
                 is_free: Boolean(it.is_free || Number(it.rate || 0) === 0),
-              }))
-            );
+              });
+            });
+
+            // If items were saved without group_id, group by service_type for the picker UI
+            const serviceGroupMap = new Map<string, string>();
+            const withGroups = mapped.map((line, idx) => {
+              if (line.legacy_combined) return line;
+              const rawGroup = parsedNotes.items[idx]?.group_id;
+              if (rawGroup) return { ...line, group_id: String(rawGroup) };
+              const existing = serviceGroupMap.get(line.service_type);
+              if (existing) return { ...line, group_id: existing };
+              const gid = `grp-load-${idx}-${Date.now()}`;
+              serviceGroupMap.set(line.service_type, gid);
+              return { ...line, group_id: gid };
+            });
+
+            setLines(withGroups.length ? withGroups : [emptyServiceLine()]);
           }
         } else {
           // Fallback to quotation fields
@@ -274,15 +354,19 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
 
           if (quotation.lines && quotation.lines.length > 0) {
             setLines(
-              quotation.lines.map((l, idx) => ({
-                id: `item-${idx}-${Date.now()}`,
-                service_type: l.products?.name || "Service",
-                selected_subservice_ids: [],
-                description: l.description,
-                quantity: Number(l.quantity || 1),
-                rate: Number(l.unit_price || 0),
-                is_free: Number(l.unit_price) === 0,
-              }))
+              quotation.lines.map((l, idx) =>
+                emptyServiceLine({
+                  id: `item-${idx}-${Date.now()}`,
+                  group_id: `grp-${idx}-${Date.now()}`,
+                  service_type: l.products?.name || "Service",
+                  package_id: null,
+                  package_name: "",
+                  description: l.description,
+                  quantity: Math.max(1, Number(l.quantity || 1)),
+                  rate: Math.max(0, Number(l.unit_price || 0)),
+                  is_free: Number(l.unit_price) === 0,
+                })
+              )
             );
           }
         }
@@ -307,17 +391,7 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
         setPaymentCompletion("30% of charge paid after the project Completion");
         setNbText("NB: the advance amount should be paid when you get the invoice.");
         setPaymentMethods(defaultPaymentMethods);
-        setLines([
-          {
-            id: `item-1-${Date.now()}`,
-            service_type: "",
-            selected_subservice_ids: [],
-            description: "",
-            quantity: 1,
-            rate: 0,
-            is_free: false,
-          },
-        ]);
+        setLines([emptyServiceLine({ id: "item-1", group_id: "grp-1" })]);
       }
       setActiveTab("form");
     }
@@ -356,116 +430,210 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
     }
   };
 
-  // Line item handlers
+  // Line item handlers — one package = one line item
+  const lineGroups = useMemo(() => {
+    const order: string[] = [];
+    const map = new Map<string, ServiceItem[]>();
+    lines.forEach((line) => {
+      if (!map.has(line.group_id)) {
+        order.push(line.group_id);
+        map.set(line.group_id, []);
+      }
+      map.get(line.group_id)!.push(line);
+    });
+    return order.map((groupId) => ({ groupId, items: map.get(groupId)! }));
+  }, [lines]);
+
   const handleAddLine = () => {
-    const newItem: ServiceItem = {
-      id: `item-${Date.now()}`,
-      service_type: "",
-      selected_subservice_ids: [],
-      description: "",
-      quantity: 1,
-      rate: 0,
-      is_free: false,
-    };
-    setLines([...lines, newItem]);
+    setLines((current) => [...current, emptyServiceLine()]);
   };
 
-  const handleRemoveLine = (index: number) => {
-    if (lines.length === 1) return;
-    setLines(lines.filter((_, i) => i !== index));
+  const handleRemoveGroup = (groupId: string) => {
+    setLines((current) => {
+      const remaining = current.filter((line) => line.group_id !== groupId);
+      return remaining.length ? remaining : [emptyServiceLine()];
+    });
   };
 
-  const handleServiceSelect = (index: number, serviceName: string) => {
-    const updated = [...lines];
-    updated[index].service_type = serviceName;
+  const handleRemovePackageLine = (lineId: string) => {
+    setLines((current) => {
+      const target = current.find((line) => line.id === lineId);
+      if (!target) return current;
+      const groupItems = current.filter((line) => line.group_id === target.group_id);
+      if (groupItems.length <= 1) {
+        // Keep the service group, clear the package selection
+        return current.map((line) =>
+          line.id === lineId
+            ? {
+                ...line,
+                package_id: null,
+                package_name: "",
+                description: line.service_type
+                  ? `1. ${line.service_type}: Comprehensive service delivery.`
+                  : "",
+                quantity: 1,
+                rate: 0,
+                is_free: false,
+                legacy_combined: false,
+                selected_subservice_ids: [],
+              }
+            : line
+        );
+      }
+      const remaining = current.filter((line) => line.id !== lineId);
+      return remaining.length ? remaining : [emptyServiceLine()];
+    });
+  };
 
-    // Find if service exists in catalog
+  const handleServiceSelect = (groupId: string, serviceName: string) => {
     const found = availableServices.find((s) => s.serviceName === serviceName);
-    if (found && Array.isArray(found.subService) && found.subService.length > 0) {
-      // Auto-select first subservice or prepare description
-      const firstSub = found.subService[0];
-      updated[index].selected_subservice_ids = [firstSub.id];
-      const desc = `1. ${firstSub.name}: ${firstSub.description || found.description || "Professional service implementation."}`;
-      updated[index].description = desc;
-      if (firstSub.price && !updated[index].is_free) {
-        updated[index].rate = Number(firstSub.price);
+    setLines((current) => {
+      const groupItems = current.filter((line) => line.group_id === groupId);
+      const others = current.filter((line) => line.group_id !== groupId);
+
+      if (found && Array.isArray(found.subService) && found.subService.length > 0) {
+        const firstSub = found.subService[0];
+        const seed = emptyServiceLine({
+          id: groupItems[0]?.id || newLineId(),
+          group_id: groupId,
+          service_type: serviceName,
+          package_id: String(firstSub.id),
+          package_name: String(firstSub.name || ""),
+          description: packageDescription(firstSub, serviceName),
+          quantity: 1,
+          rate: Number(firstSub.price || 0),
+          is_free: false,
+        });
+        return [...others, seed];
       }
-    } else {
-      updated[index].selected_subservice_ids = [];
-      if (!updated[index].description) {
-        updated[index].description = `1. ${serviceName}: Comprehensive service delivery.`;
-      }
-    }
-    setLines(updated);
+
+      const seed = emptyServiceLine({
+        id: groupItems[0]?.id || newLineId(),
+        group_id: groupId,
+        service_type: serviceName,
+        package_id: null,
+        package_name: "",
+        description: `1. ${serviceName}: Comprehensive service delivery.`,
+        quantity: 1,
+        rate: 0,
+        is_free: false,
+      });
+      return [...others, seed];
+    });
   };
 
-  const handleToggleSubService = (lineIndex: number, subService: any) => {
-    const updated = [...lines];
-    const item = updated[lineIndex];
-    const exists = item.selected_subservice_ids.includes(subService.id);
+  const handleToggleSubService = (groupId: string, subService: any) => {
+    const subId = String(subService.id);
+    setLines((current) => {
+      const groupItems = current.filter((line) => line.group_id === groupId);
+      if (!groupItems.length) return current;
+      const serviceType = groupItems[0].service_type;
+      const others = current.filter((line) => line.group_id !== groupId);
 
-    let newSelected: string[];
-    if (exists) {
-      newSelected = item.selected_subservice_ids.filter((id) => id !== subService.id);
-    } else {
-      newSelected = [...item.selected_subservice_ids, subService.id];
-    }
-    item.selected_subservice_ids = newSelected;
+      // Editing a legacy combined row: convert to split package lines based on new selection
+      const legacy = groupItems.some((line) => line.legacy_combined);
+      const selectedIds = new Set(
+        legacy
+          ? (groupItems[0].selected_subservice_ids || []).map(String)
+          : groupItems.map((line) => line.package_id).filter(Boolean).map(String)
+      );
 
-    // Recompute description and rate from selected subservices (sum prices; qty stays independent)
-    const foundService = availableServices.find((s) => s.serviceName === item.service_type);
-    if (foundService && Array.isArray(foundService.subService)) {
-      const selectedSubs = foundService.subService.filter((s: any) => newSelected.includes(s.id));
-      if (selectedSubs.length > 0) {
-        item.description = selectedSubs
-          .map((s: any, idx: number) => `${idx + 1}. ${s.name}: ${s.description || "Effective implementation and delivery."}`)
-          .join("\n");
-        if (!item.is_free) {
-          item.rate = selectedSubs.reduce((sum: number, s: any) => sum + Number(s.price || 0), 0);
+      if (selectedIds.has(subId)) {
+        selectedIds.delete(subId);
+      } else {
+        selectedIds.add(subId);
+      }
+
+      const foundService = availableServices.find((s) => s.serviceName === serviceType);
+      const catalog = Array.isArray(foundService?.subService) ? foundService.subService : [];
+
+      if (selectedIds.size === 0) {
+        const blank = emptyServiceLine({
+          id: groupItems[0].id,
+          group_id: groupId,
+          service_type: serviceType,
+          package_id: null,
+          package_name: "",
+          description: serviceType ? `1. ${serviceType}: Comprehensive service delivery.` : "",
+          quantity: 1,
+          rate: 0,
+          is_free: false,
+        });
+        return [...others, blank];
+      }
+
+      const nextGroupLines: ServiceItem[] = [];
+      Array.from(selectedIds).forEach((id) => {
+        const sub = catalog.find((s: any) => String(s.id) === id) || (String(subService.id) === id ? subService : null);
+        const existing = groupItems.find((line) => !line.legacy_combined && String(line.package_id) === id);
+        if (existing) {
+          nextGroupLines.push(existing);
+          return;
         }
-      } else if (!item.is_free) {
-        item.rate = 0;
-      }
-    }
+        nextGroupLines.push(
+          emptyServiceLine({
+            group_id: groupId,
+            service_type: serviceType,
+            package_id: id,
+            package_name: String(sub?.name || "Package"),
+            description: packageDescription(sub || { name: "Package" }, serviceType),
+            quantity: 1,
+            rate: Math.max(0, Number(sub?.price || 0)),
+            is_free: false,
+          })
+        );
+      });
 
-    setLines(updated);
+      return [...others, ...nextGroupLines];
+    });
   };
 
-  const handleToggleFree = (index: number) => {
-    const updated = [...lines];
-    const isNowFree = !updated[index].is_free;
-    updated[index].is_free = isNowFree;
-    if (isNowFree) {
-      updated[index].rate = 0;
-    }
-    setLines(updated);
+  const handleToggleFree = (lineId: string) => {
+    setLines((current) =>
+      current.map((line) => {
+        if (line.id !== lineId) return line;
+        const isNowFree = !line.is_free;
+        return { ...line, is_free: isNowFree, rate: isNowFree ? 0 : line.rate };
+      })
+    );
   };
 
-  const handleLineFieldChange = (index: number, field: keyof ServiceItem, value: any) => {
-    const updated = [...lines];
-    updated[index] = { ...updated[index], [field]: value };
-    setLines(updated);
+  const handlePackageFieldChange = (lineId: string, field: "quantity" | "rate" | "description" | "package_name", value: any) => {
+    setLines((current) =>
+      current.map((line) => {
+        if (line.id !== lineId) return line;
+        if (field === "quantity") {
+          const qty = Math.max(1, Number(value) || 1);
+          return { ...line, quantity: qty };
+        }
+        if (field === "rate") {
+          return { ...line, rate: Math.max(0, Number(value) || 0), is_free: false };
+        }
+        return { ...line, [field]: value };
+      })
+    );
   };
 
-  // Calculations
+  const handleGroupServiceNameChange = (groupId: string, serviceName: string) => {
+    setLines((current) =>
+      current.map((line) => (line.group_id === groupId ? { ...line, service_type: serviceName } : line))
+    );
+  };
+
+  // Calculations — VAT from final package subtotal
   const totals = useMemo(() => {
     let subtotal = 0;
     lines.forEach((l) => {
       if (!l.is_free) {
-        const qty = Number(l.quantity || 1);
-        const rate = Number(l.rate || 0);
+        const qty = Math.max(1, Number(l.quantity || 1));
+        const rate = Math.max(0, Number(l.rate || 0));
         subtotal += qty * rate;
       }
     });
-
-    const taxAmount = includeVat ? (subtotal * (Number(vatPercent) || 0)) / 100 : 0;
-    const grandTotal = subtotal + taxAmount;
-
-    return {
-      subtotal: Math.round(subtotal),
-      taxAmount: Math.round(taxAmount),
-      grandTotal: Math.round(grandTotal),
-    };
+    subtotal = money2(subtotal);
+    const taxAmount = includeVat ? money2((subtotal * (Number(vatPercent) || 0)) / 100) : 0;
+    const grandTotal = money2(subtotal + taxAmount);
+    return { subtotal, taxAmount, grandTotal };
   }, [lines, vatPercent, includeVat]);
 
   // Form submission
@@ -473,6 +641,44 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
     e.preventDefault();
     if (lines.length === 0) {
       accountingToast("Please add at least one item", "error");
+      return;
+    }
+
+    for (const line of lines) {
+      if (!String(line.service_type || "").trim()) {
+        accountingToast("Each line needs a service type", "error");
+        return;
+      }
+      if (!(Number(line.quantity) > 0)) {
+        accountingToast(`Quantity must be greater than 0 for ${line.package_name || line.service_type}`, "error");
+        return;
+      }
+      if (Number(line.rate) < 0) {
+        accountingToast(`Rate cannot be negative for ${line.package_name || line.service_type}`, "error");
+        return;
+      }
+      const expected = money2(Number(line.quantity) * Number(line.is_free ? 0 : line.rate));
+      const actual = money2(Number(line.quantity) * Number(line.is_free ? 0 : line.rate));
+      if (Math.abs(expected - actual) > 0.001) {
+        accountingToast("Amount must equal Quantity × Rate", "error");
+        return;
+      }
+    }
+
+    // Prevent duplicate package lines within the same service group
+    for (const group of lineGroups) {
+      const ids = group.items.map((item) => item.package_id).filter(Boolean);
+      if (new Set(ids).size !== ids.length) {
+        accountingToast("Duplicate package lines are not allowed in the same service", "error");
+        return;
+      }
+    }
+
+    const linesTotal = money2(
+      lines.reduce((sum, line) => sum + (line.is_free ? 0 : Number(line.quantity) * Number(line.rate)), 0)
+    );
+    if (Math.abs(linesTotal - totals.subtotal) > 0.01) {
+      accountingToast("Subtotal must equal the sum of all package amounts", "error");
       return;
     }
 
@@ -492,13 +698,22 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
         nb: nbText,
         payment_methods: paymentMethods,
         items: lines.map((l) => ({
+          group_id: l.group_id,
           service_type: l.service_type,
-          selected_subservice_ids: l.selected_subservice_ids,
+          package_id: l.package_id,
+          package_name: l.package_name || null,
+          selected_subservice_ids: l.legacy_combined
+            ? l.selected_subservice_ids || []
+            : l.package_id
+              ? [l.package_id]
+              : [],
           description: l.description,
           qty: l.quantity,
+          quantity: l.quantity,
           rate: l.is_free ? 0 : l.rate,
           is_free: l.is_free,
-          amount: l.is_free ? 0 : l.quantity * l.rate,
+          amount: l.is_free ? 0 : money2(l.quantity * l.rate),
+          legacy_combined: Boolean(l.legacy_combined),
         })),
       };
 
@@ -520,16 +735,23 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
         vat_percent: includeVat ? Number(vatPercent) || 0 : 0,
         notes: JSON.stringify(metadata),
         terms: `${paymentAdvance} | ${paymentCompletion}`,
-        lines: lines.map((l, idx) => ({
-          sequence: (idx + 1) * 10,
-          description: (l.service_type && l.description
-            ? `${l.service_type}: ${l.description}`
-            : l.description || l.service_type || "Service Item").slice(0, 255),
-          quantity: l.quantity || 1,
-          unit_price: l.is_free ? 0 : l.rate,
-          discount_percent: 0,
-          tax_id: null,
-        })),
+        lines: lines.map((l, idx) => {
+          const title = l.package_name || l.service_type || "Service Item";
+          const detail = l.description || "";
+          const description = (
+            l.service_type && l.package_name
+              ? `${l.service_type} — ${title}${detail ? `: ${detail}` : ""}`
+              : detail || title
+          ).slice(0, 255);
+          return {
+            sequence: (idx + 1) * 10,
+            description,
+            quantity: Math.max(1, Number(l.quantity || 1)),
+            unit_price: l.is_free ? 0 : Math.max(0, Number(l.rate || 0)),
+            discount_percent: 0,
+            tax_id: null,
+          };
+        }),
       };
 
       if (quotation) {
@@ -570,12 +792,16 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
     let html = currentTemplate.html_content;
     const itemsTableHtml = lines
       .map(
-        (l, i) => `<tr>
-          <td style="padding:10px 14px;border-bottom:1px solid #e2e8f0;font-size:13px;"><strong>${i + 1}. ${l.service_type}</strong><br/><span style="color:#64748b;font-size:12px;white-space:pre-wrap;">${l.description}</span></td>
+        (l, i) => {
+          const title = l.package_name || l.service_type;
+          const subtitle = l.package_name && l.service_type ? l.service_type : "";
+          return `<tr>
+          <td style="padding:10px 14px;border-bottom:1px solid #e2e8f0;font-size:13px;"><strong>${i + 1}. ${title}</strong>${subtitle ? `<div style="color:#64748b;font-size:11px;">${subtitle}</div>` : ""}<br/><span style="color:#64748b;font-size:12px;white-space:pre-wrap;">${l.description}</span></td>
           <td style="padding:10px 14px;text-align:center;border-bottom:1px solid #e2e8f0;font-size:13px;font-weight:600;">${l.quantity}</td>
-          <td style="padding:10px 14px;text-align:right;border-bottom:1px solid #e2e8f0;font-size:13px;">${l.is_free ? "Free" : `$${l.rate}`}</td>
-          <td style="padding:10px 14px;text-align:right;border-bottom:1px solid #e2e8f0;font-size:13px;font-weight:700;">${l.is_free ? "Free" : `$${l.quantity * l.rate}`}</td>
-        </tr>`
+          <td style="padding:10px 14px;text-align:right;border-bottom:1px solid #e2e8f0;font-size:13px;">${l.is_free ? "Free" : `$${Number(l.rate).toFixed(2)}`}</td>
+          <td style="padding:10px 14px;text-align:right;border-bottom:1px solid #e2e8f0;font-size:13px;font-weight:700;">${l.is_free ? "Free" : `$${money2(l.quantity * l.rate).toFixed(2)}`}</td>
+        </tr>`;
+        }
       )
       .join("");
     const replacements: Record<string, string> = {
@@ -589,10 +815,10 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
       quotation_date: formattedDisplayDate,
       quotation_valid_until: validUntil || "—",
       items: itemsTableHtml,
-      subtotal: `$${totals.subtotal}`,
-      tax: `$${totals.taxAmount}`,
-      total: `$${totals.grandTotal}`,
-      discount: "$0",
+      subtotal: `$${totals.subtotal.toFixed(2)}`,
+      tax: `$${totals.taxAmount.toFixed(2)}`,
+      total: `$${totals.grandTotal.toFixed(2)}`,
+      discount: "$0.00",
       notes: nbText,
       payment_terms: `${paymentAdvance} ${paymentCompletion}`,
       terms: "Payment upon receipt.",
@@ -638,12 +864,13 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
             date: formattedDisplayDate,
             validUntil,
             items: lines.map((l) => ({
-              service_type: l.service_type,
+              service_type: l.package_name || l.service_type,
+              package_name: l.package_name || null,
               description: l.description,
               qty: l.quantity,
               rate: l.is_free ? 0 : l.rate,
               is_free: l.is_free,
-              amount: l.is_free ? 0 : l.quantity * l.rate,
+              amount: l.is_free ? 0 : money2(l.quantity * l.rate),
             })),
             subtotal: totals.subtotal,
             tax: totals.taxAmount,
@@ -908,7 +1135,7 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
                   </div>
                 </div>
 
-                {/* 2. Services & Sub-services Line Items Builder */}
+                {/* 2. Services & Packages — one package = one line item */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
@@ -916,7 +1143,7 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
                         <Layers className="size-4 text-[#ea580c]" /> Services & Item(s) Breakdown
                       </h3>
                       <p className="text-[11px] text-zinc-500 mt-0.5">
-                        Choose existing services or type custom ones. Select/deselect subservices and set Free or custom rates.
+                        Select packages under a service type. Each package gets its own quantity and rate.
                       </p>
                     </div>
                     <Button
@@ -931,35 +1158,46 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
                   </div>
 
                   <div className="space-y-4">
-                    {lines.map((line, idx) => {
-                      const matchedService = availableServices.find((s) => s.serviceName === line.service_type);
+                    {lineGroups.map((group, groupIdx) => {
+                      const head = group.items[0];
+                      const matchedService = availableServices.find((s) => s.serviceName === head.service_type);
+                      const selectedPackageIds = new Set(
+                        head.legacy_combined
+                          ? (head.selected_subservice_ids || []).map(String)
+                          : group.items.map((item) => item.package_id).filter(Boolean).map(String)
+                      );
+                      const groupSubtotal = money2(
+                        group.items.reduce(
+                          (sum, item) => sum + (item.is_free ? 0 : Number(item.quantity) * Number(item.rate)),
+                          0
+                        )
+                      );
 
                       return (
                         <div
-                          key={line.id}
+                          key={group.groupId}
                           className="border border-zinc-200 rounded-xl p-4 bg-white shadow-sm hover:border-orange-300 transition-all space-y-3"
                         >
                           <div className="flex items-start justify-between gap-3">
                             <span className="flex size-6 items-center justify-center rounded-full bg-[#ea580c] text-white font-bold text-xs shrink-0">
-                              {idx + 1}
+                              {groupIdx + 1}
                             </span>
 
-                            {/* Service Type Selection */}
                             <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
                               <div>
                                 <Label className="text-xs font-semibold text-zinc-600">Service Type *</Label>
                                 <div className="flex gap-2 mt-1">
                                   <select
                                     value={
-                                      availableServices.some((s) => s.serviceName === line.service_type)
-                                        ? line.service_type
+                                      availableServices.some((s) => s.serviceName === head.service_type)
+                                        ? head.service_type
                                         : "__CUSTOM__"
                                     }
                                     onChange={(e) => {
                                       if (e.target.value === "__CUSTOM__") {
-                                        handleLineFieldChange(idx, "service_type", "");
+                                        handleGroupServiceNameChange(group.groupId, "");
                                       } else {
-                                        handleServiceSelect(idx, e.target.value);
+                                        handleServiceSelect(group.groupId, e.target.value);
                                       }
                                     }}
                                     className="w-full h-8 px-2.5 rounded-md border border-zinc-200 bg-zinc-50/70 text-xs font-semibold text-zinc-800"
@@ -979,28 +1217,26 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
                                   Service Name (Display Title) *
                                 </Label>
                                 <Input
-                                  value={line.service_type}
-                                  onChange={(e) => handleLineFieldChange(idx, "service_type", e.target.value)}
-                                  placeholder="e.g. Marketing Plan Development"
+                                  value={head.service_type}
+                                  onChange={(e) => handleGroupServiceNameChange(group.groupId, e.target.value)}
+                                  placeholder="e.g. Web Services"
                                   required
                                   className="h-8 mt-1 text-xs font-bold"
                                 />
                               </div>
                             </div>
 
-                            {/* Delete line */}
                             <button
                               type="button"
-                              onClick={() => handleRemoveLine(idx)}
-                              disabled={lines.length === 1}
-                              title="Delete row"
+                              onClick={() => handleRemoveGroup(group.groupId)}
+                              disabled={lineGroups.length === 1}
+                              title="Delete service group"
                               className="text-zinc-400 hover:text-red-600 disabled:opacity-25 transition-colors p-1"
                             >
                               <Trash2 className="size-4" />
                             </button>
                           </div>
 
-                          {/* Subservice multi-select chips if service has subservices */}
                           {matchedService && Array.isArray(matchedService.subService) && matchedService.subService.length > 0 && (
                             <div className="bg-zinc-50 p-2.5 rounded-lg border border-zinc-100 space-y-1.5">
                               <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
@@ -1008,12 +1244,12 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
                               </span>
                               <div className="flex flex-wrap gap-1.5">
                                 {matchedService.subService.map((sub: any) => {
-                                  const isChecked = line.selected_subservice_ids.includes(sub.id);
+                                  const isChecked = selectedPackageIds.has(String(sub.id));
                                   return (
                                     <button
                                       key={sub.id}
                                       type="button"
-                                      onClick={() => handleToggleSubService(idx, sub)}
+                                      onClick={() => handleToggleSubService(group.groupId, sub)}
                                       className={`text-xs px-2.5 py-1 rounded-md font-medium border flex items-center gap-1.5 transition-all ${
                                         isChecked
                                           ? "bg-[#ea580c] text-white border-orange-600 shadow-sm font-semibold"
@@ -1031,95 +1267,134 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
                                   );
                                 })}
                               </div>
+                              {head.legacy_combined && (
+                                <p className="text-[10px] text-amber-700 mt-1">
+                                  Legacy combined package row. Changing package selection will split into separate line items.
+                                </p>
+                              )}
                             </div>
                           )}
 
-                          {/* Item(s) Description textarea */}
-                          <div>
-                            <div className="flex items-center justify-between mb-1">
-                              <Label className="text-xs font-semibold text-zinc-600">
-                                Item(s) Detailed Description *
-                              </Label>
-                              <span className="text-[11px] text-zinc-400">Waad wax ka beddeli kartaa ama qori kartaa</span>
-                            </div>
-                            <textarea
-                              rows={2}
-                              value={line.description}
-                              onChange={(e) => handleLineFieldChange(idx, "description", e.target.value)}
-                              placeholder="e.g. 1. Marketing Plan Development: We develop a concise, cost-effective, and results-driven based."
-                              required
-                              className="w-full p-2.5 rounded-md border border-zinc-200 text-xs text-zinc-800 leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#ea580c]/20"
-                            />
-                          </div>
-
-                          {/* Quantity, Rate, Free Toggle & Amount */}
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 items-end pt-1 bg-zinc-50/50 p-2.5 rounded-lg border border-zinc-100">
-                            <div>
-                              <Label className="text-[11px] font-semibold text-zinc-600">Quantity (Qty)</Label>
-                              <Input
-                                type="number"
-                                min="1"
-                                value={line.quantity}
-                                onChange={(e) => handleLineFieldChange(idx, "quantity", Math.max(1, Number(e.target.value)))}
-                                required
-                                className="h-8 mt-1 text-center text-xs font-bold"
-                              />
-                            </div>
-
-                            <div>
-                              <div className="flex items-center justify-between">
-                                <Label className="text-[11px] font-semibold text-zinc-600">Rate / Price ($)</Label>
-                                <button
-                                  type="button"
-                                  onClick={() => handleToggleFree(idx)}
-                                  className={`text-[10px] font-bold px-2 py-0.5 rounded border transition-colors ${
-                                    line.is_free
-                                      ? "bg-emerald-600 text-white border-emerald-700 shadow-sm"
-                                      : "bg-white text-zinc-600 border-zinc-300 hover:text-emerald-700"
-                                  }`}
-                                >
-                                  {line.is_free ? "✓ Free" : "Mark Free"}
-                                </button>
-                              </div>
-                              {line.is_free ? (
-                                <div className="h-8 mt-1 flex items-center justify-center bg-emerald-600 border border-emerald-700 text-white font-bold text-xs rounded-md shadow-sm">
-                                  <Gift className="size-3.5 mr-1 text-white" /> Free
-                                </div>
-                              ) : (
-                                <Input
-                                  type="number"
-                                  min="0"
-                                  step="any"
-                                  value={line.rate}
-                                  onChange={(e) => handleLineFieldChange(idx, "rate", Number(e.target.value))}
-                                  required
-                                  className="h-8 mt-1 text-right text-xs font-bold"
-                                />
-                              )}
-                            </div>
-
-                            <div>
-                              <Label className="text-[11px] font-semibold text-zinc-600">Amount</Label>
-                              <div className="h-8 mt-1 flex items-center justify-center font-bold text-xs rounded-md bg-white border border-zinc-200 text-zinc-800">
-                                {line.is_free ? (
-                                  <span className="text-emerald-700 font-bold">Free</span>
-                                ) : (
-                                  <span>${(line.quantity * line.rate).toFixed(0)}</span>
-                                )}
-                              </div>
-                            </div>
-
-                            <div className="flex justify-end items-center">
-                              <span
-                                className={`text-[11px] font-bold px-3 py-1.5 rounded-full shadow-sm ${
-                                  line.is_free
-                                    ? "bg-emerald-600 text-white font-bold"
-                                    : "bg-[#ea580c] text-white font-bold"
-                                }`}
-                              >
-                                {line.is_free ? "Complementary Item" : `$${(line.quantity * line.rate).toFixed(0)}`}
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <Label className="text-xs font-semibold text-zinc-600">Selected Packages</Label>
+                              <span className="text-[11px] font-semibold text-zinc-500">
+                                Group subtotal: ${groupSubtotal.toFixed(2)}
                               </span>
                             </div>
+
+                            {group.items.map((line) => {
+                              const amount = line.is_free ? 0 : money2(Number(line.quantity) * Number(line.rate));
+                              const title = line.package_name || line.service_type || "Custom package";
+                              return (
+                                <div
+                                  key={line.id}
+                                  className="rounded-lg border border-zinc-200 bg-zinc-50/60 p-3 space-y-2"
+                                >
+                                  <div className="flex items-start justify-between gap-2">
+                                    <div className="min-w-0">
+                                      <p className="text-xs font-bold text-zinc-900 truncate">{title}</p>
+                                      {line.package_name && line.service_type ? (
+                                        <p className="text-[10px] text-zinc-500">{line.service_type}</p>
+                                      ) : null}
+                                    </div>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleRemovePackageLine(line.id)}
+                                      title="Remove package"
+                                      className="text-zinc-400 hover:text-red-600 transition-colors p-1"
+                                    >
+                                      <Trash2 className="size-3.5" />
+                                    </button>
+                                  </div>
+
+                                  <div>
+                                    <div className="flex items-center justify-between mb-1">
+                                      <Label className="text-[11px] font-semibold text-zinc-600">Description *</Label>
+                                      <span className="text-[10px] text-zinc-400">Editable per package</span>
+                                    </div>
+                                    <textarea
+                                      rows={2}
+                                      value={line.description}
+                                      onChange={(e) => handlePackageFieldChange(line.id, "description", e.target.value)}
+                                      required
+                                      className="w-full p-2 rounded-md border border-zinc-200 text-xs text-zinc-800 leading-relaxed focus:outline-none focus:ring-2 focus:ring-[#ea580c]/20"
+                                    />
+                                  </div>
+
+                                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 items-end">
+                                    <div>
+                                      <Label className="text-[11px] font-semibold text-zinc-600">Quantity (Qty)</Label>
+                                      <Input
+                                        type="number"
+                                        min="1"
+                                        value={line.quantity}
+                                        onChange={(e) =>
+                                          handlePackageFieldChange(line.id, "quantity", Math.max(1, Number(e.target.value)))
+                                        }
+                                        required
+                                        className="h-8 mt-1 text-center text-xs font-bold"
+                                      />
+                                    </div>
+
+                                    <div>
+                                      <div className="flex items-center justify-between">
+                                        <Label className="text-[11px] font-semibold text-zinc-600">Rate / Price ($)</Label>
+                                        <button
+                                          type="button"
+                                          onClick={() => handleToggleFree(line.id)}
+                                          className={`text-[10px] font-bold px-2 py-0.5 rounded border transition-colors ${
+                                            line.is_free
+                                              ? "bg-emerald-600 text-white border-emerald-700 shadow-sm"
+                                              : "bg-white text-zinc-600 border-zinc-300 hover:text-emerald-700"
+                                          }`}
+                                        >
+                                          {line.is_free ? "✓ Free" : "Mark Free"}
+                                        </button>
+                                      </div>
+                                      {line.is_free ? (
+                                        <div className="h-8 mt-1 flex items-center justify-center bg-emerald-600 border border-emerald-700 text-white font-bold text-xs rounded-md shadow-sm">
+                                          <Gift className="size-3.5 mr-1 text-white" /> Free
+                                        </div>
+                                      ) : (
+                                        <Input
+                                          type="number"
+                                          min="0"
+                                          step="any"
+                                          value={line.rate}
+                                          onChange={(e) => handlePackageFieldChange(line.id, "rate", Number(e.target.value))}
+                                          required
+                                          className="h-8 mt-1 text-right text-xs font-bold"
+                                        />
+                                      )}
+                                    </div>
+
+                                    <div>
+                                      <Label className="text-[11px] font-semibold text-zinc-600">Amount</Label>
+                                      <div className="h-8 mt-1 flex items-center justify-center font-bold text-xs rounded-md bg-white border border-zinc-200 text-zinc-800">
+                                        {line.is_free ? (
+                                          <span className="text-emerald-700 font-bold">Free</span>
+                                        ) : (
+                                          <span>${amount.toFixed(2)}</span>
+                                        )}
+                                      </div>
+                                    </div>
+
+                                    <div className="flex justify-end items-center">
+                                      <span
+                                        className={`text-[11px] font-bold px-3 py-1.5 rounded-full shadow-sm ${
+                                          line.is_free
+                                            ? "bg-emerald-600 text-white font-bold"
+                                            : "bg-[#ea580c] text-white font-bold"
+                                        }`}
+                                      >
+                                        {line.is_free ? "Complementary Item" : `$${amount.toFixed(2)}`}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
                       );
@@ -1236,7 +1511,7 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
                     <div className="bg-zinc-50 p-3 rounded-lg border border-zinc-100 flex justify-between items-center">
                       <span className="font-semibold text-xs text-zinc-600">Subtotal:</span>
-                      <span className="font-bold text-base text-zinc-900">${totals.subtotal}</span>
+                      <span className="font-bold text-base text-zinc-900">${totals.subtotal.toFixed(2)}</span>
                     </div>
 
                     <div className="bg-orange-50/70 p-3 rounded-lg border border-orange-100 flex justify-between items-center">
@@ -1255,17 +1530,17 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
                           <span className="font-bold text-xs text-zinc-600">%</span>
                         </div>
                       </div>
-                      <span className="font-bold text-base text-[#6e0002]">${includeVat ? totals.taxAmount : 0}</span>
+                      <span className="font-bold text-base text-[#6e0002]">${includeVat ? totals.taxAmount.toFixed(2) : "0.00"}</span>
                     </div>
 
                     <div className="bg-[#ea580c] text-white p-3 rounded-lg font-bold flex justify-between items-center shadow-sm">
                       <span className="text-xs uppercase tracking-wide">Grand Total:</span>
-                      <span className="text-lg font-extrabold">${totals.grandTotal}</span>
+                      <span className="text-lg font-extrabold">${totals.grandTotal.toFixed(2)}</span>
                     </div>
                   </div>
 
                   <div className="mt-2.5 text-[11px] text-zinc-500 text-right">
-                    * Subtotal ${totals.subtotal} + VAT {includeVat ? `${vatPercent}%` : "0%"} (${totals.taxAmount}) = ${totals.grandTotal}
+                    * Subtotal ${totals.subtotal.toFixed(2)} + VAT {includeVat ? `${vatPercent}%` : "0%"} (${totals.taxAmount.toFixed(2)}) = ${totals.grandTotal.toFixed(2)}
                   </div>
                 </div>
               </>
@@ -1300,7 +1575,7 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
           <DialogFooter className={`${configDialogFooterClass} px-6 pt-5 pb-9 sm:pb-9 bg-zinc-50 border-t`}>
             <div className="flex justify-between items-center w-full">
               <div className="text-xs text-zinc-600 font-medium">
-                Grand Total: <span className="font-extrabold text-[#ea580c] text-sm">${totals.grandTotal}</span>
+                Grand Total: <span className="font-extrabold text-[#ea580c] text-sm">${totals.grandTotal.toFixed(2)}</span>
               </div>
               <div className="flex items-center gap-3">
                 <Button

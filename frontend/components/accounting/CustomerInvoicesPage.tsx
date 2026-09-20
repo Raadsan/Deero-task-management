@@ -219,6 +219,29 @@ export default function CustomerInvoicesPage() {
 
   const previewVatRate = useMemo(() => (includeVat ? Number(vatPercent) || 0 : 0), [includeVat, vatPercent]);
 
+  const paymentSummary = useMemo(() => {
+    const invoiceTotal = viewOnly && selected ? Number(selected.amount_total || 0) : totals.total;
+    const paidFromInvoice = selected
+      ? Number(selected.paid_amount ?? Math.max(0, Number(selected.amount_total || 0) - Number(selected.amount_due || 0)))
+      : 0;
+    const pendingPaid = !viewOnly && form.receive_payment_now
+      ? Math.min(Math.max(0, Number(form.amount_received || 0)), invoiceTotal)
+      : 0;
+    const paid = viewOnly && selected ? paidFromInvoice : pendingPaid;
+    const balanceDue = viewOnly && selected
+      ? Number(selected.amount_due ?? Math.max(0, invoiceTotal - paid))
+      : Math.max(0, Math.round((invoiceTotal - paid) * 100) / 100);
+    const status =
+      selected?.state === 'cancelled'
+        ? 'Cancelled'
+        : paid >= invoiceTotal - 0.005 && invoiceTotal > 0.005
+        ? 'Paid'
+        : paid > 0.005
+        ? 'Partially Paid'
+        : 'Unpaid';
+    return { invoiceTotal, paid, balanceDue, status };
+  }, [viewOnly, selected, totals.total, form.receive_payment_now, form.amount_received]);
+
   function handleInvoiceTaxChange(value: string) {
     if (value === 'none') {
       setForm((current) => ({
@@ -354,17 +377,31 @@ export default function CustomerInvoicesPage() {
     let importedLines: Line[] = [];
 
     if (Array.isArray(qMeta?.items) && qMeta.items.length > 0) {
-      importedLines = qMeta.items.map((item: any) => ({
-        product_id: null,
-        service_type: item.service_type || 'Graphic design & Branding',
-        selected_subservice_ids: Array.isArray(item.selected_subservice_ids) ? item.selected_subservice_ids : [],
-        description: item.description || '',
-        quantity: Number(item.qty || item.quantity || 1),
-        unit_price: Number(item.rate || item.unit_price || 0),
-        discount_percent: Number(item.discount_percent || 0),
-        tax_id: autoTaxId,
-        is_free: Boolean(item.is_free || Number(item.rate || 0) === 0),
-      }));
+      importedLines = qMeta.items.map((item: any) => {
+        const packageName = String(item.package_name || "").trim();
+        const serviceType = String(item.service_type || "Graphic design & Branding").trim();
+        const displayName = packageName || serviceType;
+        const description = item.description
+          ? String(item.description)
+          : packageName && serviceType && packageName !== serviceType
+            ? `${serviceType} — ${packageName}`
+            : displayName;
+        return {
+          product_id: null,
+          service_type: displayName,
+          selected_subservice_ids: item.package_id
+            ? [String(item.package_id)]
+            : Array.isArray(item.selected_subservice_ids)
+              ? item.selected_subservice_ids.map(String)
+              : [],
+          description,
+          quantity: Math.max(1, Number(item.qty || item.quantity || 1)),
+          unit_price: Math.max(0, Number(item.rate || item.unit_price || 0)),
+          discount_percent: Number(item.discount_percent || 0),
+          tax_id: autoTaxId,
+          is_free: Boolean(item.is_free || Number(item.rate || item.unit_price || 0) === 0),
+        };
+      });
     } else if (Array.isArray(q.lines) && q.lines.length > 0) {
       importedLines = q.lines.map((line) => ({
         product_id: line.product_id || null,
@@ -519,10 +556,23 @@ export default function CustomerInvoicesPage() {
       tax_id: activeTaxId,
       vat_percent: invoiceVat,
       lines: hydratedLines,
-      receive_payment_now: false,
-      payment_method_id: '',
-      amount_received: '',
-      payment_reference: '',
+      receive_payment_now: Boolean(
+        freshInvoice.state === 'draft' &&
+        meta?.pending_payment?.enabled &&
+        Number(meta?.pending_payment?.amount || 0) > 0
+      ),
+      payment_method_id:
+        freshInvoice.state === 'draft' && meta?.pending_payment?.payment_method_id
+          ? String(meta.pending_payment.payment_method_id)
+          : '',
+      amount_received:
+        freshInvoice.state === 'draft' && meta?.pending_payment?.amount != null && Number(meta.pending_payment.amount) > 0
+          ? String(meta.pending_payment.amount)
+          : '',
+      payment_reference:
+        freshInvoice.state === 'draft' && meta?.pending_payment?.reference
+          ? String(meta.pending_payment.reference)
+          : '',
     });
     setOpen(true);
   }
@@ -734,23 +784,24 @@ export default function CustomerInvoicesPage() {
   }
 
   async function save(postAfterSave = false) {
-    const amountReceived = Number(form.amount_received || 0);
-    const advancePreview = Math.min(Number(form.advance_paid || 0), totals.total);
-    const outstandingAfterAdvance = Math.max(0, Math.round((totals.total - advancePreview) * 100) / 100);
-    if (postAfterSave && form.receive_payment_now) {
+    const invoiceTotal = Math.round(totals.total * 100) / 100;
+    const amountReceived = Math.min(Math.max(0, Number(form.amount_received || 0)), invoiceTotal);
+    if (form.receive_payment_now) {
       if (!form.payment_method_id) return accountingToast('Select a payment method for the immediate payment.', 'error');
       if (!Number.isFinite(amountReceived) || amountReceived <= 0) return accountingToast('Amount received must be greater than zero.', 'error');
-      if (amountReceived > outstandingAfterAdvance + 0.005) {
-        return accountingToast(`Amount received cannot exceed the remaining balance of ${outstandingAfterAdvance.toFixed(2)} after advances.`, 'error');
+      if (amountReceived > invoiceTotal + 0.005) {
+        return accountingToast(`Paid amount cannot exceed the invoice total of ${invoiceTotal.toFixed(2)}.`, 'error');
       }
       const selectedPayMethod = paymentMethods.find((m) => m.id === Number(form.payment_method_id));
       if (selectedPayMethod?.requires_reference && !form.payment_reference.trim()) {
         return accountingToast('Reference number is required for this payment method.', 'error');
       }
-      try {
-        const options = await customerReceiptApi.options({ customer_id: Number(form.customer_id), payment_method_id: Number(form.payment_method_id) });
-        if (!options.accounts.length) return accountingToast('The selected payment method has no compatible active money account and journal.', 'error');
-      } catch (error) { return accountingToast(errorMessage(error), 'error'); }
+      if (postAfterSave) {
+        try {
+          const options = await customerReceiptApi.options({ customer_id: Number(form.customer_id), payment_method_id: Number(form.payment_method_id) });
+          if (!options.accounts.length) return accountingToast('The selected payment method has no compatible active money account and journal.', 'error');
+        } catch (error) { return accountingToast(errorMessage(error), 'error'); }
+      }
     }
     setSaving(true);
 
@@ -761,6 +812,15 @@ export default function CustomerInvoicesPage() {
          || null)
       : null;
     const activeTaxId = matchedTax ? Number(matchedTax.id) : null;
+
+    const pendingPayment = form.receive_payment_now && amountReceived > 0.005
+      ? {
+          enabled: true,
+          payment_method_id: Number(form.payment_method_id),
+          amount: Math.round(amountReceived * 100) / 100,
+          reference: form.payment_reference.trim() || undefined,
+        }
+      : null;
 
     const richNotesMeta = {
       notes_text: form.notes,
@@ -775,6 +835,10 @@ export default function CustomerInvoicesPage() {
       customer_reference: form.customer_reference || undefined,
       vat_percent: effVat,
       tax_id: activeTaxId,
+      amount_untaxed: Math.round(totals.untaxed * 100) / 100,
+      amount_tax: Math.round(totals.tax * 100) / 100,
+      amount_total: Math.round(totals.total * 100) / 100,
+      pending_payment: pendingPayment,
       items: form.lines.map((l) => ({
         service_type: l.service_type,
         selected_subservice_ids: l.selected_subservice_ids,
@@ -792,6 +856,7 @@ export default function CustomerInvoicesPage() {
       notes: JSON.stringify(richNotesMeta),
       customer_reference: form.customer_reference || undefined,
       quotation_id: form.quotation_id ? Number(form.quotation_id) : undefined,
+      vat_percent: effVat,
       lines: form.lines.map((line) => ({
         product_id: line.product_id,
         description: line.description || line.service_type || 'Custom line',
@@ -808,25 +873,15 @@ export default function CustomerInvoicesPage() {
     try {
       const saved = selected ? await customerInvoiceApi.update(selected.id, payload) : await customerInvoiceApi.create(payload);
       if (postAfterSave) {
-        const postedInvoice = await customerInvoiceApi.post(saved.id);
-        if (form.receive_payment_now) {
-          const due = Number(postedInvoice.amount_due || 0);
-          const payNow = Math.min(amountReceived, due);
-          if (payNow > 0.005) {
-            const receipt = await customerReceiptApi.create({
-              customer_id: postedInvoice.customer_id,
-              payment_method_id: Number(form.payment_method_id),
-              receipt_date: apiDate(form.invoice_date),
-              amount: payNow,
-              reference: form.payment_reference.trim() || undefined,
-              memo: `Immediate payment for invoice ${postedInvoice.invoice_number}`,
-              allocations: [{ invoice_id: postedInvoice.id, allocated_amount: payNow }],
-            });
-            await customerReceiptApi.post(receipt.id);
-          }
-        }
+        // Save draft with pending payment, then open the simple Post confirmation (no second payment form).
+        setSelected(saved);
+        setOpen(false);
+        setPendingAction({ type: 'post', invoice: saved });
+        accountingToast(`Draft invoice ${selected ? 'updated' : 'created'} successfully`);
+        await load();
+        return;
       }
-      accountingToast(postAfterSave ? form.receive_payment_now ? 'Invoice and payment posted successfully' : 'Invoice posted successfully' : `Draft invoice ${selected ? 'updated' : 'created'} successfully`);
+      accountingToast(`Draft invoice ${selected ? 'updated' : 'created'} successfully`);
       setOpen(false); await load();
     } catch (error) { accountingToast(errorMessage(error), 'error'); } finally { setSaving(false); }
   }
@@ -836,53 +891,73 @@ export default function CustomerInvoicesPage() {
     finally { setSaving(false); }
   }
   async function postInvoice(invoice: CustomerInvoice) {
-    setSaving(true); try { await customerInvoiceApi.post(invoice.id); accountingToast('Invoice and journal entry posted successfully'); setPendingAction(null); await load(); }
-    catch (error) { accountingToast(errorMessage(error), 'error'); }
+    setSaving(true);
+    try {
+      const posted = await customerInvoiceApi.post(invoice.id);
+      const paid = Number(posted.paid_amount || 0);
+      accountingToast(
+        paid > 0.005
+          ? `Invoice posted. Paid $${paid.toFixed(2)}. Balance $${Number(posted.amount_due || 0).toFixed(2)}.`
+          : 'Invoice and journal entry posted successfully'
+      );
+      setPendingAction(null);
+      await load();
+    } catch (error) { accountingToast(errorMessage(error), 'error'); }
     finally { setSaving(false); }
   }
 
-  // Accept & Post with optional Customer Receipt
+  // Register additional payment on an already-posted invoice (not used for draft Post).
   const [acceptInvoice, setAcceptInvoice] = useState<CustomerInvoice | null>(null);
-  const [createReceiptOnPost, setCreateReceiptOnPost] = useState(true);
-  const [receiptPaymentMethodId, setReceiptPaymentMethodId] = useState<string>('');
 
-  const openAcceptInvoice = (invoice: CustomerInvoice) => {
-    setAcceptInvoice(invoice);
-    setCreateReceiptOnPost(false);
-    const validMethod = paymentMethods.find((m) => m.is_active !== false && m.gl_account_id && ['inbound', 'both'].includes(String(m.payment_type)));
-    if (validMethod) setReceiptPaymentMethodId(String(validMethod.id));
+  const openPostOrPayment = (invoice: CustomerInvoice) => {
+    if (invoice.state === 'draft') {
+      setPendingAction({ type: 'post', invoice });
+      return;
+    }
+    if (invoice.state === 'posted' && invoice.payment_state !== 'paid') {
+      setAcceptInvoice(invoice);
+    }
   };
 
-  async function handleConfirmPost() {
-    if (!acceptInvoice) return;
-    if (createReceiptOnPost && !receiptPaymentMethodId) {
-      return accountingToast('Select a payment method for the customer receipt.', 'error');
-    }
-    setSaving(true);
+  function getDraftPendingPayment(invoice: CustomerInvoice) {
     try {
-      const posted = await customerInvoiceApi.post(acceptInvoice.id);
-      if (createReceiptOnPost && receiptPaymentMethodId) {
-        const receipt = await customerReceiptApi.create({
-          customer_id: posted.customer_id,
-          payment_method_id: Number(receiptPaymentMethodId),
-          receipt_date: apiDate(today()),
-          amount: Number(posted.amount_total),
-          reference: `Receipt for ${posted.invoice_number}`,
-          memo: `Payment for invoice ${posted.invoice_number}`,
-          allocations: [{ invoice_id: posted.id, allocated_amount: Number(posted.amount_total) }],
-        });
-        await customerReceiptApi.post(receipt.id);
-        accountingToast(`Invoice posted & Customer Receipt created successfully!`);
-      } else {
-        accountingToast('Invoice and journal entry posted successfully');
+      const meta = invoice.notes ? JSON.parse(String(invoice.notes)) : null;
+      const pending = meta?.pending_payment;
+      if (pending?.enabled && Number(pending.amount || 0) > 0) {
+        return {
+          amount: Math.min(Number(pending.amount || 0), Number(invoice.amount_total || 0)),
+          payment_method_id: pending.payment_method_id ? Number(pending.payment_method_id) : null,
+          reference: pending.reference ? String(pending.reference) : '',
+        };
       }
-      setAcceptInvoice(null);
-      await load();
-    } catch (error) {
-      accountingToast(errorMessage(error), 'error');
-    } finally {
-      setSaving(false);
-    }
+    } catch {}
+    return null;
+  }
+
+  function postConfirmDetails(invoice: CustomerInvoice) {
+    const total = Number(invoice.amount_total || 0);
+    const pending = getDraftPendingPayment(invoice);
+    const paid = pending ? pending.amount : 0;
+    const balance = Math.max(0, Math.round((total - paid) * 100) / 100);
+    return (
+      <div className="space-y-2 text-sm">
+        <div className="flex justify-between gap-4"><span className="text-muted-foreground">Invoice Number</span><b>{invoice.invoice_number}</b></div>
+        <div className="flex justify-between gap-4"><span className="text-muted-foreground">Customer</span><b>{invoice.customers?.name || `#${invoice.customer_id}`}</b></div>
+        <div className="flex justify-between gap-4"><span className="text-muted-foreground">Invoice Total</span><b>${total.toFixed(2)}</b></div>
+        <div className="flex justify-between gap-4"><span className="text-muted-foreground">Paid</span><b>${paid.toFixed(2)}</b></div>
+        <div className="my-1 border-t border-zinc-200" />
+        <div className="flex justify-between gap-4"><span className="font-semibold text-zinc-800">Balance Due</span><b className="text-emerald-700">${balance.toFixed(2)}</b></div>
+        {pending ? (
+          <p className="pt-1 text-[11px] text-zinc-500">
+            The existing Receive Payment Now amount will be applied automatically. No additional payment is required.
+          </p>
+        ) : (
+          <p className="pt-1 text-[11px] text-zinc-500">
+            No payment will be recorded. The balance remains Accounts Receivable.
+          </p>
+        )}
+      </div>
+    );
   }
 
 
@@ -914,11 +989,11 @@ export default function CustomerInvoicesPage() {
           disabled={row.state === 'cancelled' || row.payment_state === 'paid' || saving}
           onClick={() => {
             if (row.state === 'draft' || (row.state === 'posted' && row.payment_state !== 'paid')) {
-              openAcceptInvoice(row);
+              openPostOrPayment(row);
             }
           }}
           className={row.state === 'draft' || (row.state === 'posted' && row.payment_state !== 'paid') ? "cursor-pointer hover:opacity-80 transition-opacity" : "cursor-default"}
-          title={row.state === 'draft' ? "Click to Accept / Post Invoice" : (row.state === 'posted' && row.payment_state !== 'paid') ? "Click to Register Payment" : undefined}
+          title={row.state === 'draft' ? "Click to Post Invoice" : (row.state === 'posted' && row.payment_state !== 'paid') ? "Click to Register Payment" : undefined}
         >
           <Status invoice={row} />
         </button>
@@ -945,7 +1020,7 @@ export default function CustomerInvoicesPage() {
               <button title="Edit" onClick={() => void editInvoice(row)} className={actionBtnEdit}>
                 <SquarePen className="size-4" />
               </button>
-              <button title="Accept & Post (with Receipt)" onClick={() => openAcceptInvoice(row)} className={actionBtnView}>
+              <button title="Post Invoice" onClick={() => openPostOrPayment(row)} className={actionBtnView}>
                 <Send className="size-4" />
               </button>
               <button title="Delete" onClick={() => setPendingAction({ type: 'delete', invoice: row })} className={actionBtnDelete}>
@@ -956,7 +1031,7 @@ export default function CustomerInvoicesPage() {
           {row.state === 'posted' && row.payment_state !== 'paid' && (
             <button
               title="Register Payment (Create Receipt)"
-              onClick={() => openAcceptInvoice(row)}
+              onClick={() => openPostOrPayment(row)}
               className="inline-flex size-8 items-center justify-center rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors"
             >
               <CreditCard className="size-4" />
@@ -1087,11 +1162,17 @@ export default function CustomerInvoicesPage() {
                   date={previewDateStr}
                   dueDate={previewDueDateStr}
                   lines={previewLines}
-                  subtotal={totals.untaxed}
-                  vatPercent={previewVatRate}
-                  taxAmount={totals.tax}
-                  paidAmount={selected ? (selected.paid_amount ?? Number(selected.amount_total) - Number(selected.amount_due)) : form.receive_payment_now ? Math.min(Number(form.amount_received || 0), totals.total) : 0}
-                  grandTotal={totals.total}
+                  subtotal={viewOnly && selected ? Number(selected.amount_untaxed) : totals.untaxed}
+                  vatPercent={
+                    viewOnly && selected
+                      ? (Number(selected.amount_untaxed) > 0 && Number(selected.amount_tax) > 0
+                          ? Math.round((Number(selected.amount_tax) / Number(selected.amount_untaxed)) * 1000) / 10
+                          : previewVatRate)
+                      : previewVatRate
+                  }
+                  taxAmount={viewOnly && selected ? Number(selected.amount_tax) : totals.tax}
+                  paidAmount={paymentSummary.paid}
+                  grandTotal={viewOnly && selected ? Number(selected.amount_total) : totals.total}
                   paymentAdvance={form.payment_advance}
                   paymentCompletion={form.payment_completion}
                   nbText={form.nb}
@@ -1608,10 +1689,18 @@ export default function CustomerInvoicesPage() {
                               required
                               type="number"
                               min="0.01"
-                              max={Math.max(0, totals.total - Math.min(Number(form.advance_paid || 0), totals.total)) || undefined}
+                              max={Math.max(0, totals.total) || undefined}
                               step="0.01"
                               value={form.amount_received}
-                              onChange={(event) => setForm({ ...form, amount_received: event.target.value })}
+                              onChange={(event) => {
+                                const raw = Number(event.target.value);
+                                if (!Number.isFinite(raw)) {
+                                  setForm({ ...form, amount_received: event.target.value });
+                                  return;
+                                }
+                                const capped = Math.min(Math.max(0, raw), totals.total);
+                                setForm({ ...form, amount_received: event.target.value === '' ? '' : String(capped) });
+                              }}
                               className="mt-1 h-10 w-full rounded-md border border-zinc-200 px-3"
                             />
                           </label>
@@ -1658,52 +1747,24 @@ export default function CustomerInvoicesPage() {
                   <Total label="Subtotal" value={viewOnly && selected ? Number(selected.amount_untaxed) : totals.untaxed} />
                   <Total label={`Tax${previewVatRate ? ` (${previewVatRate}%)` : ''}`} value={viewOnly && selected ? Number(selected.amount_tax) : totals.tax} />
                   <div className="my-3 border-t border-zinc-200" />
-                  <Total label="Grand total" value={viewOnly && selected ? Number(selected.amount_total) : totals.total} strong />
+                  <Total label="Grand Total" value={paymentSummary.invoiceTotal} strong />
                   <div className="my-3 border-t border-zinc-200" />
-                  <Total
-                    label="Advance Paid"
-                    value={
-                      viewOnly && selected
-                        ? Number(selected.paid_amount || 0)
-                        : Math.min(Number(form.advance_paid || 0), totals.total)
-                    }
-                  />
-                  <Total
-                    label="Paid"
-                    value={
-                      viewOnly && selected
-                        ? Number(selected.paid_amount || 0)
-                        : form.receive_payment_now
-                        ? Math.min(Number(form.amount_received || 0), totals.total)
-                        : Math.min(Number(form.advance_paid || 0), totals.total)
-                    }
-                  />
-                  <Total
-                    label="Balance Due"
-                    value={
-                      viewOnly && selected
-                        ? Number(selected.amount_due)
-                        : Math.max(
-                          0,
-                          totals.total
-                            - (form.receive_payment_now
-                              ? Number(form.amount_received || 0)
-                              : Math.min(Number(form.advance_paid || 0), totals.total))
-                        )
-                    }
-                  />
+                  <Total label="Paid" value={paymentSummary.paid} />
+                  <Total label="Balance Due" value={paymentSummary.balanceDue} />
                   <div className="mt-3 flex items-center justify-between border-t border-zinc-200 pt-3">
                     <span>Status</span>
-                    <span className="rounded-full bg-secondary/15 px-3 py-1 text-[11px] font-semibold text-secondary">
-                      {selected?.state === 'cancelled'
-                        ? 'Cancelled'
-                        : selected?.payment_state === 'paid'
-                        ? 'Paid'
-                        : selected?.payment_state === 'partial'
-                        ? 'Partially Paid'
-                        : selected?.state === 'posted'
-                        ? 'Posted'
-                        : 'Draft'}
+                    <span
+                      className={`rounded-full px-3 py-1 text-[11px] font-semibold ${
+                        paymentSummary.status === 'Paid'
+                          ? 'bg-emerald-100 text-emerald-800'
+                          : paymentSummary.status === 'Partially Paid'
+                          ? 'bg-amber-100 text-amber-800'
+                          : paymentSummary.status === 'Cancelled'
+                          ? 'bg-zinc-200 text-zinc-700'
+                          : 'bg-rose-100 text-rose-800'
+                      }`}
+                    >
+                      {paymentSummary.status}
                     </span>
                   </div>
                 </aside>
@@ -1714,10 +1775,30 @@ export default function CustomerInvoicesPage() {
         )}
       </DialogContent>
     </Dialog>
-    <AccountingConfirmDialog open={Boolean(pendingAction)} title={`${pendingAction?.type === 'delete' ? 'Delete' : 'Post'} Customer Invoice`} description={pendingAction?.type === 'delete' ? 'Confirm removal of this draft customer invoice.' : 'Confirm this invoice before posting its journal entry and locking it.'} confirmLabel={`${pendingAction?.type === 'delete' ? 'Delete' : 'Post'} Invoice`} destructive={pendingAction?.type === 'delete'} busy={saving} details={pendingAction && <div className="flex justify-between"><span className="text-muted-foreground">Invoice</span><b>{pendingAction.invoice.invoice_number}</b></div>} onCancel={() => setPendingAction(null)} onConfirm={() => pendingAction && void (pendingAction.type === 'delete' ? remove(pendingAction.invoice) : postInvoice(pendingAction.invoice))} />
+    <AccountingConfirmDialog
+      open={Boolean(pendingAction)}
+      title={pendingAction?.type === 'delete' ? 'Delete Customer Invoice' : 'Post Invoice'}
+      description={
+        pendingAction?.type === 'delete'
+          ? 'Confirm removal of this draft customer invoice.'
+          : 'Confirm posting. Any Receive Payment Now amount already entered will be applied automatically.'
+      }
+      confirmLabel={pendingAction?.type === 'delete' ? 'Delete Invoice' : 'Post Invoice'}
+      destructive={pendingAction?.type === 'delete'}
+      busy={saving}
+      details={
+        pendingAction
+          ? pendingAction.type === 'delete'
+            ? <div className="flex justify-between"><span className="text-muted-foreground">Invoice</span><b>{pendingAction.invoice.invoice_number}</b></div>
+            : postConfirmDetails(pendingAction.invoice)
+          : null
+      }
+      onCancel={() => setPendingAction(null)}
+      onConfirm={() => pendingAction && void (pendingAction.type === 'delete' ? remove(pendingAction.invoice) : postInvoice(pendingAction.invoice))}
+    />
 
-    {/* Invoice Payment & Accept Dialog */}
-    {acceptInvoice && (
+    {/* Register payment on posted invoices only — never for draft Post Invoice */}
+    {acceptInvoice && acceptInvoice.state === 'posted' && (
       <InvoicePaymentDialog
         open={Boolean(acceptInvoice)}
         onOpenChange={(val) => !val && setAcceptInvoice(null)}
@@ -1795,8 +1876,22 @@ function Status({ invoice }: { invoice: CustomerInvoice }) {
   const dueDate = invoice.due_date ? new Date(invoice.due_date) : null;
   if (dueDate) dueDate.setHours(0, 0, 0, 0);
   const isOverdue = invoice.state === 'posted' && invoice.payment_state === 'not_paid' && dueDate !== null && dueDate < today;
-  const key = invoice.state === 'cancelled' ? 'cancelled' : invoice.payment_state === 'paid' ? 'paid' : invoice.payment_state === 'partial' ? 'partial' : isOverdue ? 'overdue' : invoice.state;
-  const styles: Record<string, string> = { draft: 'bg-zinc-100 text-zinc-700', posted: 'bg-blue-50 text-blue-700', partial: 'bg-orange-50 text-orange-700', paid: 'bg-emerald-50 text-emerald-700', cancelled: 'bg-rose-50 text-rose-700', overdue: 'bg-red-100 text-red-700 ring-1 ring-red-300' };
-  const labels: Record<string, string> = { draft: 'DRAFT', posted: 'POSTED', partial: 'PARTIALLY PAID', paid: 'PAID', cancelled: 'CANCELLED', overdue: 'OVERDUE' };
+  const labels: Record<string, string> = { draft: 'DRAFT', posted: 'UNPAID', partial: 'PARTIALLY PAID', paid: 'PAID', cancelled: 'CANCELLED', overdue: 'OVERDUE', unpaid: 'UNPAID' };
+  const key = invoice.state === 'cancelled'
+    ? 'cancelled'
+    : invoice.payment_state === 'paid'
+    ? 'paid'
+    : invoice.payment_state === 'partial'
+    ? 'partial'
+    : isOverdue
+    ? 'overdue'
+    : invoice.state === 'posted'
+    ? 'unpaid'
+    : invoice.payment_state === 'not_paid' && Number(invoice.paid_amount || 0) <= 0.005 && invoice.state === 'draft'
+    ? 'draft'
+    : Number(invoice.paid_amount || 0) > 0.005
+    ? 'partial'
+    : invoice.state;
+  const styles: Record<string, string> = { draft: 'bg-zinc-100 text-zinc-700', posted: 'bg-blue-50 text-blue-700', unpaid: 'bg-rose-50 text-rose-700', partial: 'bg-orange-50 text-orange-700', paid: 'bg-emerald-50 text-emerald-700', cancelled: 'bg-rose-50 text-rose-700', overdue: 'bg-red-100 text-red-700 ring-1 ring-red-300' };
   return <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${styles[key] || styles.draft}`}>{labels[key] || key.toUpperCase()}</span>;
 }

@@ -21,27 +21,45 @@ const defaultCompany = async () => {
 
 const defaultCompanyId = async () => (await defaultCompany()).id
 
-/** Outstanding AR from posted invoices only (receipts/credit notes already reduce amount_due). */
+/** Outstanding AR from posted invoices only (receipts already reduce amount_due). */
 const outstandingFromInvoices = (invoices = []) => (invoices || [])
   .filter((invoice) => invoice.state === 'posted' && invoice.document_type === 'invoice')
   .reduce((sum, invoice) => sum + Number(invoice.amount_due || 0), 0)
 
 /**
  * Official customer balance:
- * Opening Balance + Posted Invoice outstanding (amount_due already nets receipts & credit notes).
- * Draft documents never affect this.
+ * Opening + Posted Invoice outstanding − Customer Credit (CN.amount_due on posted credit notes
+ * against fully/over-paid invoices). Draft documents never affect this.
  */
 export const computeCustomerBalance = (record) => {
   const opening = Math.round(Number(record?.opening_balance || 0) * 100) / 100
-  const outstanding = Math.round(outstandingFromInvoices(record?.customer_invoices) * 100) / 100
-  return Math.round((opening + outstanding) * 100) / 100
+  const rows = record?.customer_invoices || []
+  const outstanding = Math.round(outstandingFromInvoices(rows) * 100) / 100
+  const customerCredit = Math.round(
+    rows
+      .filter((row) => row.document_type === 'credit_note' && row.state === 'posted')
+      .reduce((sum, note) => sum + Number(note.amount_due || 0), 0) * 100
+  ) / 100
+  const explicitCredit = Math.round(Number(record?.customer_credit_balance || customerCredit) * 100) / 100
+  return Math.round((opening + outstanding - explicitCredit) * 100) / 100
 }
 
 const balanceInclude = {
   currencies: { select: { code: true } },
   customer_invoices: {
-    where: { document_type: 'invoice', state: 'posted' },
-    select: { amount_due: true, state: true, document_type: true, amount_total: true },
+    where: {
+      OR: [
+        { document_type: 'invoice', state: 'posted' },
+        { document_type: 'credit_note', state: 'posted' },
+      ],
+    },
+    select: {
+      amount_due: true,
+      state: true,
+      document_type: true,
+      amount_total: true,
+      paid_amount: true,
+    },
   },
   client: { select: { id: true, institution: true, contactPerson: true, phone: true, email: true } },
 }
@@ -49,12 +67,22 @@ const balanceInclude = {
 const present = (record) => {
   if (!record) return record
   const opening = Math.round(Number(record.opening_balance || 0) * 100) / 100
-  const receivable_balance = computeCustomerBalance(record)
+  const invoices = (record.customer_invoices || []).filter((row) => row.document_type === 'invoice')
+  const creditNotes = (record.customer_invoices || []).filter((row) => row.document_type === 'credit_note')
+  const customer_credit_balance = Math.round(
+    creditNotes.reduce((sum, note) => sum + Number(note.amount_due || 0), 0) * 100
+  ) / 100
+  const receivable_balance = computeCustomerBalance({
+    ...record,
+    customer_invoices: invoices,
+    customer_credit_balance,
+  })
   return {
     ...record,
     opening_balance: opening,
     openingBalance: opening,
     currentBalance: receivable_balance,
+    customer_credit_balance,
     contact_person: record.client?.contactPerson || record.name,
     currency: record.currencies?.code || null,
     receivable_balance,

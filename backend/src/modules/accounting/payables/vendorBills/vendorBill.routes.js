@@ -1,10 +1,12 @@
 import express from 'express'
-import { getAll, getById, create, update, remove, post, getRefunds, createRefund, updateRefund, removeRefund, postRefund } from './vendorBill.controller.js'
+import { getAll, getById, create, update, remove, post, getRefunds, createRefund, updateRefund, removeRefund, postRefund, getRefundable } from './vendorBill.controller.js'
 import { protect } from '../../../../middlewares/authMiddleware.js'
 
 const router = express.Router()
 
 router.use(protect)
+
+router.get('/refunds/refundable/:billId', getRefundable)
 
 router.route('/refunds')
     .get(getRefunds)

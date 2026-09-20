@@ -1377,6 +1377,7 @@ exports.journal_entries_source_type = exports.$Enums.journal_entries_source_type
   customer_receipt: 'customer_receipt',
   vendor_bill: 'vendor_bill',
   vendor_payment: 'vendor_payment',
+  vendor_refund: 'vendor_refund',
   pos_order: 'pos_order',
   restaurant_purchase: 'restaurant_purchase',
   vendor_advance: 'vendor_advance'

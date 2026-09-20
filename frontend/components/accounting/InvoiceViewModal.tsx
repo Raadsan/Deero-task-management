@@ -3,10 +3,12 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { FileText, Printer, Download, X, CreditCard, Send } from "lucide-react";
+import { FileText, Printer, X, CreditCard, Send } from "lucide-react";
 import { customerInvoiceApi, type CustomerInvoice } from "@/lib/api/accounting/receivables/customerInvoiceApi";
+import { accountingToast } from "@/lib/accounting-ui";
 import A4InvoiceSheet, { InvoiceLineItem, PaymentMethodEntry } from "./A4InvoiceSheet";
 import InvoicePaymentDialog from "./InvoicePaymentDialog";
+import AccountingConfirmDialog from "./AccountingConfirmDialog";
 import { useBranchTheme } from "@/components/branding/BranchThemeProvider";
 import { resolveBranchLogoUrl } from "@/lib/portfolio-branding";
 
@@ -26,6 +28,8 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice, onInvoic
 
   const [activeInvoice, setActiveInvoice] = useState<CustomerInvoice | null>(invoice);
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+  const [postConfirmOpen, setPostConfirmOpen] = useState(false);
+  const [posting, setPosting] = useState(false);
 
   const refreshInvoice = () => {
     if (invoice?.id) {
@@ -190,6 +194,36 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice, onInvoic
           { label: "E-DAHAB", value: "0628553566" },
         ];
 
+  const pendingPaid =
+    currentInvoice?.state === "draft" && meta?.pending_payment?.enabled
+      ? Math.min(Number(meta.pending_payment.amount || 0), Number(currentInvoice.amount_total || 0))
+      : Number(currentInvoice?.paid_amount || 0);
+  const pendingBalance = Math.max(
+    0,
+    Math.round((Number(currentInvoice?.amount_total || 0) - pendingPaid) * 100) / 100
+  );
+
+  const handlePostInvoice = async () => {
+    if (!currentInvoice || currentInvoice.state !== "draft" || posting) return;
+    setPosting(true);
+    try {
+      const posted = await customerInvoiceApi.post(currentInvoice.id);
+      setActiveInvoice(posted);
+      const paid = Number(posted.paid_amount || 0);
+      accountingToast(
+        paid > 0.005
+          ? `Invoice posted. Paid $${paid.toFixed(2)}. Balance $${Number(posted.amount_due || 0).toFixed(2)}.`
+          : "Invoice posted successfully"
+      );
+      setPostConfirmOpen(false);
+      if (onInvoiceUpdated) onInvoiceUpdated();
+    } catch (err: any) {
+      accountingToast(err?.response?.data?.message || err.message || "Failed to post invoice", "error");
+    } finally {
+      setPosting(false);
+    }
+  };
+
   const statusColors: Record<string, string> = {
     draft: "bg-zinc-100 text-zinc-700 border-zinc-200",
     posted: "bg-blue-50 text-blue-700 border-blue-200",
@@ -324,10 +358,10 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice, onInvoic
               <Button
                 type="button"
                 size="sm"
-                onClick={() => setPaymentDialogOpen(true)}
+                onClick={() => setPostConfirmOpen(true)}
                 className="bg-[#ea580c] hover:bg-orange-700 text-white text-xs font-bold gap-1.5 shadow-sm"
               >
-                <Send className="size-3.5" /> Accept & Post
+                <Send className="size-3.5" /> Post Invoice
               </Button>
             )}
             {currentInvoice.state === "posted" && currentInvoice.payment_state !== "paid" && (
@@ -344,12 +378,43 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice, onInvoic
         </DialogFooter>
       </DialogContent>
 
-      <InvoicePaymentDialog
-        open={paymentDialogOpen}
-        onOpenChange={setPaymentDialogOpen}
-        invoice={currentInvoice}
-        onSuccess={refreshInvoice}
+      <AccountingConfirmDialog
+        open={postConfirmOpen}
+        title="Post Invoice"
+        description="Confirm posting. Any Receive Payment Now amount already entered will be applied automatically."
+        confirmLabel="Post Invoice"
+        busy={posting}
+        details={
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between gap-4"><span className="text-muted-foreground">Invoice Number</span><b>{invoiceNo}</b></div>
+            <div className="flex justify-between gap-4"><span className="text-muted-foreground">Customer</span><b>{currentInvoice.customers?.name || invoiceTo}</b></div>
+            <div className="flex justify-between gap-4"><span className="text-muted-foreground">Invoice Total</span><b>${Number(currentInvoice.amount_total || 0).toFixed(2)}</b></div>
+            <div className="flex justify-between gap-4"><span className="text-muted-foreground">Paid</span><b>${pendingPaid.toFixed(2)}</b></div>
+            <div className="my-1 border-t border-zinc-200" />
+            <div className="flex justify-between gap-4"><span className="font-semibold text-zinc-800">Balance Due</span><b className="text-emerald-700">${pendingBalance.toFixed(2)}</b></div>
+            {pendingPaid > 0.005 ? (
+              <p className="pt-1 text-[11px] text-zinc-500">
+                The existing Receive Payment Now amount will be applied automatically. No additional payment is required.
+              </p>
+            ) : (
+              <p className="pt-1 text-[11px] text-zinc-500">
+                No payment will be recorded. The balance remains Accounts Receivable.
+              </p>
+            )}
+          </div>
+        }
+        onCancel={() => setPostConfirmOpen(false)}
+        onConfirm={() => void handlePostInvoice()}
       />
+
+      {currentInvoice.state === "posted" && (
+        <InvoicePaymentDialog
+          open={paymentDialogOpen}
+          onOpenChange={setPaymentDialogOpen}
+          invoice={currentInvoice}
+          onSuccess={refreshInvoice}
+        />
+      )}
     </Dialog>
   );
 }

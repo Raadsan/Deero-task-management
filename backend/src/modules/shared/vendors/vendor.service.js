@@ -12,10 +12,27 @@ const defaultCompanyId = async () => {
 const withBalances = (vendor) => {
   if (!vendor) return vendor
   const advanceBalance = (vendor.vendor_advances || []).reduce((sum, row) => sum + Number(row.remaining_amount), 0)
-  const payableBalance = (vendor.vendor_bills || []).reduce((sum, row) => sum + Number(row.amount_due), 0)
-  return { ...vendor, advance_balance: Math.round(advanceBalance * 100) / 100, payable_balance: Math.round(payableBalance * 100) / 100, vendor_balance: Math.round((payableBalance - advanceBalance) * 100) / 100 }
+  const payableBalance = (vendor.vendor_bills || [])
+    .filter((row) => row.document_type === 'bill' || row.document_type == null)
+    .reduce((sum, row) => sum + Number(row.amount_due), 0)
+  const refundedBalance = (vendor.vendor_bills || [])
+    .filter((row) => row.document_type === 'refund')
+    .reduce((sum, row) => sum + Number(row.amount_total), 0)
+  return {
+    ...vendor,
+    advance_balance: Math.round(advanceBalance * 100) / 100,
+    payable_balance: Math.round(payableBalance * 100) / 100,
+    refunded_balance: Math.round(refundedBalance * 100) / 100,
+    vendor_balance: Math.round((payableBalance - advanceBalance) * 100) / 100,
+  }
 }
-const balanceInclude = { vendor_advances: { where: { state: { in: ['open', 'partial'] } }, orderBy: { created_at: 'asc' } }, vendor_bills: { where: { state: 'posted', document_type: 'bill' }, select: { id: true, bill_number: true, bill_date: true, amount_total: true, amount_due: true, payment_state: true } } }
+const balanceInclude = {
+  vendor_advances: { where: { state: { in: ['open', 'partial'] } }, orderBy: { created_at: 'asc' } },
+  vendor_bills: {
+    where: { state: 'posted', document_type: { in: ['bill', 'refund'] } },
+    select: { id: true, bill_number: true, bill_date: true, amount_total: true, amount_due: true, payment_state: true, document_type: true },
+  },
+}
 export const listVendors = async () => (await prisma.vendors.findMany({ include: balanceInclude, orderBy: { created_at: 'desc' } })).map(withBalances)
 export const findVendor = async (id) => withBalances(await prisma.vendors.findUnique({ where: { id }, include: balanceInclude }))
 export const createVendorRecord = async (data) => prisma.vendors.create({ data: { ...data, company_id: data.company_id || await defaultCompanyId() } })
