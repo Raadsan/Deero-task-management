@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, Suspense } from "react";
+import { useRouter } from "next/navigation";
 import { Plus, Eye, SquarePen, Trash2, Download, FileSpreadsheet, RefreshCw, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -22,6 +23,7 @@ import {
 import { formatDate } from "@/lib/utils";
 
 function CustomerQuotationPageContent() {
+  const router = useRouter();
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -345,7 +347,20 @@ function CustomerQuotationPageContent() {
             open={viewModalOpen}
             onOpenChange={setViewModalOpen}
             quotation={viewQuotation}
-            onConverted={loadData}
+            onConverted={async () => {
+              await loadData();
+              if (viewQuotation?.id) {
+                try {
+                  const fresh = await quotationApi.getById(viewQuotation.id);
+                  setViewQuotation(fresh);
+                } catch {
+                  setViewQuotation((prev) => (prev ? { ...prev, status: "ACCEPTED" } : prev));
+                }
+              }
+            }}
+            onConvertToInvoice={(q) => {
+              router.push(`/accounting/customer-invoices?importQuotation=${q.id}`);
+            }}
           />
 
           <AccountingConfirmDialog

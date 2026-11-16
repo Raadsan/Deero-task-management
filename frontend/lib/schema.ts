@@ -14,6 +14,7 @@ export const TaskStatus = {
   pending: "pending",
   in_progress: "in_progress",
   overdue: "overdue",
+  on_hold: "on_hold",
   completed: "completed",
 } as const;
 export type TaskStatus = (typeof TaskStatus)[keyof typeof TaskStatus];

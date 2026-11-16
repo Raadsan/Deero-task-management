@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllTasks, getMyTasks, getTaskById, createTask, updateTask, deleteTask, getMonthlyGraphData, getYearlyGraphData, getDashboardMetrics, getTasksReport } from "./task.controller.js";
+import { getAllTasks, getMyTasks, getTaskById, createTask, updateTask, deleteTask, holdTask, resumeTask, getMonthlyGraphData, getYearlyGraphData, getDashboardMetrics, getTasksReport } from "./task.controller.js";
 
 const router = Router();
 
@@ -12,6 +12,8 @@ router.get("/", getAllTasks);
 router.get("/report/data", getTasksReport);
 router.get("/:id", getTaskById);
 router.post("/", createTask);
+router.post("/:id/hold", holdTask);
+router.post("/:id/resume", resumeTask);
 router.put("/:id", updateTask);
 router.delete("/:id", deleteTask);
 

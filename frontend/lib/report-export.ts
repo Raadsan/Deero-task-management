@@ -60,20 +60,28 @@ export function printReport(
   title: string,
   headers: string[],
   rows: Array<Array<string | number>>,
+  details?: { subtitle?: string; lines?: string[]; sections?: ReportSection[] },
 ) {
-  const htmlRows = rows
-    .map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`)
-    .join("");
+  const sections = details?.sections?.length ? details.sections : [{ title, headers, rows }];
+  const tables = sections.map((section) => {
+    const htmlRows = section.rows
+      .map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`)
+      .join("");
+    return `<h2>${escapeHtml(section.title)}</h2><table><thead><tr>${section.headers.map((header) => `<th>${escapeHtml(header)}</th>`).join("")}</tr></thead><tbody>${htmlRows || `<tr><td colspan="${section.headers.length}">No data found</td></tr>`}</tbody></table>`;
+  }).join("");
+  const lines = [details?.subtitle, ...(details?.lines || [])].filter(Boolean);
   const html = `<!doctype html><html><head><title>${escapeHtml(title)}</title><style>
     body{font-family:Arial,sans-serif;margin:0;padding:28px;color:#0a2744}
-    .header{display:flex;justify-content:space-between;border-bottom:4px solid #1565c0;padding-bottom:16px;margin-bottom:22px}
-    h1{margin:0;font-size:26px}.meta{color:#64748b;font-size:12px;text-align:right}
-    table{width:100%;border-collapse:collapse}th{background:#0a2744;color:white;padding:10px;text-align:left;font-size:11px;text-transform:uppercase}
+    .header{display:flex;justify-content:space-between;border-bottom:4px solid #651210;padding-bottom:16px;margin-bottom:22px}
+    h1{margin:0;font-size:26px}h2{margin:22px 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:.04em}
+    .meta{color:#64748b;font-size:12px;text-align:right}.lines{margin:8px 0 0;color:#475569;font-size:12px}
+    table{width:100%;border-collapse:collapse;margin-bottom:12px}th{background:#651210;color:white;padding:10px;text-align:left;font-size:11px;text-transform:uppercase}
     td{border-bottom:1px solid #e5e7eb;padding:9px 10px;font-size:12px}tr:nth-child(even) td{background:#f8fafc}
   </style></head><body>
-    <div class="header"><div><h1>${escapeHtml(title)}</h1><p style="margin:6px 0 0;color:#64748b;font-size:13px;">Deero Advert Report</p></div>
-    <div class="meta"><strong>Generated</strong><br/>${escapeHtml(new Date().toLocaleString())}<br/><strong>Total Rows</strong><br/>${rows.length}</div></div>
-    <table><thead><tr>${headers.map((h) => `<th>${escapeHtml(h)}</th>`).join("")}</tr></thead><tbody>${htmlRows || `<tr><td colspan="${headers.length}">No data found</td></tr>`}</tbody></table>
+    <div class="header"><div><h1>${escapeHtml(title)}</h1><p style="margin:6px 0 0;color:#64748b;font-size:13px;">Deero Advert Report</p>
+    ${lines.length ? `<p class="lines">${lines.map((line) => escapeHtml(line)).join("<br/>")}</p>` : ""}</div>
+    <div class="meta"><strong>Generated</strong><br/>${escapeHtml(new Date().toLocaleString())}</div></div>
+    ${tables}
     <script>window.onload=()=>window.print()</script>
   </body></html>`;
 
@@ -84,10 +92,18 @@ export function printReport(
   win.document.close();
 }
 
+export type ReportSection = {
+  title: string;
+  headers: string[];
+  rows: Array<Array<string | number>>;
+};
+
 export type PdfReportOptions = {
   subtitle?: string;
+  lines?: string[];
   logoUrl?: string | null;
   primaryColor?: string;
+  sections?: ReportSection[];
 };
 
 function hexToRgb(value?: string): [number, number, number] {
@@ -152,22 +168,55 @@ export async function exportPdf(
   doc.text(title, textX, 42);
   doc.setFontSize(9);
   doc.setTextColor(100);
-  doc.text(options.subtitle || "All time", textX, 58);
-  doc.text(`Generated ${new Date().toLocaleString()}`, textX, 72);
+  const headerLines = [options.subtitle || "All time", ...(options.lines || []), `Generated ${new Date().toLocaleString()}`];
+  headerLines.forEach((line, index) => doc.text(String(line), textX, 58 + index * 12));
+  const ruleY = 58 + headerLines.length * 12 + 8;
   doc.setDrawColor(...primary);
   doc.setLineWidth(2);
-  doc.line(40, 88, 802, 88);
+  doc.line(40, ruleY, 802, ruleY);
 
-  autoTable(doc, {
-    startY: 102,
-    head: [headers],
-    body: rows.map((row) => row.map((cell) => String(cell ?? "—"))),
-    styles: { fontSize: 8, cellPadding: 4 },
-    headStyles: { fillColor: primary, textColor: 255 },
-    alternateRowStyles: { fillColor: [248, 250, 252] },
+  const sections = options.sections?.length ? options.sections : [{ title, headers, rows }];
+  let cursor = ruleY + 16;
+  sections.forEach((section) => {
+    doc.setFontSize(11);
+    doc.setTextColor(30, 41, 59);
+    doc.text(section.title, 40, cursor);
+    autoTable(doc, {
+      startY: cursor + 8,
+      head: [section.headers],
+      body: section.rows.map((row) => row.map((cell) => String(cell ?? "—"))),
+      styles: { fontSize: 8, cellPadding: 4 },
+      headStyles: { fillColor: primary, textColor: 255 },
+      alternateRowStyles: { fillColor: [248, 250, 252] },
+    });
+    cursor = (doc as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? cursor + 40;
+    cursor += 28;
   });
 
   doc.save(filename.endsWith(".pdf") ? filename : `${filename}.pdf`);
+}
+
+export function exportExcel(
+  filename: string,
+  sections: ReportSection[],
+  metadata: Array<[string, string]> = [],
+) {
+  const metaRows = metadata.map(([label, value]) => `<tr><td>${escapeHtml(label)}</td><td>${escapeHtml(value)}</td></tr>`).join("");
+  const tables = sections.map((section) => {
+    const head = section.headers.map((header) => `<th>${escapeHtml(header)}</th>`).join("");
+    const body = section.rows.map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`).join("");
+    return `<h3>${escapeHtml(section.title)}</h3><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
+  }).join("");
+  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"></head><body><table>${metaRows}</table>${tables}</body></html>`;
+  const blob = new Blob([html], { type: "application/vnd.ms-excel;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename.endsWith(".xls") ? filename : `${filename}.xls`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 
 export function inDateRange(

@@ -35,7 +35,9 @@ import {
 } from "@/lib/dashboard-ui";
 import { Task } from "@/lib/types";
 import { authClient } from "@/lib/auth-client";
-import { cn, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
+import { evaluateScheduledTask } from "@/lib/scheduled-task-window";
+import { useNow } from "@/lib/use-now";
+import { cn, formatScheduledTask, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
 import { ArrowRightLeft, Edit, Eye, Gauge, Lock } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -47,6 +49,7 @@ type Props = {
 export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
   const session = authClient.useSession();
   const currentUserId = session.data?.user?.id;
+  const now = useNow();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const [viewOpen, setViewOpen] = useState(false);
@@ -93,7 +96,7 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
                     Task
                   </TableHead>
                   <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Deadline
+                    Schedule
                   </TableHead>
                   <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
                     Progress
@@ -128,7 +131,8 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
                   </TableRow>
                 ) : (
                   paginatedTasks.map((task) => {
-                    const displayStatus = resolveTaskDisplayStatus(task, currentUserId);
+                    const displayStatus = resolveTaskDisplayStatus(task, currentUserId, now);
+                    const progressGate = evaluateScheduledTask(task, now);
 
                     return (
                       <TableRow key={task.id} className={dashboardTableBodyRowClass}>
@@ -142,11 +146,13 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
                           <span className={dashboardTextSecondary}>
-                            {formatTaskDeadline(task.deadline, {
-                              status: task.status,
-                              progress: task.progress,
-                              startDate: task.startDate,
-                            })}
+                            {formatScheduledTask(task)
+                              ? `${formatScheduledTask(task)?.date} · ${formatScheduledTask(task)?.time}`
+                              : formatTaskDeadline(task.deadline, {
+                                  status: task.status,
+                                  progress: task.progress,
+                                  startDate: task.startDate,
+                                })}
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
@@ -211,11 +217,13 @@ export default function MyTasksBoardOwnTable({ tasks, isLoading }: Props) {
                               title={
                                 displayStatus === "transferred"
                                   ? "Task transferred — progress disabled"
-                                  : displayStatus === "overdue"
-                                    ? "Progress locked — edit the task and add extra time"
-                                    : "Update progress"
+                                  : !progressGate.canUpdateProgress
+                                    ? progressGate.reason
+                                    : displayStatus === "overdue"
+                                      ? "Progress locked — edit the task and add extra time"
+                                      : "Update progress"
                               }
-                              disabled={displayStatus === "overdue" || displayStatus === "transferred"}
+                              disabled={displayStatus === "transferred" || !progressGate.canUpdateProgress || (!progressGate.scheduled && displayStatus === "overdue")}
                               onClick={() => {
                                 setSelectedTask(task);
                                 setProgressOpen(true);

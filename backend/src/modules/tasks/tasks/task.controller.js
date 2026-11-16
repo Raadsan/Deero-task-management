@@ -11,6 +11,19 @@ import {
 import {
   normalizeTaskWriteStatus,
 } from "../../../lib/task-status.js";
+import {
+  appendProgressHistory,
+  applyScheduledFeatures,
+  evaluateScheduledTask,
+  isScheduleManager,
+  lockHoldFields,
+  mergeScheduleChange,
+  objectFeatures,
+  pastScheduleError,
+  putTaskOnHold,
+  resumeTaskHold,
+  scheduleChanged,
+} from "../../../lib/scheduled-task-window.js";
 
 export const getAllTasks = async (req, res) => {
   try {
@@ -375,15 +388,60 @@ export const updateTask = async (req, res) => {
     if (noteText.length > 2000) {
       return res.status(400).json({ success: false, error: "Note must be 2000 characters or fewer" });
     }
-    const actorRole = String(scope.user?.role ?? "").toLowerCase().replace(/[_-]+/g, " ").trim();
-    const canWriteNote = originalTask.assgineeId === scope.user?.id || actorRole === "admin" || actorRole === "superadmin";
+    const actorRole = scope.user?.role ?? req.session?.user?.role ?? "";
+    const normalizedRole = String(actorRole).toLowerCase().replace(/[_-]+/g, " ").trim();
+    const canWriteNote = originalTask.assgineeId === scope.user?.id || normalizedRole === "admin" || normalizedRole === "superadmin" || normalizedRole.includes("manager");
     if (noteText && !canWriteNote) {
       return res.status(403).json({ success: false, error: "You do not have permission to add notes to this task" });
     }
+    const manager = isScheduleManager(actorRole);
+    const originalFeatures = objectFeatures(originalTask.features);
+    const incomingFeatures = objectFeatures(features);
+    const scheduleIsChanging = Boolean(incomingFeatures && originalFeatures && scheduleChanged(originalFeatures, incomingFeatures));
+    if (scheduleIsChanging && !manager) {
+      return res.status(403).json({ success: false, error: "Only a manager can reschedule this task" });
+    }
+    if (scheduleIsChanging && originalFeatures?.holdActive) {
+      return res.status(400).json({ success: false, error: "Resume the task before changing its schedule" });
+    }
+
+    let workingFeatures = originalFeatures ? { ...originalFeatures } : null;
+    if (scheduleIsChanging && incomingFeatures) {
+      workingFeatures = lockHoldFields(
+        originalFeatures,
+        mergeScheduleChange(originalFeatures, incomingFeatures, originalTask.status),
+      );
+      const past = pastScheduleError(workingFeatures);
+      if (past) return res.status(400).json({ success: false, error: past });
+    }
+    const workingTask = workingFeatures ? { ...originalTask, features: workingFeatures } : originalTask;
+    const scheduleGate = evaluateScheduledTask(workingTask, new Date());
+    const progressProvided = progress !== undefined && progress !== null && progress !== "";
+    const nextProgressNumber = progressProvided ? Number(progress) : Number(originalTask.progress ?? 0);
+    const progressChanged = progressProvided && nextProgressNumber !== Number(originalTask.progress ?? 0);
+    if (scheduleGate.scheduled && !scheduleGate.canUpdateProgress && (progressChanged || noteText)) {
+      return res.status(403).json({ success: false, error: scheduleGate.reason });
+    }
+    if (scheduleGate.scheduled && progressChanged) {
+      workingFeatures = appendProgressHistory(workingFeatures || {}, {
+        at: new Date().toISOString(),
+        employeeId: scope.user?.id ?? "",
+        employeeName: scope.user?.name ?? req.session?.user?.name ?? "User",
+        previous: Number(originalTask.progress ?? 0),
+        next: nextProgressNumber,
+      });
+    }
+    const scheduledEvaluation = scheduleGate.scheduled
+      ? evaluateScheduledTask({ ...workingTask, features: workingFeatures, progress: nextProgressNumber }, new Date())
+      : scheduleGate;
+    if (scheduleGate.scheduled) {
+      workingFeatures = applyScheduledFeatures(workingFeatures || {}, scheduledEvaluation, new Date());
+    }
+
     const progressNote = noteText ? {
       id: "note-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8),
       text: noteText,
-      progress: Number(progress ?? originalTask.progress ?? 0),
+      progress: scheduleGate.scheduled ? nextProgressNumber : Number(progress ?? originalTask.progress ?? 0),
       authorId: scope.user?.id ?? "",
       authorName: scope.user?.name ?? req.session?.user?.name ?? "User",
       authorRole: scope.user?.role ?? req.session?.user?.role ?? "user",
@@ -415,9 +473,18 @@ export const updateTask = async (req, res) => {
       currentProgress: originalTask.progress,
     });
 
-    if (normalized.error) {
+    if (normalized.error && !scheduledEvaluation.scheduled) {
       return res.status(400).json({ success: false, error: normalized.error });
     }
+
+    const writeStatus = scheduledEvaluation.status === "on_hold"
+      ? (originalTask.status === "pending" ? "pending" : "in_progress")
+      : scheduledEvaluation.scheduled && scheduledEvaluation.status
+        ? scheduledEvaluation.status
+        : normalized.status;
+    const writeProgress = scheduledEvaluation.scheduled
+      ? Math.min(100, Math.max(0, scheduledEvaluation.status === "completed" ? 100 : nextProgressNumber))
+      : normalized.progress;
 
     // Find siblings (tasks created at the same time with same details)
     let siblings = [];
@@ -436,7 +503,7 @@ export const updateTask = async (req, res) => {
       });
     }
 
-    if (!siblings.length) {
+    if (!siblings.length || scheduledEvaluation.scheduled) {
       siblings = [originalTask];
     }
 
@@ -466,17 +533,19 @@ export const updateTask = async (req, res) => {
       const taskData = {
         id: newTaskId,
         description: description ?? originalTask.description,
-        status: normalized.status,
+        status: writeStatus,
         priority: (priority ?? originalTask.priority)?.toLowerCase(),
         department: department ?? originalTask.department ?? "General",
         deadline: deadline !== undefined ? (deadline ? new Date(deadline) : null) : originalTask.deadline,
         extraTimeMinutes: extraTimeMinutes !== undefined ? Math.max(0, Number(extraTimeMinutes) || 0) : originalTask.extraTimeMinutes,
-        completedAt: normalized.status === "completed" ? (completedAt ? new Date(completedAt) : new Date()) : null,
-        progressUpdatedAt: normalized.progress > 0 ? new Date() : null,
-        startDate: startDate !== undefined ? (startDate ? new Date(startDate) : null) : originalTask.startDate,
+        completedAt: writeStatus === "completed" ? (completedAt ? new Date(completedAt) : new Date()) : null,
+        progressUpdatedAt: writeProgress > 0 ? new Date() : null,
+        startDate: scheduledEvaluation.scheduled && scheduledEvaluation.startAt
+          ? scheduledEvaluation.startAt
+          : startDate !== undefined ? (startDate ? new Date(startDate) : null) : originalTask.startDate,
         assgineeId: newAssigneeId,
         supervisor: supervisor ?? originalTask.supervisor ?? "",
-        progress: normalized.progress,
+        progress: writeProgress,
         serviceInformation: serviceInformation ?? originalTask.serviceInformation ?? "",
         isPersonal: originalTask.isPersonal,
         features: features ?? originalTask.features,
@@ -514,7 +583,7 @@ export const updateTask = async (req, res) => {
         where: { id: t.id },
         data: {
           ...(description !== undefined ? { description } : {}),
-          status: normalized.status,
+          status: writeStatus,
           ...(priority !== undefined ? { priority: priority?.toLowerCase() } : {}),
           ...(department !== undefined ? { department } : {}),
           ...(deadline !== undefined
@@ -526,17 +595,25 @@ export const updateTask = async (req, res) => {
           ...(shouldCaptureOriginalDeadline
             ? { originalDeadline: t.deadline }
             : {}),
-          ...(startDate !== undefined
-            ? { startDate: startDate ? new Date(startDate) : null }
-            : {}),
+          ...(scheduledEvaluation.scheduled && scheduledEvaluation.startAt
+            ? { startDate: scheduledEvaluation.startAt }
+            : startDate !== undefined
+              ? { startDate: startDate ? new Date(startDate) : null }
+              : {}),
           ...(supervisor !== undefined ? { supervisor } : {}),
-          progress: normalized.progress,
-          ...(t.progress !== normalized.progress ? { progressUpdatedAt: new Date() } : {}),
-          ...(normalized.status === "completed"
+          progress: writeProgress,
+          ...(t.progress !== writeProgress ? { progressUpdatedAt: new Date() } : {}),
+          ...(writeStatus === "completed"
             ? { completedAt: completedAt ? new Date(completedAt) : (t.completedAt || new Date()) }
             : { completedAt: null }),
           ...(serviceInformation !== undefined ? { serviceInformation } : {}),
-          ...(features !== undefined ? { features } : {}),
+          ...(scheduledEvaluation.scheduled
+            ? { features: lockHoldFields(originalFeatures, workingFeatures) }
+            : features !== undefined && !Array.isArray(features)
+              ? { features: lockHoldFields(originalFeatures, features) }
+              : features !== undefined
+                ? { features }
+                : {}),
           ...(progressNote && t.id === id ? { progressNotes: [...(Array.isArray(t.progressNotes) ? t.progressNotes : []), progressNote] } : {}),
         },
         include: {
@@ -579,17 +656,17 @@ export const updateTask = async (req, res) => {
         }
       }
 
-      if (t.status !== normalized.status) {
+      if (t.status !== writeStatus) {
         try {
           const notifId = Math.random().toString(36).substring(2, 15);
           await prisma.$executeRawUnsafe(
             `INSERT INTO notifications (id, taskId, taskName, assigneeName, deadline, type, userId, isSeen) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
             notifId,
             updated.id,
-            `${(updated.serviceInformation || updated.description || "Task").substring(0, 50)} (${normalized.status.replace("_", " ")})`,
+            `${(updated.serviceInformation || updated.description || "Task").substring(0, 50)} (${writeStatus.replace("_", " ")})`,
             updated.user?.name || "User",
             updated.deadline || new Date(),
-            normalized.status === "in_progress" ? "status-in_progress" : "status-update",
+            writeStatus === "in_progress" ? "status-in_progress" : "status-update",
             updated.assgineeId,
             0,
           );
@@ -790,7 +867,7 @@ export const getTasksReport = async (req, res) => {
       tasks: tasks.map(t => ({
         id: t.id,
         description: t.description,
-        status: t.status,
+        status: evaluateScheduledTask(t).status === "on_hold" ? "ON_HOLD" : t.status,
         priority: t.priority,
         startDate: t.startDate,
         deadline: t.deadline,
@@ -804,4 +881,83 @@ export const getTasksReport = async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
+};
+
+function holdActor(scope, req) {
+  return {
+    userId: scope.user?.id || null,
+    userName: scope.user?.name || req.session?.user?.name || "Manager",
+  };
+}
+
+async function applyHoldChange(scope, taskId, change) {
+  const accessible = await findAccessibleTask(scope, taskId, { user: true });
+  if (!accessible) return { status: 404, body: { success: false, error: "Task not found" } };
+  try {
+    const updated = await prisma.$transaction(async (tx) => {
+      const task = await tx.task.findFirst({ where: { id: accessible.id } });
+      if (!task) {
+        const missing = new Error("Task not found");
+        missing.statusCode = 404;
+        throw missing;
+      }
+      const outcome = change(task);
+      if (!outcome.ok) {
+        const rejected = new Error(outcome.error);
+        rejected.statusCode = outcome.status || 400;
+        throw rejected;
+      }
+      const now = new Date();
+      const evaluation = evaluateScheduledTask({ ...task, features: outcome.features, progress: task.progress }, now);
+      const features = applyScheduledFeatures(outcome.features, evaluation, now);
+      const status = evaluation.status === "on_hold"
+        ? (task.status === "pending" ? "pending" : "in_progress")
+        : evaluation.status || task.status;
+      return tx.task.update({
+        where: { id: task.id },
+        data: {
+          features,
+          status,
+          ...(evaluation.status === "completed" ? { completedAt: task.completedAt || now } : {}),
+        },
+      });
+    });
+    return { status: 200, body: { success: true, data: updated } };
+  } catch (error) {
+    const status = error.statusCode || 500;
+    return { status, body: { success: false, error: error.message } };
+  }
+}
+
+export const holdTask = async (req, res) => {
+  const scope = getScope(req);
+  if (!isScheduleManager(scope.user?.role)) {
+    return res.status(403).json({ success: false, error: "Only a manager can put a task on hold" });
+  }
+  const actor = holdActor(scope, req);
+  const result = await applyHoldChange(scope, req.params.id, (task) => putTaskOnHold(task.features, {
+    reason: req.body?.reason,
+    userId: actor.userId,
+    userName: actor.userName,
+    progress: task.progress,
+    taskStatus: task.status,
+    taskId: task.id,
+    now: new Date(),
+  }));
+  return res.status(result.status).json(result.body);
+};
+
+export const resumeTask = async (req, res) => {
+  const scope = getScope(req);
+  if (!isScheduleManager(scope.user?.role)) {
+    return res.status(403).json({ success: false, error: "Only a manager can resume a task" });
+  }
+  const actor = holdActor(scope, req);
+  const result = await applyHoldChange(scope, req.params.id, (task) => resumeTaskHold(task.features, {
+    userId: actor.userId,
+    userName: actor.userName,
+    taskId: task.id,
+    now: new Date(),
+  }));
+  return res.status(result.status).json(result.body);
 };

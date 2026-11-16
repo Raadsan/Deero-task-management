@@ -2,11 +2,12 @@
 
 import { accountingToast } from '@/lib/accounting-ui';
 
-import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { SquarePen, Eye, Plus, Printer, RefreshCw, Send, Trash2 } from 'lucide-react';
 import { customerReceiptApi, type CustomerReceipt } from '@/lib/api/accounting/receivables/customerReceiptApi';
-import type { CustomerInvoice } from '@/lib/api/accounting/receivables/customerInvoiceApi';
+import { customerInvoiceApi, type CustomerInvoice } from '@/lib/api/accounting/receivables/customerInvoiceApi';
 import { accountingCustomerApi } from '@/lib/api/accounting/receivables/customerApi';
 import { accountingPaymentMethodApi } from '@/lib/api/accounting/configuration/paymentMethodApi';
 
@@ -43,7 +44,9 @@ function allocateSelectedInvoices(invoices: CustomerInvoice[], selectedIds: numb
 }
 
 export default function CustomerReceiptsPage() {
-  
+  const router = useRouter();
+  const importHandledRef = useRef<string | null>(null);
+
   const [receipts, setReceipts] = useState<CustomerReceipt[]>([]);
   const [customers, setCustomers] = useState<Row[]>([]);
   const [invoices, setInvoices] = useState<CustomerInvoice[]>([]);
@@ -75,6 +78,64 @@ export default function CustomerReceiptsPage() {
     } catch (error) { accountingToast(message(error), 'error'); } finally { setLoading(false); }
   }, []);
   useEffect(() => { const timer = window.setTimeout(() => void load(), 0); return () => window.clearTimeout(timer); }, [load]);
+
+  async function openFromInvoice(invoiceId: number) {
+    try {
+      const invoice = await customerInvoiceApi.getById(invoiceId);
+      if (!invoice || invoice.state !== 'posted' || invoice.payment_state === 'paid') {
+        accountingToast('This invoice has no outstanding balance to collect.', 'error');
+        return;
+      }
+      const due = Math.round(Number(invoice.amount_due || 0) * 100) / 100;
+      if (due <= 0.005) {
+        accountingToast('This invoice has no outstanding balance to collect.', 'error');
+        return;
+      }
+      setSelected(null);
+      setViewOnly(false);
+      let outstanding: CustomerInvoice[] = [];
+      try {
+        outstanding = await customerReceiptApi.outstandingInvoices(invoice.customer_id);
+      } catch {
+        outstanding = [];
+      }
+      const merged = [...new Map([...outstanding, invoice].map((row) => [row.id, row])).values()];
+      setInvoices(merged);
+      setForm({
+        ...emptyForm(),
+        customer_id: String(invoice.customer_id),
+        currency_id: invoice.currency_id ? String(invoice.currency_id) : '',
+        amount: String(due),
+        reference: invoice.invoice_number ? `Payment for ${invoice.invoice_number}` : '',
+        allocations: [{ invoice_id: invoice.id, allocated_amount: due }],
+      });
+      setOpen(true);
+    } catch (error) {
+      accountingToast(message(error), 'error');
+    }
+  }
+
+  useEffect(() => {
+    if (loading || typeof window === 'undefined') return;
+    let invoiceId: string | null = null;
+    try {
+      invoiceId = sessionStorage.getItem('receiptFromInvoiceId');
+      if (invoiceId) sessionStorage.removeItem('receiptFromInvoiceId');
+    } catch {
+      invoiceId = null;
+    }
+    if (!invoiceId) {
+      invoiceId = new URLSearchParams(window.location.search).get('fromInvoice');
+    }
+    if (!invoiceId || importHandledRef.current === invoiceId) return;
+    importHandledRef.current = invoiceId;
+    void openFromInvoice(Number(invoiceId)).finally(() => {
+      if (window.location.search.includes('fromInvoice')) {
+        router.replace('/accounting/customer-receipts');
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- open once when arriving from Register Payment
+  }, [loading, router]);
 
   const openInvoices = invoices.filter((invoice) => {
     const alreadyAllocated = form.allocations.some((row) => row.invoice_id === invoice.id);
@@ -279,147 +340,177 @@ export default function CustomerReceiptsPage() {
     <AccountingPageShell section="Receivables" title="Customer Receipts" description="Record customer payments and allocate them to posted invoices.">
       <DashboardDataTable rows={filtered} columns={columns} loading={loading} searchValue={query} onSearchChange={setQuery} searchPlaceholder="Search receipts..." emptyText="No customer receipts found" minWidth="1500px" action={<button onClick={newReceipt} className={btnCreatePage}><Plus className="size-4" /> New receipt</button>} filters={<><select value={status} onChange={(e) => setStatus(e.target.value)} className={dashboardSelectClass}><option value="all">All statuses</option><option value="draft">Draft</option><option value="posted">Posted</option><option value="cancelled">Cancelled</option></select><select value={customerFilter} onChange={(e) => setCustomerFilter(e.target.value)} className={dashboardSelectClass}><option value="all">All customers</option>{customers.map((row) => <option key={row.id} value={row.id}>{String(row.name)}</option>)}</select><select value={methodFilter} onChange={(e) => setMethodFilter(e.target.value)} className={dashboardSelectClass}><option value="all">All methods</option>{methods.map((row) => <option key={row.id} value={row.id}>{String(row.name)}</option>)}</select><input aria-label="From date" title="From date" type="date" value={dateFrom} max={dateTo || undefined} onChange={(e) => setDateFrom(e.target.value)} className={dashboardSelectClass} /><input aria-label="To date" title="To date" type="date" value={dateTo} min={dateFrom || undefined} onChange={(e) => setDateTo(e.target.value)} className={dashboardSelectClass} /><button title="Refresh receipts" onClick={() => void load()} className="flex size-[42px] items-center justify-center rounded-md border border-zinc-200 bg-white"><RefreshCw className="size-4" /></button></>} />
 
-      <Dialog open={open} onOpenChange={setOpen}><DialogContent className="max-h-[94vh] max-w-[calc(100vw-2rem)] overflow-y-auto xl:max-w-[1400px]"><DialogHeader><DialogTitle>{viewOnly ? 'Customer receipt' : selected ? 'Edit customer receipt' : 'Customer receipt'}</DialogTitle><DialogDescription>Enter the receipt details and select the outstanding invoices to pay.</DialogDescription></DialogHeader>
-        <form onSubmit={save} className="space-y-5">
-          <fieldset disabled={viewOnly || saving} className="grid gap-4 md:grid-cols-3">
-            <label className="text-sm font-medium">Customer *<select required value={form.customer_id} onChange={(e) => void selectCustomer(e.target.value)} className="mt-1 h-11 w-full rounded-xl border bg-background px-3"><option value="">Select customer</option>{customers.map((row) => <option key={row.id} value={row.id}>{String(row.name)}</option>)}</select></label>
-            <label className="text-sm font-medium">Receipt date *<input required type="date" value={form.receipt_date} onChange={(e) => setForm({ ...form, receipt_date: e.target.value })} className="mt-1 h-11 w-full rounded-xl border bg-background px-3" /></label>
-            <label className="text-sm font-medium">Amount *<input required min="0.01" step="0.01" type="number" value={form.amount} onChange={(e) => changeReceiptAmount(e.target.value)} className="mt-1 h-11 w-full rounded-xl border bg-background px-3" /></label>
-            <label className="text-sm font-medium">Payment method *<select required value={form.payment_method_id} onChange={(e) => selectPaymentMethod(e.target.value)} className="mt-1 h-11 w-full rounded-xl border bg-background px-3"><option value="">Select method</option>{methods.filter((row) => row.is_active !== false && row.gl_account_id && ['inbound', 'both'].includes(String(row.payment_type))).map((row) => <option key={row.id} value={row.id}>{String(row.name)}</option>)}</select></label>
-            <label className="text-sm font-medium">Reference{Boolean(methods.find((row) => row.id === Number(form.payment_method_id))?.requires_reference) && <span className="text-rose-500"> *</span>}<input required={Boolean(methods.find((row) => row.id === Number(form.payment_method_id))?.requires_reference)} value={form.reference} onChange={(e) => setForm({ ...form, reference: e.target.value })} placeholder={Boolean(methods.find((row) => row.id === Number(form.payment_method_id))?.requires_reference) ? 'e.g. SOM-TRX-123456' : 'Optional'} className="mt-1 h-11 w-full rounded-xl border bg-background px-3" /></label>
-            <label className="text-sm font-medium md:col-span-3">Notes<textarea value={form.memo} onChange={(e) => setForm({ ...form, memo: e.target.value })} className="mt-1 min-h-24 w-full rounded-xl border bg-background p-3" /></label>
-          </fieldset>
-          <div className="rounded-2xl border"><div className="flex items-center justify-between gap-4 border-b p-4"><div><h3 className="font-semibold">Outstanding Invoices</h3><p className="text-xs text-muted-foreground">Select invoices, then control each allocation manually.</p></div>{openInvoices.length > 0 && <button disabled={viewOnly || !form.amount || !form.allocations.length} type="button" onClick={autoAllocate} className="rounded-lg border px-3 py-2 text-sm font-medium disabled:opacity-50">Recalculate</button>}</div>
-            <div className="max-h-64 overflow-auto">
-              {!form.customer_id ? (
-                <p className="p-6 text-center text-sm text-muted-foreground">Select a customer first.</p>
-              ) : openInvoices.length === 0 ? (
-                <p className="p-6 text-center text-sm text-muted-foreground">No outstanding posted invoices found for this customer.</p>
-              ) : (
-                <table className="w-full min-w-[900px] border-collapse text-sm">
-                  <thead>
-                    <tr className="bg-muted/40 text-xs font-semibold">
-                      <th className="w-12 px-3 py-2 text-left font-semibold">Select</th>
-                      <th className="min-w-[160px] px-3 py-2 text-left font-semibold">Invoice</th>
-                      <th className="w-[120px] px-3 py-2 text-right font-semibold">Invoice Total</th>
-                      <th className="w-[120px] px-3 py-2 text-right font-semibold">Previously Paid</th>
-                      <th className="w-[130px] px-3 py-2 text-right font-semibold">Remaining Balance</th>
-                      <th className="w-[120px] px-3 py-2 text-left font-semibold">Status</th>
-                      <th className="w-[140px] px-3 py-2 text-right font-semibold">Amount to Receive</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {openInvoices.map((invoice) => {
-                      const allocation = form.allocations.find((row) => row.invoice_id === invoice.id);
-                      const isSelected = Boolean(allocation);
-                      const transactionOutstanding =
-                        Number(invoice.amount_due) +
-                        (viewOnly && selected?.state === 'posted' && allocation ? Number(allocation.allocated_amount) : 0);
-                      const previouslyPaid = Number(
-                        (invoice as any).previously_paid ?? Number(invoice.paid_amount || 0)
-                      );
-                      return (
-                        <tr key={invoice.id} className="border-t">
-                          <td className="px-3 py-3 align-middle">
-                            <input
-                              aria-label={`Select ${invoice.invoice_number}`}
-                              disabled={viewOnly}
-                              type="checkbox"
-                              checked={isSelected}
-                              onChange={(event) => toggleInvoice(invoice, event.target.checked)}
-                              className="size-4 accent-primary"
-                            />
-                          </td>
-                          <td className="px-3 py-3 align-middle">
-                            <b>{invoice.invoice_number}</b>
-                            <p className="text-xs text-muted-foreground">
-                              Invoice {dateValue(invoice.invoice_date)} · Due {dateValue(invoice.due_date)}
-                            </p>
-                          </td>
-                          <td className="px-3 py-3 text-right align-middle">
-                            <b>{money(invoice.amount_total, invoice.currencies?.code)}</b>
-                          </td>
-                          <td className="px-3 py-3 text-right align-middle">
-                            <b>{money(previouslyPaid)}</b>
-                          </td>
-                          <td className="px-3 py-3 text-right align-middle">
-                            <b>{money(transactionOutstanding)}</b>
-                          </td>
-                          <td className="px-3 py-3 align-middle capitalize">
-                            {invoice.payment_state === 'partial'
-                              ? 'Partially Paid'
-                              : invoice.payment_state === 'paid'
-                              ? 'Paid'
-                              : 'Unpaid'}
-                          </td>
-                          <td className="px-3 py-3 text-right align-middle">
-                            <input
-                              aria-label={`Allocate to ${invoice.invoice_number}`}
-                              disabled={viewOnly || !isSelected}
-                              type="number"
-                              min="0"
-                              max={transactionOutstanding}
-                              step=".01"
-                              value={allocation?.allocated_amount ?? ''}
-                              onChange={(event) => setAllocation(invoice, event.target.value)}
-                              className="ml-auto h-10 w-32 rounded-lg border px-3 text-right disabled:bg-muted"
-                              placeholder="0.00"
-                            />
-                          </td>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="flex max-h-[88vh] w-[min(100vw-2rem,52rem)] max-w-[52rem] flex-col gap-0 overflow-hidden p-0 sm:max-w-[52rem]">
+          <DialogHeader className="shrink-0 border-b border-zinc-100 px-5 py-4 pr-12 text-left sm:px-6">
+            <DialogTitle>{viewOnly ? 'Customer receipt' : selected ? 'Edit customer receipt' : 'Customer receipt'}</DialogTitle>
+            <DialogDescription>Enter the receipt details and select the outstanding invoices to pay.</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={save} className="flex min-h-0 flex-1 flex-col">
+            <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-4 sm:px-6">
+              <fieldset disabled={viewOnly || saving} className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <label className="text-sm font-medium">Customer *<select required value={form.customer_id} onChange={(e) => void selectCustomer(e.target.value)} className="mt-1 h-10 w-full rounded-lg border bg-background px-3"><option value="">Select customer</option>{customers.map((row) => <option key={row.id} value={row.id}>{String(row.name)}</option>)}</select></label>
+                <label className="text-sm font-medium">Receipt date *<input required type="date" value={form.receipt_date} onChange={(e) => setForm({ ...form, receipt_date: e.target.value })} className="mt-1 h-10 w-full rounded-lg border bg-background px-3" /></label>
+                <label className="text-sm font-medium">Amount *<input required min="0.01" step="0.01" type="number" value={form.amount} onChange={(e) => changeReceiptAmount(e.target.value)} className="mt-1 h-10 w-full rounded-lg border bg-background px-3" /></label>
+                <label className="text-sm font-medium">Payment method *<select required value={form.payment_method_id} onChange={(e) => selectPaymentMethod(e.target.value)} className="mt-1 h-10 w-full rounded-lg border bg-background px-3"><option value="">Select method</option>{methods.filter((row) => row.is_active !== false && row.gl_account_id && ['inbound', 'both'].includes(String(row.payment_type))).map((row) => <option key={row.id} value={row.id}>{String(row.name)}</option>)}</select></label>
+                <label className="text-sm font-medium sm:col-span-2 lg:col-span-2">Reference{Boolean(methods.find((row) => row.id === Number(form.payment_method_id))?.requires_reference) && <span className="text-rose-500"> *</span>}<input required={Boolean(methods.find((row) => row.id === Number(form.payment_method_id))?.requires_reference)} value={form.reference} onChange={(e) => setForm({ ...form, reference: e.target.value })} placeholder={Boolean(methods.find((row) => row.id === Number(form.payment_method_id))?.requires_reference) ? 'e.g. SOM-TRX-123456' : 'Optional'} className="mt-1 h-10 w-full rounded-lg border bg-background px-3" /></label>
+                <label className="text-sm font-medium sm:col-span-2 lg:col-span-3">Notes<textarea value={form.memo} onChange={(e) => setForm({ ...form, memo: e.target.value })} rows={2} className="mt-1 w-full rounded-lg border bg-background px-3 py-2" /></label>
+              </fieldset>
+
+              <div className="overflow-hidden rounded-xl border">
+                <div className="flex items-center justify-between gap-3 border-b bg-zinc-50/80 px-4 py-3">
+                  <div>
+                    <h3 className="text-sm font-semibold">Outstanding Invoices</h3>
+                    <p className="text-xs text-muted-foreground">Select invoices, then control each allocation manually.</p>
+                  </div>
+                  {openInvoices.length > 0 && (
+                    <button disabled={viewOnly || !form.amount || !form.allocations.length} type="button" onClick={autoAllocate} className="shrink-0 rounded-lg border bg-white px-3 py-1.5 text-xs font-medium disabled:opacity-50">
+                      Recalculate
+                    </button>
+                  )}
+                </div>
+                <div className="max-h-52 overflow-auto">
+                  {!form.customer_id ? (
+                    <p className="px-4 py-5 text-center text-sm text-muted-foreground">Select a customer first.</p>
+                  ) : openInvoices.length === 0 ? (
+                    <p className="px-4 py-5 text-center text-sm text-muted-foreground">No outstanding posted invoices found for this customer.</p>
+                  ) : (
+                    <table className="w-full border-collapse text-sm">
+                      <thead>
+                        <tr className="bg-muted/40 text-[11px] font-semibold uppercase tracking-wide text-zinc-500">
+                          <th className="w-10 px-3 py-2 text-left">Sel</th>
+                          <th className="px-3 py-2 text-left">Invoice</th>
+                          <th className="px-3 py-2 text-right">Total</th>
+                          <th className="hidden px-3 py-2 text-right sm:table-cell">Paid</th>
+                          <th className="px-3 py-2 text-right">Balance</th>
+                          <th className="hidden px-3 py-2 text-left md:table-cell">Status</th>
+                          <th className="px-3 py-2 text-right">Receive</th>
                         </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              )}
+                      </thead>
+                      <tbody>
+                        {openInvoices.map((invoice) => {
+                          const allocation = form.allocations.find((row) => row.invoice_id === invoice.id);
+                          const isSelected = Boolean(allocation);
+                          const transactionOutstanding =
+                            Number(invoice.amount_due) +
+                            (viewOnly && selected?.state === 'posted' && allocation ? Number(allocation.allocated_amount) : 0);
+                          const previouslyPaid = Number(
+                            (invoice as any).previously_paid ?? Number(invoice.paid_amount || 0)
+                          );
+                          return (
+                            <tr key={invoice.id} className="border-t">
+                              <td className="px-3 py-2.5 align-middle">
+                                <input
+                                  aria-label={`Select ${invoice.invoice_number}`}
+                                  disabled={viewOnly}
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={(event) => toggleInvoice(invoice, event.target.checked)}
+                                  className="size-4 accent-primary"
+                                />
+                              </td>
+                              <td className="px-3 py-2.5 align-middle">
+                                <b className="text-xs sm:text-sm">{invoice.invoice_number}</b>
+                                <p className="text-[11px] text-muted-foreground">{dateValue(invoice.invoice_date)}</p>
+                              </td>
+                              <td className="px-3 py-2.5 text-right align-middle text-xs sm:text-sm">
+                                <b>{money(invoice.amount_total, invoice.currencies?.code)}</b>
+                              </td>
+                              <td className="hidden px-3 py-2.5 text-right align-middle text-xs sm:table-cell sm:text-sm">
+                                <b>{money(previouslyPaid)}</b>
+                              </td>
+                              <td className="px-3 py-2.5 text-right align-middle text-xs sm:text-sm">
+                                <b>{money(transactionOutstanding)}</b>
+                              </td>
+                              <td className="hidden px-3 py-2.5 align-middle text-xs capitalize md:table-cell">
+                                {invoice.payment_state === 'partial'
+                                  ? 'Partial'
+                                  : invoice.payment_state === 'paid'
+                                  ? 'Paid'
+                                  : 'Unpaid'}
+                              </td>
+                              <td className="px-3 py-2.5 text-right align-middle">
+                                <input
+                                  aria-label={`Allocate to ${invoice.invoice_number}`}
+                                  disabled={viewOnly || !isSelected}
+                                  type="number"
+                                  min="0"
+                                  max={transactionOutstanding}
+                                  step=".01"
+                                  value={allocation?.allocated_amount ?? ''}
+                                  onChange={(event) => setAllocation(invoice, event.target.value)}
+                                  className="ml-auto h-9 w-[5.5rem] rounded-lg border px-2 text-right text-sm disabled:bg-muted"
+                                  placeholder="0.00"
+                                />
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              </div>
+
+              {allocationInvalid && <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">The allocated amount cannot exceed the invoice outstanding balance or the receipt amount.</div>}
+              {!allocationInvalid && unallocated > 0.005 && <div className="rounded-lg border border-secondary/30 bg-secondary/10 px-3 py-2 text-sm text-secondary">Unallocated amount will be recorded as a customer advance (credit Customer Advances 2140).</div>}
+
+              <div className="rounded-xl border px-4 py-3 sm:ml-auto sm:w-72">
+                <h3 className="mb-2 text-sm font-semibold">Summary</h3>
+                <div className="space-y-1.5 text-sm">
+                  <div className="flex justify-between gap-4"><span className="text-muted-foreground">Receipt Amount</span><b>{money(form.amount)}</b></div>
+                  <div className="flex justify-between gap-4"><span className="text-muted-foreground">Outstanding Before</span><b>{money(selectedOutstandingBefore)}</b></div>
+                  <div className="flex justify-between gap-4"><span className="text-muted-foreground">Allocated</span><b>{money(allocated)}</b></div>
+                  <div className={`flex justify-between gap-4 ${unallocated < -0.005 ? 'text-rose-600' : ''}`}><span className="text-muted-foreground">{unallocated > 0.005 ? 'Advance / Unallocated' : 'Remaining'}</span><b>{money(unallocated)}</b></div>
+                  <div className="flex justify-between gap-4 border-t pt-2"><span className="font-medium">Outstanding After</span><b>{money(outstandingAfterPayment)}</b></div>
+                </div>
+              </div>
             </div>
-          </div>
-          {allocationInvalid && <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">The allocated amount cannot exceed the invoice outstanding balance or the receipt amount.</div>}
-          {!allocationInvalid && unallocated > 0.005 && <div className="rounded-xl border border-secondary/30 bg-secondary/10 p-3 text-sm text-secondary">Unallocated amount will be recorded as a customer advance (credit Customer Advances 2140). It will not debit Accounts Receivable until applied to an invoice.</div>}
-          <div className="ml-auto w-full rounded-2xl border p-4 sm:max-w-sm"><h3 className="mb-3 font-semibold">Summary</h3><div className="space-y-2 text-sm"><div className="flex justify-between"><span>Receipt Amount</span><b>{money(form.amount)}</b></div><div className="flex justify-between"><span>Outstanding Before</span><b>{money(selectedOutstandingBefore)}</b></div><div className="flex justify-between"><span>Allocated</span><b>{money(allocated)}</b></div><div className={`flex justify-between ${unallocated < -0.005 ? 'text-rose-600' : ''}`}><span>{unallocated > 0.005 ? 'Advance / Unallocated' : 'Remaining'}</span><b>{money(unallocated)}</b></div><div className="flex justify-between border-t pt-2"><span>Outstanding After Payment</span><b>{money(outstandingAfterPayment)}</b></div></div></div>
-          <DialogFooter className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              {form.customer_id && form.amount && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    const cust = customers.find((c) => String(c.id) === String(form.customer_id));
-                    const previewReceipt: CustomerReceipt = {
-                      id: selected?.id || 0,
-                      receipt_number: selected?.receipt_number || '#DADVRV-PREVIEW',
-                      customer_id: Number(form.customer_id),
-                      journal_id: Number(form.journal_id) || 0,
-                      payment_method_id: Number(form.payment_method_id) || 0,
-                      receipt_date: form.receipt_date,
-                      currency_id: Number(form.currency_id) || 1,
-                      exchange_rate: Number(form.exchange_rate) || 1,
-                      amount: Number(form.amount) || 0,
-                      unallocated_amount: unallocated,
-                      reference: form.reference,
-                      memo: form.memo,
-                      state: selected?.state || 'draft',
-                      customers: cust ? { id: Number(cust.id), name: String(cust.name), phone: String(cust.phone || '') } : undefined,
-                      currencies: { id: 1, code: 'USD', symbol: '$' },
-                    };
-                    setViewTarget(previewReceipt);
-                    setViewOpen(true);
-                  }}
-                  className="rounded-xl border border-secondary/30 bg-secondary/10 px-4 py-2.5 text-xs font-semibold text-secondary hover:bg-secondary/20"
-                >
-                  Preview Voucher
-                </button>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              <button type="button" onClick={() => setOpen(false)} className="rounded-xl border px-5 py-2.5">{viewOnly ? 'Close' : 'Cancel'}</button>
-              {!viewOnly && <>
-                <button disabled={saving || allocationInvalid || allocated <= 0.005} className="rounded-xl border px-5 py-2.5 font-semibold disabled:opacity-50">{saving ? 'Saving…' : 'Save Draft'}</button>
-                <button type="button" disabled={saving || allocationInvalid || allocated <= 0.005} onClick={(event) => { if (event.currentTarget.form?.reportValidity()) void save(undefined, true); }} className="rounded-xl bg-primary px-5 py-2.5 font-semibold text-primary-foreground disabled:opacity-50">Post Receipt</button>
-              </>}
-            </div>
-          </DialogFooter>
-        </form>
-      </DialogContent></Dialog>
+
+            <DialogFooter className="shrink-0 flex-row flex-wrap items-center justify-between gap-2 border-t border-zinc-100 px-5 py-3 sm:px-6">
+              <div className="flex items-center gap-2">
+                {form.customer_id && form.amount && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const cust = customers.find((c) => String(c.id) === String(form.customer_id));
+                      const previewReceipt: CustomerReceipt = {
+                        id: selected?.id || 0,
+                        receipt_number: selected?.receipt_number || '#DADVRV-PREVIEW',
+                        customer_id: Number(form.customer_id),
+                        journal_id: Number(form.journal_id) || 0,
+                        payment_method_id: Number(form.payment_method_id) || 0,
+                        receipt_date: form.receipt_date,
+                        currency_id: Number(form.currency_id) || 1,
+                        exchange_rate: Number(form.exchange_rate) || 1,
+                        amount: Number(form.amount) || 0,
+                        unallocated_amount: unallocated,
+                        reference: form.reference,
+                        memo: form.memo,
+                        state: selected?.state || 'draft',
+                        customers: cust ? { id: Number(cust.id), name: String(cust.name), phone: String(cust.phone || '') } : undefined,
+                        currencies: { id: 1, code: 'USD', symbol: '$' },
+                      };
+                      setViewTarget(previewReceipt);
+                      setViewOpen(true);
+                    }}
+                    className="rounded-lg border border-secondary/30 bg-secondary/10 px-3 py-2 text-xs font-semibold text-secondary hover:bg-secondary/20"
+                  >
+                    Preview Voucher
+                  </button>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <button type="button" onClick={() => setOpen(false)} className="rounded-lg border px-4 py-2 text-sm">{viewOnly ? 'Close' : 'Cancel'}</button>
+                {!viewOnly && <>
+                  <button disabled={saving || allocationInvalid || allocated <= 0.005} className="rounded-lg border px-4 py-2 text-sm font-semibold disabled:opacity-50">{saving ? 'Saving…' : 'Save Draft'}</button>
+                  <button type="button" disabled={saving || allocationInvalid || allocated <= 0.005} onClick={(event) => { if (event.currentTarget.form?.reportValidity()) void save(undefined, true); }} className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50">Post Receipt</button>
+                </>}
+              </div>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
       <Dialog open={Boolean(postTarget)} onOpenChange={(value) => !saving && !value && setPostTarget(null)}><DialogContent className="sm:max-w-lg"><DialogHeader><div className="mb-2 flex size-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700"><Send className="size-5" /></div><DialogTitle>Post Customer Receipt</DialogTitle><DialogDescription>Confirm the receipt before updating the selected invoice balances.</DialogDescription></DialogHeader>{postTarget && <div className="grid gap-3 rounded-xl border bg-muted/20 p-4 text-sm sm:grid-cols-2"><div><p className="text-xs text-muted-foreground">Receipt</p><p className="mt-1 font-semibold">{postTarget.receipt_number}</p></div><div><p className="text-xs text-muted-foreground">Customer</p><p className="mt-1 font-semibold">{postTarget.customers?.name || '—'}</p></div><div><p className="text-xs text-muted-foreground">Receipt Date</p><p className="mt-1 font-semibold">{dateValue(postTarget.receipt_date)}</p></div><div><p className="text-xs text-muted-foreground">Amount</p><p className="mt-1 font-semibold">{money(postTarget.amount, postTarget.currencies?.code)}</p></div></div>}<div className="rounded-xl border border-secondary/30 bg-secondary/10 p-3 text-xs text-secondary">Posting updates invoice balances and locks this receipt from further editing.</div><DialogFooter><button type="button" disabled={saving} onClick={() => setPostTarget(null)} className="h-10 rounded-xl border px-5 font-semibold disabled:opacity-50">Cancel</button><button type="button" disabled={saving || !postTarget} onClick={() => postTarget && void post(postTarget)} className="h-10 rounded-xl bg-primary px-5 font-semibold text-primary-foreground disabled:opacity-50">{saving ? 'Posting…' : 'Post Receipt'}</button></DialogFooter></DialogContent></Dialog>
       <AccountingConfirmDialog open={Boolean(deleteTarget)} title="Delete Customer Receipt" description="Confirm removal of this draft customer receipt." confirmLabel="Delete Receipt" destructive busy={saving} details={deleteTarget && <div className="flex justify-between"><span className="text-muted-foreground">Receipt</span><b>{deleteTarget.receipt_number}</b></div>} onCancel={() => setDeleteTarget(null)} onConfirm={() => deleteTarget && void remove(deleteTarget)} />
       <ReceiptViewModal

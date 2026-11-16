@@ -1,6 +1,5 @@
 "use client";
 
-import ClientCompleteServiceModal from "@/components/clients/ClientCompleteServiceModal";
 import ClientFormModal from "@/components/clients/ClientFormModal";
 import ClientViewModal from "@/components/clients/ClientViewModal";
 import ConfirmDialog from "@/components/Shared/ConfirmDialog";
@@ -14,9 +13,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { deleteClientById, updateClientServiceStatus } from "@/lib/apis/clientApi";
+import { deleteClientById } from "@/lib/apis/clientApi";
 import { getAllClientsClient } from "@/lib/apis/readApi";
-import { getTaskFormBranchOptions } from "@/lib/apis/sharedApi";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {
   actionBtnDelete,
@@ -26,7 +24,6 @@ import {
   dashboardCardClass,
   dashboardLabelClass,
   dashboardPaginationClass,
-  dashboardStatusBadgeClass,
   dashboardTableBodyRowClass,
   dashboardTableCellClass,
   dashboardTableHeadClass,
@@ -36,12 +33,11 @@ import {
   dashboardTableWrapClass,
   dashboardTextPrimary,
   dashboardTextSecondary,
-  getTaskStatusBadgeClass,
 } from "@/lib/dashboard-ui";
-import { cn, formatTexts } from "@/lib/utils";
+import { cn, formatClientDisplayId, formatTexts } from "@/lib/utils";
 import { AllClients } from "@/lib/types";
 import { Edit, Eye, Plus, Search, Trash2 } from "lucide-react";
-import { useEffect, useMemo, useState, useTransition, type ReactNode } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import useSWR, { useSWRConfig } from "swr";
 import toast from "react-hot-toast";
 
@@ -51,107 +47,19 @@ const compactSelectClass =
 const compactInputClass =
   "h-9 w-full rounded-md border border-zinc-200 bg-zinc-50 pl-9 pr-3 text-sm text-zinc-600 outline-none focus:border-primary focus:ring-1 focus:ring-primary/10";
 
-function formatClientId(id: unknown) {
-  const rawId = String(id ?? "");
-  if (/^SUB-\d+$/i.test(rawId)) return rawId.toUpperCase();
-  const sequence = rawId.match(/(\d{5})$/)?.[1];
-  if (!sequence) return rawId || "N/A";
-  return `SUB-${String(Number(sequence)).padStart(3, "0")}`;
+function text(value?: string | null) {
+  const trimmed = String(value || "").trim();
+  return trimmed || "—";
 }
 
-type ClientAgreementStatus = {
-  agreementId: string;
-  serviceName: string;
-  subServiceName: string;
-  serviceStatus: "pending" | "completed";
-  portfolioId?: string | null;
-  branchName?: string;
-  base?: number;
-  finalAmount?: number;
-  vatAmount?: number;
-};
-
-function filterAgreements(
-  agreements: ClientAgreementStatus[],
-  statusFilter: string,
-  branchFilter: string,
-) {
-  return agreements.filter((agreement) => {
-    if (branchFilter !== "all" && agreement.portfolioId !== branchFilter) {
-      return false;
-    }
-    if (statusFilter === "pending" && agreement.serviceStatus !== "pending") {
-      return false;
-    }
-    if (statusFilter === "completed" && agreement.serviceStatus !== "completed") {
-      return false;
-    }
-    return true;
-  });
+function money(value?: number | null) {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(Number(value || 0));
 }
 
-function AgreementStack({
-  agreements,
-  renderItem,
-}: {
-  agreements: ClientAgreementStatus[];
-  renderItem: (agreement: ClientAgreementStatus) => ReactNode;
-}) {
-  if (!agreements.length) {
-    return <span className={dashboardTextSecondary}>—</span>;
-  }
-
-  return (
-    <div className="flex flex-col gap-2">
-      {agreements.map((agreement) => (
-        <div key={agreement.agreementId} className="min-h-8 flex items-center">
-          {renderItem(agreement)}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function ClientServiceStatusCell({
-  agreements,
-  onMarkComplete,
-  updatingId,
-}: {
-  agreements: ClientAgreementStatus[];
-  onMarkComplete: (agreement: ClientAgreementStatus) => void;
-  updatingId?: string;
-}) {
-  return (
-    <AgreementStack
-      agreements={agreements}
-      renderItem={(agreement) =>
-        agreement.serviceStatus === "completed" ? (
-          <span
-            className={cn(
-              dashboardStatusBadgeClass,
-              getTaskStatusBadgeClass("completed"),
-            )}
-          >
-            Complete
-          </span>
-        ) : (
-          <Button
-            type="button"
-            size="sm"
-            disabled={updatingId === agreement.agreementId}
-            onClick={() => onMarkComplete(agreement)}
-            className={cn(
-              "h-8 px-3 text-[11px] font-bold uppercase tracking-wider",
-              dashboardStatusBadgeClass,
-              getTaskStatusBadgeClass("pending"),
-            )}
-          >
-            Pending
-          </Button>
-        )
-      }
-    />
-  );
+function balanceTypeLabel(value?: string | null) {
+  if (value === "CUSTOMER_OWES") return "Customer Owes Us";
+  if (value === "WE_OWE") return "We Owe Customer";
+  return "—";
 }
 
 export default function ClientsManagementPage() {
@@ -160,82 +68,55 @@ export default function ClientsManagementPage() {
     getAllClientsClient,
   );
   const { mutate: globalMutate } = useSWRConfig();
-  const [updatingAgreementId, setUpdatingAgreementId] = useState<string>();
-  const [isUpdatingStatus, startStatusUpdate] = useTransition();
-  const [completeTarget, setCompleteTarget] = useState<{
-    clientName: string;
-    agreement: ClientAgreementStatus;
-  } | null>(null);
+
   const [deleteTarget, setDeleteTarget] = useState<{
     id: string;
     name: string;
   } | null>(null);
   const [isDeleting, startDelete] = useTransition();
 
-  const { data: branchOptionsRes } = useSWR(
-    "client-list-portfolios",
-    getTaskFormBranchOptions,
-  );
-  const branchOptions = branchOptionsRes?.data?.portfolios ?? [];
-  const singleBranch = branchOptionsRes?.data?.singleBranch ?? false;
-
-  const clients = (clientsRes?.data as AllClients[]) ?? [];
+  const clients = useMemo(() => {
+    return ((clientsRes?.data as AllClients[]) ?? []).filter((c) => !c.isDraft);
+  }, [clientsRes?.data]);
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [branchFilter, setBranchFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [formOpen, setFormOpen] = useState(false);
   const [formMode, setFormMode] = useState<"create" | "edit">("create");
   const [editingClientId, setEditingClientId] = useState<string | undefined>();
-  const [draftClientId, setDraftClientId] = useState<string | undefined>();
   const [viewClientId, setViewClientId] = useState<string | undefined>();
   const [viewOpen, setViewOpen] = useState(false);
 
   const filteredClients = useMemo(() => {
-    const query = search.toLowerCase();
+    const query = search.trim().toLowerCase();
     return clients.filter((client) => {
-      const institution = client.institution?.toLowerCase() ?? "";
+      const clientName = client.institution?.toLowerCase() ?? "";
+      const contactPerson = (client as AllClients & { contactPerson?: string }).contactPerson?.toLowerCase() ?? "";
       const email = client.email?.toLowerCase() ?? "";
       const phone = client.phone?.toLowerCase() ?? "";
-      const clientId = String(client.id ?? "").toLowerCase();
-      const isDraft = Boolean((client as AllClients).isDraft);
-      const agreements = (client as AllClients).serviceAgreements ?? [];
-      const visibleAgreements = filterAgreements(
-        agreements,
-        statusFilter,
-        branchFilter,
-      );
+      const clientCode = formatClientDisplayId(client).toLowerCase();
+      const internalId = String(client.id ?? "").toLowerCase();
 
       const matchesSearch =
         !query ||
-        institution.includes(query) ||
+        clientName.includes(query) ||
+        contactPerson.includes(query) ||
         email.includes(query) ||
         phone.includes(query) ||
-        clientId.includes(query);
+        clientCode.includes(query) ||
+        internalId.includes(query);
 
-      if (isDraft) {
-        return (
-          matchesSearch &&
-          (statusFilter === "all" || statusFilter === "draft") &&
-          (branchFilter === "all" || (client as AllClients & { portfolioId?: string }).portfolioId === branchFilter)
-        );
-      }
+      const isActive = client.isActive !== false;
+      const matchesStatus =
+        statusFilter === "all" ||
+        (statusFilter === "active" && isActive) ||
+        (statusFilter === "inactive" && !isActive);
 
-      const matchesFilters =
-        (statusFilter === "all" && branchFilter === "all") ||
-        visibleAgreements.length > 0;
-
-      return matchesSearch && matchesFilters;
+      return matchesSearch && matchesStatus;
     });
-  }, [clients, search, statusFilter, branchFilter]);
-
-  useEffect(() => {
-    if (branchOptionsRes?.data?.defaultBranchId && singleBranch) {
-      setBranchFilter(branchOptionsRes.data.defaultBranchId);
-    }
-  }, [branchOptionsRes?.data?.defaultBranchId, singleBranch]);
+  }, [clients, search, statusFilter]);
 
   const totalPages = Math.ceil(filteredClients.length / pageSize) || 1;
   const paginatedClients = useMemo(() => {
@@ -245,7 +126,7 @@ export default function ClientsManagementPage() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, pageSize, statusFilter, branchFilter]);
+  }, [search, pageSize, statusFilter]);
 
   const deleteDescription = formatTexts({
     type: "clients",
@@ -259,56 +140,18 @@ export default function ClientsManagementPage() {
   function openCreateModal() {
     setFormMode("create");
     setEditingClientId(undefined);
-    setDraftClientId(undefined);
-    setFormOpen(true);
-  }
-
-  function openContinueDraft(clientId: string) {
-    setFormMode("create");
-    setEditingClientId(undefined);
-    setDraftClientId(clientId);
     setFormOpen(true);
   }
 
   function openEditModal(clientId: string) {
     setFormMode("edit");
     setEditingClientId(clientId);
-    setDraftClientId(undefined);
     setFormOpen(true);
   }
 
   function openViewModal(clientId: string) {
     setViewClientId(clientId);
     setViewOpen(true);
-  }
-
-  function openCompleteModal(
-    clientName: string,
-    agreement: ClientAgreementStatus,
-  ) {
-    setCompleteTarget({ clientName, agreement });
-  }
-
-  function confirmMarkComplete() {
-    if (!completeTarget) return;
-
-    startStatusUpdate(async () => {
-      setUpdatingAgreementId(completeTarget.agreement.agreementId);
-      const result = await updateClientServiceStatus({
-        agreementId: completeTarget.agreement.agreementId,
-        serviceStatus: "completed",
-      });
-      setUpdatingAgreementId(undefined);
-
-      if (result.success) {
-        toast.success("Service marked as complete");
-        setCompleteTarget(null);
-        await mutate();
-        await globalMutate(SWR_CACH_KEYS.clients.key);
-        return;
-      }
-      toast.error(result.errors?.message ?? "Failed to update service status");
-    });
   }
 
   function confirmDeleteClient() {
@@ -318,7 +161,7 @@ export default function ClientsManagementPage() {
       const result = await deleteClientById(deleteTarget.id);
 
       if (result.success) {
-        toast.success("Successfully deleted the client");
+        toast.success("Client deleted successfully");
         setDeleteTarget(null);
         await mutate();
         await globalMutate(SWR_CACH_KEYS.clients.key);
@@ -355,37 +198,19 @@ export default function ClientsManagementPage() {
               onChange={(e) => setStatusFilter(e.target.value)}
               className={cn("min-w-[7rem]", compactSelectClass)}
             >
-              <option value="all">All statuses</option>
-              <option value="draft">Draft</option>
-              <option value="pending">Pending</option>
-              <option value="completed">Complete</option>
-            </select>
-          </div>
-
-          <div className={cn("flex items-center gap-2", dashboardLabelClass)}>
-            <span>Portfolio</span>
-            <select
-              value={branchFilter}
-              onChange={(e) => setBranchFilter(e.target.value)}
-              disabled={singleBranch}
-              className={cn("min-w-[9rem]", compactSelectClass)}
-            >
-              <option value="all">All portfolios</option>
-              {branchOptions.map((portfolio) => (
-                <option key={portfolio.id} value={portfolio.id}>
-                  {portfolio.name}
-                </option>
-              ))}
+              <option value="all">All</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
             </select>
           </div>
 
           <div className="min-w-4 flex-1" />
 
-          <div className="group relative w-52">
+          <div className="group relative w-64">
             <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-400" />
             <input
               type="text"
-              placeholder="Search clients..."
+              placeholder="Search ID, name, contact, phone…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className={compactInputClass}
@@ -409,18 +234,17 @@ export default function ClientsManagementPage() {
                 <TableRow className={dashboardTableHeadRowClass}>
                   {[
                     "Client ID",
+                    "Client Name",
                     "Contact Person",
-                    "Contact Number",
-                    "Company Name",
+                    "Phone",
                     "Email",
-                    "Services",
-                    "Sub-services",
-                    "Amount",
+                    "Balance Type",
                   ].map((heading) => (
                     <TableHead key={heading} className={cn(dashboardTableHeadClass, "text-left")}>
                       {heading}
                     </TableHead>
                   ))}
+                  <TableHead className={cn(dashboardTableHeadClass, "text-right")}>Opening Balance</TableHead>
                   <TableHead className={cn(dashboardTableHeadClass, "text-right")}>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -428,7 +252,7 @@ export default function ClientsManagementPage() {
                 {isLoading ? (
                   [...Array(5)].map((_, i) => (
                     <TableRow key={i} className="h-14 animate-pulse">
-                      {[...Array(9)].map((_, j) => (
+                      {[...Array(8)].map((_, j) => (
                         <TableCell key={j} className="px-6 py-4">
                           <div className="h-4 w-full rounded bg-zinc-100" />
                         </TableCell>
@@ -438,7 +262,7 @@ export default function ClientsManagementPage() {
                 ) : paginatedClients.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={9}
+                      colSpan={8}
                       className="px-6 py-10 text-center text-muted-foreground"
                     >
                       No clients found
@@ -446,50 +270,34 @@ export default function ClientsManagementPage() {
                   </TableRow>
                 ) : (
                   paginatedClients.map((client) => {
-                    const allAgreements =
-                      (client as AllClients).serviceAgreements ?? [];
-                    const serviceAgreements = filterAgreements(
-                      allAgreements,
-                      statusFilter,
-                      branchFilter,
-                    );
-
-                    const isDraft = Boolean((client as AllClients).isDraft);
-                    const displayPhone = client.phone?.startsWith("DRAFT") ? "N/A" : client.phone || "N/A";
-                    const displayEmail = client.email || "N/A";
-                    const totalAmount = serviceAgreements.reduce(
-                      (sum, agreement) => sum + Number(agreement.finalAmount ?? agreement.base ?? 0) + Number(agreement.vatAmount ?? 0),
-                      0,
-                    );
                     return (
                       <TableRow key={client.id} className={dashboardTableBodyRowClass}>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className={cn(dashboardTableIdClass, "whitespace-nowrap")}>{formatClientId(client.id)}</span>
+                          <span className={cn(dashboardTableIdClass, "whitespace-nowrap")}>
+                            {formatClientDisplayId(client)}
+                          </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextPrimary}>{(client as AllClients).contactPerson || "N/A"}</span>
+                          <span className={dashboardTextPrimary}>{client.institution || "—"}</span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextSecondary}>{displayPhone}</span>
+                          <span className={dashboardTextPrimary}>
+                            {text((client as AllClients & { contactPerson?: string }).contactPerson)}
+                          </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextPrimary}>{(client as AllClients).companyName || client.institution || "N/A"}</span>
+                          <span className={dashboardTextSecondary}>{text(client.phone)}</span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextSecondary}>{displayEmail}</span>
+                          <span className={dashboardTextSecondary}>{text(client.email)}</span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <AgreementStack agreements={serviceAgreements} renderItem={(agreement) => <span className={dashboardTextPrimary}>{agreement.serviceName || "N/A"}</span>} />
+                          <span className={dashboardTextPrimary}>{balanceTypeLabel(client.openingBalanceType)}</span>
                         </TableCell>
-                        <TableCell className={dashboardTableCellClass}>
-                          <AgreementStack agreements={serviceAgreements} renderItem={(agreement) => <span className={dashboardTextSecondary}>{agreement.subServiceName || "N/A"}</span>} />
+                        <TableCell className={cn(dashboardTableCellClass, "text-right")}>
+                          <span className={dashboardTextPrimary}>{money(client.openingBalanceAmount)}</span>
                         </TableCell>
-                        <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextPrimary}>${totalAmount.toFixed(2)}</span>
-                        </TableCell>
-                        <TableCell
-                          className={cn(dashboardTableCellClass, "text-right")}
-                        >
+                        <TableCell className={cn(dashboardTableCellClass, "text-right")}>
                           <div className="flex justify-end gap-2">
                             <Button
                               type="button"
@@ -500,28 +308,16 @@ export default function ClientsManagementPage() {
                             >
                               <Eye className="size-4" />
                             </Button>
-                            {isDraft ? (
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => openContinueDraft(String(client.id))}
-                                className={actionBtnEdit}
-                              >
-                                Continue
-                              </Button>
-                            ) : (
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => openEditModal(String(client.id))}
-                                className={actionBtnEdit}
-                              >
-                                <Edit className="size-4" />
-                              </Button>
-                            )}
-                            {client.id && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => openEditModal(String(client.id))}
+                              className={actionBtnEdit}
+                            >
+                              <Edit className="size-4" />
+                            </Button>
+                            {client.id ? (
                               <Button
                                 type="button"
                                 variant="ghost"
@@ -536,7 +332,7 @@ export default function ClientsManagementPage() {
                               >
                                 <Trash2 className="size-4" />
                               </Button>
-                            )}
+                            ) : null}
                           </div>
                         </TableCell>
                       </TableRow>
@@ -581,24 +377,12 @@ export default function ClientsManagementPage() {
         onOpenChange={setFormOpen}
         mode={formMode}
         clientId={editingClientId}
-        draftClientId={draftClientId}
       />
 
       <ClientViewModal
         open={viewOpen}
         onOpenChange={setViewOpen}
         clientId={viewClientId}
-      />
-
-      <ClientCompleteServiceModal
-        open={Boolean(completeTarget)}
-        onOpenChange={(open) => {
-          if (!open) setCompleteTarget(null);
-        }}
-        clientName={completeTarget?.clientName ?? ""}
-        agreement={completeTarget?.agreement ?? null}
-        loading={isUpdatingStatus}
-        onConfirm={confirmMarkComplete}
       />
 
       <ConfirmDialog

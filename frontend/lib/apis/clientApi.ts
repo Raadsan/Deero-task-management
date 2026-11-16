@@ -108,6 +108,8 @@ export async function createClient(data: {
   phone: string;
   email?: string;
   source: string;
+  alternativePhone?: string;
+  isActive?: boolean;
   companyName?: string;
   contactPerson?: string;
   address?: string;
@@ -116,6 +118,10 @@ export async function createClient(data: {
   contractEndDate?: string | Date;
   monthlyBudget?: number;
   notes?: string;
+  openingBalanceAmount?: number;
+  openingBalanceType?: string | null;
+  openingBalanceDate?: string | null;
+  openingBalanceNotes?: string | null;
   portfolioId?: string;
   accountManagerId?: string;
   autoGenerateTasks?: boolean;
@@ -177,6 +183,11 @@ export async function getAllClients(): Promise<ActionResponse<AllClients[]>> {
     if (result.success) {
       const transformed = result.data.map((client: any) => ({
         ...client,
+        clientCode: client.clientCode ?? null,
+        createdByName: client.createdByName ?? null,
+        alternativePhone: visibleClientPhone(client.alternativePhone)
+          ? formatPhoneNumber(client.alternativePhone, "addCountryKey")
+          : "",
         clientType: client.clientType ?? "ONE_TIME",
         isDraft: client.isDraft === true,
         createdAt: formatDate(client.createdAt),
@@ -211,6 +222,13 @@ export async function getClientById(id: string): Promise<ActionResponse<Client>>
       const client = result.data;
       const transformed = {
         ...client,
+        clientCode: client.clientCode ?? null,
+        alternativePhone: visibleClientPhone(client.alternativePhone)
+          ? normalizeClientPhone(client.alternativePhone)
+          : "",
+        createdBy: client.createdBy ?? null,
+        createdByName: client.createdBy?.name ?? client.createdByName ?? null,
+        rawCreatedAt: client.createdAt,
         phone: visibleClientPhone(client.phone)
           ? normalizeClientPhone(client.phone)
           : "",

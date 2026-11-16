@@ -1,6 +1,10 @@
 import { prisma } from "../../../lib/prisma.js";
 import { logAction } from "../../tasks/tracking/tracking.controller.js";
-import { getScope, canManageRolePermissions } from "../../../lib/portfolio-scope.js";
+import {
+  getScope,
+  canManageRolePermissions,
+  normalizeRoleName,
+} from "../../../lib/portfolio-scope.js";
 import {
   clampPermissionsPayload,
   loadRolePermissionCeiling,
@@ -13,10 +17,24 @@ const permissionMatrixCache = new Map();
 const CACHE_TTL = 5 * 60 * 1000;
 let defaultMenusSeedPromise = null;
 
-function ensureSuperadmin(req, res) {
+async function resolveActorRoleName(scope) {
+  let role = normalizeRoleName(scope.user?.role);
+  if (role) return role;
+  const roleId = scope.user?.roleId;
+  if (!roleId) return "";
+  const linked = await prisma.role.findUnique({
+    where: { id: roleId },
+    select: { name: true },
+  });
+  return normalizeRoleName(linked?.name);
+}
+
+async function ensureSuperadmin(req, res) {
   const scope = getScope(req);
-  const role = String(scope.user?.role ?? "").trim().toLowerCase();
-  if (role !== "superadmin") {
+  const role = await resolveActorRoleName(scope);
+  const allowed =
+    role === "superadmin" || role === "admin" || role.includes("superadmin");
+  if (!allowed) {
     res.status(403).json({
       success: false,
       error: "Forbidden: superadmin access required",
@@ -28,10 +46,19 @@ function ensureSuperadmin(req, res) {
 
 async function ensureCanManageRolePermissions(req, res, roleId) {
   const scope = getScope(req);
-  if (!scope.authenticated || !scope.user?.role) {
+  if (!scope.authenticated || !scope.user) {
     res.status(403).json({
       success: false,
       error: "Forbidden: authentication required",
+    });
+    return false;
+  }
+
+  const actorRole = await resolveActorRoleName(scope);
+  if (!actorRole) {
+    res.status(403).json({
+      success: false,
+      error: "Forbidden: user role not configured",
     });
     return false;
   }
@@ -46,7 +73,7 @@ async function ensureCanManageRolePermissions(req, res, roleId) {
     return false;
   }
 
-  if (!canManageRolePermissions(scope.user.role, targetRole.name)) {
+  if (!canManageRolePermissions(actorRole, targetRole.name)) {
     res.status(403).json({
       success: false,
       error: "Forbidden: cannot manage permissions for this role",
@@ -291,7 +318,7 @@ export const getAllMenus = async (req, res) => {
 export const createMenu = async (req, res) => {
   const { title, url, icon, order } = req.body;
   try {
-    if (!ensureSuperadmin(req, res)) return;
+    if (!(await ensureSuperadmin(req, res))) return;
     const menu = await prisma.navMenu.create({
       data: { title, url, icon: icon || null, order: Number(order) || 0 },
     });
@@ -323,7 +350,7 @@ export const updateMenu = async (req, res) => {
   const { id } = req.params;
   const { title, url, icon, order, isActive } = req.body;
   try {
-    if (!ensureSuperadmin(req, res)) return;
+    if (!(await ensureSuperadmin(req, res))) return;
     const menu = await prisma.navMenu.update({
       where: { id },
       data: {
@@ -344,7 +371,7 @@ export const updateMenu = async (req, res) => {
 export const deleteMenu = async (req, res) => {
   const { id } = req.params;
   try {
-    if (!ensureSuperadmin(req, res)) return;
+    if (!(await ensureSuperadmin(req, res))) return;
     await prisma.navMenu.delete({ where: { id } });
     clearRoleMenusCache();
     res.json({ success: true });
@@ -356,7 +383,7 @@ export const deleteMenu = async (req, res) => {
 export const createSubMenu = async (req, res) => {
   const { menuId, title, url, order } = req.body;
   try {
-    if (!ensureSuperadmin(req, res)) return;
+    if (!(await ensureSuperadmin(req, res))) return;
     const submenu = await prisma.navSubMenu.create({
       data: {
         menuId,
@@ -398,7 +425,7 @@ export const updateSubMenu = async (req, res) => {
   const { id } = req.params;
   const { title, url, order, isActive } = req.body;
   try {
-    if (!ensureSuperadmin(req, res)) return;
+    if (!(await ensureSuperadmin(req, res))) return;
     const submenu = await prisma.navSubMenu.update({
       where: { id },
       data: {
@@ -418,7 +445,7 @@ export const updateSubMenu = async (req, res) => {
 export const deleteSubMenu = async (req, res) => {
   const { id } = req.params;
   try {
-    if (!ensureSuperadmin(req, res)) return;
+    if (!(await ensureSuperadmin(req, res))) return;
     await prisma.navSubMenu.delete({ where: { id } });
     clearRoleMenusCache();
     res.json({ success: true });
@@ -513,12 +540,13 @@ export const updatePermissions = async (req, res) => {
 
 const DEFAULT_MENUS = [
   { title: "Dashboard", url: "/", icon: "LayoutDashboard", order: 1, submenus: [] },
-  { title: "Tasks", url: "/tasks", icon: "BriefcaseBusiness", order: 2, submenus: [] },
+  { title: "Projects", url: "/projects", icon: "FolderKanban", order: 2, submenus: [] },
+  { title: "Tasks", url: "/tasks", icon: "BriefcaseBusiness", order: 3, submenus: [] },
   {
     title: "My Tasks",
     url: "/my-tasks",
     icon: "ShoppingBag",
-    order: 3,
+    order: 4,
     submenus: [
       { title: "My Tasks", url: "/my-tasks", order: 1 },
       { title: "My Board", url: "/my-tasks/board", order: 2 },
@@ -529,21 +557,21 @@ const DEFAULT_MENUS = [
     title: "Client Management",
     url: "/clients",
     icon: "Handshake",
-    order: 4,
+    order: 5,
     submenus: [
       { title: "Clients", url: "/clients", order: 1 },
       { title: "Contracts", url: "/contracts", order: 2 },
       { title: "Schedules", url: "/recurring-schedules", order: 3 },
     ],
   },
-  { title: "Staff", url: "/staff", icon: "Users", order: 5, submenus: [] },
-  { title: "Services", url: "/services", icon: "Layers", order: 6, submenus: [] },
-  { title: "Portfolios", url: "/portfolios", icon: "Building2", order: 7, submenus: [] },
+  { title: "Staff", url: "/staff", icon: "Users", order: 6, submenus: [] },
+  { title: "Services", url: "/services", icon: "Layers", order: 7, submenus: [] },
+  { title: "Portfolios", url: "/portfolios", icon: "Building2", order: 8, submenus: [] },
   {
     title: "Accounting",
     url: "/accounting/dashboard",
     icon: "Calculator",
-    order: 8,
+    order: 9,
     submenus: [
       { title: "Accounting Dashboard", url: "/accounting/dashboard", order: 1 },
       { title: "Quotations", url: "/quotations", order: 2 },
@@ -565,7 +593,7 @@ const DEFAULT_MENUS = [
     title: "Reports",
     url: "/reports/clients",
     icon: "BarChart3",
-    order: 9,
+    order: 10,
     submenus: [
       { title: "Employees Report", url: "/reports/users", order: 1 },
       { title: "Client Report", url: "/reports/clients", order: 2 },
@@ -577,7 +605,7 @@ const DEFAULT_MENUS = [
     title: "Configuration",
     url: "/config",
     icon: "Settings2",
-    order: 10,
+    order: 11,
     submenus: [
       { title: "Roles", url: "/config/roles", order: 1 },
       { title: "Permissions", url: "/config/permissions", order: 2 },
@@ -717,6 +745,16 @@ async function runEnsureDefaultMenus() {
       menu = await prisma.navMenu.create({
         data: { ...fields, isActive: true },
       });
+    } else {
+      menu = await prisma.navMenu.update({
+        where: { id: menu.id },
+        data: {
+          title: fields.title,
+          icon: fields.icon,
+          order: fields.order,
+          isActive: true,
+        },
+      });
     }
 
     const submenuRecords = [];
@@ -769,7 +807,7 @@ export async function ensureDefaultMenusOnStartup() {
 
 export const seedDefaultMenus = async (req, res) => {
   try {
-    if (!ensureSuperadmin(req, res)) return;
+    if (!(await ensureSuperadmin(req, res))) return;
     const createdSubmenus = await ensureDefaultMenus();
     await logAction(null, "SEED", "NavMenu", null, "Default sidebar menus seeded");
 

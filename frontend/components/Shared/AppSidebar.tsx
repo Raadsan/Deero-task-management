@@ -24,6 +24,7 @@ import {
   BriefcaseBusiness,
   Building2,
   Handshake,
+  FolderKanban,
   LayoutDashboard,
   Layers,
   Settings2,
@@ -44,6 +45,12 @@ const NAVIGATION_LINKS: SidebarItem[] = [
     name: "Dashboard",
     href: ROUTES.dashboard,
     icon: <LayoutDashboard className="size-[18px] shrink-0" strokeWidth={2} />,
+    role: [UserRole.admin, UserRole.superadmin],
+  },
+  {
+    name: "Projects",
+    href: ROUTES.projects,
+    icon: <FolderKanban className="size-[18px] shrink-0" strokeWidth={2} />,
     role: [UserRole.admin, UserRole.superadmin],
   },
   {

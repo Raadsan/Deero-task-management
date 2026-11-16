@@ -92,39 +92,6 @@ const present = (record) => {
   }
 }
 
-const syncClientsToCustomers = async () => {
-  const company = await defaultCompany()
-  const clients = await prisma.client.findMany({ where: { isDraft: false } })
-  for (const client of clients) {
-    const name = client.institution || client.companyName || client.contactPerson || client.email
-    const data = {
-      company_id: company.id,
-      name,
-      email: client.email || null,
-      phone: client.phone || null,
-      address: client.address || null,
-      notes: client.notes || null,
-      is_active: client.isActive !== false,
-      updated_at: new Date(),
-    }
-    let customer = await prisma.customers.findUnique({ where: { clientId: client.id } })
-    if (!customer && client.email) customer = await prisma.customers.findFirst({ where: { email: client.email } })
-    if (!customer && client.phone) customer = await prisma.customers.findFirst({ where: { phone: client.phone } })
-    if (customer) {
-      await prisma.customers.update({ where: { id: customer.id }, data: { ...data, clientId: client.id } })
-    } else {
-      await prisma.customers.create({
-        data: {
-          ...data,
-          clientId: client.id,
-          currency_id: company.currency_id || null,
-        },
-      })
-    }
-  }
-  if (clients.length) clearCustomerCache()
-}
-
 /** Opening balance is a live DB column; read via SQL until Prisma client is regenerated. */
 async function loadOpeningBalances(ids) {
   if (!ids.length) return new Map()
@@ -142,8 +109,33 @@ const attachOpening = async (records) => {
   return records
 }
 
+/** Accounting invoices need a numeric customer id. Reuse the row already linked to this client. */
+export const findAccountingCustomerForClient = async (clientId) => {
+  const existing = await prisma.customers.findUnique({ where: { clientId } })
+  if (existing) return existing
+  const client = await prisma.client.findUnique({ where: { id: clientId } })
+  if (!client || client.isDraft) {
+    const error = new Error('Client not found')
+    error.status = 400
+    throw error
+  }
+  const company = await defaultCompany()
+  return prisma.customers.create({
+    data: {
+      company_id: company.id,
+      clientId: client.id,
+      name: client.companyName || client.institution || client.contactPerson || 'Client',
+      email: client.email || null,
+      phone: client.phone || null,
+      address: client.address || null,
+      is_active: client.isActive !== false,
+      currency_id: company.currency_id || null,
+      updated_at: new Date(),
+    },
+  })
+}
+
 export const listCustomers = async ({ lightweight = false } = {}) => {
-  await syncClientsToCustomers()
   if (lightweight && posCache.data && Date.now() - posCache.at < POS_TTL) return posCache.data
   const records = await prisma.customers.findMany({
     ...(lightweight ? {

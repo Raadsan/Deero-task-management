@@ -91,6 +91,15 @@ export async function generateMonthlyInstallments({ runDate = new Date() } = {})
 
   for (const contract of contracts) {
     if (!contract.client?.isActive) continue;
+
+    const scheduledCount = await prisma.clientInstallment.count({
+      where: {
+        contractId: contract.id,
+        sourceKey: { startsWith: `contract:${contract.id}:i:` },
+      },
+    });
+    if (scheduledCount > 0) continue;
+
     if (!isContractBillable(contract, year, month)) continue;
 
     const dueAmount = resolveMonthlyAmount(contract, contract.client);

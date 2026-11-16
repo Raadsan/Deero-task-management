@@ -15,6 +15,10 @@ import {
 } from "@/components/ui/table";
 import { ContractRecord, getAllContracts } from "@/lib/apis/contractApi";
 import { CONTRACT_STATUS_OPTIONS } from "@/lib/client-types";
+import {
+  contractDurationLabel,
+  contractPaymentTermsLabel,
+} from "@/lib/contract-utils";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {
   actionBtnDelete,
@@ -58,6 +62,7 @@ function statusBadgeClass(status: string) {
       return getTaskStatusBadgeClass("completed");
     case "EXPIRED":
     case "TERMINATED":
+    case "CANCELLED":
       return getTaskStatusBadgeClass("overdue");
     default:
       return getTaskStatusBadgeClass("pending");
@@ -92,8 +97,8 @@ export default function ContractsManagementPage() {
       if (!query) return true;
       return (
         row.contractNumber.toLowerCase().includes(query) ||
+        (row.title ?? "").toLowerCase().includes(query) ||
         row.client?.institution?.toLowerCase().includes(query) ||
-        row.project?.name?.toLowerCase().includes(query) ||
         String(row.id).toLowerCase().includes(query)
       );
     });
@@ -189,12 +194,13 @@ export default function ContractsManagementPage() {
                 <TableRow className={dashboardTableHeadRowClass}>
                   <TableHead className={cn(dashboardTableHeadClass, "text-left")}>ID</TableHead>
                   <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                    Contract #
+                    Title
                   </TableHead>
                   <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Client</TableHead>
-                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Project</TableHead>
+                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Duration</TableHead>
                   <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Period</TableHead>
                   <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Amount</TableHead>
+                  <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Payment</TableHead>
                   <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Status</TableHead>
                   <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Doc</TableHead>
                   <TableHead className={cn(dashboardTableHeadClass, "text-right")}>Actions</TableHead>
@@ -204,7 +210,7 @@ export default function ContractsManagementPage() {
                 {isLoading ? (
                   [...Array(5)].map((_, i) => (
                     <TableRow key={i} className="h-14 animate-pulse">
-                      {[...Array(9)].map((_, j) => (
+                      {[...Array(10)].map((_, j) => (
                         <TableCell key={j} className="px-6 py-4">
                           <div className="h-4 w-full rounded bg-zinc-100" />
                         </TableCell>
@@ -214,7 +220,7 @@ export default function ContractsManagementPage() {
                 ) : paginated.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={9}
+                      colSpan={10}
                       className="px-6 py-10 text-center text-muted-foreground"
                     >
                       No contracts found
@@ -231,7 +237,9 @@ export default function ContractsManagementPage() {
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
-                          <span className={dashboardTextPrimary}>{row.contractNumber}</span>
+                          <span className={dashboardTextPrimary}>
+                            {row.title || row.contractNumber}
+                          </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
                           <span className={dashboardTextPrimary}>
@@ -240,7 +248,7 @@ export default function ContractsManagementPage() {
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
                           <span className={dashboardTextSecondary}>
-                            {row.project?.name ?? "—"}
+                            {row.contractType === "ONE_TIME" ? "One-time" : contractDurationLabel(row.duration)}
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>
@@ -254,6 +262,14 @@ export default function ContractsManagementPage() {
                             {row.totalAmount != null
                               ? `$${row.totalAmount.toLocaleString()}`
                               : "—"}
+                          </span>
+                        </TableCell>
+                        <TableCell className={dashboardTableCellClass}>
+                          <span className={dashboardTextSecondary}>
+                            {contractPaymentTermsLabel(row.paymentTerms)}
+                            {row.paymentTermsNeedsReview ? (
+                              <span className="mt-1 block text-[11px] font-semibold text-amber-700">Review payment terms</span>
+                            ) : null}
                           </span>
                         </TableCell>
                         <TableCell className={dashboardTableCellClass}>

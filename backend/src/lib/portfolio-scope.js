@@ -80,7 +80,7 @@ const BRANCH_SCOPED_ROLES = new Set([
 
 const BRANCH_ADMIN_MANAGEABLE_ROLES = new Set(["admin", "employee", "manager"]);
 
-function normalizeRoleName(roleName) {
+export function normalizeRoleName(roleName) {
   return String(roleName ?? "")
     .toLowerCase()
     .replace(/[_-]+/g, " ")
@@ -100,11 +100,16 @@ export function canManageBranches(scope) {
   return isSuperadminScope(scope) || scope.seesAllBranches;
 }
 
+function isGlobalConfigAdminRole(role) {
+  const normalized = normalizeRoleName(role);
+  return normalized === "superadmin" || normalized === "admin";
+}
+
 export function canManageRolePermissions(actorRole, targetRoleName) {
   const actor = normalizeRoleName(actorRole);
   const target = normalizeRoleName(targetRoleName);
 
-  if (actor === "superadmin") return true;
+  if (isGlobalConfigAdminRole(actor)) return true;
   if (actor === "portfolio admin") {
     return BRANCH_ADMIN_MANAGEABLE_ROLES.has(target);
   }
@@ -309,6 +314,7 @@ export function taskBranchWhere(scope) {
       { user: { portfolioId } },
       {
         OR: [
+          { projectId: { not: null } },
           { clientTask: { none: {} } },
           {
             clientTask: {

@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge";
 import { DEEERO_SERVICE_SUBCATEGORIES, ROUTES } from "./constants";
 
 import { v4 as uuid } from "uuid";
+import { evaluateScheduledTask } from "@/lib/scheduled-task-window";
 import { TaskStatus, UserRole } from "./schema";
 import {
   DashboardViewMetric,
@@ -93,6 +94,22 @@ export function formatDate(date: Date | string, longform?: boolean) {
   });
 }
 
+/** Date + time in the user's local timezone (for audit fields like created at). */
+export function formatDateTime(date: Date | string | null | undefined) {
+  if (date == null || (typeof date === "string" && !date.trim())) return "—";
+  const d = new Date(date);
+  if (Number.isNaN(d.getTime())) return String(date);
+  return d.toLocaleString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
+}
+
 export function isTaskPastDeadline(deadline: Date | string, extraTimeMinutes: number = 0) {
   const deadlineMs = new Date(deadline).getTime();
   const extraMs = Math.max(0, Number(extraTimeMinutes || 0)) * 60_000;
@@ -106,6 +123,7 @@ export function resolveTaskDisplayStatus(
     extraTimeMinutes?: number | null;
     extraTimeHours?: number | null;
     progress?: number;
+    features?: unknown;
     assgineeId?: string;
     assignedToId?: string;
     assignedTo?: { id: string };
@@ -113,6 +131,7 @@ export function resolveTaskDisplayStatus(
     startDate?: Date | string | null;
   },
   currentUserId?: string,
+  nowMs: number = Date.now(),
 ) {
   const currentAssigneeId = task.assgineeId ?? task.assignedToId ?? task.assignedTo?.id;
   if (
@@ -125,6 +144,8 @@ export function resolveTaskDisplayStatus(
   }
 
   if (task.status === "transferred") return "transferred";
+  const scheduled = evaluateScheduledTask(task, nowMs);
+  if (scheduled.scheduled && scheduled.status) return scheduled.status;
   const progress = Number(task.progress ?? 0);
   if (task.status === "completed" || progress >= 100) return "completed";
   const extraMinutes = Number(task.extraTimeMinutes ?? (Number(task.extraTimeHours ?? 0) * 60));
@@ -142,6 +163,52 @@ export function resolveTaskDisplayStatus(
   }
 
   return task.status || "pending";
+}
+
+function scheduleRecord(features: unknown) {
+  if (!features || typeof features !== "object" || Array.isArray(features)) return null;
+  return features as Record<string, unknown>;
+}
+
+function formatClockLabel(value: string) {
+  const match = /^(\d{2}):(\d{2})/.exec(value);
+  if (!match) return "";
+  return new Date(2000, 0, 1, Number(match[1]), Number(match[2])).toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+/** Project tasks show a work slot instead of a due date. Returns null for other tasks. */
+export function formatScheduledTask(task: {
+  projectId?: string | null;
+  features?: unknown;
+  startDate?: string | Date | null;
+}) {
+  const features = scheduleRecord(task.features);
+  const isProject = Boolean(task.projectId) || features?.projectTask === true || Boolean(features?.scheduledDate);
+  if (!isProject) return null;
+
+  const rawDate = String(features?.scheduledDate || "").slice(0, 10);
+  let date = "No scheduled date";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(rawDate)) {
+    const [year, month, day] = rawDate.split("-").map(Number);
+    date = new Date(year, month - 1, day).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  } else if (task.startDate) {
+    const parsed = new Date(task.startDate);
+    if (!Number.isNaN(parsed.getTime())) {
+      date = parsed.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    }
+  }
+
+  const start = formatClockLabel(String(features?.startTime || ""));
+  const end = formatClockLabel(String(features?.endTime || ""));
+  const time = start && end ? `${start} – ${end}` : start || end || "Time not set";
+  return { date, time };
 }
 
 export function formatTaskDeadline(
@@ -348,7 +415,7 @@ export function getTaskTableLabels(task: {
     extractedTaskName = remainingParts[0];
   } else if (task.department) {
     serviceName = task.department;
-    extractedTaskName = "Task";
+    extractedTaskName = String(task.description ?? "").trim() || "Task";
   }
 
   // Fallback cleanup if serviceName accidentally still has clientName prefix
@@ -419,6 +486,15 @@ export function formatTexts({ type, formatType }: Params) {
         return "Delete The Client";
       case "delete":
         return "Delete Client";
+    }
+  } else if (type === "services") {
+    switch (formatType) {
+      case "description":
+        return "Are you sure you want to delete this main service";
+      case "diaglog":
+        return "Delete Service";
+      case "delete":
+        return "Delete Service";
     }
   } else if (type === "contracts") {
     switch (formatType) {
@@ -519,6 +595,26 @@ export function formatPhoneNumber(
   } else {
     return phoneNumber.substring(4);
   }
+}
+
+export function formatClientDisplayId(client: {
+  clientCode?: string | null;
+  id?: string | number | null;
+}) {
+  if (client.clientCode) return client.clientCode;
+  const rawId = String(client.id ?? "");
+  if (/^CL-\d+$/i.test(rawId)) return rawId.toUpperCase();
+  return rawId || "N/A";
+}
+
+export function formatServiceDisplayId(service: {
+  serviceCode?: string | null;
+  id?: string | number | null;
+}) {
+  if (service.serviceCode) return service.serviceCode;
+  const rawId = String(service.id ?? "");
+  if (/^SRV-\d+$/i.test(rawId)) return rawId.toUpperCase();
+  return rawId || "N/A";
 }
 
 export function normalizeClientPhone(phone: string): string {

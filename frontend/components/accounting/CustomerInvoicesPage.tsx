@@ -2,9 +2,10 @@
 
 import { accountingToast } from '@/lib/accounting-ui';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import { CreditCard, Eye, FileText, Plus, Printer, RefreshCw, Save, Send, StickyNote, Trash2, SquarePen, X, Check, Calculator } from 'lucide-react';
+import { CreditCard, Download, Eye, FileText, Plus, Printer, RefreshCw, Save, Send, StickyNote, Trash2, SquarePen, X, Check, Calculator } from 'lucide-react';
 import { customerInvoiceApi, type CustomerInvoice, type CustomerInvoiceLine } from '@/lib/api/accounting/receivables/customerInvoiceApi';
 import { accountingCustomerApi } from '@/lib/api/accounting/receivables/customerApi';
 import { accountingProductApi } from '@/lib/api/accounting/catalog/productApi';
@@ -21,7 +22,6 @@ import DashboardDataTable, { type DashboardTableColumn } from '@/components/Shar
 import AccountingConfirmDialog from './AccountingConfirmDialog';
 import AccountingPageShell from '@/components/accounting/AccountingPageShell';
 import InvoiceViewModal from './InvoiceViewModal';
-import InvoicePaymentDialog from './InvoicePaymentDialog';
 import A4InvoiceSheet, { type InvoiceLineItem, type PaymentMethodEntry } from './A4InvoiceSheet';
 import { useBranchTheme } from '@/components/branding/BranchThemeProvider';
 import { resolveBranchLogoUrl } from '@/lib/portfolio-branding';
@@ -119,6 +119,44 @@ const emptyForm = (): Form => ({
 const apiDate = (value: string) => new Date(`${value}T00:00:00.000Z`).toISOString();
 const dateValue = (value: unknown) => value ? new Date(String(value)).toISOString().slice(0, 10) : '';
 const money = (value: unknown, code = '') => `${code ? `${code} ` : ''}${Number(value || 0).toFixed(2)}`;
+
+function invoiceAmounts(invoice: CustomerInvoice) {
+  const gross = Number(invoice.amount_total || 0);
+  const advance = Number(invoice.advance_credit_applied || 0);
+  const previousDebt = Number(invoice.previous_outstanding_balance || 0);
+  const installment = Number(
+    invoice.contract_installment_amount
+    ?? Math.max(0, gross - previousDebt),
+  );
+  const invoiceAmount = Number(invoice.invoice_amount ?? Math.max(0, gross - advance));
+  const settled = Number(invoice.paid_amount || 0);
+  const cash = Number(invoice.cash_paid ?? Math.max(0, settled - advance));
+  const net = Number(invoice.net_amount ?? Math.max(0, installment + previousDebt - advance));
+  const due = Number(invoice.amount_due ?? Math.max(0, gross - settled));
+  return { gross, installment, previousDebt, invoiceAmount, advance, cash, net, due };
+}
+
+function invoiceStatusKey(invoice: CustomerInvoice) {
+  if (invoice.display_status) return invoice.display_status;
+  if (invoice.state === 'cancelled') return 'CANCELLED';
+  if (invoice.state !== 'posted') return 'DRAFT';
+  const { advance, cash, due } = invoiceAmounts(invoice);
+  if (due <= 0.005) return 'PAID';
+  const dueDay = invoice.due_date ? new Date(invoice.due_date) : null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (dueDay && !Number.isNaN(dueDay.getTime())) {
+    dueDay.setHours(0, 0, 0, 0);
+    if (dueDay < today) return 'OVERDUE';
+  }
+  if (advance > 0.005 || cash > 0.005) return 'PARTIALLY_PAID';
+  return 'UNPAID';
+}
+
+function clientLabel(invoice: CustomerInvoice) {
+  const client = invoice.client || invoice.customers?.client;
+  return client?.companyName || client?.institution || invoice.customers?.name || (invoice.customer_id ? `Customer #${invoice.customer_id}` : '—');
+}
 const errorMessage = (error: unknown) => axios.isAxiosError(error) ? error.response?.data?.message || error.message : error instanceof Error ? error.message : 'Something went wrong';
 
 export default function CustomerInvoicesPage() {
@@ -143,6 +181,7 @@ export default function CustomerInvoicesPage() {
   const [dialogTab, setDialogTab] = useState<'form' | 'preview'>('form');
   const [viewInvoice, setViewInvoice] = useState<CustomerInvoice | null>(null);
   const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [autoPrint, setAutoPrint] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [posting, setPosting] = useState(false);
@@ -153,9 +192,14 @@ export default function CustomerInvoicesPage() {
   const [customerFilter, setCustomerFilter] = useState('all');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
+  const [contractFilter, setContractFilter] = useState('all');
+  const [sortKey, setSortKey] = useState<'date' | 'due' | 'amount'>('date');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const [includeVat, setIncludeVat] = useState<boolean>(true);
   const [vatPercent, setVatPercent] = useState<number>(5);
   const [viewOnly, setViewOnly] = useState(false);
+  const router = useRouter();
+  const importHandledRef = useRef<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -276,22 +320,59 @@ export default function CustomerInvoicesPage() {
     }
   }
 
-  const filtered = invoices.filter((invoice) => {
+  const contractOptions = useMemo(() => {
+    const numbers = new Set<string>();
+    invoices.forEach((invoice) => {
+      if (invoice.contract_number) numbers.add(invoice.contract_number);
+    });
+    return [...numbers].sort();
+  }, [invoices]);
+
+  const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    const searchable = !needle || [invoice.invoice_number, invoice.customers?.name, invoice.state, invoice.payment_state].some((value) => String(value || '').toLowerCase().includes(needle));
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const dueDate = invoice.due_date ? new Date(invoice.due_date) : null;
-    if (dueDate) dueDate.setHours(0, 0, 0, 0);
-    const isOverdue = invoice.state === 'posted' && invoice.payment_state === 'not_paid' && dueDate !== null && dueDate < today;
-    const effectiveStatus = invoice.state === 'cancelled' ? 'cancelled' : invoice.payment_state === 'paid' ? 'paid' : invoice.payment_state === 'partial' ? 'partial' : isOverdue ? 'overdue' : invoice.state;
-    const invoiceDay = dateValue(invoice.invoice_date);
-    return searchable &&
-      (statusFilter === 'all' || effectiveStatus === statusFilter) &&
-      (currencyFilter === 'all' || Number(invoice.currency_id) === Number(currencyFilter)) &&
-      (customerFilter === 'all' || Number(invoice.customer_id) === Number(customerFilter)) &&
-      (!dateFrom || invoiceDay >= dateFrom) && (!dateTo || invoiceDay <= dateTo);
-  });
+    const rows = invoices.filter((invoice) => {
+      const searchable = !needle || [invoice.invoice_number, clientLabel(invoice)].some((value) => String(value || '').toLowerCase().includes(needle));
+      const status = invoiceStatusKey(invoice);
+      const invoiceDay = dateValue(invoice.invoice_date);
+      return searchable &&
+        (statusFilter === 'all' || status === statusFilter) &&
+        (contractFilter === 'all' || invoice.contract_number === contractFilter) &&
+        (currencyFilter === 'all' || Number(invoice.currency_id) === Number(currencyFilter)) &&
+        (customerFilter === 'all' || Number(invoice.customer_id) === Number(customerFilter)) &&
+        (!dateFrom || invoiceDay >= dateFrom) && (!dateTo || invoiceDay <= dateTo);
+    });
+    const factor = sortDir === 'asc' ? 1 : -1;
+    return [...rows].sort((left, right) => {
+      if (sortKey === 'amount') return (invoiceAmounts(left).invoiceAmount - invoiceAmounts(right).invoiceAmount) * factor;
+      const leftDate = dateValue(sortKey === 'due' ? left.due_date : left.invoice_date);
+      const rightDate = dateValue(sortKey === 'due' ? right.due_date : right.invoice_date);
+      return leftDate.localeCompare(rightDate) * factor;
+    });
+  }, [contractFilter, currencyFilter, customerFilter, dateFrom, dateTo, invoices, query, sortDir, sortKey, statusFilter]);
+
+  const summary = useMemo(() => {
+    const active = filtered.filter((invoice) => invoice.state !== 'cancelled');
+    return {
+      count: filtered.length,
+      invoiced: active.reduce((sum, invoice) => sum + invoiceAmounts(invoice).invoiceAmount, 0),
+      received: active.reduce((sum, invoice) => sum + invoiceAmounts(invoice).cash, 0),
+      outstanding: active.reduce((sum, invoice) => sum + invoiceAmounts(invoice).due, 0),
+      overdue: active.reduce((sum, invoice) => sum + (invoiceStatusKey(invoice) === 'OVERDUE' ? invoiceAmounts(invoice).due : 0), 0),
+    };
+  }, [filtered]);
+
+  function toggleSort(key: 'date' | 'due' | 'amount') {
+    setSortDir((current) => (sortKey === key && current === 'desc' ? 'asc' : 'desc'));
+    setSortKey(key);
+  }
+
+  function sortHeading(key: 'date' | 'due' | 'amount', label: string) {
+    return (
+      <button type="button" className="uppercase" onClick={() => toggleSort(key)}>
+        {label}{sortKey === key ? (sortDir === 'asc' ? ' ↑' : ' ↓') : ''}
+      </button>
+    );
+  }
 
   function createInvoice() {
     setSelected(null);
@@ -311,6 +392,44 @@ export default function CustomerInvoicesPage() {
     setVatPercent(5);
     setForm(next); setOpen(true);
   }
+
+  async function openInvoiceFromQuotation(q: Quotation) {
+    setSelected(null);
+    setViewOnly(false);
+    setDialogTab('form');
+    const next = emptyForm();
+    const immediate = terms.find((item) => /immediate/i.test(String(item.name)));
+    if (immediate) next.payment_term_id = String(immediate.id);
+    setForm(next);
+    setOpen(true);
+    await importFromQuotation(q);
+  }
+
+  useEffect(() => {
+    if (loading) return;
+    const qid = typeof window !== 'undefined'
+      ? new URLSearchParams(window.location.search).get('importQuotation')
+      : null;
+    if (!qid || importHandledRef.current === qid) return;
+
+    const run = async () => {
+      let q = quotations.find((item) => String(item.id) === qid) || null;
+      if (!q) {
+        try {
+          q = await quotationApi.getById(Number(qid));
+        } catch {
+          return;
+        }
+      }
+      if (!q || q.converted_invoice_id) return;
+      importHandledRef.current = qid;
+      await openInvoiceFromQuotation(q);
+      router.replace('/accounting/customer-invoices');
+    };
+
+    void run();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- open once when data is ready for ?importQuotation=
+  }, [loading, quotations, customers, taxes, terms, router]);
 
   const acceptedQuotations = useMemo(() => {
     // Only ACCEPTED quotations that are not yet linked to an invoice.
@@ -916,16 +1035,16 @@ export default function CustomerInvoicesPage() {
     finally { setSaving(false); }
   }
 
-  // Register additional payment on an already-posted invoice (not used for draft Post).
-  const [acceptInvoice, setAcceptInvoice] = useState<CustomerInvoice | null>(null);
-
   const openPostOrPayment = (invoice: CustomerInvoice) => {
     if (invoice.state === 'draft') {
       setPendingAction({ type: 'post', invoice });
       return;
     }
-    if (invoice.state === 'posted' && invoice.payment_state !== 'paid') {
-      setAcceptInvoice(invoice);
+    if (invoice.state === 'posted' && invoiceAmounts(invoice).due > 0.005) {
+      try {
+        sessionStorage.setItem('receiptFromInvoiceId', String(invoice.id));
+      } catch {}
+      router.push('/accounting/customer-receipts');
     }
   };
 
@@ -972,23 +1091,16 @@ export default function CustomerInvoicesPage() {
 
 
   const columns: DashboardTableColumn<CustomerInvoice>[] = [
-    { key: 'number', header: 'Invoice', cell: (row) => <span className="font-bold text-primary">{row.invoice_number}</span> },
-    { key: 'customer', header: 'Customer', cell: (row) => row.customers?.name || `#${row.customer_id}` },
-    {
-      key: 'quotation',
-      header: 'Quotation',
-      cell: (row) => {
-        const linked = (row as any).converted_quotations?.[0]?.quotation_number || row.customer_reference;
-        return linked ? <span className="font-mono text-xs text-zinc-600">{String(linked)}</span> : <span className="text-zinc-300">—</span>;
-      },
-    },
-    { key: 'date', header: 'Invoice Date', cell: (row) => dateValue(row.invoice_date) },
-    { key: 'due', header: 'Due Date', cell: (row) => dateValue(row.due_date) },
-    { key: 'subtotal', header: 'Subtotal', align: 'right', cell: (row) => money(row.amount_untaxed) },
-    { key: 'tax', header: 'Tax', align: 'right', cell: (row) => money(row.amount_tax) },
-    { key: 'total', header: 'Total', align: 'right', cell: (row) => <span className="font-semibold">{money(row.amount_total)}</span> },
-    { key: 'paid', header: 'Paid', align: 'right', cell: (row) => money(row.paid_amount ?? Number(row.amount_total) - Number(row.amount_due)) },
-    { key: 'outstanding', header: 'Outstanding', align: 'right', cell: (row) => money(row.amount_due) },
+    { key: 'number', header: 'Invoice Number', cell: (row) => <span className="font-bold text-primary">{row.invoice_number || '—'}</span> },
+    { key: 'customer', header: 'Client Name', cell: (row) => <span className="font-semibold text-zinc-900">{clientLabel(row)}</span> },
+    { key: 'installment', header: 'Installment', cell: (row) => row.installment_label || '—' },
+    { key: 'date', header: sortHeading('date', 'Invoice Date'), cell: (row) => dateValue(row.invoice_date) || '—' },
+    { key: 'installmentAmount', header: 'Contract Installment Amount', align: 'right', cell: (row) => money(invoiceAmounts(row).installment) },
+    { key: 'previousDebt', header: 'Previous Outstanding Balance', align: 'right', cell: (row) => money(invoiceAmounts(row).previousDebt) },
+    { key: 'advance', header: 'Advance/Credit Applied', align: 'right', cell: (row) => money(invoiceAmounts(row).advance) },
+    { key: 'total', header: sortHeading('amount', 'Invoice Amount'), align: 'right', cell: (row) => <span className="font-semibold">{money(invoiceAmounts(row).invoiceAmount)}</span> },
+    { key: 'paid', header: 'Amount Paid', align: 'right', cell: (row) => money(invoiceAmounts(row).cash) },
+    { key: 'outstanding', header: 'Balance Due', align: 'right', cell: (row) => money(invoiceAmounts(row).due) },
     {
       key: 'status',
       header: 'Status',
@@ -996,14 +1108,14 @@ export default function CustomerInvoicesPage() {
       cell: (row) => (
         <button
           type="button"
-          disabled={row.state === 'cancelled' || row.payment_state === 'paid' || saving}
+          disabled={row.state === 'cancelled' || invoiceAmounts(row).due <= 0.005 || saving}
           onClick={() => {
-            if (row.state === 'draft' || (row.state === 'posted' && row.payment_state !== 'paid')) {
+            if (row.state === 'draft' || (row.state === 'posted' && invoiceAmounts(row).due > 0.005)) {
               openPostOrPayment(row);
             }
           }}
-          className={row.state === 'draft' || (row.state === 'posted' && row.payment_state !== 'paid') ? "cursor-pointer hover:opacity-80 transition-opacity" : "cursor-default"}
-          title={row.state === 'draft' ? "Click to Post Invoice" : (row.state === 'posted' && row.payment_state !== 'paid') ? "Click to Register Payment" : undefined}
+          className={row.state === 'draft' || (row.state === 'posted' && invoiceAmounts(row).due > 0.005) ? "cursor-pointer hover:opacity-80 transition-opacity" : "cursor-default"}
+          title={row.state === 'draft' ? "Click to Post Invoice" : (row.state === 'posted' && invoiceAmounts(row).due > 0.005) ? "Click to Register Payment" : undefined}
         >
           <Status invoice={row} />
         </button>
@@ -1016,8 +1128,9 @@ export default function CustomerInvoicesPage() {
       cell: (row) => (
         <div className="flex justify-end gap-1">
           <button
-            title="View Invoice (Standard Template)"
+            title="View Invoice"
             onClick={() => {
+              setAutoPrint(false);
               setViewInvoice(row);
               setViewModalOpen(true);
             }}
@@ -1038,7 +1151,7 @@ export default function CustomerInvoicesPage() {
               </button>
             </>
           )}
-          {row.state === 'posted' && row.payment_state !== 'paid' && (
+          {row.state === 'posted' && invoiceAmounts(row).due > 0.005 && (
             <button
               title="Register Payment (Create Receipt)"
               onClick={() => openPostOrPayment(row)}
@@ -1048,8 +1161,20 @@ export default function CustomerInvoicesPage() {
             </button>
           )}
           <button
-            title="Print / View Invoice"
+            title="Download PDF"
             onClick={() => {
+              setAutoPrint(true);
+              setViewInvoice(row);
+              setViewModalOpen(true);
+            }}
+            className={actionBtnView}
+          >
+            <Download className="size-4" />
+          </button>
+          <button
+            title="Print Invoice"
+            onClick={() => {
+              setAutoPrint(true);
               setViewInvoice(row);
               setViewModalOpen(true);
             }}
@@ -1096,8 +1221,22 @@ export default function CustomerInvoicesPage() {
   }));
 
   return (
-    <AccountingPageShell section="Receivables" title="Customer Invoices" description="Prepare and manage customer sales invoices.">
-    <DashboardDataTable rows={filtered} columns={columns} loading={loading} searchValue={query} onSearchChange={setQuery} searchPlaceholder="Search invoices..." emptyText="No customer invoices found" minWidth="1350px" action={<button onClick={createInvoice} className={btnCreatePage}><Plus className="size-4" /> New invoice</button>} filters={<><select value={customerFilter} onChange={(event) => setCustomerFilter(event.target.value)} className={dashboardSelectClass}><option value="all">All customers</option>{customers.map((item) => <option key={item.id} value={item.id}>{String(item.name)}</option>)}</select><select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className={dashboardSelectClass}><option value="all">All statuses</option><option value="draft">Draft</option><option value="posted">Posted</option><option value="overdue">Overdue</option><option value="partial">Partially paid</option><option value="paid">Paid</option><option value="cancelled">Cancelled</option></select><select value={currencyFilter} onChange={(event) => setCurrencyFilter(event.target.value)} className={dashboardSelectClass}><option value="all">All currencies</option>{currencies.map((item) => <option key={item.id} value={item.id}>{String(item.code)}</option>)}</select><input type="date" value={dateFrom} onChange={(event) => setDateFrom(event.target.value)} className={dashboardSelectClass} /><input type="date" value={dateTo} onChange={(event) => setDateTo(event.target.value)} className={dashboardSelectClass} /><button onClick={() => void load()} className="flex size-[42px] items-center justify-center rounded-md border border-zinc-200 bg-white"><RefreshCw className={`size-4 ${loading ? 'animate-spin' : ''}`} /></button></>} />
+    <AccountingPageShell section="Receivables" title="Customer Invoices" description="Contract installment invoices, credits, and payments.">
+    <div className="mb-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+      {[
+        ['Total Invoices', String(summary.count)],
+        ['Total Invoiced Amount', money(summary.invoiced)],
+        ['Total Amount Received', money(summary.received)],
+        ['Total Outstanding', money(summary.outstanding)],
+        ['Overdue Amount', money(summary.overdue)],
+      ].map(([label, value]) => (
+        <div key={label} className="rounded-xl border border-zinc-200 bg-white px-4 py-3">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-zinc-500">{label}</p>
+          <p className="mt-1 text-lg font-bold text-zinc-900">{value}</p>
+        </div>
+      ))}
+    </div>
+    <DashboardDataTable rows={filtered} columns={columns} loading={loading} searchValue={query} onSearchChange={setQuery} searchPlaceholder="Search invoice number or client" emptyText="No customer invoices found" minWidth="1680px" action={<button onClick={createInvoice} className={btnCreatePage}><Plus className="size-4" /> New invoice</button>} filters={<><select value={customerFilter} onChange={(event) => setCustomerFilter(event.target.value)} className={dashboardSelectClass}><option value="all">All customers</option>{customers.map((item) => <option key={item.id} value={item.id}>{String(item.name)}</option>)}</select><select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} className={dashboardSelectClass}><option value="all">All payment statuses</option><option value="UNPAID">Unpaid</option><option value="PARTIALLY_PAID">Partially paid</option><option value="PAID">Paid</option><option value="OVERDUE">Overdue</option><option value="DRAFT">Draft</option><option value="CANCELLED">Cancelled</option></select><select value={contractFilter} onChange={(event) => setContractFilter(event.target.value)} className={dashboardSelectClass}><option value="all">All contracts</option>{contractOptions.map((number) => <option key={number} value={number}>{number}</option>)}</select><select value={currencyFilter} onChange={(event) => setCurrencyFilter(event.target.value)} className={dashboardSelectClass}><option value="all">All currencies</option>{currencies.map((item) => <option key={item.id} value={item.id}>{String(item.code)}</option>)}</select><input type="date" value={dateFrom} onChange={(event) => setDateFrom(event.target.value)} className={dashboardSelectClass} /><input type="date" value={dateTo} onChange={(event) => setDateTo(event.target.value)} className={dashboardSelectClass} /><button onClick={() => void load()} className="flex size-[42px] items-center justify-center rounded-md border border-zinc-200 bg-white"><RefreshCw className={`size-4 ${loading ? 'animate-spin' : ''}`} /></button></>} />
     
     <Dialog open={open} onOpenChange={(value) => !saving && setOpen(value)}>
       <DialogContent showCloseButton={false} className="max-h-[95vh] w-full !max-w-[980px] overflow-y-auto rounded-2xl">
@@ -1834,21 +1973,12 @@ export default function CustomerInvoicesPage() {
       onConfirm={() => pendingAction && void (pendingAction.type === 'delete' ? remove(pendingAction.invoice) : postInvoice(pendingAction.invoice))}
     />
 
-    {/* Register payment on posted invoices only — never for draft Post Invoice */}
-    {acceptInvoice && acceptInvoice.state === 'posted' && (
-      <InvoicePaymentDialog
-        open={Boolean(acceptInvoice)}
-        onOpenChange={(val) => !val && setAcceptInvoice(null)}
-        invoice={acceptInvoice}
-        onSuccess={load}
-      />
-    )}
-
     {viewInvoice && (
       <InvoiceViewModal
         open={viewModalOpen}
         onOpenChange={setViewModalOpen}
         invoice={viewInvoice}
+        autoPrint={autoPrint}
         onInvoiceUpdated={load}
       />
     )}
@@ -1908,27 +2038,8 @@ function Field({ label, value, set, type = 'text', optional, disabled }: { label
 }
 function Total({ label, value, strong }: { label: string; value: number; strong?: boolean }) { return <div className={`flex justify-between py-1 ${strong ? 'text-base font-bold' : ''}`}><span>{label}</span><span>{value.toFixed(2)}</span></div>; }
 function Status({ invoice }: { invoice: CustomerInvoice }) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const dueDate = invoice.due_date ? new Date(invoice.due_date) : null;
-  if (dueDate) dueDate.setHours(0, 0, 0, 0);
-  const isOverdue = invoice.state === 'posted' && invoice.payment_state === 'not_paid' && dueDate !== null && dueDate < today;
-  const labels: Record<string, string> = { draft: 'DRAFT', posted: 'UNPAID', partial: 'PARTIALLY PAID', paid: 'PAID', cancelled: 'CANCELLED', overdue: 'OVERDUE', unpaid: 'UNPAID' };
-  const key = invoice.state === 'cancelled'
-    ? 'cancelled'
-    : invoice.payment_state === 'paid'
-    ? 'paid'
-    : invoice.payment_state === 'partial'
-    ? 'partial'
-    : isOverdue
-    ? 'overdue'
-    : invoice.state === 'posted'
-    ? 'unpaid'
-    : invoice.payment_state === 'not_paid' && Number(invoice.paid_amount || 0) <= 0.005 && invoice.state === 'draft'
-    ? 'draft'
-    : Number(invoice.paid_amount || 0) > 0.005
-    ? 'partial'
-    : invoice.state;
-  const styles: Record<string, string> = { draft: 'bg-zinc-100 text-zinc-700', posted: 'bg-blue-50 text-blue-700', unpaid: 'bg-rose-50 text-rose-700', partial: 'bg-orange-50 text-orange-700', paid: 'bg-emerald-50 text-emerald-700', cancelled: 'bg-rose-50 text-rose-700', overdue: 'bg-red-100 text-red-700 ring-1 ring-red-300' };
-  return <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${styles[key] || styles.draft}`}>{labels[key] || key.toUpperCase()}</span>;
+  const key = invoiceStatusKey(invoice);
+  const labels: Record<string, string> = { DRAFT: 'DRAFT', UNPAID: 'UNPAID', PARTIALLY_PAID: 'PARTIALLY PAID', PAID: 'PAID', OVERDUE: 'OVERDUE', CANCELLED: 'CANCELLED' };
+  const styles: Record<string, string> = { DRAFT: 'bg-zinc-100 text-zinc-700', UNPAID: 'bg-rose-50 text-rose-700', PARTIALLY_PAID: 'bg-orange-50 text-orange-700', PAID: 'bg-emerald-50 text-emerald-700', OVERDUE: 'bg-red-100 text-red-700 ring-1 ring-red-300', CANCELLED: 'bg-zinc-100 text-zinc-500' };
+  return <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${styles[key] || styles.DRAFT}`}>{labels[key] || key}</span>;
 }

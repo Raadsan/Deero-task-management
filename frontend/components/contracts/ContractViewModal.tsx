@@ -17,10 +17,17 @@ import {
   uploadContractDocument,
 } from "@/lib/apis/contractApi";
 import { CONTRACT_STATUS_OPTIONS } from "@/lib/client-types";
+import {
+  contractDurationLabel,
+  contractPaymentTermsLabel,
+  contractTypeLabel,
+  paymentMilestoneLabel,
+  paymentStatusLabel,
+} from "@/lib/contract-utils";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import { btnFormSubmit } from "@/lib/dashboard-ui";
 import { resolveApiAssetUrl } from "@/lib/apis/config";
-import { cn, formatDate } from "@/lib/utils";
+import { cn, formatDate, formatDateTime } from "@/lib/utils";
 import {
   Calendar,
   DollarSign,
@@ -104,7 +111,7 @@ export default function ContractViewModal({ open, onOpenChange, contractId }: Pr
             Contract Details
           </DialogTitle>
           <DialogDescription className="text-sm text-zinc-500">
-            {contract?.contractNumber ?? "View agreement, documents, and payment terms."}
+            {contract?.title ?? contract?.contractNumber ?? "Contract details"}
           </DialogDescription>
         </DialogHeader>
 
@@ -128,12 +135,26 @@ export default function ContractViewModal({ open, onOpenChange, contractId }: Pr
                   </p>
                 </div>
 
-                {contract.project?.name && (
-                  <div className={configInfoFieldClass}>
-                    <p className={configInfoLabelClass}>Project</p>
-                    <p className="mt-1 font-medium text-zinc-800">{contract.project.name}</p>
-                  </div>
-                )}
+                <div className={configInfoFieldClass}>
+                  <p className={configInfoLabelClass}>Contract title</p>
+                  <p className="mt-1 font-medium text-zinc-800">
+                    {contract.title ?? "—"}
+                  </p>
+                </div>
+
+                <div className={configInfoFieldClass}>
+                  <p className={configInfoLabelClass}>Contract type</p>
+                  <p className="mt-1 font-medium text-zinc-800">
+                    {contractTypeLabel(contract.contractType)}
+                  </p>
+                </div>
+
+                <div className={configInfoFieldClass}>
+                  <p className={configInfoLabelClass}>Duration</p>
+                  <p className="mt-1 font-medium text-zinc-800">
+                    {contract.contractType === "ONE_TIME" ? "One-time" : contractDurationLabel(contract.duration)}
+                  </p>
+                </div>
 
                 <div className={configInfoFieldClass}>
                   <p className={configInfoLabelClass}>Status</p>
@@ -141,7 +162,7 @@ export default function ContractViewModal({ open, onOpenChange, contractId }: Pr
                 </div>
 
                 <div className={configInfoFieldClass}>
-                  <p className={configInfoLabelClass}>Amount</p>
+                  <p className={configInfoLabelClass}>Total contract amount</p>
                   <p className="mt-1 flex items-center gap-2 font-medium text-zinc-800">
                     <DollarSign className="h-4 w-4 text-emerald-600" />
                     {contract.totalAmount != null
@@ -163,10 +184,40 @@ export default function ContractViewModal({ open, onOpenChange, contractId }: Pr
                   </p>
                 </div>
 
-                {contract.paymentTerms && (
+                <div className={configInfoFieldClass}>
+                  <p className={configInfoLabelClass}>Payment terms</p>
+                  <p className="mt-1 text-sm text-zinc-700">
+                    {contractPaymentTermsLabel(contract.paymentTerms)}
+                  </p>
+                  {contract.paymentTermsNeedsReview ? (
+                    <p className="mt-1 text-xs font-medium text-amber-700">Review payment terms. This frequency does not fit the contract duration. Paid invoices and receipts are unchanged.</p>
+                  ) : null}
+                </div>
+
+                {(contract.installments?.length ?? 0) > 0 && (
                   <div className={configInfoFieldClass}>
-                    <p className={configInfoLabelClass}>Payment terms</p>
-                    <p className="mt-1 text-sm text-zinc-700">{contract.paymentTerms}</p>
+                    <p className={configInfoLabelClass}>Payment schedule</p>
+                    <div className="mt-2 max-h-48 space-y-1.5 overflow-y-auto text-xs">
+                      {contract.installments?.map((row) => (
+                        <div
+                          key={row.id}
+                          className="flex items-center justify-between gap-2 rounded border border-zinc-100 bg-white px-2 py-1.5"
+                        >
+                          <span className="text-zinc-700">
+                            Payment {String(row.installmentNumber ?? "—").padStart(2, "0")}
+                            {row.percentage != null ? ` · ${row.percentage}%` : ""} ·{" "}
+                            {row.dueMilestone ? `${paymentMilestoneLabel(row.dueMilestone)} · ` : ""}
+                            {formatDateTime(row.dueDate)}
+                          </span>
+                          <span className="shrink-0 text-right font-medium text-zinc-800">
+                            ${Number(row.dueAmount).toFixed(2)}
+                            <span className="mt-0.5 block text-[10px] font-semibold uppercase text-zinc-400">
+                              {paymentStatusLabel(row.status)}
+                            </span>
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
 

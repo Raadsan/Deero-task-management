@@ -440,3 +440,76 @@ export const EditUserDataSchema = z.object({
     ),
   department: z.string().optional(),
 });
+
+const internationalPhonePattern = /^[+]?[\d\s().-]{7,30}$/;
+
+export const SimpleClientRegistrationSchema = z.object({
+  institution: z
+    .string()
+    .min(1, "Client name is required.")
+    .max(100, "Client name must not exceed 100 characters."),
+  contactPerson: z
+    .string()
+    .min(1, "Contact person is required.")
+    .max(100, "Contact person must not exceed 100 characters."),
+  phone: z
+    .string()
+    .min(1, "Phone number is required.")
+    .max(30, "Phone number is too long.")
+    .refine(
+      (value) => internationalPhonePattern.test(value.trim()),
+      "Enter a valid phone number.",
+    ),
+  alternativePhone: z
+    .string()
+    .max(30, "Phone number is too long.")
+    .optional()
+    .refine(
+      (value) => !value?.trim() || internationalPhonePattern.test(value.trim()),
+      "Enter a valid alternative phone number.",
+    ),
+  email: z
+    .string()
+    .max(100, "Email must not exceed 100 characters.")
+    .optional()
+    .refine(
+      (value) => !value?.trim() || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim()),
+      { message: "Invalid email address." },
+    ),
+  address: z.string().max(1000, "Address is too long.").optional(),
+  notes: z.string().max(2000, "Notes are too long.").optional(),
+  isActive: z.boolean(),
+  openingBalanceAmount: z.preprocess((value) => {
+    if (value === "" || value === null || value === undefined) return 0;
+    const amount = typeof value === "number" ? value : Number(value);
+    return Number.isFinite(amount) ? amount : value;
+  }, z.number().min(0, "Opening balance cannot be negative.")),
+  openingBalanceType: z.string().optional(),
+  openingBalanceDate: z.string().optional(),
+  openingBalanceNotes: z.string().max(2000, "Opening balance notes are too long.").optional(),
+}).superRefine((values, ctx) => {
+  if (Number(values.openingBalanceAmount) <= 0) return;
+  if (values.openingBalanceType !== "CUSTOMER_OWES" && values.openingBalanceType !== "WE_OWE") {
+    ctx.addIssue({
+      code: "custom",
+      path: ["openingBalanceType"],
+      message: "Balance type is required when the opening balance is greater than zero.",
+    });
+  }
+  if (!values.openingBalanceDate) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["openingBalanceDate"],
+      message: "Opening balance date is required when the amount is greater than zero.",
+    });
+  }
+});
+
+export const SimpleServiceRegistrationSchema = z.object({
+  serviceName: z
+    .string()
+    .min(1, "Service name is required.")
+    .max(120, "Service name must not exceed 120 characters."),
+  description: z.string().max(2000, "Description is too long.").optional(),
+  isActive: z.boolean(),
+});

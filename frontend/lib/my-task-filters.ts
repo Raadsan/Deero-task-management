@@ -82,9 +82,18 @@ export function filterBoardTasks(
 }
 
 export function taskOnDate(task: Task, date: Date): boolean {
-  const value = task.deadline || (task as Task & { createdAt?: string | Date }).createdAt;
+  const features = task.features && typeof task.features === "object" && !Array.isArray(task.features)
+    ? (task.features as { scheduledDate?: string; projectTask?: boolean })
+    : null;
+  const scheduled = String(features?.scheduledDate || "").slice(0, 10);
+  const scheduledDate = /^(\d{4})-(\d{2})-(\d{2})$/.exec(scheduled);
+  const value = scheduledDate
+    ? new Date(Number(scheduledDate[1]), Number(scheduledDate[2]) - 1, Number(scheduledDate[3]))
+    : features?.projectTask && task.startDate
+      ? new Date(task.startDate)
+      : task.deadline || (task as Task & { createdAt?: string | Date }).createdAt;
   if (!value) return false;
-  const d = new Date(value);
+  const d = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(d.getTime())) return false;
   return (
     d.getFullYear() === date.getFullYear() &&

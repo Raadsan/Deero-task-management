@@ -19,6 +19,9 @@ const projectInclude = {
   client: { select: { id: true, institution: true, clientType: true } },
   portfolio: { select: { id: true, name: true } },
   createdBy: { select: { id: true, name: true } },
+  primaryContract: { select: { id: true, contractNumber: true, title: true, duration: true } },
+  tasks: { select: { id: true, status: true, progress: true, features: true } },
+  cycles: { select: { id: true, label: true, startDate: true, endDate: true }, orderBy: { startDate: "asc" } },
   _count: { select: { tasks: true, contentRequests: true } },
 };
 
@@ -34,17 +37,35 @@ export const getAllProjects = async (req, res) => {
     const scope = getScope(req);
     const { clientId, status, portfolioId } = req.query;
 
-    const where = mergeWhere(projectBranchWhere(scope), {
+    const baseWhere = mergeWhere(projectBranchWhere(scope), {
       ...(clientId ? { clientId: String(clientId) } : {}),
-      ...(status ? { status: String(status) } : {}),
       ...(portfolioId ? { portfolioId: String(portfolioId) } : {}),
     });
+    const where = {
+      ...baseWhere,
+      archived: false,
+      ...(status ? { OR: [{ lifecycleStatus: String(status) }, { status: String(status) }] } : {}),
+    };
 
-    const projects = await prisma.project.findMany({
-      where,
-      include: projectInclude,
-      orderBy: { createdAt: "desc" },
-    });
+    let projects;
+    try {
+      projects = await prisma.project.findMany({
+        where,
+        include: projectInclude,
+        orderBy: { createdAt: "desc" },
+      });
+    } catch {
+      projects = await prisma.project.findMany({
+        where: mergeWhere(baseWhere, status ? { status: String(status) } : {}),
+        include: {
+          client: { select: { id: true, institution: true, clientType: true } },
+          portfolio: { select: { id: true, name: true } },
+          createdBy: { select: { id: true, name: true } },
+          _count: { select: { tasks: true, contentRequests: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      });
+    }
 
     res.json({ success: true, data: projects });
   } catch (error) {

@@ -1,5 +1,5 @@
 import { prisma } from "../../../lib/prisma.js";
-import { generateCustomId } from "../../../lib/id-generator.js";
+import { generateClientCode, generateCustomId } from "../../../lib/id-generator.js";
 import {
   clientBranchWhere,
   denyIfOutOfScope,
@@ -13,6 +13,12 @@ import {
   resolveWorkflowAssignee,
 } from "../../../lib/workflow-automation.js";
 import { generateDailyRecurringTasks } from "../../../lib/recurring-task-generator.js";
+import {
+  applyClientOpeningBalance,
+  attachClientOpeningBalances,
+  canEditOpeningBalance,
+  ensureClientOpeningSchema,
+} from "../../../lib/client-opening-balance.js";
 
 function mapClientError(error) {
   if (error?.code === "P2002") {
@@ -32,6 +38,9 @@ function mapClientError(error) {
     return { status: 409, message: "A client with these details already exists." };
   }
 
+  if (error?.status && error.status < 500) {
+    return { status: error.status, message: error.message };
+  }
   return { status: 500, message: error?.message || "Internal Server Error" };
 }
 
@@ -186,10 +195,11 @@ export const getAllClients = async (req, res) => {
     const params = scope.seesAllBranches ? [] : [scope.portfolioId];
     const rows = await prisma.$queryRawUnsafe(
       `SELECT
-         c.id, c.createdAt, c.updatedAt, c.institution, c.companyName,
-         c.contactPerson, c.email, c.phone, c.address, c.source, c.clientType,
+         c.id, c.clientCode, c.createdAt, c.updatedAt, c.institution, c.companyName,
+         c.contactPerson, c.email, c.phone, c.alternativePhone, c.address, c.source, c.clientType,
          c.contractStartDate, c.contractEndDate, c.monthlyBudget, c.notes,
-         c.isActive, c.isDraft, c.portfolioId,
+         c.isActive, c.isDraft, c.portfolioId, c.createdById,
+         creator.name createdByName,
          a.id agreementId, a.createdAt agreementCreatedAt, a.base,
          a.discount, a.description agreementDescription, a.serviceStatus,
          a.serviceId, a.subServiceId,
@@ -197,6 +207,7 @@ export const getAllClients = async (req, res) => {
          ss.name subServiceName,
          p.id servicePortfolioRecordId, p.name servicePortfolioName
        FROM clients c
+       LEFT JOIN staffs creator ON creator.id = c.createdById
        LEFT JOIN IncomeServiceAgreement a ON a.clientId = c.id
        LEFT JOIN services s ON s.id = a.serviceId
        LEFT JOIN subservices ss ON ss.id = a.subServiceId
@@ -212,6 +223,7 @@ export const getAllClients = async (req, res) => {
       if (!client) {
         client = {
           id: row.id,
+          clientCode: row.clientCode,
           createdAt: row.createdAt,
           updatedAt: row.updatedAt,
           institution: row.institution,
@@ -219,6 +231,7 @@ export const getAllClients = async (req, res) => {
           contactPerson: row.contactPerson,
           email: row.email,
           phone: row.phone,
+          alternativePhone: row.alternativePhone,
           address: row.address,
           source: row.source,
           clientType: row.clientType,
@@ -229,6 +242,8 @@ export const getAllClients = async (req, res) => {
           isActive: Boolean(row.isActive),
           isDraft: Boolean(row.isDraft),
           portfolioId: row.portfolioId,
+          createdById: row.createdById,
+          createdByName: row.createdByName,
           clientService: [],
           serviceAgreements: [],
         };
@@ -261,7 +276,12 @@ export const getAllClients = async (req, res) => {
       });
     }
     const clients = [...clientMap.values()];
-    res.json({ success: true, data: clients });
+    await attachClientOpeningBalances(prisma, clients);
+    res.json({
+      success: true,
+      data: clients,
+      canEditOpeningBalance: canEditOpeningBalance(scope.user?.role),
+    });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -296,10 +316,13 @@ export const getClientById = async (req, res) => {
       where: mergeWhere({ id }, clientBranchWhere(scope)),
       include: {
         ...clientListInclude,
+        createdBy: { select: { id: true, name: true } },
         clientTask: { include: { task: { include: { user: true } } } },
       },
     });
     if (!client) return res.status(404).json({ success: false, message: "Client not found" });
+    await attachClientOpeningBalances(prisma, client);
+    client.canEditOpeningBalance = canEditOpeningBalance(scope.user?.role);
     res.json({ success: true, data: client });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -318,6 +341,11 @@ export const createClient = async (req, res) => {
     const institution = String(data.institution ?? "").trim() || (isDraft ? "Draft client" : "");
     if (!institution) {
       return res.status(400).json({ success: false, error: "Client name is required" });
+    }
+
+    const contactPerson = String(data.contactPerson ?? "").trim();
+    if (!isDraft && !contactPerson) {
+      return res.status(400).json({ success: false, error: "Contact person is required" });
     }
 
     const phone =
@@ -350,19 +378,27 @@ export const createClient = async (req, res) => {
       }
     }
 
+    await ensureClientOpeningSchema(prisma);
     const result = await prisma.$transaction(async (tx) => {
       const id = await generateCustomId({ entityTybe: "clients", prisma: tx });
+      const clientCode = isDraft ? null : await generateClientCode(tx);
+      const createdById = scope.user?.id ?? data.createdById ?? null;
 
       const client = await tx.client.create({
         data: {
           id,
+          clientCode,
           institution,
           companyName: data.companyName ?? null,
-          contactPerson: data.contactPerson ?? null,
+          contactPerson: contactPerson || null,
           address: data.address ?? null,
           email,
           phone,
-          source: data.source || (isDraft ? "Draft" : ""),
+          alternativePhone: data.alternativePhone
+            ? String(data.alternativePhone).trim()
+            : null,
+          source: data.source || (isDraft ? "Draft" : "Direct"),
+          createdById,
           clientType,
           contractStartDate: data.contractStartDate
             ? new Date(data.contractStartDate)
@@ -539,6 +575,14 @@ export const createClient = async (req, res) => {
         });
       }
 
+      await applyClientOpeningBalance(tx, {
+        clientId: client.id,
+        clientName: client.institution,
+        body: data,
+        actor: scope.user,
+        isDraft,
+      });
+
       let recurringDailyGeneration = null;
       if (schedule && data.autoGenerateTasks !== false) {
         recurringDailyGeneration = await generateDailyRecurringTasks({
@@ -557,7 +601,7 @@ export const createClient = async (req, res) => {
         recurringDailyGeneration,
       };
     }, {
-      timeout: 20000,
+      timeout: 30000,
     });
 
     res.status(201).json({ success: true, data: result });
@@ -620,6 +664,14 @@ export const updateClient = async (req, res) => {
       return res.status(404).json({ success: false, message: "Client not found" });
     }
 
+    if (
+      data.contactPerson !== undefined &&
+      !String(data.contactPerson).trim() &&
+      !existing.isDraft
+    ) {
+      return res.status(400).json({ success: false, error: "Contact person is required" });
+    }
+
     const finalizing = existing.isDraft && data.isDraft === false;
     const nextEmail =
       data.email !== undefined ? String(data.email).trim() || existing.email : undefined;
@@ -653,12 +705,21 @@ export const updateClient = async (req, res) => {
       }
     }
 
-    const client = await prisma.client.update({
+    await ensureClientOpeningSchema(prisma);
+    const client = await prisma.$transaction(async (tx) => {
+    const updated = await tx.client.update({
       where: { id },
       data: {
         ...(data.institution !== undefined ? { institution: data.institution } : {}),
         ...(data.companyName !== undefined ? { companyName: data.companyName } : {}),
         ...(data.contactPerson !== undefined ? { contactPerson: data.contactPerson } : {}),
+        ...(data.alternativePhone !== undefined
+          ? {
+              alternativePhone: data.alternativePhone
+                ? String(data.alternativePhone).trim()
+                : null,
+            }
+          : {}),
         ...(data.address !== undefined ? { address: data.address } : {}),
         ...(nextEmail !== undefined ? { email: nextEmail } : {}),
         ...(nextPhone !== undefined ? { phone: nextPhone } : {}),
@@ -691,6 +752,16 @@ export const updateClient = async (req, res) => {
         ...(data.createdAt ? { createdAt: new Date(data.createdAt) } : {}),
       },
     });
+
+    await applyClientOpeningBalance(tx, {
+      clientId: id,
+      clientName: updated.institution,
+      body: data,
+      actor: scope.user,
+      isDraft: updated.isDraft,
+    });
+    return updated;
+    }, { timeout: 30000 });
 
     if (data.discount !== undefined) {
       await prisma.incomeServiceAgreement.updateMany({
@@ -864,10 +935,43 @@ export const deleteClient = async (req, res) => {
     const scope = getScope(req);
     const existing = await prisma.client.findFirst({
       where: mergeWhere({ id }, clientBranchWhere(scope)),
-      select: { id: true },
+      select: { id: true, institution: true },
     });
     if (!existing) {
       return res.status(404).json({ success: false, message: "Client not found" });
+    }
+
+    const [
+      projectCount,
+      agreementCount,
+      contractCount,
+      quotationCount,
+      invoiceCount,
+      taskCount,
+    ] = await Promise.all([
+      prisma.project.count({ where: { clientId: id } }),
+      prisma.incomeServiceAgreement.count({ where: { clientId: id } }),
+      prisma.contract.count({ where: { clientId: id } }),
+      prisma.quotations.count({ where: { client_id: id } }),
+      prisma.customer_invoices.count({
+        where: { customers: { clientId: id } },
+      }),
+      prisma.clientTask.count({ where: { clientId: id } }),
+    ]);
+
+    const blockers = [];
+    if (projectCount) blockers.push(`${projectCount} project(s)`);
+    if (agreementCount) blockers.push(`${agreementCount} service agreement(s)`);
+    if (contractCount) blockers.push(`${contractCount} contract(s)`);
+    if (quotationCount) blockers.push(`${quotationCount} quotation(s)`);
+    if (invoiceCount) blockers.push(`${invoiceCount} invoice(s)`);
+    if (taskCount) blockers.push(`${taskCount} linked task(s)`);
+
+    if (blockers.length) {
+      return res.status(409).json({
+        success: false,
+        error: `Cannot delete "${existing.institution}" while linked records exist: ${blockers.join(", ")}.`,
+      });
     }
 
     await prisma.client.delete({ where: { id } });

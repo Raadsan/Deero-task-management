@@ -80,6 +80,7 @@ export const ROUTES = {
   forgotPassword: "/auth/forgot-password",
   verify: "/auth/verify",
   dashboard: "/",
+  projects: "/projects",
   payments: "/payments/revenue",
   paymentsRevenue: "/payments/revenue",
   paymentsPaid: "/payments/paid",
@@ -216,6 +217,9 @@ export const SWR_CACH_KEYS = {
   },
   services: {
     key: "/services/data",
+  },
+  projects: {
+    key: "/projects/data",
   },
   portfolios: {
     key: "/portfolios/data",

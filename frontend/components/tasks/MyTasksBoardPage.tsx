@@ -20,7 +20,7 @@ import {
 } from "@/lib/dashboard-ui";
 import { taskTitle } from "@/lib/my-task-filters";
 import { Task } from "@/lib/types";
-import { cn, resolveTaskDisplayStatus } from "@/lib/utils";
+import { cn, formatScheduledTask, resolveTaskDisplayStatus } from "@/lib/utils";
 import { AlertTriangle, CalendarDays, CheckCircle2, Circle, Clock3, LayoutGrid, Plus, Search, Table2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
@@ -212,7 +212,7 @@ export default function MyTasksBoardPage() {
                           <p className="mt-1 line-clamp-2 text-xs leading-5 text-zinc-500">{task.description}</p>
                           <div className="mt-2 flex items-center gap-1.5 text-[11px] text-zinc-400">
                             {lane.id === "overdue" ? <AlertTriangle className="size-3.5 text-red-500" /> : <Clock3 className="size-3.5" />}
-                            <span>{dateLabel(task.deadline)}</span>
+                            <span>{formatScheduledTask(task) ? `${formatScheduledTask(task)?.date} · ${formatScheduledTask(task)?.time}` : dateLabel(task.deadline)}</span>
                           </div>
                         </div>
                       </div>
@@ -237,7 +237,7 @@ export default function MyTasksBoardPage() {
               <TableRow className={dashboardTableHeadRowClass}>
                 <TableHead className={dashboardTableHeadClass}>Task</TableHead>
                 <TableHead className={dashboardTableHeadClass}>Priority</TableHead>
-                <TableHead className={dashboardTableHeadClass}>Due Date</TableHead>
+                <TableHead className={dashboardTableHeadClass}>Schedule</TableHead>
                 <TableHead className={dashboardTableHeadClass}>Status</TableHead>
                 <TableHead className={dashboardTableHeadClass}>Completed</TableHead>
                 <TableHead className={dashboardTableHeadClass}>Last Updated</TableHead>
@@ -250,7 +250,7 @@ export default function MyTasksBoardPage() {
                   <TableRow key={task.id} className={dashboardTableBodyRowClass}>
                     <TableCell className={dashboardTableCellClass}><span className="font-semibold text-slate-800">{taskTitle(task)}</span><span className="mt-1 block text-xs text-zinc-400">#{task.id}</span></TableCell>
                     <TableCell className={cn(dashboardTableCellClass, "capitalize")}>{task.priority ?? "Normal"}</TableCell>
-                    <TableCell className={dashboardTableCellClass}>{dateLabel(task.deadline)}</TableCell>
+                    <TableCell className={dashboardTableCellClass}>{formatScheduledTask(task) ? `${formatScheduledTask(task)?.date} · ${formatScheduledTask(task)?.time}` : dateLabel(task.deadline)}</TableCell>
                     <TableCell className={dashboardTableCellClass}><span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-semibold capitalize", getTaskStatusBadgeClass(status))}>{status === "pending" ? "To Do" : status}</span></TableCell>
                     <TableCell className={dashboardTableCellClass}>{task.completedAt ? dateLabel(task.completedAt) : "â€”"}</TableCell>
                     <TableCell className={dashboardTableCellClass}>{dateLabel(task.updatedAt ?? task.createdAt)}</TableCell>

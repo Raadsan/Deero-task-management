@@ -6,10 +6,16 @@ import { handleError } from "@/lib/error/handle-error";
 
 export type ServiceRecord = {
   id: string;
+  serviceCode?: string | null;
   serviceName: string;
   description?: string | null;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  createdById?: string | null;
+  createdBy?: { id: string; name: string; email?: string } | null;
   iconUrl?: string | null;
-  source?: "CUSTOM" | "ADVERT";
+  source?: "CUSTOM" | "ADVERT" | "LEGACY" | string;
   serviceType?: "ONE_TIME" | "SUBSCRIPTION";
   portfolioId?: string | null;
   portfolio?: {
@@ -18,7 +24,11 @@ export type ServiceRecord = {
     slug?: string | null;
   } | null;
   subService?: SubServiceRecord[];
-  _count?: { subService: number };
+  _count?: {
+    subService?: number;
+    clientService?: number;
+    serviceAgreements?: number;
+  };
 };
 
 export type SubServiceRecord = {
@@ -37,11 +47,20 @@ export type SubServiceRecord = {
 
 export async function getAllServices(params?: {
   portfolioId?: string;
+  activeOnly?: boolean;
 }): Promise<ActionResponse<ServiceRecord[]>> {
   try {
-    const query = params?.portfolioId
-      ? `?portfolioId=${encodeURIComponent(params.portfolioId)}`
-      : "";
+    const search = new URLSearchParams();
+    if (params?.portfolioId) {
+      search.set("portfolioId", params.portfolioId);
+    }
+    if (params?.activeOnly === true) {
+      search.set("activeOnly", "true");
+    }
+    if (params?.activeOnly === false) {
+      search.set("activeOnly", "false");
+    }
+    const query = search.toString() ? `?${search.toString()}` : "";
     const response = await api.get(`/api/services${query}`);
     if (response.data.success) {
       return { success: true, data: response.data.data };
@@ -59,6 +78,32 @@ export type SubServiceInput = {
   currency?: string;
   features?: string[];
 };
+
+export type AdvertMainService = {
+  externalId: string;
+  serviceName: string;
+  description?: string | null;
+  iconUrl?: string | null;
+  status: "Active" | "Inactive";
+};
+
+export async function getAdvertServicesCatalog(): Promise<
+  ActionResponse<AdvertMainService[]>
+> {
+  try {
+    const response = await api.get("/api/services/advert-catalog");
+    if (response.data.success) {
+      return { success: true, data: response.data.data ?? [] };
+    }
+    return {
+      success: false,
+      errors: { message: response.data.error ?? "Failed to load external services" },
+      data: [],
+    };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}
 
 export async function syncAdvertServices(): Promise<ActionResponse<{ synced: number; portfolio: string }>> {
   try {
@@ -79,6 +124,37 @@ export async function getServiceById(
       return { success: true, data: response.data.data };
     }
     return { success: false, errors: { message: "Service not found" } };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}
+
+export async function createMainService(data: {
+  serviceName: string;
+  description?: string;
+  isActive?: boolean;
+}): Promise<ActionResponse<ServiceRecord>> {
+  try {
+    const response = await api.post("/api/services", { ...data, mainOnly: true });
+    if (response.data.success) return { success: true, data: response.data.data };
+    return { success: false, errors: { message: response.data.error } };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}
+
+export async function updateMainService(
+  id: string,
+  data: {
+    serviceName: string;
+    description?: string;
+    isActive?: boolean;
+  },
+): Promise<ActionResponse<ServiceRecord>> {
+  try {
+    const response = await api.put(`/api/services/${id}`, { ...data, mainOnly: true });
+    if (response.data.success) return { success: true, data: response.data.data };
+    return { success: false, errors: { message: response.data.error } };
   } catch (error) {
     return handleError({ errors: error, type: "server" }) as ErrorResponse;
   }

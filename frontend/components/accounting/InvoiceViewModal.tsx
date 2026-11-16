@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useMemo, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { FileText, Printer, X, CreditCard, Send } from "lucide-react";
 import { customerInvoiceApi, type CustomerInvoice } from "@/lib/api/accounting/receivables/customerInvoiceApi";
 import { accountingToast } from "@/lib/accounting-ui";
 import A4InvoiceSheet, { InvoiceLineItem, PaymentMethodEntry } from "./A4InvoiceSheet";
-import InvoicePaymentDialog from "./InvoicePaymentDialog";
 import AccountingConfirmDialog from "./AccountingConfirmDialog";
 import { useBranchTheme } from "@/components/branding/BranchThemeProvider";
 import { resolveBranchLogoUrl } from "@/lib/portfolio-branding";
@@ -16,10 +16,12 @@ interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   invoice: CustomerInvoice | null;
+  autoPrint?: boolean;
   onInvoiceUpdated?: () => void;
 }
 
-export default function InvoiceViewModal({ open, onOpenChange, invoice, onInvoiceUpdated }: Props) {
+export default function InvoiceViewModal({ open, onOpenChange, invoice, autoPrint = false, onInvoiceUpdated }: Props) {
+  const router = useRouter();
   const { primaryColor, secondaryColor, name: branchName, logoUrl: branchLogoUrl } = useBranchTheme();
   const isRaadsan = Boolean(branchName?.toLowerCase().includes("raadsan") || primaryColor?.toLowerCase() === "#0166d2");
   const brandPrimary = isRaadsan ? (primaryColor || "#0166d2") : (primaryColor || "#6e0002");
@@ -27,21 +29,8 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice, onInvoic
   const brandLogo = resolveBranchLogoUrl(branchLogoUrl) || (isRaadsan ? "/logo-02.png" : "/deero-logo.png");
 
   const [activeInvoice, setActiveInvoice] = useState<CustomerInvoice | null>(invoice);
-  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [postConfirmOpen, setPostConfirmOpen] = useState(false);
   const [posting, setPosting] = useState(false);
-
-  const refreshInvoice = () => {
-    if (invoice?.id) {
-      customerInvoiceApi
-        .getById(invoice.id)
-        .then((fresh) => {
-          if (fresh) setActiveInvoice(fresh);
-        })
-        .catch(() => {});
-    }
-    if (onInvoiceUpdated) onInvoiceUpdated();
-  };
 
   useEffect(() => {
     setActiveInvoice(invoice);
@@ -54,6 +43,15 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice, onInvoic
         .catch(() => {});
     }
   }, [invoice, open]);
+
+  useEffect(() => {
+    if (!open || !autoPrint) return;
+    const timer = window.setTimeout(() => {
+      const printBtn = document.querySelector("#a4-invoice-sheet-print-btn") as HTMLButtonElement | null;
+      printBtn?.click();
+    }, 500);
+    return () => window.clearTimeout(timer);
+  }, [autoPrint, open, invoice?.id]);
 
   const currentInvoice = activeInvoice || invoice;
 
@@ -172,6 +170,23 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice, onInvoic
       ? Math.round((taxAmount / subtotal) * 100)
       : 5;
 
+  const advanceApplied = Number(currentInvoice?.advance_credit_applied || meta?.advance_credit_applied || 0);
+  const previousDebt = Number(currentInvoice?.previous_outstanding_balance || meta?.previous_outstanding_balance || 0);
+  const installmentAmount = Number(
+    currentInvoice?.contract_installment_amount
+    || meta?.contract_installment_amount
+    || Math.max(0, grandTotal - previousDebt),
+  );
+  const invoiceAmount = Number(
+    currentInvoice?.invoice_amount ?? Math.max(0, grandTotal - advanceApplied),
+  );
+  const cashPaid = Math.max(0, Number(currentInvoice?.paid_amount || 0) - advanceApplied);
+  const netDue = Number(currentInvoice?.amount_due ?? Math.max(0, grandTotal - Number(currentInvoice?.paid_amount || 0)));
+  const contractNumber = currentInvoice?.contract_number || meta?.contract_number || "—";
+  const installmentLabel = currentInvoice?.installment_number || meta?.installment_number
+    ? `Payment ${String(currentInvoice?.installment_number || meta?.installment_number).padStart(2, "0")}`
+    : lines[0]?.description || "—";
+
   const paymentAdvance =
     meta?.payment_advance || "70% of charge paid in advance.";
   const paymentCompletion =
@@ -231,6 +246,12 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice, onInvoic
     paid: "bg-emerald-50 text-emerald-700 border-emerald-200",
     cancelled: "bg-rose-50 text-rose-700 border-rose-200",
     overdue: "bg-red-100 text-red-700 border-red-300 ring-1 ring-red-200",
+    DRAFT: "bg-zinc-100 text-zinc-700 border-zinc-200",
+    UNPAID: "bg-rose-50 text-rose-700 border-rose-200",
+    PARTIALLY_PAID: "bg-orange-50 text-orange-700 border-orange-200",
+    PAID: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    OVERDUE: "bg-red-100 text-red-700 border-red-300 ring-1 ring-red-200",
+    CANCELLED: "bg-zinc-100 text-zinc-500 border-zinc-200",
   };
 
   const today = new Date();
@@ -243,16 +264,18 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice, onInvoic
     dueDate !== null &&
     dueDate < today;
 
-  const currentStatus =
-    currentInvoice?.state === "cancelled"
-      ? "cancelled"
+  const currentStatus = currentInvoice?.display_status
+    || (currentInvoice?.state === "cancelled"
+      ? "CANCELLED"
       : currentInvoice?.payment_state === "paid"
-      ? "paid"
+      ? "PAID"
       : currentInvoice?.payment_state === "partial"
-      ? "partial"
+      ? "PARTIALLY_PAID"
       : isOverdue
-      ? "overdue"
-      : currentInvoice?.state || "draft";
+      ? "OVERDUE"
+      : currentInvoice?.state === "posted"
+      ? "UNPAID"
+      : "DRAFT");
 
   if (!currentInvoice) return null;
 
@@ -311,6 +334,21 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice, onInvoic
         </DialogHeader>
 
         {/* Modal Body with A4 Invoice Template Sheet */}
+        <InvoiceDetails
+          invoice={currentInvoice}
+          customerName={invoiceTo}
+          contactPerson={contactPerson}
+          phone={contactPhone}
+          email={contactEmail}
+          status={currentStatus}
+          installmentAmount={installmentAmount}
+          previousDebt={previousDebt}
+          invoiceAmount={invoiceAmount}
+          advance={advanceApplied}
+          cashPaid={cashPaid}
+          netDue={netDue}
+          installmentLabel={installmentLabel}
+        />
         <div className="flex-1 overflow-y-auto bg-zinc-100 p-2 sm:p-4 flex justify-center">
           <div className="w-full">
             <A4InvoiceSheet
@@ -325,7 +363,8 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice, onInvoic
               subtotal={subtotal}
               vatPercent={vatPercent}
               taxAmount={taxAmount}
-              paidAmount={invoice.paid_amount ?? Number(invoice.amount_total) - Number(invoice.amount_due)}
+              paidAmount={cashPaid}
+              advanceCreditApplied={advanceApplied}
               grandTotal={grandTotal}
               paymentAdvance={paymentAdvance}
               paymentCompletion={paymentCompletion}
@@ -368,7 +407,13 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice, onInvoic
               <Button
                 type="button"
                 size="sm"
-                onClick={() => setPaymentDialogOpen(true)}
+                onClick={() => {
+                  onOpenChange(false);
+                  try {
+                    sessionStorage.setItem('receiptFromInvoiceId', String(currentInvoice.id));
+                  } catch {}
+                  router.push('/accounting/customer-receipts');
+                }}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold gap-1.5 shadow-sm"
               >
                 <CreditCard className="size-3.5" /> Register Payment
@@ -407,14 +452,151 @@ export default function InvoiceViewModal({ open, onOpenChange, invoice, onInvoic
         onConfirm={() => void handlePostInvoice()}
       />
 
-      {currentInvoice.state === "posted" && (
-        <InvoicePaymentDialog
-          open={paymentDialogOpen}
-          onOpenChange={setPaymentDialogOpen}
-          invoice={currentInvoice}
-          onSuccess={refreshInvoice}
-        />
-      )}
     </Dialog>
+  );
+}
+
+function milestoneName(value?: string | null) {
+  const labels: Record<string, string> = {
+    CONTRACT_START: "Advance",
+    AFTER_1_MONTH: "After 1 Month",
+    AFTER_3_MONTHS: "After 3 Months",
+    AFTER_6_MONTHS: "After 6 Months",
+    AFTER_12_MONTHS: "After 12 Months",
+    CONTRACT_COMPLETION: "Contract Completion",
+  };
+  if (!value) return "—";
+  return labels[value] || value.replace(/_/g, " ");
+}
+
+function detailDate(value?: string | null) {
+  if (!value) return "—";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+  return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+}
+
+function moneyText(value: number) {
+  return `$${Number(value || 0).toFixed(2)}`;
+}
+
+function InvoiceDetails({
+  invoice,
+  customerName,
+  contactPerson,
+  phone,
+  email,
+  status,
+  installmentAmount,
+  previousDebt,
+  invoiceAmount,
+  advance,
+  cashPaid,
+  netDue,
+  installmentLabel,
+}: {
+  invoice: CustomerInvoice;
+  customerName: string;
+  contactPerson: string;
+  phone: string;
+  email: string;
+  status: string;
+  installmentAmount: number;
+  previousDebt: number;
+  invoiceAmount: number;
+  advance: number;
+  cashPaid: number;
+  netDue: number;
+  installmentLabel: string;
+}) {
+  const address = invoice.client?.address || invoice.customers?.client?.address || "—";
+  const payments = invoice.payment_history || [];
+  const duration = invoice.contract_duration
+    || [detailDate(invoice.contract_start), detailDate(invoice.contract_end)].filter((value) => value !== "—").join(" – ")
+    || "—";
+  return (
+    <div className="max-h-[42vh] space-y-4 overflow-y-auto border-b border-zinc-200 bg-white px-5 py-4 text-xs text-zinc-700">
+      <DetailBlock title="Invoice">
+        <Detail label="Invoice number" value={invoice.invoice_number || "—"} />
+        <Detail label="Invoice date" value={detailDate(invoice.invoice_date)} />
+        <Detail label="Due date" value={detailDate(invoice.due_date)} />
+        <Detail label="Status" value={status.replace(/_/g, " ")} />
+      </DetailBlock>
+      <DetailBlock title="Customer">
+        <Detail label="Client name" value={customerName} />
+        <Detail label="Contact person" value={contactPerson || "—"} />
+        <Detail label="Phone" value={phone || "—"} />
+        <Detail label="Email" value={email || "—"} />
+        <Detail label="Address" value={address} />
+      </DetailBlock>
+      <DetailBlock title="Contract">
+        <Detail label="Contract number" value={invoice.contract_number || "—"} />
+        <Detail label="Contract title" value={invoice.contract_title || "—"} />
+        <Detail label="Duration" value={duration} />
+        <Detail label="Contract amount" value={invoice.contract_amount != null ? moneyText(Number(invoice.contract_amount)) : "—"} />
+        <Detail label="Payment terms" value={invoice.contract_payment_terms || "—"} />
+      </DetailBlock>
+      <DetailBlock title="Installment">
+        <Detail label="Installment" value={invoice.installment_label || installmentLabel || "—"} />
+        <Detail label="Percentage" value={invoice.installment_percentage != null ? `${invoice.installment_percentage}%` : "—"} />
+        <Detail label="Milestone" value={milestoneName(invoice.installment_milestone)} />
+        <Detail label="Scheduled due date" value={detailDate(invoice.installment_due_date || invoice.due_date)} />
+      </DetailBlock>
+      <DetailBlock title="Financial summary">
+        <Detail label="Contract installment amount" value={moneyText(installmentAmount)} />
+        <Detail label="Previous outstanding balance" value={moneyText(previousDebt)} />
+        <Detail label="Advance/credit applied" value={moneyText(advance)} />
+        <Detail label="Invoice amount" value={moneyText(invoiceAmount)} />
+        <Detail label="Amount paid" value={moneyText(cashPaid)} />
+        <Detail label="Balance due" value={moneyText(netDue)} />
+      </DetailBlock>
+      <div>
+        <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-zinc-500">Payment history</p>
+        {payments.length === 0 ? (
+          <p className="text-zinc-500">No cash receipt has been recorded for this invoice. Advance credit is not a receipt.</p>
+        ) : (
+          <table className="w-full border-collapse text-left">
+            <thead>
+              <tr className="border-b border-zinc-200 text-[10px] uppercase tracking-wide text-zinc-500">
+                <th className="py-1 pr-2 font-semibold">Date</th>
+                <th className="py-1 pr-2 font-semibold">Receipt</th>
+                <th className="py-1 pr-2 font-semibold">Method</th>
+                <th className="py-1 pr-2 font-semibold">Amount</th>
+                <th className="py-1 font-semibold">Reference</th>
+              </tr>
+            </thead>
+            <tbody>
+              {payments.map((payment, index) => (
+                <tr key={`${payment.receipt_number || "receipt"}-${index}`} className="border-b border-zinc-100">
+                  <td className="py-1.5 pr-2">{detailDate(payment.date)}</td>
+                  <td className="py-1.5 pr-2">{payment.receipt_number || "—"}</td>
+                  <td className="py-1.5 pr-2">{payment.method || "—"}</td>
+                  <td className="py-1.5 pr-2">{moneyText(Number(payment.amount || 0))}</td>
+                  <td className="py-1.5">{payment.reference || "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function DetailBlock({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section>
+      <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-zinc-500">{title}</p>
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">{children}</div>
+    </section>
+  );
+}
+
+function Detail({ label, value }: { label: string; value: string }) {
+  return (
+    <p>
+      <span className="text-zinc-500">{label}: </span>
+      <span className="font-semibold text-zinc-900">{value}</span>
+    </p>
   );
 }

@@ -11,11 +11,13 @@ import {
   updateService,
   updateSubService,
   syncAdvertServices,
+  getAdvertServicesCatalog,
 } from "./service.controller.js";
 
 const router = Router();
 
 router.get("/", getAllServices);
+router.get("/advert-catalog", getAdvertServicesCatalog);
 router.get("/sub/all", getAllSubServices);
 router.post("/", createService);
 router.post("/sync-advert", syncAdvertServices);

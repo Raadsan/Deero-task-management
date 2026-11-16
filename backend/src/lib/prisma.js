@@ -3,7 +3,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Singleton in dev; nodemon restarts when lib/generated/prisma/index.js changes.
+/** Bump when `npx prisma generate` changes the client schema (forces a fresh client in dev). */
+const PRISMA_SCHEMA_REV = "2026-11-contract-payment-terms";
 
 const globalForPrisma = globalThis;
 
@@ -27,11 +28,20 @@ function createPrismaClient() {
   });
 }
 
-export const prisma = globalForPrisma.prisma ?? createPrismaClient();
-
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
+if (
+  globalForPrisma.prisma &&
+  globalForPrisma.prismaSchemaRev !== PRISMA_SCHEMA_REV
+) {
+  void globalForPrisma.prisma.$disconnect().catch(() => {});
+  globalForPrisma.prisma = undefined;
 }
+
+if (!globalForPrisma.prisma) {
+  globalForPrisma.prisma = createPrismaClient();
+  globalForPrisma.prismaSchemaRev = PRISMA_SCHEMA_REV;
+}
+
+export const prisma = globalForPrisma.prisma;
 
 async function disconnectPrisma() {
   try {

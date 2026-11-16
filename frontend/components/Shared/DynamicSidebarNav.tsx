@@ -19,6 +19,7 @@ import {
   Building2,
   BarChart3,
   FileSpreadsheet,
+  FolderKanban,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -66,6 +67,7 @@ export default function DynamicSidebarNav({ data }: Props) {
     pathname.startsWith("/tasks/recurring-schedules") ||
     pathname.startsWith("/staff") ||
     pathname.startsWith("/services") ||
+    pathname.startsWith("/projects") ||
     pathname.startsWith("/portfolios") ||
     pathname.startsWith("/reports");
 
@@ -208,6 +210,12 @@ export default function DynamicSidebarNav({ data }: Props) {
       title: "Dashboard",
       url: "/tasks/dashboard",
       icon: LayoutDashboard,
+    },
+    {
+      id: "task-projects",
+      title: "Projects",
+      url: "/projects",
+      icon: FolderKanban,
     },
     {
       id: "task-all",

@@ -1,14 +1,10 @@
-import DeeroReportPage from "@/components/reports/DeeroReportPage";
-import StaffTasksSummaryReport from "@/components/reports/StaffTasksSummaryReport";
+import TasksPerformanceReport from "@/components/reports/TasksPerformanceReport";
 import ManagementPageShell from "@/components/Shared/ManagementPageShell";
 
 export default function TasksReportRoutePage() {
   return (
-    <ManagementPageShell title="Tasks Report">
-      <div className="space-y-6">
-        <DeeroReportPage type="tasks" chartsOnly />
-        <StaffTasksSummaryReport />
-      </div>
+    <ManagementPageShell title="Tasks Report" subtitle="System-wide task status, assignments, and schedule.">
+      <TasksPerformanceReport />
     </ManagementPageShell>
   );
 }

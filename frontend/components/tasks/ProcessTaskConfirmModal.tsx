@@ -19,6 +19,8 @@ import {
 import { formatStatusLabel } from "@/lib/dashboard-ui";
 import { taskTitle } from "@/lib/my-task-filters";
 import { Task } from "@/lib/types";
+import { evaluateScheduledTask } from "@/lib/scheduled-task-window";
+import { useNow } from "@/lib/use-now";
 import { cn, formatTaskDeadline, getTaskTableLabels, resolveTaskDisplayStatus } from "@/lib/utils";
 import { useBranchTheme } from "@/components/branding/BranchThemeProvider";
 import { Clock, Lock, Sparkles } from "lucide-react";
@@ -66,6 +68,7 @@ export default function ProcessTaskConfirmModal({
   onConfirm,
 }: Props) {
   const { primaryColor } = useBranchTheme();
+  const now = useNow();
   const [progress, setProgress] = useState(0);
   const [notes, setNotes] = useState("");
 
@@ -75,11 +78,18 @@ export default function ProcessTaskConfirmModal({
     setNotes("");
   }, [open, task]);
 
+  const scheduleGate = evaluateScheduledTask(task, now);
+  const scheduleLocked = scheduleGate.scheduled && !scheduleGate.canUpdateProgress;
   const displayStatus = task
-    ? resolveTaskDisplayStatus({ ...task, progress })
+    ? resolveTaskDisplayStatus(scheduleLocked ? task : { ...task, progress }, undefined, now)
     : "";
   const isCompleted = progress >= 100;
-  const isOverdue = task ? resolveTaskDisplayStatus(task) === "overdue" : false;
+  const isOverdue = scheduleGate.scheduled
+    ? scheduleGate.status === "overdue"
+    : task
+      ? resolveTaskDisplayStatus(task, undefined, now) === "overdue"
+      : false;
+  const progressLocked = scheduleLocked || (!scheduleGate.scheduled && isOverdue);
   const extraMinutes = Number(task?.extraTimeMinutes ?? 0);
   const hasExtraTime = extraMinutes > 0;
 
@@ -154,16 +164,23 @@ export default function ProcessTaskConfirmModal({
                 />
               </div>
 
-              {/* Deadline & Status */}
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 pt-2 border-t border-zinc-200/60">
-                <DetailRow
-                  label="Deadline"
-                  value={formatTaskDeadline(task.deadline, {
-                    status: task.status,
-                    progress,
-                    extraTimeMinutes: task.extraTimeMinutes,
-                  })}
-                />
+                {scheduleGate.scheduled ? (
+                  <>
+                    <DetailRow label="Scheduled Date" value={scheduleGate.dateLabel} />
+                    <DetailRow label="Start Time" value={scheduleGate.startLabel} />
+                    <DetailRow label="End Time" value={scheduleGate.endLabel} />
+                  </>
+                ) : (
+                  <DetailRow
+                    label="Deadline"
+                    value={formatTaskDeadline(task.deadline, {
+                      status: task.status,
+                      progress,
+                      extraTimeMinutes: task.extraTimeMinutes,
+                    })}
+                  />
+                )}
                 <DetailRow
                   label="Current Status"
                   value={formatStatusLabel(displayStatus)}
@@ -173,7 +190,14 @@ export default function ProcessTaskConfirmModal({
             </div>
 
             {/* Extra Time Highlight Banner */}
-            {hasExtraTime ? (
+            {scheduleLocked ? (
+              <div className="flex items-center gap-2.5 rounded-xl border border-zinc-200 bg-zinc-50 p-3 text-xs font-semibold text-zinc-700">
+                <Lock className="size-4 shrink-0 text-zinc-500" />
+                <span>{scheduleGate.reason}</span>
+              </div>
+            ) : null}
+
+            {!scheduleGate.scheduled && hasExtraTime ? (
               <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50/70 p-3.5 text-amber-900">
                 <Clock className="size-4 text-amber-600 mt-0.5 shrink-0" />
                 <div className="text-xs leading-relaxed">
@@ -194,7 +218,7 @@ export default function ProcessTaskConfirmModal({
             ) : null}
 
             {/* Overdue Warning */}
-            {isOverdue ? (
+            {!scheduleGate.scheduled && isOverdue ? (
               <div className="flex items-center gap-2.5 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-800">
                 <Lock className="size-4 shrink-0 text-red-600" />
                 <span>
@@ -223,7 +247,7 @@ export default function ProcessTaskConfirmModal({
                   onChange={(event) =>
                     setProgress(clampProgress(Number(event.target.value)))
                   }
-                  disabled={loading || isOverdue}
+                  disabled={loading || progressLocked}
                   style={{
                     background: `linear-gradient(to right, ${primaryColor} 0%, ${primaryColor} ${progress}%, #e4e4e7 ${progress}%, #e4e4e7 100%)`,
                     accentColor: primaryColor,
@@ -238,7 +262,7 @@ export default function ProcessTaskConfirmModal({
                   onChange={(event) =>
                     setProgress(clampProgress(Number(event.target.value)))
                   }
-                  disabled={loading || isOverdue}
+                  disabled={loading || progressLocked}
                   className={cn(configCompactInputClass, "w-20 text-center font-bold text-zinc-800")}
                 />
               </div>
@@ -255,7 +279,7 @@ export default function ProcessTaskConfirmModal({
                 onChange={(event) => setNotes(event.target.value)}
                 placeholder="Write a message or progress note for this task..."
                 rows={3}
-                disabled={loading}
+                disabled={loading || progressLocked}
                 className="w-full resize-none rounded-xl border border-zinc-200 bg-white p-3 text-xs leading-relaxed text-zinc-800 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10 disabled:opacity-50"
               />
             </div>
@@ -274,8 +298,8 @@ export default function ProcessTaskConfirmModal({
           </Button>
           <button
             type="button"
-            onClick={() => void onConfirm(isOverdue ? Number(task.progress ?? 0) : progress, notes)}
-            disabled={loading || !task || (isOverdue && !notes.trim())}
+            onClick={() => void onConfirm(progressLocked ? Number(task.progress ?? 0) : progress, notes)}
+            disabled={loading || !task || progressLocked || (isOverdue && !notes.trim())}
             className={cn(
               "h-10 min-w-[130px] px-6 text-xs font-bold text-white shadow-sm transition-all rounded-md",
               isCompleted ? "bg-emerald-600 hover:bg-emerald-700" : "",

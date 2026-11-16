@@ -1,10 +1,10 @@
-import DeeroReportPage from "@/components/reports/DeeroReportPage";
+import EmployeesPerformanceReport from "@/components/reports/EmployeesPerformanceReport";
 import ManagementPageShell from "@/components/Shared/ManagementPageShell";
 
 export default function UsersReportPage() {
   return (
-    <ManagementPageShell title="Users Report">
-      <DeeroReportPage type="users" />
+    <ManagementPageShell title="Employees Report" subtitle="Assigned projects, task status, and service performance for the selected period.">
+      <EmployeesPerformanceReport />
     </ManagementPageShell>
   );
 }

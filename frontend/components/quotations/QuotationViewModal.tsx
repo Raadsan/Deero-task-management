@@ -1,10 +1,10 @@
 "use client";
 
 import { accountingToast } from "@/lib/accounting-ui";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, FileText, Loader2 } from "lucide-react";
+import { ArrowRight, FileText, Loader2, Receipt } from "lucide-react";
 import { quotationApi, type Quotation } from "@/lib/api/quotationApi";
 import A4QuotationSheet, { type QuotationLineItem, type PaymentMethodEntry } from "./A4QuotationSheet";
 import { useBranchTheme } from "@/components/branding/BranchThemeProvider";
@@ -15,16 +15,31 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   quotation: Quotation | null;
   onConverted?: () => void;
+  /** Called when user clicks Convert to Invoice on an accepted quotation. */
+  onConvertToInvoice?: (quotation: Quotation) => void;
 }
 
-export default function QuotationViewModal({ open, onOpenChange, quotation, onConverted }: Props) {
-  const [converting, setConverting] = useState(false);
+export default function QuotationViewModal({
+  open,
+  onOpenChange,
+  quotation,
+  onConverted,
+  onConvertToInvoice,
+}: Props) {
+  const [accepting, setAccepting] = useState(false);
   const [confirmAccept, setConfirmAccept] = useState(false);
+  const [localStatus, setLocalStatus] = useState<string | null>(null);
 
   const { primaryColor, secondaryColor, name: branchName } = useBranchTheme();
   const isRaadsan = Boolean(branchName?.toLowerCase().includes("raadsan") || primaryColor?.toLowerCase() === "#0166d2");
   const brandPrimary = isRaadsan ? (primaryColor || "#0166d2") : (primaryColor || "#6e0002");
   const brandSecondary = isRaadsan ? (secondaryColor || "#fdc210") : (secondaryColor || "#ea580c");
+
+  useEffect(() => {
+    setLocalStatus(quotation?.status || null);
+  }, [quotation?.id, quotation?.status, open]);
+
+  const status = localStatus || quotation?.status || "DRAFT";
 
   const meta = useMemo(() => {
     if (!quotation?.notes) return null;
@@ -114,23 +129,34 @@ export default function QuotationViewModal({ open, onOpenChange, quotation, onCo
     CONVERTED: "bg-purple-50 text-purple-700 border-purple-200",
   };
 
-  const handleConvert = async () => {
+  const handleAccept = async () => {
     if (!quotation) return;
     try {
-      setConverting(true);
-      await quotationApi.accept(quotation.id);
-      accountingToast(`Quotation ${quotation.quotation_number} accepted — available for invoice import`, "success");
+      setAccepting(true);
+      const updated = await quotationApi.accept(quotation.id);
+      setLocalStatus(updated?.status || "ACCEPTED");
+      accountingToast(`Quotation ${quotation.quotation_number} accepted`, "success");
       setConfirmAccept(false);
       if (onConverted) onConverted();
-      onOpenChange(false);
     } catch (err: any) {
       accountingToast(err?.response?.data?.message || err.message || "Failed to accept quotation", "error");
     } finally {
-      setConverting(false);
+      setAccepting(false);
     }
   };
 
+  const handleConvertToInvoice = () => {
+    if (!quotation) return;
+    const payload = { ...quotation, status: status as Quotation["status"] };
+    onOpenChange(false);
+    if (onConvertToInvoice) onConvertToInvoice(payload);
+  };
+
   if (!quotation) return null;
+
+  const canAccept = status !== "ACCEPTED" && status !== "CONVERTED" && !quotation.converted_invoice_id;
+  const canConvert = status === "ACCEPTED" && !quotation.converted_invoice_id;
+  const isInvoiced = Boolean(quotation.converted_invoice_id) || status === "CONVERTED";
 
   return (
     <>
@@ -152,10 +178,10 @@ export default function QuotationViewModal({ open, onOpenChange, quotation, onCo
               </div>
               <span
                 className={`ml-2 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider rounded-full border ${
-                  statusColors[quotation.status] || "bg-zinc-100"
+                  statusColors[status] || "bg-zinc-100"
                 }`}
               >
-                {quotation.status}
+                {status}
               </span>
             </div>
 
@@ -214,24 +240,30 @@ export default function QuotationViewModal({ open, onOpenChange, quotation, onCo
               >
                 Close
               </Button>
-              {quotation.status !== "ACCEPTED" &&
-                quotation.status !== "CONVERTED" &&
-                !quotation.converted_invoice_id && (
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={() => setConfirmAccept(true)}
-                    disabled={converting}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold gap-1.5"
-                  >
-                    {converting ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
-                    {converting ? "Accepting..." : "Accept Quotation"}
-                  </Button>
-                )}
-              {quotation.status === "ACCEPTED" && !quotation.converted_invoice_id && (
-                <span className="text-xs font-semibold text-emerald-700">Accepted — import from Invoice form</span>
+              {canAccept && (
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => setConfirmAccept(true)}
+                  disabled={accepting}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold gap-1.5"
+                >
+                  {accepting ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
+                  {accepting ? "Accepting..." : "Accept Quotation"}
+                </Button>
               )}
-              {Boolean(quotation.converted_invoice_id) && (
+              {canConvert && (
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={handleConvertToInvoice}
+                  className="bg-[#6e0002] hover:bg-[#8a0a0c] text-white font-bold gap-1.5"
+                >
+                  <Receipt className="size-4" />
+                  Convert to Invoice
+                </Button>
+              )}
+              {isInvoiced && (
                 <span className="text-xs font-semibold text-purple-700">
                   Invoiced
                   {quotation.converted_invoice?.invoice_number
@@ -249,8 +281,8 @@ export default function QuotationViewModal({ open, onOpenChange, quotation, onCo
         title="Accept Quotation"
         description={`Accept quotation ${quotation.quotation_number}?`}
         confirmLabel="Accept Quotation"
-        busy={converting}
-        notice="No invoice will be created yet. Import it later from Customer Invoices → Import from Accepted Quotation."
+        busy={accepting}
+        notice="After accepting, use Convert to Invoice to open the invoice form with this quotation."
         details={
           <div className="space-y-1 text-sm">
             <div className="flex justify-between gap-4">
@@ -263,8 +295,8 @@ export default function QuotationViewModal({ open, onOpenChange, quotation, onCo
             </div>
           </div>
         }
-        onCancel={() => !converting && setConfirmAccept(false)}
-        onConfirm={() => void handleConvert()}
+        onCancel={() => !accepting && setConfirmAccept(false)}
+        onConfirm={() => void handleAccept()}
       />
     </>
   );

@@ -6,6 +6,7 @@ import AccountingProductsPage from '@/components/accounting/AccountingProductsPa
 import ChartOfAccountsPage from '@/components/accounting/ChartOfAccountsPage';
 import FiscalManagementPage from '@/components/accounting/FiscalManagementPage';
 import GeneralLedgerPage from '@/components/accounting/GeneralLedgerPage';
+import AccountingCustomersPage from '@/components/accounting/AccountingCustomersPage';
 import PartnerMasterDataPage from '@/components/Shared/PartnerMasterDataPage';
 import CustomerInvoicesPage from '@/components/accounting/CustomerInvoicesPage';
 import CustomerReceiptsPage from '@/components/accounting/CustomerReceiptsPage';
@@ -103,7 +104,7 @@ export default async function AccountingDynamicSectionPage({ params }: Props) {
   }
 
   if (key === 'customers') {
-    return <PartnerMasterDataPage kind="customer" />;
+    return <AccountingCustomersPage />;
   }
 
   if (key === 'receivables') {

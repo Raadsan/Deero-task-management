@@ -20,7 +20,7 @@ export default function Header({ session: serverSession }: { session: AuthSessio
   const liveUser = session.data?.user as any;
   const userInitial = (liveUser?.name || serverSession?.user.name)?.charAt(0).toUpperCase() || "A";
   const userName = liveUser?.name || serverSession?.user.name || "Administrator";
-  const userRole = liveUser?.role || serverSession?.user.role || "SUPERADMIN";
+  const userRole = (liveUser?.role || serverSession?.user.role || "Staff").toString();
   const userEmail = liveUser?.email || serverSession?.user.email || "";
   const userImage = liveUser?.image as string | null | undefined;
 

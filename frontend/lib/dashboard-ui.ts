@@ -97,6 +97,9 @@ export function getTaskStatusBadgeClass(status: string): string {
       return "bg-primary text-white font-bold";
     case "overdue":
       return "bg-[#e6005c] text-white font-bold";
+    case "on_hold":
+    case "on hold":
+      return "bg-[#7c3aed] text-white font-bold";
     case "transferred":
     case "reassigned":
       return "bg-[#6366f1] text-white font-bold";
@@ -112,6 +115,7 @@ export function formatStatusLabel(status: string): string {
   if (lower === "in_progress" || lower === "in progress" || lower === "in process" || lower === "inprogres" || lower === "inprocess") return "In Process";
   if (lower === "completed" || lower === "complete" || lower === "done") return "Complete";
   if (lower === "overdue") return "Overdue";
+  if (lower === "on_hold" || lower === "on hold") return "On Hold";
   return status.charAt(0).toUpperCase() + status.slice(1);
 }
 

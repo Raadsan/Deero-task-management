@@ -32,6 +32,7 @@ import {
   authRoutes,
   notificationRoutes,
   utilRoutes,
+  reportRoutes,
 } from "./modules/index.js";
 import { attachSessionScope } from "./middlewares/session-scope.js";
 import { prisma } from "./lib/prisma.js";
@@ -128,6 +129,7 @@ app.use("/api/accounting", attachSessionScope, accountingRoutes);
 app.use("/api/roles", roleRoutes);
 app.use("/api/utils", utilRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/reports", attachSessionScope, reportRoutes);
 
 app.get("/", (req, res) => {
   res.send("Deero Management API is running...");
@@ -270,6 +272,24 @@ app.listen(port, async () => {
   }
 
   try {
+    const { generateReadyInstallmentInvoices } = await import("./lib/contract-invoice-scheduler.js");
+    const runContractInvoiceJob = async () => {
+      try {
+        const result = await generateReadyInstallmentInvoices();
+        if (result.created > 0) {
+          console.log(`[contract-invoice] Created ${result.created} installment invoice(s)`);
+        }
+      } catch (err) {
+        console.error("[contract-invoice] Failed:", err.message);
+      }
+    };
+    setTimeout(runContractInvoiceJob, 20_000);
+    setInterval(runContractInvoiceJob, 60 * 1000);
+  } catch (error) {
+    console.error("Failed to start contract invoice scheduler:", error);
+  }
+
+  try {
     const { checkAndNotifyOverdueTasks } = await import(
       "./lib/overdue-checker.js"
     );
@@ -285,5 +305,24 @@ app.listen(port, async () => {
     setInterval(runOverdueJob, 10 * 60 * 1000);
   } catch (error) {
     console.error("Failed to start overdue task checker:", error);
+  }
+
+  try {
+    const { syncScheduledTaskActivation } = await import("./lib/scheduled-task-window.js");
+    const { prisma } = await import("./lib/prisma.js");
+    const runScheduleJob = async () => {
+      try {
+        const updated = await syncScheduledTaskActivation(prisma);
+        if (updated > 0) {
+          console.log(`[schedule-job] Updated ${updated} scheduled task(s)`);
+        }
+      } catch (err) {
+        console.error("[schedule-job] Failed:", err.message);
+      }
+    };
+    await runScheduleJob();
+    setInterval(runScheduleJob, 30 * 1000);
+  } catch (error) {
+    console.error("Failed to start scheduled task activation:", error);
   }
 });

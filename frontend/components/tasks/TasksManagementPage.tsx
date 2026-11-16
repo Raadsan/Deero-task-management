@@ -36,7 +36,8 @@ import {
   formatStatusLabel,
   getTaskStatusBadgeClass,
 } from "@/lib/dashboard-ui";
-import { cn, formatTaskDeadline, getTaskTableLabels, isTaskNotesUnseen, resolveTaskDisplayStatus } from "@/lib/utils";
+import { useNow } from "@/lib/use-now";
+import { cn, formatScheduledTask, formatTaskDeadline, getTaskTableLabels, isTaskNotesUnseen, resolveTaskDisplayStatus } from "@/lib/utils";
 import { CalendarDays, Edit, Eye, Plus, Search } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -81,6 +82,7 @@ import { useLiveTimer } from "@/hooks/useLiveTimer";
 
 export default function TasksManagementPage() {
   const [mounted, setMounted] = useState(false);
+  const now = useNow();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [userFilter, setUserFilter] = useState("all");
@@ -165,7 +167,7 @@ export default function TasksManagementPage() {
         description.includes(query) ||
         taskId.includes(query);
 
-      const displayStatus = resolveTaskDisplayStatus(task);
+      const displayStatus = resolveTaskDisplayStatus(task, undefined, now);
 
       const matchesStatus =
         statusFilter === "all" ||
@@ -177,7 +179,7 @@ export default function TasksManagementPage() {
 
       return matchesSearch && matchesStatus && matchesUser;
     });
-  }, [tasks, search, statusFilter, userFilter]);
+  }, [tasks, search, statusFilter, userFilter, now]);
 
   const totalPages = Math.ceil(filteredTasks.length / pageSize) || 1;
   const paginatedTasks = useMemo(() => {
@@ -320,7 +322,7 @@ export default function TasksManagementPage() {
                   Progress
                 </TableHead>
                 <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                  Deadline
+                  Schedule
                 </TableHead>
                 <TableHead className={cn(dashboardTableHeadClass, "text-center")}>
                   Status
@@ -354,7 +356,7 @@ export default function TasksManagementPage() {
                 paginatedTasks.map((task) => {
                   const { taskName, clientName, serviceName } = getTaskTableLabels(task);
                   // Display status
-                  const displayStatus = resolveTaskDisplayStatus(task);
+                  const displayStatus = resolveTaskDisplayStatus(task, undefined, now);
                   const progress = task.progress ?? 0;
                   // Assignee info
                   const assignedName = task.assignedTo?.name || "Unassigned";
@@ -471,6 +473,13 @@ export default function TasksManagementPage() {
                                 : "text-primary",
                           )} />
                           <div className="flex min-w-0 flex-1 flex-col leading-tight">
+                            {formatScheduledTask(task) ? (
+                              <>
+                                <span className={cn("truncate text-xs font-semibold", dashboardTextPrimary)}>{formatScheduledTask(task)?.date}</span>
+                                <span className="mt-0.5 truncate text-[10px] text-zinc-500">{formatScheduledTask(task)?.time}</span>
+                              </>
+                            ) : (
+                              <>
                             <span
                               className={cn(
                                 "truncate text-xs font-semibold",
@@ -508,6 +517,8 @@ export default function TasksManagementPage() {
                             )}>
                               {taskDeadlineDate(task)}
                             </span>
+                              </>
+                            )}
                           </div>
                         </div>
                       </TableCell>

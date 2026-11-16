@@ -50,11 +50,14 @@ model Staff {
   accounts                  Account[]
   auditLogs                 AuditLog[]
   managedClients            Client[]                 @relation("ClientAccountManager")
+  clientsCreated            Client[]                 @relation("ClientCreatedBy")
   contentRequestAssignments ContentRequestAssignee[]
   contentRequestsCreated    ContentRequest[]         @relation("ContentRequestCreatedBy")
   uploadedContractDocuments ContractDocument[]       @relation("ContractDocumentUploadedBy")
   createdContracts          Contract[]               @relation("ContractCreatedBy")
   createdProjects           Project[]                @relation("ProjectCreatedBy")
+  servicesCreated           Service[]                @relation("ServiceCreatedBy")
+  servicesUpdated           Service[]                @relation("ServiceUpdatedBy")
   assignedRecurringSteps    RecurringScheduleStep[]  @relation("RecurringStepAssignee")
   sessions                  Session[]
   portfolio                 Portfolio?               @relation(fields: [portfolioId], references: [id], map: "Users_branchId_fkey")
@@ -63,6 +66,8 @@ model Staff {
   transferredToTasks        TaskTransferHistory[]    @relation("TaskTransferTo")
   transferredByTasks        TaskTransferHistory[]    @relation("TaskTransferredBy")
   assignedTasks             Task[]                   @relation("TaskAssignee")
+  projectSubAssignments     ProjectSubService[]      @relation("ProjectSubServiceAssignee")
+  projectExtraRequests      ProjectExtraRequest[]    @relation("ProjectExtraRequestedBy")
 
   @@index([portfolioId], map: "Users_branchId_fkey")
   @@index([roleId], map: "Users_roleId_fkey")
@@ -118,13 +123,16 @@ model Verification {
 
 model Client {
   id                 String                   @id
+  clientCode         String?                  @unique
   createdAt          DateTime?                @default(now())
   updatedAt          DateTime?                @updatedAt
   institution        String
   email              String                   @unique
   phone              String                   @unique
+  alternativePhone   String?
   source             String
   accountManagerId   String?
+  createdById        String?
   address            String?                  @db.Text
   portfolioId        String?
   clientType         ClientType               @default(ONE_TIME)
@@ -135,12 +143,18 @@ model Client {
   isActive           Boolean                  @default(true)
   monthlyBudget      Float?
   notes              String?                  @db.Text
+  openingBalanceAmount   Decimal              @default(0.00) @db.Decimal(15, 2)
+  openingBalanceType     String?              @db.VarChar(32)
+  openingBalanceDate     DateTime?            @db.Date
+  openingBalanceNotes    String?              @db.Text
+  openingJournalEntryId  Int?                 @db.UnsignedInt
   isDraft            Boolean                  @default(false)
   clientSubService   ClientSubService[]
   serviceAgreements  IncomeServiceAgreement[]
   clientService      ClientService[]
   installments       ClientInstallment[]
   accountManager     Staff?                   @relation("ClientAccountManager", fields: [accountManagerId], references: [id])
+  createdBy          Staff?                   @relation("ClientCreatedBy", fields: [createdById], references: [id])
   portfolio          Portfolio?               @relation(fields: [portfolioId], references: [id], map: "clients_branchId_fkey")
   clientTask         ClientTask[]
   contentCycles      ContentCycle[]
@@ -155,14 +169,42 @@ model Client {
   @@index([clientType])
   @@index([isDraft])
   @@index([accountManagerId], map: "clients_accountManagerId_fkey")
+  @@index([createdById], map: "clients_createdById_fkey")
   @@index([portfolioId], map: "clients_branchId_idx")
   @@map("clients")
 }
 
+model ClientOpeningBalanceHistory {
+  id              Int       @id @default(autoincrement()) @db.UnsignedInt
+  clientId        String
+  previousAmount  Decimal   @default(0.00) @db.Decimal(15, 2)
+  previousType    String?   @db.VarChar(32)
+  previousDate    DateTime? @db.Date
+  previousNotes   String?   @db.Text
+  amount          Decimal   @default(0.00) @db.Decimal(15, 2)
+  balanceType     String?   @db.VarChar(32)
+  balanceDate     DateTime? @db.Date
+  notes           String?   @db.Text
+  journalEntryId  Int?      @db.UnsignedInt
+  action          String    @db.VarChar(16)
+  changedById     String?
+  changedByName   String?   @db.VarChar(128)
+  changedAt       DateTime  @default(now())
+
+  @@index([clientId], map: "idx_obh_client")
+  @@map("client_opening_balance_history")
+}
+
 model Service {
   id                String                   @id
+  serviceCode       String?                  @unique
   serviceName       String
   description       String?                  @db.Text
+  isActive          Boolean                  @default(true)
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+  createdById       String?
+  updatedById       String?
   portfolioId       String?
   iconUrl           String?                  @db.Text
   source            String                   @default("CUSTOM")
@@ -171,12 +213,17 @@ model Service {
   serviceType       ServiceType              @default(ONE_TIME)
   serviceAgreements IncomeServiceAgreement[]
   clientService     ClientService[]
+  createdBy         Staff?                   @relation("ServiceCreatedBy", fields: [createdById], references: [id])
+  updatedBy         Staff?                   @relation("ServiceUpdatedBy", fields: [updatedById], references: [id])
   portfolio         Portfolio?               @relation(fields: [portfolioId], references: [id], map: "services_branchId_fkey")
   subService        SubService[]
+  projectLinks      ProjectServiceLink[]
 
   @@unique([source, externalId])
   @@unique([serviceName, portfolioId], map: "services_serviceName_branchId_key")
   @@index([portfolioId], map: "services_branchId_fkey")
+  @@index([createdById], map: "services_createdById_fkey")
+  @@index([updatedById], map: "services_updatedById_fkey")
   @@map("services")
 }
 
@@ -309,6 +356,8 @@ model TaskTransferHistory {
   progressAtTransfer Int       @default(0)
   deadlineAtTransfer DateTime?
   transferredById    String?
+  reason             String?
+  note               String?   @db.Text
   fromAssignee       Staff     @relation("TaskTransferFrom", fields: [fromAssigneeId], references: [id], onDelete: Cascade)
   task               Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
   toAssignee         Staff     @relation("TaskTransferTo", fields: [toAssigneeId], references: [id], onDelete: Cascade)
@@ -629,6 +678,14 @@ model Project {
   clientId          String
   portfolioId       String?
   createdById       String?
+  projectCode       String?                  @unique
+  billingMode       String                   @default("ONE_TIME")
+  lifecycleStatus   String                   @default("ACTIVE")
+  contractId        String?
+  archived          Boolean                  @default(false)
+  isDraft           Boolean                  @default(false)
+  scheduleConfig    Json?
+  primaryContract   Contract?                @relation("ProjectPrimaryContract", fields: [contractId], references: [id])
   serviceAgreements IncomeServiceAgreement[]
   contentRequests   ContentRequest[]
   contracts         Contract[]
@@ -636,12 +693,78 @@ model Project {
   client            Client                   @relation(fields: [clientId], references: [id], onDelete: Cascade)
   createdBy         Staff?                   @relation("ProjectCreatedBy", fields: [createdById], references: [id])
   tasks             Task[]
+  serviceLinks      ProjectServiceLink[]
+  cycles            ProjectCycle[]
+  extraRequests     ProjectExtraRequest[]
 
   @@index([clientId])
   @@index([status])
   @@index([portfolioId], map: "projects_branchId_idx")
   @@index([createdById], map: "projects_createdById_fkey")
+  @@index([contractId], map: "projects_contractId_fkey")
   @@map("projects")
+}
+
+model ProjectServiceLink {
+  id          String              @id
+  projectId   String
+  serviceId   String
+  project     Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  service     Service             @relation(fields: [serviceId], references: [id])
+  subServices ProjectSubService[]
+
+  @@unique([projectId, serviceId])
+  @@index([serviceId])
+  @@map("project_service_links")
+}
+
+model ProjectSubService {
+  id               String             @id
+  projectServiceId String
+  name             String
+  description      String?            @db.Text
+  quantity         Int                @default(1)
+  unit             String             @default("Items")
+  targetQuantity   Int                @default(1)
+  assigneeId       String?
+  link             ProjectServiceLink @relation(fields: [projectServiceId], references: [id], onDelete: Cascade)
+  assignee         Staff?             @relation("ProjectSubServiceAssignee", fields: [assigneeId], references: [id])
+  extraRequests    ProjectExtraRequest[]
+
+  @@index([projectServiceId])
+  @@index([assigneeId])
+  @@map("project_sub_services")
+}
+
+model ProjectCycle {
+  id        String   @id
+  projectId String
+  label     String
+  startDate DateTime
+  endDate   DateTime
+  createdAt DateTime @default(now())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@map("project_cycles")
+}
+
+model ProjectExtraRequest {
+  id            String            @id
+  projectId     String
+  subServiceId  String
+  quantity      Int
+  description   String?           @db.Text
+  status        String            @default("PENDING")
+  requestedById String?
+  createdAt     DateTime          @default(now())
+  project       Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  subService    ProjectSubService @relation(fields: [subServiceId], references: [id])
+  requestedBy   Staff?            @relation("ProjectExtraRequestedBy", fields: [requestedById], references: [id])
+
+  @@index([projectId])
+  @@index([subServiceId])
+  @@map("project_extra_requests")
 }
 
 model Contract {
@@ -649,18 +772,22 @@ model Contract {
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
   contractNumber String              @unique
+  title          String?
+  duration       String?
   startDate      DateTime?
   endDate        DateTime?
   renewalDate    DateTime?
   totalAmount    Float?
   paymentTerms   String?             @db.Text
-  status         ContractStatus      @default(ACTIVE)
+  status         ContractStatus      @default(DRAFT)
   notes          String?             @db.Text
   clientId       String
   projectId      String?
   portfolioId    String?
   createdById    String?
   billingDay     Int?                @default(1)
+  billingPeriodMonths Int?
+  contractType   String?             @default("MONTHLY")
   monthlyAmount  Float?
   installments   ClientInstallment[]
   documents      ContractDocument[]
@@ -668,6 +795,7 @@ model Contract {
   client         Client              @relation(fields: [clientId], references: [id], onDelete: Cascade)
   createdBy      Staff?              @relation("ContractCreatedBy", fields: [createdById], references: [id])
   project        Project?            @relation(fields: [projectId], references: [id])
+  primaryForProjects Project[]       @relation("ProjectPrimaryContract")
 
   @@index([clientId])
   @@index([projectId])
@@ -689,8 +817,11 @@ model ClientInstallment {
   paidAmount  Float             @default(0)
   status      InstallmentStatus @default(PENDING)
   notes       String?           @db.Text
-  clientId    String
-  contractId  String?
+  clientId           String
+  contractId         String?
+  installmentNumber  Int?
+  percentage         Float?
+  dueMilestone       String?
   client      Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
   contract    Contract?         @relation(fields: [contractId], references: [id])
 
@@ -1807,6 +1938,7 @@ enum ContractStatus {
   EXPIRED
   TERMINATED
   RENEWED
+  CANCELLED
 }
 
 enum InstallmentStatus {

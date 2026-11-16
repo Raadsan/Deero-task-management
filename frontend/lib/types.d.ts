@@ -123,6 +123,11 @@ interface User {
 
 interface Client {
   id: number | string;
+  clientCode?: string | null;
+  alternativePhone?: string | null;
+  createdBy?: { id: string; name: string } | null;
+  createdByName?: string | null;
+  rawCreatedAt?: string | null;
   institution: string;
   email: string;
   phone: string;
@@ -149,6 +154,12 @@ interface Client {
   contactPerson?: string | null;
   address?: string | null;
   notes?: string | null;
+  openingBalanceAmount?: number | null;
+  openingBalanceType?: "CUSTOMER_OWES" | "WE_OWE" | string | null;
+  openingBalanceDate?: string | null;
+  openingBalanceNotes?: string | null;
+  currentOutstandingBalance?: number | null;
+  canEditOpeningBalance?: boolean;
   portfolioId?: string | null;
   monthlyBudget?: number | null;
   contractStartDate?: string | null;
@@ -193,6 +204,7 @@ type ActionResponse<T = null> = {
     details?: string;
     loginPath?: string;
   };
+  canEditOpeningBalance?: boolean;
   statusCode?: number;
 };
 

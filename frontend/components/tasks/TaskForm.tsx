@@ -1,6 +1,6 @@
 "use client";
 
-import { createTask, editTask } from "@/lib/apis/taskApi";
+import { createTask, editTask, holdTask, resumeTask } from "@/lib/apis/taskApi";
 import {
   getAllAssignees,
   getTaskFormBranchOptions,
@@ -8,6 +8,8 @@ import {
 } from "@/lib/apis/sharedApi";
 import { ROUTES, SWR_CACH_KEYS, TASK_PRIORITIES } from "@/lib/constants";
 import { btnFormCancel, btnFormSubmit } from "@/lib/dashboard-ui";
+import { evaluateScheduledTask, holdSnapshot } from "@/lib/scheduled-task-window";
+import { useNow } from "@/lib/use-now";
 import { cn, getTaskStatus, resolveTaskDisplayStatus } from "@/lib/utils";
 import { ArrowRightLeft, CheckSquare, Clock, Lock, MessageSquareText, Plus, UserCheck, Users, X } from "lucide-react";
 import { CreateTaskSchema, TaskSchema } from "@/lib/validations";
@@ -84,6 +86,8 @@ export default function TaskForm({
 
   const [taskKind, setTaskKind] = useState<TaskKind | null>(initialKind);
   const [taskFeatures, setTaskFeatures] = useState<Array<{ id: string; name: string; done: boolean }>>([]);
+  const [holdReason, setHoldReason] = useState("");
+  const taskOnHold = holdSnapshot(currentTask?.features).active;
 
   const {
     handleSubmit,
@@ -99,7 +103,7 @@ export default function TaskForm({
       taskName: currentTask && !hasClientInit ? (currentTask.serviceInformation || "") : "",
       description: initialData?.description ?? currentTask?.description ?? "",
       assigneeId: initialData?.assigneeId ?? currentTask?.assignedTo?.id ?? "",
-      status: (currentTask?.status as TaskStatus) ?? TaskStatus.pending,
+      status: taskOnHold ? TaskStatus.on_hold : ((currentTask?.status as TaskStatus) ?? TaskStatus.pending),
       clientInstitutionId: String(initialData?.clientInstitutionId ?? currentTask?.institutions?.[0]?.id ?? ""),
       department: initialData?.department ?? currentTask?.department ?? "",
       priority: currentTask?.priority
@@ -255,6 +259,9 @@ export default function TaskForm({
   }
 
   const [transiton, setStartTransition] = useTransition();
+  const now = useNow();
+  const scheduleGate = evaluateScheduledTask(currentTask, now);
+  const scheduleLocked = scheduleGate.scheduled && !scheduleGate.canUpdateProgress;
   const router = useRouter();
   const { mutate } = useSWRConfig();
   const isModal = Boolean(onSuccess || onCancel);
@@ -557,13 +564,30 @@ export default function TaskForm({
         toast.error(result?.errors?.message || "Failed to created Task");
       });
     } else if (formType === "edit") {
+      if (data.status === TaskStatus.on_hold && !taskOnHold && !holdReason.trim()) {
+        toast.error("A reason is required to put this task on hold");
+        return;
+      }
       startTransition(async () => {
+        if (data.status === TaskStatus.on_hold && !taskOnHold) {
+          const held = await holdTask(String(taskId), holdReason.trim());
+          if (!held.success) {
+            toast.error(held.errors?.message || "Could not put the task on hold");
+            return;
+          }
+        } else if (data.status !== TaskStatus.on_hold && taskOnHold) {
+          const resumed = await resumeTask(String(taskId));
+          if (!resumed.success) {
+            toast.error(resumed.errors?.message || "Could not resume the task");
+            return;
+          }
+        }
         const result = await editTask({
           taskId,
           startDate: data.startDate,
           deadline: data.deadline,
           extraTimeMinutes: Math.round(Number(data.extraTimeHours ?? 0) * 60),
-          status: data.status,
+          status: data.status === TaskStatus.on_hold ? (currentTask?.status || TaskStatus.in_progress) : data.status,
           assgineeId: selectedAssigneeIds[0] || data.assigneeId,
           assigneeIds: selectedAssigneeIds,
           description: data.description,
@@ -573,10 +597,10 @@ export default function TaskForm({
           progress: data.progress,
           completedAt: data.status === TaskStatus.completed ? (data.completedAt ?? new Date()) : null,
           serviceInformation: data.serviceInformation,
-          features: taskFeatures,
+          ...(taskFeatures.length ? { features: taskFeatures } : {}),
         });
         if (result.success) {
-          toast.success("Successfully Edited Task");
+          toast.success(data.status === TaskStatus.on_hold ? "Task put on hold" : "Successfully Edited Task");
           refreshTasksList();
           if (onSuccess) return onSuccess();
           return router.push(ROUTES.tasks);
@@ -590,7 +614,7 @@ export default function TaskForm({
           taskId,
           deadline: data.deadline,
           extraTimeMinutes: Math.round(Number(data.extraTimeHours ?? 0) * 60),
-          status: data.status,
+          status: data.status === TaskStatus.on_hold ? (currentTask?.status || TaskStatus.in_progress) : data.status,
           assgineeId: data.assigneeId,
           description: data.description,
           department: data.department,
@@ -1030,7 +1054,7 @@ export default function TaskForm({
                 errorMessage={fieldMessage("status")}
                 invalid={fieldInvalid("status")}
                 elements={taskStatus.filter(
-                  (s) => s !== TaskStatus.pending && s !== TaskStatus.in_progress,
+                  (s) => s !== TaskStatus.pending && s !== TaskStatus.in_progress && s !== TaskStatus.on_hold,
                 )}
                 compact={isModal}
                 onChange={(value) => {
@@ -1073,6 +1097,24 @@ export default function TaskForm({
                 }}
               />
             )}
+
+            {!isCreate && watchedStatus === TaskStatus.on_hold ? (
+              taskOnHold ? (
+                <p className="text-sm text-violet-700">
+                  This task is on hold{holdSnapshot(currentTask?.features).reason ? `: ${holdSnapshot(currentTask?.features).reason}` : ""}. Choose another status and save to resume it.
+                </p>
+              ) : (
+                <label className="block text-sm font-medium text-zinc-700">
+                  Reason for On Hold
+                  <textarea
+                    className="mt-1.5 min-h-20 w-full rounded-md border border-zinc-200 px-3 py-2 text-sm outline-none focus:border-primary"
+                    placeholder="Why is this task going on hold?"
+                    value={holdReason}
+                    onChange={(event) => setHoldReason(event.target.value)}
+                  />
+                </label>
+              )
+            ) : null}
 
             {String(watchedStatus).toLowerCase() === "completed" && (
               <DatePicker
@@ -1174,7 +1216,12 @@ export default function TaskForm({
             {!isCreate && (
               <>
                 {/* Show overdue banner only when task is overdue AND no extra time has been entered in the form yet */}
-                {resolveTaskDisplayStatus(currentTask) === "overdue" && !(Number(extraTimeHoursValue) > 0) ? (
+                {scheduleLocked ? (
+                  <div className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 p-3 text-xs font-semibold text-zinc-700">
+                    <Lock className="size-4 shrink-0 text-zinc-500" />
+                    <span>{scheduleGate.reason}</span>
+                  </div>
+                ) : resolveTaskDisplayStatus(currentTask, undefined, now) === "overdue" && !(Number(extraTimeHoursValue) > 0) ? (
                   <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-800">
                     <Lock className="size-4 shrink-0 text-red-600" />
                     <span>Task is overdue and expired. Progress updates are locked until extra time is added.</span>
@@ -1212,7 +1259,7 @@ export default function TaskForm({
                       },
                     }),
                   }}
-                  disbaled={!isAssignee || (resolveTaskDisplayStatus(currentTask) === "overdue" && !(Number(extraTimeHoursValue) > 0)) || transiton}
+                  disbaled={!isAssignee || scheduleLocked || (!scheduleGate.scheduled && resolveTaskDisplayStatus(currentTask, undefined, now) === "overdue" && !(Number(extraTimeHoursValue) > 0)) || transiton}
                   errorMessage={fieldMessage("progress")}
                   invalid={fieldInvalid("progress")}
                   compact={isModal}

@@ -35,7 +35,9 @@ import {
   getTaskStatusBadgeClass,
 } from "@/lib/dashboard-ui";
 import { Task } from "@/lib/types";
-import { cn, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
+import { evaluateScheduledTask } from "@/lib/scheduled-task-window";
+import { useNow } from "@/lib/use-now";
+import { cn, formatScheduledTask, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
 import { CalendarDays, Eye, Gauge, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
@@ -111,6 +113,7 @@ export default function MyTasksTodayPage() {
   }, [mutateTodayTasks]);
 
   const [mounted, setMounted] = useState(false);
+  const now = useNow();
   const allTasks = normalizeMyTasksList(tasksRaw).filter(
     (task) => !isBoardOnlyTask(task),
   );
@@ -125,12 +128,25 @@ export default function MyTasksTodayPage() {
   const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null);
 
   const todayTasks = useMemo(() => {
-    return allTasks.filter(
-      (task) =>
-        isToday(task.startDate) ||
+    return allTasks.filter((task) => {
+      const features = task.features && typeof task.features === "object" && !Array.isArray(task.features)
+        ? (task.features as { projectTask?: boolean; scheduledDate?: string })
+        : null;
+      if (features?.projectTask || features?.scheduledDate) {
+        const scheduled = String(features.scheduledDate || "").slice(0, 10);
+        if (/^\d{4}-\d{2}-\d{2}$/.test(scheduled)) {
+          const [year, month, day] = scheduled.split("-").map(Number);
+          const now = new Date();
+          return year === now.getFullYear() && month - 1 === now.getMonth() && day === now.getDate();
+        }
+        return isToday(task.startDate ?? undefined);
+      }
+      return (
+        isToday(task.startDate ?? undefined) ||
         isToday(task.deadline) ||
-        isToday((task as Task & { createdAt?: string | Date }).createdAt),
-    );
+        isToday((task as Task & { createdAt?: string | Date }).createdAt)
+      );
+    });
   }, [allTasks]);
 
   const filteredTasks = useMemo(() => {
@@ -150,14 +166,14 @@ export default function MyTasksTodayPage() {
         description.includes(query) ||
         taskId.includes(query);
 
-      const displayStatus = resolveTaskDisplayStatus(task);
+      const displayStatus = resolveTaskDisplayStatus(task, undefined, now);
       const matchesStatus =
         statusFilter === "all" ||
         displayStatus.toLowerCase() === statusFilter.toLowerCase();
 
       return matchesSearch && matchesStatus;
     });
-  }, [todayTasks, search, statusFilter]);
+  }, [todayTasks, search, statusFilter, now]);
 
   const totalPages = Math.ceil(filteredTasks.length / pageSize) || 1;
   const paginatedTasks = useMemo(() => {
@@ -308,7 +324,7 @@ export default function MyTasksTodayPage() {
                   <TableHead
                     className={cn(dashboardTableHeadClass, "text-left")}
                   >
-                    Deadline
+                    Schedule
                   </TableHead>
                   <TableHead
                     className={cn(dashboardTableHeadClass, "text-right")}
@@ -344,7 +360,8 @@ export default function MyTasksTodayPage() {
                   </TableRow>
                 ) : (
                   paginatedTasks.map((task) => {
-                    const displayStatus = resolveTaskDisplayStatus(task);
+                    const displayStatus = resolveTaskDisplayStatus(task, undefined, now);
+                    const progressGate = evaluateScheduledTask(task, now);
                     const busy = updatingTaskId === String(task.id);
 
                     return (
@@ -401,6 +418,13 @@ export default function MyTasksTodayPage() {
                               )}
                             />
                             <div className="min-w-0 leading-tight">
+                              {formatScheduledTask(task) ? (
+                                <>
+                                  <span className="block truncate text-[11px] font-semibold text-zinc-700">{formatScheduledTask(task)?.date}</span>
+                                  <span className="mt-0.5 block text-[10px] text-zinc-500">{formatScheduledTask(task)?.time}</span>
+                                </>
+                              ) : (
+                                <>
                               <span
                                 className={cn(
                                   "block truncate text-[11px] font-semibold",
@@ -430,6 +454,8 @@ export default function MyTasksTodayPage() {
                               >
                                 {taskDeadlineDate(task)}
                               </span>
+                                </>
+                              )}
                             </div>
                           </div>
                         </TableCell>
@@ -479,10 +505,10 @@ export default function MyTasksTodayPage() {
                               type="button"
                               variant="ghost"
                               size="sm"
-                              title="Update progress"
-                              disabled={busy}
+                              title={progressGate.canUpdateProgress ? "Update progress" : progressGate.reason}
+                              disabled={busy || !progressGate.canUpdateProgress}
                               onClick={() => openProcessDialog(task)}
-                              className={actionBtnView}
+                              className={cn(actionBtnView, !progressGate.canUpdateProgress && "cursor-not-allowed opacity-40")}
                             >
                               <Gauge className="size-4" />
                             </Button>

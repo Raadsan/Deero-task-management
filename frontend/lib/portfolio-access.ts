@@ -29,6 +29,30 @@ export const BRANCH_ADMIN_MANAGEABLE_ROLE_NAMES = [
   "manager",
 ] as const;
 
+export function isGlobalConfigAdminRole(role?: string | null) {
+  const normalized = normalizeRoleName(role);
+  return (
+    normalized === "superadmin" ||
+    normalized === "admin" ||
+    normalized.includes("superadmin")
+  );
+}
+
+/** Auth `role` is often empty when only `roleId` is set — fall back to the linked config role name. */
+export function resolveStaffActorRole(
+  sessionRole?: string | null,
+  roleId?: string | null,
+  configRoles?: Array<{ id: string; name: string }>,
+) {
+  const fromSession = normalizeRoleName(sessionRole);
+  if (fromSession) return fromSession;
+  if (roleId && configRoles?.length) {
+    const linked = configRoles.find((role) => role.id === roleId);
+    return normalizeRoleName(linked?.name);
+  }
+  return "";
+}
+
 export function canManageRolePermissions(
   actorRole?: string | null,
   targetRoleName?: string | null,
@@ -36,7 +60,7 @@ export function canManageRolePermissions(
   const actor = normalizeRoleName(actorRole);
   const target = normalizeRoleName(targetRoleName);
 
-  if (actor === "superadmin") return true;
+  if (isGlobalConfigAdminRole(actor)) return true;
   if (actor === "portfolio admin") {
     return BRANCH_ADMIN_MANAGEABLE_ROLE_NAMES.includes(
       target as (typeof BRANCH_ADMIN_MANAGEABLE_ROLE_NAMES)[number],

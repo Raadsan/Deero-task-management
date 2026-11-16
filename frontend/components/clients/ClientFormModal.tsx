@@ -10,15 +10,13 @@ import {
 import { getClientById } from "@/lib/apis/clientApi";
 import { Client } from "@/lib/types";
 import useSWR from "swr";
-import ClientCreateWizard from "./ClientCreateWizard";
-import ClientForm from "./ClientForm";
+import SimpleClientRegistrationForm from "./SimpleClientRegistrationForm";
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   mode: "create" | "edit";
   clientId?: string;
-  draftClientId?: string;
 }
 
 async function loadClientFormData(mode: "create" | "edit", clientId?: string) {
@@ -34,7 +32,6 @@ export default function ClientFormModal({
   onOpenChange,
   mode,
   clientId,
-  draftClientId,
 }: Props) {
   const { data, isLoading } = useSWR(
     open ? ["client-form-modal", mode, clientId ?? "new"] : null,
@@ -43,15 +40,15 @@ export default function ClientFormModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden border-zinc-200 bg-white p-0 sm:max-w-3xl">
+      <DialogContent className="flex max-h-[90vh] flex-col overflow-hidden border-zinc-200 bg-white p-0 sm:max-w-2xl">
         <DialogHeader className="shrink-0 border-b border-zinc-100 px-6 py-4 text-left">
           <DialogTitle className="text-xl font-bold text-[#1e293b]">
-            {mode === "create" ? "Create Client" : "Edit Client"}
+            {mode === "create" ? "Client Registration" : "Edit Client"}
           </DialogTitle>
           <DialogDescription className="text-sm text-zinc-500">
             {mode === "create"
-              ? "3 steps: type, details, then optional service, contract, and schedule. Save as draft anytime."
-              : "Update client details, portfolio, service, and agreement information."}
+              ? "Register a new client with contact and status details."
+              : "Update client contact information and status."}
           </DialogDescription>
         </DialogHeader>
 
@@ -63,9 +60,8 @@ export default function ClientFormModal({
               ))}
             </div>
           ) : open ? (
-            <ClientCreateWizard
-              draftClientId={mode === "create" ? draftClientId : undefined}
-              editClientId={mode === "edit" ? clientId : undefined}
+            <SimpleClientRegistrationForm
+              mode={mode}
               initialClient={mode === "edit" ? (data?.currentClient as Client | undefined) : undefined}
               onSuccess={() => onOpenChange(false)}
               onCancel={() => onOpenChange(false)}

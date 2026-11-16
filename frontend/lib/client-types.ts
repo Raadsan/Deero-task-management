@@ -11,13 +11,53 @@ export type ContentType =
   | "MARKETING_CAMPAIGN"
   | "OTHER";
 
-export const CONTRACT_STATUS_OPTIONS = [
+export const CONTRACT_REGISTRATION_STATUS_OPTIONS = [
   { value: "DRAFT", label: "Draft" },
   { value: "ACTIVE", label: "Active" },
   { value: "EXPIRED", label: "Expired" },
-  { value: "TERMINATED", label: "Terminated" },
+  { value: "CANCELLED", label: "Cancelled" },
+] as const;
+
+export const CONTRACT_STATUS_OPTIONS = [
+  ...CONTRACT_REGISTRATION_STATUS_OPTIONS,
+  { value: "TERMINATED", label: "Cancelled" },
   { value: "RENEWED", label: "Renewed" },
 ] as const;
+
+export const CONTRACT_DURATION_OPTIONS = [
+  { value: "ONE_MONTH", label: "1 Month" },
+  { value: "THREE_MONTHS", label: "3 Months" },
+  { value: "SIX_MONTHS", label: "6 Months" },
+  { value: "TWELVE_MONTHS", label: "12 Months" },
+  { value: "ENDLESS", label: "Endless" },
+] as const;
+
+export const CONTRACT_TYPE_OPTIONS = [
+  { value: "ONE_TIME", label: "One-time" },
+  { value: "MONTHLY", label: "Monthly" },
+] as const;
+
+export const ONE_TIME_PAYMENT_TERM_OPTIONS = [
+  { value: "ADVANCE_70_30", label: "70% Advance / 30% Completion" },
+  { value: "ADVANCE_50_50", label: "50% Advance / 50% Completion" },
+  { value: "FULL_ON_COMPLETION", label: "Full Payment on Completion" },
+] as const;
+
+export const MONTHLY_PAYMENT_TERM_OPTIONS = [
+  { value: "QUARTERLY", label: "Quarterly" },
+  { value: "SEMI_ANNUALLY", label: "Semi-Annual" },
+  { value: "ANNUALLY", label: "Annual" },
+  { value: "CUSTOM", label: "Custom percentage-based payments" },
+  { value: "MONTHLY", label: "Monthly" },
+  { value: "FULL_PAYMENT", label: "Full Payment" },
+] as const;
+
+export const CONTRACT_PAYMENT_TERMS_OPTIONS = [
+  ...ONE_TIME_PAYMENT_TERM_OPTIONS,
+  ...MONTHLY_PAYMENT_TERM_OPTIONS,
+] as const;
+
+export type ContractDuration = (typeof CONTRACT_DURATION_OPTIONS)[number]["value"];
 
 export type ContractStatus = (typeof CONTRACT_STATUS_OPTIONS)[number]["value"];
 

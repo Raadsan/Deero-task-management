@@ -21,6 +21,8 @@ import {
 import { formatStatusLabel } from "@/lib/dashboard-ui";
 import { taskTitle } from "@/lib/my-task-filters";
 import { Task } from "@/lib/types";
+import { evaluateScheduledTask } from "@/lib/scheduled-task-window";
+import { useNow } from "@/lib/use-now";
 import { cn, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
 import { ArrowRightLeft, Clock, Lock } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -44,12 +46,15 @@ export default function MyTaskQuickEditModal({
   task,
 }: Props) {
   const { mutate } = useSWRConfig();
+  const now = useNow();
   const [progress, setProgress] = useState(0);
+  const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!open || !task) return;
     setProgress(clampProgress(Number(task.progress ?? 0)));
+    setNotes("");
   }, [open, task]);
 
   async function handleSave() {
@@ -63,7 +68,8 @@ export default function MyTaskQuickEditModal({
       const result = await editTask({
         taskId: task.id,
         progress: nextProgress,
-        status: isCompleted ? "completed" : "pending",
+        status: isCompleted ? "completed" : "in_progress",
+        notes: notes.trim() || undefined,
       });
 
       if (result.success) {
@@ -89,8 +95,12 @@ export default function MyTaskQuickEditModal({
     }
   }
 
+  const scheduleGate = evaluateScheduledTask(task, now);
+  const scheduleLocked = Boolean(task) && scheduleGate.scheduled && !scheduleGate.canUpdateProgress;
+  const deadlineLocked = Boolean(task) && !scheduleGate.scheduled && resolveTaskDisplayStatus(task, undefined, now) === "overdue";
+  const progressLocked = scheduleLocked || deadlineLocked;
   const displayStatus = task
-    ? resolveTaskDisplayStatus({ ...task, progress })
+    ? resolveTaskDisplayStatus(scheduleLocked ? task : { ...task, progress }, undefined, now)
     : "";
   const isCompleted = progress >= 100;
 
@@ -138,13 +148,21 @@ export default function MyTaskQuickEditModal({
                   label="Supervisor"
                   value={task.supervisor || "N/A"}
                 />
-                <DetailRow
-                  label="Deadline"
-                  value={formatTaskDeadline(task.deadline, {
-                    status: task.status,
-                    progress,
-                  })}
-                />
+                {scheduleGate.scheduled ? (
+                  <>
+                    <DetailRow label="Scheduled Date" value={scheduleGate.dateLabel} />
+                    <DetailRow label="Start Time" value={scheduleGate.startLabel} />
+                    <DetailRow label="End Time" value={scheduleGate.endLabel} />
+                  </>
+                ) : (
+                  <DetailRow
+                    label="Deadline"
+                    value={formatTaskDeadline(task.deadline, {
+                      status: task.status,
+                      progress,
+                    })}
+                  />
+                )}
                 <DetailRow
                   label="Created"
                   value={formatTaskDeadline(
@@ -176,7 +194,12 @@ export default function MyTaskQuickEditModal({
               ) : null}
             </div>
 
-            {resolveTaskDisplayStatus(task) === "overdue" ? (
+            {scheduleLocked ? (
+              <div className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 p-3 text-xs font-semibold text-zinc-700">
+                <Lock className="size-4 shrink-0 text-zinc-500" />
+                <span>{scheduleGate.reason}</span>
+              </div>
+            ) : resolveTaskDisplayStatus(task, undefined, now) === "overdue" ? (
               <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-xs font-semibold text-red-800">
                 <Lock className="size-4 shrink-0 text-red-600" />
                 <span>Task is overdue and deadline has ended. Progress updates are locked until extra time is added by your manager.</span>
@@ -216,7 +239,7 @@ export default function MyTaskQuickEditModal({
                     setProgress(Math.max(minVal, val));
                   }}
                   className="accent-primary h-2 w-full cursor-pointer appearance-none rounded-lg bg-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed"
-                  disabled={saving || resolveTaskDisplayStatus(task) === "overdue"}
+                  disabled={saving || progressLocked}
                 />
                 <input
                   type="number"
@@ -229,9 +252,23 @@ export default function MyTaskQuickEditModal({
                     setProgress(Math.max(minVal, val));
                   }}
                   className={cn(configCompactInputClass, "w-20 text-center disabled:opacity-40")}
-                  disabled={saving || resolveTaskDisplayStatus(task) === "overdue"}
+                  disabled={saving || progressLocked}
                 />
               </div>
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="quick-progress-notes" className="text-xs font-bold uppercase tracking-wider text-zinc-500">
+                Notes / Message <span className="font-normal normal-case text-zinc-400">(Optional)</span>
+              </label>
+              <textarea
+                id="quick-progress-notes"
+                value={notes}
+                onChange={(event) => setNotes(event.target.value)}
+                placeholder="Write a message or progress note for this task..."
+                rows={3}
+                disabled={saving || progressLocked}
+                className="w-full resize-none rounded-xl border border-zinc-200 bg-white p-3 text-xs leading-relaxed text-zinc-800 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/10 disabled:opacity-50"
+              />
             </div>
           </div>
         ) : null}
@@ -248,7 +285,7 @@ export default function MyTaskQuickEditModal({
           <Button
             type="button"
             onClick={() => void handleSave()}
-            disabled={saving || !task || resolveTaskDisplayStatus(task) === "overdue"}
+            disabled={saving || !task || progressLocked}
             className={cn(
               isCompleted && "bg-emerald-600 text-white hover:bg-emerald-700",
             )}

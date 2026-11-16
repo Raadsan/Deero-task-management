@@ -1,6 +1,6 @@
 import { prisma } from "../../../lib/prisma.js";
 import mysql from "mysql2/promise";
-import { generateCustomId } from "../../../lib/id-generator.js";
+import { generateCustomId, generateServiceCode } from "../../../lib/id-generator.js";
 import {
   denyIfOutOfScope,
   directBranchWhere,
@@ -13,8 +13,36 @@ import {
 const serviceInclude = {
   subService: { orderBy: [{ sortOrder: "asc" }, { name: "asc" }] },
   portfolio: { select: { id: true, name: true, slug: true } },
-  _count: { select: { subService: true } },
+  createdBy: { select: { id: true, name: true, email: true } },
+  updatedBy: { select: { id: true, name: true, email: true } },
+  _count: {
+    select: {
+      subService: true,
+      clientService: true,
+      serviceAgreements: true,
+    },
+  },
 };
+
+function parseActiveFilter(value) {
+  if (value === "true" || value === "1") return true;
+  if (value === "false" || value === "0") return false;
+  return undefined;
+}
+
+async function assertUniqueServiceName(trimmedName, excludeId) {
+  const duplicate = await prisma.service.findFirst({
+    where: {
+      serviceName: trimmedName,
+      ...(excludeId ? { NOT: { id: excludeId } } : {}),
+    },
+  });
+  if (duplicate) {
+    const error = new Error("A service with this name already exists.");
+    error.statusCode = 400;
+    throw error;
+  }
+}
 
 function mapServiceError(error) {
   const raw = error?.message || "";
@@ -104,17 +132,32 @@ async function loadServiceById(id) {
 export const getAllServices = async (req, res) => {
   try {
     const scope = getScope(req);
-    const cacheKey = scope.seesAllBranches ? "all" : (scope.portfolioId || "public");
-    const cached = serviceListCache.get(cacheKey);
-    if (cached && Date.now() - cached.createdAt < SERVICE_LIST_CACHE_MS) {
-      return res.json({ success: true, data: cached.data });
+    const activeOnly = parseActiveFilter(req.query.activeOnly);
+    const hasQueryFilters = activeOnly !== undefined;
+
+    const cacheKey = `${scope.seesAllBranches ? "all" : (scope.portfolioId || "public")}:active=${activeOnly ?? "any"}`;
+    if (!hasQueryFilters) {
+      const legacyKey = scope.seesAllBranches ? "all" : (scope.portfolioId || "public");
+      const cached = serviceListCache.get(legacyKey) || serviceListCache.get(cacheKey);
+      if (cached && Date.now() - cached.createdAt < SERVICE_LIST_CACHE_MS) {
+        return res.json({ success: true, data: cached.data });
+      }
     }
+
+    const where = mergeWhere(directBranchWhere(scope), { source: { not: "LEGACY" } });
+    if (activeOnly === true) where.isActive = true;
+    if (activeOnly === false) where.isActive = false;
+
     const services = await prisma.service.findMany({
-      where: mergeWhere(directBranchWhere(scope), { source: { not: "LEGACY" } }),
+      where,
       include: serviceInclude,
-      orderBy: [{ portfolio: { name: "asc" } }, { serviceName: "asc" }],
+      orderBy: [{ serviceCode: "asc" }, { serviceName: "asc" }],
     });
-    serviceListCache.set(cacheKey, { createdAt: Date.now(), data: services });
+
+    if (!hasQueryFilters) {
+      const legacyKey = scope.seesAllBranches ? "all" : (scope.portfolioId || "public");
+      serviceListCache.set(legacyKey, { createdAt: Date.now(), data: services });
+    }
     res.json({ success: true, data: services });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -138,7 +181,109 @@ export const getServiceById = async (req, res) => {
   }
 };
 
+async function createMainServiceRecord(req, res) {
+  const { serviceName, description, isActive = true } = req.body;
+  try {
+    const scope = getScope(req);
+    const trimmedName = String(serviceName ?? "").trim();
+    if (!trimmedName) {
+      return res.status(400).json({ success: false, error: "Service name is required" });
+    }
+
+    await assertUniqueServiceName(trimmedName);
+    const resolvedBranchId = (await getMainBranch())?.id || resolveWritableBranchId(scope, null);
+    const createdById = scope.user?.id ?? null;
+    const active = isActive !== false && isActive !== "inactive" && isActive !== "false";
+
+    const serviceId = await prisma.$transaction(async (tx) => {
+      const id = await generateCustomId({ entityTybe: "services", prisma: tx });
+      const serviceCode = await generateServiceCode(tx);
+      await tx.service.create({
+        data: {
+          id,
+          serviceCode,
+          serviceName: trimmedName,
+          description: description?.trim() || null,
+          isActive: active,
+          source: "CUSTOM",
+          serviceType: "ONE_TIME",
+          portfolioId: resolvedBranchId ?? null,
+          createdById,
+        },
+      });
+      return id;
+    }, SERVICE_TX_OPTIONS);
+
+    const service = await loadServiceById(serviceId);
+    clearServiceListCache();
+    res.status(201).json({ success: true, data: service });
+  } catch (error) {
+    console.error("createMainServiceRecord error:", error);
+    const message = error.message?.includes("already exists")
+      ? error.message
+      : mapServiceError(error);
+    res.status(error.statusCode || (error.code === "P2002" ? 400 : 500)).json({
+      success: false,
+      error: message,
+    });
+  }
+}
+
+async function updateMainServiceRecord(req, res) {
+  const { id } = req.params;
+  const { serviceName, description, isActive } = req.body;
+  try {
+    const scope = getScope(req);
+    const trimmedName = String(serviceName ?? "").trim();
+    if (!trimmedName) {
+      return res.status(400).json({ success: false, error: "Service name is required" });
+    }
+
+    const existingService = await prisma.service.findFirst({
+      where: mergeWhere({ id }, directBranchWhere(scope)),
+    });
+    if (!existingService) {
+      return res.status(404).json({ success: false, error: "Service not found" });
+    }
+    if (denyIfOutOfScope(res, scope, existingService.portfolioId)) return;
+
+    await assertUniqueServiceName(trimmedName, id);
+
+    const active =
+      isActive === undefined
+        ? existingService.isActive
+        : isActive !== false && isActive !== "inactive" && isActive !== "false";
+
+    await prisma.service.update({
+      where: { id },
+      data: {
+        serviceName: trimmedName,
+        description: description?.trim() ?? null,
+        isActive: active,
+        updatedById: scope.user?.id ?? null,
+      },
+    });
+
+    const service = await loadServiceById(id);
+    clearServiceListCache();
+    res.json({ success: true, data: service });
+  } catch (error) {
+    console.error("updateMainServiceRecord error:", error);
+    const message = error.message?.includes("already exists")
+      ? error.message
+      : mapServiceError(error);
+    res.status(error.statusCode || (error.code === "P2002" ? 400 : 500)).json({
+      success: false,
+      error: message,
+    });
+  }
+}
+
 export const createService = async (req, res) => {
+  if (req.body?.mainOnly === true) {
+    return createMainServiceRecord(req, res);
+  }
+
   const { serviceName, description, portfolioId, serviceType = "ONE_TIME", subServices = [] } = req.body;
   try {
     const scope = getScope(req);
@@ -171,13 +316,16 @@ export const createService = async (req, res) => {
 
     const serviceId = await prisma.$transaction(async (tx) => {
       const id = await generateCustomId({ entityTybe: "services", prisma: tx });
+      const serviceCode = await generateServiceCode(tx);
       await tx.service.create({
         data: {
           id,
+          serviceCode,
           serviceName: trimmedName,
           description: description?.trim() || null,
           serviceType,
           portfolioId: resolvedBranchId,
+          createdById: scope.user?.id ?? null,
         },
       });
 
@@ -214,6 +362,10 @@ export const createService = async (req, res) => {
 
 export const updateService = async (req, res) => {
   const { id } = req.params;
+  if (req.body?.mainOnly === true) {
+    return updateMainServiceRecord(req, res);
+  }
+
   const { serviceName, description, portfolioId, serviceType = "ONE_TIME", subServices = [] } = req.body;
   try {
     const scope = getScope(req);
@@ -264,6 +416,7 @@ export const updateService = async (req, res) => {
           description: description?.trim() ?? null,
           serviceType,
           portfolioId: resolvedBranchId,
+          updatedById: scope.user?.id ?? null,
         },
       });
 
@@ -319,11 +472,31 @@ export const deleteService = async (req, res) => {
     const scope = getScope(req);
     const existing = await prisma.service.findFirst({
       where: mergeWhere({ id }, directBranchWhere(scope)),
+      select: { id: true, serviceName: true, portfolioId: true },
     });
     if (!existing) {
       return res.status(404).json({ success: false, error: "Service not found" });
     }
     if (denyIfOutOfScope(res, scope, existing.portfolioId)) return;
+
+    const [clientLinks, agreements, subCount] = await Promise.all([
+      prisma.clientService.count({ where: { serviceId: id } }),
+      prisma.incomeServiceAgreement.count({ where: { serviceId: id } }),
+      prisma.subService.count({ where: { categoryId: id } }),
+    ]);
+
+    const blockers = [];
+    if (clientLinks) blockers.push(`${clientLinks} client link(s)`);
+    if (agreements) blockers.push(`${agreements} service agreement(s)`);
+    if (subCount) blockers.push(`${subCount} sub-service record(s)`);
+
+    if (blockers.length) {
+      return res.status(409).json({
+        success: false,
+        error: `Cannot delete "${existing.serviceName}" while linked records exist: ${blockers.join(", ")}. Deactivate the service instead to preserve history.`,
+        preferDeactivate: true,
+      });
+    }
 
     await prisma.service.delete({ where: { id } });
     clearServiceListCache();
@@ -446,6 +619,45 @@ export const getAllSubServices = async (req, res) => {
     res.json({ success: true, data: subServices });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const getAdvertServicesCatalog = async (_req, res) => {
+  let connection;
+  try {
+    if (!process.env.ADVERT_DATABASE_URL) {
+      return res.status(503).json({
+        success: false,
+        error: "External services source is not configured (ADVERT_DATABASE_URL).",
+      });
+    }
+
+    connection = await mysql.createConnection(process.env.ADVERT_DATABASE_URL);
+    const [rows] = await connection.query(
+      `SELECT s.id AS externalId,
+              s.serviceTitle AS serviceName,
+              s.serviceIcon AS iconUrl
+       FROM Service s
+       ORDER BY s.serviceTitle ASC, s.id ASC`,
+    );
+
+    const data = rows.map((row) => ({
+      externalId: String(row.externalId),
+      serviceName: String(row.serviceName ?? "").trim(),
+      description: null,
+      iconUrl: row.iconUrl ? String(row.iconUrl) : null,
+      status: "Active",
+    }));
+
+    res.json({ success: true, data });
+  } catch (error) {
+    console.error("getAdvertServicesCatalog error:", error);
+    res.status(500).json({
+      success: false,
+      error: mapServiceError(error) || "Could not load services from Deero Advert",
+    });
+  } finally {
+    await connection?.end();
   }
 };
 

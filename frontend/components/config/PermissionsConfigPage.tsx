@@ -18,11 +18,14 @@ import {
   seedNavMenus,
   updateRolePermissions,
 } from "@/lib/apis/configApi";
-import { authClient } from "@/lib/auth-client";
+import { getBackendSessionClient } from "@/lib/apis/readApi";
 import {
   BRANCH_ADMIN_MANAGEABLE_ROLE_NAMES,
   canManageRolePermissions,
+  isGlobalConfigAdminRole,
+  resolveStaffActorRole,
 } from "@/lib/portfolio-access";
+import { resolveConfigRoleId } from "@/lib/role-options";
 import {
   buildPermissionCeilingFromMenus,
   canGrantPermission,
@@ -97,13 +100,13 @@ function matrixToPermissions(menus: NavMenuItem[]) {
 }
 
 export default function PermissionsConfigPage() {
-  const session = authClient.useSession();
-  const currentRole = String(session.data?.user.role ?? "").toLowerCase();
-  const isSuperadmin = currentRole === "superadmin";
-  const isBranchAdmin = currentRole === "portfolio admin";
-  const isBranchManager = currentRole === "portfolio manager";
-  const usesPermissionCeiling = isBranchAdmin || isBranchManager;
-  const canManagePermissions = isSuperadmin || isBranchAdmin;
+  const { data: sessionRes, isLoading: sessionLoading } = useSWR(
+    "permissions-backend-session",
+    getBackendSessionClient,
+  );
+  const sessionUser = sessionRes?.data?.user as
+    | { role?: string; roleId?: string | null }
+    | undefined;
   const { data: rolesRes } = useSWR(SWR_CACH_KEYS.configRoles.key, getConfigRoles);
   const { mutate: globalMutate } = useSWRConfig();
 
@@ -112,8 +115,24 @@ export default function PermissionsConfigPage() {
     () => roles.filter((role) => role.isActive !== false),
     [roles],
   );
+
+  const actorRole = useMemo(
+    () =>
+      resolveStaffActorRole(sessionUser?.role, sessionUser?.roleId, activeRoles),
+    [activeRoles, sessionUser?.role, sessionUser?.roleId],
+  );
+
+  const isGlobalAdmin = isGlobalConfigAdminRole(actorRole);
+  const isSuperadmin =
+    actorRole === "superadmin" || actorRole.includes("superadmin") || isGlobalAdmin;
+  const isBranchAdmin = actorRole === "portfolio admin";
+  const isBranchManager = actorRole === "portfolio manager";
+  const usesPermissionCeiling = isBranchAdmin || isBranchManager;
+  const canManagePermissions = isGlobalAdmin || isBranchAdmin;
+  const canSeedMenus = isGlobalAdmin;
+
   const manageableRoles = useMemo(() => {
-    if (isSuperadmin) return activeRoles;
+    if (isGlobalAdmin) return activeRoles;
     if (isBranchAdmin) {
       return activeRoles.filter((role) =>
         BRANCH_ADMIN_MANAGEABLE_ROLE_NAMES.includes(
@@ -121,20 +140,21 @@ export default function PermissionsConfigPage() {
         ),
       );
     }
-    return activeRoles.filter((role) => role.name.toLowerCase() === currentRole);
-  }, [activeRoles, currentRole, isSuperadmin, isBranchAdmin]);
-
-  const sessionUser = session.data?.user as
-    | { role?: string; roleId?: string | null }
-    | undefined;
+    return activeRoles.filter((role) => role.name.toLowerCase() === actorRole);
+  }, [activeRoles, actorRole, isGlobalAdmin, isBranchAdmin]);
 
   const actorRoleId = useMemo(() => {
     if (sessionUser?.roleId) return sessionUser.roleId;
-    if (!sessionUser?.role) return "";
-    const match = activeRoles.find(
-      (role) => role.name.toLowerCase() === sessionUser.role!.toLowerCase(),
-    );
-    return match?.id ?? "";
+    if (sessionUser?.role) {
+      return (
+        resolveConfigRoleId(activeRoles, sessionUser.role) ??
+        activeRoles.find(
+          (role) => role.name.toLowerCase() === sessionUser.role!.toLowerCase(),
+        )?.id ??
+        ""
+      );
+    }
+    return "";
   }, [activeRoles, sessionUser?.role, sessionUser?.roleId]);
 
   const {
@@ -181,7 +201,7 @@ export default function PermissionsConfigPage() {
 
   const selectedRole = manageableRoles.find((role) => role.id === selectedRoleId);
   const canEditSelectedRole = Boolean(
-    selectedRole && canManageRolePermissions(currentRole, selectedRole.name),
+    selectedRole && canManageRolePermissions(actorRole, selectedRole.name),
   );
 
   useEffect(() => {
@@ -380,7 +400,10 @@ export default function PermissionsConfigPage() {
   }
 
   const isLoading =
-    loadingPerms || refreshing || (usesPermissionCeiling && loadingActorPerms);
+    sessionLoading ||
+    loadingPerms ||
+    refreshing ||
+    (usesPermissionCeiling && loadingActorPerms);
 
   return (
     <ManagementPageShell title="Permissions">
@@ -400,7 +423,7 @@ export default function PermissionsConfigPage() {
             type="button"
             variant="outline"
             onClick={() => void handleRefresh()}
-            disabled={isLoading || !isSuperadmin}
+            disabled={isLoading || !canSeedMenus}
             className="h-9"
             title="Refresh menus from database"
           >
@@ -445,9 +468,10 @@ export default function PermissionsConfigPage() {
             </Button>
           </div>
         </div>
-        {!canManagePermissions && (
+        {!sessionLoading && !canManagePermissions && (
           <div className="border-b border-zinc-100 bg-amber-50 px-6 py-2 text-xs text-amber-700">
             You do not have permission to update role permissions.
+            {actorRole ? ` (signed in as: ${actorRole})` : " (no role on session — set Staff role or link a config role)."}
           </div>
         )}
         {(isBranchAdmin || isBranchManager) && (

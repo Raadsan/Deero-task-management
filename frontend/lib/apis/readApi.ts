@@ -110,6 +110,13 @@ export async function getAllClientsClient(): Promise<ActionResponse<AllClients[]
 
     const data = result.data.map((client: any) => ({
       ...client,
+      clientCode: client.clientCode ?? null,
+      alternativePhone: (() => {
+        const alt = String(client.alternativePhone ?? "").trim();
+        if (!alt || alt.startsWith("NO_PHONE_")) return "";
+        return formatPhoneNumber(alt, "addCountryKey");
+      })(),
+      createdByName: client.createdByName ?? null,
       clientType: client.clientType ?? "ONE_TIME",
       isDraft: client.isDraft === true,
       createdAt: formatDate(client.createdAt),
@@ -149,8 +156,32 @@ export async function getAllClientsClient(): Promise<ActionResponse<AllClients[]
         subServices: [],
       },
     }));
-    return { success: true, data };
+    return {
+      success: true,
+      data,
+      canEditOpeningBalance: Boolean(result.canEditOpeningBalance),
+    };
   } catch {
     return { success: false, errors: { message: "Failed to fetch clients" } };
+  }
+}
+
+/** Session from the Express auth API (uses the login cookie on the API origin). */
+export async function getBackendSessionClient(): Promise<ActionResponse<AuthSession | null>> {
+  try {
+    const response = await fetch(`${API_URL}/api/auth/get-session`, {
+      credentials: "include",
+      cache: "no-store",
+    });
+    if (!response.ok) {
+      return { success: false, data: null };
+    }
+    const data = (await response.json()) as AuthSession | null;
+    if (!data?.user) {
+      return { success: false, data: null };
+    }
+    return { success: true, data };
+  } catch {
+    return { success: false, data: null };
   }
 }

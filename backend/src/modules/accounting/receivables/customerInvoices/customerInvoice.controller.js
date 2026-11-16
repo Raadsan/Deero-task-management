@@ -1,5 +1,6 @@
 import prisma from '../../../../config/db.js'
 import { logAudit } from '../../../../utils/auditHelper.js'
+import { findAccountingCustomerForClient } from '../../../shared/customers/customer.service.js'
 
 const invoiceInclude = {
   customers: {
@@ -13,9 +14,11 @@ const invoiceInclude = {
         select: {
           id: true,
           institution: true,
+          companyName: true,
           contactPerson: true,
           email: true,
           phone: true,
+          address: true,
         },
       },
     },
@@ -23,10 +26,13 @@ const invoiceInclude = {
   client: {
     select: {
       id: true,
+      clientCode: true,
       institution: true,
+      companyName: true,
       contactPerson: true,
       email: true,
       phone: true,
+      address: true,
     },
   },
   companies: { select: { id: true, name: true } },
@@ -87,8 +93,22 @@ function parseInvoiceNotes(notes) {
  * Draft invoices keep Receive Payment Now in notes.pending_payment until post.
  * Expose that amount as paid/outstanding/payment_state so list/detail UIs stay correct.
  */
+function withClientIdentity(invoice) {
+  if (!invoice) return invoice
+  const client = invoice.client || invoice.customers?.client
+  if (!client) return invoice
+  const name = client.companyName || client.institution || invoice.customers?.name
+  return {
+    ...invoice,
+    customers: invoice.customers
+      ? { ...invoice.customers, name, phone: client.phone || invoice.customers.phone, email: client.email || invoice.customers.email }
+      : invoice.customers,
+  }
+}
+
 function enrichInvoicePaymentDisplay(invoice) {
   if (!invoice) return invoice
+  invoice = withClientIdentity(invoice)
   const total = money2(invoice.amount_total)
   if (invoice.state === 'draft') {
     const meta = parseInvoiceNotes(invoice.notes)
@@ -112,14 +132,196 @@ function enrichInvoicePaymentDisplay(invoice) {
   }
   const paid = money2(invoice.paid_amount ?? Math.max(0, total - Number(invoice.amount_due || 0)))
   const due = money2(invoice.amount_due ?? Math.max(0, total - paid))
+  const meta = parseInvoiceNotes(invoice.notes)
+  const advance = money2(meta?.advance_credit_applied || 0)
+  const previousDebt = money2(meta?.previous_outstanding_balance || 0)
+  const installmentAmount = money2(
+    meta?.contract_installment_amount
+    || Math.max(0, total - previousDebt),
+  )
+  const cashPaid = money2(Math.max(0, paid - advance))
+  const netAmount = money2(Math.max(0, installmentAmount + previousDebt - advance))
+  const invoiceAmount = money2(Math.max(0, total - advance))
   return {
     ...invoice,
     paid_amount: paid,
     amount_due: due,
+    advance_credit_applied: advance,
+    previous_outstanding_balance: previousDebt,
+    contract_installment_amount: installmentAmount,
+    invoice_amount: invoiceAmount,
+    cash_paid: cashPaid,
+    net_amount: netAmount,
+    contract_number: meta?.contract_number || invoice.customer_reference || null,
+    contract_id: meta?.contract_id || null,
+    installment_number: meta?.installment_number || null,
+    installment_id: meta?.installment_id || invoice.installment_id || null,
     payment_state:
       invoice.payment_state ||
       (due <= 0.005 && total > 0.005 ? 'paid' : paid > 0.005 ? 'partial' : 'not_paid'),
+    display_status: invoiceDisplayStatus({ ...invoice, amount_due: due, paid_amount: paid, advance_credit_applied: advance }),
   }
+}
+
+const MILESTONE_LABELS = {
+  CONTRACT_START: 'Advance',
+  AFTER_1_MONTH: 'After 1 Month',
+  AFTER_3_MONTHS: 'After 3 Months',
+  AFTER_6_MONTHS: 'After 6 Months',
+  AFTER_12_MONTHS: 'After 12 Months',
+  CONTRACT_COMPLETION: 'Contract Completion',
+  CUSTOM_DATE: 'Custom date',
+  MONTHLY: 'Monthly',
+  QUARTERLY: 'Quarterly',
+  SEMI_ANNUALLY: 'Semi-Annual',
+  ANNUALLY: 'Annual',
+}
+
+function invoiceDisplayStatus(invoice) {
+  if (invoice.state === 'cancelled') return 'CANCELLED'
+  if (invoice.state !== 'posted') return 'DRAFT'
+  const due = money2(invoice.amount_due)
+  if (due <= 0.005) return 'PAID'
+  const dueDate = invoice.due_date ? new Date(invoice.due_date) : null
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  if (dueDate && !Number.isNaN(dueDate.getTime())) {
+    dueDate.setHours(0, 0, 0, 0)
+    if (dueDate < today) return 'OVERDUE'
+  }
+  const advance = money2(invoice.advance_credit_applied)
+  const cash = money2(Math.max(0, Number(invoice.paid_amount || 0) - advance))
+  if (advance > 0.005 || cash > 0.005) return 'PARTIALLY_PAID'
+  return 'UNPAID'
+}
+
+function installmentLabel(number, percentage, milestone) {
+  if (!number && !milestone) return null
+  const sequence = String(number || 1).padStart(2, '0')
+  const share = percentage != null && percentage !== '' ? `${Number(percentage)}% ` : ''
+  const name = MILESTONE_LABELS[milestone] || milestone || 'Scheduled payment'
+  return `Payment ${sequence} – ${share}${name}`.trim()
+}
+
+async function attachInvoiceContext(invoices, withPayments = false) {
+  const list = (Array.isArray(invoices) ? invoices : [invoices]).filter(Boolean)
+  if (!list.length) return invoices
+  const contractIds = new Set()
+  const contractNumbers = new Set()
+  for (const invoice of list) {
+    if (invoice.contract_id) contractIds.add(String(invoice.contract_id))
+    if (invoice.contract_number) contractNumbers.add(String(invoice.contract_number))
+    if (invoice.customer_reference) contractNumbers.add(String(invoice.customer_reference))
+  }
+  const or = []
+  if (contractIds.size) or.push({ id: { in: [...contractIds] } })
+  if (contractNumbers.size) or.push({ contractNumber: { in: [...contractNumbers] } })
+  const contracts = or.length
+    ? await prisma.contract.findMany({
+        where: { OR: or },
+        select: {
+          id: true,
+          contractNumber: true,
+          title: true,
+          duration: true,
+          startDate: true,
+          endDate: true,
+          totalAmount: true,
+          paymentTerms: true,
+          projectId: true,
+        },
+      })
+    : []
+  const resolvedIds = contracts.map((contract) => contract.id)
+  const projectIds = contracts.map((contract) => contract.projectId).filter(Boolean)
+  const [projects, installments, allocations] = await Promise.all([
+    resolvedIds.length || projectIds.length
+      ? prisma.project.findMany({
+          where: {
+            archived: false,
+            OR: [
+              ...(resolvedIds.length ? [{ contractId: { in: resolvedIds } }] : []),
+              ...(projectIds.length ? [{ id: { in: projectIds } }] : []),
+            ],
+          },
+          select: { id: true, name: true, contractId: true },
+        })
+      : [],
+    resolvedIds.length
+      ? prisma.clientInstallment.findMany({
+          where: { contractId: { in: resolvedIds } },
+          select: {
+            sourceKey: true,
+            contractId: true,
+            installmentNumber: true,
+            percentage: true,
+            dueMilestone: true,
+            dueDate: true,
+          },
+        })
+      : [],
+    withPayments
+      ? prisma.receipt_allocations.findMany({
+          where: { invoice_id: { in: list.map((invoice) => invoice.id) }, customer_receipts: { state: 'posted' } },
+          include: {
+            customer_receipts: {
+              select: {
+                receipt_number: true,
+                receipt_date: true,
+                reference: true,
+                state: true,
+                payment_methods: { select: { name: true } },
+              },
+            },
+          },
+          orderBy: { allocated_at: 'asc' },
+        })
+      : [],
+  ])
+  const byId = new Map(contracts.map((contract) => [contract.id, contract]))
+  const byNumber = new Map(contracts.map((contract) => [contract.contractNumber, contract]))
+  const decorated = list.map((invoice) => {
+    const contract = byId.get(invoice.contract_id) || byNumber.get(invoice.contract_number) || byNumber.get(invoice.customer_reference) || null
+    const installment = installments.find((row) => (
+      (invoice.installment_id && row.sourceKey === invoice.installment_id)
+      || (contract && row.contractId === contract.id && Number(row.installmentNumber) === Number(invoice.installment_number))
+    )) || null
+    const project = contract
+      ? projects.find((row) => row.id === contract.projectId) || projects.find((row) => row.contractId === contract.id) || null
+      : null
+    const payments = allocations
+      .filter((row) => row.invoice_id === invoice.id)
+      .map((row) => ({
+        date: row.customer_receipts?.receipt_date || row.allocated_at,
+        receipt_number: row.customer_receipts?.receipt_number || null,
+        method: row.customer_receipts?.payment_methods?.name || null,
+        amount: money2(row.allocated_amount),
+        reference: row.customer_receipts?.reference || null,
+      }))
+    return {
+      ...invoice,
+      contract_id: contract?.id || invoice.contract_id || null,
+      contract_number: contract?.contractNumber || invoice.contract_number || null,
+      contract_title: contract?.title || null,
+      contract_duration: contract?.duration || null,
+      contract_start: contract?.startDate || null,
+      contract_end: contract?.endDate || null,
+      contract_amount: contract?.totalAmount ?? null,
+      contract_payment_terms: contract?.paymentTerms || null,
+      project_name: project?.name || null,
+      installment_number: installment?.installmentNumber ?? invoice.installment_number ?? null,
+      installment_percentage: installment?.percentage ?? null,
+      installment_milestone: installment?.dueMilestone || null,
+      installment_due_date: installment?.dueDate || null,
+      installment_label: installmentLabel(
+        installment?.installmentNumber ?? invoice.installment_number,
+        installment?.percentage,
+        installment?.dueMilestone,
+      ),
+      payment_history: payments,
+    }
+  })
+  return Array.isArray(invoices) ? decorated : decorated[0]
 }
 
 async function clearPendingPaymentNotes(invoiceId, meta) {
@@ -301,8 +503,24 @@ export async function ensureCustomerInvoiceDefaults() {
   }
 }
 
-async function prepareInvoice(input) {
-  const customerId = id(input.customer_id)
+export async function prepareInvoice(input) {
+  let clientId = String(input.client_id || '').trim()
+  const contractId = String(input.contract_id || '').trim()
+  let contract = null
+  if (contractId) {
+    contract = await prisma.contract.findUnique({
+      where: { id: contractId },
+      select: { id: true, clientId: true, contractNumber: true },
+    })
+    if (!contract) throw inputError('Contract not found')
+    if (!contract.clientId) throw inputError('This contract has no client')
+    clientId = contract.clientId
+  }
+  let customerId = id(input.customer_id)
+  if (clientId) {
+    const linked = await findAccountingCustomerForClient(clientId)
+    customerId = linked.id
+  }
   const invoiceDate = date(input.invoice_date)
   const lines = Array.isArray(input.lines) ? input.lines : []
 
@@ -311,6 +529,8 @@ async function prepareInvoice(input) {
 
   const customer = await prisma.customers.findUnique({ where: { id: customerId } })
   if (!customer) throw inputError('Customer not found')
+  input._resolvedClientId = clientId || customer.clientId || null
+  input._resolvedContract = contract
   let [company, journal, paymentTerm, fiscalPeriod, revenueAccount] = await Promise.all([
     prisma.companies.findUnique({ where: { id: customer.company_id } }),
     id(input.journal_id)
@@ -479,17 +699,21 @@ async function prepareInvoice(input) {
         parsed.amount_untaxed = amountUntaxed
         parsed.amount_tax = amountTax
         parsed.amount_total = amountTotal
+        if (input._resolvedContract?.id) parsed.contract_id = input._resolvedContract.id
         notesValue = JSON.stringify(parsed)
       }
     } catch {
       // keep original notes string
     }
   }
+  if (input._resolvedContract?.id && !String(notesValue || '').includes(input._resolvedContract.id)) {
+    notesValue = JSON.stringify({ ...(notesValue ? { note: notesValue } : {}), contract_id: input._resolvedContract.id, contract_number: input._resolvedContract.contractNumber || null })
+  }
 
   return {
     header: {
       company_id: customer.company_id,
-      client_id: customer.clientId || null,
+      client_id: input._resolvedClientId || customer.clientId || null,
       document_type: 'invoice',
       customer_id: customerId,
       journal_id: journal.id,
@@ -518,7 +742,7 @@ async function prepareInvoice(input) {
   }
 }
 
-function journalItems(prepared) {
+export function journalItems(prepared) {
   const rate = Number(prepared.header.exchange_rate)
   const credits = new Map()
   for (const line of prepared.journalCredits) {
@@ -555,7 +779,7 @@ function journalItems(prepared) {
   return items
 }
 
-async function allocateInvoiceNumber(tx, journal) {
+export async function allocateInvoiceNumber(tx, journal) {
   for (;;) {
     const updated = await tx.journals.update({
       where: { id: journal.id },
@@ -575,7 +799,7 @@ export const getAll = async (req, res) => {
       include: invoiceInclude,
       orderBy: { created_at: 'desc' },
     })
-    res.json({ success: true, data: data.map(enrichInvoicePaymentDisplay) })
+    res.json({ success: true, data: await attachInvoiceContext(data.map(enrichInvoicePaymentDisplay)) })
   } catch (error) { fail(res, error, 'Failed to fetch customer invoices') }
 }
 
@@ -586,7 +810,7 @@ export const getById = async (req, res) => {
   try {
     const data = await prisma.customer_invoices.findUnique({ where: { id: invoiceId }, include: invoiceInclude })
     if (!data) return res.status(404).json({ success: false, message: 'Customer invoice not found' })
-    res.json({ success: true, data: enrichInvoicePaymentDisplay(data) })
+    res.json({ success: true, data: await attachInvoiceContext(enrichInvoicePaymentDisplay(data), true) })
   } catch (error) { fail(res, error, 'Failed to fetch customer invoice') }
 }
 
@@ -736,6 +960,8 @@ export const post = async (req, res) => {
   const invoiceId = id(req.params.id)
   if (!invoiceId) return res.status(400).json({ success: false, message: 'Invalid invoice id' })
   try {
+    const { ensureClientOpeningSchema } = await import('../../../../lib/client-opening-balance.js')
+    await ensureClientOpeningSchema(prisma)
     const data = await prisma.$transaction(async (tx) => {
       const invoice = await tx.customer_invoices.findUnique({
         where: { id: invoiceId },
@@ -770,9 +996,16 @@ export const post = async (req, res) => {
       if (claimedInvoice.count !== 1) throw inputError('Only draft invoices can be posted')
 
       // Auto-apply real posted customer advances (unallocated receipts). Never invent advances from quotation text.
-      const appliedAdvance = await applyCustomerAdvances(tx, { ...invoice, state: 'posted', payment_state: 'not_paid', paid_amount: 0, amount_due: invoice.amount_total }, postedAt)
-      if (appliedAdvance > 0.005) {
-        const paidAmount = Math.round(appliedAdvance * 100) / 100
+      const postedInvoice = { ...invoice, state: 'posted', payment_state: 'not_paid', paid_amount: 0, amount_due: invoice.amount_total }
+      const appliedAdvance = await applyCustomerAdvances(tx, postedInvoice, postedAt)
+      const { applyOpeningCreditToInvoice } = await import('../../../../lib/client-opening-balance.js')
+      const appliedOpening = await applyOpeningCreditToInvoice(tx, {
+        ...postedInvoice,
+        amount_due: Math.max(0, Math.round((Number(invoice.amount_total) - Number(appliedAdvance || 0)) * 100) / 100),
+      }, postedAt)
+      const appliedCredit = Math.round((Number(appliedAdvance || 0) + Number(appliedOpening || 0)) * 100) / 100
+      if (appliedCredit > 0.005) {
+        const paidAmount = Math.round(appliedCredit * 100) / 100
         const amountDue = Math.max(0, Math.round((Number(invoice.amount_total) - paidAmount) * 100) / 100)
         await tx.customer_invoices.update({
           where: { id: invoiceId },
@@ -831,7 +1064,7 @@ async function ensureCustomerAdvanceAccount(tx, companyId) {
  * Creates receipt_allocations + Dr Customer Advance / Cr AR journal entries.
  * Does NOT create a new cash receipt.
  */
-async function applyCustomerAdvances(tx, invoice, postedAt) {
+export async function applyCustomerAdvances(tx, invoice, postedAt) {
   const advances = await tx.customer_receipts.findMany({
     where: {
       customer_id: invoice.customer_id,

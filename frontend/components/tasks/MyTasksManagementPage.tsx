@@ -35,7 +35,9 @@ import {
   getTaskStatusBadgeClass,
 } from "@/lib/dashboard-ui";
 import { Task } from "@/lib/types";
-import { cn, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
+import { evaluateScheduledTask } from "@/lib/scheduled-task-window";
+import { useNow } from "@/lib/use-now";
+import { cn, formatScheduledTask, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
 import { CalendarDays, Gauge, Eye, Plus, Search } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -92,6 +94,7 @@ export default function MyTasksManagementPage() {
   }, [mutateMyTasks]);
 
   const [mounted, setMounted] = useState(false);
+  const now = useNow();
 
   const tasks = normalizeMyTasksList(tasksRaw).filter((task) => !isBoardOnlyTask(task));
   const [search, setSearch] = useState("");
@@ -120,14 +123,14 @@ export default function MyTasksManagementPage() {
         description.includes(query) ||
         taskId.includes(query);
 
-      const displayStatus = resolveTaskDisplayStatus(task);
+      const displayStatus = resolveTaskDisplayStatus(task, undefined, now);
       const matchesStatus =
         statusFilter === "all" ||
         displayStatus.toLowerCase() === statusFilter.toLowerCase();
 
       return matchesSearch && matchesStatus;
     });
-  }, [tasks, search, statusFilter]);
+  }, [tasks, search, statusFilter, now]);
 
   const totalPages = Math.ceil(filteredTasks.length / pageSize) || 1;
   const paginatedTasks = useMemo(() => {
@@ -271,7 +274,7 @@ export default function MyTasksManagementPage() {
                   <TableHead
                     className={cn(dashboardTableHeadClass, "text-left")}
                   >
-                    Deadline
+                    Schedule
                   </TableHead>
                   <TableHead
                     className={cn(dashboardTableHeadClass, "text-right")}
@@ -307,7 +310,8 @@ export default function MyTasksManagementPage() {
                   </TableRow>
                 ) : (
                   paginatedTasks.map((task) => {
-                    const displayStatus = resolveTaskDisplayStatus(task);
+                    const displayStatus = resolveTaskDisplayStatus(task, undefined, now);
+                    const progressGate = evaluateScheduledTask(task, now);
                     const busy = updatingTaskId === String(task.id);
 
                     return (
@@ -360,6 +364,13 @@ export default function MyTasksManagementPage() {
                               )}
                             />
                             <div className="min-w-0 leading-tight">
+                              {formatScheduledTask(task) ? (
+                                <>
+                                  <span className="block truncate text-[11px] font-semibold text-zinc-700">{formatScheduledTask(task)?.date}</span>
+                                  <span className="mt-0.5 block text-[10px] text-zinc-500">{formatScheduledTask(task)?.time}</span>
+                                </>
+                              ) : (
+                                <>
                               <span
                                 className={cn(
                                   "block truncate text-[11px] font-semibold",
@@ -389,6 +400,8 @@ export default function MyTasksManagementPage() {
                               >
                                 {taskDeadlineDate(task)}
                               </span>
+                                </>
+                              )}
                             </div>
                           </div>
                         </TableCell>
@@ -434,10 +447,10 @@ export default function MyTasksManagementPage() {
                               type="button"
                               variant="ghost"
                               size="sm"
-                              title="Update progress"
-                              disabled={busy}
+                              title={progressGate.canUpdateProgress ? "Update progress" : progressGate.reason}
+                              disabled={busy || !progressGate.canUpdateProgress}
                               onClick={() => openProcessDialog(task)}
-                              className={actionBtnView}
+                              className={cn(actionBtnView, !progressGate.canUpdateProgress && "cursor-not-allowed opacity-40")}
                             >
                               <Gauge className="size-4" />
                             </Button>

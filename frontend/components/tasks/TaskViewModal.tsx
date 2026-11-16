@@ -12,7 +12,9 @@ import { getAllTasksClient } from "@/lib/apis/readApi";
 import { getTaskFormBranchOptions } from "@/lib/apis/sharedApi";
 import { editTask } from "@/lib/apis/taskApi";
 import { SWR_CACH_KEYS } from "@/lib/constants";
-import { getTaskTableLabels, markTaskNotesSeen, resolveTaskDisplayStatus } from "@/lib/utils";
+import TaskHoldPanel from "@/components/tasks/TaskHoldControls";
+import { formatStatusLabel } from "@/lib/dashboard-ui";
+import { formatScheduledTask, getTaskTableLabels, markTaskNotesSeen, resolveTaskDisplayStatus } from "@/lib/utils";
 import { btnFormSubmit } from "@/lib/dashboard-ui";
 import { Task } from "@/lib/types";
 import {
@@ -40,6 +42,7 @@ const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   pending: { bg: "bg-yellow-100", text: "text-yellow-800" },
   in_progress: { bg: "bg-amber-100", text: "text-amber-800" },
   overdue: { bg: "bg-red-100", text: "text-red-800" },
+  on_hold: { bg: "bg-violet-100", text: "text-violet-800" },
   completed: { bg: "bg-green-100", text: "text-green-800" },
 };
 
@@ -241,6 +244,14 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
                   : "N/A")
               }
             />
+            {formatScheduledTask(currentTask) ? (
+              <>
+                <InfoItem icon={Calendar} label="Scheduled Date" value={formatScheduledTask(currentTask)?.date || "N/A"} />
+                <InfoItem icon={Clock} label="Start Time" value={String(formatScheduledTask(currentTask)?.time || "").split("–")[0]?.trim() || "N/A"} />
+                <InfoItem icon={Clock} label="End Time" value={String(formatScheduledTask(currentTask)?.time || "").split("–")[1]?.trim() || "N/A"} />
+              </>
+            ) : (
+              <>
             <InfoItem
               icon={Calendar}
               label="Start Date"
@@ -271,6 +282,8 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
                   : "N/A"
               }
             />
+              </>
+            )}
             <InfoItem
               icon={Clock}
               label="Extra Time Added"
@@ -303,7 +316,7 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
               <span
                 className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${statusColor.bg} ${statusColor.text}`}
               >
-                {displayStatus}
+                {formatStatusLabel(displayStatus)}
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -316,6 +329,7 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
             </div>
           </div>
 
+          <TaskHoldPanel task={currentTask} />
 
           {currentTask.progressNotes?.length ? (
             <div className="rounded-lg border border-amber-100 bg-amber-50/40 p-4">

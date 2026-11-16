@@ -179,6 +179,26 @@ export type AuditLog = $Result.DefaultSelection<Prisma.$AuditLogPayload>
  */
 export type Project = $Result.DefaultSelection<Prisma.$ProjectPayload>
 /**
+ * Model ProjectServiceLink
+ * 
+ */
+export type ProjectServiceLink = $Result.DefaultSelection<Prisma.$ProjectServiceLinkPayload>
+/**
+ * Model ProjectSubService
+ * 
+ */
+export type ProjectSubService = $Result.DefaultSelection<Prisma.$ProjectSubServicePayload>
+/**
+ * Model ProjectCycle
+ * 
+ */
+export type ProjectCycle = $Result.DefaultSelection<Prisma.$ProjectCyclePayload>
+/**
+ * Model ProjectExtraRequest
+ * 
+ */
+export type ProjectExtraRequest = $Result.DefaultSelection<Prisma.$ProjectExtraRequestPayload>
+/**
  * Model Contract
  * 
  */
@@ -513,7 +533,8 @@ export const ContractStatus: {
   ACTIVE: 'ACTIVE',
   EXPIRED: 'EXPIRED',
   TERMINATED: 'TERMINATED',
-  RENEWED: 'RENEWED'
+  RENEWED: 'RENEWED',
+  CANCELLED: 'CANCELLED'
 };
 
 export type ContractStatus = (typeof ContractStatus)[keyof typeof ContractStatus]
@@ -1398,6 +1419,46 @@ export class PrismaClient<
     * ```
     */
   get project(): Prisma.ProjectDelegate<ExtArgs>;
+
+  /**
+   * `prisma.projectServiceLink`: Exposes CRUD operations for the **ProjectServiceLink** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ProjectServiceLinks
+    * const projectServiceLinks = await prisma.projectServiceLink.findMany()
+    * ```
+    */
+  get projectServiceLink(): Prisma.ProjectServiceLinkDelegate<ExtArgs>;
+
+  /**
+   * `prisma.projectSubService`: Exposes CRUD operations for the **ProjectSubService** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ProjectSubServices
+    * const projectSubServices = await prisma.projectSubService.findMany()
+    * ```
+    */
+  get projectSubService(): Prisma.ProjectSubServiceDelegate<ExtArgs>;
+
+  /**
+   * `prisma.projectCycle`: Exposes CRUD operations for the **ProjectCycle** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ProjectCycles
+    * const projectCycles = await prisma.projectCycle.findMany()
+    * ```
+    */
+  get projectCycle(): Prisma.ProjectCycleDelegate<ExtArgs>;
+
+  /**
+   * `prisma.projectExtraRequest`: Exposes CRUD operations for the **ProjectExtraRequest** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ProjectExtraRequests
+    * const projectExtraRequests = await prisma.projectExtraRequest.findMany()
+    * ```
+    */
+  get projectExtraRequest(): Prisma.ProjectExtraRequestDelegate<ExtArgs>;
 
   /**
    * `prisma.contract`: Exposes CRUD operations for the **Contract** model.
@@ -2302,6 +2363,10 @@ export namespace Prisma {
     RoleSubMenuAccess: 'RoleSubMenuAccess',
     AuditLog: 'AuditLog',
     Project: 'Project',
+    ProjectServiceLink: 'ProjectServiceLink',
+    ProjectSubService: 'ProjectSubService',
+    ProjectCycle: 'ProjectCycle',
+    ProjectExtraRequest: 'ProjectExtraRequest',
     Contract: 'Contract',
     ClientInstallment: 'ClientInstallment',
     ContractDocument: 'ContractDocument',
@@ -2360,7 +2425,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "role" | "staff" | "session" | "account" | "verification" | "client" | "service" | "subService" | "portfolio" | "clientSubService" | "clientService" | "task" | "taskTransferHistory" | "clientTask" | "counter" | "income" | "expense" | "incomeTransaction" | "expenseTransaction" | "incomeTransactionDetails" | "userFiles" | "incomeServiceAgreement" | "expenseServiceAgreement" | "expenseTransactionDetails" | "userSalary" | "userSalaryDetails" | "notification" | "navMenu" | "navSubMenu" | "roleMenuAccess" | "roleSubMenuAccess" | "auditLog" | "project" | "contract" | "clientInstallment" | "contractDocument" | "contentRequest" | "contentRequestAssignee" | "recurringSchedule" | "recurringScheduleStep" | "recurringTaskOccurrence" | "contentCycle" | "workflowTemplate" | "workflowTemplateStep" | "account_types" | "bank_accounts" | "banks" | "chart_of_accounts" | "companies" | "currencies" | "customer_invoice_lines" | "customer_invoices" | "customer_receipts" | "customers" | "fiscal_periods" | "fiscal_years" | "journal_entries" | "journal_items" | "journals" | "payment_allocations" | "payment_methods" | "payment_term_lines" | "payment_terms" | "product_categories" | "products" | "receipt_allocations" | "taxes" | "vendor_bill_lines" | "vendor_bills" | "vendor_payments" | "vendor_advances" | "vendor_advance_applications" | "vendors" | "quotations" | "quotation_lines" | "document_templates"
+      modelProps: "role" | "staff" | "session" | "account" | "verification" | "client" | "service" | "subService" | "portfolio" | "clientSubService" | "clientService" | "task" | "taskTransferHistory" | "clientTask" | "counter" | "income" | "expense" | "incomeTransaction" | "expenseTransaction" | "incomeTransactionDetails" | "userFiles" | "incomeServiceAgreement" | "expenseServiceAgreement" | "expenseTransactionDetails" | "userSalary" | "userSalaryDetails" | "notification" | "navMenu" | "navSubMenu" | "roleMenuAccess" | "roleSubMenuAccess" | "auditLog" | "project" | "projectServiceLink" | "projectSubService" | "projectCycle" | "projectExtraRequest" | "contract" | "clientInstallment" | "contractDocument" | "contentRequest" | "contentRequestAssignee" | "recurringSchedule" | "recurringScheduleStep" | "recurringTaskOccurrence" | "contentCycle" | "workflowTemplate" | "workflowTemplateStep" | "account_types" | "bank_accounts" | "banks" | "chart_of_accounts" | "companies" | "currencies" | "customer_invoice_lines" | "customer_invoices" | "customer_receipts" | "customers" | "fiscal_periods" | "fiscal_years" | "journal_entries" | "journal_items" | "journals" | "payment_allocations" | "payment_methods" | "payment_term_lines" | "payment_terms" | "product_categories" | "products" | "receipt_allocations" | "taxes" | "vendor_bill_lines" | "vendor_bills" | "vendor_payments" | "vendor_advances" | "vendor_advance_applications" | "vendors" | "quotations" | "quotation_lines" | "document_templates"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -4539,6 +4604,270 @@ export namespace Prisma {
           count: {
             args: Prisma.ProjectCountArgs<ExtArgs>
             result: $Utils.Optional<ProjectCountAggregateOutputType> | number
+          }
+        }
+      }
+      ProjectServiceLink: {
+        payload: Prisma.$ProjectServiceLinkPayload<ExtArgs>
+        fields: Prisma.ProjectServiceLinkFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ProjectServiceLinkFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectServiceLinkPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ProjectServiceLinkFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectServiceLinkPayload>
+          }
+          findFirst: {
+            args: Prisma.ProjectServiceLinkFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectServiceLinkPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ProjectServiceLinkFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectServiceLinkPayload>
+          }
+          findMany: {
+            args: Prisma.ProjectServiceLinkFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectServiceLinkPayload>[]
+          }
+          create: {
+            args: Prisma.ProjectServiceLinkCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectServiceLinkPayload>
+          }
+          createMany: {
+            args: Prisma.ProjectServiceLinkCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.ProjectServiceLinkDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectServiceLinkPayload>
+          }
+          update: {
+            args: Prisma.ProjectServiceLinkUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectServiceLinkPayload>
+          }
+          deleteMany: {
+            args: Prisma.ProjectServiceLinkDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ProjectServiceLinkUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ProjectServiceLinkUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectServiceLinkPayload>
+          }
+          aggregate: {
+            args: Prisma.ProjectServiceLinkAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateProjectServiceLink>
+          }
+          groupBy: {
+            args: Prisma.ProjectServiceLinkGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ProjectServiceLinkGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ProjectServiceLinkCountArgs<ExtArgs>
+            result: $Utils.Optional<ProjectServiceLinkCountAggregateOutputType> | number
+          }
+        }
+      }
+      ProjectSubService: {
+        payload: Prisma.$ProjectSubServicePayload<ExtArgs>
+        fields: Prisma.ProjectSubServiceFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ProjectSubServiceFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectSubServicePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ProjectSubServiceFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectSubServicePayload>
+          }
+          findFirst: {
+            args: Prisma.ProjectSubServiceFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectSubServicePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ProjectSubServiceFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectSubServicePayload>
+          }
+          findMany: {
+            args: Prisma.ProjectSubServiceFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectSubServicePayload>[]
+          }
+          create: {
+            args: Prisma.ProjectSubServiceCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectSubServicePayload>
+          }
+          createMany: {
+            args: Prisma.ProjectSubServiceCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.ProjectSubServiceDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectSubServicePayload>
+          }
+          update: {
+            args: Prisma.ProjectSubServiceUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectSubServicePayload>
+          }
+          deleteMany: {
+            args: Prisma.ProjectSubServiceDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ProjectSubServiceUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ProjectSubServiceUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectSubServicePayload>
+          }
+          aggregate: {
+            args: Prisma.ProjectSubServiceAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateProjectSubService>
+          }
+          groupBy: {
+            args: Prisma.ProjectSubServiceGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ProjectSubServiceGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ProjectSubServiceCountArgs<ExtArgs>
+            result: $Utils.Optional<ProjectSubServiceCountAggregateOutputType> | number
+          }
+        }
+      }
+      ProjectCycle: {
+        payload: Prisma.$ProjectCyclePayload<ExtArgs>
+        fields: Prisma.ProjectCycleFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ProjectCycleFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectCyclePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ProjectCycleFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectCyclePayload>
+          }
+          findFirst: {
+            args: Prisma.ProjectCycleFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectCyclePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ProjectCycleFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectCyclePayload>
+          }
+          findMany: {
+            args: Prisma.ProjectCycleFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectCyclePayload>[]
+          }
+          create: {
+            args: Prisma.ProjectCycleCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectCyclePayload>
+          }
+          createMany: {
+            args: Prisma.ProjectCycleCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.ProjectCycleDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectCyclePayload>
+          }
+          update: {
+            args: Prisma.ProjectCycleUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectCyclePayload>
+          }
+          deleteMany: {
+            args: Prisma.ProjectCycleDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ProjectCycleUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ProjectCycleUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectCyclePayload>
+          }
+          aggregate: {
+            args: Prisma.ProjectCycleAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateProjectCycle>
+          }
+          groupBy: {
+            args: Prisma.ProjectCycleGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ProjectCycleGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ProjectCycleCountArgs<ExtArgs>
+            result: $Utils.Optional<ProjectCycleCountAggregateOutputType> | number
+          }
+        }
+      }
+      ProjectExtraRequest: {
+        payload: Prisma.$ProjectExtraRequestPayload<ExtArgs>
+        fields: Prisma.ProjectExtraRequestFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ProjectExtraRequestFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectExtraRequestPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ProjectExtraRequestFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectExtraRequestPayload>
+          }
+          findFirst: {
+            args: Prisma.ProjectExtraRequestFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectExtraRequestPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ProjectExtraRequestFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectExtraRequestPayload>
+          }
+          findMany: {
+            args: Prisma.ProjectExtraRequestFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectExtraRequestPayload>[]
+          }
+          create: {
+            args: Prisma.ProjectExtraRequestCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectExtraRequestPayload>
+          }
+          createMany: {
+            args: Prisma.ProjectExtraRequestCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.ProjectExtraRequestDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectExtraRequestPayload>
+          }
+          update: {
+            args: Prisma.ProjectExtraRequestUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectExtraRequestPayload>
+          }
+          deleteMany: {
+            args: Prisma.ProjectExtraRequestDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ProjectExtraRequestUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ProjectExtraRequestUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProjectExtraRequestPayload>
+          }
+          aggregate: {
+            args: Prisma.ProjectExtraRequestAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateProjectExtraRequest>
+          }
+          groupBy: {
+            args: Prisma.ProjectExtraRequestGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ProjectExtraRequestGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ProjectExtraRequestCountArgs<ExtArgs>
+            result: $Utils.Optional<ProjectExtraRequestCountAggregateOutputType> | number
           }
         }
       }
@@ -7589,17 +7918,22 @@ export namespace Prisma {
     accounts: number
     auditLogs: number
     managedClients: number
+    clientsCreated: number
     contentRequestAssignments: number
     contentRequestsCreated: number
     uploadedContractDocuments: number
     createdContracts: number
     createdProjects: number
+    servicesCreated: number
+    servicesUpdated: number
     assignedRecurringSteps: number
     sessions: number
     transferredFromTasks: number
     transferredToTasks: number
     transferredByTasks: number
     assignedTasks: number
+    projectSubAssignments: number
+    projectExtraRequests: number
   }
 
   export type StaffCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -7611,17 +7945,22 @@ export namespace Prisma {
     accounts?: boolean | StaffCountOutputTypeCountAccountsArgs
     auditLogs?: boolean | StaffCountOutputTypeCountAuditLogsArgs
     managedClients?: boolean | StaffCountOutputTypeCountManagedClientsArgs
+    clientsCreated?: boolean | StaffCountOutputTypeCountClientsCreatedArgs
     contentRequestAssignments?: boolean | StaffCountOutputTypeCountContentRequestAssignmentsArgs
     contentRequestsCreated?: boolean | StaffCountOutputTypeCountContentRequestsCreatedArgs
     uploadedContractDocuments?: boolean | StaffCountOutputTypeCountUploadedContractDocumentsArgs
     createdContracts?: boolean | StaffCountOutputTypeCountCreatedContractsArgs
     createdProjects?: boolean | StaffCountOutputTypeCountCreatedProjectsArgs
+    servicesCreated?: boolean | StaffCountOutputTypeCountServicesCreatedArgs
+    servicesUpdated?: boolean | StaffCountOutputTypeCountServicesUpdatedArgs
     assignedRecurringSteps?: boolean | StaffCountOutputTypeCountAssignedRecurringStepsArgs
     sessions?: boolean | StaffCountOutputTypeCountSessionsArgs
     transferredFromTasks?: boolean | StaffCountOutputTypeCountTransferredFromTasksArgs
     transferredToTasks?: boolean | StaffCountOutputTypeCountTransferredToTasksArgs
     transferredByTasks?: boolean | StaffCountOutputTypeCountTransferredByTasksArgs
     assignedTasks?: boolean | StaffCountOutputTypeCountAssignedTasksArgs
+    projectSubAssignments?: boolean | StaffCountOutputTypeCountProjectSubAssignmentsArgs
+    projectExtraRequests?: boolean | StaffCountOutputTypeCountProjectExtraRequestsArgs
   }
 
   // Custom InputTypes
@@ -7694,6 +8033,13 @@ export namespace Prisma {
   /**
    * StaffCountOutputType without action
    */
+  export type StaffCountOutputTypeCountClientsCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ClientWhereInput
+  }
+
+  /**
+   * StaffCountOutputType without action
+   */
   export type StaffCountOutputTypeCountContentRequestAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ContentRequestAssigneeWhereInput
   }
@@ -7724,6 +8070,20 @@ export namespace Prisma {
    */
   export type StaffCountOutputTypeCountCreatedProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProjectWhereInput
+  }
+
+  /**
+   * StaffCountOutputType without action
+   */
+  export type StaffCountOutputTypeCountServicesCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ServiceWhereInput
+  }
+
+  /**
+   * StaffCountOutputType without action
+   */
+  export type StaffCountOutputTypeCountServicesUpdatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ServiceWhereInput
   }
 
   /**
@@ -7766,6 +8126,20 @@ export namespace Prisma {
    */
   export type StaffCountOutputTypeCountAssignedTasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TaskWhereInput
+  }
+
+  /**
+   * StaffCountOutputType without action
+   */
+  export type StaffCountOutputTypeCountProjectSubAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProjectSubServiceWhereInput
+  }
+
+  /**
+   * StaffCountOutputType without action
+   */
+  export type StaffCountOutputTypeCountProjectExtraRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProjectExtraRequestWhereInput
   }
 
 
@@ -7907,12 +8281,14 @@ export namespace Prisma {
     serviceAgreements: number
     clientService: number
     subService: number
+    projectLinks: number
   }
 
   export type ServiceCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     serviceAgreements?: boolean | ServiceCountOutputTypeCountServiceAgreementsArgs
     clientService?: boolean | ServiceCountOutputTypeCountClientServiceArgs
     subService?: boolean | ServiceCountOutputTypeCountSubServiceArgs
+    projectLinks?: boolean | ServiceCountOutputTypeCountProjectLinksArgs
   }
 
   // Custom InputTypes
@@ -7945,6 +8321,13 @@ export namespace Prisma {
    */
   export type ServiceCountOutputTypeCountSubServiceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SubServiceWhereInput
+  }
+
+  /**
+   * ServiceCountOutputType without action
+   */
+  export type ServiceCountOutputTypeCountProjectLinksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProjectServiceLinkWhereInput
   }
 
 
@@ -8450,6 +8833,9 @@ export namespace Prisma {
     contentRequests: number
     contracts: number
     tasks: number
+    serviceLinks: number
+    cycles: number
+    extraRequests: number
   }
 
   export type ProjectCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8457,6 +8843,9 @@ export namespace Prisma {
     contentRequests?: boolean | ProjectCountOutputTypeCountContentRequestsArgs
     contracts?: boolean | ProjectCountOutputTypeCountContractsArgs
     tasks?: boolean | ProjectCountOutputTypeCountTasksArgs
+    serviceLinks?: boolean | ProjectCountOutputTypeCountServiceLinksArgs
+    cycles?: boolean | ProjectCountOutputTypeCountCyclesArgs
+    extraRequests?: boolean | ProjectCountOutputTypeCountExtraRequestsArgs
   }
 
   // Custom InputTypes
@@ -8498,6 +8887,89 @@ export namespace Prisma {
     where?: TaskWhereInput
   }
 
+  /**
+   * ProjectCountOutputType without action
+   */
+  export type ProjectCountOutputTypeCountServiceLinksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProjectServiceLinkWhereInput
+  }
+
+  /**
+   * ProjectCountOutputType without action
+   */
+  export type ProjectCountOutputTypeCountCyclesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProjectCycleWhereInput
+  }
+
+  /**
+   * ProjectCountOutputType without action
+   */
+  export type ProjectCountOutputTypeCountExtraRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProjectExtraRequestWhereInput
+  }
+
+
+  /**
+   * Count Type ProjectServiceLinkCountOutputType
+   */
+
+  export type ProjectServiceLinkCountOutputType = {
+    subServices: number
+  }
+
+  export type ProjectServiceLinkCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    subServices?: boolean | ProjectServiceLinkCountOutputTypeCountSubServicesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ProjectServiceLinkCountOutputType without action
+   */
+  export type ProjectServiceLinkCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectServiceLinkCountOutputType
+     */
+    select?: ProjectServiceLinkCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ProjectServiceLinkCountOutputType without action
+   */
+  export type ProjectServiceLinkCountOutputTypeCountSubServicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProjectSubServiceWhereInput
+  }
+
+
+  /**
+   * Count Type ProjectSubServiceCountOutputType
+   */
+
+  export type ProjectSubServiceCountOutputType = {
+    extraRequests: number
+  }
+
+  export type ProjectSubServiceCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    extraRequests?: boolean | ProjectSubServiceCountOutputTypeCountExtraRequestsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ProjectSubServiceCountOutputType without action
+   */
+  export type ProjectSubServiceCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectSubServiceCountOutputType
+     */
+    select?: ProjectSubServiceCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ProjectSubServiceCountOutputType without action
+   */
+  export type ProjectSubServiceCountOutputTypeCountExtraRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProjectExtraRequestWhereInput
+  }
+
 
   /**
    * Count Type ContractCountOutputType
@@ -8506,11 +8978,13 @@ export namespace Prisma {
   export type ContractCountOutputType = {
     installments: number
     documents: number
+    primaryForProjects: number
   }
 
   export type ContractCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     installments?: boolean | ContractCountOutputTypeCountInstallmentsArgs
     documents?: boolean | ContractCountOutputTypeCountDocumentsArgs
+    primaryForProjects?: boolean | ContractCountOutputTypeCountPrimaryForProjectsArgs
   }
 
   // Custom InputTypes
@@ -8536,6 +9010,13 @@ export namespace Prisma {
    */
   export type ContractCountOutputTypeCountDocumentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ContractDocumentWhereInput
+  }
+
+  /**
+   * ContractCountOutputType without action
+   */
+  export type ContractCountOutputTypeCountPrimaryForProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProjectWhereInput
   }
 
 
@@ -11366,11 +11847,14 @@ export namespace Prisma {
     accounts?: boolean | Staff$accountsArgs<ExtArgs>
     auditLogs?: boolean | Staff$auditLogsArgs<ExtArgs>
     managedClients?: boolean | Staff$managedClientsArgs<ExtArgs>
+    clientsCreated?: boolean | Staff$clientsCreatedArgs<ExtArgs>
     contentRequestAssignments?: boolean | Staff$contentRequestAssignmentsArgs<ExtArgs>
     contentRequestsCreated?: boolean | Staff$contentRequestsCreatedArgs<ExtArgs>
     uploadedContractDocuments?: boolean | Staff$uploadedContractDocumentsArgs<ExtArgs>
     createdContracts?: boolean | Staff$createdContractsArgs<ExtArgs>
     createdProjects?: boolean | Staff$createdProjectsArgs<ExtArgs>
+    servicesCreated?: boolean | Staff$servicesCreatedArgs<ExtArgs>
+    servicesUpdated?: boolean | Staff$servicesUpdatedArgs<ExtArgs>
     assignedRecurringSteps?: boolean | Staff$assignedRecurringStepsArgs<ExtArgs>
     sessions?: boolean | Staff$sessionsArgs<ExtArgs>
     portfolio?: boolean | Staff$portfolioArgs<ExtArgs>
@@ -11379,6 +11863,8 @@ export namespace Prisma {
     transferredToTasks?: boolean | Staff$transferredToTasksArgs<ExtArgs>
     transferredByTasks?: boolean | Staff$transferredByTasksArgs<ExtArgs>
     assignedTasks?: boolean | Staff$assignedTasksArgs<ExtArgs>
+    projectSubAssignments?: boolean | Staff$projectSubAssignmentsArgs<ExtArgs>
+    projectExtraRequests?: boolean | Staff$projectExtraRequestsArgs<ExtArgs>
     _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["staff"]>
 
@@ -11414,11 +11900,14 @@ export namespace Prisma {
     accounts?: boolean | Staff$accountsArgs<ExtArgs>
     auditLogs?: boolean | Staff$auditLogsArgs<ExtArgs>
     managedClients?: boolean | Staff$managedClientsArgs<ExtArgs>
+    clientsCreated?: boolean | Staff$clientsCreatedArgs<ExtArgs>
     contentRequestAssignments?: boolean | Staff$contentRequestAssignmentsArgs<ExtArgs>
     contentRequestsCreated?: boolean | Staff$contentRequestsCreatedArgs<ExtArgs>
     uploadedContractDocuments?: boolean | Staff$uploadedContractDocumentsArgs<ExtArgs>
     createdContracts?: boolean | Staff$createdContractsArgs<ExtArgs>
     createdProjects?: boolean | Staff$createdProjectsArgs<ExtArgs>
+    servicesCreated?: boolean | Staff$servicesCreatedArgs<ExtArgs>
+    servicesUpdated?: boolean | Staff$servicesUpdatedArgs<ExtArgs>
     assignedRecurringSteps?: boolean | Staff$assignedRecurringStepsArgs<ExtArgs>
     sessions?: boolean | Staff$sessionsArgs<ExtArgs>
     portfolio?: boolean | Staff$portfolioArgs<ExtArgs>
@@ -11427,6 +11916,8 @@ export namespace Prisma {
     transferredToTasks?: boolean | Staff$transferredToTasksArgs<ExtArgs>
     transferredByTasks?: boolean | Staff$transferredByTasksArgs<ExtArgs>
     assignedTasks?: boolean | Staff$assignedTasksArgs<ExtArgs>
+    projectSubAssignments?: boolean | Staff$projectSubAssignmentsArgs<ExtArgs>
+    projectExtraRequests?: boolean | Staff$projectExtraRequestsArgs<ExtArgs>
     _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -11441,11 +11932,14 @@ export namespace Prisma {
       accounts: Prisma.$AccountPayload<ExtArgs>[]
       auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
       managedClients: Prisma.$ClientPayload<ExtArgs>[]
+      clientsCreated: Prisma.$ClientPayload<ExtArgs>[]
       contentRequestAssignments: Prisma.$ContentRequestAssigneePayload<ExtArgs>[]
       contentRequestsCreated: Prisma.$ContentRequestPayload<ExtArgs>[]
       uploadedContractDocuments: Prisma.$ContractDocumentPayload<ExtArgs>[]
       createdContracts: Prisma.$ContractPayload<ExtArgs>[]
       createdProjects: Prisma.$ProjectPayload<ExtArgs>[]
+      servicesCreated: Prisma.$ServicePayload<ExtArgs>[]
+      servicesUpdated: Prisma.$ServicePayload<ExtArgs>[]
       assignedRecurringSteps: Prisma.$RecurringScheduleStepPayload<ExtArgs>[]
       sessions: Prisma.$SessionPayload<ExtArgs>[]
       portfolio: Prisma.$PortfolioPayload<ExtArgs> | null
@@ -11454,6 +11948,8 @@ export namespace Prisma {
       transferredToTasks: Prisma.$TaskTransferHistoryPayload<ExtArgs>[]
       transferredByTasks: Prisma.$TaskTransferHistoryPayload<ExtArgs>[]
       assignedTasks: Prisma.$TaskPayload<ExtArgs>[]
+      projectSubAssignments: Prisma.$ProjectSubServicePayload<ExtArgs>[]
+      projectExtraRequests: Prisma.$ProjectExtraRequestPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -11823,11 +12319,14 @@ export namespace Prisma {
     accounts<T extends Staff$accountsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany"> | Null>
     auditLogs<T extends Staff$auditLogsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany"> | Null>
     managedClients<T extends Staff$managedClientsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$managedClientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findMany"> | Null>
+    clientsCreated<T extends Staff$clientsCreatedArgs<ExtArgs> = {}>(args?: Subset<T, Staff$clientsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findMany"> | Null>
     contentRequestAssignments<T extends Staff$contentRequestAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$contentRequestAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentRequestAssigneePayload<ExtArgs>, T, "findMany"> | Null>
     contentRequestsCreated<T extends Staff$contentRequestsCreatedArgs<ExtArgs> = {}>(args?: Subset<T, Staff$contentRequestsCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentRequestPayload<ExtArgs>, T, "findMany"> | Null>
     uploadedContractDocuments<T extends Staff$uploadedContractDocumentsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$uploadedContractDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContractDocumentPayload<ExtArgs>, T, "findMany"> | Null>
     createdContracts<T extends Staff$createdContractsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdContractsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContractPayload<ExtArgs>, T, "findMany"> | Null>
     createdProjects<T extends Staff$createdProjectsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdProjectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany"> | Null>
+    servicesCreated<T extends Staff$servicesCreatedArgs<ExtArgs> = {}>(args?: Subset<T, Staff$servicesCreatedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findMany"> | Null>
+    servicesUpdated<T extends Staff$servicesUpdatedArgs<ExtArgs> = {}>(args?: Subset<T, Staff$servicesUpdatedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findMany"> | Null>
     assignedRecurringSteps<T extends Staff$assignedRecurringStepsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$assignedRecurringStepsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RecurringScheduleStepPayload<ExtArgs>, T, "findMany"> | Null>
     sessions<T extends Staff$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany"> | Null>
     portfolio<T extends Staff$portfolioArgs<ExtArgs> = {}>(args?: Subset<T, Staff$portfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
@@ -11836,6 +12335,8 @@ export namespace Prisma {
     transferredToTasks<T extends Staff$transferredToTasksArgs<ExtArgs> = {}>(args?: Subset<T, Staff$transferredToTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskTransferHistoryPayload<ExtArgs>, T, "findMany"> | Null>
     transferredByTasks<T extends Staff$transferredByTasksArgs<ExtArgs> = {}>(args?: Subset<T, Staff$transferredByTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskTransferHistoryPayload<ExtArgs>, T, "findMany"> | Null>
     assignedTasks<T extends Staff$assignedTasksArgs<ExtArgs> = {}>(args?: Subset<T, Staff$assignedTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany"> | Null>
+    projectSubAssignments<T extends Staff$projectSubAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$projectSubAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectSubServicePayload<ExtArgs>, T, "findMany"> | Null>
+    projectExtraRequests<T extends Staff$projectExtraRequestsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$projectExtraRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectExtraRequestPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -12343,6 +12844,26 @@ export namespace Prisma {
   }
 
   /**
+   * Staff.clientsCreated
+   */
+  export type Staff$clientsCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Client
+     */
+    select?: ClientSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientInclude<ExtArgs> | null
+    where?: ClientWhereInput
+    orderBy?: ClientOrderByWithRelationInput | ClientOrderByWithRelationInput[]
+    cursor?: ClientWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ClientScalarFieldEnum | ClientScalarFieldEnum[]
+  }
+
+  /**
    * Staff.contentRequestAssignments
    */
   export type Staff$contentRequestAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -12440,6 +12961,46 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ProjectScalarFieldEnum | ProjectScalarFieldEnum[]
+  }
+
+  /**
+   * Staff.servicesCreated
+   */
+  export type Staff$servicesCreatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Service
+     */
+    select?: ServiceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceInclude<ExtArgs> | null
+    where?: ServiceWhereInput
+    orderBy?: ServiceOrderByWithRelationInput | ServiceOrderByWithRelationInput[]
+    cursor?: ServiceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ServiceScalarFieldEnum | ServiceScalarFieldEnum[]
+  }
+
+  /**
+   * Staff.servicesUpdated
+   */
+  export type Staff$servicesUpdatedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Service
+     */
+    select?: ServiceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ServiceInclude<ExtArgs> | null
+    where?: ServiceWhereInput
+    orderBy?: ServiceOrderByWithRelationInput | ServiceOrderByWithRelationInput[]
+    cursor?: ServiceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ServiceScalarFieldEnum | ServiceScalarFieldEnum[]
   }
 
   /**
@@ -12590,6 +13151,46 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TaskScalarFieldEnum | TaskScalarFieldEnum[]
+  }
+
+  /**
+   * Staff.projectSubAssignments
+   */
+  export type Staff$projectSubAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectSubService
+     */
+    select?: ProjectSubServiceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectSubServiceInclude<ExtArgs> | null
+    where?: ProjectSubServiceWhereInput
+    orderBy?: ProjectSubServiceOrderByWithRelationInput | ProjectSubServiceOrderByWithRelationInput[]
+    cursor?: ProjectSubServiceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProjectSubServiceScalarFieldEnum | ProjectSubServiceScalarFieldEnum[]
+  }
+
+  /**
+   * Staff.projectExtraRequests
+   */
+  export type Staff$projectExtraRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectExtraRequest
+     */
+    select?: ProjectExtraRequestSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectExtraRequestInclude<ExtArgs> | null
+    where?: ProjectExtraRequestWhereInput
+    orderBy?: ProjectExtraRequestOrderByWithRelationInput | ProjectExtraRequestOrderByWithRelationInput[]
+    cursor?: ProjectExtraRequestWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProjectExtraRequestScalarFieldEnum | ProjectExtraRequestScalarFieldEnum[]
   }
 
   /**
@@ -15362,13 +15963,16 @@ export namespace Prisma {
 
   export type ClientMinAggregateOutputType = {
     id: string | null
+    clientCode: string | null
     createdAt: Date | null
     updatedAt: Date | null
     institution: string | null
     email: string | null
     phone: string | null
+    alternativePhone: string | null
     source: string | null
     accountManagerId: string | null
+    createdById: string | null
     address: string | null
     portfolioId: string | null
     clientType: $Enums.ClientType | null
@@ -15384,13 +15988,16 @@ export namespace Prisma {
 
   export type ClientMaxAggregateOutputType = {
     id: string | null
+    clientCode: string | null
     createdAt: Date | null
     updatedAt: Date | null
     institution: string | null
     email: string | null
     phone: string | null
+    alternativePhone: string | null
     source: string | null
     accountManagerId: string | null
+    createdById: string | null
     address: string | null
     portfolioId: string | null
     clientType: $Enums.ClientType | null
@@ -15406,13 +16013,16 @@ export namespace Prisma {
 
   export type ClientCountAggregateOutputType = {
     id: number
+    clientCode: number
     createdAt: number
     updatedAt: number
     institution: number
     email: number
     phone: number
+    alternativePhone: number
     source: number
     accountManagerId: number
+    createdById: number
     address: number
     portfolioId: number
     clientType: number
@@ -15438,13 +16048,16 @@ export namespace Prisma {
 
   export type ClientMinAggregateInputType = {
     id?: true
+    clientCode?: true
     createdAt?: true
     updatedAt?: true
     institution?: true
     email?: true
     phone?: true
+    alternativePhone?: true
     source?: true
     accountManagerId?: true
+    createdById?: true
     address?: true
     portfolioId?: true
     clientType?: true
@@ -15460,13 +16073,16 @@ export namespace Prisma {
 
   export type ClientMaxAggregateInputType = {
     id?: true
+    clientCode?: true
     createdAt?: true
     updatedAt?: true
     institution?: true
     email?: true
     phone?: true
+    alternativePhone?: true
     source?: true
     accountManagerId?: true
+    createdById?: true
     address?: true
     portfolioId?: true
     clientType?: true
@@ -15482,13 +16098,16 @@ export namespace Prisma {
 
   export type ClientCountAggregateInputType = {
     id?: true
+    clientCode?: true
     createdAt?: true
     updatedAt?: true
     institution?: true
     email?: true
     phone?: true
+    alternativePhone?: true
     source?: true
     accountManagerId?: true
+    createdById?: true
     address?: true
     portfolioId?: true
     clientType?: true
@@ -15591,13 +16210,16 @@ export namespace Prisma {
 
   export type ClientGroupByOutputType = {
     id: string
+    clientCode: string | null
     createdAt: Date | null
     updatedAt: Date | null
     institution: string
     email: string
     phone: string
+    alternativePhone: string | null
     source: string
     accountManagerId: string | null
+    createdById: string | null
     address: string | null
     portfolioId: string | null
     clientType: $Enums.ClientType
@@ -15632,13 +16254,16 @@ export namespace Prisma {
 
   export type ClientSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    clientCode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     institution?: boolean
     email?: boolean
     phone?: boolean
+    alternativePhone?: boolean
     source?: boolean
     accountManagerId?: boolean
+    createdById?: boolean
     address?: boolean
     portfolioId?: boolean
     clientType?: boolean
@@ -15655,6 +16280,7 @@ export namespace Prisma {
     clientService?: boolean | Client$clientServiceArgs<ExtArgs>
     installments?: boolean | Client$installmentsArgs<ExtArgs>
     accountManager?: boolean | Client$accountManagerArgs<ExtArgs>
+    createdBy?: boolean | Client$createdByArgs<ExtArgs>
     portfolio?: boolean | Client$portfolioArgs<ExtArgs>
     clientTask?: boolean | Client$clientTaskArgs<ExtArgs>
     contentCycles?: boolean | Client$contentCyclesArgs<ExtArgs>
@@ -15671,13 +16297,16 @@ export namespace Prisma {
 
   export type ClientSelectScalar = {
     id?: boolean
+    clientCode?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     institution?: boolean
     email?: boolean
     phone?: boolean
+    alternativePhone?: boolean
     source?: boolean
     accountManagerId?: boolean
+    createdById?: boolean
     address?: boolean
     portfolioId?: boolean
     clientType?: boolean
@@ -15697,6 +16326,7 @@ export namespace Prisma {
     clientService?: boolean | Client$clientServiceArgs<ExtArgs>
     installments?: boolean | Client$installmentsArgs<ExtArgs>
     accountManager?: boolean | Client$accountManagerArgs<ExtArgs>
+    createdBy?: boolean | Client$createdByArgs<ExtArgs>
     portfolio?: boolean | Client$portfolioArgs<ExtArgs>
     clientTask?: boolean | Client$clientTaskArgs<ExtArgs>
     contentCycles?: boolean | Client$contentCyclesArgs<ExtArgs>
@@ -15718,6 +16348,7 @@ export namespace Prisma {
       clientService: Prisma.$ClientServicePayload<ExtArgs>[]
       installments: Prisma.$ClientInstallmentPayload<ExtArgs>[]
       accountManager: Prisma.$StaffPayload<ExtArgs> | null
+      createdBy: Prisma.$StaffPayload<ExtArgs> | null
       portfolio: Prisma.$PortfolioPayload<ExtArgs> | null
       clientTask: Prisma.$ClientTaskPayload<ExtArgs>[]
       contentCycles: Prisma.$ContentCyclePayload<ExtArgs>[]
@@ -15731,13 +16362,16 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      clientCode: string | null
       createdAt: Date | null
       updatedAt: Date | null
       institution: string
       email: string
       phone: string
+      alternativePhone: string | null
       source: string
       accountManagerId: string | null
+      createdById: string | null
       address: string | null
       portfolioId: string | null
       clientType: $Enums.ClientType
@@ -16094,6 +16728,7 @@ export namespace Prisma {
     clientService<T extends Client$clientServiceArgs<ExtArgs> = {}>(args?: Subset<T, Client$clientServiceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientServicePayload<ExtArgs>, T, "findMany"> | Null>
     installments<T extends Client$installmentsArgs<ExtArgs> = {}>(args?: Subset<T, Client$installmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientInstallmentPayload<ExtArgs>, T, "findMany"> | Null>
     accountManager<T extends Client$accountManagerArgs<ExtArgs> = {}>(args?: Subset<T, Client$accountManagerArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    createdBy<T extends Client$createdByArgs<ExtArgs> = {}>(args?: Subset<T, Client$createdByArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     portfolio<T extends Client$portfolioArgs<ExtArgs> = {}>(args?: Subset<T, Client$portfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     clientTask<T extends Client$clientTaskArgs<ExtArgs> = {}>(args?: Subset<T, Client$clientTaskArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientTaskPayload<ExtArgs>, T, "findMany"> | Null>
     contentCycles<T extends Client$contentCyclesArgs<ExtArgs> = {}>(args?: Subset<T, Client$contentCyclesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentCyclePayload<ExtArgs>, T, "findMany"> | Null>
@@ -16134,13 +16769,16 @@ export namespace Prisma {
    */ 
   interface ClientFieldRefs {
     readonly id: FieldRef<"Client", 'String'>
+    readonly clientCode: FieldRef<"Client", 'String'>
     readonly createdAt: FieldRef<"Client", 'DateTime'>
     readonly updatedAt: FieldRef<"Client", 'DateTime'>
     readonly institution: FieldRef<"Client", 'String'>
     readonly email: FieldRef<"Client", 'String'>
     readonly phone: FieldRef<"Client", 'String'>
+    readonly alternativePhone: FieldRef<"Client", 'String'>
     readonly source: FieldRef<"Client", 'String'>
     readonly accountManagerId: FieldRef<"Client", 'String'>
+    readonly createdById: FieldRef<"Client", 'String'>
     readonly address: FieldRef<"Client", 'String'>
     readonly portfolioId: FieldRef<"Client", 'String'>
     readonly clientType: FieldRef<"Client", 'ClientType'>
@@ -16546,6 +17184,21 @@ export namespace Prisma {
   }
 
   /**
+   * Client.createdBy
+   */
+  export type Client$createdByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Staff
+     */
+    select?: StaffSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
+  }
+
+  /**
    * Client.portfolio
    */
   export type Client$portfolioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -16762,8 +17415,14 @@ export namespace Prisma {
 
   export type ServiceMinAggregateOutputType = {
     id: string | null
+    serviceCode: string | null
     serviceName: string | null
     description: string | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    createdById: string | null
+    updatedById: string | null
     portfolioId: string | null
     iconUrl: string | null
     source: string | null
@@ -16774,8 +17433,14 @@ export namespace Prisma {
 
   export type ServiceMaxAggregateOutputType = {
     id: string | null
+    serviceCode: string | null
     serviceName: string | null
     description: string | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    createdById: string | null
+    updatedById: string | null
     portfolioId: string | null
     iconUrl: string | null
     source: string | null
@@ -16786,8 +17451,14 @@ export namespace Prisma {
 
   export type ServiceCountAggregateOutputType = {
     id: number
+    serviceCode: number
     serviceName: number
     description: number
+    isActive: number
+    createdAt: number
+    updatedAt: number
+    createdById: number
+    updatedById: number
     portfolioId: number
     iconUrl: number
     source: number
@@ -16800,8 +17471,14 @@ export namespace Prisma {
 
   export type ServiceMinAggregateInputType = {
     id?: true
+    serviceCode?: true
     serviceName?: true
     description?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+    createdById?: true
+    updatedById?: true
     portfolioId?: true
     iconUrl?: true
     source?: true
@@ -16812,8 +17489,14 @@ export namespace Prisma {
 
   export type ServiceMaxAggregateInputType = {
     id?: true
+    serviceCode?: true
     serviceName?: true
     description?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+    createdById?: true
+    updatedById?: true
     portfolioId?: true
     iconUrl?: true
     source?: true
@@ -16824,8 +17507,14 @@ export namespace Prisma {
 
   export type ServiceCountAggregateInputType = {
     id?: true
+    serviceCode?: true
     serviceName?: true
     description?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+    createdById?: true
+    updatedById?: true
     portfolioId?: true
     iconUrl?: true
     source?: true
@@ -16909,8 +17598,14 @@ export namespace Prisma {
 
   export type ServiceGroupByOutputType = {
     id: string
+    serviceCode: string | null
     serviceName: string
     description: string | null
+    isActive: boolean
+    createdAt: Date
+    updatedAt: Date
+    createdById: string | null
+    updatedById: string | null
     portfolioId: string | null
     iconUrl: string | null
     source: string
@@ -16938,8 +17633,14 @@ export namespace Prisma {
 
   export type ServiceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    serviceCode?: boolean
     serviceName?: boolean
     description?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    createdById?: boolean
+    updatedById?: boolean
     portfolioId?: boolean
     iconUrl?: boolean
     source?: boolean
@@ -16948,16 +17649,25 @@ export namespace Prisma {
     serviceType?: boolean
     serviceAgreements?: boolean | Service$serviceAgreementsArgs<ExtArgs>
     clientService?: boolean | Service$clientServiceArgs<ExtArgs>
+    createdBy?: boolean | Service$createdByArgs<ExtArgs>
+    updatedBy?: boolean | Service$updatedByArgs<ExtArgs>
     portfolio?: boolean | Service$portfolioArgs<ExtArgs>
     subService?: boolean | Service$subServiceArgs<ExtArgs>
+    projectLinks?: boolean | Service$projectLinksArgs<ExtArgs>
     _count?: boolean | ServiceCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["service"]>
 
 
   export type ServiceSelectScalar = {
     id?: boolean
+    serviceCode?: boolean
     serviceName?: boolean
     description?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    createdById?: boolean
+    updatedById?: boolean
     portfolioId?: boolean
     iconUrl?: boolean
     source?: boolean
@@ -16969,8 +17679,11 @@ export namespace Prisma {
   export type ServiceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     serviceAgreements?: boolean | Service$serviceAgreementsArgs<ExtArgs>
     clientService?: boolean | Service$clientServiceArgs<ExtArgs>
+    createdBy?: boolean | Service$createdByArgs<ExtArgs>
+    updatedBy?: boolean | Service$updatedByArgs<ExtArgs>
     portfolio?: boolean | Service$portfolioArgs<ExtArgs>
     subService?: boolean | Service$subServiceArgs<ExtArgs>
+    projectLinks?: boolean | Service$projectLinksArgs<ExtArgs>
     _count?: boolean | ServiceCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -16979,13 +17692,22 @@ export namespace Prisma {
     objects: {
       serviceAgreements: Prisma.$IncomeServiceAgreementPayload<ExtArgs>[]
       clientService: Prisma.$ClientServicePayload<ExtArgs>[]
+      createdBy: Prisma.$StaffPayload<ExtArgs> | null
+      updatedBy: Prisma.$StaffPayload<ExtArgs> | null
       portfolio: Prisma.$PortfolioPayload<ExtArgs> | null
       subService: Prisma.$SubServicePayload<ExtArgs>[]
+      projectLinks: Prisma.$ProjectServiceLinkPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      serviceCode: string | null
       serviceName: string
       description: string | null
+      isActive: boolean
+      createdAt: Date
+      updatedAt: Date
+      createdById: string | null
+      updatedById: string | null
       portfolioId: string | null
       iconUrl: string | null
       source: string
@@ -17334,8 +18056,11 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     serviceAgreements<T extends Service$serviceAgreementsArgs<ExtArgs> = {}>(args?: Subset<T, Service$serviceAgreementsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IncomeServiceAgreementPayload<ExtArgs>, T, "findMany"> | Null>
     clientService<T extends Service$clientServiceArgs<ExtArgs> = {}>(args?: Subset<T, Service$clientServiceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientServicePayload<ExtArgs>, T, "findMany"> | Null>
+    createdBy<T extends Service$createdByArgs<ExtArgs> = {}>(args?: Subset<T, Service$createdByArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    updatedBy<T extends Service$updatedByArgs<ExtArgs> = {}>(args?: Subset<T, Service$updatedByArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     portfolio<T extends Service$portfolioArgs<ExtArgs> = {}>(args?: Subset<T, Service$portfolioArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     subService<T extends Service$subServiceArgs<ExtArgs> = {}>(args?: Subset<T, Service$subServiceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SubServicePayload<ExtArgs>, T, "findMany"> | Null>
+    projectLinks<T extends Service$projectLinksArgs<ExtArgs> = {}>(args?: Subset<T, Service$projectLinksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectServiceLinkPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -17366,8 +18091,14 @@ export namespace Prisma {
    */ 
   interface ServiceFieldRefs {
     readonly id: FieldRef<"Service", 'String'>
+    readonly serviceCode: FieldRef<"Service", 'String'>
     readonly serviceName: FieldRef<"Service", 'String'>
     readonly description: FieldRef<"Service", 'String'>
+    readonly isActive: FieldRef<"Service", 'Boolean'>
+    readonly createdAt: FieldRef<"Service", 'DateTime'>
+    readonly updatedAt: FieldRef<"Service", 'DateTime'>
+    readonly createdById: FieldRef<"Service", 'String'>
+    readonly updatedById: FieldRef<"Service", 'String'>
     readonly portfolioId: FieldRef<"Service", 'String'>
     readonly iconUrl: FieldRef<"Service", 'String'>
     readonly source: FieldRef<"Service", 'String'>
@@ -17713,6 +18444,36 @@ export namespace Prisma {
   }
 
   /**
+   * Service.createdBy
+   */
+  export type Service$createdByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Staff
+     */
+    select?: StaffSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
+  }
+
+  /**
+   * Service.updatedBy
+   */
+  export type Service$updatedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Staff
+     */
+    select?: StaffSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
+  }
+
+  /**
    * Service.portfolio
    */
   export type Service$portfolioArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -17745,6 +18506,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SubServiceScalarFieldEnum | SubServiceScalarFieldEnum[]
+  }
+
+  /**
+   * Service.projectLinks
+   */
+  export type Service$projectLinksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectServiceLink
+     */
+    select?: ProjectServiceLinkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectServiceLinkInclude<ExtArgs> | null
+    where?: ProjectServiceLinkWhereInput
+    orderBy?: ProjectServiceLinkOrderByWithRelationInput | ProjectServiceLinkOrderByWithRelationInput[]
+    cursor?: ProjectServiceLinkWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProjectServiceLinkScalarFieldEnum | ProjectServiceLinkScalarFieldEnum[]
   }
 
   /**
@@ -23065,6 +23846,8 @@ export namespace Prisma {
     progressAtTransfer: number | null
     deadlineAtTransfer: Date | null
     transferredById: string | null
+    reason: string | null
+    note: string | null
   }
 
   export type TaskTransferHistoryMaxAggregateOutputType = {
@@ -23076,6 +23859,8 @@ export namespace Prisma {
     progressAtTransfer: number | null
     deadlineAtTransfer: Date | null
     transferredById: string | null
+    reason: string | null
+    note: string | null
   }
 
   export type TaskTransferHistoryCountAggregateOutputType = {
@@ -23087,6 +23872,8 @@ export namespace Prisma {
     progressAtTransfer: number
     deadlineAtTransfer: number
     transferredById: number
+    reason: number
+    note: number
     _all: number
   }
 
@@ -23108,6 +23895,8 @@ export namespace Prisma {
     progressAtTransfer?: true
     deadlineAtTransfer?: true
     transferredById?: true
+    reason?: true
+    note?: true
   }
 
   export type TaskTransferHistoryMaxAggregateInputType = {
@@ -23119,6 +23908,8 @@ export namespace Prisma {
     progressAtTransfer?: true
     deadlineAtTransfer?: true
     transferredById?: true
+    reason?: true
+    note?: true
   }
 
   export type TaskTransferHistoryCountAggregateInputType = {
@@ -23130,6 +23921,8 @@ export namespace Prisma {
     progressAtTransfer?: true
     deadlineAtTransfer?: true
     transferredById?: true
+    reason?: true
+    note?: true
     _all?: true
   }
 
@@ -23228,6 +24021,8 @@ export namespace Prisma {
     progressAtTransfer: number
     deadlineAtTransfer: Date | null
     transferredById: string | null
+    reason: string | null
+    note: string | null
     _count: TaskTransferHistoryCountAggregateOutputType | null
     _avg: TaskTransferHistoryAvgAggregateOutputType | null
     _sum: TaskTransferHistorySumAggregateOutputType | null
@@ -23258,6 +24053,8 @@ export namespace Prisma {
     progressAtTransfer?: boolean
     deadlineAtTransfer?: boolean
     transferredById?: boolean
+    reason?: boolean
+    note?: boolean
     fromAssignee?: boolean | StaffDefaultArgs<ExtArgs>
     task?: boolean | TaskDefaultArgs<ExtArgs>
     toAssignee?: boolean | StaffDefaultArgs<ExtArgs>
@@ -23274,6 +24071,8 @@ export namespace Prisma {
     progressAtTransfer?: boolean
     deadlineAtTransfer?: boolean
     transferredById?: boolean
+    reason?: boolean
+    note?: boolean
   }
 
   export type TaskTransferHistoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -23300,6 +24099,8 @@ export namespace Prisma {
       progressAtTransfer: number
       deadlineAtTransfer: Date | null
       transferredById: string | null
+      reason: string | null
+      note: string | null
     }, ExtArgs["result"]["taskTransferHistory"]>
     composites: {}
   }
@@ -23681,6 +24482,8 @@ export namespace Prisma {
     readonly progressAtTransfer: FieldRef<"TaskTransferHistory", 'Int'>
     readonly deadlineAtTransfer: FieldRef<"TaskTransferHistory", 'DateTime'>
     readonly transferredById: FieldRef<"TaskTransferHistory", 'String'>
+    readonly reason: FieldRef<"TaskTransferHistory", 'String'>
+    readonly note: FieldRef<"TaskTransferHistory", 'String'>
   }
     
 
@@ -41960,6 +42763,12 @@ export namespace Prisma {
     clientId: string | null
     portfolioId: string | null
     createdById: string | null
+    projectCode: string | null
+    billingMode: string | null
+    lifecycleStatus: string | null
+    contractId: string | null
+    archived: boolean | null
+    isDraft: boolean | null
   }
 
   export type ProjectMaxAggregateOutputType = {
@@ -41976,6 +42785,12 @@ export namespace Prisma {
     clientId: string | null
     portfolioId: string | null
     createdById: string | null
+    projectCode: string | null
+    billingMode: string | null
+    lifecycleStatus: string | null
+    contractId: string | null
+    archived: boolean | null
+    isDraft: boolean | null
   }
 
   export type ProjectCountAggregateOutputType = {
@@ -41992,6 +42807,13 @@ export namespace Prisma {
     clientId: number
     portfolioId: number
     createdById: number
+    projectCode: number
+    billingMode: number
+    lifecycleStatus: number
+    contractId: number
+    archived: number
+    isDraft: number
+    scheduleConfig: number
     _all: number
   }
 
@@ -42010,6 +42832,12 @@ export namespace Prisma {
     clientId?: true
     portfolioId?: true
     createdById?: true
+    projectCode?: true
+    billingMode?: true
+    lifecycleStatus?: true
+    contractId?: true
+    archived?: true
+    isDraft?: true
   }
 
   export type ProjectMaxAggregateInputType = {
@@ -42026,6 +42854,12 @@ export namespace Prisma {
     clientId?: true
     portfolioId?: true
     createdById?: true
+    projectCode?: true
+    billingMode?: true
+    lifecycleStatus?: true
+    contractId?: true
+    archived?: true
+    isDraft?: true
   }
 
   export type ProjectCountAggregateInputType = {
@@ -42042,6 +42876,13 @@ export namespace Prisma {
     clientId?: true
     portfolioId?: true
     createdById?: true
+    projectCode?: true
+    billingMode?: true
+    lifecycleStatus?: true
+    contractId?: true
+    archived?: true
+    isDraft?: true
+    scheduleConfig?: true
     _all?: true
   }
 
@@ -42131,6 +42972,13 @@ export namespace Prisma {
     clientId: string
     portfolioId: string | null
     createdById: string | null
+    projectCode: string | null
+    billingMode: string
+    lifecycleStatus: string
+    contractId: string | null
+    archived: boolean
+    isDraft: boolean
+    scheduleConfig: JsonValue | null
     _count: ProjectCountAggregateOutputType | null
     _min: ProjectMinAggregateOutputType | null
     _max: ProjectMaxAggregateOutputType | null
@@ -42164,6 +43012,14 @@ export namespace Prisma {
     clientId?: boolean
     portfolioId?: boolean
     createdById?: boolean
+    projectCode?: boolean
+    billingMode?: boolean
+    lifecycleStatus?: boolean
+    contractId?: boolean
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: boolean
+    primaryContract?: boolean | Project$primaryContractArgs<ExtArgs>
     serviceAgreements?: boolean | Project$serviceAgreementsArgs<ExtArgs>
     contentRequests?: boolean | Project$contentRequestsArgs<ExtArgs>
     contracts?: boolean | Project$contractsArgs<ExtArgs>
@@ -42171,6 +43027,9 @@ export namespace Prisma {
     client?: boolean | ClientDefaultArgs<ExtArgs>
     createdBy?: boolean | Project$createdByArgs<ExtArgs>
     tasks?: boolean | Project$tasksArgs<ExtArgs>
+    serviceLinks?: boolean | Project$serviceLinksArgs<ExtArgs>
+    cycles?: boolean | Project$cyclesArgs<ExtArgs>
+    extraRequests?: boolean | Project$extraRequestsArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["project"]>
 
@@ -42189,9 +43048,17 @@ export namespace Prisma {
     clientId?: boolean
     portfolioId?: boolean
     createdById?: boolean
+    projectCode?: boolean
+    billingMode?: boolean
+    lifecycleStatus?: boolean
+    contractId?: boolean
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: boolean
   }
 
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    primaryContract?: boolean | Project$primaryContractArgs<ExtArgs>
     serviceAgreements?: boolean | Project$serviceAgreementsArgs<ExtArgs>
     contentRequests?: boolean | Project$contentRequestsArgs<ExtArgs>
     contracts?: boolean | Project$contractsArgs<ExtArgs>
@@ -42199,12 +43066,16 @@ export namespace Prisma {
     client?: boolean | ClientDefaultArgs<ExtArgs>
     createdBy?: boolean | Project$createdByArgs<ExtArgs>
     tasks?: boolean | Project$tasksArgs<ExtArgs>
+    serviceLinks?: boolean | Project$serviceLinksArgs<ExtArgs>
+    cycles?: boolean | Project$cyclesArgs<ExtArgs>
+    extraRequests?: boolean | Project$extraRequestsArgs<ExtArgs>
     _count?: boolean | ProjectCountOutputTypeDefaultArgs<ExtArgs>
   }
 
   export type $ProjectPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Project"
     objects: {
+      primaryContract: Prisma.$ContractPayload<ExtArgs> | null
       serviceAgreements: Prisma.$IncomeServiceAgreementPayload<ExtArgs>[]
       contentRequests: Prisma.$ContentRequestPayload<ExtArgs>[]
       contracts: Prisma.$ContractPayload<ExtArgs>[]
@@ -42212,6 +43083,9 @@ export namespace Prisma {
       client: Prisma.$ClientPayload<ExtArgs>
       createdBy: Prisma.$StaffPayload<ExtArgs> | null
       tasks: Prisma.$TaskPayload<ExtArgs>[]
+      serviceLinks: Prisma.$ProjectServiceLinkPayload<ExtArgs>[]
+      cycles: Prisma.$ProjectCyclePayload<ExtArgs>[]
+      extraRequests: Prisma.$ProjectExtraRequestPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -42227,6 +43101,13 @@ export namespace Prisma {
       clientId: string
       portfolioId: string | null
       createdById: string | null
+      projectCode: string | null
+      billingMode: string
+      lifecycleStatus: string
+      contractId: string | null
+      archived: boolean
+      isDraft: boolean
+      scheduleConfig: Prisma.JsonValue | null
     }, ExtArgs["result"]["project"]>
     composites: {}
   }
@@ -42567,6 +43448,7 @@ export namespace Prisma {
    */
   export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    primaryContract<T extends Project$primaryContractArgs<ExtArgs> = {}>(args?: Subset<T, Project$primaryContractArgs<ExtArgs>>): Prisma__ContractClient<$Result.GetResult<Prisma.$ContractPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     serviceAgreements<T extends Project$serviceAgreementsArgs<ExtArgs> = {}>(args?: Subset<T, Project$serviceAgreementsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$IncomeServiceAgreementPayload<ExtArgs>, T, "findMany"> | Null>
     contentRequests<T extends Project$contentRequestsArgs<ExtArgs> = {}>(args?: Subset<T, Project$contentRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContentRequestPayload<ExtArgs>, T, "findMany"> | Null>
     contracts<T extends Project$contractsArgs<ExtArgs> = {}>(args?: Subset<T, Project$contractsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ContractPayload<ExtArgs>, T, "findMany"> | Null>
@@ -42574,6 +43456,9 @@ export namespace Prisma {
     client<T extends ClientDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ClientDefaultArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     createdBy<T extends Project$createdByArgs<ExtArgs> = {}>(args?: Subset<T, Project$createdByArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     tasks<T extends Project$tasksArgs<ExtArgs> = {}>(args?: Subset<T, Project$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany"> | Null>
+    serviceLinks<T extends Project$serviceLinksArgs<ExtArgs> = {}>(args?: Subset<T, Project$serviceLinksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectServiceLinkPayload<ExtArgs>, T, "findMany"> | Null>
+    cycles<T extends Project$cyclesArgs<ExtArgs> = {}>(args?: Subset<T, Project$cyclesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectCyclePayload<ExtArgs>, T, "findMany"> | Null>
+    extraRequests<T extends Project$extraRequestsArgs<ExtArgs> = {}>(args?: Subset<T, Project$extraRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectExtraRequestPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -42616,6 +43501,13 @@ export namespace Prisma {
     readonly clientId: FieldRef<"Project", 'String'>
     readonly portfolioId: FieldRef<"Project", 'String'>
     readonly createdById: FieldRef<"Project", 'String'>
+    readonly projectCode: FieldRef<"Project", 'String'>
+    readonly billingMode: FieldRef<"Project", 'String'>
+    readonly lifecycleStatus: FieldRef<"Project", 'String'>
+    readonly contractId: FieldRef<"Project", 'String'>
+    readonly archived: FieldRef<"Project", 'Boolean'>
+    readonly isDraft: FieldRef<"Project", 'Boolean'>
+    readonly scheduleConfig: FieldRef<"Project", 'Json'>
   }
     
 
@@ -42915,6 +43807,21 @@ export namespace Prisma {
   }
 
   /**
+   * Project.primaryContract
+   */
+  export type Project$primaryContractArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Contract
+     */
+    select?: ContractSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ContractInclude<ExtArgs> | null
+    where?: ContractWhereInput
+  }
+
+  /**
    * Project.serviceAgreements
    */
   export type Project$serviceAgreementsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -43025,6 +43932,66 @@ export namespace Prisma {
   }
 
   /**
+   * Project.serviceLinks
+   */
+  export type Project$serviceLinksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectServiceLink
+     */
+    select?: ProjectServiceLinkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectServiceLinkInclude<ExtArgs> | null
+    where?: ProjectServiceLinkWhereInput
+    orderBy?: ProjectServiceLinkOrderByWithRelationInput | ProjectServiceLinkOrderByWithRelationInput[]
+    cursor?: ProjectServiceLinkWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProjectServiceLinkScalarFieldEnum | ProjectServiceLinkScalarFieldEnum[]
+  }
+
+  /**
+   * Project.cycles
+   */
+  export type Project$cyclesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectCycle
+     */
+    select?: ProjectCycleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectCycleInclude<ExtArgs> | null
+    where?: ProjectCycleWhereInput
+    orderBy?: ProjectCycleOrderByWithRelationInput | ProjectCycleOrderByWithRelationInput[]
+    cursor?: ProjectCycleWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProjectCycleScalarFieldEnum | ProjectCycleScalarFieldEnum[]
+  }
+
+  /**
+   * Project.extraRequests
+   */
+  export type Project$extraRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectExtraRequest
+     */
+    select?: ProjectExtraRequestSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectExtraRequestInclude<ExtArgs> | null
+    where?: ProjectExtraRequestWhereInput
+    orderBy?: ProjectExtraRequestOrderByWithRelationInput | ProjectExtraRequestOrderByWithRelationInput[]
+    cursor?: ProjectExtraRequestWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProjectExtraRequestScalarFieldEnum | ProjectExtraRequestScalarFieldEnum[]
+  }
+
+  /**
    * Project without action
    */
   export type ProjectDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -43036,6 +44003,3747 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ProjectInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ProjectServiceLink
+   */
+
+  export type AggregateProjectServiceLink = {
+    _count: ProjectServiceLinkCountAggregateOutputType | null
+    _min: ProjectServiceLinkMinAggregateOutputType | null
+    _max: ProjectServiceLinkMaxAggregateOutputType | null
+  }
+
+  export type ProjectServiceLinkMinAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    serviceId: string | null
+  }
+
+  export type ProjectServiceLinkMaxAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    serviceId: string | null
+  }
+
+  export type ProjectServiceLinkCountAggregateOutputType = {
+    id: number
+    projectId: number
+    serviceId: number
+    _all: number
+  }
+
+
+  export type ProjectServiceLinkMinAggregateInputType = {
+    id?: true
+    projectId?: true
+    serviceId?: true
+  }
+
+  export type ProjectServiceLinkMaxAggregateInputType = {
+    id?: true
+    projectId?: true
+    serviceId?: true
+  }
+
+  export type ProjectServiceLinkCountAggregateInputType = {
+    id?: true
+    projectId?: true
+    serviceId?: true
+    _all?: true
+  }
+
+  export type ProjectServiceLinkAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ProjectServiceLink to aggregate.
+     */
+    where?: ProjectServiceLinkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProjectServiceLinks to fetch.
+     */
+    orderBy?: ProjectServiceLinkOrderByWithRelationInput | ProjectServiceLinkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ProjectServiceLinkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProjectServiceLinks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProjectServiceLinks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ProjectServiceLinks
+    **/
+    _count?: true | ProjectServiceLinkCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ProjectServiceLinkMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ProjectServiceLinkMaxAggregateInputType
+  }
+
+  export type GetProjectServiceLinkAggregateType<T extends ProjectServiceLinkAggregateArgs> = {
+        [P in keyof T & keyof AggregateProjectServiceLink]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateProjectServiceLink[P]>
+      : GetScalarType<T[P], AggregateProjectServiceLink[P]>
+  }
+
+
+
+
+  export type ProjectServiceLinkGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProjectServiceLinkWhereInput
+    orderBy?: ProjectServiceLinkOrderByWithAggregationInput | ProjectServiceLinkOrderByWithAggregationInput[]
+    by: ProjectServiceLinkScalarFieldEnum[] | ProjectServiceLinkScalarFieldEnum
+    having?: ProjectServiceLinkScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ProjectServiceLinkCountAggregateInputType | true
+    _min?: ProjectServiceLinkMinAggregateInputType
+    _max?: ProjectServiceLinkMaxAggregateInputType
+  }
+
+  export type ProjectServiceLinkGroupByOutputType = {
+    id: string
+    projectId: string
+    serviceId: string
+    _count: ProjectServiceLinkCountAggregateOutputType | null
+    _min: ProjectServiceLinkMinAggregateOutputType | null
+    _max: ProjectServiceLinkMaxAggregateOutputType | null
+  }
+
+  type GetProjectServiceLinkGroupByPayload<T extends ProjectServiceLinkGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ProjectServiceLinkGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ProjectServiceLinkGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ProjectServiceLinkGroupByOutputType[P]>
+            : GetScalarType<T[P], ProjectServiceLinkGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ProjectServiceLinkSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    serviceId?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+    subServices?: boolean | ProjectServiceLink$subServicesArgs<ExtArgs>
+    _count?: boolean | ProjectServiceLinkCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["projectServiceLink"]>
+
+
+  export type ProjectServiceLinkSelectScalar = {
+    id?: boolean
+    projectId?: boolean
+    serviceId?: boolean
+  }
+
+  export type ProjectServiceLinkInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+    subServices?: boolean | ProjectServiceLink$subServicesArgs<ExtArgs>
+    _count?: boolean | ProjectServiceLinkCountOutputTypeDefaultArgs<ExtArgs>
+  }
+
+  export type $ProjectServiceLinkPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ProjectServiceLink"
+    objects: {
+      project: Prisma.$ProjectPayload<ExtArgs>
+      service: Prisma.$ServicePayload<ExtArgs>
+      subServices: Prisma.$ProjectSubServicePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      projectId: string
+      serviceId: string
+    }, ExtArgs["result"]["projectServiceLink"]>
+    composites: {}
+  }
+
+  type ProjectServiceLinkGetPayload<S extends boolean | null | undefined | ProjectServiceLinkDefaultArgs> = $Result.GetResult<Prisma.$ProjectServiceLinkPayload, S>
+
+  type ProjectServiceLinkCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ProjectServiceLinkFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ProjectServiceLinkCountAggregateInputType | true
+    }
+
+  export interface ProjectServiceLinkDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ProjectServiceLink'], meta: { name: 'ProjectServiceLink' } }
+    /**
+     * Find zero or one ProjectServiceLink that matches the filter.
+     * @param {ProjectServiceLinkFindUniqueArgs} args - Arguments to find a ProjectServiceLink
+     * @example
+     * // Get one ProjectServiceLink
+     * const projectServiceLink = await prisma.projectServiceLink.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ProjectServiceLinkFindUniqueArgs>(args: SelectSubset<T, ProjectServiceLinkFindUniqueArgs<ExtArgs>>): Prisma__ProjectServiceLinkClient<$Result.GetResult<Prisma.$ProjectServiceLinkPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one ProjectServiceLink that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ProjectServiceLinkFindUniqueOrThrowArgs} args - Arguments to find a ProjectServiceLink
+     * @example
+     * // Get one ProjectServiceLink
+     * const projectServiceLink = await prisma.projectServiceLink.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ProjectServiceLinkFindUniqueOrThrowArgs>(args: SelectSubset<T, ProjectServiceLinkFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ProjectServiceLinkClient<$Result.GetResult<Prisma.$ProjectServiceLinkPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first ProjectServiceLink that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectServiceLinkFindFirstArgs} args - Arguments to find a ProjectServiceLink
+     * @example
+     * // Get one ProjectServiceLink
+     * const projectServiceLink = await prisma.projectServiceLink.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ProjectServiceLinkFindFirstArgs>(args?: SelectSubset<T, ProjectServiceLinkFindFirstArgs<ExtArgs>>): Prisma__ProjectServiceLinkClient<$Result.GetResult<Prisma.$ProjectServiceLinkPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first ProjectServiceLink that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectServiceLinkFindFirstOrThrowArgs} args - Arguments to find a ProjectServiceLink
+     * @example
+     * // Get one ProjectServiceLink
+     * const projectServiceLink = await prisma.projectServiceLink.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ProjectServiceLinkFindFirstOrThrowArgs>(args?: SelectSubset<T, ProjectServiceLinkFindFirstOrThrowArgs<ExtArgs>>): Prisma__ProjectServiceLinkClient<$Result.GetResult<Prisma.$ProjectServiceLinkPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more ProjectServiceLinks that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectServiceLinkFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ProjectServiceLinks
+     * const projectServiceLinks = await prisma.projectServiceLink.findMany()
+     * 
+     * // Get first 10 ProjectServiceLinks
+     * const projectServiceLinks = await prisma.projectServiceLink.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const projectServiceLinkWithIdOnly = await prisma.projectServiceLink.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ProjectServiceLinkFindManyArgs>(args?: SelectSubset<T, ProjectServiceLinkFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectServiceLinkPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a ProjectServiceLink.
+     * @param {ProjectServiceLinkCreateArgs} args - Arguments to create a ProjectServiceLink.
+     * @example
+     * // Create one ProjectServiceLink
+     * const ProjectServiceLink = await prisma.projectServiceLink.create({
+     *   data: {
+     *     // ... data to create a ProjectServiceLink
+     *   }
+     * })
+     * 
+     */
+    create<T extends ProjectServiceLinkCreateArgs>(args: SelectSubset<T, ProjectServiceLinkCreateArgs<ExtArgs>>): Prisma__ProjectServiceLinkClient<$Result.GetResult<Prisma.$ProjectServiceLinkPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many ProjectServiceLinks.
+     * @param {ProjectServiceLinkCreateManyArgs} args - Arguments to create many ProjectServiceLinks.
+     * @example
+     * // Create many ProjectServiceLinks
+     * const projectServiceLink = await prisma.projectServiceLink.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ProjectServiceLinkCreateManyArgs>(args?: SelectSubset<T, ProjectServiceLinkCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a ProjectServiceLink.
+     * @param {ProjectServiceLinkDeleteArgs} args - Arguments to delete one ProjectServiceLink.
+     * @example
+     * // Delete one ProjectServiceLink
+     * const ProjectServiceLink = await prisma.projectServiceLink.delete({
+     *   where: {
+     *     // ... filter to delete one ProjectServiceLink
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ProjectServiceLinkDeleteArgs>(args: SelectSubset<T, ProjectServiceLinkDeleteArgs<ExtArgs>>): Prisma__ProjectServiceLinkClient<$Result.GetResult<Prisma.$ProjectServiceLinkPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one ProjectServiceLink.
+     * @param {ProjectServiceLinkUpdateArgs} args - Arguments to update one ProjectServiceLink.
+     * @example
+     * // Update one ProjectServiceLink
+     * const projectServiceLink = await prisma.projectServiceLink.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ProjectServiceLinkUpdateArgs>(args: SelectSubset<T, ProjectServiceLinkUpdateArgs<ExtArgs>>): Prisma__ProjectServiceLinkClient<$Result.GetResult<Prisma.$ProjectServiceLinkPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more ProjectServiceLinks.
+     * @param {ProjectServiceLinkDeleteManyArgs} args - Arguments to filter ProjectServiceLinks to delete.
+     * @example
+     * // Delete a few ProjectServiceLinks
+     * const { count } = await prisma.projectServiceLink.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ProjectServiceLinkDeleteManyArgs>(args?: SelectSubset<T, ProjectServiceLinkDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ProjectServiceLinks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectServiceLinkUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ProjectServiceLinks
+     * const projectServiceLink = await prisma.projectServiceLink.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ProjectServiceLinkUpdateManyArgs>(args: SelectSubset<T, ProjectServiceLinkUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ProjectServiceLink.
+     * @param {ProjectServiceLinkUpsertArgs} args - Arguments to update or create a ProjectServiceLink.
+     * @example
+     * // Update or create a ProjectServiceLink
+     * const projectServiceLink = await prisma.projectServiceLink.upsert({
+     *   create: {
+     *     // ... data to create a ProjectServiceLink
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ProjectServiceLink we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ProjectServiceLinkUpsertArgs>(args: SelectSubset<T, ProjectServiceLinkUpsertArgs<ExtArgs>>): Prisma__ProjectServiceLinkClient<$Result.GetResult<Prisma.$ProjectServiceLinkPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of ProjectServiceLinks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectServiceLinkCountArgs} args - Arguments to filter ProjectServiceLinks to count.
+     * @example
+     * // Count the number of ProjectServiceLinks
+     * const count = await prisma.projectServiceLink.count({
+     *   where: {
+     *     // ... the filter for the ProjectServiceLinks we want to count
+     *   }
+     * })
+    **/
+    count<T extends ProjectServiceLinkCountArgs>(
+      args?: Subset<T, ProjectServiceLinkCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ProjectServiceLinkCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ProjectServiceLink.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectServiceLinkAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ProjectServiceLinkAggregateArgs>(args: Subset<T, ProjectServiceLinkAggregateArgs>): Prisma.PrismaPromise<GetProjectServiceLinkAggregateType<T>>
+
+    /**
+     * Group by ProjectServiceLink.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectServiceLinkGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ProjectServiceLinkGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ProjectServiceLinkGroupByArgs['orderBy'] }
+        : { orderBy?: ProjectServiceLinkGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ProjectServiceLinkGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProjectServiceLinkGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ProjectServiceLink model
+   */
+  readonly fields: ProjectServiceLinkFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ProjectServiceLink.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ProjectServiceLinkClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    service<T extends ServiceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ServiceDefaultArgs<ExtArgs>>): Prisma__ServiceClient<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    subServices<T extends ProjectServiceLink$subServicesArgs<ExtArgs> = {}>(args?: Subset<T, ProjectServiceLink$subServicesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectSubServicePayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ProjectServiceLink model
+   */ 
+  interface ProjectServiceLinkFieldRefs {
+    readonly id: FieldRef<"ProjectServiceLink", 'String'>
+    readonly projectId: FieldRef<"ProjectServiceLink", 'String'>
+    readonly serviceId: FieldRef<"ProjectServiceLink", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ProjectServiceLink findUnique
+   */
+  export type ProjectServiceLinkFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectServiceLink
+     */
+    select?: ProjectServiceLinkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectServiceLinkInclude<ExtArgs> | null
+    /**
+     * Filter, which ProjectServiceLink to fetch.
+     */
+    where: ProjectServiceLinkWhereUniqueInput
+  }
+
+  /**
+   * ProjectServiceLink findUniqueOrThrow
+   */
+  export type ProjectServiceLinkFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectServiceLink
+     */
+    select?: ProjectServiceLinkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectServiceLinkInclude<ExtArgs> | null
+    /**
+     * Filter, which ProjectServiceLink to fetch.
+     */
+    where: ProjectServiceLinkWhereUniqueInput
+  }
+
+  /**
+   * ProjectServiceLink findFirst
+   */
+  export type ProjectServiceLinkFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectServiceLink
+     */
+    select?: ProjectServiceLinkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectServiceLinkInclude<ExtArgs> | null
+    /**
+     * Filter, which ProjectServiceLink to fetch.
+     */
+    where?: ProjectServiceLinkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProjectServiceLinks to fetch.
+     */
+    orderBy?: ProjectServiceLinkOrderByWithRelationInput | ProjectServiceLinkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ProjectServiceLinks.
+     */
+    cursor?: ProjectServiceLinkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProjectServiceLinks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProjectServiceLinks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ProjectServiceLinks.
+     */
+    distinct?: ProjectServiceLinkScalarFieldEnum | ProjectServiceLinkScalarFieldEnum[]
+  }
+
+  /**
+   * ProjectServiceLink findFirstOrThrow
+   */
+  export type ProjectServiceLinkFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectServiceLink
+     */
+    select?: ProjectServiceLinkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectServiceLinkInclude<ExtArgs> | null
+    /**
+     * Filter, which ProjectServiceLink to fetch.
+     */
+    where?: ProjectServiceLinkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProjectServiceLinks to fetch.
+     */
+    orderBy?: ProjectServiceLinkOrderByWithRelationInput | ProjectServiceLinkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ProjectServiceLinks.
+     */
+    cursor?: ProjectServiceLinkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProjectServiceLinks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProjectServiceLinks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ProjectServiceLinks.
+     */
+    distinct?: ProjectServiceLinkScalarFieldEnum | ProjectServiceLinkScalarFieldEnum[]
+  }
+
+  /**
+   * ProjectServiceLink findMany
+   */
+  export type ProjectServiceLinkFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectServiceLink
+     */
+    select?: ProjectServiceLinkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectServiceLinkInclude<ExtArgs> | null
+    /**
+     * Filter, which ProjectServiceLinks to fetch.
+     */
+    where?: ProjectServiceLinkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProjectServiceLinks to fetch.
+     */
+    orderBy?: ProjectServiceLinkOrderByWithRelationInput | ProjectServiceLinkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ProjectServiceLinks.
+     */
+    cursor?: ProjectServiceLinkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProjectServiceLinks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProjectServiceLinks.
+     */
+    skip?: number
+    distinct?: ProjectServiceLinkScalarFieldEnum | ProjectServiceLinkScalarFieldEnum[]
+  }
+
+  /**
+   * ProjectServiceLink create
+   */
+  export type ProjectServiceLinkCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectServiceLink
+     */
+    select?: ProjectServiceLinkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectServiceLinkInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ProjectServiceLink.
+     */
+    data: XOR<ProjectServiceLinkCreateInput, ProjectServiceLinkUncheckedCreateInput>
+  }
+
+  /**
+   * ProjectServiceLink createMany
+   */
+  export type ProjectServiceLinkCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ProjectServiceLinks.
+     */
+    data: ProjectServiceLinkCreateManyInput | ProjectServiceLinkCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ProjectServiceLink update
+   */
+  export type ProjectServiceLinkUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectServiceLink
+     */
+    select?: ProjectServiceLinkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectServiceLinkInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ProjectServiceLink.
+     */
+    data: XOR<ProjectServiceLinkUpdateInput, ProjectServiceLinkUncheckedUpdateInput>
+    /**
+     * Choose, which ProjectServiceLink to update.
+     */
+    where: ProjectServiceLinkWhereUniqueInput
+  }
+
+  /**
+   * ProjectServiceLink updateMany
+   */
+  export type ProjectServiceLinkUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ProjectServiceLinks.
+     */
+    data: XOR<ProjectServiceLinkUpdateManyMutationInput, ProjectServiceLinkUncheckedUpdateManyInput>
+    /**
+     * Filter which ProjectServiceLinks to update
+     */
+    where?: ProjectServiceLinkWhereInput
+  }
+
+  /**
+   * ProjectServiceLink upsert
+   */
+  export type ProjectServiceLinkUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectServiceLink
+     */
+    select?: ProjectServiceLinkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectServiceLinkInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ProjectServiceLink to update in case it exists.
+     */
+    where: ProjectServiceLinkWhereUniqueInput
+    /**
+     * In case the ProjectServiceLink found by the `where` argument doesn't exist, create a new ProjectServiceLink with this data.
+     */
+    create: XOR<ProjectServiceLinkCreateInput, ProjectServiceLinkUncheckedCreateInput>
+    /**
+     * In case the ProjectServiceLink was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ProjectServiceLinkUpdateInput, ProjectServiceLinkUncheckedUpdateInput>
+  }
+
+  /**
+   * ProjectServiceLink delete
+   */
+  export type ProjectServiceLinkDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectServiceLink
+     */
+    select?: ProjectServiceLinkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectServiceLinkInclude<ExtArgs> | null
+    /**
+     * Filter which ProjectServiceLink to delete.
+     */
+    where: ProjectServiceLinkWhereUniqueInput
+  }
+
+  /**
+   * ProjectServiceLink deleteMany
+   */
+  export type ProjectServiceLinkDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ProjectServiceLinks to delete
+     */
+    where?: ProjectServiceLinkWhereInput
+  }
+
+  /**
+   * ProjectServiceLink.subServices
+   */
+  export type ProjectServiceLink$subServicesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectSubService
+     */
+    select?: ProjectSubServiceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectSubServiceInclude<ExtArgs> | null
+    where?: ProjectSubServiceWhereInput
+    orderBy?: ProjectSubServiceOrderByWithRelationInput | ProjectSubServiceOrderByWithRelationInput[]
+    cursor?: ProjectSubServiceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProjectSubServiceScalarFieldEnum | ProjectSubServiceScalarFieldEnum[]
+  }
+
+  /**
+   * ProjectServiceLink without action
+   */
+  export type ProjectServiceLinkDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectServiceLink
+     */
+    select?: ProjectServiceLinkSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectServiceLinkInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ProjectSubService
+   */
+
+  export type AggregateProjectSubService = {
+    _count: ProjectSubServiceCountAggregateOutputType | null
+    _avg: ProjectSubServiceAvgAggregateOutputType | null
+    _sum: ProjectSubServiceSumAggregateOutputType | null
+    _min: ProjectSubServiceMinAggregateOutputType | null
+    _max: ProjectSubServiceMaxAggregateOutputType | null
+  }
+
+  export type ProjectSubServiceAvgAggregateOutputType = {
+    quantity: number | null
+    targetQuantity: number | null
+  }
+
+  export type ProjectSubServiceSumAggregateOutputType = {
+    quantity: number | null
+    targetQuantity: number | null
+  }
+
+  export type ProjectSubServiceMinAggregateOutputType = {
+    id: string | null
+    projectServiceId: string | null
+    name: string | null
+    description: string | null
+    quantity: number | null
+    unit: string | null
+    targetQuantity: number | null
+    assigneeId: string | null
+  }
+
+  export type ProjectSubServiceMaxAggregateOutputType = {
+    id: string | null
+    projectServiceId: string | null
+    name: string | null
+    description: string | null
+    quantity: number | null
+    unit: string | null
+    targetQuantity: number | null
+    assigneeId: string | null
+  }
+
+  export type ProjectSubServiceCountAggregateOutputType = {
+    id: number
+    projectServiceId: number
+    name: number
+    description: number
+    quantity: number
+    unit: number
+    targetQuantity: number
+    assigneeId: number
+    _all: number
+  }
+
+
+  export type ProjectSubServiceAvgAggregateInputType = {
+    quantity?: true
+    targetQuantity?: true
+  }
+
+  export type ProjectSubServiceSumAggregateInputType = {
+    quantity?: true
+    targetQuantity?: true
+  }
+
+  export type ProjectSubServiceMinAggregateInputType = {
+    id?: true
+    projectServiceId?: true
+    name?: true
+    description?: true
+    quantity?: true
+    unit?: true
+    targetQuantity?: true
+    assigneeId?: true
+  }
+
+  export type ProjectSubServiceMaxAggregateInputType = {
+    id?: true
+    projectServiceId?: true
+    name?: true
+    description?: true
+    quantity?: true
+    unit?: true
+    targetQuantity?: true
+    assigneeId?: true
+  }
+
+  export type ProjectSubServiceCountAggregateInputType = {
+    id?: true
+    projectServiceId?: true
+    name?: true
+    description?: true
+    quantity?: true
+    unit?: true
+    targetQuantity?: true
+    assigneeId?: true
+    _all?: true
+  }
+
+  export type ProjectSubServiceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ProjectSubService to aggregate.
+     */
+    where?: ProjectSubServiceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProjectSubServices to fetch.
+     */
+    orderBy?: ProjectSubServiceOrderByWithRelationInput | ProjectSubServiceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ProjectSubServiceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProjectSubServices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProjectSubServices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ProjectSubServices
+    **/
+    _count?: true | ProjectSubServiceCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ProjectSubServiceAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ProjectSubServiceSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ProjectSubServiceMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ProjectSubServiceMaxAggregateInputType
+  }
+
+  export type GetProjectSubServiceAggregateType<T extends ProjectSubServiceAggregateArgs> = {
+        [P in keyof T & keyof AggregateProjectSubService]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateProjectSubService[P]>
+      : GetScalarType<T[P], AggregateProjectSubService[P]>
+  }
+
+
+
+
+  export type ProjectSubServiceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProjectSubServiceWhereInput
+    orderBy?: ProjectSubServiceOrderByWithAggregationInput | ProjectSubServiceOrderByWithAggregationInput[]
+    by: ProjectSubServiceScalarFieldEnum[] | ProjectSubServiceScalarFieldEnum
+    having?: ProjectSubServiceScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ProjectSubServiceCountAggregateInputType | true
+    _avg?: ProjectSubServiceAvgAggregateInputType
+    _sum?: ProjectSubServiceSumAggregateInputType
+    _min?: ProjectSubServiceMinAggregateInputType
+    _max?: ProjectSubServiceMaxAggregateInputType
+  }
+
+  export type ProjectSubServiceGroupByOutputType = {
+    id: string
+    projectServiceId: string
+    name: string
+    description: string | null
+    quantity: number
+    unit: string
+    targetQuantity: number
+    assigneeId: string | null
+    _count: ProjectSubServiceCountAggregateOutputType | null
+    _avg: ProjectSubServiceAvgAggregateOutputType | null
+    _sum: ProjectSubServiceSumAggregateOutputType | null
+    _min: ProjectSubServiceMinAggregateOutputType | null
+    _max: ProjectSubServiceMaxAggregateOutputType | null
+  }
+
+  type GetProjectSubServiceGroupByPayload<T extends ProjectSubServiceGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ProjectSubServiceGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ProjectSubServiceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ProjectSubServiceGroupByOutputType[P]>
+            : GetScalarType<T[P], ProjectSubServiceGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ProjectSubServiceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectServiceId?: boolean
+    name?: boolean
+    description?: boolean
+    quantity?: boolean
+    unit?: boolean
+    targetQuantity?: boolean
+    assigneeId?: boolean
+    link?: boolean | ProjectServiceLinkDefaultArgs<ExtArgs>
+    assignee?: boolean | ProjectSubService$assigneeArgs<ExtArgs>
+    extraRequests?: boolean | ProjectSubService$extraRequestsArgs<ExtArgs>
+    _count?: boolean | ProjectSubServiceCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["projectSubService"]>
+
+
+  export type ProjectSubServiceSelectScalar = {
+    id?: boolean
+    projectServiceId?: boolean
+    name?: boolean
+    description?: boolean
+    quantity?: boolean
+    unit?: boolean
+    targetQuantity?: boolean
+    assigneeId?: boolean
+  }
+
+  export type ProjectSubServiceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    link?: boolean | ProjectServiceLinkDefaultArgs<ExtArgs>
+    assignee?: boolean | ProjectSubService$assigneeArgs<ExtArgs>
+    extraRequests?: boolean | ProjectSubService$extraRequestsArgs<ExtArgs>
+    _count?: boolean | ProjectSubServiceCountOutputTypeDefaultArgs<ExtArgs>
+  }
+
+  export type $ProjectSubServicePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ProjectSubService"
+    objects: {
+      link: Prisma.$ProjectServiceLinkPayload<ExtArgs>
+      assignee: Prisma.$StaffPayload<ExtArgs> | null
+      extraRequests: Prisma.$ProjectExtraRequestPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      projectServiceId: string
+      name: string
+      description: string | null
+      quantity: number
+      unit: string
+      targetQuantity: number
+      assigneeId: string | null
+    }, ExtArgs["result"]["projectSubService"]>
+    composites: {}
+  }
+
+  type ProjectSubServiceGetPayload<S extends boolean | null | undefined | ProjectSubServiceDefaultArgs> = $Result.GetResult<Prisma.$ProjectSubServicePayload, S>
+
+  type ProjectSubServiceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ProjectSubServiceFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ProjectSubServiceCountAggregateInputType | true
+    }
+
+  export interface ProjectSubServiceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ProjectSubService'], meta: { name: 'ProjectSubService' } }
+    /**
+     * Find zero or one ProjectSubService that matches the filter.
+     * @param {ProjectSubServiceFindUniqueArgs} args - Arguments to find a ProjectSubService
+     * @example
+     * // Get one ProjectSubService
+     * const projectSubService = await prisma.projectSubService.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ProjectSubServiceFindUniqueArgs>(args: SelectSubset<T, ProjectSubServiceFindUniqueArgs<ExtArgs>>): Prisma__ProjectSubServiceClient<$Result.GetResult<Prisma.$ProjectSubServicePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one ProjectSubService that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ProjectSubServiceFindUniqueOrThrowArgs} args - Arguments to find a ProjectSubService
+     * @example
+     * // Get one ProjectSubService
+     * const projectSubService = await prisma.projectSubService.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ProjectSubServiceFindUniqueOrThrowArgs>(args: SelectSubset<T, ProjectSubServiceFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ProjectSubServiceClient<$Result.GetResult<Prisma.$ProjectSubServicePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first ProjectSubService that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectSubServiceFindFirstArgs} args - Arguments to find a ProjectSubService
+     * @example
+     * // Get one ProjectSubService
+     * const projectSubService = await prisma.projectSubService.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ProjectSubServiceFindFirstArgs>(args?: SelectSubset<T, ProjectSubServiceFindFirstArgs<ExtArgs>>): Prisma__ProjectSubServiceClient<$Result.GetResult<Prisma.$ProjectSubServicePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first ProjectSubService that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectSubServiceFindFirstOrThrowArgs} args - Arguments to find a ProjectSubService
+     * @example
+     * // Get one ProjectSubService
+     * const projectSubService = await prisma.projectSubService.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ProjectSubServiceFindFirstOrThrowArgs>(args?: SelectSubset<T, ProjectSubServiceFindFirstOrThrowArgs<ExtArgs>>): Prisma__ProjectSubServiceClient<$Result.GetResult<Prisma.$ProjectSubServicePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more ProjectSubServices that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectSubServiceFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ProjectSubServices
+     * const projectSubServices = await prisma.projectSubService.findMany()
+     * 
+     * // Get first 10 ProjectSubServices
+     * const projectSubServices = await prisma.projectSubService.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const projectSubServiceWithIdOnly = await prisma.projectSubService.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ProjectSubServiceFindManyArgs>(args?: SelectSubset<T, ProjectSubServiceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectSubServicePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a ProjectSubService.
+     * @param {ProjectSubServiceCreateArgs} args - Arguments to create a ProjectSubService.
+     * @example
+     * // Create one ProjectSubService
+     * const ProjectSubService = await prisma.projectSubService.create({
+     *   data: {
+     *     // ... data to create a ProjectSubService
+     *   }
+     * })
+     * 
+     */
+    create<T extends ProjectSubServiceCreateArgs>(args: SelectSubset<T, ProjectSubServiceCreateArgs<ExtArgs>>): Prisma__ProjectSubServiceClient<$Result.GetResult<Prisma.$ProjectSubServicePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many ProjectSubServices.
+     * @param {ProjectSubServiceCreateManyArgs} args - Arguments to create many ProjectSubServices.
+     * @example
+     * // Create many ProjectSubServices
+     * const projectSubService = await prisma.projectSubService.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ProjectSubServiceCreateManyArgs>(args?: SelectSubset<T, ProjectSubServiceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a ProjectSubService.
+     * @param {ProjectSubServiceDeleteArgs} args - Arguments to delete one ProjectSubService.
+     * @example
+     * // Delete one ProjectSubService
+     * const ProjectSubService = await prisma.projectSubService.delete({
+     *   where: {
+     *     // ... filter to delete one ProjectSubService
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ProjectSubServiceDeleteArgs>(args: SelectSubset<T, ProjectSubServiceDeleteArgs<ExtArgs>>): Prisma__ProjectSubServiceClient<$Result.GetResult<Prisma.$ProjectSubServicePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one ProjectSubService.
+     * @param {ProjectSubServiceUpdateArgs} args - Arguments to update one ProjectSubService.
+     * @example
+     * // Update one ProjectSubService
+     * const projectSubService = await prisma.projectSubService.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ProjectSubServiceUpdateArgs>(args: SelectSubset<T, ProjectSubServiceUpdateArgs<ExtArgs>>): Prisma__ProjectSubServiceClient<$Result.GetResult<Prisma.$ProjectSubServicePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more ProjectSubServices.
+     * @param {ProjectSubServiceDeleteManyArgs} args - Arguments to filter ProjectSubServices to delete.
+     * @example
+     * // Delete a few ProjectSubServices
+     * const { count } = await prisma.projectSubService.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ProjectSubServiceDeleteManyArgs>(args?: SelectSubset<T, ProjectSubServiceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ProjectSubServices.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectSubServiceUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ProjectSubServices
+     * const projectSubService = await prisma.projectSubService.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ProjectSubServiceUpdateManyArgs>(args: SelectSubset<T, ProjectSubServiceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ProjectSubService.
+     * @param {ProjectSubServiceUpsertArgs} args - Arguments to update or create a ProjectSubService.
+     * @example
+     * // Update or create a ProjectSubService
+     * const projectSubService = await prisma.projectSubService.upsert({
+     *   create: {
+     *     // ... data to create a ProjectSubService
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ProjectSubService we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ProjectSubServiceUpsertArgs>(args: SelectSubset<T, ProjectSubServiceUpsertArgs<ExtArgs>>): Prisma__ProjectSubServiceClient<$Result.GetResult<Prisma.$ProjectSubServicePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of ProjectSubServices.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectSubServiceCountArgs} args - Arguments to filter ProjectSubServices to count.
+     * @example
+     * // Count the number of ProjectSubServices
+     * const count = await prisma.projectSubService.count({
+     *   where: {
+     *     // ... the filter for the ProjectSubServices we want to count
+     *   }
+     * })
+    **/
+    count<T extends ProjectSubServiceCountArgs>(
+      args?: Subset<T, ProjectSubServiceCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ProjectSubServiceCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ProjectSubService.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectSubServiceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ProjectSubServiceAggregateArgs>(args: Subset<T, ProjectSubServiceAggregateArgs>): Prisma.PrismaPromise<GetProjectSubServiceAggregateType<T>>
+
+    /**
+     * Group by ProjectSubService.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectSubServiceGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ProjectSubServiceGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ProjectSubServiceGroupByArgs['orderBy'] }
+        : { orderBy?: ProjectSubServiceGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ProjectSubServiceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProjectSubServiceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ProjectSubService model
+   */
+  readonly fields: ProjectSubServiceFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ProjectSubService.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ProjectSubServiceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    link<T extends ProjectServiceLinkDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectServiceLinkDefaultArgs<ExtArgs>>): Prisma__ProjectServiceLinkClient<$Result.GetResult<Prisma.$ProjectServiceLinkPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    assignee<T extends ProjectSubService$assigneeArgs<ExtArgs> = {}>(args?: Subset<T, ProjectSubService$assigneeArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    extraRequests<T extends ProjectSubService$extraRequestsArgs<ExtArgs> = {}>(args?: Subset<T, ProjectSubService$extraRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectExtraRequestPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ProjectSubService model
+   */ 
+  interface ProjectSubServiceFieldRefs {
+    readonly id: FieldRef<"ProjectSubService", 'String'>
+    readonly projectServiceId: FieldRef<"ProjectSubService", 'String'>
+    readonly name: FieldRef<"ProjectSubService", 'String'>
+    readonly description: FieldRef<"ProjectSubService", 'String'>
+    readonly quantity: FieldRef<"ProjectSubService", 'Int'>
+    readonly unit: FieldRef<"ProjectSubService", 'String'>
+    readonly targetQuantity: FieldRef<"ProjectSubService", 'Int'>
+    readonly assigneeId: FieldRef<"ProjectSubService", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ProjectSubService findUnique
+   */
+  export type ProjectSubServiceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectSubService
+     */
+    select?: ProjectSubServiceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectSubServiceInclude<ExtArgs> | null
+    /**
+     * Filter, which ProjectSubService to fetch.
+     */
+    where: ProjectSubServiceWhereUniqueInput
+  }
+
+  /**
+   * ProjectSubService findUniqueOrThrow
+   */
+  export type ProjectSubServiceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectSubService
+     */
+    select?: ProjectSubServiceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectSubServiceInclude<ExtArgs> | null
+    /**
+     * Filter, which ProjectSubService to fetch.
+     */
+    where: ProjectSubServiceWhereUniqueInput
+  }
+
+  /**
+   * ProjectSubService findFirst
+   */
+  export type ProjectSubServiceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectSubService
+     */
+    select?: ProjectSubServiceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectSubServiceInclude<ExtArgs> | null
+    /**
+     * Filter, which ProjectSubService to fetch.
+     */
+    where?: ProjectSubServiceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProjectSubServices to fetch.
+     */
+    orderBy?: ProjectSubServiceOrderByWithRelationInput | ProjectSubServiceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ProjectSubServices.
+     */
+    cursor?: ProjectSubServiceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProjectSubServices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProjectSubServices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ProjectSubServices.
+     */
+    distinct?: ProjectSubServiceScalarFieldEnum | ProjectSubServiceScalarFieldEnum[]
+  }
+
+  /**
+   * ProjectSubService findFirstOrThrow
+   */
+  export type ProjectSubServiceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectSubService
+     */
+    select?: ProjectSubServiceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectSubServiceInclude<ExtArgs> | null
+    /**
+     * Filter, which ProjectSubService to fetch.
+     */
+    where?: ProjectSubServiceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProjectSubServices to fetch.
+     */
+    orderBy?: ProjectSubServiceOrderByWithRelationInput | ProjectSubServiceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ProjectSubServices.
+     */
+    cursor?: ProjectSubServiceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProjectSubServices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProjectSubServices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ProjectSubServices.
+     */
+    distinct?: ProjectSubServiceScalarFieldEnum | ProjectSubServiceScalarFieldEnum[]
+  }
+
+  /**
+   * ProjectSubService findMany
+   */
+  export type ProjectSubServiceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectSubService
+     */
+    select?: ProjectSubServiceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectSubServiceInclude<ExtArgs> | null
+    /**
+     * Filter, which ProjectSubServices to fetch.
+     */
+    where?: ProjectSubServiceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProjectSubServices to fetch.
+     */
+    orderBy?: ProjectSubServiceOrderByWithRelationInput | ProjectSubServiceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ProjectSubServices.
+     */
+    cursor?: ProjectSubServiceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProjectSubServices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProjectSubServices.
+     */
+    skip?: number
+    distinct?: ProjectSubServiceScalarFieldEnum | ProjectSubServiceScalarFieldEnum[]
+  }
+
+  /**
+   * ProjectSubService create
+   */
+  export type ProjectSubServiceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectSubService
+     */
+    select?: ProjectSubServiceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectSubServiceInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ProjectSubService.
+     */
+    data: XOR<ProjectSubServiceCreateInput, ProjectSubServiceUncheckedCreateInput>
+  }
+
+  /**
+   * ProjectSubService createMany
+   */
+  export type ProjectSubServiceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ProjectSubServices.
+     */
+    data: ProjectSubServiceCreateManyInput | ProjectSubServiceCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ProjectSubService update
+   */
+  export type ProjectSubServiceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectSubService
+     */
+    select?: ProjectSubServiceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectSubServiceInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ProjectSubService.
+     */
+    data: XOR<ProjectSubServiceUpdateInput, ProjectSubServiceUncheckedUpdateInput>
+    /**
+     * Choose, which ProjectSubService to update.
+     */
+    where: ProjectSubServiceWhereUniqueInput
+  }
+
+  /**
+   * ProjectSubService updateMany
+   */
+  export type ProjectSubServiceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ProjectSubServices.
+     */
+    data: XOR<ProjectSubServiceUpdateManyMutationInput, ProjectSubServiceUncheckedUpdateManyInput>
+    /**
+     * Filter which ProjectSubServices to update
+     */
+    where?: ProjectSubServiceWhereInput
+  }
+
+  /**
+   * ProjectSubService upsert
+   */
+  export type ProjectSubServiceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectSubService
+     */
+    select?: ProjectSubServiceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectSubServiceInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ProjectSubService to update in case it exists.
+     */
+    where: ProjectSubServiceWhereUniqueInput
+    /**
+     * In case the ProjectSubService found by the `where` argument doesn't exist, create a new ProjectSubService with this data.
+     */
+    create: XOR<ProjectSubServiceCreateInput, ProjectSubServiceUncheckedCreateInput>
+    /**
+     * In case the ProjectSubService was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ProjectSubServiceUpdateInput, ProjectSubServiceUncheckedUpdateInput>
+  }
+
+  /**
+   * ProjectSubService delete
+   */
+  export type ProjectSubServiceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectSubService
+     */
+    select?: ProjectSubServiceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectSubServiceInclude<ExtArgs> | null
+    /**
+     * Filter which ProjectSubService to delete.
+     */
+    where: ProjectSubServiceWhereUniqueInput
+  }
+
+  /**
+   * ProjectSubService deleteMany
+   */
+  export type ProjectSubServiceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ProjectSubServices to delete
+     */
+    where?: ProjectSubServiceWhereInput
+  }
+
+  /**
+   * ProjectSubService.assignee
+   */
+  export type ProjectSubService$assigneeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Staff
+     */
+    select?: StaffSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
+  }
+
+  /**
+   * ProjectSubService.extraRequests
+   */
+  export type ProjectSubService$extraRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectExtraRequest
+     */
+    select?: ProjectExtraRequestSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectExtraRequestInclude<ExtArgs> | null
+    where?: ProjectExtraRequestWhereInput
+    orderBy?: ProjectExtraRequestOrderByWithRelationInput | ProjectExtraRequestOrderByWithRelationInput[]
+    cursor?: ProjectExtraRequestWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProjectExtraRequestScalarFieldEnum | ProjectExtraRequestScalarFieldEnum[]
+  }
+
+  /**
+   * ProjectSubService without action
+   */
+  export type ProjectSubServiceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectSubService
+     */
+    select?: ProjectSubServiceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectSubServiceInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ProjectCycle
+   */
+
+  export type AggregateProjectCycle = {
+    _count: ProjectCycleCountAggregateOutputType | null
+    _min: ProjectCycleMinAggregateOutputType | null
+    _max: ProjectCycleMaxAggregateOutputType | null
+  }
+
+  export type ProjectCycleMinAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    label: string | null
+    startDate: Date | null
+    endDate: Date | null
+    createdAt: Date | null
+  }
+
+  export type ProjectCycleMaxAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    label: string | null
+    startDate: Date | null
+    endDate: Date | null
+    createdAt: Date | null
+  }
+
+  export type ProjectCycleCountAggregateOutputType = {
+    id: number
+    projectId: number
+    label: number
+    startDate: number
+    endDate: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ProjectCycleMinAggregateInputType = {
+    id?: true
+    projectId?: true
+    label?: true
+    startDate?: true
+    endDate?: true
+    createdAt?: true
+  }
+
+  export type ProjectCycleMaxAggregateInputType = {
+    id?: true
+    projectId?: true
+    label?: true
+    startDate?: true
+    endDate?: true
+    createdAt?: true
+  }
+
+  export type ProjectCycleCountAggregateInputType = {
+    id?: true
+    projectId?: true
+    label?: true
+    startDate?: true
+    endDate?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ProjectCycleAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ProjectCycle to aggregate.
+     */
+    where?: ProjectCycleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProjectCycles to fetch.
+     */
+    orderBy?: ProjectCycleOrderByWithRelationInput | ProjectCycleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ProjectCycleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProjectCycles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProjectCycles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ProjectCycles
+    **/
+    _count?: true | ProjectCycleCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ProjectCycleMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ProjectCycleMaxAggregateInputType
+  }
+
+  export type GetProjectCycleAggregateType<T extends ProjectCycleAggregateArgs> = {
+        [P in keyof T & keyof AggregateProjectCycle]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateProjectCycle[P]>
+      : GetScalarType<T[P], AggregateProjectCycle[P]>
+  }
+
+
+
+
+  export type ProjectCycleGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProjectCycleWhereInput
+    orderBy?: ProjectCycleOrderByWithAggregationInput | ProjectCycleOrderByWithAggregationInput[]
+    by: ProjectCycleScalarFieldEnum[] | ProjectCycleScalarFieldEnum
+    having?: ProjectCycleScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ProjectCycleCountAggregateInputType | true
+    _min?: ProjectCycleMinAggregateInputType
+    _max?: ProjectCycleMaxAggregateInputType
+  }
+
+  export type ProjectCycleGroupByOutputType = {
+    id: string
+    projectId: string
+    label: string
+    startDate: Date
+    endDate: Date
+    createdAt: Date
+    _count: ProjectCycleCountAggregateOutputType | null
+    _min: ProjectCycleMinAggregateOutputType | null
+    _max: ProjectCycleMaxAggregateOutputType | null
+  }
+
+  type GetProjectCycleGroupByPayload<T extends ProjectCycleGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ProjectCycleGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ProjectCycleGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ProjectCycleGroupByOutputType[P]>
+            : GetScalarType<T[P], ProjectCycleGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ProjectCycleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    label?: boolean
+    startDate?: boolean
+    endDate?: boolean
+    createdAt?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["projectCycle"]>
+
+
+  export type ProjectCycleSelectScalar = {
+    id?: boolean
+    projectId?: boolean
+    label?: boolean
+    startDate?: boolean
+    endDate?: boolean
+    createdAt?: boolean
+  }
+
+  export type ProjectCycleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+  }
+
+  export type $ProjectCyclePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ProjectCycle"
+    objects: {
+      project: Prisma.$ProjectPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      projectId: string
+      label: string
+      startDate: Date
+      endDate: Date
+      createdAt: Date
+    }, ExtArgs["result"]["projectCycle"]>
+    composites: {}
+  }
+
+  type ProjectCycleGetPayload<S extends boolean | null | undefined | ProjectCycleDefaultArgs> = $Result.GetResult<Prisma.$ProjectCyclePayload, S>
+
+  type ProjectCycleCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ProjectCycleFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ProjectCycleCountAggregateInputType | true
+    }
+
+  export interface ProjectCycleDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ProjectCycle'], meta: { name: 'ProjectCycle' } }
+    /**
+     * Find zero or one ProjectCycle that matches the filter.
+     * @param {ProjectCycleFindUniqueArgs} args - Arguments to find a ProjectCycle
+     * @example
+     * // Get one ProjectCycle
+     * const projectCycle = await prisma.projectCycle.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ProjectCycleFindUniqueArgs>(args: SelectSubset<T, ProjectCycleFindUniqueArgs<ExtArgs>>): Prisma__ProjectCycleClient<$Result.GetResult<Prisma.$ProjectCyclePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one ProjectCycle that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ProjectCycleFindUniqueOrThrowArgs} args - Arguments to find a ProjectCycle
+     * @example
+     * // Get one ProjectCycle
+     * const projectCycle = await prisma.projectCycle.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ProjectCycleFindUniqueOrThrowArgs>(args: SelectSubset<T, ProjectCycleFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ProjectCycleClient<$Result.GetResult<Prisma.$ProjectCyclePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first ProjectCycle that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectCycleFindFirstArgs} args - Arguments to find a ProjectCycle
+     * @example
+     * // Get one ProjectCycle
+     * const projectCycle = await prisma.projectCycle.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ProjectCycleFindFirstArgs>(args?: SelectSubset<T, ProjectCycleFindFirstArgs<ExtArgs>>): Prisma__ProjectCycleClient<$Result.GetResult<Prisma.$ProjectCyclePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first ProjectCycle that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectCycleFindFirstOrThrowArgs} args - Arguments to find a ProjectCycle
+     * @example
+     * // Get one ProjectCycle
+     * const projectCycle = await prisma.projectCycle.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ProjectCycleFindFirstOrThrowArgs>(args?: SelectSubset<T, ProjectCycleFindFirstOrThrowArgs<ExtArgs>>): Prisma__ProjectCycleClient<$Result.GetResult<Prisma.$ProjectCyclePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more ProjectCycles that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectCycleFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ProjectCycles
+     * const projectCycles = await prisma.projectCycle.findMany()
+     * 
+     * // Get first 10 ProjectCycles
+     * const projectCycles = await prisma.projectCycle.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const projectCycleWithIdOnly = await prisma.projectCycle.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ProjectCycleFindManyArgs>(args?: SelectSubset<T, ProjectCycleFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectCyclePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a ProjectCycle.
+     * @param {ProjectCycleCreateArgs} args - Arguments to create a ProjectCycle.
+     * @example
+     * // Create one ProjectCycle
+     * const ProjectCycle = await prisma.projectCycle.create({
+     *   data: {
+     *     // ... data to create a ProjectCycle
+     *   }
+     * })
+     * 
+     */
+    create<T extends ProjectCycleCreateArgs>(args: SelectSubset<T, ProjectCycleCreateArgs<ExtArgs>>): Prisma__ProjectCycleClient<$Result.GetResult<Prisma.$ProjectCyclePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many ProjectCycles.
+     * @param {ProjectCycleCreateManyArgs} args - Arguments to create many ProjectCycles.
+     * @example
+     * // Create many ProjectCycles
+     * const projectCycle = await prisma.projectCycle.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ProjectCycleCreateManyArgs>(args?: SelectSubset<T, ProjectCycleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a ProjectCycle.
+     * @param {ProjectCycleDeleteArgs} args - Arguments to delete one ProjectCycle.
+     * @example
+     * // Delete one ProjectCycle
+     * const ProjectCycle = await prisma.projectCycle.delete({
+     *   where: {
+     *     // ... filter to delete one ProjectCycle
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ProjectCycleDeleteArgs>(args: SelectSubset<T, ProjectCycleDeleteArgs<ExtArgs>>): Prisma__ProjectCycleClient<$Result.GetResult<Prisma.$ProjectCyclePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one ProjectCycle.
+     * @param {ProjectCycleUpdateArgs} args - Arguments to update one ProjectCycle.
+     * @example
+     * // Update one ProjectCycle
+     * const projectCycle = await prisma.projectCycle.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ProjectCycleUpdateArgs>(args: SelectSubset<T, ProjectCycleUpdateArgs<ExtArgs>>): Prisma__ProjectCycleClient<$Result.GetResult<Prisma.$ProjectCyclePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more ProjectCycles.
+     * @param {ProjectCycleDeleteManyArgs} args - Arguments to filter ProjectCycles to delete.
+     * @example
+     * // Delete a few ProjectCycles
+     * const { count } = await prisma.projectCycle.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ProjectCycleDeleteManyArgs>(args?: SelectSubset<T, ProjectCycleDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ProjectCycles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectCycleUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ProjectCycles
+     * const projectCycle = await prisma.projectCycle.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ProjectCycleUpdateManyArgs>(args: SelectSubset<T, ProjectCycleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ProjectCycle.
+     * @param {ProjectCycleUpsertArgs} args - Arguments to update or create a ProjectCycle.
+     * @example
+     * // Update or create a ProjectCycle
+     * const projectCycle = await prisma.projectCycle.upsert({
+     *   create: {
+     *     // ... data to create a ProjectCycle
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ProjectCycle we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ProjectCycleUpsertArgs>(args: SelectSubset<T, ProjectCycleUpsertArgs<ExtArgs>>): Prisma__ProjectCycleClient<$Result.GetResult<Prisma.$ProjectCyclePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of ProjectCycles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectCycleCountArgs} args - Arguments to filter ProjectCycles to count.
+     * @example
+     * // Count the number of ProjectCycles
+     * const count = await prisma.projectCycle.count({
+     *   where: {
+     *     // ... the filter for the ProjectCycles we want to count
+     *   }
+     * })
+    **/
+    count<T extends ProjectCycleCountArgs>(
+      args?: Subset<T, ProjectCycleCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ProjectCycleCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ProjectCycle.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectCycleAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ProjectCycleAggregateArgs>(args: Subset<T, ProjectCycleAggregateArgs>): Prisma.PrismaPromise<GetProjectCycleAggregateType<T>>
+
+    /**
+     * Group by ProjectCycle.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectCycleGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ProjectCycleGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ProjectCycleGroupByArgs['orderBy'] }
+        : { orderBy?: ProjectCycleGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ProjectCycleGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProjectCycleGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ProjectCycle model
+   */
+  readonly fields: ProjectCycleFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ProjectCycle.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ProjectCycleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ProjectCycle model
+   */ 
+  interface ProjectCycleFieldRefs {
+    readonly id: FieldRef<"ProjectCycle", 'String'>
+    readonly projectId: FieldRef<"ProjectCycle", 'String'>
+    readonly label: FieldRef<"ProjectCycle", 'String'>
+    readonly startDate: FieldRef<"ProjectCycle", 'DateTime'>
+    readonly endDate: FieldRef<"ProjectCycle", 'DateTime'>
+    readonly createdAt: FieldRef<"ProjectCycle", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ProjectCycle findUnique
+   */
+  export type ProjectCycleFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectCycle
+     */
+    select?: ProjectCycleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectCycleInclude<ExtArgs> | null
+    /**
+     * Filter, which ProjectCycle to fetch.
+     */
+    where: ProjectCycleWhereUniqueInput
+  }
+
+  /**
+   * ProjectCycle findUniqueOrThrow
+   */
+  export type ProjectCycleFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectCycle
+     */
+    select?: ProjectCycleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectCycleInclude<ExtArgs> | null
+    /**
+     * Filter, which ProjectCycle to fetch.
+     */
+    where: ProjectCycleWhereUniqueInput
+  }
+
+  /**
+   * ProjectCycle findFirst
+   */
+  export type ProjectCycleFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectCycle
+     */
+    select?: ProjectCycleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectCycleInclude<ExtArgs> | null
+    /**
+     * Filter, which ProjectCycle to fetch.
+     */
+    where?: ProjectCycleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProjectCycles to fetch.
+     */
+    orderBy?: ProjectCycleOrderByWithRelationInput | ProjectCycleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ProjectCycles.
+     */
+    cursor?: ProjectCycleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProjectCycles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProjectCycles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ProjectCycles.
+     */
+    distinct?: ProjectCycleScalarFieldEnum | ProjectCycleScalarFieldEnum[]
+  }
+
+  /**
+   * ProjectCycle findFirstOrThrow
+   */
+  export type ProjectCycleFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectCycle
+     */
+    select?: ProjectCycleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectCycleInclude<ExtArgs> | null
+    /**
+     * Filter, which ProjectCycle to fetch.
+     */
+    where?: ProjectCycleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProjectCycles to fetch.
+     */
+    orderBy?: ProjectCycleOrderByWithRelationInput | ProjectCycleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ProjectCycles.
+     */
+    cursor?: ProjectCycleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProjectCycles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProjectCycles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ProjectCycles.
+     */
+    distinct?: ProjectCycleScalarFieldEnum | ProjectCycleScalarFieldEnum[]
+  }
+
+  /**
+   * ProjectCycle findMany
+   */
+  export type ProjectCycleFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectCycle
+     */
+    select?: ProjectCycleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectCycleInclude<ExtArgs> | null
+    /**
+     * Filter, which ProjectCycles to fetch.
+     */
+    where?: ProjectCycleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProjectCycles to fetch.
+     */
+    orderBy?: ProjectCycleOrderByWithRelationInput | ProjectCycleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ProjectCycles.
+     */
+    cursor?: ProjectCycleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProjectCycles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProjectCycles.
+     */
+    skip?: number
+    distinct?: ProjectCycleScalarFieldEnum | ProjectCycleScalarFieldEnum[]
+  }
+
+  /**
+   * ProjectCycle create
+   */
+  export type ProjectCycleCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectCycle
+     */
+    select?: ProjectCycleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectCycleInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ProjectCycle.
+     */
+    data: XOR<ProjectCycleCreateInput, ProjectCycleUncheckedCreateInput>
+  }
+
+  /**
+   * ProjectCycle createMany
+   */
+  export type ProjectCycleCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ProjectCycles.
+     */
+    data: ProjectCycleCreateManyInput | ProjectCycleCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ProjectCycle update
+   */
+  export type ProjectCycleUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectCycle
+     */
+    select?: ProjectCycleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectCycleInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ProjectCycle.
+     */
+    data: XOR<ProjectCycleUpdateInput, ProjectCycleUncheckedUpdateInput>
+    /**
+     * Choose, which ProjectCycle to update.
+     */
+    where: ProjectCycleWhereUniqueInput
+  }
+
+  /**
+   * ProjectCycle updateMany
+   */
+  export type ProjectCycleUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ProjectCycles.
+     */
+    data: XOR<ProjectCycleUpdateManyMutationInput, ProjectCycleUncheckedUpdateManyInput>
+    /**
+     * Filter which ProjectCycles to update
+     */
+    where?: ProjectCycleWhereInput
+  }
+
+  /**
+   * ProjectCycle upsert
+   */
+  export type ProjectCycleUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectCycle
+     */
+    select?: ProjectCycleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectCycleInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ProjectCycle to update in case it exists.
+     */
+    where: ProjectCycleWhereUniqueInput
+    /**
+     * In case the ProjectCycle found by the `where` argument doesn't exist, create a new ProjectCycle with this data.
+     */
+    create: XOR<ProjectCycleCreateInput, ProjectCycleUncheckedCreateInput>
+    /**
+     * In case the ProjectCycle was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ProjectCycleUpdateInput, ProjectCycleUncheckedUpdateInput>
+  }
+
+  /**
+   * ProjectCycle delete
+   */
+  export type ProjectCycleDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectCycle
+     */
+    select?: ProjectCycleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectCycleInclude<ExtArgs> | null
+    /**
+     * Filter which ProjectCycle to delete.
+     */
+    where: ProjectCycleWhereUniqueInput
+  }
+
+  /**
+   * ProjectCycle deleteMany
+   */
+  export type ProjectCycleDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ProjectCycles to delete
+     */
+    where?: ProjectCycleWhereInput
+  }
+
+  /**
+   * ProjectCycle without action
+   */
+  export type ProjectCycleDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectCycle
+     */
+    select?: ProjectCycleSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectCycleInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ProjectExtraRequest
+   */
+
+  export type AggregateProjectExtraRequest = {
+    _count: ProjectExtraRequestCountAggregateOutputType | null
+    _avg: ProjectExtraRequestAvgAggregateOutputType | null
+    _sum: ProjectExtraRequestSumAggregateOutputType | null
+    _min: ProjectExtraRequestMinAggregateOutputType | null
+    _max: ProjectExtraRequestMaxAggregateOutputType | null
+  }
+
+  export type ProjectExtraRequestAvgAggregateOutputType = {
+    quantity: number | null
+  }
+
+  export type ProjectExtraRequestSumAggregateOutputType = {
+    quantity: number | null
+  }
+
+  export type ProjectExtraRequestMinAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    subServiceId: string | null
+    quantity: number | null
+    description: string | null
+    status: string | null
+    requestedById: string | null
+    createdAt: Date | null
+  }
+
+  export type ProjectExtraRequestMaxAggregateOutputType = {
+    id: string | null
+    projectId: string | null
+    subServiceId: string | null
+    quantity: number | null
+    description: string | null
+    status: string | null
+    requestedById: string | null
+    createdAt: Date | null
+  }
+
+  export type ProjectExtraRequestCountAggregateOutputType = {
+    id: number
+    projectId: number
+    subServiceId: number
+    quantity: number
+    description: number
+    status: number
+    requestedById: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ProjectExtraRequestAvgAggregateInputType = {
+    quantity?: true
+  }
+
+  export type ProjectExtraRequestSumAggregateInputType = {
+    quantity?: true
+  }
+
+  export type ProjectExtraRequestMinAggregateInputType = {
+    id?: true
+    projectId?: true
+    subServiceId?: true
+    quantity?: true
+    description?: true
+    status?: true
+    requestedById?: true
+    createdAt?: true
+  }
+
+  export type ProjectExtraRequestMaxAggregateInputType = {
+    id?: true
+    projectId?: true
+    subServiceId?: true
+    quantity?: true
+    description?: true
+    status?: true
+    requestedById?: true
+    createdAt?: true
+  }
+
+  export type ProjectExtraRequestCountAggregateInputType = {
+    id?: true
+    projectId?: true
+    subServiceId?: true
+    quantity?: true
+    description?: true
+    status?: true
+    requestedById?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ProjectExtraRequestAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ProjectExtraRequest to aggregate.
+     */
+    where?: ProjectExtraRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProjectExtraRequests to fetch.
+     */
+    orderBy?: ProjectExtraRequestOrderByWithRelationInput | ProjectExtraRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ProjectExtraRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProjectExtraRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProjectExtraRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ProjectExtraRequests
+    **/
+    _count?: true | ProjectExtraRequestCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ProjectExtraRequestAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ProjectExtraRequestSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ProjectExtraRequestMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ProjectExtraRequestMaxAggregateInputType
+  }
+
+  export type GetProjectExtraRequestAggregateType<T extends ProjectExtraRequestAggregateArgs> = {
+        [P in keyof T & keyof AggregateProjectExtraRequest]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateProjectExtraRequest[P]>
+      : GetScalarType<T[P], AggregateProjectExtraRequest[P]>
+  }
+
+
+
+
+  export type ProjectExtraRequestGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProjectExtraRequestWhereInput
+    orderBy?: ProjectExtraRequestOrderByWithAggregationInput | ProjectExtraRequestOrderByWithAggregationInput[]
+    by: ProjectExtraRequestScalarFieldEnum[] | ProjectExtraRequestScalarFieldEnum
+    having?: ProjectExtraRequestScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ProjectExtraRequestCountAggregateInputType | true
+    _avg?: ProjectExtraRequestAvgAggregateInputType
+    _sum?: ProjectExtraRequestSumAggregateInputType
+    _min?: ProjectExtraRequestMinAggregateInputType
+    _max?: ProjectExtraRequestMaxAggregateInputType
+  }
+
+  export type ProjectExtraRequestGroupByOutputType = {
+    id: string
+    projectId: string
+    subServiceId: string
+    quantity: number
+    description: string | null
+    status: string
+    requestedById: string | null
+    createdAt: Date
+    _count: ProjectExtraRequestCountAggregateOutputType | null
+    _avg: ProjectExtraRequestAvgAggregateOutputType | null
+    _sum: ProjectExtraRequestSumAggregateOutputType | null
+    _min: ProjectExtraRequestMinAggregateOutputType | null
+    _max: ProjectExtraRequestMaxAggregateOutputType | null
+  }
+
+  type GetProjectExtraRequestGroupByPayload<T extends ProjectExtraRequestGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ProjectExtraRequestGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ProjectExtraRequestGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ProjectExtraRequestGroupByOutputType[P]>
+            : GetScalarType<T[P], ProjectExtraRequestGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ProjectExtraRequestSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    projectId?: boolean
+    subServiceId?: boolean
+    quantity?: boolean
+    description?: boolean
+    status?: boolean
+    requestedById?: boolean
+    createdAt?: boolean
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    subService?: boolean | ProjectSubServiceDefaultArgs<ExtArgs>
+    requestedBy?: boolean | ProjectExtraRequest$requestedByArgs<ExtArgs>
+  }, ExtArgs["result"]["projectExtraRequest"]>
+
+
+  export type ProjectExtraRequestSelectScalar = {
+    id?: boolean
+    projectId?: boolean
+    subServiceId?: boolean
+    quantity?: boolean
+    description?: boolean
+    status?: boolean
+    requestedById?: boolean
+    createdAt?: boolean
+  }
+
+  export type ProjectExtraRequestInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    project?: boolean | ProjectDefaultArgs<ExtArgs>
+    subService?: boolean | ProjectSubServiceDefaultArgs<ExtArgs>
+    requestedBy?: boolean | ProjectExtraRequest$requestedByArgs<ExtArgs>
+  }
+
+  export type $ProjectExtraRequestPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ProjectExtraRequest"
+    objects: {
+      project: Prisma.$ProjectPayload<ExtArgs>
+      subService: Prisma.$ProjectSubServicePayload<ExtArgs>
+      requestedBy: Prisma.$StaffPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      projectId: string
+      subServiceId: string
+      quantity: number
+      description: string | null
+      status: string
+      requestedById: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["projectExtraRequest"]>
+    composites: {}
+  }
+
+  type ProjectExtraRequestGetPayload<S extends boolean | null | undefined | ProjectExtraRequestDefaultArgs> = $Result.GetResult<Prisma.$ProjectExtraRequestPayload, S>
+
+  type ProjectExtraRequestCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ProjectExtraRequestFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ProjectExtraRequestCountAggregateInputType | true
+    }
+
+  export interface ProjectExtraRequestDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ProjectExtraRequest'], meta: { name: 'ProjectExtraRequest' } }
+    /**
+     * Find zero or one ProjectExtraRequest that matches the filter.
+     * @param {ProjectExtraRequestFindUniqueArgs} args - Arguments to find a ProjectExtraRequest
+     * @example
+     * // Get one ProjectExtraRequest
+     * const projectExtraRequest = await prisma.projectExtraRequest.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ProjectExtraRequestFindUniqueArgs>(args: SelectSubset<T, ProjectExtraRequestFindUniqueArgs<ExtArgs>>): Prisma__ProjectExtraRequestClient<$Result.GetResult<Prisma.$ProjectExtraRequestPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one ProjectExtraRequest that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ProjectExtraRequestFindUniqueOrThrowArgs} args - Arguments to find a ProjectExtraRequest
+     * @example
+     * // Get one ProjectExtraRequest
+     * const projectExtraRequest = await prisma.projectExtraRequest.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ProjectExtraRequestFindUniqueOrThrowArgs>(args: SelectSubset<T, ProjectExtraRequestFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ProjectExtraRequestClient<$Result.GetResult<Prisma.$ProjectExtraRequestPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first ProjectExtraRequest that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectExtraRequestFindFirstArgs} args - Arguments to find a ProjectExtraRequest
+     * @example
+     * // Get one ProjectExtraRequest
+     * const projectExtraRequest = await prisma.projectExtraRequest.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ProjectExtraRequestFindFirstArgs>(args?: SelectSubset<T, ProjectExtraRequestFindFirstArgs<ExtArgs>>): Prisma__ProjectExtraRequestClient<$Result.GetResult<Prisma.$ProjectExtraRequestPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first ProjectExtraRequest that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectExtraRequestFindFirstOrThrowArgs} args - Arguments to find a ProjectExtraRequest
+     * @example
+     * // Get one ProjectExtraRequest
+     * const projectExtraRequest = await prisma.projectExtraRequest.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ProjectExtraRequestFindFirstOrThrowArgs>(args?: SelectSubset<T, ProjectExtraRequestFindFirstOrThrowArgs<ExtArgs>>): Prisma__ProjectExtraRequestClient<$Result.GetResult<Prisma.$ProjectExtraRequestPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more ProjectExtraRequests that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectExtraRequestFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ProjectExtraRequests
+     * const projectExtraRequests = await prisma.projectExtraRequest.findMany()
+     * 
+     * // Get first 10 ProjectExtraRequests
+     * const projectExtraRequests = await prisma.projectExtraRequest.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const projectExtraRequestWithIdOnly = await prisma.projectExtraRequest.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ProjectExtraRequestFindManyArgs>(args?: SelectSubset<T, ProjectExtraRequestFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectExtraRequestPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a ProjectExtraRequest.
+     * @param {ProjectExtraRequestCreateArgs} args - Arguments to create a ProjectExtraRequest.
+     * @example
+     * // Create one ProjectExtraRequest
+     * const ProjectExtraRequest = await prisma.projectExtraRequest.create({
+     *   data: {
+     *     // ... data to create a ProjectExtraRequest
+     *   }
+     * })
+     * 
+     */
+    create<T extends ProjectExtraRequestCreateArgs>(args: SelectSubset<T, ProjectExtraRequestCreateArgs<ExtArgs>>): Prisma__ProjectExtraRequestClient<$Result.GetResult<Prisma.$ProjectExtraRequestPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many ProjectExtraRequests.
+     * @param {ProjectExtraRequestCreateManyArgs} args - Arguments to create many ProjectExtraRequests.
+     * @example
+     * // Create many ProjectExtraRequests
+     * const projectExtraRequest = await prisma.projectExtraRequest.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ProjectExtraRequestCreateManyArgs>(args?: SelectSubset<T, ProjectExtraRequestCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a ProjectExtraRequest.
+     * @param {ProjectExtraRequestDeleteArgs} args - Arguments to delete one ProjectExtraRequest.
+     * @example
+     * // Delete one ProjectExtraRequest
+     * const ProjectExtraRequest = await prisma.projectExtraRequest.delete({
+     *   where: {
+     *     // ... filter to delete one ProjectExtraRequest
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ProjectExtraRequestDeleteArgs>(args: SelectSubset<T, ProjectExtraRequestDeleteArgs<ExtArgs>>): Prisma__ProjectExtraRequestClient<$Result.GetResult<Prisma.$ProjectExtraRequestPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one ProjectExtraRequest.
+     * @param {ProjectExtraRequestUpdateArgs} args - Arguments to update one ProjectExtraRequest.
+     * @example
+     * // Update one ProjectExtraRequest
+     * const projectExtraRequest = await prisma.projectExtraRequest.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ProjectExtraRequestUpdateArgs>(args: SelectSubset<T, ProjectExtraRequestUpdateArgs<ExtArgs>>): Prisma__ProjectExtraRequestClient<$Result.GetResult<Prisma.$ProjectExtraRequestPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more ProjectExtraRequests.
+     * @param {ProjectExtraRequestDeleteManyArgs} args - Arguments to filter ProjectExtraRequests to delete.
+     * @example
+     * // Delete a few ProjectExtraRequests
+     * const { count } = await prisma.projectExtraRequest.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ProjectExtraRequestDeleteManyArgs>(args?: SelectSubset<T, ProjectExtraRequestDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ProjectExtraRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectExtraRequestUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ProjectExtraRequests
+     * const projectExtraRequest = await prisma.projectExtraRequest.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ProjectExtraRequestUpdateManyArgs>(args: SelectSubset<T, ProjectExtraRequestUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ProjectExtraRequest.
+     * @param {ProjectExtraRequestUpsertArgs} args - Arguments to update or create a ProjectExtraRequest.
+     * @example
+     * // Update or create a ProjectExtraRequest
+     * const projectExtraRequest = await prisma.projectExtraRequest.upsert({
+     *   create: {
+     *     // ... data to create a ProjectExtraRequest
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ProjectExtraRequest we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ProjectExtraRequestUpsertArgs>(args: SelectSubset<T, ProjectExtraRequestUpsertArgs<ExtArgs>>): Prisma__ProjectExtraRequestClient<$Result.GetResult<Prisma.$ProjectExtraRequestPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of ProjectExtraRequests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectExtraRequestCountArgs} args - Arguments to filter ProjectExtraRequests to count.
+     * @example
+     * // Count the number of ProjectExtraRequests
+     * const count = await prisma.projectExtraRequest.count({
+     *   where: {
+     *     // ... the filter for the ProjectExtraRequests we want to count
+     *   }
+     * })
+    **/
+    count<T extends ProjectExtraRequestCountArgs>(
+      args?: Subset<T, ProjectExtraRequestCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ProjectExtraRequestCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ProjectExtraRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectExtraRequestAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ProjectExtraRequestAggregateArgs>(args: Subset<T, ProjectExtraRequestAggregateArgs>): Prisma.PrismaPromise<GetProjectExtraRequestAggregateType<T>>
+
+    /**
+     * Group by ProjectExtraRequest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectExtraRequestGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ProjectExtraRequestGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ProjectExtraRequestGroupByArgs['orderBy'] }
+        : { orderBy?: ProjectExtraRequestGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ProjectExtraRequestGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProjectExtraRequestGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ProjectExtraRequest model
+   */
+  readonly fields: ProjectExtraRequestFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ProjectExtraRequest.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ProjectExtraRequestClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    project<T extends ProjectDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectDefaultArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    subService<T extends ProjectSubServiceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProjectSubServiceDefaultArgs<ExtArgs>>): Prisma__ProjectSubServiceClient<$Result.GetResult<Prisma.$ProjectSubServicePayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    requestedBy<T extends ProjectExtraRequest$requestedByArgs<ExtArgs> = {}>(args?: Subset<T, ProjectExtraRequest$requestedByArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ProjectExtraRequest model
+   */ 
+  interface ProjectExtraRequestFieldRefs {
+    readonly id: FieldRef<"ProjectExtraRequest", 'String'>
+    readonly projectId: FieldRef<"ProjectExtraRequest", 'String'>
+    readonly subServiceId: FieldRef<"ProjectExtraRequest", 'String'>
+    readonly quantity: FieldRef<"ProjectExtraRequest", 'Int'>
+    readonly description: FieldRef<"ProjectExtraRequest", 'String'>
+    readonly status: FieldRef<"ProjectExtraRequest", 'String'>
+    readonly requestedById: FieldRef<"ProjectExtraRequest", 'String'>
+    readonly createdAt: FieldRef<"ProjectExtraRequest", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ProjectExtraRequest findUnique
+   */
+  export type ProjectExtraRequestFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectExtraRequest
+     */
+    select?: ProjectExtraRequestSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectExtraRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which ProjectExtraRequest to fetch.
+     */
+    where: ProjectExtraRequestWhereUniqueInput
+  }
+
+  /**
+   * ProjectExtraRequest findUniqueOrThrow
+   */
+  export type ProjectExtraRequestFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectExtraRequest
+     */
+    select?: ProjectExtraRequestSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectExtraRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which ProjectExtraRequest to fetch.
+     */
+    where: ProjectExtraRequestWhereUniqueInput
+  }
+
+  /**
+   * ProjectExtraRequest findFirst
+   */
+  export type ProjectExtraRequestFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectExtraRequest
+     */
+    select?: ProjectExtraRequestSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectExtraRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which ProjectExtraRequest to fetch.
+     */
+    where?: ProjectExtraRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProjectExtraRequests to fetch.
+     */
+    orderBy?: ProjectExtraRequestOrderByWithRelationInput | ProjectExtraRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ProjectExtraRequests.
+     */
+    cursor?: ProjectExtraRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProjectExtraRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProjectExtraRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ProjectExtraRequests.
+     */
+    distinct?: ProjectExtraRequestScalarFieldEnum | ProjectExtraRequestScalarFieldEnum[]
+  }
+
+  /**
+   * ProjectExtraRequest findFirstOrThrow
+   */
+  export type ProjectExtraRequestFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectExtraRequest
+     */
+    select?: ProjectExtraRequestSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectExtraRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which ProjectExtraRequest to fetch.
+     */
+    where?: ProjectExtraRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProjectExtraRequests to fetch.
+     */
+    orderBy?: ProjectExtraRequestOrderByWithRelationInput | ProjectExtraRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ProjectExtraRequests.
+     */
+    cursor?: ProjectExtraRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProjectExtraRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProjectExtraRequests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ProjectExtraRequests.
+     */
+    distinct?: ProjectExtraRequestScalarFieldEnum | ProjectExtraRequestScalarFieldEnum[]
+  }
+
+  /**
+   * ProjectExtraRequest findMany
+   */
+  export type ProjectExtraRequestFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectExtraRequest
+     */
+    select?: ProjectExtraRequestSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectExtraRequestInclude<ExtArgs> | null
+    /**
+     * Filter, which ProjectExtraRequests to fetch.
+     */
+    where?: ProjectExtraRequestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProjectExtraRequests to fetch.
+     */
+    orderBy?: ProjectExtraRequestOrderByWithRelationInput | ProjectExtraRequestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ProjectExtraRequests.
+     */
+    cursor?: ProjectExtraRequestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProjectExtraRequests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProjectExtraRequests.
+     */
+    skip?: number
+    distinct?: ProjectExtraRequestScalarFieldEnum | ProjectExtraRequestScalarFieldEnum[]
+  }
+
+  /**
+   * ProjectExtraRequest create
+   */
+  export type ProjectExtraRequestCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectExtraRequest
+     */
+    select?: ProjectExtraRequestSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectExtraRequestInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ProjectExtraRequest.
+     */
+    data: XOR<ProjectExtraRequestCreateInput, ProjectExtraRequestUncheckedCreateInput>
+  }
+
+  /**
+   * ProjectExtraRequest createMany
+   */
+  export type ProjectExtraRequestCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ProjectExtraRequests.
+     */
+    data: ProjectExtraRequestCreateManyInput | ProjectExtraRequestCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ProjectExtraRequest update
+   */
+  export type ProjectExtraRequestUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectExtraRequest
+     */
+    select?: ProjectExtraRequestSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectExtraRequestInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ProjectExtraRequest.
+     */
+    data: XOR<ProjectExtraRequestUpdateInput, ProjectExtraRequestUncheckedUpdateInput>
+    /**
+     * Choose, which ProjectExtraRequest to update.
+     */
+    where: ProjectExtraRequestWhereUniqueInput
+  }
+
+  /**
+   * ProjectExtraRequest updateMany
+   */
+  export type ProjectExtraRequestUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ProjectExtraRequests.
+     */
+    data: XOR<ProjectExtraRequestUpdateManyMutationInput, ProjectExtraRequestUncheckedUpdateManyInput>
+    /**
+     * Filter which ProjectExtraRequests to update
+     */
+    where?: ProjectExtraRequestWhereInput
+  }
+
+  /**
+   * ProjectExtraRequest upsert
+   */
+  export type ProjectExtraRequestUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectExtraRequest
+     */
+    select?: ProjectExtraRequestSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectExtraRequestInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ProjectExtraRequest to update in case it exists.
+     */
+    where: ProjectExtraRequestWhereUniqueInput
+    /**
+     * In case the ProjectExtraRequest found by the `where` argument doesn't exist, create a new ProjectExtraRequest with this data.
+     */
+    create: XOR<ProjectExtraRequestCreateInput, ProjectExtraRequestUncheckedCreateInput>
+    /**
+     * In case the ProjectExtraRequest was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ProjectExtraRequestUpdateInput, ProjectExtraRequestUncheckedUpdateInput>
+  }
+
+  /**
+   * ProjectExtraRequest delete
+   */
+  export type ProjectExtraRequestDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectExtraRequest
+     */
+    select?: ProjectExtraRequestSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectExtraRequestInclude<ExtArgs> | null
+    /**
+     * Filter which ProjectExtraRequest to delete.
+     */
+    where: ProjectExtraRequestWhereUniqueInput
+  }
+
+  /**
+   * ProjectExtraRequest deleteMany
+   */
+  export type ProjectExtraRequestDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ProjectExtraRequests to delete
+     */
+    where?: ProjectExtraRequestWhereInput
+  }
+
+  /**
+   * ProjectExtraRequest.requestedBy
+   */
+  export type ProjectExtraRequest$requestedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Staff
+     */
+    select?: StaffSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
+  }
+
+  /**
+   * ProjectExtraRequest without action
+   */
+  export type ProjectExtraRequestDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProjectExtraRequest
+     */
+    select?: ProjectExtraRequestSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectExtraRequestInclude<ExtArgs> | null
   }
 
 
@@ -43054,12 +47762,14 @@ export namespace Prisma {
   export type ContractAvgAggregateOutputType = {
     totalAmount: number | null
     billingDay: number | null
+    billingPeriodMonths: number | null
     monthlyAmount: number | null
   }
 
   export type ContractSumAggregateOutputType = {
     totalAmount: number | null
     billingDay: number | null
+    billingPeriodMonths: number | null
     monthlyAmount: number | null
   }
 
@@ -43068,6 +47778,8 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     contractNumber: string | null
+    title: string | null
+    duration: string | null
     startDate: Date | null
     endDate: Date | null
     renewalDate: Date | null
@@ -43080,6 +47792,8 @@ export namespace Prisma {
     portfolioId: string | null
     createdById: string | null
     billingDay: number | null
+    billingPeriodMonths: number | null
+    contractType: string | null
     monthlyAmount: number | null
   }
 
@@ -43088,6 +47802,8 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     contractNumber: string | null
+    title: string | null
+    duration: string | null
     startDate: Date | null
     endDate: Date | null
     renewalDate: Date | null
@@ -43100,6 +47816,8 @@ export namespace Prisma {
     portfolioId: string | null
     createdById: string | null
     billingDay: number | null
+    billingPeriodMonths: number | null
+    contractType: string | null
     monthlyAmount: number | null
   }
 
@@ -43108,6 +47826,8 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     contractNumber: number
+    title: number
+    duration: number
     startDate: number
     endDate: number
     renewalDate: number
@@ -43120,6 +47840,8 @@ export namespace Prisma {
     portfolioId: number
     createdById: number
     billingDay: number
+    billingPeriodMonths: number
+    contractType: number
     monthlyAmount: number
     _all: number
   }
@@ -43128,12 +47850,14 @@ export namespace Prisma {
   export type ContractAvgAggregateInputType = {
     totalAmount?: true
     billingDay?: true
+    billingPeriodMonths?: true
     monthlyAmount?: true
   }
 
   export type ContractSumAggregateInputType = {
     totalAmount?: true
     billingDay?: true
+    billingPeriodMonths?: true
     monthlyAmount?: true
   }
 
@@ -43142,6 +47866,8 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     contractNumber?: true
+    title?: true
+    duration?: true
     startDate?: true
     endDate?: true
     renewalDate?: true
@@ -43154,6 +47880,8 @@ export namespace Prisma {
     portfolioId?: true
     createdById?: true
     billingDay?: true
+    billingPeriodMonths?: true
+    contractType?: true
     monthlyAmount?: true
   }
 
@@ -43162,6 +47890,8 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     contractNumber?: true
+    title?: true
+    duration?: true
     startDate?: true
     endDate?: true
     renewalDate?: true
@@ -43174,6 +47904,8 @@ export namespace Prisma {
     portfolioId?: true
     createdById?: true
     billingDay?: true
+    billingPeriodMonths?: true
+    contractType?: true
     monthlyAmount?: true
   }
 
@@ -43182,6 +47914,8 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     contractNumber?: true
+    title?: true
+    duration?: true
     startDate?: true
     endDate?: true
     renewalDate?: true
@@ -43194,6 +47928,8 @@ export namespace Prisma {
     portfolioId?: true
     createdById?: true
     billingDay?: true
+    billingPeriodMonths?: true
+    contractType?: true
     monthlyAmount?: true
     _all?: true
   }
@@ -43289,6 +48025,8 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     contractNumber: string
+    title: string | null
+    duration: string | null
     startDate: Date | null
     endDate: Date | null
     renewalDate: Date | null
@@ -43301,6 +48039,8 @@ export namespace Prisma {
     portfolioId: string | null
     createdById: string | null
     billingDay: number | null
+    billingPeriodMonths: number | null
+    contractType: string | null
     monthlyAmount: number | null
     _count: ContractCountAggregateOutputType | null
     _avg: ContractAvgAggregateOutputType | null
@@ -43328,6 +48068,8 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     contractNumber?: boolean
+    title?: boolean
+    duration?: boolean
     startDate?: boolean
     endDate?: boolean
     renewalDate?: boolean
@@ -43340,6 +48082,8 @@ export namespace Prisma {
     portfolioId?: boolean
     createdById?: boolean
     billingDay?: boolean
+    billingPeriodMonths?: boolean
+    contractType?: boolean
     monthlyAmount?: boolean
     installments?: boolean | Contract$installmentsArgs<ExtArgs>
     documents?: boolean | Contract$documentsArgs<ExtArgs>
@@ -43347,6 +48091,7 @@ export namespace Prisma {
     client?: boolean | ClientDefaultArgs<ExtArgs>
     createdBy?: boolean | Contract$createdByArgs<ExtArgs>
     project?: boolean | Contract$projectArgs<ExtArgs>
+    primaryForProjects?: boolean | Contract$primaryForProjectsArgs<ExtArgs>
     _count?: boolean | ContractCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["contract"]>
 
@@ -43356,6 +48101,8 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     contractNumber?: boolean
+    title?: boolean
+    duration?: boolean
     startDate?: boolean
     endDate?: boolean
     renewalDate?: boolean
@@ -43368,6 +48115,8 @@ export namespace Prisma {
     portfolioId?: boolean
     createdById?: boolean
     billingDay?: boolean
+    billingPeriodMonths?: boolean
+    contractType?: boolean
     monthlyAmount?: boolean
   }
 
@@ -43378,6 +48127,7 @@ export namespace Prisma {
     client?: boolean | ClientDefaultArgs<ExtArgs>
     createdBy?: boolean | Contract$createdByArgs<ExtArgs>
     project?: boolean | Contract$projectArgs<ExtArgs>
+    primaryForProjects?: boolean | Contract$primaryForProjectsArgs<ExtArgs>
     _count?: boolean | ContractCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -43390,12 +48140,15 @@ export namespace Prisma {
       client: Prisma.$ClientPayload<ExtArgs>
       createdBy: Prisma.$StaffPayload<ExtArgs> | null
       project: Prisma.$ProjectPayload<ExtArgs> | null
+      primaryForProjects: Prisma.$ProjectPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       createdAt: Date
       updatedAt: Date
       contractNumber: string
+      title: string | null
+      duration: string | null
       startDate: Date | null
       endDate: Date | null
       renewalDate: Date | null
@@ -43408,6 +48161,8 @@ export namespace Prisma {
       portfolioId: string | null
       createdById: string | null
       billingDay: number | null
+      billingPeriodMonths: number | null
+      contractType: string | null
       monthlyAmount: number | null
     }, ExtArgs["result"]["contract"]>
     composites: {}
@@ -43755,6 +48510,7 @@ export namespace Prisma {
     client<T extends ClientDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ClientDefaultArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     createdBy<T extends Contract$createdByArgs<ExtArgs> = {}>(args?: Subset<T, Contract$createdByArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     project<T extends Contract$projectArgs<ExtArgs> = {}>(args?: Subset<T, Contract$projectArgs<ExtArgs>>): Prisma__ProjectClient<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    primaryForProjects<T extends Contract$primaryForProjectsArgs<ExtArgs> = {}>(args?: Subset<T, Contract$primaryForProjectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -43788,6 +48544,8 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"Contract", 'DateTime'>
     readonly updatedAt: FieldRef<"Contract", 'DateTime'>
     readonly contractNumber: FieldRef<"Contract", 'String'>
+    readonly title: FieldRef<"Contract", 'String'>
+    readonly duration: FieldRef<"Contract", 'String'>
     readonly startDate: FieldRef<"Contract", 'DateTime'>
     readonly endDate: FieldRef<"Contract", 'DateTime'>
     readonly renewalDate: FieldRef<"Contract", 'DateTime'>
@@ -43800,6 +48558,8 @@ export namespace Prisma {
     readonly portfolioId: FieldRef<"Contract", 'String'>
     readonly createdById: FieldRef<"Contract", 'String'>
     readonly billingDay: FieldRef<"Contract", 'Int'>
+    readonly billingPeriodMonths: FieldRef<"Contract", 'Int'>
+    readonly contractType: FieldRef<"Contract", 'String'>
     readonly monthlyAmount: FieldRef<"Contract", 'Float'>
   }
     
@@ -44185,6 +48945,26 @@ export namespace Prisma {
   }
 
   /**
+   * Contract.primaryForProjects
+   */
+  export type Contract$primaryForProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Project
+     */
+    select?: ProjectSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ProjectInclude<ExtArgs> | null
+    where?: ProjectWhereInput
+    orderBy?: ProjectOrderByWithRelationInput | ProjectOrderByWithRelationInput[]
+    cursor?: ProjectWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ProjectScalarFieldEnum | ProjectScalarFieldEnum[]
+  }
+
+  /**
    * Contract without action
    */
   export type ContractDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -44216,6 +48996,8 @@ export namespace Prisma {
     periodMonth: number | null
     dueAmount: number | null
     paidAmount: number | null
+    installmentNumber: number | null
+    percentage: number | null
   }
 
   export type ClientInstallmentSumAggregateOutputType = {
@@ -44223,6 +49005,8 @@ export namespace Prisma {
     periodMonth: number | null
     dueAmount: number | null
     paidAmount: number | null
+    installmentNumber: number | null
+    percentage: number | null
   }
 
   export type ClientInstallmentMinAggregateOutputType = {
@@ -44239,6 +49023,9 @@ export namespace Prisma {
     notes: string | null
     clientId: string | null
     contractId: string | null
+    installmentNumber: number | null
+    percentage: number | null
+    dueMilestone: string | null
   }
 
   export type ClientInstallmentMaxAggregateOutputType = {
@@ -44255,6 +49042,9 @@ export namespace Prisma {
     notes: string | null
     clientId: string | null
     contractId: string | null
+    installmentNumber: number | null
+    percentage: number | null
+    dueMilestone: string | null
   }
 
   export type ClientInstallmentCountAggregateOutputType = {
@@ -44271,6 +49061,9 @@ export namespace Prisma {
     notes: number
     clientId: number
     contractId: number
+    installmentNumber: number
+    percentage: number
+    dueMilestone: number
     _all: number
   }
 
@@ -44280,6 +49073,8 @@ export namespace Prisma {
     periodMonth?: true
     dueAmount?: true
     paidAmount?: true
+    installmentNumber?: true
+    percentage?: true
   }
 
   export type ClientInstallmentSumAggregateInputType = {
@@ -44287,6 +49082,8 @@ export namespace Prisma {
     periodMonth?: true
     dueAmount?: true
     paidAmount?: true
+    installmentNumber?: true
+    percentage?: true
   }
 
   export type ClientInstallmentMinAggregateInputType = {
@@ -44303,6 +49100,9 @@ export namespace Prisma {
     notes?: true
     clientId?: true
     contractId?: true
+    installmentNumber?: true
+    percentage?: true
+    dueMilestone?: true
   }
 
   export type ClientInstallmentMaxAggregateInputType = {
@@ -44319,6 +49119,9 @@ export namespace Prisma {
     notes?: true
     clientId?: true
     contractId?: true
+    installmentNumber?: true
+    percentage?: true
+    dueMilestone?: true
   }
 
   export type ClientInstallmentCountAggregateInputType = {
@@ -44335,6 +49138,9 @@ export namespace Prisma {
     notes?: true
     clientId?: true
     contractId?: true
+    installmentNumber?: true
+    percentage?: true
+    dueMilestone?: true
     _all?: true
   }
 
@@ -44438,6 +49244,9 @@ export namespace Prisma {
     notes: string | null
     clientId: string
     contractId: string | null
+    installmentNumber: number | null
+    percentage: number | null
+    dueMilestone: string | null
     _count: ClientInstallmentCountAggregateOutputType | null
     _avg: ClientInstallmentAvgAggregateOutputType | null
     _sum: ClientInstallmentSumAggregateOutputType | null
@@ -44473,6 +49282,9 @@ export namespace Prisma {
     notes?: boolean
     clientId?: boolean
     contractId?: boolean
+    installmentNumber?: boolean
+    percentage?: boolean
+    dueMilestone?: boolean
     client?: boolean | ClientDefaultArgs<ExtArgs>
     contract?: boolean | ClientInstallment$contractArgs<ExtArgs>
   }, ExtArgs["result"]["clientInstallment"]>
@@ -44492,6 +49304,9 @@ export namespace Prisma {
     notes?: boolean
     clientId?: boolean
     contractId?: boolean
+    installmentNumber?: boolean
+    percentage?: boolean
+    dueMilestone?: boolean
   }
 
   export type ClientInstallmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -44519,6 +49334,9 @@ export namespace Prisma {
       notes: string | null
       clientId: string
       contractId: string | null
+      installmentNumber: number | null
+      percentage: number | null
+      dueMilestone: string | null
     }, ExtArgs["result"]["clientInstallment"]>
     composites: {}
   }
@@ -44903,6 +49721,9 @@ export namespace Prisma {
     readonly notes: FieldRef<"ClientInstallment", 'String'>
     readonly clientId: FieldRef<"ClientInstallment", 'String'>
     readonly contractId: FieldRef<"ClientInstallment", 'String'>
+    readonly installmentNumber: FieldRef<"ClientInstallment", 'Int'>
+    readonly percentage: FieldRef<"ClientInstallment", 'Float'>
+    readonly dueMilestone: FieldRef<"ClientInstallment", 'String'>
   }
     
 
@@ -90057,13 +94878,16 @@ export namespace Prisma {
 
   export const ClientScalarFieldEnum: {
     id: 'id',
+    clientCode: 'clientCode',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     institution: 'institution',
     email: 'email',
     phone: 'phone',
+    alternativePhone: 'alternativePhone',
     source: 'source',
     accountManagerId: 'accountManagerId',
+    createdById: 'createdById',
     address: 'address',
     portfolioId: 'portfolioId',
     clientType: 'clientType',
@@ -90082,8 +94906,14 @@ export namespace Prisma {
 
   export const ServiceScalarFieldEnum: {
     id: 'id',
+    serviceCode: 'serviceCode',
     serviceName: 'serviceName',
     description: 'description',
+    isActive: 'isActive',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    createdById: 'createdById',
+    updatedById: 'updatedById',
     portfolioId: 'portfolioId',
     iconUrl: 'iconUrl',
     source: 'source',
@@ -90193,7 +95023,9 @@ export namespace Prisma {
     toAssigneeId: 'toAssigneeId',
     progressAtTransfer: 'progressAtTransfer',
     deadlineAtTransfer: 'deadlineAtTransfer',
-    transferredById: 'transferredById'
+    transferredById: 'transferredById',
+    reason: 'reason',
+    note: 'note'
   };
 
   export type TaskTransferHistoryScalarFieldEnum = (typeof TaskTransferHistoryScalarFieldEnum)[keyof typeof TaskTransferHistoryScalarFieldEnum]
@@ -90466,10 +95298,66 @@ export namespace Prisma {
     dueDate: 'dueDate',
     clientId: 'clientId',
     portfolioId: 'portfolioId',
-    createdById: 'createdById'
+    createdById: 'createdById',
+    projectCode: 'projectCode',
+    billingMode: 'billingMode',
+    lifecycleStatus: 'lifecycleStatus',
+    contractId: 'contractId',
+    archived: 'archived',
+    isDraft: 'isDraft',
+    scheduleConfig: 'scheduleConfig'
   };
 
   export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
+
+
+  export const ProjectServiceLinkScalarFieldEnum: {
+    id: 'id',
+    projectId: 'projectId',
+    serviceId: 'serviceId'
+  };
+
+  export type ProjectServiceLinkScalarFieldEnum = (typeof ProjectServiceLinkScalarFieldEnum)[keyof typeof ProjectServiceLinkScalarFieldEnum]
+
+
+  export const ProjectSubServiceScalarFieldEnum: {
+    id: 'id',
+    projectServiceId: 'projectServiceId',
+    name: 'name',
+    description: 'description',
+    quantity: 'quantity',
+    unit: 'unit',
+    targetQuantity: 'targetQuantity',
+    assigneeId: 'assigneeId'
+  };
+
+  export type ProjectSubServiceScalarFieldEnum = (typeof ProjectSubServiceScalarFieldEnum)[keyof typeof ProjectSubServiceScalarFieldEnum]
+
+
+  export const ProjectCycleScalarFieldEnum: {
+    id: 'id',
+    projectId: 'projectId',
+    label: 'label',
+    startDate: 'startDate',
+    endDate: 'endDate',
+    createdAt: 'createdAt'
+  };
+
+  export type ProjectCycleScalarFieldEnum = (typeof ProjectCycleScalarFieldEnum)[keyof typeof ProjectCycleScalarFieldEnum]
+
+
+  export const ProjectExtraRequestScalarFieldEnum: {
+    id: 'id',
+    projectId: 'projectId',
+    subServiceId: 'subServiceId',
+    quantity: 'quantity',
+    description: 'description',
+    status: 'status',
+    requestedById: 'requestedById',
+    createdAt: 'createdAt'
+  };
+
+  export type ProjectExtraRequestScalarFieldEnum = (typeof ProjectExtraRequestScalarFieldEnum)[keyof typeof ProjectExtraRequestScalarFieldEnum]
 
 
   export const ContractScalarFieldEnum: {
@@ -90477,6 +95365,8 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     contractNumber: 'contractNumber',
+    title: 'title',
+    duration: 'duration',
     startDate: 'startDate',
     endDate: 'endDate',
     renewalDate: 'renewalDate',
@@ -90489,6 +95379,8 @@ export namespace Prisma {
     portfolioId: 'portfolioId',
     createdById: 'createdById',
     billingDay: 'billingDay',
+    billingPeriodMonths: 'billingPeriodMonths',
+    contractType: 'contractType',
     monthlyAmount: 'monthlyAmount'
   };
 
@@ -90508,7 +95400,10 @@ export namespace Prisma {
     status: 'status',
     notes: 'notes',
     clientId: 'clientId',
-    contractId: 'contractId'
+    contractId: 'contractId',
+    installmentNumber: 'installmentNumber',
+    percentage: 'percentage',
+    dueMilestone: 'dueMilestone'
   };
 
   export type ClientInstallmentScalarFieldEnum = (typeof ClientInstallmentScalarFieldEnum)[keyof typeof ClientInstallmentScalarFieldEnum]
@@ -91705,11 +96600,14 @@ export namespace Prisma {
     accounts?: AccountListRelationFilter
     auditLogs?: AuditLogListRelationFilter
     managedClients?: ClientListRelationFilter
+    clientsCreated?: ClientListRelationFilter
     contentRequestAssignments?: ContentRequestAssigneeListRelationFilter
     contentRequestsCreated?: ContentRequestListRelationFilter
     uploadedContractDocuments?: ContractDocumentListRelationFilter
     createdContracts?: ContractListRelationFilter
     createdProjects?: ProjectListRelationFilter
+    servicesCreated?: ServiceListRelationFilter
+    servicesUpdated?: ServiceListRelationFilter
     assignedRecurringSteps?: RecurringScheduleStepListRelationFilter
     sessions?: SessionListRelationFilter
     portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
@@ -91718,6 +96616,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryListRelationFilter
     transferredByTasks?: TaskTransferHistoryListRelationFilter
     assignedTasks?: TaskListRelationFilter
+    projectSubAssignments?: ProjectSubServiceListRelationFilter
+    projectExtraRequests?: ProjectExtraRequestListRelationFilter
   }
 
   export type StaffOrderByWithRelationInput = {
@@ -91748,11 +96648,14 @@ export namespace Prisma {
     accounts?: AccountOrderByRelationAggregateInput
     auditLogs?: AuditLogOrderByRelationAggregateInput
     managedClients?: ClientOrderByRelationAggregateInput
+    clientsCreated?: ClientOrderByRelationAggregateInput
     contentRequestAssignments?: ContentRequestAssigneeOrderByRelationAggregateInput
     contentRequestsCreated?: ContentRequestOrderByRelationAggregateInput
     uploadedContractDocuments?: ContractDocumentOrderByRelationAggregateInput
     createdContracts?: ContractOrderByRelationAggregateInput
     createdProjects?: ProjectOrderByRelationAggregateInput
+    servicesCreated?: ServiceOrderByRelationAggregateInput
+    servicesUpdated?: ServiceOrderByRelationAggregateInput
     assignedRecurringSteps?: RecurringScheduleStepOrderByRelationAggregateInput
     sessions?: SessionOrderByRelationAggregateInput
     portfolio?: PortfolioOrderByWithRelationInput
@@ -91761,6 +96664,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryOrderByRelationAggregateInput
     transferredByTasks?: TaskTransferHistoryOrderByRelationAggregateInput
     assignedTasks?: TaskOrderByRelationAggregateInput
+    projectSubAssignments?: ProjectSubServiceOrderByRelationAggregateInput
+    projectExtraRequests?: ProjectExtraRequestOrderByRelationAggregateInput
   }
 
   export type StaffWhereUniqueInput = Prisma.AtLeast<{
@@ -91794,11 +96699,14 @@ export namespace Prisma {
     accounts?: AccountListRelationFilter
     auditLogs?: AuditLogListRelationFilter
     managedClients?: ClientListRelationFilter
+    clientsCreated?: ClientListRelationFilter
     contentRequestAssignments?: ContentRequestAssigneeListRelationFilter
     contentRequestsCreated?: ContentRequestListRelationFilter
     uploadedContractDocuments?: ContractDocumentListRelationFilter
     createdContracts?: ContractListRelationFilter
     createdProjects?: ProjectListRelationFilter
+    servicesCreated?: ServiceListRelationFilter
+    servicesUpdated?: ServiceListRelationFilter
     assignedRecurringSteps?: RecurringScheduleStepListRelationFilter
     sessions?: SessionListRelationFilter
     portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
@@ -91807,6 +96715,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryListRelationFilter
     transferredByTasks?: TaskTransferHistoryListRelationFilter
     assignedTasks?: TaskListRelationFilter
+    projectSubAssignments?: ProjectSubServiceListRelationFilter
+    projectExtraRequests?: ProjectExtraRequestListRelationFilter
   }, "id" | "email">
 
   export type StaffOrderByWithAggregationInput = {
@@ -92091,13 +97001,16 @@ export namespace Prisma {
     OR?: ClientWhereInput[]
     NOT?: ClientWhereInput | ClientWhereInput[]
     id?: StringFilter<"Client"> | string
+    clientCode?: StringNullableFilter<"Client"> | string | null
     createdAt?: DateTimeNullableFilter<"Client"> | Date | string | null
     updatedAt?: DateTimeNullableFilter<"Client"> | Date | string | null
     institution?: StringFilter<"Client"> | string
     email?: StringFilter<"Client"> | string
     phone?: StringFilter<"Client"> | string
+    alternativePhone?: StringNullableFilter<"Client"> | string | null
     source?: StringFilter<"Client"> | string
     accountManagerId?: StringNullableFilter<"Client"> | string | null
+    createdById?: StringNullableFilter<"Client"> | string | null
     address?: StringNullableFilter<"Client"> | string | null
     portfolioId?: StringNullableFilter<"Client"> | string | null
     clientType?: EnumClientTypeFilter<"Client"> | $Enums.ClientType
@@ -92114,6 +97027,7 @@ export namespace Prisma {
     clientService?: ClientServiceListRelationFilter
     installments?: ClientInstallmentListRelationFilter
     accountManager?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+    createdBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
     clientTask?: ClientTaskListRelationFilter
     contentCycles?: ContentCycleListRelationFilter
@@ -92128,13 +97042,16 @@ export namespace Prisma {
 
   export type ClientOrderByWithRelationInput = {
     id?: SortOrder
+    clientCode?: SortOrderInput | SortOrder
     createdAt?: SortOrderInput | SortOrder
     updatedAt?: SortOrderInput | SortOrder
     institution?: SortOrder
     email?: SortOrder
     phone?: SortOrder
+    alternativePhone?: SortOrderInput | SortOrder
     source?: SortOrder
     accountManagerId?: SortOrderInput | SortOrder
+    createdById?: SortOrderInput | SortOrder
     address?: SortOrderInput | SortOrder
     portfolioId?: SortOrderInput | SortOrder
     clientType?: SortOrder
@@ -92151,6 +97068,7 @@ export namespace Prisma {
     clientService?: ClientServiceOrderByRelationAggregateInput
     installments?: ClientInstallmentOrderByRelationAggregateInput
     accountManager?: StaffOrderByWithRelationInput
+    createdBy?: StaffOrderByWithRelationInput
     portfolio?: PortfolioOrderByWithRelationInput
     clientTask?: ClientTaskOrderByRelationAggregateInput
     contentCycles?: ContentCycleOrderByRelationAggregateInput
@@ -92165,6 +97083,7 @@ export namespace Prisma {
 
   export type ClientWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    clientCode?: string
     email?: string
     phone?: string
     AND?: ClientWhereInput | ClientWhereInput[]
@@ -92173,8 +97092,10 @@ export namespace Prisma {
     createdAt?: DateTimeNullableFilter<"Client"> | Date | string | null
     updatedAt?: DateTimeNullableFilter<"Client"> | Date | string | null
     institution?: StringFilter<"Client"> | string
+    alternativePhone?: StringNullableFilter<"Client"> | string | null
     source?: StringFilter<"Client"> | string
     accountManagerId?: StringNullableFilter<"Client"> | string | null
+    createdById?: StringNullableFilter<"Client"> | string | null
     address?: StringNullableFilter<"Client"> | string | null
     portfolioId?: StringNullableFilter<"Client"> | string | null
     clientType?: EnumClientTypeFilter<"Client"> | $Enums.ClientType
@@ -92191,6 +97112,7 @@ export namespace Prisma {
     clientService?: ClientServiceListRelationFilter
     installments?: ClientInstallmentListRelationFilter
     accountManager?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+    createdBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
     clientTask?: ClientTaskListRelationFilter
     contentCycles?: ContentCycleListRelationFilter
@@ -92201,17 +97123,20 @@ export namespace Prisma {
     projects?: ProjectListRelationFilter
     quotations?: QuotationsListRelationFilter
     recurringSchedules?: RecurringScheduleListRelationFilter
-  }, "id" | "email" | "phone">
+  }, "id" | "clientCode" | "email" | "phone">
 
   export type ClientOrderByWithAggregationInput = {
     id?: SortOrder
+    clientCode?: SortOrderInput | SortOrder
     createdAt?: SortOrderInput | SortOrder
     updatedAt?: SortOrderInput | SortOrder
     institution?: SortOrder
     email?: SortOrder
     phone?: SortOrder
+    alternativePhone?: SortOrderInput | SortOrder
     source?: SortOrder
     accountManagerId?: SortOrderInput | SortOrder
+    createdById?: SortOrderInput | SortOrder
     address?: SortOrderInput | SortOrder
     portfolioId?: SortOrderInput | SortOrder
     clientType?: SortOrder
@@ -92235,13 +97160,16 @@ export namespace Prisma {
     OR?: ClientScalarWhereWithAggregatesInput[]
     NOT?: ClientScalarWhereWithAggregatesInput | ClientScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Client"> | string
+    clientCode?: StringNullableWithAggregatesFilter<"Client"> | string | null
     createdAt?: DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
     updatedAt?: DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
     institution?: StringWithAggregatesFilter<"Client"> | string
     email?: StringWithAggregatesFilter<"Client"> | string
     phone?: StringWithAggregatesFilter<"Client"> | string
+    alternativePhone?: StringNullableWithAggregatesFilter<"Client"> | string | null
     source?: StringWithAggregatesFilter<"Client"> | string
     accountManagerId?: StringNullableWithAggregatesFilter<"Client"> | string | null
+    createdById?: StringNullableWithAggregatesFilter<"Client"> | string | null
     address?: StringNullableWithAggregatesFilter<"Client"> | string | null
     portfolioId?: StringNullableWithAggregatesFilter<"Client"> | string | null
     clientType?: EnumClientTypeWithAggregatesFilter<"Client"> | $Enums.ClientType
@@ -92260,8 +97188,14 @@ export namespace Prisma {
     OR?: ServiceWhereInput[]
     NOT?: ServiceWhereInput | ServiceWhereInput[]
     id?: StringFilter<"Service"> | string
+    serviceCode?: StringNullableFilter<"Service"> | string | null
     serviceName?: StringFilter<"Service"> | string
     description?: StringNullableFilter<"Service"> | string | null
+    isActive?: BoolFilter<"Service"> | boolean
+    createdAt?: DateTimeFilter<"Service"> | Date | string
+    updatedAt?: DateTimeFilter<"Service"> | Date | string
+    createdById?: StringNullableFilter<"Service"> | string | null
+    updatedById?: StringNullableFilter<"Service"> | string | null
     portfolioId?: StringNullableFilter<"Service"> | string | null
     iconUrl?: StringNullableFilter<"Service"> | string | null
     source?: StringFilter<"Service"> | string
@@ -92270,14 +97204,23 @@ export namespace Prisma {
     serviceType?: EnumServiceTypeFilter<"Service"> | $Enums.ServiceType
     serviceAgreements?: IncomeServiceAgreementListRelationFilter
     clientService?: ClientServiceListRelationFilter
+    createdBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+    updatedBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
     subService?: SubServiceListRelationFilter
+    projectLinks?: ProjectServiceLinkListRelationFilter
   }
 
   export type ServiceOrderByWithRelationInput = {
     id?: SortOrder
+    serviceCode?: SortOrderInput | SortOrder
     serviceName?: SortOrder
     description?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    createdById?: SortOrderInput | SortOrder
+    updatedById?: SortOrderInput | SortOrder
     portfolioId?: SortOrderInput | SortOrder
     iconUrl?: SortOrderInput | SortOrder
     source?: SortOrder
@@ -92286,12 +97229,16 @@ export namespace Prisma {
     serviceType?: SortOrder
     serviceAgreements?: IncomeServiceAgreementOrderByRelationAggregateInput
     clientService?: ClientServiceOrderByRelationAggregateInput
+    createdBy?: StaffOrderByWithRelationInput
+    updatedBy?: StaffOrderByWithRelationInput
     portfolio?: PortfolioOrderByWithRelationInput
     subService?: SubServiceOrderByRelationAggregateInput
+    projectLinks?: ProjectServiceLinkOrderByRelationAggregateInput
   }
 
   export type ServiceWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    serviceCode?: string
     source_externalId?: ServiceSourceExternalIdCompoundUniqueInput
     serviceName_portfolioId?: ServiceServiceNamePortfolioIdCompoundUniqueInput
     AND?: ServiceWhereInput | ServiceWhereInput[]
@@ -92299,6 +97246,11 @@ export namespace Prisma {
     NOT?: ServiceWhereInput | ServiceWhereInput[]
     serviceName?: StringFilter<"Service"> | string
     description?: StringNullableFilter<"Service"> | string | null
+    isActive?: BoolFilter<"Service"> | boolean
+    createdAt?: DateTimeFilter<"Service"> | Date | string
+    updatedAt?: DateTimeFilter<"Service"> | Date | string
+    createdById?: StringNullableFilter<"Service"> | string | null
+    updatedById?: StringNullableFilter<"Service"> | string | null
     portfolioId?: StringNullableFilter<"Service"> | string | null
     iconUrl?: StringNullableFilter<"Service"> | string | null
     source?: StringFilter<"Service"> | string
@@ -92307,14 +97259,23 @@ export namespace Prisma {
     serviceType?: EnumServiceTypeFilter<"Service"> | $Enums.ServiceType
     serviceAgreements?: IncomeServiceAgreementListRelationFilter
     clientService?: ClientServiceListRelationFilter
+    createdBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+    updatedBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     portfolio?: XOR<PortfolioNullableRelationFilter, PortfolioWhereInput> | null
     subService?: SubServiceListRelationFilter
-  }, "id" | "source_externalId" | "serviceName_portfolioId">
+    projectLinks?: ProjectServiceLinkListRelationFilter
+  }, "id" | "serviceCode" | "source_externalId" | "serviceName_portfolioId">
 
   export type ServiceOrderByWithAggregationInput = {
     id?: SortOrder
+    serviceCode?: SortOrderInput | SortOrder
     serviceName?: SortOrder
     description?: SortOrderInput | SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    createdById?: SortOrderInput | SortOrder
+    updatedById?: SortOrderInput | SortOrder
     portfolioId?: SortOrderInput | SortOrder
     iconUrl?: SortOrderInput | SortOrder
     source?: SortOrder
@@ -92331,8 +97292,14 @@ export namespace Prisma {
     OR?: ServiceScalarWhereWithAggregatesInput[]
     NOT?: ServiceScalarWhereWithAggregatesInput | ServiceScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Service"> | string
+    serviceCode?: StringNullableWithAggregatesFilter<"Service"> | string | null
     serviceName?: StringWithAggregatesFilter<"Service"> | string
     description?: StringNullableWithAggregatesFilter<"Service"> | string | null
+    isActive?: BoolWithAggregatesFilter<"Service"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"Service"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Service"> | Date | string
+    createdById?: StringNullableWithAggregatesFilter<"Service"> | string | null
+    updatedById?: StringNullableWithAggregatesFilter<"Service"> | string | null
     portfolioId?: StringNullableWithAggregatesFilter<"Service"> | string | null
     iconUrl?: StringNullableWithAggregatesFilter<"Service"> | string | null
     source?: StringWithAggregatesFilter<"Service"> | string
@@ -92867,6 +97834,8 @@ export namespace Prisma {
     progressAtTransfer?: IntFilter<"TaskTransferHistory"> | number
     deadlineAtTransfer?: DateTimeNullableFilter<"TaskTransferHistory"> | Date | string | null
     transferredById?: StringNullableFilter<"TaskTransferHistory"> | string | null
+    reason?: StringNullableFilter<"TaskTransferHistory"> | string | null
+    note?: StringNullableFilter<"TaskTransferHistory"> | string | null
     fromAssignee?: XOR<StaffRelationFilter, StaffWhereInput>
     task?: XOR<TaskRelationFilter, TaskWhereInput>
     toAssignee?: XOR<StaffRelationFilter, StaffWhereInput>
@@ -92882,6 +97851,8 @@ export namespace Prisma {
     progressAtTransfer?: SortOrder
     deadlineAtTransfer?: SortOrderInput | SortOrder
     transferredById?: SortOrderInput | SortOrder
+    reason?: SortOrderInput | SortOrder
+    note?: SortOrderInput | SortOrder
     fromAssignee?: StaffOrderByWithRelationInput
     task?: TaskOrderByWithRelationInput
     toAssignee?: StaffOrderByWithRelationInput
@@ -92900,6 +97871,8 @@ export namespace Prisma {
     progressAtTransfer?: IntFilter<"TaskTransferHistory"> | number
     deadlineAtTransfer?: DateTimeNullableFilter<"TaskTransferHistory"> | Date | string | null
     transferredById?: StringNullableFilter<"TaskTransferHistory"> | string | null
+    reason?: StringNullableFilter<"TaskTransferHistory"> | string | null
+    note?: StringNullableFilter<"TaskTransferHistory"> | string | null
     fromAssignee?: XOR<StaffRelationFilter, StaffWhereInput>
     task?: XOR<TaskRelationFilter, TaskWhereInput>
     toAssignee?: XOR<StaffRelationFilter, StaffWhereInput>
@@ -92915,6 +97888,8 @@ export namespace Prisma {
     progressAtTransfer?: SortOrder
     deadlineAtTransfer?: SortOrderInput | SortOrder
     transferredById?: SortOrderInput | SortOrder
+    reason?: SortOrderInput | SortOrder
+    note?: SortOrderInput | SortOrder
     _count?: TaskTransferHistoryCountOrderByAggregateInput
     _avg?: TaskTransferHistoryAvgOrderByAggregateInput
     _max?: TaskTransferHistoryMaxOrderByAggregateInput
@@ -92934,6 +97909,8 @@ export namespace Prisma {
     progressAtTransfer?: IntWithAggregatesFilter<"TaskTransferHistory"> | number
     deadlineAtTransfer?: DateTimeNullableWithAggregatesFilter<"TaskTransferHistory"> | Date | string | null
     transferredById?: StringNullableWithAggregatesFilter<"TaskTransferHistory"> | string | null
+    reason?: StringNullableWithAggregatesFilter<"TaskTransferHistory"> | string | null
+    note?: StringNullableWithAggregatesFilter<"TaskTransferHistory"> | string | null
   }
 
   export type ClientTaskWhereInput = {
@@ -94302,6 +99279,14 @@ export namespace Prisma {
     clientId?: StringFilter<"Project"> | string
     portfolioId?: StringNullableFilter<"Project"> | string | null
     createdById?: StringNullableFilter<"Project"> | string | null
+    projectCode?: StringNullableFilter<"Project"> | string | null
+    billingMode?: StringFilter<"Project"> | string
+    lifecycleStatus?: StringFilter<"Project"> | string
+    contractId?: StringNullableFilter<"Project"> | string | null
+    archived?: BoolFilter<"Project"> | boolean
+    isDraft?: BoolFilter<"Project"> | boolean
+    scheduleConfig?: JsonNullableFilter<"Project">
+    primaryContract?: XOR<ContractNullableRelationFilter, ContractWhereInput> | null
     serviceAgreements?: IncomeServiceAgreementListRelationFilter
     contentRequests?: ContentRequestListRelationFilter
     contracts?: ContractListRelationFilter
@@ -94309,6 +99294,9 @@ export namespace Prisma {
     client?: XOR<ClientRelationFilter, ClientWhereInput>
     createdBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     tasks?: TaskListRelationFilter
+    serviceLinks?: ProjectServiceLinkListRelationFilter
+    cycles?: ProjectCycleListRelationFilter
+    extraRequests?: ProjectExtraRequestListRelationFilter
   }
 
   export type ProjectOrderByWithRelationInput = {
@@ -94325,6 +99313,14 @@ export namespace Prisma {
     clientId?: SortOrder
     portfolioId?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
+    projectCode?: SortOrderInput | SortOrder
+    billingMode?: SortOrder
+    lifecycleStatus?: SortOrder
+    contractId?: SortOrderInput | SortOrder
+    archived?: SortOrder
+    isDraft?: SortOrder
+    scheduleConfig?: SortOrderInput | SortOrder
+    primaryContract?: ContractOrderByWithRelationInput
     serviceAgreements?: IncomeServiceAgreementOrderByRelationAggregateInput
     contentRequests?: ContentRequestOrderByRelationAggregateInput
     contracts?: ContractOrderByRelationAggregateInput
@@ -94332,10 +99328,14 @@ export namespace Prisma {
     client?: ClientOrderByWithRelationInput
     createdBy?: StaffOrderByWithRelationInput
     tasks?: TaskOrderByRelationAggregateInput
+    serviceLinks?: ProjectServiceLinkOrderByRelationAggregateInput
+    cycles?: ProjectCycleOrderByRelationAggregateInput
+    extraRequests?: ProjectExtraRequestOrderByRelationAggregateInput
   }
 
   export type ProjectWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    projectCode?: string
     AND?: ProjectWhereInput | ProjectWhereInput[]
     OR?: ProjectWhereInput[]
     NOT?: ProjectWhereInput | ProjectWhereInput[]
@@ -94351,6 +99351,13 @@ export namespace Prisma {
     clientId?: StringFilter<"Project"> | string
     portfolioId?: StringNullableFilter<"Project"> | string | null
     createdById?: StringNullableFilter<"Project"> | string | null
+    billingMode?: StringFilter<"Project"> | string
+    lifecycleStatus?: StringFilter<"Project"> | string
+    contractId?: StringNullableFilter<"Project"> | string | null
+    archived?: BoolFilter<"Project"> | boolean
+    isDraft?: BoolFilter<"Project"> | boolean
+    scheduleConfig?: JsonNullableFilter<"Project">
+    primaryContract?: XOR<ContractNullableRelationFilter, ContractWhereInput> | null
     serviceAgreements?: IncomeServiceAgreementListRelationFilter
     contentRequests?: ContentRequestListRelationFilter
     contracts?: ContractListRelationFilter
@@ -94358,7 +99365,10 @@ export namespace Prisma {
     client?: XOR<ClientRelationFilter, ClientWhereInput>
     createdBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     tasks?: TaskListRelationFilter
-  }, "id">
+    serviceLinks?: ProjectServiceLinkListRelationFilter
+    cycles?: ProjectCycleListRelationFilter
+    extraRequests?: ProjectExtraRequestListRelationFilter
+  }, "id" | "projectCode">
 
   export type ProjectOrderByWithAggregationInput = {
     id?: SortOrder
@@ -94374,6 +99384,13 @@ export namespace Prisma {
     clientId?: SortOrder
     portfolioId?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
+    projectCode?: SortOrderInput | SortOrder
+    billingMode?: SortOrder
+    lifecycleStatus?: SortOrder
+    contractId?: SortOrderInput | SortOrder
+    archived?: SortOrder
+    isDraft?: SortOrder
+    scheduleConfig?: SortOrderInput | SortOrder
     _count?: ProjectCountOrderByAggregateInput
     _max?: ProjectMaxOrderByAggregateInput
     _min?: ProjectMinOrderByAggregateInput
@@ -94396,6 +99413,281 @@ export namespace Prisma {
     clientId?: StringWithAggregatesFilter<"Project"> | string
     portfolioId?: StringNullableWithAggregatesFilter<"Project"> | string | null
     createdById?: StringNullableWithAggregatesFilter<"Project"> | string | null
+    projectCode?: StringNullableWithAggregatesFilter<"Project"> | string | null
+    billingMode?: StringWithAggregatesFilter<"Project"> | string
+    lifecycleStatus?: StringWithAggregatesFilter<"Project"> | string
+    contractId?: StringNullableWithAggregatesFilter<"Project"> | string | null
+    archived?: BoolWithAggregatesFilter<"Project"> | boolean
+    isDraft?: BoolWithAggregatesFilter<"Project"> | boolean
+    scheduleConfig?: JsonNullableWithAggregatesFilter<"Project">
+  }
+
+  export type ProjectServiceLinkWhereInput = {
+    AND?: ProjectServiceLinkWhereInput | ProjectServiceLinkWhereInput[]
+    OR?: ProjectServiceLinkWhereInput[]
+    NOT?: ProjectServiceLinkWhereInput | ProjectServiceLinkWhereInput[]
+    id?: StringFilter<"ProjectServiceLink"> | string
+    projectId?: StringFilter<"ProjectServiceLink"> | string
+    serviceId?: StringFilter<"ProjectServiceLink"> | string
+    project?: XOR<ProjectRelationFilter, ProjectWhereInput>
+    service?: XOR<ServiceRelationFilter, ServiceWhereInput>
+    subServices?: ProjectSubServiceListRelationFilter
+  }
+
+  export type ProjectServiceLinkOrderByWithRelationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    serviceId?: SortOrder
+    project?: ProjectOrderByWithRelationInput
+    service?: ServiceOrderByWithRelationInput
+    subServices?: ProjectSubServiceOrderByRelationAggregateInput
+  }
+
+  export type ProjectServiceLinkWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    projectId_serviceId?: ProjectServiceLinkProjectIdServiceIdCompoundUniqueInput
+    AND?: ProjectServiceLinkWhereInput | ProjectServiceLinkWhereInput[]
+    OR?: ProjectServiceLinkWhereInput[]
+    NOT?: ProjectServiceLinkWhereInput | ProjectServiceLinkWhereInput[]
+    projectId?: StringFilter<"ProjectServiceLink"> | string
+    serviceId?: StringFilter<"ProjectServiceLink"> | string
+    project?: XOR<ProjectRelationFilter, ProjectWhereInput>
+    service?: XOR<ServiceRelationFilter, ServiceWhereInput>
+    subServices?: ProjectSubServiceListRelationFilter
+  }, "id" | "projectId_serviceId">
+
+  export type ProjectServiceLinkOrderByWithAggregationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    serviceId?: SortOrder
+    _count?: ProjectServiceLinkCountOrderByAggregateInput
+    _max?: ProjectServiceLinkMaxOrderByAggregateInput
+    _min?: ProjectServiceLinkMinOrderByAggregateInput
+  }
+
+  export type ProjectServiceLinkScalarWhereWithAggregatesInput = {
+    AND?: ProjectServiceLinkScalarWhereWithAggregatesInput | ProjectServiceLinkScalarWhereWithAggregatesInput[]
+    OR?: ProjectServiceLinkScalarWhereWithAggregatesInput[]
+    NOT?: ProjectServiceLinkScalarWhereWithAggregatesInput | ProjectServiceLinkScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ProjectServiceLink"> | string
+    projectId?: StringWithAggregatesFilter<"ProjectServiceLink"> | string
+    serviceId?: StringWithAggregatesFilter<"ProjectServiceLink"> | string
+  }
+
+  export type ProjectSubServiceWhereInput = {
+    AND?: ProjectSubServiceWhereInput | ProjectSubServiceWhereInput[]
+    OR?: ProjectSubServiceWhereInput[]
+    NOT?: ProjectSubServiceWhereInput | ProjectSubServiceWhereInput[]
+    id?: StringFilter<"ProjectSubService"> | string
+    projectServiceId?: StringFilter<"ProjectSubService"> | string
+    name?: StringFilter<"ProjectSubService"> | string
+    description?: StringNullableFilter<"ProjectSubService"> | string | null
+    quantity?: IntFilter<"ProjectSubService"> | number
+    unit?: StringFilter<"ProjectSubService"> | string
+    targetQuantity?: IntFilter<"ProjectSubService"> | number
+    assigneeId?: StringNullableFilter<"ProjectSubService"> | string | null
+    link?: XOR<ProjectServiceLinkRelationFilter, ProjectServiceLinkWhereInput>
+    assignee?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+    extraRequests?: ProjectExtraRequestListRelationFilter
+  }
+
+  export type ProjectSubServiceOrderByWithRelationInput = {
+    id?: SortOrder
+    projectServiceId?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    quantity?: SortOrder
+    unit?: SortOrder
+    targetQuantity?: SortOrder
+    assigneeId?: SortOrderInput | SortOrder
+    link?: ProjectServiceLinkOrderByWithRelationInput
+    assignee?: StaffOrderByWithRelationInput
+    extraRequests?: ProjectExtraRequestOrderByRelationAggregateInput
+  }
+
+  export type ProjectSubServiceWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ProjectSubServiceWhereInput | ProjectSubServiceWhereInput[]
+    OR?: ProjectSubServiceWhereInput[]
+    NOT?: ProjectSubServiceWhereInput | ProjectSubServiceWhereInput[]
+    projectServiceId?: StringFilter<"ProjectSubService"> | string
+    name?: StringFilter<"ProjectSubService"> | string
+    description?: StringNullableFilter<"ProjectSubService"> | string | null
+    quantity?: IntFilter<"ProjectSubService"> | number
+    unit?: StringFilter<"ProjectSubService"> | string
+    targetQuantity?: IntFilter<"ProjectSubService"> | number
+    assigneeId?: StringNullableFilter<"ProjectSubService"> | string | null
+    link?: XOR<ProjectServiceLinkRelationFilter, ProjectServiceLinkWhereInput>
+    assignee?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+    extraRequests?: ProjectExtraRequestListRelationFilter
+  }, "id">
+
+  export type ProjectSubServiceOrderByWithAggregationInput = {
+    id?: SortOrder
+    projectServiceId?: SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    quantity?: SortOrder
+    unit?: SortOrder
+    targetQuantity?: SortOrder
+    assigneeId?: SortOrderInput | SortOrder
+    _count?: ProjectSubServiceCountOrderByAggregateInput
+    _avg?: ProjectSubServiceAvgOrderByAggregateInput
+    _max?: ProjectSubServiceMaxOrderByAggregateInput
+    _min?: ProjectSubServiceMinOrderByAggregateInput
+    _sum?: ProjectSubServiceSumOrderByAggregateInput
+  }
+
+  export type ProjectSubServiceScalarWhereWithAggregatesInput = {
+    AND?: ProjectSubServiceScalarWhereWithAggregatesInput | ProjectSubServiceScalarWhereWithAggregatesInput[]
+    OR?: ProjectSubServiceScalarWhereWithAggregatesInput[]
+    NOT?: ProjectSubServiceScalarWhereWithAggregatesInput | ProjectSubServiceScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ProjectSubService"> | string
+    projectServiceId?: StringWithAggregatesFilter<"ProjectSubService"> | string
+    name?: StringWithAggregatesFilter<"ProjectSubService"> | string
+    description?: StringNullableWithAggregatesFilter<"ProjectSubService"> | string | null
+    quantity?: IntWithAggregatesFilter<"ProjectSubService"> | number
+    unit?: StringWithAggregatesFilter<"ProjectSubService"> | string
+    targetQuantity?: IntWithAggregatesFilter<"ProjectSubService"> | number
+    assigneeId?: StringNullableWithAggregatesFilter<"ProjectSubService"> | string | null
+  }
+
+  export type ProjectCycleWhereInput = {
+    AND?: ProjectCycleWhereInput | ProjectCycleWhereInput[]
+    OR?: ProjectCycleWhereInput[]
+    NOT?: ProjectCycleWhereInput | ProjectCycleWhereInput[]
+    id?: StringFilter<"ProjectCycle"> | string
+    projectId?: StringFilter<"ProjectCycle"> | string
+    label?: StringFilter<"ProjectCycle"> | string
+    startDate?: DateTimeFilter<"ProjectCycle"> | Date | string
+    endDate?: DateTimeFilter<"ProjectCycle"> | Date | string
+    createdAt?: DateTimeFilter<"ProjectCycle"> | Date | string
+    project?: XOR<ProjectRelationFilter, ProjectWhereInput>
+  }
+
+  export type ProjectCycleOrderByWithRelationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    label?: SortOrder
+    startDate?: SortOrder
+    endDate?: SortOrder
+    createdAt?: SortOrder
+    project?: ProjectOrderByWithRelationInput
+  }
+
+  export type ProjectCycleWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ProjectCycleWhereInput | ProjectCycleWhereInput[]
+    OR?: ProjectCycleWhereInput[]
+    NOT?: ProjectCycleWhereInput | ProjectCycleWhereInput[]
+    projectId?: StringFilter<"ProjectCycle"> | string
+    label?: StringFilter<"ProjectCycle"> | string
+    startDate?: DateTimeFilter<"ProjectCycle"> | Date | string
+    endDate?: DateTimeFilter<"ProjectCycle"> | Date | string
+    createdAt?: DateTimeFilter<"ProjectCycle"> | Date | string
+    project?: XOR<ProjectRelationFilter, ProjectWhereInput>
+  }, "id">
+
+  export type ProjectCycleOrderByWithAggregationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    label?: SortOrder
+    startDate?: SortOrder
+    endDate?: SortOrder
+    createdAt?: SortOrder
+    _count?: ProjectCycleCountOrderByAggregateInput
+    _max?: ProjectCycleMaxOrderByAggregateInput
+    _min?: ProjectCycleMinOrderByAggregateInput
+  }
+
+  export type ProjectCycleScalarWhereWithAggregatesInput = {
+    AND?: ProjectCycleScalarWhereWithAggregatesInput | ProjectCycleScalarWhereWithAggregatesInput[]
+    OR?: ProjectCycleScalarWhereWithAggregatesInput[]
+    NOT?: ProjectCycleScalarWhereWithAggregatesInput | ProjectCycleScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ProjectCycle"> | string
+    projectId?: StringWithAggregatesFilter<"ProjectCycle"> | string
+    label?: StringWithAggregatesFilter<"ProjectCycle"> | string
+    startDate?: DateTimeWithAggregatesFilter<"ProjectCycle"> | Date | string
+    endDate?: DateTimeWithAggregatesFilter<"ProjectCycle"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"ProjectCycle"> | Date | string
+  }
+
+  export type ProjectExtraRequestWhereInput = {
+    AND?: ProjectExtraRequestWhereInput | ProjectExtraRequestWhereInput[]
+    OR?: ProjectExtraRequestWhereInput[]
+    NOT?: ProjectExtraRequestWhereInput | ProjectExtraRequestWhereInput[]
+    id?: StringFilter<"ProjectExtraRequest"> | string
+    projectId?: StringFilter<"ProjectExtraRequest"> | string
+    subServiceId?: StringFilter<"ProjectExtraRequest"> | string
+    quantity?: IntFilter<"ProjectExtraRequest"> | number
+    description?: StringNullableFilter<"ProjectExtraRequest"> | string | null
+    status?: StringFilter<"ProjectExtraRequest"> | string
+    requestedById?: StringNullableFilter<"ProjectExtraRequest"> | string | null
+    createdAt?: DateTimeFilter<"ProjectExtraRequest"> | Date | string
+    project?: XOR<ProjectRelationFilter, ProjectWhereInput>
+    subService?: XOR<ProjectSubServiceRelationFilter, ProjectSubServiceWhereInput>
+    requestedBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+  }
+
+  export type ProjectExtraRequestOrderByWithRelationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    subServiceId?: SortOrder
+    quantity?: SortOrder
+    description?: SortOrderInput | SortOrder
+    status?: SortOrder
+    requestedById?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    project?: ProjectOrderByWithRelationInput
+    subService?: ProjectSubServiceOrderByWithRelationInput
+    requestedBy?: StaffOrderByWithRelationInput
+  }
+
+  export type ProjectExtraRequestWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ProjectExtraRequestWhereInput | ProjectExtraRequestWhereInput[]
+    OR?: ProjectExtraRequestWhereInput[]
+    NOT?: ProjectExtraRequestWhereInput | ProjectExtraRequestWhereInput[]
+    projectId?: StringFilter<"ProjectExtraRequest"> | string
+    subServiceId?: StringFilter<"ProjectExtraRequest"> | string
+    quantity?: IntFilter<"ProjectExtraRequest"> | number
+    description?: StringNullableFilter<"ProjectExtraRequest"> | string | null
+    status?: StringFilter<"ProjectExtraRequest"> | string
+    requestedById?: StringNullableFilter<"ProjectExtraRequest"> | string | null
+    createdAt?: DateTimeFilter<"ProjectExtraRequest"> | Date | string
+    project?: XOR<ProjectRelationFilter, ProjectWhereInput>
+    subService?: XOR<ProjectSubServiceRelationFilter, ProjectSubServiceWhereInput>
+    requestedBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+  }, "id">
+
+  export type ProjectExtraRequestOrderByWithAggregationInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    subServiceId?: SortOrder
+    quantity?: SortOrder
+    description?: SortOrderInput | SortOrder
+    status?: SortOrder
+    requestedById?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: ProjectExtraRequestCountOrderByAggregateInput
+    _avg?: ProjectExtraRequestAvgOrderByAggregateInput
+    _max?: ProjectExtraRequestMaxOrderByAggregateInput
+    _min?: ProjectExtraRequestMinOrderByAggregateInput
+    _sum?: ProjectExtraRequestSumOrderByAggregateInput
+  }
+
+  export type ProjectExtraRequestScalarWhereWithAggregatesInput = {
+    AND?: ProjectExtraRequestScalarWhereWithAggregatesInput | ProjectExtraRequestScalarWhereWithAggregatesInput[]
+    OR?: ProjectExtraRequestScalarWhereWithAggregatesInput[]
+    NOT?: ProjectExtraRequestScalarWhereWithAggregatesInput | ProjectExtraRequestScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ProjectExtraRequest"> | string
+    projectId?: StringWithAggregatesFilter<"ProjectExtraRequest"> | string
+    subServiceId?: StringWithAggregatesFilter<"ProjectExtraRequest"> | string
+    quantity?: IntWithAggregatesFilter<"ProjectExtraRequest"> | number
+    description?: StringNullableWithAggregatesFilter<"ProjectExtraRequest"> | string | null
+    status?: StringWithAggregatesFilter<"ProjectExtraRequest"> | string
+    requestedById?: StringNullableWithAggregatesFilter<"ProjectExtraRequest"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"ProjectExtraRequest"> | Date | string
   }
 
   export type ContractWhereInput = {
@@ -94406,6 +99698,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Contract"> | Date | string
     updatedAt?: DateTimeFilter<"Contract"> | Date | string
     contractNumber?: StringFilter<"Contract"> | string
+    title?: StringNullableFilter<"Contract"> | string | null
+    duration?: StringNullableFilter<"Contract"> | string | null
     startDate?: DateTimeNullableFilter<"Contract"> | Date | string | null
     endDate?: DateTimeNullableFilter<"Contract"> | Date | string | null
     renewalDate?: DateTimeNullableFilter<"Contract"> | Date | string | null
@@ -94418,6 +99712,8 @@ export namespace Prisma {
     portfolioId?: StringNullableFilter<"Contract"> | string | null
     createdById?: StringNullableFilter<"Contract"> | string | null
     billingDay?: IntNullableFilter<"Contract"> | number | null
+    billingPeriodMonths?: IntNullableFilter<"Contract"> | number | null
+    contractType?: StringNullableFilter<"Contract"> | string | null
     monthlyAmount?: FloatNullableFilter<"Contract"> | number | null
     installments?: ClientInstallmentListRelationFilter
     documents?: ContractDocumentListRelationFilter
@@ -94425,6 +99721,7 @@ export namespace Prisma {
     client?: XOR<ClientRelationFilter, ClientWhereInput>
     createdBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     project?: XOR<ProjectNullableRelationFilter, ProjectWhereInput> | null
+    primaryForProjects?: ProjectListRelationFilter
   }
 
   export type ContractOrderByWithRelationInput = {
@@ -94432,6 +99729,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     contractNumber?: SortOrder
+    title?: SortOrderInput | SortOrder
+    duration?: SortOrderInput | SortOrder
     startDate?: SortOrderInput | SortOrder
     endDate?: SortOrderInput | SortOrder
     renewalDate?: SortOrderInput | SortOrder
@@ -94444,6 +99743,8 @@ export namespace Prisma {
     portfolioId?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
     billingDay?: SortOrderInput | SortOrder
+    billingPeriodMonths?: SortOrderInput | SortOrder
+    contractType?: SortOrderInput | SortOrder
     monthlyAmount?: SortOrderInput | SortOrder
     installments?: ClientInstallmentOrderByRelationAggregateInput
     documents?: ContractDocumentOrderByRelationAggregateInput
@@ -94451,6 +99752,7 @@ export namespace Prisma {
     client?: ClientOrderByWithRelationInput
     createdBy?: StaffOrderByWithRelationInput
     project?: ProjectOrderByWithRelationInput
+    primaryForProjects?: ProjectOrderByRelationAggregateInput
   }
 
   export type ContractWhereUniqueInput = Prisma.AtLeast<{
@@ -94461,6 +99763,8 @@ export namespace Prisma {
     NOT?: ContractWhereInput | ContractWhereInput[]
     createdAt?: DateTimeFilter<"Contract"> | Date | string
     updatedAt?: DateTimeFilter<"Contract"> | Date | string
+    title?: StringNullableFilter<"Contract"> | string | null
+    duration?: StringNullableFilter<"Contract"> | string | null
     startDate?: DateTimeNullableFilter<"Contract"> | Date | string | null
     endDate?: DateTimeNullableFilter<"Contract"> | Date | string | null
     renewalDate?: DateTimeNullableFilter<"Contract"> | Date | string | null
@@ -94473,6 +99777,8 @@ export namespace Prisma {
     portfolioId?: StringNullableFilter<"Contract"> | string | null
     createdById?: StringNullableFilter<"Contract"> | string | null
     billingDay?: IntNullableFilter<"Contract"> | number | null
+    billingPeriodMonths?: IntNullableFilter<"Contract"> | number | null
+    contractType?: StringNullableFilter<"Contract"> | string | null
     monthlyAmount?: FloatNullableFilter<"Contract"> | number | null
     installments?: ClientInstallmentListRelationFilter
     documents?: ContractDocumentListRelationFilter
@@ -94480,6 +99786,7 @@ export namespace Prisma {
     client?: XOR<ClientRelationFilter, ClientWhereInput>
     createdBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     project?: XOR<ProjectNullableRelationFilter, ProjectWhereInput> | null
+    primaryForProjects?: ProjectListRelationFilter
   }, "id" | "contractNumber">
 
   export type ContractOrderByWithAggregationInput = {
@@ -94487,6 +99794,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     contractNumber?: SortOrder
+    title?: SortOrderInput | SortOrder
+    duration?: SortOrderInput | SortOrder
     startDate?: SortOrderInput | SortOrder
     endDate?: SortOrderInput | SortOrder
     renewalDate?: SortOrderInput | SortOrder
@@ -94499,6 +99808,8 @@ export namespace Prisma {
     portfolioId?: SortOrderInput | SortOrder
     createdById?: SortOrderInput | SortOrder
     billingDay?: SortOrderInput | SortOrder
+    billingPeriodMonths?: SortOrderInput | SortOrder
+    contractType?: SortOrderInput | SortOrder
     monthlyAmount?: SortOrderInput | SortOrder
     _count?: ContractCountOrderByAggregateInput
     _avg?: ContractAvgOrderByAggregateInput
@@ -94515,6 +99826,8 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Contract"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Contract"> | Date | string
     contractNumber?: StringWithAggregatesFilter<"Contract"> | string
+    title?: StringNullableWithAggregatesFilter<"Contract"> | string | null
+    duration?: StringNullableWithAggregatesFilter<"Contract"> | string | null
     startDate?: DateTimeNullableWithAggregatesFilter<"Contract"> | Date | string | null
     endDate?: DateTimeNullableWithAggregatesFilter<"Contract"> | Date | string | null
     renewalDate?: DateTimeNullableWithAggregatesFilter<"Contract"> | Date | string | null
@@ -94527,6 +99840,8 @@ export namespace Prisma {
     portfolioId?: StringNullableWithAggregatesFilter<"Contract"> | string | null
     createdById?: StringNullableWithAggregatesFilter<"Contract"> | string | null
     billingDay?: IntNullableWithAggregatesFilter<"Contract"> | number | null
+    billingPeriodMonths?: IntNullableWithAggregatesFilter<"Contract"> | number | null
+    contractType?: StringNullableWithAggregatesFilter<"Contract"> | string | null
     monthlyAmount?: FloatNullableWithAggregatesFilter<"Contract"> | number | null
   }
 
@@ -94547,6 +99862,9 @@ export namespace Prisma {
     notes?: StringNullableFilter<"ClientInstallment"> | string | null
     clientId?: StringFilter<"ClientInstallment"> | string
     contractId?: StringNullableFilter<"ClientInstallment"> | string | null
+    installmentNumber?: IntNullableFilter<"ClientInstallment"> | number | null
+    percentage?: FloatNullableFilter<"ClientInstallment"> | number | null
+    dueMilestone?: StringNullableFilter<"ClientInstallment"> | string | null
     client?: XOR<ClientRelationFilter, ClientWhereInput>
     contract?: XOR<ContractNullableRelationFilter, ContractWhereInput> | null
   }
@@ -94565,6 +99883,9 @@ export namespace Prisma {
     notes?: SortOrderInput | SortOrder
     clientId?: SortOrder
     contractId?: SortOrderInput | SortOrder
+    installmentNumber?: SortOrderInput | SortOrder
+    percentage?: SortOrderInput | SortOrder
+    dueMilestone?: SortOrderInput | SortOrder
     client?: ClientOrderByWithRelationInput
     contract?: ContractOrderByWithRelationInput
   }
@@ -94587,6 +99908,9 @@ export namespace Prisma {
     notes?: StringNullableFilter<"ClientInstallment"> | string | null
     clientId?: StringFilter<"ClientInstallment"> | string
     contractId?: StringNullableFilter<"ClientInstallment"> | string | null
+    installmentNumber?: IntNullableFilter<"ClientInstallment"> | number | null
+    percentage?: FloatNullableFilter<"ClientInstallment"> | number | null
+    dueMilestone?: StringNullableFilter<"ClientInstallment"> | string | null
     client?: XOR<ClientRelationFilter, ClientWhereInput>
     contract?: XOR<ContractNullableRelationFilter, ContractWhereInput> | null
   }, "id" | "sourceKey_periodYear_periodMonth">
@@ -94605,6 +99929,9 @@ export namespace Prisma {
     notes?: SortOrderInput | SortOrder
     clientId?: SortOrder
     contractId?: SortOrderInput | SortOrder
+    installmentNumber?: SortOrderInput | SortOrder
+    percentage?: SortOrderInput | SortOrder
+    dueMilestone?: SortOrderInput | SortOrder
     _count?: ClientInstallmentCountOrderByAggregateInput
     _avg?: ClientInstallmentAvgOrderByAggregateInput
     _max?: ClientInstallmentMaxOrderByAggregateInput
@@ -94629,6 +99956,9 @@ export namespace Prisma {
     notes?: StringNullableWithAggregatesFilter<"ClientInstallment"> | string | null
     clientId?: StringWithAggregatesFilter<"ClientInstallment"> | string
     contractId?: StringNullableWithAggregatesFilter<"ClientInstallment"> | string | null
+    installmentNumber?: IntNullableWithAggregatesFilter<"ClientInstallment"> | number | null
+    percentage?: FloatNullableWithAggregatesFilter<"ClientInstallment"> | number | null
+    dueMilestone?: StringNullableWithAggregatesFilter<"ClientInstallment"> | string | null
   }
 
   export type ContractDocumentWhereInput = {
@@ -99028,11 +104358,14 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
@@ -99041,6 +104374,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateInput = {
@@ -99071,17 +104406,22 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUpdateInput = {
@@ -99110,11 +104450,14 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
@@ -99123,6 +104466,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateInput = {
@@ -99153,17 +104498,22 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffCreateManyInput = {
@@ -99489,11 +104839,13 @@ export namespace Prisma {
 
   export type ClientCreateInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     address?: string | null
     clientType?: $Enums.ClientType
@@ -99510,6 +104862,7 @@ export namespace Prisma {
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
+    createdBy?: StaffCreateNestedOneWithoutClientsCreatedInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
@@ -99524,13 +104877,16 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     accountManagerId?: string | null
+    createdById?: string | null
     address?: string | null
     portfolioId?: string | null
     clientType?: $Enums.ClientType
@@ -99559,11 +104915,13 @@ export namespace Prisma {
 
   export type ClientUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     address?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -99580,6 +104938,7 @@ export namespace Prisma {
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
+    createdBy?: StaffUpdateOneWithoutClientsCreatedNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
@@ -99594,13 +104953,16 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -99629,13 +104991,16 @@ export namespace Prisma {
 
   export type ClientCreateManyInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     accountManagerId?: string | null
+    createdById?: string | null
     address?: string | null
     portfolioId?: string | null
     clientType?: $Enums.ClientType
@@ -99651,11 +105016,13 @@ export namespace Prisma {
 
   export type ClientUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     address?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -99671,13 +105038,16 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -99693,8 +105063,12 @@ export namespace Prisma {
 
   export type ServiceCreateInput = {
     id: string
+    serviceCode?: string | null
     serviceName: string
     description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
     iconUrl?: string | null
     source?: string
     externalId?: string | null
@@ -99702,14 +105076,23 @@ export namespace Prisma {
     serviceType?: $Enums.ServiceType
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutServiceInput
     clientService?: ClientServiceCreateNestedManyWithoutServiceInput
+    createdBy?: StaffCreateNestedOneWithoutServicesCreatedInput
+    updatedBy?: StaffCreateNestedOneWithoutServicesUpdatedInput
     portfolio?: PortfolioCreateNestedOneWithoutServicesInput
     subService?: SubServiceCreateNestedManyWithoutServiceInput
+    projectLinks?: ProjectServiceLinkCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUncheckedCreateInput = {
     id: string
+    serviceCode?: string | null
     serviceName: string
     description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdById?: string | null
+    updatedById?: string | null
     portfolioId?: string | null
     iconUrl?: string | null
     source?: string
@@ -99719,12 +105102,17 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutServiceInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
     subService?: SubServiceUncheckedCreateNestedManyWithoutServiceInput
+    projectLinks?: ProjectServiceLinkUncheckedCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -99732,14 +105120,23 @@ export namespace Prisma {
     serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutServiceNestedInput
     clientService?: ClientServiceUpdateManyWithoutServiceNestedInput
+    createdBy?: StaffUpdateOneWithoutServicesCreatedNestedInput
+    updatedBy?: StaffUpdateOneWithoutServicesUpdatedNestedInput
     portfolio?: PortfolioUpdateOneWithoutServicesNestedInput
     subService?: SubServiceUpdateManyWithoutServiceNestedInput
+    projectLinks?: ProjectServiceLinkUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
@@ -99749,12 +105146,19 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutServiceNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
     subService?: SubServiceUncheckedUpdateManyWithoutServiceNestedInput
+    projectLinks?: ProjectServiceLinkUncheckedUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceCreateManyInput = {
     id: string
+    serviceCode?: string | null
     serviceName: string
     description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdById?: string | null
+    updatedById?: string | null
     portfolioId?: string | null
     iconUrl?: string | null
     source?: string
@@ -99765,8 +105169,12 @@ export namespace Prisma {
 
   export type ServiceUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -99776,8 +105184,14 @@ export namespace Prisma {
 
   export type ServiceUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
@@ -100353,6 +105767,8 @@ export namespace Prisma {
     createdAt?: Date | string
     progressAtTransfer?: number
     deadlineAtTransfer?: Date | string | null
+    reason?: string | null
+    note?: string | null
     fromAssignee: StaffCreateNestedOneWithoutTransferredFromTasksInput
     task: TaskCreateNestedOneWithoutTransferHistoryInput
     toAssignee: StaffCreateNestedOneWithoutTransferredToTasksInput
@@ -100368,6 +105784,8 @@ export namespace Prisma {
     progressAtTransfer?: number
     deadlineAtTransfer?: Date | string | null
     transferredById?: string | null
+    reason?: string | null
+    note?: string | null
   }
 
   export type TaskTransferHistoryUpdateInput = {
@@ -100375,6 +105793,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     progressAtTransfer?: IntFieldUpdateOperationsInput | number
     deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
     fromAssignee?: StaffUpdateOneRequiredWithoutTransferredFromTasksNestedInput
     task?: TaskUpdateOneRequiredWithoutTransferHistoryNestedInput
     toAssignee?: StaffUpdateOneRequiredWithoutTransferredToTasksNestedInput
@@ -100390,6 +105810,8 @@ export namespace Prisma {
     progressAtTransfer?: IntFieldUpdateOperationsInput | number
     deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredById?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TaskTransferHistoryCreateManyInput = {
@@ -100401,6 +105823,8 @@ export namespace Prisma {
     progressAtTransfer?: number
     deadlineAtTransfer?: Date | string | null
     transferredById?: string | null
+    reason?: string | null
+    note?: string | null
   }
 
   export type TaskTransferHistoryUpdateManyMutationInput = {
@@ -100408,6 +105832,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     progressAtTransfer?: IntFieldUpdateOperationsInput | number
     deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TaskTransferHistoryUncheckedUpdateManyInput = {
@@ -100419,6 +105845,8 @@ export namespace Prisma {
     progressAtTransfer?: IntFieldUpdateOperationsInput | number
     deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredById?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ClientTaskCreateInput = {
@@ -101832,6 +107260,13 @@ export namespace Prisma {
     priority?: $Enums.ProjectPriority
     startDate?: Date | string | null
     dueDate?: Date | string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractCreateNestedOneWithoutPrimaryForProjectsInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestCreateNestedManyWithoutProjectInput
     contracts?: ContractCreateNestedManyWithoutProjectInput
@@ -101839,6 +107274,9 @@ export namespace Prisma {
     client: ClientCreateNestedOneWithoutProjectsInput
     createdBy?: StaffCreateNestedOneWithoutCreatedProjectsInput
     tasks?: TaskCreateNestedManyWithoutProjectInput
+    serviceLinks?: ProjectServiceLinkCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateInput = {
@@ -101855,10 +107293,20 @@ export namespace Prisma {
     clientId: string
     portfolioId?: string | null
     createdById?: string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    contractId?: string | null
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutProjectInput
     contracts?: ContractUncheckedCreateNestedManyWithoutProjectInput
     tasks?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    serviceLinks?: ProjectServiceLinkUncheckedCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleUncheckedCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUpdateInput = {
@@ -101872,6 +107320,13 @@ export namespace Prisma {
     priority?: EnumProjectPriorityFieldUpdateOperationsInput | $Enums.ProjectPriority
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractUpdateOneWithoutPrimaryForProjectsNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutProjectNestedInput
     contracts?: ContractUpdateManyWithoutProjectNestedInput
@@ -101879,6 +107334,9 @@ export namespace Prisma {
     client?: ClientUpdateOneRequiredWithoutProjectsNestedInput
     createdBy?: StaffUpdateOneWithoutCreatedProjectsNestedInput
     tasks?: TaskUpdateManyWithoutProjectNestedInput
+    serviceLinks?: ProjectServiceLinkUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateInput = {
@@ -101895,10 +107353,20 @@ export namespace Prisma {
     clientId?: StringFieldUpdateOperationsInput | string
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutProjectNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutProjectNestedInput
     tasks?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    serviceLinks?: ProjectServiceLinkUncheckedUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUncheckedUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectCreateManyInput = {
@@ -101915,6 +107383,13 @@ export namespace Prisma {
     clientId: string
     portfolioId?: string | null
     createdById?: string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    contractId?: string | null
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ProjectUpdateManyMutationInput = {
@@ -101928,6 +107403,12 @@ export namespace Prisma {
     priority?: EnumProjectPriorityFieldUpdateOperationsInput | $Enums.ProjectPriority
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ProjectUncheckedUpdateManyInput = {
@@ -101944,6 +107425,272 @@ export namespace Prisma {
     clientId?: StringFieldUpdateOperationsInput | string
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type ProjectServiceLinkCreateInput = {
+    id: string
+    project: ProjectCreateNestedOneWithoutServiceLinksInput
+    service: ServiceCreateNestedOneWithoutProjectLinksInput
+    subServices?: ProjectSubServiceCreateNestedManyWithoutLinkInput
+  }
+
+  export type ProjectServiceLinkUncheckedCreateInput = {
+    id: string
+    projectId: string
+    serviceId: string
+    subServices?: ProjectSubServiceUncheckedCreateNestedManyWithoutLinkInput
+  }
+
+  export type ProjectServiceLinkUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    project?: ProjectUpdateOneRequiredWithoutServiceLinksNestedInput
+    service?: ServiceUpdateOneRequiredWithoutProjectLinksNestedInput
+    subServices?: ProjectSubServiceUpdateManyWithoutLinkNestedInput
+  }
+
+  export type ProjectServiceLinkUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    subServices?: ProjectSubServiceUncheckedUpdateManyWithoutLinkNestedInput
+  }
+
+  export type ProjectServiceLinkCreateManyInput = {
+    id: string
+    projectId: string
+    serviceId: string
+  }
+
+  export type ProjectServiceLinkUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ProjectServiceLinkUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ProjectSubServiceCreateInput = {
+    id: string
+    name: string
+    description?: string | null
+    quantity?: number
+    unit?: string
+    targetQuantity?: number
+    link: ProjectServiceLinkCreateNestedOneWithoutSubServicesInput
+    assignee?: StaffCreateNestedOneWithoutProjectSubAssignmentsInput
+    extraRequests?: ProjectExtraRequestCreateNestedManyWithoutSubServiceInput
+  }
+
+  export type ProjectSubServiceUncheckedCreateInput = {
+    id: string
+    projectServiceId: string
+    name: string
+    description?: string | null
+    quantity?: number
+    unit?: string
+    targetQuantity?: number
+    assigneeId?: string | null
+    extraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutSubServiceInput
+  }
+
+  export type ProjectSubServiceUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unit?: StringFieldUpdateOperationsInput | string
+    targetQuantity?: IntFieldUpdateOperationsInput | number
+    link?: ProjectServiceLinkUpdateOneRequiredWithoutSubServicesNestedInput
+    assignee?: StaffUpdateOneWithoutProjectSubAssignmentsNestedInput
+    extraRequests?: ProjectExtraRequestUpdateManyWithoutSubServiceNestedInput
+  }
+
+  export type ProjectSubServiceUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectServiceId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unit?: StringFieldUpdateOperationsInput | string
+    targetQuantity?: IntFieldUpdateOperationsInput | number
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    extraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutSubServiceNestedInput
+  }
+
+  export type ProjectSubServiceCreateManyInput = {
+    id: string
+    projectServiceId: string
+    name: string
+    description?: string | null
+    quantity?: number
+    unit?: string
+    targetQuantity?: number
+    assigneeId?: string | null
+  }
+
+  export type ProjectSubServiceUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unit?: StringFieldUpdateOperationsInput | string
+    targetQuantity?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ProjectSubServiceUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectServiceId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unit?: StringFieldUpdateOperationsInput | string
+    targetQuantity?: IntFieldUpdateOperationsInput | number
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ProjectCycleCreateInput = {
+    id: string
+    label: string
+    startDate: Date | string
+    endDate: Date | string
+    createdAt?: Date | string
+    project: ProjectCreateNestedOneWithoutCyclesInput
+  }
+
+  export type ProjectCycleUncheckedCreateInput = {
+    id: string
+    projectId: string
+    label: string
+    startDate: Date | string
+    endDate: Date | string
+    createdAt?: Date | string
+  }
+
+  export type ProjectCycleUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutCyclesNestedInput
+  }
+
+  export type ProjectCycleUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProjectCycleCreateManyInput = {
+    id: string
+    projectId: string
+    label: string
+    startDate: Date | string
+    endDate: Date | string
+    createdAt?: Date | string
+  }
+
+  export type ProjectCycleUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProjectCycleUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProjectExtraRequestCreateInput = {
+    id: string
+    quantity: number
+    description?: string | null
+    status?: string
+    createdAt?: Date | string
+    project: ProjectCreateNestedOneWithoutExtraRequestsInput
+    subService: ProjectSubServiceCreateNestedOneWithoutExtraRequestsInput
+    requestedBy?: StaffCreateNestedOneWithoutProjectExtraRequestsInput
+  }
+
+  export type ProjectExtraRequestUncheckedCreateInput = {
+    id: string
+    projectId: string
+    subServiceId: string
+    quantity: number
+    description?: string | null
+    status?: string
+    requestedById?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ProjectExtraRequestUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutExtraRequestsNestedInput
+    subService?: ProjectSubServiceUpdateOneRequiredWithoutExtraRequestsNestedInput
+    requestedBy?: StaffUpdateOneWithoutProjectExtraRequestsNestedInput
+  }
+
+  export type ProjectExtraRequestUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    subServiceId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    requestedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProjectExtraRequestCreateManyInput = {
+    id: string
+    projectId: string
+    subServiceId: string
+    quantity: number
+    description?: string | null
+    status?: string
+    requestedById?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ProjectExtraRequestUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProjectExtraRequestUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    subServiceId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    requestedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ContractCreateInput = {
@@ -101951,6 +107698,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     contractNumber: string
+    title?: string | null
+    duration?: string | null
     startDate?: Date | string | null
     endDate?: Date | string | null
     renewalDate?: Date | string | null
@@ -101959,6 +107708,8 @@ export namespace Prisma {
     status?: $Enums.ContractStatus
     notes?: string | null
     billingDay?: number | null
+    billingPeriodMonths?: number | null
+    contractType?: string | null
     monthlyAmount?: number | null
     installments?: ClientInstallmentCreateNestedManyWithoutContractInput
     documents?: ContractDocumentCreateNestedManyWithoutContractInput
@@ -101966,6 +107717,7 @@ export namespace Prisma {
     client: ClientCreateNestedOneWithoutContractsInput
     createdBy?: StaffCreateNestedOneWithoutCreatedContractsInput
     project?: ProjectCreateNestedOneWithoutContractsInput
+    primaryForProjects?: ProjectCreateNestedManyWithoutPrimaryContractInput
   }
 
   export type ContractUncheckedCreateInput = {
@@ -101973,6 +107725,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     contractNumber: string
+    title?: string | null
+    duration?: string | null
     startDate?: Date | string | null
     endDate?: Date | string | null
     renewalDate?: Date | string | null
@@ -101985,9 +107739,12 @@ export namespace Prisma {
     portfolioId?: string | null
     createdById?: string | null
     billingDay?: number | null
+    billingPeriodMonths?: number | null
+    contractType?: string | null
     monthlyAmount?: number | null
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutContractInput
     documents?: ContractDocumentUncheckedCreateNestedManyWithoutContractInput
+    primaryForProjects?: ProjectUncheckedCreateNestedManyWithoutPrimaryContractInput
   }
 
   export type ContractUpdateInput = {
@@ -101995,6 +107752,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -102003,6 +107762,8 @@ export namespace Prisma {
     status?: EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     installments?: ClientInstallmentUpdateManyWithoutContractNestedInput
     documents?: ContractDocumentUpdateManyWithoutContractNestedInput
@@ -102010,6 +107771,7 @@ export namespace Prisma {
     client?: ClientUpdateOneRequiredWithoutContractsNestedInput
     createdBy?: StaffUpdateOneWithoutCreatedContractsNestedInput
     project?: ProjectUpdateOneWithoutContractsNestedInput
+    primaryForProjects?: ProjectUpdateManyWithoutPrimaryContractNestedInput
   }
 
   export type ContractUncheckedUpdateInput = {
@@ -102017,6 +107779,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -102029,9 +107793,12 @@ export namespace Prisma {
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     installments?: ClientInstallmentUncheckedUpdateManyWithoutContractNestedInput
     documents?: ContractDocumentUncheckedUpdateManyWithoutContractNestedInput
+    primaryForProjects?: ProjectUncheckedUpdateManyWithoutPrimaryContractNestedInput
   }
 
   export type ContractCreateManyInput = {
@@ -102039,6 +107806,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     contractNumber: string
+    title?: string | null
+    duration?: string | null
     startDate?: Date | string | null
     endDate?: Date | string | null
     renewalDate?: Date | string | null
@@ -102051,6 +107820,8 @@ export namespace Prisma {
     portfolioId?: string | null
     createdById?: string | null
     billingDay?: number | null
+    billingPeriodMonths?: number | null
+    contractType?: string | null
     monthlyAmount?: number | null
   }
 
@@ -102059,6 +107830,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -102067,6 +107840,8 @@ export namespace Prisma {
     status?: EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
@@ -102075,6 +107850,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -102087,6 +107864,8 @@ export namespace Prisma {
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
@@ -102102,6 +107881,9 @@ export namespace Prisma {
     paidAmount?: number
     status?: $Enums.InstallmentStatus
     notes?: string | null
+    installmentNumber?: number | null
+    percentage?: number | null
+    dueMilestone?: string | null
     client: ClientCreateNestedOneWithoutInstallmentsInput
     contract?: ContractCreateNestedOneWithoutInstallmentsInput
   }
@@ -102120,6 +107902,9 @@ export namespace Prisma {
     notes?: string | null
     clientId: string
     contractId?: string | null
+    installmentNumber?: number | null
+    percentage?: number | null
+    dueMilestone?: string | null
   }
 
   export type ClientInstallmentUpdateInput = {
@@ -102134,6 +107919,9 @@ export namespace Prisma {
     paidAmount?: FloatFieldUpdateOperationsInput | number
     status?: EnumInstallmentStatusFieldUpdateOperationsInput | $Enums.InstallmentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    installmentNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueMilestone?: NullableStringFieldUpdateOperationsInput | string | null
     client?: ClientUpdateOneRequiredWithoutInstallmentsNestedInput
     contract?: ContractUpdateOneWithoutInstallmentsNestedInput
   }
@@ -102152,6 +107940,9 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: StringFieldUpdateOperationsInput | string
     contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    installmentNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueMilestone?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ClientInstallmentCreateManyInput = {
@@ -102168,6 +107959,9 @@ export namespace Prisma {
     notes?: string | null
     clientId: string
     contractId?: string | null
+    installmentNumber?: number | null
+    percentage?: number | null
+    dueMilestone?: string | null
   }
 
   export type ClientInstallmentUpdateManyMutationInput = {
@@ -102182,6 +107976,9 @@ export namespace Prisma {
     paidAmount?: FloatFieldUpdateOperationsInput | number
     status?: EnumInstallmentStatusFieldUpdateOperationsInput | $Enums.InstallmentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    installmentNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueMilestone?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ClientInstallmentUncheckedUpdateManyInput = {
@@ -102198,6 +107995,9 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: StringFieldUpdateOperationsInput | string
     contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    installmentNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueMilestone?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ContractDocumentCreateInput = {
@@ -106898,6 +112698,12 @@ export namespace Prisma {
     none?: ProjectWhereInput
   }
 
+  export type ServiceListRelationFilter = {
+    every?: ServiceWhereInput
+    some?: ServiceWhereInput
+    none?: ServiceWhereInput
+  }
+
   export type RecurringScheduleStepListRelationFilter = {
     every?: RecurringScheduleStepWhereInput
     some?: RecurringScheduleStepWhereInput
@@ -106930,6 +112736,18 @@ export namespace Prisma {
     every?: TaskWhereInput
     some?: TaskWhereInput
     none?: TaskWhereInput
+  }
+
+  export type ProjectSubServiceListRelationFilter = {
+    every?: ProjectSubServiceWhereInput
+    some?: ProjectSubServiceWhereInput
+    none?: ProjectSubServiceWhereInput
+  }
+
+  export type ProjectExtraRequestListRelationFilter = {
+    every?: ProjectExtraRequestWhereInput
+    some?: ProjectExtraRequestWhereInput
+    none?: ProjectExtraRequestWhereInput
   }
 
   export type ExpenseTransactionOrderByRelationAggregateInput = {
@@ -106980,6 +112798,10 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type ServiceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type RecurringScheduleStepOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -106993,6 +112815,14 @@ export namespace Prisma {
   }
 
   export type TaskOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ProjectSubServiceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ProjectExtraRequestOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -107320,13 +113150,16 @@ export namespace Prisma {
 
   export type ClientCountOrderByAggregateInput = {
     id?: SortOrder
+    clientCode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     institution?: SortOrder
     email?: SortOrder
     phone?: SortOrder
+    alternativePhone?: SortOrder
     source?: SortOrder
     accountManagerId?: SortOrder
+    createdById?: SortOrder
     address?: SortOrder
     portfolioId?: SortOrder
     clientType?: SortOrder
@@ -107346,13 +113179,16 @@ export namespace Prisma {
 
   export type ClientMaxOrderByAggregateInput = {
     id?: SortOrder
+    clientCode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     institution?: SortOrder
     email?: SortOrder
     phone?: SortOrder
+    alternativePhone?: SortOrder
     source?: SortOrder
     accountManagerId?: SortOrder
+    createdById?: SortOrder
     address?: SortOrder
     portfolioId?: SortOrder
     clientType?: SortOrder
@@ -107368,13 +113204,16 @@ export namespace Prisma {
 
   export type ClientMinOrderByAggregateInput = {
     id?: SortOrder
+    clientCode?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     institution?: SortOrder
     email?: SortOrder
     phone?: SortOrder
+    alternativePhone?: SortOrder
     source?: SortOrder
     accountManagerId?: SortOrder
+    createdById?: SortOrder
     address?: SortOrder
     portfolioId?: SortOrder
     clientType?: SortOrder
@@ -107431,7 +113270,17 @@ export namespace Prisma {
     none?: SubServiceWhereInput
   }
 
+  export type ProjectServiceLinkListRelationFilter = {
+    every?: ProjectServiceLinkWhereInput
+    some?: ProjectServiceLinkWhereInput
+    none?: ProjectServiceLinkWhereInput
+  }
+
   export type SubServiceOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ProjectServiceLinkOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -107447,8 +113296,14 @@ export namespace Prisma {
 
   export type ServiceCountOrderByAggregateInput = {
     id?: SortOrder
+    serviceCode?: SortOrder
     serviceName?: SortOrder
     description?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    createdById?: SortOrder
+    updatedById?: SortOrder
     portfolioId?: SortOrder
     iconUrl?: SortOrder
     source?: SortOrder
@@ -107459,8 +113314,14 @@ export namespace Prisma {
 
   export type ServiceMaxOrderByAggregateInput = {
     id?: SortOrder
+    serviceCode?: SortOrder
     serviceName?: SortOrder
     description?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    createdById?: SortOrder
+    updatedById?: SortOrder
     portfolioId?: SortOrder
     iconUrl?: SortOrder
     source?: SortOrder
@@ -107471,8 +113332,14 @@ export namespace Prisma {
 
   export type ServiceMinOrderByAggregateInput = {
     id?: SortOrder
+    serviceCode?: SortOrder
     serviceName?: SortOrder
     description?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    createdById?: SortOrder
+    updatedById?: SortOrder
     portfolioId?: SortOrder
     iconUrl?: SortOrder
     source?: SortOrder
@@ -107622,16 +113489,6 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
-  }
-
-  export type ServiceListRelationFilter = {
-    every?: ServiceWhereInput
-    some?: ServiceWhereInput
-    none?: ServiceWhereInput
-  }
-
-  export type ServiceOrderByRelationAggregateInput = {
-    _count?: SortOrder
   }
 
   export type PortfolioCountOrderByAggregateInput = {
@@ -107956,6 +113813,8 @@ export namespace Prisma {
     progressAtTransfer?: SortOrder
     deadlineAtTransfer?: SortOrder
     transferredById?: SortOrder
+    reason?: SortOrder
+    note?: SortOrder
   }
 
   export type TaskTransferHistoryAvgOrderByAggregateInput = {
@@ -107971,6 +113830,8 @@ export namespace Prisma {
     progressAtTransfer?: SortOrder
     deadlineAtTransfer?: SortOrder
     transferredById?: SortOrder
+    reason?: SortOrder
+    note?: SortOrder
   }
 
   export type TaskTransferHistoryMinOrderByAggregateInput = {
@@ -107982,6 +113843,8 @@ export namespace Prisma {
     progressAtTransfer?: SortOrder
     deadlineAtTransfer?: SortOrder
     transferredById?: SortOrder
+    reason?: SortOrder
+    note?: SortOrder
   }
 
   export type TaskTransferHistorySumOrderByAggregateInput = {
@@ -108901,6 +114764,21 @@ export namespace Prisma {
     not?: NestedEnumProjectPriorityFilter<$PrismaModel> | $Enums.ProjectPriority
   }
 
+  export type ContractNullableRelationFilter = {
+    is?: ContractWhereInput | null
+    isNot?: ContractWhereInput | null
+  }
+
+  export type ProjectCycleListRelationFilter = {
+    every?: ProjectCycleWhereInput
+    some?: ProjectCycleWhereInput
+    none?: ProjectCycleWhereInput
+  }
+
+  export type ProjectCycleOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type ProjectCountOrderByAggregateInput = {
     id?: SortOrder
     createdAt?: SortOrder
@@ -108915,6 +114793,13 @@ export namespace Prisma {
     clientId?: SortOrder
     portfolioId?: SortOrder
     createdById?: SortOrder
+    projectCode?: SortOrder
+    billingMode?: SortOrder
+    lifecycleStatus?: SortOrder
+    contractId?: SortOrder
+    archived?: SortOrder
+    isDraft?: SortOrder
+    scheduleConfig?: SortOrder
   }
 
   export type ProjectMaxOrderByAggregateInput = {
@@ -108931,6 +114816,12 @@ export namespace Prisma {
     clientId?: SortOrder
     portfolioId?: SortOrder
     createdById?: SortOrder
+    projectCode?: SortOrder
+    billingMode?: SortOrder
+    lifecycleStatus?: SortOrder
+    contractId?: SortOrder
+    archived?: SortOrder
+    isDraft?: SortOrder
   }
 
   export type ProjectMinOrderByAggregateInput = {
@@ -108947,6 +114838,12 @@ export namespace Prisma {
     clientId?: SortOrder
     portfolioId?: SortOrder
     createdById?: SortOrder
+    projectCode?: SortOrder
+    billingMode?: SortOrder
+    lifecycleStatus?: SortOrder
+    contractId?: SortOrder
+    archived?: SortOrder
+    isDraft?: SortOrder
   }
 
   export type EnumContentTypeWithAggregatesFilter<$PrismaModel = never> = {
@@ -108979,6 +114876,155 @@ export namespace Prisma {
     _max?: NestedEnumProjectPriorityFilter<$PrismaModel>
   }
 
+  export type ProjectRelationFilter = {
+    is?: ProjectWhereInput
+    isNot?: ProjectWhereInput
+  }
+
+  export type ProjectServiceLinkProjectIdServiceIdCompoundUniqueInput = {
+    projectId: string
+    serviceId: string
+  }
+
+  export type ProjectServiceLinkCountOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    serviceId?: SortOrder
+  }
+
+  export type ProjectServiceLinkMaxOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    serviceId?: SortOrder
+  }
+
+  export type ProjectServiceLinkMinOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    serviceId?: SortOrder
+  }
+
+  export type ProjectServiceLinkRelationFilter = {
+    is?: ProjectServiceLinkWhereInput
+    isNot?: ProjectServiceLinkWhereInput
+  }
+
+  export type ProjectSubServiceCountOrderByAggregateInput = {
+    id?: SortOrder
+    projectServiceId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    quantity?: SortOrder
+    unit?: SortOrder
+    targetQuantity?: SortOrder
+    assigneeId?: SortOrder
+  }
+
+  export type ProjectSubServiceAvgOrderByAggregateInput = {
+    quantity?: SortOrder
+    targetQuantity?: SortOrder
+  }
+
+  export type ProjectSubServiceMaxOrderByAggregateInput = {
+    id?: SortOrder
+    projectServiceId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    quantity?: SortOrder
+    unit?: SortOrder
+    targetQuantity?: SortOrder
+    assigneeId?: SortOrder
+  }
+
+  export type ProjectSubServiceMinOrderByAggregateInput = {
+    id?: SortOrder
+    projectServiceId?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    quantity?: SortOrder
+    unit?: SortOrder
+    targetQuantity?: SortOrder
+    assigneeId?: SortOrder
+  }
+
+  export type ProjectSubServiceSumOrderByAggregateInput = {
+    quantity?: SortOrder
+    targetQuantity?: SortOrder
+  }
+
+  export type ProjectCycleCountOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    label?: SortOrder
+    startDate?: SortOrder
+    endDate?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ProjectCycleMaxOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    label?: SortOrder
+    startDate?: SortOrder
+    endDate?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ProjectCycleMinOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    label?: SortOrder
+    startDate?: SortOrder
+    endDate?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ProjectSubServiceRelationFilter = {
+    is?: ProjectSubServiceWhereInput
+    isNot?: ProjectSubServiceWhereInput
+  }
+
+  export type ProjectExtraRequestCountOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    subServiceId?: SortOrder
+    quantity?: SortOrder
+    description?: SortOrder
+    status?: SortOrder
+    requestedById?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ProjectExtraRequestAvgOrderByAggregateInput = {
+    quantity?: SortOrder
+  }
+
+  export type ProjectExtraRequestMaxOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    subServiceId?: SortOrder
+    quantity?: SortOrder
+    description?: SortOrder
+    status?: SortOrder
+    requestedById?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ProjectExtraRequestMinOrderByAggregateInput = {
+    id?: SortOrder
+    projectId?: SortOrder
+    subServiceId?: SortOrder
+    quantity?: SortOrder
+    description?: SortOrder
+    status?: SortOrder
+    requestedById?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ProjectExtraRequestSumOrderByAggregateInput = {
+    quantity?: SortOrder
+  }
+
   export type EnumContractStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.ContractStatus | EnumContractStatusFieldRefInput<$PrismaModel>
     in?: $Enums.ContractStatus[]
@@ -109002,6 +115048,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     contractNumber?: SortOrder
+    title?: SortOrder
+    duration?: SortOrder
     startDate?: SortOrder
     endDate?: SortOrder
     renewalDate?: SortOrder
@@ -109014,12 +115062,15 @@ export namespace Prisma {
     portfolioId?: SortOrder
     createdById?: SortOrder
     billingDay?: SortOrder
+    billingPeriodMonths?: SortOrder
+    contractType?: SortOrder
     monthlyAmount?: SortOrder
   }
 
   export type ContractAvgOrderByAggregateInput = {
     totalAmount?: SortOrder
     billingDay?: SortOrder
+    billingPeriodMonths?: SortOrder
     monthlyAmount?: SortOrder
   }
 
@@ -109028,6 +115079,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     contractNumber?: SortOrder
+    title?: SortOrder
+    duration?: SortOrder
     startDate?: SortOrder
     endDate?: SortOrder
     renewalDate?: SortOrder
@@ -109040,6 +115093,8 @@ export namespace Prisma {
     portfolioId?: SortOrder
     createdById?: SortOrder
     billingDay?: SortOrder
+    billingPeriodMonths?: SortOrder
+    contractType?: SortOrder
     monthlyAmount?: SortOrder
   }
 
@@ -109048,6 +115103,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     contractNumber?: SortOrder
+    title?: SortOrder
+    duration?: SortOrder
     startDate?: SortOrder
     endDate?: SortOrder
     renewalDate?: SortOrder
@@ -109060,12 +115117,15 @@ export namespace Prisma {
     portfolioId?: SortOrder
     createdById?: SortOrder
     billingDay?: SortOrder
+    billingPeriodMonths?: SortOrder
+    contractType?: SortOrder
     monthlyAmount?: SortOrder
   }
 
   export type ContractSumOrderByAggregateInput = {
     totalAmount?: SortOrder
     billingDay?: SortOrder
+    billingPeriodMonths?: SortOrder
     monthlyAmount?: SortOrder
   }
 
@@ -109102,11 +115162,6 @@ export namespace Prisma {
     not?: NestedEnumInstallmentStatusFilter<$PrismaModel> | $Enums.InstallmentStatus
   }
 
-  export type ContractNullableRelationFilter = {
-    is?: ContractWhereInput | null
-    isNot?: ContractWhereInput | null
-  }
-
   export type ClientInstallmentSourceKeyPeriodYearPeriodMonthCompoundUniqueInput = {
     sourceKey: string
     periodYear: number
@@ -109127,6 +115182,9 @@ export namespace Prisma {
     notes?: SortOrder
     clientId?: SortOrder
     contractId?: SortOrder
+    installmentNumber?: SortOrder
+    percentage?: SortOrder
+    dueMilestone?: SortOrder
   }
 
   export type ClientInstallmentAvgOrderByAggregateInput = {
@@ -109134,6 +115192,8 @@ export namespace Prisma {
     periodMonth?: SortOrder
     dueAmount?: SortOrder
     paidAmount?: SortOrder
+    installmentNumber?: SortOrder
+    percentage?: SortOrder
   }
 
   export type ClientInstallmentMaxOrderByAggregateInput = {
@@ -109150,6 +115210,9 @@ export namespace Prisma {
     notes?: SortOrder
     clientId?: SortOrder
     contractId?: SortOrder
+    installmentNumber?: SortOrder
+    percentage?: SortOrder
+    dueMilestone?: SortOrder
   }
 
   export type ClientInstallmentMinOrderByAggregateInput = {
@@ -109166,6 +115229,9 @@ export namespace Prisma {
     notes?: SortOrder
     clientId?: SortOrder
     contractId?: SortOrder
+    installmentNumber?: SortOrder
+    percentage?: SortOrder
+    dueMilestone?: SortOrder
   }
 
   export type ClientInstallmentSumOrderByAggregateInput = {
@@ -109173,6 +115239,8 @@ export namespace Prisma {
     periodMonth?: SortOrder
     dueAmount?: SortOrder
     paidAmount?: SortOrder
+    installmentNumber?: SortOrder
+    percentage?: SortOrder
   }
 
   export type EnumInstallmentStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -112899,6 +118967,13 @@ export namespace Prisma {
     connect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
   }
 
+  export type ClientCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<ClientCreateWithoutCreatedByInput, ClientUncheckedCreateWithoutCreatedByInput> | ClientCreateWithoutCreatedByInput[] | ClientUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: ClientCreateOrConnectWithoutCreatedByInput | ClientCreateOrConnectWithoutCreatedByInput[]
+    createMany?: ClientCreateManyCreatedByInputEnvelope
+    connect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+  }
+
   export type ContentRequestAssigneeCreateNestedManyWithoutUserInput = {
     create?: XOR<ContentRequestAssigneeCreateWithoutUserInput, ContentRequestAssigneeUncheckedCreateWithoutUserInput> | ContentRequestAssigneeCreateWithoutUserInput[] | ContentRequestAssigneeUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ContentRequestAssigneeCreateOrConnectWithoutUserInput | ContentRequestAssigneeCreateOrConnectWithoutUserInput[]
@@ -112932,6 +119007,20 @@ export namespace Prisma {
     connectOrCreate?: ProjectCreateOrConnectWithoutCreatedByInput | ProjectCreateOrConnectWithoutCreatedByInput[]
     createMany?: ProjectCreateManyCreatedByInputEnvelope
     connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+  }
+
+  export type ServiceCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<ServiceCreateWithoutCreatedByInput, ServiceUncheckedCreateWithoutCreatedByInput> | ServiceCreateWithoutCreatedByInput[] | ServiceUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: ServiceCreateOrConnectWithoutCreatedByInput | ServiceCreateOrConnectWithoutCreatedByInput[]
+    createMany?: ServiceCreateManyCreatedByInputEnvelope
+    connect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+  }
+
+  export type ServiceCreateNestedManyWithoutUpdatedByInput = {
+    create?: XOR<ServiceCreateWithoutUpdatedByInput, ServiceUncheckedCreateWithoutUpdatedByInput> | ServiceCreateWithoutUpdatedByInput[] | ServiceUncheckedCreateWithoutUpdatedByInput[]
+    connectOrCreate?: ServiceCreateOrConnectWithoutUpdatedByInput | ServiceCreateOrConnectWithoutUpdatedByInput[]
+    createMany?: ServiceCreateManyUpdatedByInputEnvelope
+    connect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
   }
 
   export type RecurringScheduleStepCreateNestedManyWithoutAssigneeInput = {
@@ -112986,6 +119075,20 @@ export namespace Prisma {
     connectOrCreate?: TaskCreateOrConnectWithoutUserInput | TaskCreateOrConnectWithoutUserInput[]
     createMany?: TaskCreateManyUserInputEnvelope
     connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+  }
+
+  export type ProjectSubServiceCreateNestedManyWithoutAssigneeInput = {
+    create?: XOR<ProjectSubServiceCreateWithoutAssigneeInput, ProjectSubServiceUncheckedCreateWithoutAssigneeInput> | ProjectSubServiceCreateWithoutAssigneeInput[] | ProjectSubServiceUncheckedCreateWithoutAssigneeInput[]
+    connectOrCreate?: ProjectSubServiceCreateOrConnectWithoutAssigneeInput | ProjectSubServiceCreateOrConnectWithoutAssigneeInput[]
+    createMany?: ProjectSubServiceCreateManyAssigneeInputEnvelope
+    connect?: ProjectSubServiceWhereUniqueInput | ProjectSubServiceWhereUniqueInput[]
+  }
+
+  export type ProjectExtraRequestCreateNestedManyWithoutRequestedByInput = {
+    create?: XOR<ProjectExtraRequestCreateWithoutRequestedByInput, ProjectExtraRequestUncheckedCreateWithoutRequestedByInput> | ProjectExtraRequestCreateWithoutRequestedByInput[] | ProjectExtraRequestUncheckedCreateWithoutRequestedByInput[]
+    connectOrCreate?: ProjectExtraRequestCreateOrConnectWithoutRequestedByInput | ProjectExtraRequestCreateOrConnectWithoutRequestedByInput[]
+    createMany?: ProjectExtraRequestCreateManyRequestedByInputEnvelope
+    connect?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
   }
 
   export type ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput = {
@@ -113044,6 +119147,13 @@ export namespace Prisma {
     connect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
   }
 
+  export type ClientUncheckedCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<ClientCreateWithoutCreatedByInput, ClientUncheckedCreateWithoutCreatedByInput> | ClientCreateWithoutCreatedByInput[] | ClientUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: ClientCreateOrConnectWithoutCreatedByInput | ClientCreateOrConnectWithoutCreatedByInput[]
+    createMany?: ClientCreateManyCreatedByInputEnvelope
+    connect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+  }
+
   export type ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<ContentRequestAssigneeCreateWithoutUserInput, ContentRequestAssigneeUncheckedCreateWithoutUserInput> | ContentRequestAssigneeCreateWithoutUserInput[] | ContentRequestAssigneeUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ContentRequestAssigneeCreateOrConnectWithoutUserInput | ContentRequestAssigneeCreateOrConnectWithoutUserInput[]
@@ -113077,6 +119187,20 @@ export namespace Prisma {
     connectOrCreate?: ProjectCreateOrConnectWithoutCreatedByInput | ProjectCreateOrConnectWithoutCreatedByInput[]
     createMany?: ProjectCreateManyCreatedByInputEnvelope
     connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+  }
+
+  export type ServiceUncheckedCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<ServiceCreateWithoutCreatedByInput, ServiceUncheckedCreateWithoutCreatedByInput> | ServiceCreateWithoutCreatedByInput[] | ServiceUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: ServiceCreateOrConnectWithoutCreatedByInput | ServiceCreateOrConnectWithoutCreatedByInput[]
+    createMany?: ServiceCreateManyCreatedByInputEnvelope
+    connect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+  }
+
+  export type ServiceUncheckedCreateNestedManyWithoutUpdatedByInput = {
+    create?: XOR<ServiceCreateWithoutUpdatedByInput, ServiceUncheckedCreateWithoutUpdatedByInput> | ServiceCreateWithoutUpdatedByInput[] | ServiceUncheckedCreateWithoutUpdatedByInput[]
+    connectOrCreate?: ServiceCreateOrConnectWithoutUpdatedByInput | ServiceCreateOrConnectWithoutUpdatedByInput[]
+    createMany?: ServiceCreateManyUpdatedByInputEnvelope
+    connect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
   }
 
   export type RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput = {
@@ -113119,6 +119243,20 @@ export namespace Prisma {
     connectOrCreate?: TaskCreateOrConnectWithoutUserInput | TaskCreateOrConnectWithoutUserInput[]
     createMany?: TaskCreateManyUserInputEnvelope
     connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
+  }
+
+  export type ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput = {
+    create?: XOR<ProjectSubServiceCreateWithoutAssigneeInput, ProjectSubServiceUncheckedCreateWithoutAssigneeInput> | ProjectSubServiceCreateWithoutAssigneeInput[] | ProjectSubServiceUncheckedCreateWithoutAssigneeInput[]
+    connectOrCreate?: ProjectSubServiceCreateOrConnectWithoutAssigneeInput | ProjectSubServiceCreateOrConnectWithoutAssigneeInput[]
+    createMany?: ProjectSubServiceCreateManyAssigneeInputEnvelope
+    connect?: ProjectSubServiceWhereUniqueInput | ProjectSubServiceWhereUniqueInput[]
+  }
+
+  export type ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput = {
+    create?: XOR<ProjectExtraRequestCreateWithoutRequestedByInput, ProjectExtraRequestUncheckedCreateWithoutRequestedByInput> | ProjectExtraRequestCreateWithoutRequestedByInput[] | ProjectExtraRequestUncheckedCreateWithoutRequestedByInput[]
+    connectOrCreate?: ProjectExtraRequestCreateOrConnectWithoutRequestedByInput | ProjectExtraRequestCreateOrConnectWithoutRequestedByInput[]
+    createMany?: ProjectExtraRequestCreateManyRequestedByInputEnvelope
+    connect?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
   }
 
   export type NullableBoolFieldUpdateOperationsInput = {
@@ -113241,6 +119379,20 @@ export namespace Prisma {
     deleteMany?: ClientScalarWhereInput | ClientScalarWhereInput[]
   }
 
+  export type ClientUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<ClientCreateWithoutCreatedByInput, ClientUncheckedCreateWithoutCreatedByInput> | ClientCreateWithoutCreatedByInput[] | ClientUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: ClientCreateOrConnectWithoutCreatedByInput | ClientCreateOrConnectWithoutCreatedByInput[]
+    upsert?: ClientUpsertWithWhereUniqueWithoutCreatedByInput | ClientUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: ClientCreateManyCreatedByInputEnvelope
+    set?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+    disconnect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+    delete?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+    connect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+    update?: ClientUpdateWithWhereUniqueWithoutCreatedByInput | ClientUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: ClientUpdateManyWithWhereWithoutCreatedByInput | ClientUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: ClientScalarWhereInput | ClientScalarWhereInput[]
+  }
+
   export type ContentRequestAssigneeUpdateManyWithoutUserNestedInput = {
     create?: XOR<ContentRequestAssigneeCreateWithoutUserInput, ContentRequestAssigneeUncheckedCreateWithoutUserInput> | ContentRequestAssigneeCreateWithoutUserInput[] | ContentRequestAssigneeUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ContentRequestAssigneeCreateOrConnectWithoutUserInput | ContentRequestAssigneeCreateOrConnectWithoutUserInput[]
@@ -113309,6 +119461,34 @@ export namespace Prisma {
     update?: ProjectUpdateWithWhereUniqueWithoutCreatedByInput | ProjectUpdateWithWhereUniqueWithoutCreatedByInput[]
     updateMany?: ProjectUpdateManyWithWhereWithoutCreatedByInput | ProjectUpdateManyWithWhereWithoutCreatedByInput[]
     deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
+  }
+
+  export type ServiceUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<ServiceCreateWithoutCreatedByInput, ServiceUncheckedCreateWithoutCreatedByInput> | ServiceCreateWithoutCreatedByInput[] | ServiceUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: ServiceCreateOrConnectWithoutCreatedByInput | ServiceCreateOrConnectWithoutCreatedByInput[]
+    upsert?: ServiceUpsertWithWhereUniqueWithoutCreatedByInput | ServiceUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: ServiceCreateManyCreatedByInputEnvelope
+    set?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    disconnect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    delete?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    connect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    update?: ServiceUpdateWithWhereUniqueWithoutCreatedByInput | ServiceUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: ServiceUpdateManyWithWhereWithoutCreatedByInput | ServiceUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: ServiceScalarWhereInput | ServiceScalarWhereInput[]
+  }
+
+  export type ServiceUpdateManyWithoutUpdatedByNestedInput = {
+    create?: XOR<ServiceCreateWithoutUpdatedByInput, ServiceUncheckedCreateWithoutUpdatedByInput> | ServiceCreateWithoutUpdatedByInput[] | ServiceUncheckedCreateWithoutUpdatedByInput[]
+    connectOrCreate?: ServiceCreateOrConnectWithoutUpdatedByInput | ServiceCreateOrConnectWithoutUpdatedByInput[]
+    upsert?: ServiceUpsertWithWhereUniqueWithoutUpdatedByInput | ServiceUpsertWithWhereUniqueWithoutUpdatedByInput[]
+    createMany?: ServiceCreateManyUpdatedByInputEnvelope
+    set?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    disconnect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    delete?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    connect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    update?: ServiceUpdateWithWhereUniqueWithoutUpdatedByInput | ServiceUpdateWithWhereUniqueWithoutUpdatedByInput[]
+    updateMany?: ServiceUpdateManyWithWhereWithoutUpdatedByInput | ServiceUpdateManyWithWhereWithoutUpdatedByInput[]
+    deleteMany?: ServiceScalarWhereInput | ServiceScalarWhereInput[]
   }
 
   export type RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput = {
@@ -113413,6 +119593,34 @@ export namespace Prisma {
     update?: TaskUpdateWithWhereUniqueWithoutUserInput | TaskUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: TaskUpdateManyWithWhereWithoutUserInput | TaskUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
+  }
+
+  export type ProjectSubServiceUpdateManyWithoutAssigneeNestedInput = {
+    create?: XOR<ProjectSubServiceCreateWithoutAssigneeInput, ProjectSubServiceUncheckedCreateWithoutAssigneeInput> | ProjectSubServiceCreateWithoutAssigneeInput[] | ProjectSubServiceUncheckedCreateWithoutAssigneeInput[]
+    connectOrCreate?: ProjectSubServiceCreateOrConnectWithoutAssigneeInput | ProjectSubServiceCreateOrConnectWithoutAssigneeInput[]
+    upsert?: ProjectSubServiceUpsertWithWhereUniqueWithoutAssigneeInput | ProjectSubServiceUpsertWithWhereUniqueWithoutAssigneeInput[]
+    createMany?: ProjectSubServiceCreateManyAssigneeInputEnvelope
+    set?: ProjectSubServiceWhereUniqueInput | ProjectSubServiceWhereUniqueInput[]
+    disconnect?: ProjectSubServiceWhereUniqueInput | ProjectSubServiceWhereUniqueInput[]
+    delete?: ProjectSubServiceWhereUniqueInput | ProjectSubServiceWhereUniqueInput[]
+    connect?: ProjectSubServiceWhereUniqueInput | ProjectSubServiceWhereUniqueInput[]
+    update?: ProjectSubServiceUpdateWithWhereUniqueWithoutAssigneeInput | ProjectSubServiceUpdateWithWhereUniqueWithoutAssigneeInput[]
+    updateMany?: ProjectSubServiceUpdateManyWithWhereWithoutAssigneeInput | ProjectSubServiceUpdateManyWithWhereWithoutAssigneeInput[]
+    deleteMany?: ProjectSubServiceScalarWhereInput | ProjectSubServiceScalarWhereInput[]
+  }
+
+  export type ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput = {
+    create?: XOR<ProjectExtraRequestCreateWithoutRequestedByInput, ProjectExtraRequestUncheckedCreateWithoutRequestedByInput> | ProjectExtraRequestCreateWithoutRequestedByInput[] | ProjectExtraRequestUncheckedCreateWithoutRequestedByInput[]
+    connectOrCreate?: ProjectExtraRequestCreateOrConnectWithoutRequestedByInput | ProjectExtraRequestCreateOrConnectWithoutRequestedByInput[]
+    upsert?: ProjectExtraRequestUpsertWithWhereUniqueWithoutRequestedByInput | ProjectExtraRequestUpsertWithWhereUniqueWithoutRequestedByInput[]
+    createMany?: ProjectExtraRequestCreateManyRequestedByInputEnvelope
+    set?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    disconnect?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    delete?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    connect?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    update?: ProjectExtraRequestUpdateWithWhereUniqueWithoutRequestedByInput | ProjectExtraRequestUpdateWithWhereUniqueWithoutRequestedByInput[]
+    updateMany?: ProjectExtraRequestUpdateManyWithWhereWithoutRequestedByInput | ProjectExtraRequestUpdateManyWithWhereWithoutRequestedByInput[]
+    deleteMany?: ProjectExtraRequestScalarWhereInput | ProjectExtraRequestScalarWhereInput[]
   }
 
   export type ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput = {
@@ -113527,6 +119735,20 @@ export namespace Prisma {
     deleteMany?: ClientScalarWhereInput | ClientScalarWhereInput[]
   }
 
+  export type ClientUncheckedUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<ClientCreateWithoutCreatedByInput, ClientUncheckedCreateWithoutCreatedByInput> | ClientCreateWithoutCreatedByInput[] | ClientUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: ClientCreateOrConnectWithoutCreatedByInput | ClientCreateOrConnectWithoutCreatedByInput[]
+    upsert?: ClientUpsertWithWhereUniqueWithoutCreatedByInput | ClientUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: ClientCreateManyCreatedByInputEnvelope
+    set?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+    disconnect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+    delete?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+    connect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+    update?: ClientUpdateWithWhereUniqueWithoutCreatedByInput | ClientUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: ClientUpdateManyWithWhereWithoutCreatedByInput | ClientUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: ClientScalarWhereInput | ClientScalarWhereInput[]
+  }
+
   export type ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<ContentRequestAssigneeCreateWithoutUserInput, ContentRequestAssigneeUncheckedCreateWithoutUserInput> | ContentRequestAssigneeCreateWithoutUserInput[] | ContentRequestAssigneeUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ContentRequestAssigneeCreateOrConnectWithoutUserInput | ContentRequestAssigneeCreateOrConnectWithoutUserInput[]
@@ -113595,6 +119817,34 @@ export namespace Prisma {
     update?: ProjectUpdateWithWhereUniqueWithoutCreatedByInput | ProjectUpdateWithWhereUniqueWithoutCreatedByInput[]
     updateMany?: ProjectUpdateManyWithWhereWithoutCreatedByInput | ProjectUpdateManyWithWhereWithoutCreatedByInput[]
     deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
+  }
+
+  export type ServiceUncheckedUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<ServiceCreateWithoutCreatedByInput, ServiceUncheckedCreateWithoutCreatedByInput> | ServiceCreateWithoutCreatedByInput[] | ServiceUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: ServiceCreateOrConnectWithoutCreatedByInput | ServiceCreateOrConnectWithoutCreatedByInput[]
+    upsert?: ServiceUpsertWithWhereUniqueWithoutCreatedByInput | ServiceUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: ServiceCreateManyCreatedByInputEnvelope
+    set?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    disconnect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    delete?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    connect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    update?: ServiceUpdateWithWhereUniqueWithoutCreatedByInput | ServiceUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: ServiceUpdateManyWithWhereWithoutCreatedByInput | ServiceUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: ServiceScalarWhereInput | ServiceScalarWhereInput[]
+  }
+
+  export type ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput = {
+    create?: XOR<ServiceCreateWithoutUpdatedByInput, ServiceUncheckedCreateWithoutUpdatedByInput> | ServiceCreateWithoutUpdatedByInput[] | ServiceUncheckedCreateWithoutUpdatedByInput[]
+    connectOrCreate?: ServiceCreateOrConnectWithoutUpdatedByInput | ServiceCreateOrConnectWithoutUpdatedByInput[]
+    upsert?: ServiceUpsertWithWhereUniqueWithoutUpdatedByInput | ServiceUpsertWithWhereUniqueWithoutUpdatedByInput[]
+    createMany?: ServiceCreateManyUpdatedByInputEnvelope
+    set?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    disconnect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    delete?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    connect?: ServiceWhereUniqueInput | ServiceWhereUniqueInput[]
+    update?: ServiceUpdateWithWhereUniqueWithoutUpdatedByInput | ServiceUpdateWithWhereUniqueWithoutUpdatedByInput[]
+    updateMany?: ServiceUpdateManyWithWhereWithoutUpdatedByInput | ServiceUpdateManyWithWhereWithoutUpdatedByInput[]
+    deleteMany?: ServiceScalarWhereInput | ServiceScalarWhereInput[]
   }
 
   export type RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput = {
@@ -113681,6 +119931,34 @@ export namespace Prisma {
     deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
   }
 
+  export type ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput = {
+    create?: XOR<ProjectSubServiceCreateWithoutAssigneeInput, ProjectSubServiceUncheckedCreateWithoutAssigneeInput> | ProjectSubServiceCreateWithoutAssigneeInput[] | ProjectSubServiceUncheckedCreateWithoutAssigneeInput[]
+    connectOrCreate?: ProjectSubServiceCreateOrConnectWithoutAssigneeInput | ProjectSubServiceCreateOrConnectWithoutAssigneeInput[]
+    upsert?: ProjectSubServiceUpsertWithWhereUniqueWithoutAssigneeInput | ProjectSubServiceUpsertWithWhereUniqueWithoutAssigneeInput[]
+    createMany?: ProjectSubServiceCreateManyAssigneeInputEnvelope
+    set?: ProjectSubServiceWhereUniqueInput | ProjectSubServiceWhereUniqueInput[]
+    disconnect?: ProjectSubServiceWhereUniqueInput | ProjectSubServiceWhereUniqueInput[]
+    delete?: ProjectSubServiceWhereUniqueInput | ProjectSubServiceWhereUniqueInput[]
+    connect?: ProjectSubServiceWhereUniqueInput | ProjectSubServiceWhereUniqueInput[]
+    update?: ProjectSubServiceUpdateWithWhereUniqueWithoutAssigneeInput | ProjectSubServiceUpdateWithWhereUniqueWithoutAssigneeInput[]
+    updateMany?: ProjectSubServiceUpdateManyWithWhereWithoutAssigneeInput | ProjectSubServiceUpdateManyWithWhereWithoutAssigneeInput[]
+    deleteMany?: ProjectSubServiceScalarWhereInput | ProjectSubServiceScalarWhereInput[]
+  }
+
+  export type ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput = {
+    create?: XOR<ProjectExtraRequestCreateWithoutRequestedByInput, ProjectExtraRequestUncheckedCreateWithoutRequestedByInput> | ProjectExtraRequestCreateWithoutRequestedByInput[] | ProjectExtraRequestUncheckedCreateWithoutRequestedByInput[]
+    connectOrCreate?: ProjectExtraRequestCreateOrConnectWithoutRequestedByInput | ProjectExtraRequestCreateOrConnectWithoutRequestedByInput[]
+    upsert?: ProjectExtraRequestUpsertWithWhereUniqueWithoutRequestedByInput | ProjectExtraRequestUpsertWithWhereUniqueWithoutRequestedByInput[]
+    createMany?: ProjectExtraRequestCreateManyRequestedByInputEnvelope
+    set?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    disconnect?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    delete?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    connect?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    update?: ProjectExtraRequestUpdateWithWhereUniqueWithoutRequestedByInput | ProjectExtraRequestUpdateWithWhereUniqueWithoutRequestedByInput[]
+    updateMany?: ProjectExtraRequestUpdateManyWithWhereWithoutRequestedByInput | ProjectExtraRequestUpdateManyWithWhereWithoutRequestedByInput[]
+    deleteMany?: ProjectExtraRequestScalarWhereInput | ProjectExtraRequestScalarWhereInput[]
+  }
+
   export type StaffCreateNestedOneWithoutSessionsInput = {
     create?: XOR<StaffCreateWithoutSessionsInput, StaffUncheckedCreateWithoutSessionsInput>
     connectOrCreate?: StaffCreateOrConnectWithoutSessionsInput
@@ -113740,6 +120018,12 @@ export namespace Prisma {
   export type StaffCreateNestedOneWithoutManagedClientsInput = {
     create?: XOR<StaffCreateWithoutManagedClientsInput, StaffUncheckedCreateWithoutManagedClientsInput>
     connectOrCreate?: StaffCreateOrConnectWithoutManagedClientsInput
+    connect?: StaffWhereUniqueInput
+  }
+
+  export type StaffCreateNestedOneWithoutClientsCreatedInput = {
+    create?: XOR<StaffCreateWithoutClientsCreatedInput, StaffUncheckedCreateWithoutClientsCreatedInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutClientsCreatedInput
     connect?: StaffWhereUniqueInput
   }
 
@@ -113977,6 +120261,16 @@ export namespace Prisma {
     delete?: StaffWhereInput | boolean
     connect?: StaffWhereUniqueInput
     update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutManagedClientsInput, StaffUpdateWithoutManagedClientsInput>, StaffUncheckedUpdateWithoutManagedClientsInput>
+  }
+
+  export type StaffUpdateOneWithoutClientsCreatedNestedInput = {
+    create?: XOR<StaffCreateWithoutClientsCreatedInput, StaffUncheckedCreateWithoutClientsCreatedInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutClientsCreatedInput
+    upsert?: StaffUpsertWithoutClientsCreatedInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutClientsCreatedInput, StaffUpdateWithoutClientsCreatedInput>, StaffUncheckedUpdateWithoutClientsCreatedInput>
   }
 
   export type PortfolioUpdateOneWithoutClientsNestedInput = {
@@ -114303,6 +120597,18 @@ export namespace Prisma {
     connect?: ClientServiceWhereUniqueInput | ClientServiceWhereUniqueInput[]
   }
 
+  export type StaffCreateNestedOneWithoutServicesCreatedInput = {
+    create?: XOR<StaffCreateWithoutServicesCreatedInput, StaffUncheckedCreateWithoutServicesCreatedInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutServicesCreatedInput
+    connect?: StaffWhereUniqueInput
+  }
+
+  export type StaffCreateNestedOneWithoutServicesUpdatedInput = {
+    create?: XOR<StaffCreateWithoutServicesUpdatedInput, StaffUncheckedCreateWithoutServicesUpdatedInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutServicesUpdatedInput
+    connect?: StaffWhereUniqueInput
+  }
+
   export type PortfolioCreateNestedOneWithoutServicesInput = {
     create?: XOR<PortfolioCreateWithoutServicesInput, PortfolioUncheckedCreateWithoutServicesInput>
     connectOrCreate?: PortfolioCreateOrConnectWithoutServicesInput
@@ -114314,6 +120620,13 @@ export namespace Prisma {
     connectOrCreate?: SubServiceCreateOrConnectWithoutServiceInput | SubServiceCreateOrConnectWithoutServiceInput[]
     createMany?: SubServiceCreateManyServiceInputEnvelope
     connect?: SubServiceWhereUniqueInput | SubServiceWhereUniqueInput[]
+  }
+
+  export type ProjectServiceLinkCreateNestedManyWithoutServiceInput = {
+    create?: XOR<ProjectServiceLinkCreateWithoutServiceInput, ProjectServiceLinkUncheckedCreateWithoutServiceInput> | ProjectServiceLinkCreateWithoutServiceInput[] | ProjectServiceLinkUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ProjectServiceLinkCreateOrConnectWithoutServiceInput | ProjectServiceLinkCreateOrConnectWithoutServiceInput[]
+    createMany?: ProjectServiceLinkCreateManyServiceInputEnvelope
+    connect?: ProjectServiceLinkWhereUniqueInput | ProjectServiceLinkWhereUniqueInput[]
   }
 
   export type IncomeServiceAgreementUncheckedCreateNestedManyWithoutServiceInput = {
@@ -114335,6 +120648,13 @@ export namespace Prisma {
     connectOrCreate?: SubServiceCreateOrConnectWithoutServiceInput | SubServiceCreateOrConnectWithoutServiceInput[]
     createMany?: SubServiceCreateManyServiceInputEnvelope
     connect?: SubServiceWhereUniqueInput | SubServiceWhereUniqueInput[]
+  }
+
+  export type ProjectServiceLinkUncheckedCreateNestedManyWithoutServiceInput = {
+    create?: XOR<ProjectServiceLinkCreateWithoutServiceInput, ProjectServiceLinkUncheckedCreateWithoutServiceInput> | ProjectServiceLinkCreateWithoutServiceInput[] | ProjectServiceLinkUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ProjectServiceLinkCreateOrConnectWithoutServiceInput | ProjectServiceLinkCreateOrConnectWithoutServiceInput[]
+    createMany?: ProjectServiceLinkCreateManyServiceInputEnvelope
+    connect?: ProjectServiceLinkWhereUniqueInput | ProjectServiceLinkWhereUniqueInput[]
   }
 
   export type EnumServiceTypeFieldUpdateOperationsInput = {
@@ -114369,6 +120689,26 @@ export namespace Prisma {
     deleteMany?: ClientServiceScalarWhereInput | ClientServiceScalarWhereInput[]
   }
 
+  export type StaffUpdateOneWithoutServicesCreatedNestedInput = {
+    create?: XOR<StaffCreateWithoutServicesCreatedInput, StaffUncheckedCreateWithoutServicesCreatedInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutServicesCreatedInput
+    upsert?: StaffUpsertWithoutServicesCreatedInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutServicesCreatedInput, StaffUpdateWithoutServicesCreatedInput>, StaffUncheckedUpdateWithoutServicesCreatedInput>
+  }
+
+  export type StaffUpdateOneWithoutServicesUpdatedNestedInput = {
+    create?: XOR<StaffCreateWithoutServicesUpdatedInput, StaffUncheckedCreateWithoutServicesUpdatedInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutServicesUpdatedInput
+    upsert?: StaffUpsertWithoutServicesUpdatedInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutServicesUpdatedInput, StaffUpdateWithoutServicesUpdatedInput>, StaffUncheckedUpdateWithoutServicesUpdatedInput>
+  }
+
   export type PortfolioUpdateOneWithoutServicesNestedInput = {
     create?: XOR<PortfolioCreateWithoutServicesInput, PortfolioUncheckedCreateWithoutServicesInput>
     connectOrCreate?: PortfolioCreateOrConnectWithoutServicesInput
@@ -114391,6 +120731,20 @@ export namespace Prisma {
     update?: SubServiceUpdateWithWhereUniqueWithoutServiceInput | SubServiceUpdateWithWhereUniqueWithoutServiceInput[]
     updateMany?: SubServiceUpdateManyWithWhereWithoutServiceInput | SubServiceUpdateManyWithWhereWithoutServiceInput[]
     deleteMany?: SubServiceScalarWhereInput | SubServiceScalarWhereInput[]
+  }
+
+  export type ProjectServiceLinkUpdateManyWithoutServiceNestedInput = {
+    create?: XOR<ProjectServiceLinkCreateWithoutServiceInput, ProjectServiceLinkUncheckedCreateWithoutServiceInput> | ProjectServiceLinkCreateWithoutServiceInput[] | ProjectServiceLinkUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ProjectServiceLinkCreateOrConnectWithoutServiceInput | ProjectServiceLinkCreateOrConnectWithoutServiceInput[]
+    upsert?: ProjectServiceLinkUpsertWithWhereUniqueWithoutServiceInput | ProjectServiceLinkUpsertWithWhereUniqueWithoutServiceInput[]
+    createMany?: ProjectServiceLinkCreateManyServiceInputEnvelope
+    set?: ProjectServiceLinkWhereUniqueInput | ProjectServiceLinkWhereUniqueInput[]
+    disconnect?: ProjectServiceLinkWhereUniqueInput | ProjectServiceLinkWhereUniqueInput[]
+    delete?: ProjectServiceLinkWhereUniqueInput | ProjectServiceLinkWhereUniqueInput[]
+    connect?: ProjectServiceLinkWhereUniqueInput | ProjectServiceLinkWhereUniqueInput[]
+    update?: ProjectServiceLinkUpdateWithWhereUniqueWithoutServiceInput | ProjectServiceLinkUpdateWithWhereUniqueWithoutServiceInput[]
+    updateMany?: ProjectServiceLinkUpdateManyWithWhereWithoutServiceInput | ProjectServiceLinkUpdateManyWithWhereWithoutServiceInput[]
+    deleteMany?: ProjectServiceLinkScalarWhereInput | ProjectServiceLinkScalarWhereInput[]
   }
 
   export type IncomeServiceAgreementUncheckedUpdateManyWithoutServiceNestedInput = {
@@ -114433,6 +120787,20 @@ export namespace Prisma {
     update?: SubServiceUpdateWithWhereUniqueWithoutServiceInput | SubServiceUpdateWithWhereUniqueWithoutServiceInput[]
     updateMany?: SubServiceUpdateManyWithWhereWithoutServiceInput | SubServiceUpdateManyWithWhereWithoutServiceInput[]
     deleteMany?: SubServiceScalarWhereInput | SubServiceScalarWhereInput[]
+  }
+
+  export type ProjectServiceLinkUncheckedUpdateManyWithoutServiceNestedInput = {
+    create?: XOR<ProjectServiceLinkCreateWithoutServiceInput, ProjectServiceLinkUncheckedCreateWithoutServiceInput> | ProjectServiceLinkCreateWithoutServiceInput[] | ProjectServiceLinkUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ProjectServiceLinkCreateOrConnectWithoutServiceInput | ProjectServiceLinkCreateOrConnectWithoutServiceInput[]
+    upsert?: ProjectServiceLinkUpsertWithWhereUniqueWithoutServiceInput | ProjectServiceLinkUpsertWithWhereUniqueWithoutServiceInput[]
+    createMany?: ProjectServiceLinkCreateManyServiceInputEnvelope
+    set?: ProjectServiceLinkWhereUniqueInput | ProjectServiceLinkWhereUniqueInput[]
+    disconnect?: ProjectServiceLinkWhereUniqueInput | ProjectServiceLinkWhereUniqueInput[]
+    delete?: ProjectServiceLinkWhereUniqueInput | ProjectServiceLinkWhereUniqueInput[]
+    connect?: ProjectServiceLinkWhereUniqueInput | ProjectServiceLinkWhereUniqueInput[]
+    update?: ProjectServiceLinkUpdateWithWhereUniqueWithoutServiceInput | ProjectServiceLinkUpdateWithWhereUniqueWithoutServiceInput[]
+    updateMany?: ProjectServiceLinkUpdateManyWithWhereWithoutServiceInput | ProjectServiceLinkUpdateManyWithWhereWithoutServiceInput[]
+    deleteMany?: ProjectServiceLinkScalarWhereInput | ProjectServiceLinkScalarWhereInput[]
   }
 
   export type ClientSubServiceCreateNestedManyWithoutSubServiceInput = {
@@ -116033,6 +122401,12 @@ export namespace Prisma {
     update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutAuditLogsInput, StaffUpdateWithoutAuditLogsInput>, StaffUncheckedUpdateWithoutAuditLogsInput>
   }
 
+  export type ContractCreateNestedOneWithoutPrimaryForProjectsInput = {
+    create?: XOR<ContractCreateWithoutPrimaryForProjectsInput, ContractUncheckedCreateWithoutPrimaryForProjectsInput>
+    connectOrCreate?: ContractCreateOrConnectWithoutPrimaryForProjectsInput
+    connect?: ContractWhereUniqueInput
+  }
+
   export type IncomeServiceAgreementCreateNestedManyWithoutProjectInput = {
     create?: XOR<IncomeServiceAgreementCreateWithoutProjectInput, IncomeServiceAgreementUncheckedCreateWithoutProjectInput> | IncomeServiceAgreementCreateWithoutProjectInput[] | IncomeServiceAgreementUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: IncomeServiceAgreementCreateOrConnectWithoutProjectInput | IncomeServiceAgreementCreateOrConnectWithoutProjectInput[]
@@ -116079,6 +122453,27 @@ export namespace Prisma {
     connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
   }
 
+  export type ProjectServiceLinkCreateNestedManyWithoutProjectInput = {
+    create?: XOR<ProjectServiceLinkCreateWithoutProjectInput, ProjectServiceLinkUncheckedCreateWithoutProjectInput> | ProjectServiceLinkCreateWithoutProjectInput[] | ProjectServiceLinkUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: ProjectServiceLinkCreateOrConnectWithoutProjectInput | ProjectServiceLinkCreateOrConnectWithoutProjectInput[]
+    createMany?: ProjectServiceLinkCreateManyProjectInputEnvelope
+    connect?: ProjectServiceLinkWhereUniqueInput | ProjectServiceLinkWhereUniqueInput[]
+  }
+
+  export type ProjectCycleCreateNestedManyWithoutProjectInput = {
+    create?: XOR<ProjectCycleCreateWithoutProjectInput, ProjectCycleUncheckedCreateWithoutProjectInput> | ProjectCycleCreateWithoutProjectInput[] | ProjectCycleUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: ProjectCycleCreateOrConnectWithoutProjectInput | ProjectCycleCreateOrConnectWithoutProjectInput[]
+    createMany?: ProjectCycleCreateManyProjectInputEnvelope
+    connect?: ProjectCycleWhereUniqueInput | ProjectCycleWhereUniqueInput[]
+  }
+
+  export type ProjectExtraRequestCreateNestedManyWithoutProjectInput = {
+    create?: XOR<ProjectExtraRequestCreateWithoutProjectInput, ProjectExtraRequestUncheckedCreateWithoutProjectInput> | ProjectExtraRequestCreateWithoutProjectInput[] | ProjectExtraRequestUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: ProjectExtraRequestCreateOrConnectWithoutProjectInput | ProjectExtraRequestCreateOrConnectWithoutProjectInput[]
+    createMany?: ProjectExtraRequestCreateManyProjectInputEnvelope
+    connect?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+  }
+
   export type IncomeServiceAgreementUncheckedCreateNestedManyWithoutProjectInput = {
     create?: XOR<IncomeServiceAgreementCreateWithoutProjectInput, IncomeServiceAgreementUncheckedCreateWithoutProjectInput> | IncomeServiceAgreementCreateWithoutProjectInput[] | IncomeServiceAgreementUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: IncomeServiceAgreementCreateOrConnectWithoutProjectInput | IncomeServiceAgreementCreateOrConnectWithoutProjectInput[]
@@ -116107,6 +122502,27 @@ export namespace Prisma {
     connect?: TaskWhereUniqueInput | TaskWhereUniqueInput[]
   }
 
+  export type ProjectServiceLinkUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<ProjectServiceLinkCreateWithoutProjectInput, ProjectServiceLinkUncheckedCreateWithoutProjectInput> | ProjectServiceLinkCreateWithoutProjectInput[] | ProjectServiceLinkUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: ProjectServiceLinkCreateOrConnectWithoutProjectInput | ProjectServiceLinkCreateOrConnectWithoutProjectInput[]
+    createMany?: ProjectServiceLinkCreateManyProjectInputEnvelope
+    connect?: ProjectServiceLinkWhereUniqueInput | ProjectServiceLinkWhereUniqueInput[]
+  }
+
+  export type ProjectCycleUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<ProjectCycleCreateWithoutProjectInput, ProjectCycleUncheckedCreateWithoutProjectInput> | ProjectCycleCreateWithoutProjectInput[] | ProjectCycleUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: ProjectCycleCreateOrConnectWithoutProjectInput | ProjectCycleCreateOrConnectWithoutProjectInput[]
+    createMany?: ProjectCycleCreateManyProjectInputEnvelope
+    connect?: ProjectCycleWhereUniqueInput | ProjectCycleWhereUniqueInput[]
+  }
+
+  export type ProjectExtraRequestUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<ProjectExtraRequestCreateWithoutProjectInput, ProjectExtraRequestUncheckedCreateWithoutProjectInput> | ProjectExtraRequestCreateWithoutProjectInput[] | ProjectExtraRequestUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: ProjectExtraRequestCreateOrConnectWithoutProjectInput | ProjectExtraRequestCreateOrConnectWithoutProjectInput[]
+    createMany?: ProjectExtraRequestCreateManyProjectInputEnvelope
+    connect?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+  }
+
   export type EnumContentTypeFieldUpdateOperationsInput = {
     set?: $Enums.ContentType
   }
@@ -116117,6 +122533,16 @@ export namespace Prisma {
 
   export type EnumProjectPriorityFieldUpdateOperationsInput = {
     set?: $Enums.ProjectPriority
+  }
+
+  export type ContractUpdateOneWithoutPrimaryForProjectsNestedInput = {
+    create?: XOR<ContractCreateWithoutPrimaryForProjectsInput, ContractUncheckedCreateWithoutPrimaryForProjectsInput>
+    connectOrCreate?: ContractCreateOrConnectWithoutPrimaryForProjectsInput
+    upsert?: ContractUpsertWithoutPrimaryForProjectsInput
+    disconnect?: ContractWhereInput | boolean
+    delete?: ContractWhereInput | boolean
+    connect?: ContractWhereUniqueInput
+    update?: XOR<XOR<ContractUpdateToOneWithWhereWithoutPrimaryForProjectsInput, ContractUpdateWithoutPrimaryForProjectsInput>, ContractUncheckedUpdateWithoutPrimaryForProjectsInput>
   }
 
   export type IncomeServiceAgreementUpdateManyWithoutProjectNestedInput = {
@@ -116203,6 +122629,48 @@ export namespace Prisma {
     deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
   }
 
+  export type ProjectServiceLinkUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<ProjectServiceLinkCreateWithoutProjectInput, ProjectServiceLinkUncheckedCreateWithoutProjectInput> | ProjectServiceLinkCreateWithoutProjectInput[] | ProjectServiceLinkUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: ProjectServiceLinkCreateOrConnectWithoutProjectInput | ProjectServiceLinkCreateOrConnectWithoutProjectInput[]
+    upsert?: ProjectServiceLinkUpsertWithWhereUniqueWithoutProjectInput | ProjectServiceLinkUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: ProjectServiceLinkCreateManyProjectInputEnvelope
+    set?: ProjectServiceLinkWhereUniqueInput | ProjectServiceLinkWhereUniqueInput[]
+    disconnect?: ProjectServiceLinkWhereUniqueInput | ProjectServiceLinkWhereUniqueInput[]
+    delete?: ProjectServiceLinkWhereUniqueInput | ProjectServiceLinkWhereUniqueInput[]
+    connect?: ProjectServiceLinkWhereUniqueInput | ProjectServiceLinkWhereUniqueInput[]
+    update?: ProjectServiceLinkUpdateWithWhereUniqueWithoutProjectInput | ProjectServiceLinkUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: ProjectServiceLinkUpdateManyWithWhereWithoutProjectInput | ProjectServiceLinkUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: ProjectServiceLinkScalarWhereInput | ProjectServiceLinkScalarWhereInput[]
+  }
+
+  export type ProjectCycleUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<ProjectCycleCreateWithoutProjectInput, ProjectCycleUncheckedCreateWithoutProjectInput> | ProjectCycleCreateWithoutProjectInput[] | ProjectCycleUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: ProjectCycleCreateOrConnectWithoutProjectInput | ProjectCycleCreateOrConnectWithoutProjectInput[]
+    upsert?: ProjectCycleUpsertWithWhereUniqueWithoutProjectInput | ProjectCycleUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: ProjectCycleCreateManyProjectInputEnvelope
+    set?: ProjectCycleWhereUniqueInput | ProjectCycleWhereUniqueInput[]
+    disconnect?: ProjectCycleWhereUniqueInput | ProjectCycleWhereUniqueInput[]
+    delete?: ProjectCycleWhereUniqueInput | ProjectCycleWhereUniqueInput[]
+    connect?: ProjectCycleWhereUniqueInput | ProjectCycleWhereUniqueInput[]
+    update?: ProjectCycleUpdateWithWhereUniqueWithoutProjectInput | ProjectCycleUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: ProjectCycleUpdateManyWithWhereWithoutProjectInput | ProjectCycleUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: ProjectCycleScalarWhereInput | ProjectCycleScalarWhereInput[]
+  }
+
+  export type ProjectExtraRequestUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<ProjectExtraRequestCreateWithoutProjectInput, ProjectExtraRequestUncheckedCreateWithoutProjectInput> | ProjectExtraRequestCreateWithoutProjectInput[] | ProjectExtraRequestUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: ProjectExtraRequestCreateOrConnectWithoutProjectInput | ProjectExtraRequestCreateOrConnectWithoutProjectInput[]
+    upsert?: ProjectExtraRequestUpsertWithWhereUniqueWithoutProjectInput | ProjectExtraRequestUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: ProjectExtraRequestCreateManyProjectInputEnvelope
+    set?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    disconnect?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    delete?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    connect?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    update?: ProjectExtraRequestUpdateWithWhereUniqueWithoutProjectInput | ProjectExtraRequestUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: ProjectExtraRequestUpdateManyWithWhereWithoutProjectInput | ProjectExtraRequestUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: ProjectExtraRequestScalarWhereInput | ProjectExtraRequestScalarWhereInput[]
+  }
+
   export type IncomeServiceAgreementUncheckedUpdateManyWithoutProjectNestedInput = {
     create?: XOR<IncomeServiceAgreementCreateWithoutProjectInput, IncomeServiceAgreementUncheckedCreateWithoutProjectInput> | IncomeServiceAgreementCreateWithoutProjectInput[] | IncomeServiceAgreementUncheckedCreateWithoutProjectInput[]
     connectOrCreate?: IncomeServiceAgreementCreateOrConnectWithoutProjectInput | IncomeServiceAgreementCreateOrConnectWithoutProjectInput[]
@@ -116259,6 +122727,248 @@ export namespace Prisma {
     deleteMany?: TaskScalarWhereInput | TaskScalarWhereInput[]
   }
 
+  export type ProjectServiceLinkUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<ProjectServiceLinkCreateWithoutProjectInput, ProjectServiceLinkUncheckedCreateWithoutProjectInput> | ProjectServiceLinkCreateWithoutProjectInput[] | ProjectServiceLinkUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: ProjectServiceLinkCreateOrConnectWithoutProjectInput | ProjectServiceLinkCreateOrConnectWithoutProjectInput[]
+    upsert?: ProjectServiceLinkUpsertWithWhereUniqueWithoutProjectInput | ProjectServiceLinkUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: ProjectServiceLinkCreateManyProjectInputEnvelope
+    set?: ProjectServiceLinkWhereUniqueInput | ProjectServiceLinkWhereUniqueInput[]
+    disconnect?: ProjectServiceLinkWhereUniqueInput | ProjectServiceLinkWhereUniqueInput[]
+    delete?: ProjectServiceLinkWhereUniqueInput | ProjectServiceLinkWhereUniqueInput[]
+    connect?: ProjectServiceLinkWhereUniqueInput | ProjectServiceLinkWhereUniqueInput[]
+    update?: ProjectServiceLinkUpdateWithWhereUniqueWithoutProjectInput | ProjectServiceLinkUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: ProjectServiceLinkUpdateManyWithWhereWithoutProjectInput | ProjectServiceLinkUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: ProjectServiceLinkScalarWhereInput | ProjectServiceLinkScalarWhereInput[]
+  }
+
+  export type ProjectCycleUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<ProjectCycleCreateWithoutProjectInput, ProjectCycleUncheckedCreateWithoutProjectInput> | ProjectCycleCreateWithoutProjectInput[] | ProjectCycleUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: ProjectCycleCreateOrConnectWithoutProjectInput | ProjectCycleCreateOrConnectWithoutProjectInput[]
+    upsert?: ProjectCycleUpsertWithWhereUniqueWithoutProjectInput | ProjectCycleUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: ProjectCycleCreateManyProjectInputEnvelope
+    set?: ProjectCycleWhereUniqueInput | ProjectCycleWhereUniqueInput[]
+    disconnect?: ProjectCycleWhereUniqueInput | ProjectCycleWhereUniqueInput[]
+    delete?: ProjectCycleWhereUniqueInput | ProjectCycleWhereUniqueInput[]
+    connect?: ProjectCycleWhereUniqueInput | ProjectCycleWhereUniqueInput[]
+    update?: ProjectCycleUpdateWithWhereUniqueWithoutProjectInput | ProjectCycleUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: ProjectCycleUpdateManyWithWhereWithoutProjectInput | ProjectCycleUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: ProjectCycleScalarWhereInput | ProjectCycleScalarWhereInput[]
+  }
+
+  export type ProjectExtraRequestUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<ProjectExtraRequestCreateWithoutProjectInput, ProjectExtraRequestUncheckedCreateWithoutProjectInput> | ProjectExtraRequestCreateWithoutProjectInput[] | ProjectExtraRequestUncheckedCreateWithoutProjectInput[]
+    connectOrCreate?: ProjectExtraRequestCreateOrConnectWithoutProjectInput | ProjectExtraRequestCreateOrConnectWithoutProjectInput[]
+    upsert?: ProjectExtraRequestUpsertWithWhereUniqueWithoutProjectInput | ProjectExtraRequestUpsertWithWhereUniqueWithoutProjectInput[]
+    createMany?: ProjectExtraRequestCreateManyProjectInputEnvelope
+    set?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    disconnect?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    delete?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    connect?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    update?: ProjectExtraRequestUpdateWithWhereUniqueWithoutProjectInput | ProjectExtraRequestUpdateWithWhereUniqueWithoutProjectInput[]
+    updateMany?: ProjectExtraRequestUpdateManyWithWhereWithoutProjectInput | ProjectExtraRequestUpdateManyWithWhereWithoutProjectInput[]
+    deleteMany?: ProjectExtraRequestScalarWhereInput | ProjectExtraRequestScalarWhereInput[]
+  }
+
+  export type ProjectCreateNestedOneWithoutServiceLinksInput = {
+    create?: XOR<ProjectCreateWithoutServiceLinksInput, ProjectUncheckedCreateWithoutServiceLinksInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutServiceLinksInput
+    connect?: ProjectWhereUniqueInput
+  }
+
+  export type ServiceCreateNestedOneWithoutProjectLinksInput = {
+    create?: XOR<ServiceCreateWithoutProjectLinksInput, ServiceUncheckedCreateWithoutProjectLinksInput>
+    connectOrCreate?: ServiceCreateOrConnectWithoutProjectLinksInput
+    connect?: ServiceWhereUniqueInput
+  }
+
+  export type ProjectSubServiceCreateNestedManyWithoutLinkInput = {
+    create?: XOR<ProjectSubServiceCreateWithoutLinkInput, ProjectSubServiceUncheckedCreateWithoutLinkInput> | ProjectSubServiceCreateWithoutLinkInput[] | ProjectSubServiceUncheckedCreateWithoutLinkInput[]
+    connectOrCreate?: ProjectSubServiceCreateOrConnectWithoutLinkInput | ProjectSubServiceCreateOrConnectWithoutLinkInput[]
+    createMany?: ProjectSubServiceCreateManyLinkInputEnvelope
+    connect?: ProjectSubServiceWhereUniqueInput | ProjectSubServiceWhereUniqueInput[]
+  }
+
+  export type ProjectSubServiceUncheckedCreateNestedManyWithoutLinkInput = {
+    create?: XOR<ProjectSubServiceCreateWithoutLinkInput, ProjectSubServiceUncheckedCreateWithoutLinkInput> | ProjectSubServiceCreateWithoutLinkInput[] | ProjectSubServiceUncheckedCreateWithoutLinkInput[]
+    connectOrCreate?: ProjectSubServiceCreateOrConnectWithoutLinkInput | ProjectSubServiceCreateOrConnectWithoutLinkInput[]
+    createMany?: ProjectSubServiceCreateManyLinkInputEnvelope
+    connect?: ProjectSubServiceWhereUniqueInput | ProjectSubServiceWhereUniqueInput[]
+  }
+
+  export type ProjectUpdateOneRequiredWithoutServiceLinksNestedInput = {
+    create?: XOR<ProjectCreateWithoutServiceLinksInput, ProjectUncheckedCreateWithoutServiceLinksInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutServiceLinksInput
+    upsert?: ProjectUpsertWithoutServiceLinksInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutServiceLinksInput, ProjectUpdateWithoutServiceLinksInput>, ProjectUncheckedUpdateWithoutServiceLinksInput>
+  }
+
+  export type ServiceUpdateOneRequiredWithoutProjectLinksNestedInput = {
+    create?: XOR<ServiceCreateWithoutProjectLinksInput, ServiceUncheckedCreateWithoutProjectLinksInput>
+    connectOrCreate?: ServiceCreateOrConnectWithoutProjectLinksInput
+    upsert?: ServiceUpsertWithoutProjectLinksInput
+    connect?: ServiceWhereUniqueInput
+    update?: XOR<XOR<ServiceUpdateToOneWithWhereWithoutProjectLinksInput, ServiceUpdateWithoutProjectLinksInput>, ServiceUncheckedUpdateWithoutProjectLinksInput>
+  }
+
+  export type ProjectSubServiceUpdateManyWithoutLinkNestedInput = {
+    create?: XOR<ProjectSubServiceCreateWithoutLinkInput, ProjectSubServiceUncheckedCreateWithoutLinkInput> | ProjectSubServiceCreateWithoutLinkInput[] | ProjectSubServiceUncheckedCreateWithoutLinkInput[]
+    connectOrCreate?: ProjectSubServiceCreateOrConnectWithoutLinkInput | ProjectSubServiceCreateOrConnectWithoutLinkInput[]
+    upsert?: ProjectSubServiceUpsertWithWhereUniqueWithoutLinkInput | ProjectSubServiceUpsertWithWhereUniqueWithoutLinkInput[]
+    createMany?: ProjectSubServiceCreateManyLinkInputEnvelope
+    set?: ProjectSubServiceWhereUniqueInput | ProjectSubServiceWhereUniqueInput[]
+    disconnect?: ProjectSubServiceWhereUniqueInput | ProjectSubServiceWhereUniqueInput[]
+    delete?: ProjectSubServiceWhereUniqueInput | ProjectSubServiceWhereUniqueInput[]
+    connect?: ProjectSubServiceWhereUniqueInput | ProjectSubServiceWhereUniqueInput[]
+    update?: ProjectSubServiceUpdateWithWhereUniqueWithoutLinkInput | ProjectSubServiceUpdateWithWhereUniqueWithoutLinkInput[]
+    updateMany?: ProjectSubServiceUpdateManyWithWhereWithoutLinkInput | ProjectSubServiceUpdateManyWithWhereWithoutLinkInput[]
+    deleteMany?: ProjectSubServiceScalarWhereInput | ProjectSubServiceScalarWhereInput[]
+  }
+
+  export type ProjectSubServiceUncheckedUpdateManyWithoutLinkNestedInput = {
+    create?: XOR<ProjectSubServiceCreateWithoutLinkInput, ProjectSubServiceUncheckedCreateWithoutLinkInput> | ProjectSubServiceCreateWithoutLinkInput[] | ProjectSubServiceUncheckedCreateWithoutLinkInput[]
+    connectOrCreate?: ProjectSubServiceCreateOrConnectWithoutLinkInput | ProjectSubServiceCreateOrConnectWithoutLinkInput[]
+    upsert?: ProjectSubServiceUpsertWithWhereUniqueWithoutLinkInput | ProjectSubServiceUpsertWithWhereUniqueWithoutLinkInput[]
+    createMany?: ProjectSubServiceCreateManyLinkInputEnvelope
+    set?: ProjectSubServiceWhereUniqueInput | ProjectSubServiceWhereUniqueInput[]
+    disconnect?: ProjectSubServiceWhereUniqueInput | ProjectSubServiceWhereUniqueInput[]
+    delete?: ProjectSubServiceWhereUniqueInput | ProjectSubServiceWhereUniqueInput[]
+    connect?: ProjectSubServiceWhereUniqueInput | ProjectSubServiceWhereUniqueInput[]
+    update?: ProjectSubServiceUpdateWithWhereUniqueWithoutLinkInput | ProjectSubServiceUpdateWithWhereUniqueWithoutLinkInput[]
+    updateMany?: ProjectSubServiceUpdateManyWithWhereWithoutLinkInput | ProjectSubServiceUpdateManyWithWhereWithoutLinkInput[]
+    deleteMany?: ProjectSubServiceScalarWhereInput | ProjectSubServiceScalarWhereInput[]
+  }
+
+  export type ProjectServiceLinkCreateNestedOneWithoutSubServicesInput = {
+    create?: XOR<ProjectServiceLinkCreateWithoutSubServicesInput, ProjectServiceLinkUncheckedCreateWithoutSubServicesInput>
+    connectOrCreate?: ProjectServiceLinkCreateOrConnectWithoutSubServicesInput
+    connect?: ProjectServiceLinkWhereUniqueInput
+  }
+
+  export type StaffCreateNestedOneWithoutProjectSubAssignmentsInput = {
+    create?: XOR<StaffCreateWithoutProjectSubAssignmentsInput, StaffUncheckedCreateWithoutProjectSubAssignmentsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutProjectSubAssignmentsInput
+    connect?: StaffWhereUniqueInput
+  }
+
+  export type ProjectExtraRequestCreateNestedManyWithoutSubServiceInput = {
+    create?: XOR<ProjectExtraRequestCreateWithoutSubServiceInput, ProjectExtraRequestUncheckedCreateWithoutSubServiceInput> | ProjectExtraRequestCreateWithoutSubServiceInput[] | ProjectExtraRequestUncheckedCreateWithoutSubServiceInput[]
+    connectOrCreate?: ProjectExtraRequestCreateOrConnectWithoutSubServiceInput | ProjectExtraRequestCreateOrConnectWithoutSubServiceInput[]
+    createMany?: ProjectExtraRequestCreateManySubServiceInputEnvelope
+    connect?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+  }
+
+  export type ProjectExtraRequestUncheckedCreateNestedManyWithoutSubServiceInput = {
+    create?: XOR<ProjectExtraRequestCreateWithoutSubServiceInput, ProjectExtraRequestUncheckedCreateWithoutSubServiceInput> | ProjectExtraRequestCreateWithoutSubServiceInput[] | ProjectExtraRequestUncheckedCreateWithoutSubServiceInput[]
+    connectOrCreate?: ProjectExtraRequestCreateOrConnectWithoutSubServiceInput | ProjectExtraRequestCreateOrConnectWithoutSubServiceInput[]
+    createMany?: ProjectExtraRequestCreateManySubServiceInputEnvelope
+    connect?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+  }
+
+  export type ProjectServiceLinkUpdateOneRequiredWithoutSubServicesNestedInput = {
+    create?: XOR<ProjectServiceLinkCreateWithoutSubServicesInput, ProjectServiceLinkUncheckedCreateWithoutSubServicesInput>
+    connectOrCreate?: ProjectServiceLinkCreateOrConnectWithoutSubServicesInput
+    upsert?: ProjectServiceLinkUpsertWithoutSubServicesInput
+    connect?: ProjectServiceLinkWhereUniqueInput
+    update?: XOR<XOR<ProjectServiceLinkUpdateToOneWithWhereWithoutSubServicesInput, ProjectServiceLinkUpdateWithoutSubServicesInput>, ProjectServiceLinkUncheckedUpdateWithoutSubServicesInput>
+  }
+
+  export type StaffUpdateOneWithoutProjectSubAssignmentsNestedInput = {
+    create?: XOR<StaffCreateWithoutProjectSubAssignmentsInput, StaffUncheckedCreateWithoutProjectSubAssignmentsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutProjectSubAssignmentsInput
+    upsert?: StaffUpsertWithoutProjectSubAssignmentsInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutProjectSubAssignmentsInput, StaffUpdateWithoutProjectSubAssignmentsInput>, StaffUncheckedUpdateWithoutProjectSubAssignmentsInput>
+  }
+
+  export type ProjectExtraRequestUpdateManyWithoutSubServiceNestedInput = {
+    create?: XOR<ProjectExtraRequestCreateWithoutSubServiceInput, ProjectExtraRequestUncheckedCreateWithoutSubServiceInput> | ProjectExtraRequestCreateWithoutSubServiceInput[] | ProjectExtraRequestUncheckedCreateWithoutSubServiceInput[]
+    connectOrCreate?: ProjectExtraRequestCreateOrConnectWithoutSubServiceInput | ProjectExtraRequestCreateOrConnectWithoutSubServiceInput[]
+    upsert?: ProjectExtraRequestUpsertWithWhereUniqueWithoutSubServiceInput | ProjectExtraRequestUpsertWithWhereUniqueWithoutSubServiceInput[]
+    createMany?: ProjectExtraRequestCreateManySubServiceInputEnvelope
+    set?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    disconnect?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    delete?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    connect?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    update?: ProjectExtraRequestUpdateWithWhereUniqueWithoutSubServiceInput | ProjectExtraRequestUpdateWithWhereUniqueWithoutSubServiceInput[]
+    updateMany?: ProjectExtraRequestUpdateManyWithWhereWithoutSubServiceInput | ProjectExtraRequestUpdateManyWithWhereWithoutSubServiceInput[]
+    deleteMany?: ProjectExtraRequestScalarWhereInput | ProjectExtraRequestScalarWhereInput[]
+  }
+
+  export type ProjectExtraRequestUncheckedUpdateManyWithoutSubServiceNestedInput = {
+    create?: XOR<ProjectExtraRequestCreateWithoutSubServiceInput, ProjectExtraRequestUncheckedCreateWithoutSubServiceInput> | ProjectExtraRequestCreateWithoutSubServiceInput[] | ProjectExtraRequestUncheckedCreateWithoutSubServiceInput[]
+    connectOrCreate?: ProjectExtraRequestCreateOrConnectWithoutSubServiceInput | ProjectExtraRequestCreateOrConnectWithoutSubServiceInput[]
+    upsert?: ProjectExtraRequestUpsertWithWhereUniqueWithoutSubServiceInput | ProjectExtraRequestUpsertWithWhereUniqueWithoutSubServiceInput[]
+    createMany?: ProjectExtraRequestCreateManySubServiceInputEnvelope
+    set?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    disconnect?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    delete?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    connect?: ProjectExtraRequestWhereUniqueInput | ProjectExtraRequestWhereUniqueInput[]
+    update?: ProjectExtraRequestUpdateWithWhereUniqueWithoutSubServiceInput | ProjectExtraRequestUpdateWithWhereUniqueWithoutSubServiceInput[]
+    updateMany?: ProjectExtraRequestUpdateManyWithWhereWithoutSubServiceInput | ProjectExtraRequestUpdateManyWithWhereWithoutSubServiceInput[]
+    deleteMany?: ProjectExtraRequestScalarWhereInput | ProjectExtraRequestScalarWhereInput[]
+  }
+
+  export type ProjectCreateNestedOneWithoutCyclesInput = {
+    create?: XOR<ProjectCreateWithoutCyclesInput, ProjectUncheckedCreateWithoutCyclesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutCyclesInput
+    connect?: ProjectWhereUniqueInput
+  }
+
+  export type ProjectUpdateOneRequiredWithoutCyclesNestedInput = {
+    create?: XOR<ProjectCreateWithoutCyclesInput, ProjectUncheckedCreateWithoutCyclesInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutCyclesInput
+    upsert?: ProjectUpsertWithoutCyclesInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutCyclesInput, ProjectUpdateWithoutCyclesInput>, ProjectUncheckedUpdateWithoutCyclesInput>
+  }
+
+  export type ProjectCreateNestedOneWithoutExtraRequestsInput = {
+    create?: XOR<ProjectCreateWithoutExtraRequestsInput, ProjectUncheckedCreateWithoutExtraRequestsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutExtraRequestsInput
+    connect?: ProjectWhereUniqueInput
+  }
+
+  export type ProjectSubServiceCreateNestedOneWithoutExtraRequestsInput = {
+    create?: XOR<ProjectSubServiceCreateWithoutExtraRequestsInput, ProjectSubServiceUncheckedCreateWithoutExtraRequestsInput>
+    connectOrCreate?: ProjectSubServiceCreateOrConnectWithoutExtraRequestsInput
+    connect?: ProjectSubServiceWhereUniqueInput
+  }
+
+  export type StaffCreateNestedOneWithoutProjectExtraRequestsInput = {
+    create?: XOR<StaffCreateWithoutProjectExtraRequestsInput, StaffUncheckedCreateWithoutProjectExtraRequestsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutProjectExtraRequestsInput
+    connect?: StaffWhereUniqueInput
+  }
+
+  export type ProjectUpdateOneRequiredWithoutExtraRequestsNestedInput = {
+    create?: XOR<ProjectCreateWithoutExtraRequestsInput, ProjectUncheckedCreateWithoutExtraRequestsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutExtraRequestsInput
+    upsert?: ProjectUpsertWithoutExtraRequestsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutExtraRequestsInput, ProjectUpdateWithoutExtraRequestsInput>, ProjectUncheckedUpdateWithoutExtraRequestsInput>
+  }
+
+  export type ProjectSubServiceUpdateOneRequiredWithoutExtraRequestsNestedInput = {
+    create?: XOR<ProjectSubServiceCreateWithoutExtraRequestsInput, ProjectSubServiceUncheckedCreateWithoutExtraRequestsInput>
+    connectOrCreate?: ProjectSubServiceCreateOrConnectWithoutExtraRequestsInput
+    upsert?: ProjectSubServiceUpsertWithoutExtraRequestsInput
+    connect?: ProjectSubServiceWhereUniqueInput
+    update?: XOR<XOR<ProjectSubServiceUpdateToOneWithWhereWithoutExtraRequestsInput, ProjectSubServiceUpdateWithoutExtraRequestsInput>, ProjectSubServiceUncheckedUpdateWithoutExtraRequestsInput>
+  }
+
+  export type StaffUpdateOneWithoutProjectExtraRequestsNestedInput = {
+    create?: XOR<StaffCreateWithoutProjectExtraRequestsInput, StaffUncheckedCreateWithoutProjectExtraRequestsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutProjectExtraRequestsInput
+    upsert?: StaffUpsertWithoutProjectExtraRequestsInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutProjectExtraRequestsInput, StaffUpdateWithoutProjectExtraRequestsInput>, StaffUncheckedUpdateWithoutProjectExtraRequestsInput>
+  }
+
   export type ClientInstallmentCreateNestedManyWithoutContractInput = {
     create?: XOR<ClientInstallmentCreateWithoutContractInput, ClientInstallmentUncheckedCreateWithoutContractInput> | ClientInstallmentCreateWithoutContractInput[] | ClientInstallmentUncheckedCreateWithoutContractInput[]
     connectOrCreate?: ClientInstallmentCreateOrConnectWithoutContractInput | ClientInstallmentCreateOrConnectWithoutContractInput[]
@@ -116297,6 +123007,13 @@ export namespace Prisma {
     connect?: ProjectWhereUniqueInput
   }
 
+  export type ProjectCreateNestedManyWithoutPrimaryContractInput = {
+    create?: XOR<ProjectCreateWithoutPrimaryContractInput, ProjectUncheckedCreateWithoutPrimaryContractInput> | ProjectCreateWithoutPrimaryContractInput[] | ProjectUncheckedCreateWithoutPrimaryContractInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutPrimaryContractInput | ProjectCreateOrConnectWithoutPrimaryContractInput[]
+    createMany?: ProjectCreateManyPrimaryContractInputEnvelope
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+  }
+
   export type ClientInstallmentUncheckedCreateNestedManyWithoutContractInput = {
     create?: XOR<ClientInstallmentCreateWithoutContractInput, ClientInstallmentUncheckedCreateWithoutContractInput> | ClientInstallmentCreateWithoutContractInput[] | ClientInstallmentUncheckedCreateWithoutContractInput[]
     connectOrCreate?: ClientInstallmentCreateOrConnectWithoutContractInput | ClientInstallmentCreateOrConnectWithoutContractInput[]
@@ -116309,6 +123026,13 @@ export namespace Prisma {
     connectOrCreate?: ContractDocumentCreateOrConnectWithoutContractInput | ContractDocumentCreateOrConnectWithoutContractInput[]
     createMany?: ContractDocumentCreateManyContractInputEnvelope
     connect?: ContractDocumentWhereUniqueInput | ContractDocumentWhereUniqueInput[]
+  }
+
+  export type ProjectUncheckedCreateNestedManyWithoutPrimaryContractInput = {
+    create?: XOR<ProjectCreateWithoutPrimaryContractInput, ProjectUncheckedCreateWithoutPrimaryContractInput> | ProjectCreateWithoutPrimaryContractInput[] | ProjectUncheckedCreateWithoutPrimaryContractInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutPrimaryContractInput | ProjectCreateOrConnectWithoutPrimaryContractInput[]
+    createMany?: ProjectCreateManyPrimaryContractInputEnvelope
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
   }
 
   export type EnumContractStatusFieldUpdateOperationsInput = {
@@ -116389,6 +123113,20 @@ export namespace Prisma {
     update?: XOR<XOR<ProjectUpdateToOneWithWhereWithoutContractsInput, ProjectUpdateWithoutContractsInput>, ProjectUncheckedUpdateWithoutContractsInput>
   }
 
+  export type ProjectUpdateManyWithoutPrimaryContractNestedInput = {
+    create?: XOR<ProjectCreateWithoutPrimaryContractInput, ProjectUncheckedCreateWithoutPrimaryContractInput> | ProjectCreateWithoutPrimaryContractInput[] | ProjectUncheckedCreateWithoutPrimaryContractInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutPrimaryContractInput | ProjectCreateOrConnectWithoutPrimaryContractInput[]
+    upsert?: ProjectUpsertWithWhereUniqueWithoutPrimaryContractInput | ProjectUpsertWithWhereUniqueWithoutPrimaryContractInput[]
+    createMany?: ProjectCreateManyPrimaryContractInputEnvelope
+    set?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    disconnect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    delete?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    update?: ProjectUpdateWithWhereUniqueWithoutPrimaryContractInput | ProjectUpdateWithWhereUniqueWithoutPrimaryContractInput[]
+    updateMany?: ProjectUpdateManyWithWhereWithoutPrimaryContractInput | ProjectUpdateManyWithWhereWithoutPrimaryContractInput[]
+    deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
+  }
+
   export type ClientInstallmentUncheckedUpdateManyWithoutContractNestedInput = {
     create?: XOR<ClientInstallmentCreateWithoutContractInput, ClientInstallmentUncheckedCreateWithoutContractInput> | ClientInstallmentCreateWithoutContractInput[] | ClientInstallmentUncheckedCreateWithoutContractInput[]
     connectOrCreate?: ClientInstallmentCreateOrConnectWithoutContractInput | ClientInstallmentCreateOrConnectWithoutContractInput[]
@@ -116415,6 +123153,20 @@ export namespace Prisma {
     update?: ContractDocumentUpdateWithWhereUniqueWithoutContractInput | ContractDocumentUpdateWithWhereUniqueWithoutContractInput[]
     updateMany?: ContractDocumentUpdateManyWithWhereWithoutContractInput | ContractDocumentUpdateManyWithWhereWithoutContractInput[]
     deleteMany?: ContractDocumentScalarWhereInput | ContractDocumentScalarWhereInput[]
+  }
+
+  export type ProjectUncheckedUpdateManyWithoutPrimaryContractNestedInput = {
+    create?: XOR<ProjectCreateWithoutPrimaryContractInput, ProjectUncheckedCreateWithoutPrimaryContractInput> | ProjectCreateWithoutPrimaryContractInput[] | ProjectUncheckedCreateWithoutPrimaryContractInput[]
+    connectOrCreate?: ProjectCreateOrConnectWithoutPrimaryContractInput | ProjectCreateOrConnectWithoutPrimaryContractInput[]
+    upsert?: ProjectUpsertWithWhereUniqueWithoutPrimaryContractInput | ProjectUpsertWithWhereUniqueWithoutPrimaryContractInput[]
+    createMany?: ProjectCreateManyPrimaryContractInputEnvelope
+    set?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    disconnect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    delete?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+    update?: ProjectUpdateWithWhereUniqueWithoutPrimaryContractInput | ProjectUpdateWithWhereUniqueWithoutPrimaryContractInput[]
+    updateMany?: ProjectUpdateManyWithWhereWithoutPrimaryContractInput | ProjectUpdateManyWithWhereWithoutPrimaryContractInput[]
+    deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
   }
 
   export type ClientCreateNestedOneWithoutInstallmentsInput = {
@@ -123926,11 +130678,14 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
@@ -123938,6 +130693,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateWithoutDynamicRoleInput = {
@@ -123967,17 +130724,22 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffCreateOrConnectWithoutDynamicRoleInput = {
@@ -124318,11 +131080,13 @@ export namespace Prisma {
 
   export type ClientCreateWithoutAccountManagerInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     address?: string | null
     clientType?: $Enums.ClientType
@@ -124338,6 +131102,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
+    createdBy?: StaffCreateNestedOneWithoutClientsCreatedInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
@@ -124352,12 +131117,15 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutAccountManagerInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
+    createdById?: string | null
     address?: string | null
     portfolioId?: string | null
     clientType?: $Enums.ClientType
@@ -124391,6 +131159,90 @@ export namespace Prisma {
 
   export type ClientCreateManyAccountManagerInputEnvelope = {
     data: ClientCreateManyAccountManagerInput | ClientCreateManyAccountManagerInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ClientCreateWithoutCreatedByInput = {
+    id: string
+    clientCode?: string | null
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
+    institution: string
+    email: string
+    phone: string
+    alternativePhone?: string | null
+    source: string
+    address?: string | null
+    clientType?: $Enums.ClientType
+    companyName?: string | null
+    contactPerson?: string | null
+    contractEndDate?: Date | string | null
+    contractStartDate?: Date | string | null
+    isActive?: boolean
+    monthlyBudget?: number | null
+    notes?: string | null
+    isDraft?: boolean
+    clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
+    serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
+    clientService?: ClientServiceCreateNestedManyWithoutClientInput
+    installments?: ClientInstallmentCreateNestedManyWithoutClientInput
+    accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
+    portfolio?: PortfolioCreateNestedOneWithoutClientsInput
+    clientTask?: ClientTaskCreateNestedManyWithoutClientInput
+    contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
+    contentRequests?: ContentRequestCreateNestedManyWithoutClientInput
+    contracts?: ContractCreateNestedManyWithoutClientInput
+    customerInvoices?: customer_invoicesCreateNestedManyWithoutClientInput
+    accountingCustomer?: customersCreateNestedOneWithoutClientInput
+    projects?: ProjectCreateNestedManyWithoutClientInput
+    quotations?: quotationsCreateNestedManyWithoutClientInput
+    recurringSchedules?: RecurringScheduleCreateNestedManyWithoutClientInput
+  }
+
+  export type ClientUncheckedCreateWithoutCreatedByInput = {
+    id: string
+    clientCode?: string | null
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
+    institution: string
+    email: string
+    phone: string
+    alternativePhone?: string | null
+    source: string
+    accountManagerId?: string | null
+    address?: string | null
+    portfolioId?: string | null
+    clientType?: $Enums.ClientType
+    companyName?: string | null
+    contactPerson?: string | null
+    contractEndDate?: Date | string | null
+    contractStartDate?: Date | string | null
+    isActive?: boolean
+    monthlyBudget?: number | null
+    notes?: string | null
+    isDraft?: boolean
+    clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
+    serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
+    clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
+    installments?: ClientInstallmentUncheckedCreateNestedManyWithoutClientInput
+    clientTask?: ClientTaskUncheckedCreateNestedManyWithoutClientInput
+    contentCycles?: ContentCycleUncheckedCreateNestedManyWithoutClientInput
+    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutClientInput
+    contracts?: ContractUncheckedCreateNestedManyWithoutClientInput
+    customerInvoices?: customer_invoicesUncheckedCreateNestedManyWithoutClientInput
+    accountingCustomer?: customersUncheckedCreateNestedOneWithoutClientInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutClientInput
+    quotations?: quotationsUncheckedCreateNestedManyWithoutClientInput
+    recurringSchedules?: RecurringScheduleUncheckedCreateNestedManyWithoutClientInput
+  }
+
+  export type ClientCreateOrConnectWithoutCreatedByInput = {
+    where: ClientWhereUniqueInput
+    create: XOR<ClientCreateWithoutCreatedByInput, ClientUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type ClientCreateManyCreatedByInputEnvelope = {
+    data: ClientCreateManyCreatedByInput | ClientCreateManyCreatedByInput[]
     skipDuplicates?: boolean
   }
 
@@ -124497,6 +131349,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     contractNumber: string
+    title?: string | null
+    duration?: string | null
     startDate?: Date | string | null
     endDate?: Date | string | null
     renewalDate?: Date | string | null
@@ -124505,12 +131359,15 @@ export namespace Prisma {
     status?: $Enums.ContractStatus
     notes?: string | null
     billingDay?: number | null
+    billingPeriodMonths?: number | null
+    contractType?: string | null
     monthlyAmount?: number | null
     installments?: ClientInstallmentCreateNestedManyWithoutContractInput
     documents?: ContractDocumentCreateNestedManyWithoutContractInput
     portfolio?: PortfolioCreateNestedOneWithoutContractsInput
     client: ClientCreateNestedOneWithoutContractsInput
     project?: ProjectCreateNestedOneWithoutContractsInput
+    primaryForProjects?: ProjectCreateNestedManyWithoutPrimaryContractInput
   }
 
   export type ContractUncheckedCreateWithoutCreatedByInput = {
@@ -124518,6 +131375,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     contractNumber: string
+    title?: string | null
+    duration?: string | null
     startDate?: Date | string | null
     endDate?: Date | string | null
     renewalDate?: Date | string | null
@@ -124529,9 +131388,12 @@ export namespace Prisma {
     projectId?: string | null
     portfolioId?: string | null
     billingDay?: number | null
+    billingPeriodMonths?: number | null
+    contractType?: string | null
     monthlyAmount?: number | null
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutContractInput
     documents?: ContractDocumentUncheckedCreateNestedManyWithoutContractInput
+    primaryForProjects?: ProjectUncheckedCreateNestedManyWithoutPrimaryContractInput
   }
 
   export type ContractCreateOrConnectWithoutCreatedByInput = {
@@ -124555,12 +131417,22 @@ export namespace Prisma {
     priority?: $Enums.ProjectPriority
     startDate?: Date | string | null
     dueDate?: Date | string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractCreateNestedOneWithoutPrimaryForProjectsInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestCreateNestedManyWithoutProjectInput
     contracts?: ContractCreateNestedManyWithoutProjectInput
     portfolio?: PortfolioCreateNestedOneWithoutProjectsInput
     client: ClientCreateNestedOneWithoutProjectsInput
     tasks?: TaskCreateNestedManyWithoutProjectInput
+    serviceLinks?: ProjectServiceLinkCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutCreatedByInput = {
@@ -124576,10 +131448,20 @@ export namespace Prisma {
     dueDate?: Date | string | null
     clientId: string
     portfolioId?: string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    contractId?: string | null
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutProjectInput
     contracts?: ContractUncheckedCreateNestedManyWithoutProjectInput
     tasks?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    serviceLinks?: ProjectServiceLinkUncheckedCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleUncheckedCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutCreatedByInput = {
@@ -124589,6 +131471,110 @@ export namespace Prisma {
 
   export type ProjectCreateManyCreatedByInputEnvelope = {
     data: ProjectCreateManyCreatedByInput | ProjectCreateManyCreatedByInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ServiceCreateWithoutCreatedByInput = {
+    id: string
+    serviceCode?: string | null
+    serviceName: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    iconUrl?: string | null
+    source?: string
+    externalId?: string | null
+    lastSyncedAt?: Date | string | null
+    serviceType?: $Enums.ServiceType
+    serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutServiceInput
+    clientService?: ClientServiceCreateNestedManyWithoutServiceInput
+    updatedBy?: StaffCreateNestedOneWithoutServicesUpdatedInput
+    portfolio?: PortfolioCreateNestedOneWithoutServicesInput
+    subService?: SubServiceCreateNestedManyWithoutServiceInput
+    projectLinks?: ProjectServiceLinkCreateNestedManyWithoutServiceInput
+  }
+
+  export type ServiceUncheckedCreateWithoutCreatedByInput = {
+    id: string
+    serviceCode?: string | null
+    serviceName: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    updatedById?: string | null
+    portfolioId?: string | null
+    iconUrl?: string | null
+    source?: string
+    externalId?: string | null
+    lastSyncedAt?: Date | string | null
+    serviceType?: $Enums.ServiceType
+    serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutServiceInput
+    clientService?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
+    subService?: SubServiceUncheckedCreateNestedManyWithoutServiceInput
+    projectLinks?: ProjectServiceLinkUncheckedCreateNestedManyWithoutServiceInput
+  }
+
+  export type ServiceCreateOrConnectWithoutCreatedByInput = {
+    where: ServiceWhereUniqueInput
+    create: XOR<ServiceCreateWithoutCreatedByInput, ServiceUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type ServiceCreateManyCreatedByInputEnvelope = {
+    data: ServiceCreateManyCreatedByInput | ServiceCreateManyCreatedByInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ServiceCreateWithoutUpdatedByInput = {
+    id: string
+    serviceCode?: string | null
+    serviceName: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    iconUrl?: string | null
+    source?: string
+    externalId?: string | null
+    lastSyncedAt?: Date | string | null
+    serviceType?: $Enums.ServiceType
+    serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutServiceInput
+    clientService?: ClientServiceCreateNestedManyWithoutServiceInput
+    createdBy?: StaffCreateNestedOneWithoutServicesCreatedInput
+    portfolio?: PortfolioCreateNestedOneWithoutServicesInput
+    subService?: SubServiceCreateNestedManyWithoutServiceInput
+    projectLinks?: ProjectServiceLinkCreateNestedManyWithoutServiceInput
+  }
+
+  export type ServiceUncheckedCreateWithoutUpdatedByInput = {
+    id: string
+    serviceCode?: string | null
+    serviceName: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdById?: string | null
+    portfolioId?: string | null
+    iconUrl?: string | null
+    source?: string
+    externalId?: string | null
+    lastSyncedAt?: Date | string | null
+    serviceType?: $Enums.ServiceType
+    serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutServiceInput
+    clientService?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
+    subService?: SubServiceUncheckedCreateNestedManyWithoutServiceInput
+    projectLinks?: ProjectServiceLinkUncheckedCreateNestedManyWithoutServiceInput
+  }
+
+  export type ServiceCreateOrConnectWithoutUpdatedByInput = {
+    where: ServiceWhereUniqueInput
+    create: XOR<ServiceCreateWithoutUpdatedByInput, ServiceUncheckedCreateWithoutUpdatedByInput>
+  }
+
+  export type ServiceCreateManyUpdatedByInputEnvelope = {
+    data: ServiceCreateManyUpdatedByInput | ServiceCreateManyUpdatedByInput[]
     skipDuplicates?: boolean
   }
 
@@ -124759,6 +131745,8 @@ export namespace Prisma {
     createdAt?: Date | string
     progressAtTransfer?: number
     deadlineAtTransfer?: Date | string | null
+    reason?: string | null
+    note?: string | null
     task: TaskCreateNestedOneWithoutTransferHistoryInput
     toAssignee: StaffCreateNestedOneWithoutTransferredToTasksInput
     transferredBy?: StaffCreateNestedOneWithoutTransferredByTasksInput
@@ -124772,6 +131760,8 @@ export namespace Prisma {
     progressAtTransfer?: number
     deadlineAtTransfer?: Date | string | null
     transferredById?: string | null
+    reason?: string | null
+    note?: string | null
   }
 
   export type TaskTransferHistoryCreateOrConnectWithoutFromAssigneeInput = {
@@ -124789,6 +131779,8 @@ export namespace Prisma {
     createdAt?: Date | string
     progressAtTransfer?: number
     deadlineAtTransfer?: Date | string | null
+    reason?: string | null
+    note?: string | null
     fromAssignee: StaffCreateNestedOneWithoutTransferredFromTasksInput
     task: TaskCreateNestedOneWithoutTransferHistoryInput
     transferredBy?: StaffCreateNestedOneWithoutTransferredByTasksInput
@@ -124802,6 +131794,8 @@ export namespace Prisma {
     progressAtTransfer?: number
     deadlineAtTransfer?: Date | string | null
     transferredById?: string | null
+    reason?: string | null
+    note?: string | null
   }
 
   export type TaskTransferHistoryCreateOrConnectWithoutToAssigneeInput = {
@@ -124819,6 +131813,8 @@ export namespace Prisma {
     createdAt?: Date | string
     progressAtTransfer?: number
     deadlineAtTransfer?: Date | string | null
+    reason?: string | null
+    note?: string | null
     fromAssignee: StaffCreateNestedOneWithoutTransferredFromTasksInput
     task: TaskCreateNestedOneWithoutTransferHistoryInput
     toAssignee: StaffCreateNestedOneWithoutTransferredToTasksInput
@@ -124832,6 +131828,8 @@ export namespace Prisma {
     toAssigneeId: string
     progressAtTransfer?: number
     deadlineAtTransfer?: Date | string | null
+    reason?: string | null
+    note?: string | null
   }
 
   export type TaskTransferHistoryCreateOrConnectWithoutTransferredByInput = {
@@ -124917,6 +131915,68 @@ export namespace Prisma {
 
   export type TaskCreateManyUserInputEnvelope = {
     data: TaskCreateManyUserInput | TaskCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ProjectSubServiceCreateWithoutAssigneeInput = {
+    id: string
+    name: string
+    description?: string | null
+    quantity?: number
+    unit?: string
+    targetQuantity?: number
+    link: ProjectServiceLinkCreateNestedOneWithoutSubServicesInput
+    extraRequests?: ProjectExtraRequestCreateNestedManyWithoutSubServiceInput
+  }
+
+  export type ProjectSubServiceUncheckedCreateWithoutAssigneeInput = {
+    id: string
+    projectServiceId: string
+    name: string
+    description?: string | null
+    quantity?: number
+    unit?: string
+    targetQuantity?: number
+    extraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutSubServiceInput
+  }
+
+  export type ProjectSubServiceCreateOrConnectWithoutAssigneeInput = {
+    where: ProjectSubServiceWhereUniqueInput
+    create: XOR<ProjectSubServiceCreateWithoutAssigneeInput, ProjectSubServiceUncheckedCreateWithoutAssigneeInput>
+  }
+
+  export type ProjectSubServiceCreateManyAssigneeInputEnvelope = {
+    data: ProjectSubServiceCreateManyAssigneeInput | ProjectSubServiceCreateManyAssigneeInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ProjectExtraRequestCreateWithoutRequestedByInput = {
+    id: string
+    quantity: number
+    description?: string | null
+    status?: string
+    createdAt?: Date | string
+    project: ProjectCreateNestedOneWithoutExtraRequestsInput
+    subService: ProjectSubServiceCreateNestedOneWithoutExtraRequestsInput
+  }
+
+  export type ProjectExtraRequestUncheckedCreateWithoutRequestedByInput = {
+    id: string
+    projectId: string
+    subServiceId: string
+    quantity: number
+    description?: string | null
+    status?: string
+    createdAt?: Date | string
+  }
+
+  export type ProjectExtraRequestCreateOrConnectWithoutRequestedByInput = {
+    where: ProjectExtraRequestWhereUniqueInput
+    create: XOR<ProjectExtraRequestCreateWithoutRequestedByInput, ProjectExtraRequestUncheckedCreateWithoutRequestedByInput>
+  }
+
+  export type ProjectExtraRequestCreateManyRequestedByInputEnvelope = {
+    data: ProjectExtraRequestCreateManyRequestedByInput | ProjectExtraRequestCreateManyRequestedByInput[]
     skipDuplicates?: boolean
   }
 
@@ -125152,13 +132212,16 @@ export namespace Prisma {
     OR?: ClientScalarWhereInput[]
     NOT?: ClientScalarWhereInput | ClientScalarWhereInput[]
     id?: StringFilter<"Client"> | string
+    clientCode?: StringNullableFilter<"Client"> | string | null
     createdAt?: DateTimeNullableFilter<"Client"> | Date | string | null
     updatedAt?: DateTimeNullableFilter<"Client"> | Date | string | null
     institution?: StringFilter<"Client"> | string
     email?: StringFilter<"Client"> | string
     phone?: StringFilter<"Client"> | string
+    alternativePhone?: StringNullableFilter<"Client"> | string | null
     source?: StringFilter<"Client"> | string
     accountManagerId?: StringNullableFilter<"Client"> | string | null
+    createdById?: StringNullableFilter<"Client"> | string | null
     address?: StringNullableFilter<"Client"> | string | null
     portfolioId?: StringNullableFilter<"Client"> | string | null
     clientType?: EnumClientTypeFilter<"Client"> | $Enums.ClientType
@@ -125170,6 +132233,22 @@ export namespace Prisma {
     monthlyBudget?: FloatNullableFilter<"Client"> | number | null
     notes?: StringNullableFilter<"Client"> | string | null
     isDraft?: BoolFilter<"Client"> | boolean
+  }
+
+  export type ClientUpsertWithWhereUniqueWithoutCreatedByInput = {
+    where: ClientWhereUniqueInput
+    update: XOR<ClientUpdateWithoutCreatedByInput, ClientUncheckedUpdateWithoutCreatedByInput>
+    create: XOR<ClientCreateWithoutCreatedByInput, ClientUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type ClientUpdateWithWhereUniqueWithoutCreatedByInput = {
+    where: ClientWhereUniqueInput
+    data: XOR<ClientUpdateWithoutCreatedByInput, ClientUncheckedUpdateWithoutCreatedByInput>
+  }
+
+  export type ClientUpdateManyWithWhereWithoutCreatedByInput = {
+    where: ClientScalarWhereInput
+    data: XOR<ClientUpdateManyMutationInput, ClientUncheckedUpdateManyWithoutCreatedByInput>
   }
 
   export type ContentRequestAssigneeUpsertWithWhereUniqueWithoutUserInput = {
@@ -125288,6 +132367,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Contract"> | Date | string
     updatedAt?: DateTimeFilter<"Contract"> | Date | string
     contractNumber?: StringFilter<"Contract"> | string
+    title?: StringNullableFilter<"Contract"> | string | null
+    duration?: StringNullableFilter<"Contract"> | string | null
     startDate?: DateTimeNullableFilter<"Contract"> | Date | string | null
     endDate?: DateTimeNullableFilter<"Contract"> | Date | string | null
     renewalDate?: DateTimeNullableFilter<"Contract"> | Date | string | null
@@ -125300,6 +132381,8 @@ export namespace Prisma {
     portfolioId?: StringNullableFilter<"Contract"> | string | null
     createdById?: StringNullableFilter<"Contract"> | string | null
     billingDay?: IntNullableFilter<"Contract"> | number | null
+    billingPeriodMonths?: IntNullableFilter<"Contract"> | number | null
+    contractType?: StringNullableFilter<"Contract"> | string | null
     monthlyAmount?: FloatNullableFilter<"Contract"> | number | null
   }
 
@@ -125336,6 +132419,66 @@ export namespace Prisma {
     clientId?: StringFilter<"Project"> | string
     portfolioId?: StringNullableFilter<"Project"> | string | null
     createdById?: StringNullableFilter<"Project"> | string | null
+    projectCode?: StringNullableFilter<"Project"> | string | null
+    billingMode?: StringFilter<"Project"> | string
+    lifecycleStatus?: StringFilter<"Project"> | string
+    contractId?: StringNullableFilter<"Project"> | string | null
+    archived?: BoolFilter<"Project"> | boolean
+    isDraft?: BoolFilter<"Project"> | boolean
+    scheduleConfig?: JsonNullableFilter<"Project">
+  }
+
+  export type ServiceUpsertWithWhereUniqueWithoutCreatedByInput = {
+    where: ServiceWhereUniqueInput
+    update: XOR<ServiceUpdateWithoutCreatedByInput, ServiceUncheckedUpdateWithoutCreatedByInput>
+    create: XOR<ServiceCreateWithoutCreatedByInput, ServiceUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type ServiceUpdateWithWhereUniqueWithoutCreatedByInput = {
+    where: ServiceWhereUniqueInput
+    data: XOR<ServiceUpdateWithoutCreatedByInput, ServiceUncheckedUpdateWithoutCreatedByInput>
+  }
+
+  export type ServiceUpdateManyWithWhereWithoutCreatedByInput = {
+    where: ServiceScalarWhereInput
+    data: XOR<ServiceUpdateManyMutationInput, ServiceUncheckedUpdateManyWithoutCreatedByInput>
+  }
+
+  export type ServiceScalarWhereInput = {
+    AND?: ServiceScalarWhereInput | ServiceScalarWhereInput[]
+    OR?: ServiceScalarWhereInput[]
+    NOT?: ServiceScalarWhereInput | ServiceScalarWhereInput[]
+    id?: StringFilter<"Service"> | string
+    serviceCode?: StringNullableFilter<"Service"> | string | null
+    serviceName?: StringFilter<"Service"> | string
+    description?: StringNullableFilter<"Service"> | string | null
+    isActive?: BoolFilter<"Service"> | boolean
+    createdAt?: DateTimeFilter<"Service"> | Date | string
+    updatedAt?: DateTimeFilter<"Service"> | Date | string
+    createdById?: StringNullableFilter<"Service"> | string | null
+    updatedById?: StringNullableFilter<"Service"> | string | null
+    portfolioId?: StringNullableFilter<"Service"> | string | null
+    iconUrl?: StringNullableFilter<"Service"> | string | null
+    source?: StringFilter<"Service"> | string
+    externalId?: StringNullableFilter<"Service"> | string | null
+    lastSyncedAt?: DateTimeNullableFilter<"Service"> | Date | string | null
+    serviceType?: EnumServiceTypeFilter<"Service"> | $Enums.ServiceType
+  }
+
+  export type ServiceUpsertWithWhereUniqueWithoutUpdatedByInput = {
+    where: ServiceWhereUniqueInput
+    update: XOR<ServiceUpdateWithoutUpdatedByInput, ServiceUncheckedUpdateWithoutUpdatedByInput>
+    create: XOR<ServiceCreateWithoutUpdatedByInput, ServiceUncheckedCreateWithoutUpdatedByInput>
+  }
+
+  export type ServiceUpdateWithWhereUniqueWithoutUpdatedByInput = {
+    where: ServiceWhereUniqueInput
+    data: XOR<ServiceUpdateWithoutUpdatedByInput, ServiceUncheckedUpdateWithoutUpdatedByInput>
+  }
+
+  export type ServiceUpdateManyWithWhereWithoutUpdatedByInput = {
+    where: ServiceScalarWhereInput
+    data: XOR<ServiceUpdateManyMutationInput, ServiceUncheckedUpdateManyWithoutUpdatedByInput>
   }
 
   export type RecurringScheduleStepUpsertWithWhereUniqueWithoutAssigneeInput = {
@@ -125529,6 +132672,8 @@ export namespace Prisma {
     progressAtTransfer?: IntFilter<"TaskTransferHistory"> | number
     deadlineAtTransfer?: DateTimeNullableFilter<"TaskTransferHistory"> | Date | string | null
     transferredById?: StringNullableFilter<"TaskTransferHistory"> | string | null
+    reason?: StringNullableFilter<"TaskTransferHistory"> | string | null
+    note?: StringNullableFilter<"TaskTransferHistory"> | string | null
   }
 
   export type TaskTransferHistoryUpsertWithWhereUniqueWithoutToAssigneeInput = {
@@ -125613,6 +132758,66 @@ export namespace Prisma {
     progressNotes?: JsonNullableFilter<"Task">
   }
 
+  export type ProjectSubServiceUpsertWithWhereUniqueWithoutAssigneeInput = {
+    where: ProjectSubServiceWhereUniqueInput
+    update: XOR<ProjectSubServiceUpdateWithoutAssigneeInput, ProjectSubServiceUncheckedUpdateWithoutAssigneeInput>
+    create: XOR<ProjectSubServiceCreateWithoutAssigneeInput, ProjectSubServiceUncheckedCreateWithoutAssigneeInput>
+  }
+
+  export type ProjectSubServiceUpdateWithWhereUniqueWithoutAssigneeInput = {
+    where: ProjectSubServiceWhereUniqueInput
+    data: XOR<ProjectSubServiceUpdateWithoutAssigneeInput, ProjectSubServiceUncheckedUpdateWithoutAssigneeInput>
+  }
+
+  export type ProjectSubServiceUpdateManyWithWhereWithoutAssigneeInput = {
+    where: ProjectSubServiceScalarWhereInput
+    data: XOR<ProjectSubServiceUpdateManyMutationInput, ProjectSubServiceUncheckedUpdateManyWithoutAssigneeInput>
+  }
+
+  export type ProjectSubServiceScalarWhereInput = {
+    AND?: ProjectSubServiceScalarWhereInput | ProjectSubServiceScalarWhereInput[]
+    OR?: ProjectSubServiceScalarWhereInput[]
+    NOT?: ProjectSubServiceScalarWhereInput | ProjectSubServiceScalarWhereInput[]
+    id?: StringFilter<"ProjectSubService"> | string
+    projectServiceId?: StringFilter<"ProjectSubService"> | string
+    name?: StringFilter<"ProjectSubService"> | string
+    description?: StringNullableFilter<"ProjectSubService"> | string | null
+    quantity?: IntFilter<"ProjectSubService"> | number
+    unit?: StringFilter<"ProjectSubService"> | string
+    targetQuantity?: IntFilter<"ProjectSubService"> | number
+    assigneeId?: StringNullableFilter<"ProjectSubService"> | string | null
+  }
+
+  export type ProjectExtraRequestUpsertWithWhereUniqueWithoutRequestedByInput = {
+    where: ProjectExtraRequestWhereUniqueInput
+    update: XOR<ProjectExtraRequestUpdateWithoutRequestedByInput, ProjectExtraRequestUncheckedUpdateWithoutRequestedByInput>
+    create: XOR<ProjectExtraRequestCreateWithoutRequestedByInput, ProjectExtraRequestUncheckedCreateWithoutRequestedByInput>
+  }
+
+  export type ProjectExtraRequestUpdateWithWhereUniqueWithoutRequestedByInput = {
+    where: ProjectExtraRequestWhereUniqueInput
+    data: XOR<ProjectExtraRequestUpdateWithoutRequestedByInput, ProjectExtraRequestUncheckedUpdateWithoutRequestedByInput>
+  }
+
+  export type ProjectExtraRequestUpdateManyWithWhereWithoutRequestedByInput = {
+    where: ProjectExtraRequestScalarWhereInput
+    data: XOR<ProjectExtraRequestUpdateManyMutationInput, ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByInput>
+  }
+
+  export type ProjectExtraRequestScalarWhereInput = {
+    AND?: ProjectExtraRequestScalarWhereInput | ProjectExtraRequestScalarWhereInput[]
+    OR?: ProjectExtraRequestScalarWhereInput[]
+    NOT?: ProjectExtraRequestScalarWhereInput | ProjectExtraRequestScalarWhereInput[]
+    id?: StringFilter<"ProjectExtraRequest"> | string
+    projectId?: StringFilter<"ProjectExtraRequest"> | string
+    subServiceId?: StringFilter<"ProjectExtraRequest"> | string
+    quantity?: IntFilter<"ProjectExtraRequest"> | number
+    description?: StringNullableFilter<"ProjectExtraRequest"> | string | null
+    status?: StringFilter<"ProjectExtraRequest"> | string
+    requestedById?: StringNullableFilter<"ProjectExtraRequest"> | string | null
+    createdAt?: DateTimeFilter<"ProjectExtraRequest"> | Date | string
+  }
+
   export type StaffCreateWithoutSessionsInput = {
     id: string
     createdAt?: Date | string
@@ -125639,11 +132844,14 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
@@ -125651,6 +132859,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateWithoutSessionsInput = {
@@ -125681,16 +132891,21 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffCreateOrConnectWithoutSessionsInput = {
@@ -125735,11 +132950,14 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
@@ -125747,6 +132965,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutSessionsInput = {
@@ -125777,16 +132997,21 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffCreateWithoutAccountsInput = {
@@ -125814,11 +133039,14 @@ export namespace Prisma {
     registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
@@ -125827,6 +133055,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateWithoutAccountsInput = {
@@ -125856,17 +133086,22 @@ export namespace Prisma {
     registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffCreateOrConnectWithoutAccountsInput = {
@@ -125910,11 +133145,14 @@ export namespace Prisma {
     registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
@@ -125923,6 +133161,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutAccountsInput = {
@@ -125952,17 +133192,22 @@ export namespace Prisma {
     registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type ClientSubServiceCreateWithoutClientInput = {
@@ -126069,6 +133314,9 @@ export namespace Prisma {
     paidAmount?: number
     status?: $Enums.InstallmentStatus
     notes?: string | null
+    installmentNumber?: number | null
+    percentage?: number | null
+    dueMilestone?: string | null
     contract?: ContractCreateNestedOneWithoutInstallmentsInput
   }
 
@@ -126085,6 +133333,9 @@ export namespace Prisma {
     status?: $Enums.InstallmentStatus
     notes?: string | null
     contractId?: string | null
+    installmentNumber?: number | null
+    percentage?: number | null
+    dueMilestone?: string | null
   }
 
   export type ClientInstallmentCreateOrConnectWithoutClientInput = {
@@ -126122,11 +133373,14 @@ export namespace Prisma {
     registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
@@ -126135,6 +133389,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateWithoutManagedClientsInput = {
@@ -126164,22 +133420,122 @@ export namespace Prisma {
     registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffCreateOrConnectWithoutManagedClientsInput = {
     where: StaffWhereUniqueInput
     create: XOR<StaffCreateWithoutManagedClientsInput, StaffUncheckedCreateWithoutManagedClientsInput>
+  }
+
+  export type StaffCreateWithoutClientsCreatedInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    gender?: string | null
+    salary?: string | null
+    department?: string | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
+    expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
+    incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
+    userFiles?: UserFilesCreateNestedManyWithoutUserInput
+    reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
+    registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
+    contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
+    uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
+    createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
+    createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
+    assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
+    dynamicRole?: RoleCreateNestedOneWithoutUsersInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
+  }
+
+  export type StaffUncheckedCreateWithoutClientsCreatedInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    gender?: string | null
+    salary?: string | null
+    department?: string | null
+    roleId?: string | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    portfolioId?: string | null
+    employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
+    expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
+    incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
+    userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
+    reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
+    registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
+    contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
+    uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
+    createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
+    createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
+    assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
+  }
+
+  export type StaffCreateOrConnectWithoutClientsCreatedInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutClientsCreatedInput, StaffUncheckedCreateWithoutClientsCreatedInput>
   }
 
   export type PortfolioCreateWithoutClientsInput = {
@@ -126338,6 +133694,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     contractNumber: string
+    title?: string | null
+    duration?: string | null
     startDate?: Date | string | null
     endDate?: Date | string | null
     renewalDate?: Date | string | null
@@ -126346,12 +133704,15 @@ export namespace Prisma {
     status?: $Enums.ContractStatus
     notes?: string | null
     billingDay?: number | null
+    billingPeriodMonths?: number | null
+    contractType?: string | null
     monthlyAmount?: number | null
     installments?: ClientInstallmentCreateNestedManyWithoutContractInput
     documents?: ContractDocumentCreateNestedManyWithoutContractInput
     portfolio?: PortfolioCreateNestedOneWithoutContractsInput
     createdBy?: StaffCreateNestedOneWithoutCreatedContractsInput
     project?: ProjectCreateNestedOneWithoutContractsInput
+    primaryForProjects?: ProjectCreateNestedManyWithoutPrimaryContractInput
   }
 
   export type ContractUncheckedCreateWithoutClientInput = {
@@ -126359,6 +133720,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     contractNumber: string
+    title?: string | null
+    duration?: string | null
     startDate?: Date | string | null
     endDate?: Date | string | null
     renewalDate?: Date | string | null
@@ -126370,9 +133733,12 @@ export namespace Prisma {
     portfolioId?: string | null
     createdById?: string | null
     billingDay?: number | null
+    billingPeriodMonths?: number | null
+    contractType?: string | null
     monthlyAmount?: number | null
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutContractInput
     documents?: ContractDocumentUncheckedCreateNestedManyWithoutContractInput
+    primaryForProjects?: ProjectUncheckedCreateNestedManyWithoutPrimaryContractInput
   }
 
   export type ContractCreateOrConnectWithoutClientInput = {
@@ -126529,12 +133895,22 @@ export namespace Prisma {
     priority?: $Enums.ProjectPriority
     startDate?: Date | string | null
     dueDate?: Date | string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractCreateNestedOneWithoutPrimaryForProjectsInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestCreateNestedManyWithoutProjectInput
     contracts?: ContractCreateNestedManyWithoutProjectInput
     portfolio?: PortfolioCreateNestedOneWithoutProjectsInput
     createdBy?: StaffCreateNestedOneWithoutCreatedProjectsInput
     tasks?: TaskCreateNestedManyWithoutProjectInput
+    serviceLinks?: ProjectServiceLinkCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutClientInput = {
@@ -126550,10 +133926,20 @@ export namespace Prisma {
     dueDate?: Date | string | null
     portfolioId?: string | null
     createdById?: string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    contractId?: string | null
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutProjectInput
     contracts?: ContractUncheckedCreateNestedManyWithoutProjectInput
     tasks?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    serviceLinks?: ProjectServiceLinkUncheckedCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleUncheckedCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutClientInput = {
@@ -126783,6 +134169,9 @@ export namespace Prisma {
     notes?: StringNullableFilter<"ClientInstallment"> | string | null
     clientId?: StringFilter<"ClientInstallment"> | string
     contractId?: StringNullableFilter<"ClientInstallment"> | string | null
+    installmentNumber?: IntNullableFilter<"ClientInstallment"> | number | null
+    percentage?: FloatNullableFilter<"ClientInstallment"> | number | null
+    dueMilestone?: StringNullableFilter<"ClientInstallment"> | string | null
   }
 
   export type StaffUpsertWithoutManagedClientsInput = {
@@ -126821,11 +134210,14 @@ export namespace Prisma {
     registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
@@ -126834,6 +134226,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutManagedClientsInput = {
@@ -126863,17 +134257,123 @@ export namespace Prisma {
     registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
+  }
+
+  export type StaffUpsertWithoutClientsCreatedInput = {
+    update: XOR<StaffUpdateWithoutClientsCreatedInput, StaffUncheckedUpdateWithoutClientsCreatedInput>
+    create: XOR<StaffCreateWithoutClientsCreatedInput, StaffUncheckedCreateWithoutClientsCreatedInput>
+    where?: StaffWhereInput
+  }
+
+  export type StaffUpdateToOneWithWhereWithoutClientsCreatedInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutClientsCreatedInput, StaffUncheckedUpdateWithoutClientsCreatedInput>
+  }
+
+  export type StaffUpdateWithoutClientsCreatedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    salary?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
+    incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
+    userFiles?: UserFilesUpdateManyWithoutUserNestedInput
+    reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
+    registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
+    contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
+    uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
+    createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
+    createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
+    assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
+    dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
+  }
+
+  export type StaffUncheckedUpdateWithoutClientsCreatedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    salary?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
+    incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
+    userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
+    reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
+    registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
+    contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+    uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+    createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
+    createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
+    assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type PortfolioUpsertWithoutClientsInput = {
@@ -127300,6 +134800,196 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type StaffCreateWithoutServicesCreatedInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    gender?: string | null
+    salary?: string | null
+    department?: string | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
+    expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
+    incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
+    userFiles?: UserFilesCreateNestedManyWithoutUserInput
+    reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
+    registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
+    contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
+    contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
+    uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
+    createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
+    createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
+    assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
+    dynamicRole?: RoleCreateNestedOneWithoutUsersInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
+  }
+
+  export type StaffUncheckedCreateWithoutServicesCreatedInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    gender?: string | null
+    salary?: string | null
+    department?: string | null
+    roleId?: string | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    portfolioId?: string | null
+    employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
+    expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
+    incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
+    userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
+    reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
+    registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
+    contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
+    contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
+    uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
+    createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
+    createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
+    assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
+  }
+
+  export type StaffCreateOrConnectWithoutServicesCreatedInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutServicesCreatedInput, StaffUncheckedCreateWithoutServicesCreatedInput>
+  }
+
+  export type StaffCreateWithoutServicesUpdatedInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    gender?: string | null
+    salary?: string | null
+    department?: string | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
+    expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
+    incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
+    userFiles?: UserFilesCreateNestedManyWithoutUserInput
+    reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
+    registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
+    contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
+    contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
+    uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
+    createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
+    createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
+    dynamicRole?: RoleCreateNestedOneWithoutUsersInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
+  }
+
+  export type StaffUncheckedCreateWithoutServicesUpdatedInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    gender?: string | null
+    salary?: string | null
+    department?: string | null
+    roleId?: string | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    portfolioId?: string | null
+    employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
+    expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
+    incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
+    userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
+    reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
+    registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
+    contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
+    contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
+    uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
+    createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
+    createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
+  }
+
+  export type StaffCreateOrConnectWithoutServicesUpdatedInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutServicesUpdatedInput, StaffUncheckedCreateWithoutServicesUpdatedInput>
+  }
+
   export type PortfolioCreateWithoutServicesInput = {
     id: string
     createdAt?: Date | string
@@ -127391,6 +135081,28 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ProjectServiceLinkCreateWithoutServiceInput = {
+    id: string
+    project: ProjectCreateNestedOneWithoutServiceLinksInput
+    subServices?: ProjectSubServiceCreateNestedManyWithoutLinkInput
+  }
+
+  export type ProjectServiceLinkUncheckedCreateWithoutServiceInput = {
+    id: string
+    projectId: string
+    subServices?: ProjectSubServiceUncheckedCreateNestedManyWithoutLinkInput
+  }
+
+  export type ProjectServiceLinkCreateOrConnectWithoutServiceInput = {
+    where: ProjectServiceLinkWhereUniqueInput
+    create: XOR<ProjectServiceLinkCreateWithoutServiceInput, ProjectServiceLinkUncheckedCreateWithoutServiceInput>
+  }
+
+  export type ProjectServiceLinkCreateManyServiceInputEnvelope = {
+    data: ProjectServiceLinkCreateManyServiceInput | ProjectServiceLinkCreateManyServiceInput[]
+    skipDuplicates?: boolean
+  }
+
   export type IncomeServiceAgreementUpsertWithWhereUniqueWithoutServiceInput = {
     where: IncomeServiceAgreementWhereUniqueInput
     update: XOR<IncomeServiceAgreementUpdateWithoutServiceInput, IncomeServiceAgreementUncheckedUpdateWithoutServiceInput>
@@ -127421,6 +135133,208 @@ export namespace Prisma {
   export type ClientServiceUpdateManyWithWhereWithoutServiceInput = {
     where: ClientServiceScalarWhereInput
     data: XOR<ClientServiceUpdateManyMutationInput, ClientServiceUncheckedUpdateManyWithoutServiceInput>
+  }
+
+  export type StaffUpsertWithoutServicesCreatedInput = {
+    update: XOR<StaffUpdateWithoutServicesCreatedInput, StaffUncheckedUpdateWithoutServicesCreatedInput>
+    create: XOR<StaffCreateWithoutServicesCreatedInput, StaffUncheckedCreateWithoutServicesCreatedInput>
+    where?: StaffWhereInput
+  }
+
+  export type StaffUpdateToOneWithWhereWithoutServicesCreatedInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutServicesCreatedInput, StaffUncheckedUpdateWithoutServicesCreatedInput>
+  }
+
+  export type StaffUpdateWithoutServicesCreatedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    salary?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
+    incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
+    userFiles?: UserFilesUpdateManyWithoutUserNestedInput
+    reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
+    registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
+    contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
+    contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
+    uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
+    createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
+    createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
+    assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
+    dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
+  }
+
+  export type StaffUncheckedUpdateWithoutServicesCreatedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    salary?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
+    incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
+    userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
+    reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
+    registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
+    contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
+    contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+    uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+    createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
+    createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
+    assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
+  }
+
+  export type StaffUpsertWithoutServicesUpdatedInput = {
+    update: XOR<StaffUpdateWithoutServicesUpdatedInput, StaffUncheckedUpdateWithoutServicesUpdatedInput>
+    create: XOR<StaffCreateWithoutServicesUpdatedInput, StaffUncheckedCreateWithoutServicesUpdatedInput>
+    where?: StaffWhereInput
+  }
+
+  export type StaffUpdateToOneWithWhereWithoutServicesUpdatedInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutServicesUpdatedInput, StaffUncheckedUpdateWithoutServicesUpdatedInput>
+  }
+
+  export type StaffUpdateWithoutServicesUpdatedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    salary?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
+    incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
+    userFiles?: UserFilesUpdateManyWithoutUserNestedInput
+    reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
+    registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
+    contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
+    contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
+    uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
+    createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
+    createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
+    dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
+  }
+
+  export type StaffUncheckedUpdateWithoutServicesUpdatedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    salary?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
+    incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
+    userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
+    reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
+    registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
+    contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
+    contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+    uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+    createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
+    createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type PortfolioUpsertWithoutServicesInput = {
@@ -127515,6 +135429,31 @@ export namespace Prisma {
     sortOrder?: IntFilter<"SubService"> | number
   }
 
+  export type ProjectServiceLinkUpsertWithWhereUniqueWithoutServiceInput = {
+    where: ProjectServiceLinkWhereUniqueInput
+    update: XOR<ProjectServiceLinkUpdateWithoutServiceInput, ProjectServiceLinkUncheckedUpdateWithoutServiceInput>
+    create: XOR<ProjectServiceLinkCreateWithoutServiceInput, ProjectServiceLinkUncheckedCreateWithoutServiceInput>
+  }
+
+  export type ProjectServiceLinkUpdateWithWhereUniqueWithoutServiceInput = {
+    where: ProjectServiceLinkWhereUniqueInput
+    data: XOR<ProjectServiceLinkUpdateWithoutServiceInput, ProjectServiceLinkUncheckedUpdateWithoutServiceInput>
+  }
+
+  export type ProjectServiceLinkUpdateManyWithWhereWithoutServiceInput = {
+    where: ProjectServiceLinkScalarWhereInput
+    data: XOR<ProjectServiceLinkUpdateManyMutationInput, ProjectServiceLinkUncheckedUpdateManyWithoutServiceInput>
+  }
+
+  export type ProjectServiceLinkScalarWhereInput = {
+    AND?: ProjectServiceLinkScalarWhereInput | ProjectServiceLinkScalarWhereInput[]
+    OR?: ProjectServiceLinkScalarWhereInput[]
+    NOT?: ProjectServiceLinkScalarWhereInput | ProjectServiceLinkScalarWhereInput[]
+    id?: StringFilter<"ProjectServiceLink"> | string
+    projectId?: StringFilter<"ProjectServiceLink"> | string
+    serviceId?: StringFilter<"ProjectServiceLink"> | string
+  }
+
   export type ClientSubServiceCreateWithoutSubServiceInput = {
     count: number
     client: ClientCreateNestedOneWithoutClientSubServiceInput
@@ -127587,8 +135526,12 @@ export namespace Prisma {
 
   export type ServiceCreateWithoutSubServiceInput = {
     id: string
+    serviceCode?: string | null
     serviceName: string
     description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
     iconUrl?: string | null
     source?: string
     externalId?: string | null
@@ -127596,13 +135539,22 @@ export namespace Prisma {
     serviceType?: $Enums.ServiceType
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutServiceInput
     clientService?: ClientServiceCreateNestedManyWithoutServiceInput
+    createdBy?: StaffCreateNestedOneWithoutServicesCreatedInput
+    updatedBy?: StaffCreateNestedOneWithoutServicesUpdatedInput
     portfolio?: PortfolioCreateNestedOneWithoutServicesInput
+    projectLinks?: ProjectServiceLinkCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUncheckedCreateWithoutSubServiceInput = {
     id: string
+    serviceCode?: string | null
     serviceName: string
     description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdById?: string | null
+    updatedById?: string | null
     portfolioId?: string | null
     iconUrl?: string | null
     source?: string
@@ -127611,6 +135563,7 @@ export namespace Prisma {
     serviceType?: $Enums.ServiceType
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutServiceInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
+    projectLinks?: ProjectServiceLinkUncheckedCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceCreateOrConnectWithoutSubServiceInput = {
@@ -127663,8 +135616,12 @@ export namespace Prisma {
 
   export type ServiceUpdateWithoutSubServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -127672,13 +135629,22 @@ export namespace Prisma {
     serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutServiceNestedInput
     clientService?: ClientServiceUpdateManyWithoutServiceNestedInput
+    createdBy?: StaffUpdateOneWithoutServicesCreatedNestedInput
+    updatedBy?: StaffUpdateOneWithoutServicesUpdatedNestedInput
     portfolio?: PortfolioUpdateOneWithoutServicesNestedInput
+    projectLinks?: ProjectServiceLinkUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateWithoutSubServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
@@ -127687,15 +135653,18 @@ export namespace Prisma {
     serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutServiceNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
+    projectLinks?: ProjectServiceLinkUncheckedUpdateManyWithoutServiceNestedInput
   }
 
   export type ClientCreateWithoutPortfolioInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     address?: string | null
     clientType?: $Enums.ClientType
@@ -127712,6 +135681,7 @@ export namespace Prisma {
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
+    createdBy?: StaffCreateNestedOneWithoutClientsCreatedInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestCreateNestedManyWithoutClientInput
@@ -127725,13 +135695,16 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutPortfolioInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     accountManagerId?: string | null
+    createdById?: string | null
     address?: string | null
     clientType?: $Enums.ClientType
     companyName?: string | null
@@ -127814,6 +135787,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     contractNumber: string
+    title?: string | null
+    duration?: string | null
     startDate?: Date | string | null
     endDate?: Date | string | null
     renewalDate?: Date | string | null
@@ -127822,12 +135797,15 @@ export namespace Prisma {
     status?: $Enums.ContractStatus
     notes?: string | null
     billingDay?: number | null
+    billingPeriodMonths?: number | null
+    contractType?: string | null
     monthlyAmount?: number | null
     installments?: ClientInstallmentCreateNestedManyWithoutContractInput
     documents?: ContractDocumentCreateNestedManyWithoutContractInput
     client: ClientCreateNestedOneWithoutContractsInput
     createdBy?: StaffCreateNestedOneWithoutCreatedContractsInput
     project?: ProjectCreateNestedOneWithoutContractsInput
+    primaryForProjects?: ProjectCreateNestedManyWithoutPrimaryContractInput
   }
 
   export type ContractUncheckedCreateWithoutPortfolioInput = {
@@ -127835,6 +135813,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     contractNumber: string
+    title?: string | null
+    duration?: string | null
     startDate?: Date | string | null
     endDate?: Date | string | null
     renewalDate?: Date | string | null
@@ -127846,9 +135826,12 @@ export namespace Prisma {
     projectId?: string | null
     createdById?: string | null
     billingDay?: number | null
+    billingPeriodMonths?: number | null
+    contractType?: string | null
     monthlyAmount?: number | null
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutContractInput
     documents?: ContractDocumentUncheckedCreateNestedManyWithoutContractInput
+    primaryForProjects?: ProjectUncheckedCreateNestedManyWithoutPrimaryContractInput
   }
 
   export type ContractCreateOrConnectWithoutPortfolioInput = {
@@ -127872,12 +135855,22 @@ export namespace Prisma {
     priority?: $Enums.ProjectPriority
     startDate?: Date | string | null
     dueDate?: Date | string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractCreateNestedOneWithoutPrimaryForProjectsInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestCreateNestedManyWithoutProjectInput
     contracts?: ContractCreateNestedManyWithoutProjectInput
     client: ClientCreateNestedOneWithoutProjectsInput
     createdBy?: StaffCreateNestedOneWithoutCreatedProjectsInput
     tasks?: TaskCreateNestedManyWithoutProjectInput
+    serviceLinks?: ProjectServiceLinkCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutPortfolioInput = {
@@ -127893,10 +135886,20 @@ export namespace Prisma {
     dueDate?: Date | string | null
     clientId: string
     createdById?: string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    contractId?: string | null
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutProjectInput
     contracts?: ContractUncheckedCreateNestedManyWithoutProjectInput
     tasks?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    serviceLinks?: ProjectServiceLinkUncheckedCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleUncheckedCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutPortfolioInput = {
@@ -127955,8 +135958,12 @@ export namespace Prisma {
 
   export type ServiceCreateWithoutPortfolioInput = {
     id: string
+    serviceCode?: string | null
     serviceName: string
     description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
     iconUrl?: string | null
     source?: string
     externalId?: string | null
@@ -127964,13 +135971,22 @@ export namespace Prisma {
     serviceType?: $Enums.ServiceType
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutServiceInput
     clientService?: ClientServiceCreateNestedManyWithoutServiceInput
+    createdBy?: StaffCreateNestedOneWithoutServicesCreatedInput
+    updatedBy?: StaffCreateNestedOneWithoutServicesUpdatedInput
     subService?: SubServiceCreateNestedManyWithoutServiceInput
+    projectLinks?: ProjectServiceLinkCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUncheckedCreateWithoutPortfolioInput = {
     id: string
+    serviceCode?: string | null
     serviceName: string
     description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdById?: string | null
+    updatedById?: string | null
     iconUrl?: string | null
     source?: string
     externalId?: string | null
@@ -127979,6 +135995,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutServiceInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
     subService?: SubServiceUncheckedCreateNestedManyWithoutServiceInput
+    projectLinks?: ProjectServiceLinkUncheckedCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceCreateOrConnectWithoutPortfolioInput = {
@@ -128017,11 +136034,14 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
@@ -128029,6 +136049,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateWithoutPortfolioInput = {
@@ -128058,17 +136080,22 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffCreateOrConnectWithoutPortfolioInput = {
@@ -128177,21 +136204,6 @@ export namespace Prisma {
     data: XOR<ServiceUpdateManyMutationInput, ServiceUncheckedUpdateManyWithoutPortfolioInput>
   }
 
-  export type ServiceScalarWhereInput = {
-    AND?: ServiceScalarWhereInput | ServiceScalarWhereInput[]
-    OR?: ServiceScalarWhereInput[]
-    NOT?: ServiceScalarWhereInput | ServiceScalarWhereInput[]
-    id?: StringFilter<"Service"> | string
-    serviceName?: StringFilter<"Service"> | string
-    description?: StringNullableFilter<"Service"> | string | null
-    portfolioId?: StringNullableFilter<"Service"> | string | null
-    iconUrl?: StringNullableFilter<"Service"> | string | null
-    source?: StringFilter<"Service"> | string
-    externalId?: StringNullableFilter<"Service"> | string | null
-    lastSyncedAt?: DateTimeNullableFilter<"Service"> | Date | string | null
-    serviceType?: EnumServiceTypeFilter<"Service"> | $Enums.ServiceType
-  }
-
   export type StaffUpsertWithWhereUniqueWithoutPortfolioInput = {
     where: StaffWhereUniqueInput
     update: XOR<StaffUpdateWithoutPortfolioInput, StaffUncheckedUpdateWithoutPortfolioInput>
@@ -128210,11 +136222,13 @@ export namespace Prisma {
 
   export type ClientCreateWithoutClientSubServiceInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     address?: string | null
     clientType?: $Enums.ClientType
@@ -128230,6 +136244,7 @@ export namespace Prisma {
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
+    createdBy?: StaffCreateNestedOneWithoutClientsCreatedInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
@@ -128244,13 +136259,16 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutClientSubServiceInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     accountManagerId?: string | null
+    createdById?: string | null
     address?: string | null
     portfolioId?: string | null
     clientType?: $Enums.ClientType
@@ -128325,11 +136343,13 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutClientSubServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     address?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -128345,6 +136365,7 @@ export namespace Prisma {
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
+    createdBy?: StaffUpdateOneWithoutClientsCreatedNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
@@ -128359,13 +136380,16 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutClientSubServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -128430,11 +136454,13 @@ export namespace Prisma {
 
   export type ClientCreateWithoutClientServiceInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     address?: string | null
     clientType?: $Enums.ClientType
@@ -128450,6 +136476,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
+    createdBy?: StaffCreateNestedOneWithoutClientsCreatedInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
@@ -128464,13 +136491,16 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutClientServiceInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     accountManagerId?: string | null
+    createdById?: string | null
     address?: string | null
     portfolioId?: string | null
     clientType?: $Enums.ClientType
@@ -128503,22 +136533,35 @@ export namespace Prisma {
 
   export type ServiceCreateWithoutClientServiceInput = {
     id: string
+    serviceCode?: string | null
     serviceName: string
     description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
     iconUrl?: string | null
     source?: string
     externalId?: string | null
     lastSyncedAt?: Date | string | null
     serviceType?: $Enums.ServiceType
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutServiceInput
+    createdBy?: StaffCreateNestedOneWithoutServicesCreatedInput
+    updatedBy?: StaffCreateNestedOneWithoutServicesUpdatedInput
     portfolio?: PortfolioCreateNestedOneWithoutServicesInput
     subService?: SubServiceCreateNestedManyWithoutServiceInput
+    projectLinks?: ProjectServiceLinkCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUncheckedCreateWithoutClientServiceInput = {
     id: string
+    serviceCode?: string | null
     serviceName: string
     description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdById?: string | null
+    updatedById?: string | null
     portfolioId?: string | null
     iconUrl?: string | null
     source?: string
@@ -128527,6 +136570,7 @@ export namespace Prisma {
     serviceType?: $Enums.ServiceType
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutServiceInput
     subService?: SubServiceUncheckedCreateNestedManyWithoutServiceInput
+    projectLinks?: ProjectServiceLinkUncheckedCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceCreateOrConnectWithoutClientServiceInput = {
@@ -128547,11 +136591,13 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutClientServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     address?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -128567,6 +136613,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
+    createdBy?: StaffUpdateOneWithoutClientsCreatedNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
@@ -128581,13 +136628,16 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutClientServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -128626,22 +136676,35 @@ export namespace Prisma {
 
   export type ServiceUpdateWithoutClientServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutServiceNestedInput
+    createdBy?: StaffUpdateOneWithoutServicesCreatedNestedInput
+    updatedBy?: StaffUpdateOneWithoutServicesUpdatedNestedInput
     portfolio?: PortfolioUpdateOneWithoutServicesNestedInput
     subService?: SubServiceUpdateManyWithoutServiceNestedInput
+    projectLinks?: ProjectServiceLinkUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateWithoutClientServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
@@ -128650,6 +136713,7 @@ export namespace Prisma {
     serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutServiceNestedInput
     subService?: SubServiceUncheckedUpdateManyWithoutServiceNestedInput
+    projectLinks?: ProjectServiceLinkUncheckedUpdateManyWithoutServiceNestedInput
   }
 
   export type ClientTaskCreateWithoutTaskInput = {
@@ -128696,6 +136760,8 @@ export namespace Prisma {
     createdAt?: Date | string
     progressAtTransfer?: number
     deadlineAtTransfer?: Date | string | null
+    reason?: string | null
+    note?: string | null
     fromAssignee: StaffCreateNestedOneWithoutTransferredFromTasksInput
     toAssignee: StaffCreateNestedOneWithoutTransferredToTasksInput
     transferredBy?: StaffCreateNestedOneWithoutTransferredByTasksInput
@@ -128709,6 +136775,8 @@ export namespace Prisma {
     progressAtTransfer?: number
     deadlineAtTransfer?: Date | string | null
     transferredById?: string | null
+    reason?: string | null
+    note?: string | null
   }
 
   export type TaskTransferHistoryCreateOrConnectWithoutTaskInput = {
@@ -128792,11 +136860,14 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
@@ -128804,6 +136875,8 @@ export namespace Prisma {
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateWithoutAssignedTasksInput = {
@@ -128834,16 +136907,21 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffCreateOrConnectWithoutAssignedTasksInput = {
@@ -128928,12 +137006,22 @@ export namespace Prisma {
     priority?: $Enums.ProjectPriority
     startDate?: Date | string | null
     dueDate?: Date | string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractCreateNestedOneWithoutPrimaryForProjectsInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestCreateNestedManyWithoutProjectInput
     contracts?: ContractCreateNestedManyWithoutProjectInput
     portfolio?: PortfolioCreateNestedOneWithoutProjectsInput
     client: ClientCreateNestedOneWithoutProjectsInput
     createdBy?: StaffCreateNestedOneWithoutCreatedProjectsInput
+    serviceLinks?: ProjectServiceLinkCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutTasksInput = {
@@ -128950,9 +137038,19 @@ export namespace Prisma {
     clientId: string
     portfolioId?: string | null
     createdById?: string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    contractId?: string | null
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutProjectInput
     contracts?: ContractUncheckedCreateNestedManyWithoutProjectInput
+    serviceLinks?: ProjectServiceLinkUncheckedCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleUncheckedCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutTasksInput = {
@@ -129136,11 +137234,14 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
@@ -129148,6 +137249,8 @@ export namespace Prisma {
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutAssignedTasksInput = {
@@ -129178,16 +137281,21 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type ContentCycleUpsertWithoutTasksInput = {
@@ -129290,12 +137398,22 @@ export namespace Prisma {
     priority?: EnumProjectPriorityFieldUpdateOperationsInput | $Enums.ProjectPriority
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractUpdateOneWithoutPrimaryForProjectsNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutProjectNestedInput
     contracts?: ContractUpdateManyWithoutProjectNestedInput
     portfolio?: PortfolioUpdateOneWithoutProjectsNestedInput
     client?: ClientUpdateOneRequiredWithoutProjectsNestedInput
     createdBy?: StaffUpdateOneWithoutCreatedProjectsNestedInput
+    serviceLinks?: ProjectServiceLinkUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutTasksInput = {
@@ -129312,9 +137430,19 @@ export namespace Prisma {
     clientId?: StringFieldUpdateOperationsInput | string
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutProjectNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutProjectNestedInput
+    serviceLinks?: ProjectServiceLinkUncheckedUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUncheckedUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type WorkflowTemplateStepUpsertWithoutGeneratedTasksInput = {
@@ -129380,11 +137508,14 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
@@ -129392,6 +137523,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateWithoutTransferredFromTasksInput = {
@@ -129422,16 +137555,21 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffCreateOrConnectWithoutTransferredFromTasksInput = {
@@ -129536,11 +137674,14 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
@@ -129548,6 +137689,8 @@ export namespace Prisma {
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateWithoutTransferredToTasksInput = {
@@ -129578,16 +137721,21 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffCreateOrConnectWithoutTransferredToTasksInput = {
@@ -129621,11 +137769,14 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
@@ -129633,6 +137784,8 @@ export namespace Prisma {
     transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateWithoutTransferredByTasksInput = {
@@ -129663,16 +137816,21 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffCreateOrConnectWithoutTransferredByTasksInput = {
@@ -129717,11 +137875,14 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
@@ -129729,6 +137890,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutTransferredFromTasksInput = {
@@ -129759,16 +137922,21 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type TaskUpsertWithoutTransferHistoryInput = {
@@ -129885,11 +138053,14 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
@@ -129897,6 +138068,8 @@ export namespace Prisma {
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutTransferredToTasksInput = {
@@ -129927,16 +138100,21 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUpsertWithoutTransferredByTasksInput = {
@@ -129976,11 +138154,14 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
@@ -129988,6 +138169,8 @@ export namespace Prisma {
     transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutTransferredByTasksInput = {
@@ -130018,25 +138201,32 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type ClientCreateWithoutClientTaskInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     address?: string | null
     clientType?: $Enums.ClientType
@@ -130053,6 +138243,7 @@ export namespace Prisma {
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
+    createdBy?: StaffCreateNestedOneWithoutClientsCreatedInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestCreateNestedManyWithoutClientInput
@@ -130066,13 +138257,16 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutClientTaskInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     accountManagerId?: string | null
+    createdById?: string | null
     address?: string | null
     portfolioId?: string | null
     clientType?: $Enums.ClientType
@@ -130187,11 +138381,13 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutClientTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     address?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -130208,6 +138404,7 @@ export namespace Prisma {
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
+    createdBy?: StaffUpdateOneWithoutClientsCreatedNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutClientNestedInput
@@ -130221,13 +138418,16 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutClientTaskInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -130555,11 +138755,14 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
@@ -130568,6 +138771,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateWithoutIncomeTransactionInput = {
@@ -130597,17 +138802,22 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffCreateOrConnectWithoutIncomeTransactionInput = {
@@ -130751,11 +138961,14 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
@@ -130764,6 +138977,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutIncomeTransactionInput = {
@@ -130793,17 +139008,22 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type ExpenseTransactionDetailsCreateWithoutExpenseTransactionInput = {
@@ -130889,11 +139109,14 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
@@ -130902,6 +139125,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateWithoutExpenseTransactionInput = {
@@ -130931,17 +139156,22 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffCreateOrConnectWithoutExpenseTransactionInput = {
@@ -131059,11 +139289,14 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
@@ -131072,6 +139305,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutExpenseTransactionInput = {
@@ -131101,17 +139336,22 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type IncomeTransactionCreateWithoutTransactionDetailsInput = {
@@ -131227,11 +139467,14 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
@@ -131240,6 +139483,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateWithoutUserFilesInput = {
@@ -131269,17 +139514,22 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffCreateOrConnectWithoutUserFilesInput = {
@@ -131323,11 +139573,14 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
@@ -131336,6 +139589,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutUserFilesInput = {
@@ -131365,26 +139620,33 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type ClientCreateWithoutServiceAgreementsInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     address?: string | null
     clientType?: $Enums.ClientType
@@ -131400,6 +139662,7 @@ export namespace Prisma {
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
+    createdBy?: StaffCreateNestedOneWithoutClientsCreatedInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
@@ -131414,13 +139677,16 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutServiceAgreementsInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     accountManagerId?: string | null
+    createdById?: string | null
     address?: string | null
     portfolioId?: string | null
     clientType?: $Enums.ClientType
@@ -131462,12 +139728,22 @@ export namespace Prisma {
     priority?: $Enums.ProjectPriority
     startDate?: Date | string | null
     dueDate?: Date | string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractCreateNestedOneWithoutPrimaryForProjectsInput
     contentRequests?: ContentRequestCreateNestedManyWithoutProjectInput
     contracts?: ContractCreateNestedManyWithoutProjectInput
     portfolio?: PortfolioCreateNestedOneWithoutProjectsInput
     client: ClientCreateNestedOneWithoutProjectsInput
     createdBy?: StaffCreateNestedOneWithoutCreatedProjectsInput
     tasks?: TaskCreateNestedManyWithoutProjectInput
+    serviceLinks?: ProjectServiceLinkCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutServiceAgreementsInput = {
@@ -131484,9 +139760,19 @@ export namespace Prisma {
     clientId: string
     portfolioId?: string | null
     createdById?: string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    contractId?: string | null
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutProjectInput
     contracts?: ContractUncheckedCreateNestedManyWithoutProjectInput
     tasks?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    serviceLinks?: ProjectServiceLinkUncheckedCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleUncheckedCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutServiceAgreementsInput = {
@@ -131496,22 +139782,35 @@ export namespace Prisma {
 
   export type ServiceCreateWithoutServiceAgreementsInput = {
     id: string
+    serviceCode?: string | null
     serviceName: string
     description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
     iconUrl?: string | null
     source?: string
     externalId?: string | null
     lastSyncedAt?: Date | string | null
     serviceType?: $Enums.ServiceType
     clientService?: ClientServiceCreateNestedManyWithoutServiceInput
+    createdBy?: StaffCreateNestedOneWithoutServicesCreatedInput
+    updatedBy?: StaffCreateNestedOneWithoutServicesUpdatedInput
     portfolio?: PortfolioCreateNestedOneWithoutServicesInput
     subService?: SubServiceCreateNestedManyWithoutServiceInput
+    projectLinks?: ProjectServiceLinkCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUncheckedCreateWithoutServiceAgreementsInput = {
     id: string
+    serviceCode?: string | null
     serviceName: string
     description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdById?: string | null
+    updatedById?: string | null
     portfolioId?: string | null
     iconUrl?: string | null
     source?: string
@@ -131520,6 +139819,7 @@ export namespace Prisma {
     serviceType?: $Enums.ServiceType
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
     subService?: SubServiceUncheckedCreateNestedManyWithoutServiceInput
+    projectLinks?: ProjectServiceLinkUncheckedCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceCreateOrConnectWithoutServiceAgreementsInput = {
@@ -131693,11 +139993,13 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutServiceAgreementsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     address?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -131713,6 +140015,7 @@ export namespace Prisma {
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
+    createdBy?: StaffUpdateOneWithoutClientsCreatedNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
@@ -131727,13 +140030,16 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutServiceAgreementsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -131781,12 +140087,22 @@ export namespace Prisma {
     priority?: EnumProjectPriorityFieldUpdateOperationsInput | $Enums.ProjectPriority
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractUpdateOneWithoutPrimaryForProjectsNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutProjectNestedInput
     contracts?: ContractUpdateManyWithoutProjectNestedInput
     portfolio?: PortfolioUpdateOneWithoutProjectsNestedInput
     client?: ClientUpdateOneRequiredWithoutProjectsNestedInput
     createdBy?: StaffUpdateOneWithoutCreatedProjectsNestedInput
     tasks?: TaskUpdateManyWithoutProjectNestedInput
+    serviceLinks?: ProjectServiceLinkUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutServiceAgreementsInput = {
@@ -131803,9 +140119,19 @@ export namespace Prisma {
     clientId?: StringFieldUpdateOperationsInput | string
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutProjectNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutProjectNestedInput
     tasks?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    serviceLinks?: ProjectServiceLinkUncheckedUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUncheckedUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ServiceUpsertWithoutServiceAgreementsInput = {
@@ -131821,22 +140147,35 @@ export namespace Prisma {
 
   export type ServiceUpdateWithoutServiceAgreementsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
     lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
     clientService?: ClientServiceUpdateManyWithoutServiceNestedInput
+    createdBy?: StaffUpdateOneWithoutServicesCreatedNestedInput
+    updatedBy?: StaffUpdateOneWithoutServicesUpdatedNestedInput
     portfolio?: PortfolioUpdateOneWithoutServicesNestedInput
     subService?: SubServiceUpdateManyWithoutServiceNestedInput
+    projectLinks?: ProjectServiceLinkUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateWithoutServiceAgreementsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
@@ -131845,6 +140184,7 @@ export namespace Prisma {
     serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
     clientService?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
     subService?: SubServiceUncheckedUpdateManyWithoutServiceNestedInput
+    projectLinks?: ProjectServiceLinkUncheckedUpdateManyWithoutServiceNestedInput
   }
 
   export type SubServiceUpsertWithoutServiceAgreementsInput = {
@@ -132067,11 +140407,14 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
@@ -132080,6 +140423,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateWithoutRecieverInput = {
@@ -132109,17 +140454,22 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffCreateOrConnectWithoutRecieverInput = {
@@ -132152,11 +140502,14 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
@@ -132165,6 +140518,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateWithoutRegistererInput = {
@@ -132194,17 +140549,22 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffCreateOrConnectWithoutRegistererInput = {
@@ -132270,11 +140630,14 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
@@ -132283,6 +140646,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutRecieverInput = {
@@ -132312,17 +140677,22 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUpsertWithoutRegistererInput = {
@@ -132361,11 +140731,14 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
@@ -132374,6 +140747,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutRegistererInput = {
@@ -132403,17 +140778,22 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type UserSalaryDetailsUpsertWithWhereUniqueWithoutUserSalaryInput = {
@@ -133074,11 +141454,14 @@ export namespace Prisma {
     registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
@@ -133087,6 +141470,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateWithoutAuditLogsInput = {
@@ -133116,17 +141501,22 @@ export namespace Prisma {
     registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffCreateOrConnectWithoutAuditLogsInput = {
@@ -133170,11 +141560,14 @@ export namespace Prisma {
     registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
@@ -133183,6 +141576,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutAuditLogsInput = {
@@ -133212,17 +141607,79 @@ export namespace Prisma {
     registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
+  }
+
+  export type ContractCreateWithoutPrimaryForProjectsInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    contractNumber: string
+    title?: string | null
+    duration?: string | null
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    renewalDate?: Date | string | null
+    totalAmount?: number | null
+    paymentTerms?: string | null
+    status?: $Enums.ContractStatus
+    notes?: string | null
+    billingDay?: number | null
+    billingPeriodMonths?: number | null
+    contractType?: string | null
+    monthlyAmount?: number | null
+    installments?: ClientInstallmentCreateNestedManyWithoutContractInput
+    documents?: ContractDocumentCreateNestedManyWithoutContractInput
+    portfolio?: PortfolioCreateNestedOneWithoutContractsInput
+    client: ClientCreateNestedOneWithoutContractsInput
+    createdBy?: StaffCreateNestedOneWithoutCreatedContractsInput
+    project?: ProjectCreateNestedOneWithoutContractsInput
+  }
+
+  export type ContractUncheckedCreateWithoutPrimaryForProjectsInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    contractNumber: string
+    title?: string | null
+    duration?: string | null
+    startDate?: Date | string | null
+    endDate?: Date | string | null
+    renewalDate?: Date | string | null
+    totalAmount?: number | null
+    paymentTerms?: string | null
+    status?: $Enums.ContractStatus
+    notes?: string | null
+    clientId: string
+    projectId?: string | null
+    portfolioId?: string | null
+    createdById?: string | null
+    billingDay?: number | null
+    billingPeriodMonths?: number | null
+    contractType?: string | null
+    monthlyAmount?: number | null
+    installments?: ClientInstallmentUncheckedCreateNestedManyWithoutContractInput
+    documents?: ContractDocumentUncheckedCreateNestedManyWithoutContractInput
+  }
+
+  export type ContractCreateOrConnectWithoutPrimaryForProjectsInput = {
+    where: ContractWhereUniqueInput
+    create: XOR<ContractCreateWithoutPrimaryForProjectsInput, ContractUncheckedCreateWithoutPrimaryForProjectsInput>
   }
 
   export type IncomeServiceAgreementCreateWithoutProjectInput = {
@@ -133322,6 +141779,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     contractNumber: string
+    title?: string | null
+    duration?: string | null
     startDate?: Date | string | null
     endDate?: Date | string | null
     renewalDate?: Date | string | null
@@ -133330,12 +141789,15 @@ export namespace Prisma {
     status?: $Enums.ContractStatus
     notes?: string | null
     billingDay?: number | null
+    billingPeriodMonths?: number | null
+    contractType?: string | null
     monthlyAmount?: number | null
     installments?: ClientInstallmentCreateNestedManyWithoutContractInput
     documents?: ContractDocumentCreateNestedManyWithoutContractInput
     portfolio?: PortfolioCreateNestedOneWithoutContractsInput
     client: ClientCreateNestedOneWithoutContractsInput
     createdBy?: StaffCreateNestedOneWithoutCreatedContractsInput
+    primaryForProjects?: ProjectCreateNestedManyWithoutPrimaryContractInput
   }
 
   export type ContractUncheckedCreateWithoutProjectInput = {
@@ -133343,6 +141805,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     contractNumber: string
+    title?: string | null
+    duration?: string | null
     startDate?: Date | string | null
     endDate?: Date | string | null
     renewalDate?: Date | string | null
@@ -133354,9 +141818,12 @@ export namespace Prisma {
     portfolioId?: string | null
     createdById?: string | null
     billingDay?: number | null
+    billingPeriodMonths?: number | null
+    contractType?: string | null
     monthlyAmount?: number | null
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutContractInput
     documents?: ContractDocumentUncheckedCreateNestedManyWithoutContractInput
+    primaryForProjects?: ProjectUncheckedCreateNestedManyWithoutPrimaryContractInput
   }
 
   export type ContractCreateOrConnectWithoutProjectInput = {
@@ -133426,11 +141893,13 @@ export namespace Prisma {
 
   export type ClientCreateWithoutProjectsInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     address?: string | null
     clientType?: $Enums.ClientType
@@ -133447,6 +141916,7 @@ export namespace Prisma {
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
+    createdBy?: StaffCreateNestedOneWithoutClientsCreatedInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
@@ -133460,13 +141930,16 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutProjectsInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     accountManagerId?: string | null
+    createdById?: string | null
     address?: string | null
     portfolioId?: string | null
     clientType?: $Enums.ClientType
@@ -133523,10 +141996,13 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
@@ -133535,6 +142011,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedProjectsInput = {
@@ -133565,16 +142043,21 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedProjectsInput = {
@@ -133656,6 +142139,147 @@ export namespace Prisma {
   export type TaskCreateManyProjectInputEnvelope = {
     data: TaskCreateManyProjectInput | TaskCreateManyProjectInput[]
     skipDuplicates?: boolean
+  }
+
+  export type ProjectServiceLinkCreateWithoutProjectInput = {
+    id: string
+    service: ServiceCreateNestedOneWithoutProjectLinksInput
+    subServices?: ProjectSubServiceCreateNestedManyWithoutLinkInput
+  }
+
+  export type ProjectServiceLinkUncheckedCreateWithoutProjectInput = {
+    id: string
+    serviceId: string
+    subServices?: ProjectSubServiceUncheckedCreateNestedManyWithoutLinkInput
+  }
+
+  export type ProjectServiceLinkCreateOrConnectWithoutProjectInput = {
+    where: ProjectServiceLinkWhereUniqueInput
+    create: XOR<ProjectServiceLinkCreateWithoutProjectInput, ProjectServiceLinkUncheckedCreateWithoutProjectInput>
+  }
+
+  export type ProjectServiceLinkCreateManyProjectInputEnvelope = {
+    data: ProjectServiceLinkCreateManyProjectInput | ProjectServiceLinkCreateManyProjectInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ProjectCycleCreateWithoutProjectInput = {
+    id: string
+    label: string
+    startDate: Date | string
+    endDate: Date | string
+    createdAt?: Date | string
+  }
+
+  export type ProjectCycleUncheckedCreateWithoutProjectInput = {
+    id: string
+    label: string
+    startDate: Date | string
+    endDate: Date | string
+    createdAt?: Date | string
+  }
+
+  export type ProjectCycleCreateOrConnectWithoutProjectInput = {
+    where: ProjectCycleWhereUniqueInput
+    create: XOR<ProjectCycleCreateWithoutProjectInput, ProjectCycleUncheckedCreateWithoutProjectInput>
+  }
+
+  export type ProjectCycleCreateManyProjectInputEnvelope = {
+    data: ProjectCycleCreateManyProjectInput | ProjectCycleCreateManyProjectInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ProjectExtraRequestCreateWithoutProjectInput = {
+    id: string
+    quantity: number
+    description?: string | null
+    status?: string
+    createdAt?: Date | string
+    subService: ProjectSubServiceCreateNestedOneWithoutExtraRequestsInput
+    requestedBy?: StaffCreateNestedOneWithoutProjectExtraRequestsInput
+  }
+
+  export type ProjectExtraRequestUncheckedCreateWithoutProjectInput = {
+    id: string
+    subServiceId: string
+    quantity: number
+    description?: string | null
+    status?: string
+    requestedById?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ProjectExtraRequestCreateOrConnectWithoutProjectInput = {
+    where: ProjectExtraRequestWhereUniqueInput
+    create: XOR<ProjectExtraRequestCreateWithoutProjectInput, ProjectExtraRequestUncheckedCreateWithoutProjectInput>
+  }
+
+  export type ProjectExtraRequestCreateManyProjectInputEnvelope = {
+    data: ProjectExtraRequestCreateManyProjectInput | ProjectExtraRequestCreateManyProjectInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ContractUpsertWithoutPrimaryForProjectsInput = {
+    update: XOR<ContractUpdateWithoutPrimaryForProjectsInput, ContractUncheckedUpdateWithoutPrimaryForProjectsInput>
+    create: XOR<ContractCreateWithoutPrimaryForProjectsInput, ContractUncheckedCreateWithoutPrimaryForProjectsInput>
+    where?: ContractWhereInput
+  }
+
+  export type ContractUpdateToOneWithWhereWithoutPrimaryForProjectsInput = {
+    where?: ContractWhereInput
+    data: XOR<ContractUpdateWithoutPrimaryForProjectsInput, ContractUncheckedUpdateWithoutPrimaryForProjectsInput>
+  }
+
+  export type ContractUpdateWithoutPrimaryForProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalAmount?: NullableFloatFieldUpdateOperationsInput | number | null
+    paymentTerms?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
+    monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
+    installments?: ClientInstallmentUpdateManyWithoutContractNestedInput
+    documents?: ContractDocumentUpdateManyWithoutContractNestedInput
+    portfolio?: PortfolioUpdateOneWithoutContractsNestedInput
+    client?: ClientUpdateOneRequiredWithoutContractsNestedInput
+    createdBy?: StaffUpdateOneWithoutCreatedContractsNestedInput
+    project?: ProjectUpdateOneWithoutContractsNestedInput
+  }
+
+  export type ContractUncheckedUpdateWithoutPrimaryForProjectsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    totalAmount?: NullableFloatFieldUpdateOperationsInput | number | null
+    paymentTerms?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    clientId?: StringFieldUpdateOperationsInput | string
+    projectId?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
+    monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
+    installments?: ClientInstallmentUncheckedUpdateManyWithoutContractNestedInput
+    documents?: ContractDocumentUncheckedUpdateManyWithoutContractNestedInput
   }
 
   export type IncomeServiceAgreementUpsertWithWhereUniqueWithoutProjectInput = {
@@ -133780,11 +142404,13 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutProjectsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     address?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -133801,6 +142427,7 @@ export namespace Prisma {
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
+    createdBy?: StaffUpdateOneWithoutClientsCreatedNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
@@ -133814,13 +142441,16 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutProjectsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -133883,10 +142513,13 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
@@ -133895,6 +142528,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedProjectsInput = {
@@ -133925,16 +142560,21 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type TaskUpsertWithWhereUniqueWithoutProjectInput = {
@@ -133953,6 +142593,1148 @@ export namespace Prisma {
     data: XOR<TaskUpdateManyMutationInput, TaskUncheckedUpdateManyWithoutProjectInput>
   }
 
+  export type ProjectServiceLinkUpsertWithWhereUniqueWithoutProjectInput = {
+    where: ProjectServiceLinkWhereUniqueInput
+    update: XOR<ProjectServiceLinkUpdateWithoutProjectInput, ProjectServiceLinkUncheckedUpdateWithoutProjectInput>
+    create: XOR<ProjectServiceLinkCreateWithoutProjectInput, ProjectServiceLinkUncheckedCreateWithoutProjectInput>
+  }
+
+  export type ProjectServiceLinkUpdateWithWhereUniqueWithoutProjectInput = {
+    where: ProjectServiceLinkWhereUniqueInput
+    data: XOR<ProjectServiceLinkUpdateWithoutProjectInput, ProjectServiceLinkUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type ProjectServiceLinkUpdateManyWithWhereWithoutProjectInput = {
+    where: ProjectServiceLinkScalarWhereInput
+    data: XOR<ProjectServiceLinkUpdateManyMutationInput, ProjectServiceLinkUncheckedUpdateManyWithoutProjectInput>
+  }
+
+  export type ProjectCycleUpsertWithWhereUniqueWithoutProjectInput = {
+    where: ProjectCycleWhereUniqueInput
+    update: XOR<ProjectCycleUpdateWithoutProjectInput, ProjectCycleUncheckedUpdateWithoutProjectInput>
+    create: XOR<ProjectCycleCreateWithoutProjectInput, ProjectCycleUncheckedCreateWithoutProjectInput>
+  }
+
+  export type ProjectCycleUpdateWithWhereUniqueWithoutProjectInput = {
+    where: ProjectCycleWhereUniqueInput
+    data: XOR<ProjectCycleUpdateWithoutProjectInput, ProjectCycleUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type ProjectCycleUpdateManyWithWhereWithoutProjectInput = {
+    where: ProjectCycleScalarWhereInput
+    data: XOR<ProjectCycleUpdateManyMutationInput, ProjectCycleUncheckedUpdateManyWithoutProjectInput>
+  }
+
+  export type ProjectCycleScalarWhereInput = {
+    AND?: ProjectCycleScalarWhereInput | ProjectCycleScalarWhereInput[]
+    OR?: ProjectCycleScalarWhereInput[]
+    NOT?: ProjectCycleScalarWhereInput | ProjectCycleScalarWhereInput[]
+    id?: StringFilter<"ProjectCycle"> | string
+    projectId?: StringFilter<"ProjectCycle"> | string
+    label?: StringFilter<"ProjectCycle"> | string
+    startDate?: DateTimeFilter<"ProjectCycle"> | Date | string
+    endDate?: DateTimeFilter<"ProjectCycle"> | Date | string
+    createdAt?: DateTimeFilter<"ProjectCycle"> | Date | string
+  }
+
+  export type ProjectExtraRequestUpsertWithWhereUniqueWithoutProjectInput = {
+    where: ProjectExtraRequestWhereUniqueInput
+    update: XOR<ProjectExtraRequestUpdateWithoutProjectInput, ProjectExtraRequestUncheckedUpdateWithoutProjectInput>
+    create: XOR<ProjectExtraRequestCreateWithoutProjectInput, ProjectExtraRequestUncheckedCreateWithoutProjectInput>
+  }
+
+  export type ProjectExtraRequestUpdateWithWhereUniqueWithoutProjectInput = {
+    where: ProjectExtraRequestWhereUniqueInput
+    data: XOR<ProjectExtraRequestUpdateWithoutProjectInput, ProjectExtraRequestUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type ProjectExtraRequestUpdateManyWithWhereWithoutProjectInput = {
+    where: ProjectExtraRequestScalarWhereInput
+    data: XOR<ProjectExtraRequestUpdateManyMutationInput, ProjectExtraRequestUncheckedUpdateManyWithoutProjectInput>
+  }
+
+  export type ProjectCreateWithoutServiceLinksInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    description?: string | null
+    projectType?: $Enums.ContentType
+    status?: $Enums.ProjectStatus
+    priority?: $Enums.ProjectPriority
+    startDate?: Date | string | null
+    dueDate?: Date | string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractCreateNestedOneWithoutPrimaryForProjectsInput
+    serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutProjectInput
+    contentRequests?: ContentRequestCreateNestedManyWithoutProjectInput
+    contracts?: ContractCreateNestedManyWithoutProjectInput
+    portfolio?: PortfolioCreateNestedOneWithoutProjectsInput
+    client: ClientCreateNestedOneWithoutProjectsInput
+    createdBy?: StaffCreateNestedOneWithoutCreatedProjectsInput
+    tasks?: TaskCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectUncheckedCreateWithoutServiceLinksInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    description?: string | null
+    projectType?: $Enums.ContentType
+    status?: $Enums.ProjectStatus
+    priority?: $Enums.ProjectPriority
+    startDate?: Date | string | null
+    dueDate?: Date | string | null
+    clientId: string
+    portfolioId?: string | null
+    createdById?: string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    contractId?: string | null
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutProjectInput
+    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutProjectInput
+    contracts?: ContractUncheckedCreateNestedManyWithoutProjectInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleUncheckedCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectCreateOrConnectWithoutServiceLinksInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutServiceLinksInput, ProjectUncheckedCreateWithoutServiceLinksInput>
+  }
+
+  export type ServiceCreateWithoutProjectLinksInput = {
+    id: string
+    serviceCode?: string | null
+    serviceName: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    iconUrl?: string | null
+    source?: string
+    externalId?: string | null
+    lastSyncedAt?: Date | string | null
+    serviceType?: $Enums.ServiceType
+    serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutServiceInput
+    clientService?: ClientServiceCreateNestedManyWithoutServiceInput
+    createdBy?: StaffCreateNestedOneWithoutServicesCreatedInput
+    updatedBy?: StaffCreateNestedOneWithoutServicesUpdatedInput
+    portfolio?: PortfolioCreateNestedOneWithoutServicesInput
+    subService?: SubServiceCreateNestedManyWithoutServiceInput
+  }
+
+  export type ServiceUncheckedCreateWithoutProjectLinksInput = {
+    id: string
+    serviceCode?: string | null
+    serviceName: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdById?: string | null
+    updatedById?: string | null
+    portfolioId?: string | null
+    iconUrl?: string | null
+    source?: string
+    externalId?: string | null
+    lastSyncedAt?: Date | string | null
+    serviceType?: $Enums.ServiceType
+    serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutServiceInput
+    clientService?: ClientServiceUncheckedCreateNestedManyWithoutServiceInput
+    subService?: SubServiceUncheckedCreateNestedManyWithoutServiceInput
+  }
+
+  export type ServiceCreateOrConnectWithoutProjectLinksInput = {
+    where: ServiceWhereUniqueInput
+    create: XOR<ServiceCreateWithoutProjectLinksInput, ServiceUncheckedCreateWithoutProjectLinksInput>
+  }
+
+  export type ProjectSubServiceCreateWithoutLinkInput = {
+    id: string
+    name: string
+    description?: string | null
+    quantity?: number
+    unit?: string
+    targetQuantity?: number
+    assignee?: StaffCreateNestedOneWithoutProjectSubAssignmentsInput
+    extraRequests?: ProjectExtraRequestCreateNestedManyWithoutSubServiceInput
+  }
+
+  export type ProjectSubServiceUncheckedCreateWithoutLinkInput = {
+    id: string
+    name: string
+    description?: string | null
+    quantity?: number
+    unit?: string
+    targetQuantity?: number
+    assigneeId?: string | null
+    extraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutSubServiceInput
+  }
+
+  export type ProjectSubServiceCreateOrConnectWithoutLinkInput = {
+    where: ProjectSubServiceWhereUniqueInput
+    create: XOR<ProjectSubServiceCreateWithoutLinkInput, ProjectSubServiceUncheckedCreateWithoutLinkInput>
+  }
+
+  export type ProjectSubServiceCreateManyLinkInputEnvelope = {
+    data: ProjectSubServiceCreateManyLinkInput | ProjectSubServiceCreateManyLinkInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ProjectUpsertWithoutServiceLinksInput = {
+    update: XOR<ProjectUpdateWithoutServiceLinksInput, ProjectUncheckedUpdateWithoutServiceLinksInput>
+    create: XOR<ProjectCreateWithoutServiceLinksInput, ProjectUncheckedCreateWithoutServiceLinksInput>
+    where?: ProjectWhereInput
+  }
+
+  export type ProjectUpdateToOneWithWhereWithoutServiceLinksInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutServiceLinksInput, ProjectUncheckedUpdateWithoutServiceLinksInput>
+  }
+
+  export type ProjectUpdateWithoutServiceLinksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    projectType?: EnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+    priority?: EnumProjectPriorityFieldUpdateOperationsInput | $Enums.ProjectPriority
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractUpdateOneWithoutPrimaryForProjectsNestedInput
+    serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutProjectNestedInput
+    contentRequests?: ContentRequestUpdateManyWithoutProjectNestedInput
+    contracts?: ContractUpdateManyWithoutProjectNestedInput
+    portfolio?: PortfolioUpdateOneWithoutProjectsNestedInput
+    client?: ClientUpdateOneRequiredWithoutProjectsNestedInput
+    createdBy?: StaffUpdateOneWithoutCreatedProjectsNestedInput
+    tasks?: TaskUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutServiceLinksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    projectType?: EnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+    priority?: EnumProjectPriorityFieldUpdateOperationsInput | $Enums.ProjectPriority
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    clientId?: StringFieldUpdateOperationsInput | string
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutProjectNestedInput
+    contentRequests?: ContentRequestUncheckedUpdateManyWithoutProjectNestedInput
+    contracts?: ContractUncheckedUpdateManyWithoutProjectNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUncheckedUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ServiceUpsertWithoutProjectLinksInput = {
+    update: XOR<ServiceUpdateWithoutProjectLinksInput, ServiceUncheckedUpdateWithoutProjectLinksInput>
+    create: XOR<ServiceCreateWithoutProjectLinksInput, ServiceUncheckedCreateWithoutProjectLinksInput>
+    where?: ServiceWhereInput
+  }
+
+  export type ServiceUpdateToOneWithWhereWithoutProjectLinksInput = {
+    where?: ServiceWhereInput
+    data: XOR<ServiceUpdateWithoutProjectLinksInput, ServiceUncheckedUpdateWithoutProjectLinksInput>
+  }
+
+  export type ServiceUpdateWithoutProjectLinksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+    serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutServiceNestedInput
+    clientService?: ClientServiceUpdateManyWithoutServiceNestedInput
+    createdBy?: StaffUpdateOneWithoutServicesCreatedNestedInput
+    updatedBy?: StaffUpdateOneWithoutServicesUpdatedNestedInput
+    portfolio?: PortfolioUpdateOneWithoutServicesNestedInput
+    subService?: SubServiceUpdateManyWithoutServiceNestedInput
+  }
+
+  export type ServiceUncheckedUpdateWithoutProjectLinksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+    serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutServiceNestedInput
+    clientService?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
+    subService?: SubServiceUncheckedUpdateManyWithoutServiceNestedInput
+  }
+
+  export type ProjectSubServiceUpsertWithWhereUniqueWithoutLinkInput = {
+    where: ProjectSubServiceWhereUniqueInput
+    update: XOR<ProjectSubServiceUpdateWithoutLinkInput, ProjectSubServiceUncheckedUpdateWithoutLinkInput>
+    create: XOR<ProjectSubServiceCreateWithoutLinkInput, ProjectSubServiceUncheckedCreateWithoutLinkInput>
+  }
+
+  export type ProjectSubServiceUpdateWithWhereUniqueWithoutLinkInput = {
+    where: ProjectSubServiceWhereUniqueInput
+    data: XOR<ProjectSubServiceUpdateWithoutLinkInput, ProjectSubServiceUncheckedUpdateWithoutLinkInput>
+  }
+
+  export type ProjectSubServiceUpdateManyWithWhereWithoutLinkInput = {
+    where: ProjectSubServiceScalarWhereInput
+    data: XOR<ProjectSubServiceUpdateManyMutationInput, ProjectSubServiceUncheckedUpdateManyWithoutLinkInput>
+  }
+
+  export type ProjectServiceLinkCreateWithoutSubServicesInput = {
+    id: string
+    project: ProjectCreateNestedOneWithoutServiceLinksInput
+    service: ServiceCreateNestedOneWithoutProjectLinksInput
+  }
+
+  export type ProjectServiceLinkUncheckedCreateWithoutSubServicesInput = {
+    id: string
+    projectId: string
+    serviceId: string
+  }
+
+  export type ProjectServiceLinkCreateOrConnectWithoutSubServicesInput = {
+    where: ProjectServiceLinkWhereUniqueInput
+    create: XOR<ProjectServiceLinkCreateWithoutSubServicesInput, ProjectServiceLinkUncheckedCreateWithoutSubServicesInput>
+  }
+
+  export type StaffCreateWithoutProjectSubAssignmentsInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    gender?: string | null
+    salary?: string | null
+    department?: string | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
+    expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
+    incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
+    userFiles?: UserFilesCreateNestedManyWithoutUserInput
+    reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
+    registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
+    contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
+    contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
+    uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
+    createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
+    createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
+    assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
+    dynamicRole?: RoleCreateNestedOneWithoutUsersInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
+  }
+
+  export type StaffUncheckedCreateWithoutProjectSubAssignmentsInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    gender?: string | null
+    salary?: string | null
+    department?: string | null
+    roleId?: string | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    portfolioId?: string | null
+    employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
+    expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
+    incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
+    userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
+    reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
+    registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
+    contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
+    contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
+    uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
+    createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
+    createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
+    assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
+  }
+
+  export type StaffCreateOrConnectWithoutProjectSubAssignmentsInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutProjectSubAssignmentsInput, StaffUncheckedCreateWithoutProjectSubAssignmentsInput>
+  }
+
+  export type ProjectExtraRequestCreateWithoutSubServiceInput = {
+    id: string
+    quantity: number
+    description?: string | null
+    status?: string
+    createdAt?: Date | string
+    project: ProjectCreateNestedOneWithoutExtraRequestsInput
+    requestedBy?: StaffCreateNestedOneWithoutProjectExtraRequestsInput
+  }
+
+  export type ProjectExtraRequestUncheckedCreateWithoutSubServiceInput = {
+    id: string
+    projectId: string
+    quantity: number
+    description?: string | null
+    status?: string
+    requestedById?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ProjectExtraRequestCreateOrConnectWithoutSubServiceInput = {
+    where: ProjectExtraRequestWhereUniqueInput
+    create: XOR<ProjectExtraRequestCreateWithoutSubServiceInput, ProjectExtraRequestUncheckedCreateWithoutSubServiceInput>
+  }
+
+  export type ProjectExtraRequestCreateManySubServiceInputEnvelope = {
+    data: ProjectExtraRequestCreateManySubServiceInput | ProjectExtraRequestCreateManySubServiceInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ProjectServiceLinkUpsertWithoutSubServicesInput = {
+    update: XOR<ProjectServiceLinkUpdateWithoutSubServicesInput, ProjectServiceLinkUncheckedUpdateWithoutSubServicesInput>
+    create: XOR<ProjectServiceLinkCreateWithoutSubServicesInput, ProjectServiceLinkUncheckedCreateWithoutSubServicesInput>
+    where?: ProjectServiceLinkWhereInput
+  }
+
+  export type ProjectServiceLinkUpdateToOneWithWhereWithoutSubServicesInput = {
+    where?: ProjectServiceLinkWhereInput
+    data: XOR<ProjectServiceLinkUpdateWithoutSubServicesInput, ProjectServiceLinkUncheckedUpdateWithoutSubServicesInput>
+  }
+
+  export type ProjectServiceLinkUpdateWithoutSubServicesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    project?: ProjectUpdateOneRequiredWithoutServiceLinksNestedInput
+    service?: ServiceUpdateOneRequiredWithoutProjectLinksNestedInput
+  }
+
+  export type ProjectServiceLinkUncheckedUpdateWithoutSubServicesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type StaffUpsertWithoutProjectSubAssignmentsInput = {
+    update: XOR<StaffUpdateWithoutProjectSubAssignmentsInput, StaffUncheckedUpdateWithoutProjectSubAssignmentsInput>
+    create: XOR<StaffCreateWithoutProjectSubAssignmentsInput, StaffUncheckedCreateWithoutProjectSubAssignmentsInput>
+    where?: StaffWhereInput
+  }
+
+  export type StaffUpdateToOneWithWhereWithoutProjectSubAssignmentsInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutProjectSubAssignmentsInput, StaffUncheckedUpdateWithoutProjectSubAssignmentsInput>
+  }
+
+  export type StaffUpdateWithoutProjectSubAssignmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    salary?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
+    incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
+    userFiles?: UserFilesUpdateManyWithoutUserNestedInput
+    reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
+    registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
+    contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
+    contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
+    uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
+    createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
+    createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
+    assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
+    dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
+  }
+
+  export type StaffUncheckedUpdateWithoutProjectSubAssignmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    salary?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
+    incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
+    userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
+    reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
+    registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
+    contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
+    contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+    uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+    createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
+    createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
+    assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
+  }
+
+  export type ProjectExtraRequestUpsertWithWhereUniqueWithoutSubServiceInput = {
+    where: ProjectExtraRequestWhereUniqueInput
+    update: XOR<ProjectExtraRequestUpdateWithoutSubServiceInput, ProjectExtraRequestUncheckedUpdateWithoutSubServiceInput>
+    create: XOR<ProjectExtraRequestCreateWithoutSubServiceInput, ProjectExtraRequestUncheckedCreateWithoutSubServiceInput>
+  }
+
+  export type ProjectExtraRequestUpdateWithWhereUniqueWithoutSubServiceInput = {
+    where: ProjectExtraRequestWhereUniqueInput
+    data: XOR<ProjectExtraRequestUpdateWithoutSubServiceInput, ProjectExtraRequestUncheckedUpdateWithoutSubServiceInput>
+  }
+
+  export type ProjectExtraRequestUpdateManyWithWhereWithoutSubServiceInput = {
+    where: ProjectExtraRequestScalarWhereInput
+    data: XOR<ProjectExtraRequestUpdateManyMutationInput, ProjectExtraRequestUncheckedUpdateManyWithoutSubServiceInput>
+  }
+
+  export type ProjectCreateWithoutCyclesInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    description?: string | null
+    projectType?: $Enums.ContentType
+    status?: $Enums.ProjectStatus
+    priority?: $Enums.ProjectPriority
+    startDate?: Date | string | null
+    dueDate?: Date | string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractCreateNestedOneWithoutPrimaryForProjectsInput
+    serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutProjectInput
+    contentRequests?: ContentRequestCreateNestedManyWithoutProjectInput
+    contracts?: ContractCreateNestedManyWithoutProjectInput
+    portfolio?: PortfolioCreateNestedOneWithoutProjectsInput
+    client: ClientCreateNestedOneWithoutProjectsInput
+    createdBy?: StaffCreateNestedOneWithoutCreatedProjectsInput
+    tasks?: TaskCreateNestedManyWithoutProjectInput
+    serviceLinks?: ProjectServiceLinkCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectUncheckedCreateWithoutCyclesInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    description?: string | null
+    projectType?: $Enums.ContentType
+    status?: $Enums.ProjectStatus
+    priority?: $Enums.ProjectPriority
+    startDate?: Date | string | null
+    dueDate?: Date | string | null
+    clientId: string
+    portfolioId?: string | null
+    createdById?: string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    contractId?: string | null
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutProjectInput
+    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutProjectInput
+    contracts?: ContractUncheckedCreateNestedManyWithoutProjectInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    serviceLinks?: ProjectServiceLinkUncheckedCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectCreateOrConnectWithoutCyclesInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutCyclesInput, ProjectUncheckedCreateWithoutCyclesInput>
+  }
+
+  export type ProjectUpsertWithoutCyclesInput = {
+    update: XOR<ProjectUpdateWithoutCyclesInput, ProjectUncheckedUpdateWithoutCyclesInput>
+    create: XOR<ProjectCreateWithoutCyclesInput, ProjectUncheckedCreateWithoutCyclesInput>
+    where?: ProjectWhereInput
+  }
+
+  export type ProjectUpdateToOneWithWhereWithoutCyclesInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutCyclesInput, ProjectUncheckedUpdateWithoutCyclesInput>
+  }
+
+  export type ProjectUpdateWithoutCyclesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    projectType?: EnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+    priority?: EnumProjectPriorityFieldUpdateOperationsInput | $Enums.ProjectPriority
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractUpdateOneWithoutPrimaryForProjectsNestedInput
+    serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutProjectNestedInput
+    contentRequests?: ContentRequestUpdateManyWithoutProjectNestedInput
+    contracts?: ContractUpdateManyWithoutProjectNestedInput
+    portfolio?: PortfolioUpdateOneWithoutProjectsNestedInput
+    client?: ClientUpdateOneRequiredWithoutProjectsNestedInput
+    createdBy?: StaffUpdateOneWithoutCreatedProjectsNestedInput
+    tasks?: TaskUpdateManyWithoutProjectNestedInput
+    serviceLinks?: ProjectServiceLinkUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutCyclesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    projectType?: EnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+    priority?: EnumProjectPriorityFieldUpdateOperationsInput | $Enums.ProjectPriority
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    clientId?: StringFieldUpdateOperationsInput | string
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutProjectNestedInput
+    contentRequests?: ContentRequestUncheckedUpdateManyWithoutProjectNestedInput
+    contracts?: ContractUncheckedUpdateManyWithoutProjectNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    serviceLinks?: ProjectServiceLinkUncheckedUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectCreateWithoutExtraRequestsInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    description?: string | null
+    projectType?: $Enums.ContentType
+    status?: $Enums.ProjectStatus
+    priority?: $Enums.ProjectPriority
+    startDate?: Date | string | null
+    dueDate?: Date | string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractCreateNestedOneWithoutPrimaryForProjectsInput
+    serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutProjectInput
+    contentRequests?: ContentRequestCreateNestedManyWithoutProjectInput
+    contracts?: ContractCreateNestedManyWithoutProjectInput
+    portfolio?: PortfolioCreateNestedOneWithoutProjectsInput
+    client: ClientCreateNestedOneWithoutProjectsInput
+    createdBy?: StaffCreateNestedOneWithoutCreatedProjectsInput
+    tasks?: TaskCreateNestedManyWithoutProjectInput
+    serviceLinks?: ProjectServiceLinkCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectUncheckedCreateWithoutExtraRequestsInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    description?: string | null
+    projectType?: $Enums.ContentType
+    status?: $Enums.ProjectStatus
+    priority?: $Enums.ProjectPriority
+    startDate?: Date | string | null
+    dueDate?: Date | string | null
+    clientId: string
+    portfolioId?: string | null
+    createdById?: string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    contractId?: string | null
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutProjectInput
+    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutProjectInput
+    contracts?: ContractUncheckedCreateNestedManyWithoutProjectInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    serviceLinks?: ProjectServiceLinkUncheckedCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectCreateOrConnectWithoutExtraRequestsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutExtraRequestsInput, ProjectUncheckedCreateWithoutExtraRequestsInput>
+  }
+
+  export type ProjectSubServiceCreateWithoutExtraRequestsInput = {
+    id: string
+    name: string
+    description?: string | null
+    quantity?: number
+    unit?: string
+    targetQuantity?: number
+    link: ProjectServiceLinkCreateNestedOneWithoutSubServicesInput
+    assignee?: StaffCreateNestedOneWithoutProjectSubAssignmentsInput
+  }
+
+  export type ProjectSubServiceUncheckedCreateWithoutExtraRequestsInput = {
+    id: string
+    projectServiceId: string
+    name: string
+    description?: string | null
+    quantity?: number
+    unit?: string
+    targetQuantity?: number
+    assigneeId?: string | null
+  }
+
+  export type ProjectSubServiceCreateOrConnectWithoutExtraRequestsInput = {
+    where: ProjectSubServiceWhereUniqueInput
+    create: XOR<ProjectSubServiceCreateWithoutExtraRequestsInput, ProjectSubServiceUncheckedCreateWithoutExtraRequestsInput>
+  }
+
+  export type StaffCreateWithoutProjectExtraRequestsInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    gender?: string | null
+    salary?: string | null
+    department?: string | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
+    expenseTransaction?: ExpenseTransactionCreateNestedManyWithoutUserInput
+    incomeTransaction?: IncomeTransactionCreateNestedManyWithoutUserInput
+    userFiles?: UserFilesCreateNestedManyWithoutUserInput
+    reciever?: UserSalaryCreateNestedManyWithoutRecieverUserInput
+    registerer?: UserSalaryCreateNestedManyWithoutRegisteredUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
+    contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
+    contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
+    uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
+    createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
+    createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
+    assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    portfolio?: PortfolioCreateNestedOneWithoutUsersInput
+    dynamicRole?: RoleCreateNestedOneWithoutUsersInput
+    transferredFromTasks?: TaskTransferHistoryCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+  }
+
+  export type StaffUncheckedCreateWithoutProjectExtraRequestsInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    gender?: string | null
+    salary?: string | null
+    department?: string | null
+    roleId?: string | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    portfolioId?: string | null
+    employmentType?: string | null
+    jobTitle?: string | null
+    staffCode?: string | null
+    expenseTransaction?: ExpenseTransactionUncheckedCreateNestedManyWithoutUserInput
+    incomeTransaction?: IncomeTransactionUncheckedCreateNestedManyWithoutUserInput
+    userFiles?: UserFilesUncheckedCreateNestedManyWithoutUserInput
+    reciever?: UserSalaryUncheckedCreateNestedManyWithoutRecieverUserInput
+    registerer?: UserSalaryUncheckedCreateNestedManyWithoutRegisteredUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
+    contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
+    contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
+    uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
+    createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
+    createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
+    assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
+    transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
+    transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
+    assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+  }
+
+  export type StaffCreateOrConnectWithoutProjectExtraRequestsInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutProjectExtraRequestsInput, StaffUncheckedCreateWithoutProjectExtraRequestsInput>
+  }
+
+  export type ProjectUpsertWithoutExtraRequestsInput = {
+    update: XOR<ProjectUpdateWithoutExtraRequestsInput, ProjectUncheckedUpdateWithoutExtraRequestsInput>
+    create: XOR<ProjectCreateWithoutExtraRequestsInput, ProjectUncheckedCreateWithoutExtraRequestsInput>
+    where?: ProjectWhereInput
+  }
+
+  export type ProjectUpdateToOneWithWhereWithoutExtraRequestsInput = {
+    where?: ProjectWhereInput
+    data: XOR<ProjectUpdateWithoutExtraRequestsInput, ProjectUncheckedUpdateWithoutExtraRequestsInput>
+  }
+
+  export type ProjectUpdateWithoutExtraRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    projectType?: EnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+    priority?: EnumProjectPriorityFieldUpdateOperationsInput | $Enums.ProjectPriority
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractUpdateOneWithoutPrimaryForProjectsNestedInput
+    serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutProjectNestedInput
+    contentRequests?: ContentRequestUpdateManyWithoutProjectNestedInput
+    contracts?: ContractUpdateManyWithoutProjectNestedInput
+    portfolio?: PortfolioUpdateOneWithoutProjectsNestedInput
+    client?: ClientUpdateOneRequiredWithoutProjectsNestedInput
+    createdBy?: StaffUpdateOneWithoutCreatedProjectsNestedInput
+    tasks?: TaskUpdateManyWithoutProjectNestedInput
+    serviceLinks?: ProjectServiceLinkUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutExtraRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    projectType?: EnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+    priority?: EnumProjectPriorityFieldUpdateOperationsInput | $Enums.ProjectPriority
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    clientId?: StringFieldUpdateOperationsInput | string
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutProjectNestedInput
+    contentRequests?: ContentRequestUncheckedUpdateManyWithoutProjectNestedInput
+    contracts?: ContractUncheckedUpdateManyWithoutProjectNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    serviceLinks?: ProjectServiceLinkUncheckedUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectSubServiceUpsertWithoutExtraRequestsInput = {
+    update: XOR<ProjectSubServiceUpdateWithoutExtraRequestsInput, ProjectSubServiceUncheckedUpdateWithoutExtraRequestsInput>
+    create: XOR<ProjectSubServiceCreateWithoutExtraRequestsInput, ProjectSubServiceUncheckedCreateWithoutExtraRequestsInput>
+    where?: ProjectSubServiceWhereInput
+  }
+
+  export type ProjectSubServiceUpdateToOneWithWhereWithoutExtraRequestsInput = {
+    where?: ProjectSubServiceWhereInput
+    data: XOR<ProjectSubServiceUpdateWithoutExtraRequestsInput, ProjectSubServiceUncheckedUpdateWithoutExtraRequestsInput>
+  }
+
+  export type ProjectSubServiceUpdateWithoutExtraRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unit?: StringFieldUpdateOperationsInput | string
+    targetQuantity?: IntFieldUpdateOperationsInput | number
+    link?: ProjectServiceLinkUpdateOneRequiredWithoutSubServicesNestedInput
+    assignee?: StaffUpdateOneWithoutProjectSubAssignmentsNestedInput
+  }
+
+  export type ProjectSubServiceUncheckedUpdateWithoutExtraRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectServiceId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unit?: StringFieldUpdateOperationsInput | string
+    targetQuantity?: IntFieldUpdateOperationsInput | number
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type StaffUpsertWithoutProjectExtraRequestsInput = {
+    update: XOR<StaffUpdateWithoutProjectExtraRequestsInput, StaffUncheckedUpdateWithoutProjectExtraRequestsInput>
+    create: XOR<StaffCreateWithoutProjectExtraRequestsInput, StaffUncheckedCreateWithoutProjectExtraRequestsInput>
+    where?: StaffWhereInput
+  }
+
+  export type StaffUpdateToOneWithWhereWithoutProjectExtraRequestsInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutProjectExtraRequestsInput, StaffUncheckedUpdateWithoutProjectExtraRequestsInput>
+  }
+
+  export type StaffUpdateWithoutProjectExtraRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    salary?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    expenseTransaction?: ExpenseTransactionUpdateManyWithoutUserNestedInput
+    incomeTransaction?: IncomeTransactionUpdateManyWithoutUserNestedInput
+    userFiles?: UserFilesUpdateManyWithoutUserNestedInput
+    reciever?: UserSalaryUpdateManyWithoutRecieverUserNestedInput
+    registerer?: UserSalaryUpdateManyWithoutRegisteredUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
+    contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
+    contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
+    uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
+    createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
+    createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
+    assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
+    dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
+    transferredFromTasks?: TaskTransferHistoryUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+  }
+
+  export type StaffUncheckedUpdateWithoutProjectExtraRequestsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    salary?: NullableStringFieldUpdateOperationsInput | string | null
+    department?: NullableStringFieldUpdateOperationsInput | string | null
+    roleId?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    employmentType?: NullableStringFieldUpdateOperationsInput | string | null
+    jobTitle?: NullableStringFieldUpdateOperationsInput | string | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    expenseTransaction?: ExpenseTransactionUncheckedUpdateManyWithoutUserNestedInput
+    incomeTransaction?: IncomeTransactionUncheckedUpdateManyWithoutUserNestedInput
+    userFiles?: UserFilesUncheckedUpdateManyWithoutUserNestedInput
+    reciever?: UserSalaryUncheckedUpdateManyWithoutRecieverUserNestedInput
+    registerer?: UserSalaryUncheckedUpdateManyWithoutRegisteredUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
+    contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
+    contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+    uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+    createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
+    createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
+    assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
+    transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
+    transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
+    assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+  }
+
   export type ClientInstallmentCreateWithoutContractInput = {
     id?: string
     createdAt?: Date | string
@@ -133965,6 +143747,9 @@ export namespace Prisma {
     paidAmount?: number
     status?: $Enums.InstallmentStatus
     notes?: string | null
+    installmentNumber?: number | null
+    percentage?: number | null
+    dueMilestone?: string | null
     client: ClientCreateNestedOneWithoutInstallmentsInput
   }
 
@@ -133981,6 +143766,9 @@ export namespace Prisma {
     status?: $Enums.InstallmentStatus
     notes?: string | null
     clientId: string
+    installmentNumber?: number | null
+    percentage?: number | null
+    dueMilestone?: string | null
   }
 
   export type ClientInstallmentCreateOrConnectWithoutContractInput = {
@@ -134082,11 +143870,13 @@ export namespace Prisma {
 
   export type ClientCreateWithoutContractsInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     address?: string | null
     clientType?: $Enums.ClientType
@@ -134103,6 +143893,7 @@ export namespace Prisma {
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
+    createdBy?: StaffCreateNestedOneWithoutClientsCreatedInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
@@ -134116,13 +143907,16 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutContractsInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     accountManagerId?: string | null
+    createdById?: string | null
     address?: string | null
     portfolioId?: string | null
     clientType?: $Enums.ClientType
@@ -134179,10 +143973,13 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
     createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
@@ -134191,6 +143988,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedContractsInput = {
@@ -134221,16 +144020,21 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedContractsInput = {
@@ -134249,12 +144053,22 @@ export namespace Prisma {
     priority?: $Enums.ProjectPriority
     startDate?: Date | string | null
     dueDate?: Date | string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractCreateNestedOneWithoutPrimaryForProjectsInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestCreateNestedManyWithoutProjectInput
     portfolio?: PortfolioCreateNestedOneWithoutProjectsInput
     client: ClientCreateNestedOneWithoutProjectsInput
     createdBy?: StaffCreateNestedOneWithoutCreatedProjectsInput
     tasks?: TaskCreateNestedManyWithoutProjectInput
+    serviceLinks?: ProjectServiceLinkCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutContractsInput = {
@@ -134271,14 +144085,92 @@ export namespace Prisma {
     clientId: string
     portfolioId?: string | null
     createdById?: string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    contractId?: string | null
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutProjectInput
     contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutProjectInput
     tasks?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    serviceLinks?: ProjectServiceLinkUncheckedCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleUncheckedCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutContractsInput = {
     where: ProjectWhereUniqueInput
     create: XOR<ProjectCreateWithoutContractsInput, ProjectUncheckedCreateWithoutContractsInput>
+  }
+
+  export type ProjectCreateWithoutPrimaryContractInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    description?: string | null
+    projectType?: $Enums.ContentType
+    status?: $Enums.ProjectStatus
+    priority?: $Enums.ProjectPriority
+    startDate?: Date | string | null
+    dueDate?: Date | string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutProjectInput
+    contentRequests?: ContentRequestCreateNestedManyWithoutProjectInput
+    contracts?: ContractCreateNestedManyWithoutProjectInput
+    portfolio?: PortfolioCreateNestedOneWithoutProjectsInput
+    client: ClientCreateNestedOneWithoutProjectsInput
+    createdBy?: StaffCreateNestedOneWithoutCreatedProjectsInput
+    tasks?: TaskCreateNestedManyWithoutProjectInput
+    serviceLinks?: ProjectServiceLinkCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectUncheckedCreateWithoutPrimaryContractInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    description?: string | null
+    projectType?: $Enums.ContentType
+    status?: $Enums.ProjectStatus
+    priority?: $Enums.ProjectPriority
+    startDate?: Date | string | null
+    dueDate?: Date | string | null
+    clientId: string
+    portfolioId?: string | null
+    createdById?: string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutProjectInput
+    contentRequests?: ContentRequestUncheckedCreateNestedManyWithoutProjectInput
+    contracts?: ContractUncheckedCreateNestedManyWithoutProjectInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    serviceLinks?: ProjectServiceLinkUncheckedCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleUncheckedCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectCreateOrConnectWithoutPrimaryContractInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutPrimaryContractInput, ProjectUncheckedCreateWithoutPrimaryContractInput>
+  }
+
+  export type ProjectCreateManyPrimaryContractInputEnvelope = {
+    data: ProjectCreateManyPrimaryContractInput | ProjectCreateManyPrimaryContractInput[]
+    skipDuplicates?: boolean
   }
 
   export type ClientInstallmentUpsertWithWhereUniqueWithoutContractInput = {
@@ -134387,11 +144279,13 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutContractsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     address?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -134408,6 +144302,7 @@ export namespace Prisma {
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
+    createdBy?: StaffUpdateOneWithoutClientsCreatedNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
@@ -134421,13 +144316,16 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutContractsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -134490,10 +144388,13 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
     createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
@@ -134502,6 +144403,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedContractsInput = {
@@ -134532,16 +144435,21 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type ProjectUpsertWithoutContractsInput = {
@@ -134566,12 +144474,22 @@ export namespace Prisma {
     priority?: EnumProjectPriorityFieldUpdateOperationsInput | $Enums.ProjectPriority
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractUpdateOneWithoutPrimaryForProjectsNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutProjectNestedInput
     portfolio?: PortfolioUpdateOneWithoutProjectsNestedInput
     client?: ClientUpdateOneRequiredWithoutProjectsNestedInput
     createdBy?: StaffUpdateOneWithoutCreatedProjectsNestedInput
     tasks?: TaskUpdateManyWithoutProjectNestedInput
+    serviceLinks?: ProjectServiceLinkUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutContractsInput = {
@@ -134588,18 +144506,46 @@ export namespace Prisma {
     clientId?: StringFieldUpdateOperationsInput | string
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutProjectNestedInput
     tasks?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    serviceLinks?: ProjectServiceLinkUncheckedUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUncheckedUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectUpsertWithWhereUniqueWithoutPrimaryContractInput = {
+    where: ProjectWhereUniqueInput
+    update: XOR<ProjectUpdateWithoutPrimaryContractInput, ProjectUncheckedUpdateWithoutPrimaryContractInput>
+    create: XOR<ProjectCreateWithoutPrimaryContractInput, ProjectUncheckedCreateWithoutPrimaryContractInput>
+  }
+
+  export type ProjectUpdateWithWhereUniqueWithoutPrimaryContractInput = {
+    where: ProjectWhereUniqueInput
+    data: XOR<ProjectUpdateWithoutPrimaryContractInput, ProjectUncheckedUpdateWithoutPrimaryContractInput>
+  }
+
+  export type ProjectUpdateManyWithWhereWithoutPrimaryContractInput = {
+    where: ProjectScalarWhereInput
+    data: XOR<ProjectUpdateManyMutationInput, ProjectUncheckedUpdateManyWithoutPrimaryContractInput>
   }
 
   export type ClientCreateWithoutInstallmentsInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     address?: string | null
     clientType?: $Enums.ClientType
@@ -134615,6 +144561,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
+    createdBy?: StaffCreateNestedOneWithoutClientsCreatedInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
@@ -134629,13 +144576,16 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutInstallmentsInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     accountManagerId?: string | null
+    createdById?: string | null
     address?: string | null
     portfolioId?: string | null
     clientType?: $Enums.ClientType
@@ -134671,6 +144621,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     contractNumber: string
+    title?: string | null
+    duration?: string | null
     startDate?: Date | string | null
     endDate?: Date | string | null
     renewalDate?: Date | string | null
@@ -134679,12 +144631,15 @@ export namespace Prisma {
     status?: $Enums.ContractStatus
     notes?: string | null
     billingDay?: number | null
+    billingPeriodMonths?: number | null
+    contractType?: string | null
     monthlyAmount?: number | null
     documents?: ContractDocumentCreateNestedManyWithoutContractInput
     portfolio?: PortfolioCreateNestedOneWithoutContractsInput
     client: ClientCreateNestedOneWithoutContractsInput
     createdBy?: StaffCreateNestedOneWithoutCreatedContractsInput
     project?: ProjectCreateNestedOneWithoutContractsInput
+    primaryForProjects?: ProjectCreateNestedManyWithoutPrimaryContractInput
   }
 
   export type ContractUncheckedCreateWithoutInstallmentsInput = {
@@ -134692,6 +144647,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     contractNumber: string
+    title?: string | null
+    duration?: string | null
     startDate?: Date | string | null
     endDate?: Date | string | null
     renewalDate?: Date | string | null
@@ -134704,8 +144661,11 @@ export namespace Prisma {
     portfolioId?: string | null
     createdById?: string | null
     billingDay?: number | null
+    billingPeriodMonths?: number | null
+    contractType?: string | null
     monthlyAmount?: number | null
     documents?: ContractDocumentUncheckedCreateNestedManyWithoutContractInput
+    primaryForProjects?: ProjectUncheckedCreateNestedManyWithoutPrimaryContractInput
   }
 
   export type ContractCreateOrConnectWithoutInstallmentsInput = {
@@ -134726,11 +144686,13 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutInstallmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     address?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -134746,6 +144708,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
+    createdBy?: StaffUpdateOneWithoutClientsCreatedNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
@@ -134760,13 +144723,16 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutInstallmentsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -134808,6 +144774,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -134816,12 +144784,15 @@ export namespace Prisma {
     status?: EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     documents?: ContractDocumentUpdateManyWithoutContractNestedInput
     portfolio?: PortfolioUpdateOneWithoutContractsNestedInput
     client?: ClientUpdateOneRequiredWithoutContractsNestedInput
     createdBy?: StaffUpdateOneWithoutCreatedContractsNestedInput
     project?: ProjectUpdateOneWithoutContractsNestedInput
+    primaryForProjects?: ProjectUpdateManyWithoutPrimaryContractNestedInput
   }
 
   export type ContractUncheckedUpdateWithoutInstallmentsInput = {
@@ -134829,6 +144800,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -134841,8 +144814,11 @@ export namespace Prisma {
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     documents?: ContractDocumentUncheckedUpdateManyWithoutContractNestedInput
+    primaryForProjects?: ProjectUncheckedUpdateManyWithoutPrimaryContractNestedInput
   }
 
   export type ContractCreateWithoutDocumentsInput = {
@@ -134850,6 +144826,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     contractNumber: string
+    title?: string | null
+    duration?: string | null
     startDate?: Date | string | null
     endDate?: Date | string | null
     renewalDate?: Date | string | null
@@ -134858,12 +144836,15 @@ export namespace Prisma {
     status?: $Enums.ContractStatus
     notes?: string | null
     billingDay?: number | null
+    billingPeriodMonths?: number | null
+    contractType?: string | null
     monthlyAmount?: number | null
     installments?: ClientInstallmentCreateNestedManyWithoutContractInput
     portfolio?: PortfolioCreateNestedOneWithoutContractsInput
     client: ClientCreateNestedOneWithoutContractsInput
     createdBy?: StaffCreateNestedOneWithoutCreatedContractsInput
     project?: ProjectCreateNestedOneWithoutContractsInput
+    primaryForProjects?: ProjectCreateNestedManyWithoutPrimaryContractInput
   }
 
   export type ContractUncheckedCreateWithoutDocumentsInput = {
@@ -134871,6 +144852,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     contractNumber: string
+    title?: string | null
+    duration?: string | null
     startDate?: Date | string | null
     endDate?: Date | string | null
     renewalDate?: Date | string | null
@@ -134883,8 +144866,11 @@ export namespace Prisma {
     portfolioId?: string | null
     createdById?: string | null
     billingDay?: number | null
+    billingPeriodMonths?: number | null
+    contractType?: string | null
     monthlyAmount?: number | null
     installments?: ClientInstallmentUncheckedCreateNestedManyWithoutContractInput
+    primaryForProjects?: ProjectUncheckedCreateNestedManyWithoutPrimaryContractInput
   }
 
   export type ContractCreateOrConnectWithoutDocumentsInput = {
@@ -134918,10 +144904,13 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
@@ -134930,6 +144919,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateWithoutUploadedContractDocumentsInput = {
@@ -134960,16 +144951,21 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffCreateOrConnectWithoutUploadedContractDocumentsInput = {
@@ -134993,6 +144989,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -135001,12 +144999,15 @@ export namespace Prisma {
     status?: EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     installments?: ClientInstallmentUpdateManyWithoutContractNestedInput
     portfolio?: PortfolioUpdateOneWithoutContractsNestedInput
     client?: ClientUpdateOneRequiredWithoutContractsNestedInput
     createdBy?: StaffUpdateOneWithoutCreatedContractsNestedInput
     project?: ProjectUpdateOneWithoutContractsNestedInput
+    primaryForProjects?: ProjectUpdateManyWithoutPrimaryContractNestedInput
   }
 
   export type ContractUncheckedUpdateWithoutDocumentsInput = {
@@ -135014,6 +145015,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -135026,8 +145029,11 @@ export namespace Prisma {
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     installments?: ClientInstallmentUncheckedUpdateManyWithoutContractNestedInput
+    primaryForProjects?: ProjectUncheckedUpdateManyWithoutPrimaryContractNestedInput
   }
 
   export type StaffUpsertWithoutUploadedContractDocumentsInput = {
@@ -135067,10 +145073,13 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
@@ -135079,6 +145088,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutUploadedContractDocumentsInput = {
@@ -135109,16 +145120,21 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type ContentRequestAssigneeCreateWithoutContentRequestInput = {
@@ -135202,11 +145218,13 @@ export namespace Prisma {
 
   export type ClientCreateWithoutContentRequestsInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     address?: string | null
     clientType?: $Enums.ClientType
@@ -135223,6 +145241,7 @@ export namespace Prisma {
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
+    createdBy?: StaffCreateNestedOneWithoutClientsCreatedInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
@@ -135236,13 +145255,16 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutContentRequestsInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     accountManagerId?: string | null
+    createdById?: string | null
     address?: string | null
     portfolioId?: string | null
     clientType?: $Enums.ClientType
@@ -135299,10 +145321,13 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
@@ -135311,6 +145336,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateWithoutContentRequestsCreatedInput = {
@@ -135341,16 +145368,21 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffCreateOrConnectWithoutContentRequestsCreatedInput = {
@@ -135369,12 +145401,22 @@ export namespace Prisma {
     priority?: $Enums.ProjectPriority
     startDate?: Date | string | null
     dueDate?: Date | string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractCreateNestedOneWithoutPrimaryForProjectsInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutProjectInput
     contracts?: ContractCreateNestedManyWithoutProjectInput
     portfolio?: PortfolioCreateNestedOneWithoutProjectsInput
     client: ClientCreateNestedOneWithoutProjectsInput
     createdBy?: StaffCreateNestedOneWithoutCreatedProjectsInput
     tasks?: TaskCreateNestedManyWithoutProjectInput
+    serviceLinks?: ProjectServiceLinkCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutContentRequestsInput = {
@@ -135391,9 +145433,19 @@ export namespace Prisma {
     clientId: string
     portfolioId?: string | null
     createdById?: string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    contractId?: string | null
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutProjectInput
     contracts?: ContractUncheckedCreateNestedManyWithoutProjectInput
     tasks?: TaskUncheckedCreateNestedManyWithoutProjectInput
+    serviceLinks?: ProjectServiceLinkUncheckedCreateNestedManyWithoutProjectInput
+    cycles?: ProjectCycleUncheckedCreateNestedManyWithoutProjectInput
+    extraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutContentRequestsInput = {
@@ -135567,11 +145619,13 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutContentRequestsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     address?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -135588,6 +145642,7 @@ export namespace Prisma {
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
+    createdBy?: StaffUpdateOneWithoutClientsCreatedNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
@@ -135601,13 +145656,16 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutContentRequestsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -135670,10 +145728,13 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
@@ -135682,6 +145743,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutContentRequestsCreatedInput = {
@@ -135712,16 +145775,21 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type ProjectUpsertWithoutContentRequestsInput = {
@@ -135746,12 +145814,22 @@ export namespace Prisma {
     priority?: EnumProjectPriorityFieldUpdateOperationsInput | $Enums.ProjectPriority
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractUpdateOneWithoutPrimaryForProjectsNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutProjectNestedInput
     contracts?: ContractUpdateManyWithoutProjectNestedInput
     portfolio?: PortfolioUpdateOneWithoutProjectsNestedInput
     client?: ClientUpdateOneRequiredWithoutProjectsNestedInput
     createdBy?: StaffUpdateOneWithoutCreatedProjectsNestedInput
     tasks?: TaskUpdateManyWithoutProjectNestedInput
+    serviceLinks?: ProjectServiceLinkUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutContentRequestsInput = {
@@ -135768,9 +145846,19 @@ export namespace Prisma {
     clientId?: StringFieldUpdateOperationsInput | string
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutProjectNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutProjectNestedInput
     tasks?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    serviceLinks?: ProjectServiceLinkUncheckedUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUncheckedUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type TaskUpsertWithWhereUniqueWithoutContentRequestInput = {
@@ -135852,10 +145940,13 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepCreateNestedManyWithoutAssigneeInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
@@ -135864,6 +145955,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateWithoutContentRequestAssignmentsInput = {
@@ -135894,16 +145987,21 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedCreateNestedManyWithoutAssigneeInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffCreateOrConnectWithoutContentRequestAssignmentsInput = {
@@ -135991,10 +146089,13 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
@@ -136003,6 +146104,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutContentRequestAssignmentsInput = {
@@ -136033,16 +146136,21 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type ContentCycleCreateWithoutScheduleInput = {
@@ -136184,11 +146292,13 @@ export namespace Prisma {
 
   export type ClientCreateWithoutRecurringSchedulesInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     address?: string | null
     clientType?: $Enums.ClientType
@@ -136205,6 +146315,7 @@ export namespace Prisma {
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
+    createdBy?: StaffCreateNestedOneWithoutClientsCreatedInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
@@ -136218,13 +146329,16 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutRecurringSchedulesInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     accountManagerId?: string | null
+    createdById?: string | null
     address?: string | null
     portfolioId?: string | null
     clientType?: $Enums.ClientType
@@ -136361,11 +146475,13 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutRecurringSchedulesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     address?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -136382,6 +146498,7 @@ export namespace Prisma {
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
+    createdBy?: StaffUpdateOneWithoutClientsCreatedNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
@@ -136395,13 +146512,16 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutRecurringSchedulesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -136453,11 +146573,14 @@ export namespace Prisma {
     accounts?: AccountCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
     managedClients?: ClientCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceCreateNestedManyWithoutUpdatedByInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     portfolio?: PortfolioCreateNestedOneWithoutUsersInput
     dynamicRole?: RoleCreateNestedOneWithoutUsersInput
@@ -136465,6 +146588,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffUncheckedCreateWithoutAssignedRecurringStepsInput = {
@@ -136495,16 +146620,21 @@ export namespace Prisma {
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
     managedClients?: ClientUncheckedCreateNestedManyWithoutAccountManagerInput
+    clientsCreated?: ClientUncheckedCreateNestedManyWithoutCreatedByInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedCreateNestedManyWithoutUserInput
     contentRequestsCreated?: ContentRequestUncheckedCreateNestedManyWithoutCreatedByInput
     uploadedContractDocuments?: ContractDocumentUncheckedCreateNestedManyWithoutUploadedByInput
     createdContracts?: ContractUncheckedCreateNestedManyWithoutCreatedByInput
     createdProjects?: ProjectUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesCreated?: ServiceUncheckedCreateNestedManyWithoutCreatedByInput
+    servicesUpdated?: ServiceUncheckedCreateNestedManyWithoutUpdatedByInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     transferredFromTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutFromAssigneeInput
     transferredToTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutToAssigneeInput
     transferredByTasks?: TaskTransferHistoryUncheckedCreateNestedManyWithoutTransferredByInput
     assignedTasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    projectSubAssignments?: ProjectSubServiceUncheckedCreateNestedManyWithoutAssigneeInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedCreateNestedManyWithoutRequestedByInput
   }
 
   export type StaffCreateOrConnectWithoutAssignedRecurringStepsInput = {
@@ -136643,11 +146773,14 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
@@ -136655,6 +146788,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutAssignedRecurringStepsInput = {
@@ -136685,16 +146820,21 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type RecurringScheduleUpsertWithoutStepsInput = {
@@ -137048,11 +147188,13 @@ export namespace Prisma {
 
   export type ClientCreateWithoutContentCyclesInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     address?: string | null
     clientType?: $Enums.ClientType
@@ -137069,6 +147211,7 @@ export namespace Prisma {
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
+    createdBy?: StaffCreateNestedOneWithoutClientsCreatedInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     contentRequests?: ContentRequestCreateNestedManyWithoutClientInput
@@ -137082,13 +147225,16 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutContentCyclesInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     accountManagerId?: string | null
+    createdById?: string | null
     address?: string | null
     portfolioId?: string | null
     clientType?: $Enums.ClientType
@@ -137247,11 +147393,13 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutContentCyclesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     address?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -137268,6 +147416,7 @@ export namespace Prisma {
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
+    createdBy?: StaffUpdateOneWithoutClientsCreatedNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutClientNestedInput
@@ -137281,13 +147430,16 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutContentCyclesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -142715,11 +152867,13 @@ export namespace Prisma {
 
   export type ClientCreateWithoutCustomerInvoicesInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     address?: string | null
     clientType?: $Enums.ClientType
@@ -142736,6 +152890,7 @@ export namespace Prisma {
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
+    createdBy?: StaffCreateNestedOneWithoutClientsCreatedInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
@@ -142749,13 +152904,16 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutCustomerInvoicesInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     accountManagerId?: string | null
+    createdById?: string | null
     address?: string | null
     portfolioId?: string | null
     clientType?: $Enums.ClientType
@@ -143428,11 +153586,13 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutCustomerInvoicesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     address?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -143449,6 +153609,7 @@ export namespace Prisma {
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
+    createdBy?: StaffUpdateOneWithoutClientsCreatedNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
@@ -143462,13 +153623,16 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutCustomerInvoicesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -144938,11 +155102,13 @@ export namespace Prisma {
 
   export type ClientCreateWithoutAccountingCustomerInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     address?: string | null
     clientType?: $Enums.ClientType
@@ -144959,6 +155125,7 @@ export namespace Prisma {
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
+    createdBy?: StaffCreateNestedOneWithoutClientsCreatedInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
@@ -144972,13 +155139,16 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutAccountingCustomerInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     accountManagerId?: string | null
+    createdById?: string | null
     address?: string | null
     portfolioId?: string | null
     clientType?: $Enums.ClientType
@@ -145307,11 +155477,13 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutAccountingCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     address?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -145328,6 +155500,7 @@ export namespace Prisma {
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
+    createdBy?: StaffUpdateOneWithoutClientsCreatedNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
@@ -145341,13 +155514,16 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutAccountingCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -155057,11 +165233,13 @@ export namespace Prisma {
 
   export type ClientCreateWithoutQuotationsInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     address?: string | null
     clientType?: $Enums.ClientType
@@ -155078,6 +165256,7 @@ export namespace Prisma {
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
     installments?: ClientInstallmentCreateNestedManyWithoutClientInput
     accountManager?: StaffCreateNestedOneWithoutManagedClientsInput
+    createdBy?: StaffCreateNestedOneWithoutClientsCreatedInput
     portfolio?: PortfolioCreateNestedOneWithoutClientsInput
     clientTask?: ClientTaskCreateNestedManyWithoutClientInput
     contentCycles?: ContentCycleCreateNestedManyWithoutClientInput
@@ -155091,13 +165270,16 @@ export namespace Prisma {
 
   export type ClientUncheckedCreateWithoutQuotationsInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     accountManagerId?: string | null
+    createdById?: string | null
     address?: string | null
     portfolioId?: string | null
     clientType?: $Enums.ClientType
@@ -155285,11 +165467,13 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutQuotationsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     address?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -155306,6 +165490,7 @@ export namespace Prisma {
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
+    createdBy?: StaffUpdateOneWithoutClientsCreatedNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
@@ -155319,13 +165504,16 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutQuotationsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -155866,11 +166054,14 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     portfolio?: PortfolioUpdateOneWithoutUsersNestedInput
@@ -155878,6 +166069,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutDynamicRoleInput = {
@@ -155907,17 +166100,22 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateManyWithoutDynamicRoleInput = {
@@ -156031,12 +166229,39 @@ export namespace Prisma {
 
   export type ClientCreateManyAccountManagerInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
+    createdById?: string | null
+    address?: string | null
+    portfolioId?: string | null
+    clientType?: $Enums.ClientType
+    companyName?: string | null
+    contactPerson?: string | null
+    contractEndDate?: Date | string | null
+    contractStartDate?: Date | string | null
+    isActive?: boolean
+    monthlyBudget?: number | null
+    notes?: string | null
+    isDraft?: boolean
+  }
+
+  export type ClientCreateManyCreatedByInput = {
+    id: string
+    clientCode?: string | null
+    createdAt?: Date | string | null
+    updatedAt?: Date | string | null
+    institution: string
+    email: string
+    phone: string
+    alternativePhone?: string | null
+    source: string
+    accountManagerId?: string | null
     address?: string | null
     portfolioId?: string | null
     clientType?: $Enums.ClientType
@@ -156087,6 +166312,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     contractNumber: string
+    title?: string | null
+    duration?: string | null
     startDate?: Date | string | null
     endDate?: Date | string | null
     renewalDate?: Date | string | null
@@ -156098,6 +166325,8 @@ export namespace Prisma {
     projectId?: string | null
     portfolioId?: string | null
     billingDay?: number | null
+    billingPeriodMonths?: number | null
+    contractType?: string | null
     monthlyAmount?: number | null
   }
 
@@ -156114,6 +166343,47 @@ export namespace Prisma {
     dueDate?: Date | string | null
     clientId: string
     portfolioId?: string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    contractId?: string | null
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type ServiceCreateManyCreatedByInput = {
+    id: string
+    serviceCode?: string | null
+    serviceName: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    updatedById?: string | null
+    portfolioId?: string | null
+    iconUrl?: string | null
+    source?: string
+    externalId?: string | null
+    lastSyncedAt?: Date | string | null
+    serviceType?: $Enums.ServiceType
+  }
+
+  export type ServiceCreateManyUpdatedByInput = {
+    id: string
+    serviceCode?: string | null
+    serviceName: string
+    description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdById?: string | null
+    portfolioId?: string | null
+    iconUrl?: string | null
+    source?: string
+    externalId?: string | null
+    lastSyncedAt?: Date | string | null
+    serviceType?: $Enums.ServiceType
   }
 
   export type RecurringScheduleStepCreateManyAssigneeInput = {
@@ -156153,6 +166423,8 @@ export namespace Prisma {
     progressAtTransfer?: number
     deadlineAtTransfer?: Date | string | null
     transferredById?: string | null
+    reason?: string | null
+    note?: string | null
   }
 
   export type TaskTransferHistoryCreateManyToAssigneeInput = {
@@ -156163,6 +166435,8 @@ export namespace Prisma {
     progressAtTransfer?: number
     deadlineAtTransfer?: Date | string | null
     transferredById?: string | null
+    reason?: string | null
+    note?: string | null
   }
 
   export type TaskTransferHistoryCreateManyTransferredByInput = {
@@ -156173,6 +166447,8 @@ export namespace Prisma {
     toAssigneeId: string
     progressAtTransfer?: number
     deadlineAtTransfer?: Date | string | null
+    reason?: string | null
+    note?: string | null
   }
 
   export type TaskCreateManyUserInput = {
@@ -156203,6 +166479,26 @@ export namespace Prisma {
     startDate?: Date | string | null
     features?: NullableJsonNullValueInput | InputJsonValue
     progressNotes?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type ProjectSubServiceCreateManyAssigneeInput = {
+    id: string
+    projectServiceId: string
+    name: string
+    description?: string | null
+    quantity?: number
+    unit?: string
+    targetQuantity?: number
+  }
+
+  export type ProjectExtraRequestCreateManyRequestedByInput = {
+    id: string
+    projectId: string
+    subServiceId: string
+    quantity: number
+    description?: string | null
+    status?: string
+    createdAt?: Date | string
   }
 
   export type ExpenseTransactionUpdateWithoutUserInput = {
@@ -156479,11 +166775,13 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutAccountManagerInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     address?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -156499,6 +166797,7 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
+    createdBy?: StaffUpdateOneWithoutClientsCreatedNestedInput
     portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
@@ -156513,12 +166812,15 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutAccountManagerInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -156547,12 +166849,113 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateManyWithoutAccountManagerInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
+    contractEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type ClientUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    institution?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
+    contractEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
+    serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
+    clientService?: ClientServiceUpdateManyWithoutClientNestedInput
+    installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
+    accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
+    portfolio?: PortfolioUpdateOneWithoutClientsNestedInput
+    clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
+    contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
+    contentRequests?: ContentRequestUpdateManyWithoutClientNestedInput
+    contracts?: ContractUpdateManyWithoutClientNestedInput
+    customerInvoices?: customer_invoicesUpdateManyWithoutClientNestedInput
+    accountingCustomer?: customersUpdateOneWithoutClientNestedInput
+    projects?: ProjectUpdateManyWithoutClientNestedInput
+    quotations?: quotationsUpdateManyWithoutClientNestedInput
+    recurringSchedules?: RecurringScheduleUpdateManyWithoutClientNestedInput
+  }
+
+  export type ClientUncheckedUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    institution?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    contactPerson?: NullableStringFieldUpdateOperationsInput | string | null
+    contractEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    contractStartDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
+    serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
+    clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
+    installments?: ClientInstallmentUncheckedUpdateManyWithoutClientNestedInput
+    clientTask?: ClientTaskUncheckedUpdateManyWithoutClientNestedInput
+    contentCycles?: ContentCycleUncheckedUpdateManyWithoutClientNestedInput
+    contentRequests?: ContentRequestUncheckedUpdateManyWithoutClientNestedInput
+    contracts?: ContractUncheckedUpdateManyWithoutClientNestedInput
+    customerInvoices?: customer_invoicesUncheckedUpdateManyWithoutClientNestedInput
+    accountingCustomer?: customersUncheckedUpdateOneWithoutClientNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutClientNestedInput
+    quotations?: quotationsUncheckedUpdateManyWithoutClientNestedInput
+    recurringSchedules?: RecurringScheduleUncheckedUpdateManyWithoutClientNestedInput
+  }
+
+  export type ClientUncheckedUpdateManyWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    institution?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -156671,6 +167074,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -156679,12 +167084,15 @@ export namespace Prisma {
     status?: EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     installments?: ClientInstallmentUpdateManyWithoutContractNestedInput
     documents?: ContractDocumentUpdateManyWithoutContractNestedInput
     portfolio?: PortfolioUpdateOneWithoutContractsNestedInput
     client?: ClientUpdateOneRequiredWithoutContractsNestedInput
     project?: ProjectUpdateOneWithoutContractsNestedInput
+    primaryForProjects?: ProjectUpdateManyWithoutPrimaryContractNestedInput
   }
 
   export type ContractUncheckedUpdateWithoutCreatedByInput = {
@@ -156692,6 +167100,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -156703,9 +167113,12 @@ export namespace Prisma {
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     installments?: ClientInstallmentUncheckedUpdateManyWithoutContractNestedInput
     documents?: ContractDocumentUncheckedUpdateManyWithoutContractNestedInput
+    primaryForProjects?: ProjectUncheckedUpdateManyWithoutPrimaryContractNestedInput
   }
 
   export type ContractUncheckedUpdateManyWithoutCreatedByInput = {
@@ -156713,6 +167126,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -156724,6 +167139,8 @@ export namespace Prisma {
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
@@ -156738,12 +167155,22 @@ export namespace Prisma {
     priority?: EnumProjectPriorityFieldUpdateOperationsInput | $Enums.ProjectPriority
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractUpdateOneWithoutPrimaryForProjectsNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutProjectNestedInput
     contracts?: ContractUpdateManyWithoutProjectNestedInput
     portfolio?: PortfolioUpdateOneWithoutProjectsNestedInput
     client?: ClientUpdateOneRequiredWithoutProjectsNestedInput
     tasks?: TaskUpdateManyWithoutProjectNestedInput
+    serviceLinks?: ProjectServiceLinkUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutCreatedByInput = {
@@ -156759,10 +167186,20 @@ export namespace Prisma {
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientId?: StringFieldUpdateOperationsInput | string
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutProjectNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutProjectNestedInput
     tasks?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    serviceLinks?: ProjectServiceLinkUncheckedUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUncheckedUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateManyWithoutCreatedByInput = {
@@ -156778,6 +167215,131 @@ export namespace Prisma {
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientId?: StringFieldUpdateOperationsInput | string
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type ServiceUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+    serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutServiceNestedInput
+    clientService?: ClientServiceUpdateManyWithoutServiceNestedInput
+    updatedBy?: StaffUpdateOneWithoutServicesUpdatedNestedInput
+    portfolio?: PortfolioUpdateOneWithoutServicesNestedInput
+    subService?: SubServiceUpdateManyWithoutServiceNestedInput
+    projectLinks?: ProjectServiceLinkUpdateManyWithoutServiceNestedInput
+  }
+
+  export type ServiceUncheckedUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+    serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutServiceNestedInput
+    clientService?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
+    subService?: SubServiceUncheckedUpdateManyWithoutServiceNestedInput
+    projectLinks?: ProjectServiceLinkUncheckedUpdateManyWithoutServiceNestedInput
+  }
+
+  export type ServiceUncheckedUpdateManyWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+  }
+
+  export type ServiceUpdateWithoutUpdatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+    serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutServiceNestedInput
+    clientService?: ClientServiceUpdateManyWithoutServiceNestedInput
+    createdBy?: StaffUpdateOneWithoutServicesCreatedNestedInput
+    portfolio?: PortfolioUpdateOneWithoutServicesNestedInput
+    subService?: SubServiceUpdateManyWithoutServiceNestedInput
+    projectLinks?: ProjectServiceLinkUpdateManyWithoutServiceNestedInput
+  }
+
+  export type ServiceUncheckedUpdateWithoutUpdatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
+    serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutServiceNestedInput
+    clientService?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
+    subService?: SubServiceUncheckedUpdateManyWithoutServiceNestedInput
+    projectLinks?: ProjectServiceLinkUncheckedUpdateManyWithoutServiceNestedInput
+  }
+
+  export type ServiceUncheckedUpdateManyWithoutUpdatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceName?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: StringFieldUpdateOperationsInput | string
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    lastSyncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
   }
 
   export type RecurringScheduleStepUpdateWithoutAssigneeInput = {
@@ -156874,6 +167436,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     progressAtTransfer?: IntFieldUpdateOperationsInput | number
     deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
     task?: TaskUpdateOneRequiredWithoutTransferHistoryNestedInput
     toAssignee?: StaffUpdateOneRequiredWithoutTransferredToTasksNestedInput
     transferredBy?: StaffUpdateOneWithoutTransferredByTasksNestedInput
@@ -156887,6 +167451,8 @@ export namespace Prisma {
     progressAtTransfer?: IntFieldUpdateOperationsInput | number
     deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredById?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeInput = {
@@ -156897,6 +167463,8 @@ export namespace Prisma {
     progressAtTransfer?: IntFieldUpdateOperationsInput | number
     deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredById?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TaskTransferHistoryUpdateWithoutToAssigneeInput = {
@@ -156904,6 +167472,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     progressAtTransfer?: IntFieldUpdateOperationsInput | number
     deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
     fromAssignee?: StaffUpdateOneRequiredWithoutTransferredFromTasksNestedInput
     task?: TaskUpdateOneRequiredWithoutTransferHistoryNestedInput
     transferredBy?: StaffUpdateOneWithoutTransferredByTasksNestedInput
@@ -156917,6 +167487,8 @@ export namespace Prisma {
     progressAtTransfer?: IntFieldUpdateOperationsInput | number
     deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredById?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeInput = {
@@ -156927,6 +167499,8 @@ export namespace Prisma {
     progressAtTransfer?: IntFieldUpdateOperationsInput | number
     deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredById?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TaskTransferHistoryUpdateWithoutTransferredByInput = {
@@ -156934,6 +167508,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     progressAtTransfer?: IntFieldUpdateOperationsInput | number
     deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
     fromAssignee?: StaffUpdateOneRequiredWithoutTransferredFromTasksNestedInput
     task?: TaskUpdateOneRequiredWithoutTransferHistoryNestedInput
     toAssignee?: StaffUpdateOneRequiredWithoutTransferredToTasksNestedInput
@@ -156947,6 +167523,8 @@ export namespace Prisma {
     toAssigneeId?: StringFieldUpdateOperationsInput | string
     progressAtTransfer?: IntFieldUpdateOperationsInput | number
     deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByInput = {
@@ -156957,6 +167535,8 @@ export namespace Prisma {
     toAssigneeId?: StringFieldUpdateOperationsInput | string
     progressAtTransfer?: IntFieldUpdateOperationsInput | number
     deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TaskUpdateWithoutUserInput = {
@@ -157055,6 +167635,68 @@ export namespace Prisma {
     progressNotes?: NullableJsonNullValueInput | InputJsonValue
   }
 
+  export type ProjectSubServiceUpdateWithoutAssigneeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unit?: StringFieldUpdateOperationsInput | string
+    targetQuantity?: IntFieldUpdateOperationsInput | number
+    link?: ProjectServiceLinkUpdateOneRequiredWithoutSubServicesNestedInput
+    extraRequests?: ProjectExtraRequestUpdateManyWithoutSubServiceNestedInput
+  }
+
+  export type ProjectSubServiceUncheckedUpdateWithoutAssigneeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectServiceId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unit?: StringFieldUpdateOperationsInput | string
+    targetQuantity?: IntFieldUpdateOperationsInput | number
+    extraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutSubServiceNestedInput
+  }
+
+  export type ProjectSubServiceUncheckedUpdateManyWithoutAssigneeInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectServiceId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unit?: StringFieldUpdateOperationsInput | string
+    targetQuantity?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type ProjectExtraRequestUpdateWithoutRequestedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutExtraRequestsNestedInput
+    subService?: ProjectSubServiceUpdateOneRequiredWithoutExtraRequestsNestedInput
+  }
+
+  export type ProjectExtraRequestUncheckedUpdateWithoutRequestedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    subServiceId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    subServiceId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ClientSubServiceCreateManyClientInput = {
     subServiceId: string
     count: number
@@ -157097,6 +167739,9 @@ export namespace Prisma {
     status?: $Enums.InstallmentStatus
     notes?: string | null
     contractId?: string | null
+    installmentNumber?: number | null
+    percentage?: number | null
+    dueMilestone?: string | null
   }
 
   export type ClientTaskCreateManyClientInput = {
@@ -157134,6 +167779,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     contractNumber: string
+    title?: string | null
+    duration?: string | null
     startDate?: Date | string | null
     endDate?: Date | string | null
     renewalDate?: Date | string | null
@@ -157145,6 +167792,8 @@ export namespace Prisma {
     portfolioId?: string | null
     createdById?: string | null
     billingDay?: number | null
+    billingPeriodMonths?: number | null
+    contractType?: string | null
     monthlyAmount?: number | null
   }
 
@@ -157191,6 +167840,13 @@ export namespace Prisma {
     dueDate?: Date | string | null
     portfolioId?: string | null
     createdById?: string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    contractId?: string | null
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type quotationsCreateManyClientInput = {
@@ -157331,6 +167987,9 @@ export namespace Prisma {
     paidAmount?: FloatFieldUpdateOperationsInput | number
     status?: EnumInstallmentStatusFieldUpdateOperationsInput | $Enums.InstallmentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    installmentNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueMilestone?: NullableStringFieldUpdateOperationsInput | string | null
     contract?: ContractUpdateOneWithoutInstallmentsNestedInput
   }
 
@@ -157347,6 +168006,9 @@ export namespace Prisma {
     status?: EnumInstallmentStatusFieldUpdateOperationsInput | $Enums.InstallmentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    installmentNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueMilestone?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ClientInstallmentUncheckedUpdateManyWithoutClientInput = {
@@ -157362,6 +168024,9 @@ export namespace Prisma {
     status?: EnumInstallmentStatusFieldUpdateOperationsInput | $Enums.InstallmentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    installmentNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueMilestone?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ClientTaskUpdateWithoutClientInput = {
@@ -157465,6 +168130,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -157473,12 +168140,15 @@ export namespace Prisma {
     status?: EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     installments?: ClientInstallmentUpdateManyWithoutContractNestedInput
     documents?: ContractDocumentUpdateManyWithoutContractNestedInput
     portfolio?: PortfolioUpdateOneWithoutContractsNestedInput
     createdBy?: StaffUpdateOneWithoutCreatedContractsNestedInput
     project?: ProjectUpdateOneWithoutContractsNestedInput
+    primaryForProjects?: ProjectUpdateManyWithoutPrimaryContractNestedInput
   }
 
   export type ContractUncheckedUpdateWithoutClientInput = {
@@ -157486,6 +168156,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -157497,9 +168169,12 @@ export namespace Prisma {
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     installments?: ClientInstallmentUncheckedUpdateManyWithoutContractNestedInput
     documents?: ContractDocumentUncheckedUpdateManyWithoutContractNestedInput
+    primaryForProjects?: ProjectUncheckedUpdateManyWithoutPrimaryContractNestedInput
   }
 
   export type ContractUncheckedUpdateManyWithoutClientInput = {
@@ -157507,6 +168182,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -157518,6 +168195,8 @@ export namespace Prisma {
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
@@ -157629,12 +168308,22 @@ export namespace Prisma {
     priority?: EnumProjectPriorityFieldUpdateOperationsInput | $Enums.ProjectPriority
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractUpdateOneWithoutPrimaryForProjectsNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutProjectNestedInput
     contracts?: ContractUpdateManyWithoutProjectNestedInput
     portfolio?: PortfolioUpdateOneWithoutProjectsNestedInput
     createdBy?: StaffUpdateOneWithoutCreatedProjectsNestedInput
     tasks?: TaskUpdateManyWithoutProjectNestedInput
+    serviceLinks?: ProjectServiceLinkUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutClientInput = {
@@ -157650,10 +168339,20 @@ export namespace Prisma {
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutProjectNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutProjectNestedInput
     tasks?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    serviceLinks?: ProjectServiceLinkUncheckedUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUncheckedUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateManyWithoutClientInput = {
@@ -157669,6 +168368,13 @@ export namespace Prisma {
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type quotationsUpdateWithoutClientInput = {
@@ -157816,6 +168522,11 @@ export namespace Prisma {
     sortOrder?: number
   }
 
+  export type ProjectServiceLinkCreateManyServiceInput = {
+    id: string
+    projectId: string
+  }
+
   export type IncomeServiceAgreementUpdateWithoutServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -157929,6 +168640,23 @@ export namespace Prisma {
     sortOrder?: IntFieldUpdateOperationsInput | number
   }
 
+  export type ProjectServiceLinkUpdateWithoutServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    project?: ProjectUpdateOneRequiredWithoutServiceLinksNestedInput
+    subServices?: ProjectSubServiceUpdateManyWithoutLinkNestedInput
+  }
+
+  export type ProjectServiceLinkUncheckedUpdateWithoutServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    subServices?: ProjectSubServiceUncheckedUpdateManyWithoutLinkNestedInput
+  }
+
+  export type ProjectServiceLinkUncheckedUpdateManyWithoutServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+  }
+
   export type ClientSubServiceCreateManySubServiceInput = {
     count: number
     clientId: string
@@ -158027,13 +168755,16 @@ export namespace Prisma {
 
   export type ClientCreateManyPortfolioInput = {
     id: string
+    clientCode?: string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     institution: string
     email: string
     phone: string
+    alternativePhone?: string | null
     source: string
     accountManagerId?: string | null
+    createdById?: string | null
     address?: string | null
     clientType?: $Enums.ClientType
     companyName?: string | null
@@ -158065,6 +168796,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     contractNumber: string
+    title?: string | null
+    duration?: string | null
     startDate?: Date | string | null
     endDate?: Date | string | null
     renewalDate?: Date | string | null
@@ -158076,6 +168809,8 @@ export namespace Prisma {
     projectId?: string | null
     createdById?: string | null
     billingDay?: number | null
+    billingPeriodMonths?: number | null
+    contractType?: string | null
     monthlyAmount?: number | null
   }
 
@@ -158092,6 +168827,13 @@ export namespace Prisma {
     dueDate?: Date | string | null
     clientId: string
     createdById?: string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    contractId?: string | null
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type RecurringScheduleCreateManyPortfolioInput = {
@@ -158111,8 +168853,14 @@ export namespace Prisma {
 
   export type ServiceCreateManyPortfolioInput = {
     id: string
+    serviceCode?: string | null
     serviceName: string
     description?: string | null
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdById?: string | null
+    updatedById?: string | null
     iconUrl?: string | null
     source?: string
     externalId?: string | null
@@ -158143,11 +168891,13 @@ export namespace Prisma {
 
   export type ClientUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     address?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
@@ -158164,6 +168914,7 @@ export namespace Prisma {
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
     installments?: ClientInstallmentUpdateManyWithoutClientNestedInput
     accountManager?: StaffUpdateOneWithoutManagedClientsNestedInput
+    createdBy?: StaffUpdateOneWithoutClientsCreatedNestedInput
     clientTask?: ClientTaskUpdateManyWithoutClientNestedInput
     contentCycles?: ContentCycleUpdateManyWithoutClientNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutClientNestedInput
@@ -158177,13 +168928,16 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     companyName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -158211,13 +168965,16 @@ export namespace Prisma {
 
   export type ClientUncheckedUpdateManyWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
+    clientCode?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     institution?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: StringFieldUpdateOperationsInput | string
+    alternativePhone?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     accountManagerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     clientType?: EnumClientTypeFieldUpdateOperationsInput | $Enums.ClientType
     companyName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -158281,6 +169038,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -158289,12 +169048,15 @@ export namespace Prisma {
     status?: EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     installments?: ClientInstallmentUpdateManyWithoutContractNestedInput
     documents?: ContractDocumentUpdateManyWithoutContractNestedInput
     client?: ClientUpdateOneRequiredWithoutContractsNestedInput
     createdBy?: StaffUpdateOneWithoutCreatedContractsNestedInput
     project?: ProjectUpdateOneWithoutContractsNestedInput
+    primaryForProjects?: ProjectUpdateManyWithoutPrimaryContractNestedInput
   }
 
   export type ContractUncheckedUpdateWithoutPortfolioInput = {
@@ -158302,6 +169064,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -158313,9 +169077,12 @@ export namespace Prisma {
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     installments?: ClientInstallmentUncheckedUpdateManyWithoutContractNestedInput
     documents?: ContractDocumentUncheckedUpdateManyWithoutContractNestedInput
+    primaryForProjects?: ProjectUncheckedUpdateManyWithoutPrimaryContractNestedInput
   }
 
   export type ContractUncheckedUpdateManyWithoutPortfolioInput = {
@@ -158323,6 +169090,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -158334,6 +169103,8 @@ export namespace Prisma {
     projectId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
@@ -158348,12 +169119,22 @@ export namespace Prisma {
     priority?: EnumProjectPriorityFieldUpdateOperationsInput | $Enums.ProjectPriority
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    primaryContract?: ContractUpdateOneWithoutPrimaryForProjectsNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUpdateManyWithoutProjectNestedInput
     contracts?: ContractUpdateManyWithoutProjectNestedInput
     client?: ClientUpdateOneRequiredWithoutProjectsNestedInput
     createdBy?: StaffUpdateOneWithoutCreatedProjectsNestedInput
     tasks?: TaskUpdateManyWithoutProjectNestedInput
+    serviceLinks?: ProjectServiceLinkUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutPortfolioInput = {
@@ -158369,10 +169150,20 @@ export namespace Prisma {
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientId?: StringFieldUpdateOperationsInput | string
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutProjectNestedInput
     contentRequests?: ContentRequestUncheckedUpdateManyWithoutProjectNestedInput
     contracts?: ContractUncheckedUpdateManyWithoutProjectNestedInput
     tasks?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    serviceLinks?: ProjectServiceLinkUncheckedUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUncheckedUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateManyWithoutPortfolioInput = {
@@ -158388,6 +169179,13 @@ export namespace Prisma {
     dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     clientId?: StringFieldUpdateOperationsInput | string
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    contractId?: NullableStringFieldUpdateOperationsInput | string | null
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type RecurringScheduleUpdateWithoutPortfolioInput = {
@@ -158441,8 +169239,12 @@ export namespace Prisma {
 
   export type ServiceUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -158450,13 +169252,22 @@ export namespace Prisma {
     serviceType?: EnumServiceTypeFieldUpdateOperationsInput | $Enums.ServiceType
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutServiceNestedInput
     clientService?: ClientServiceUpdateManyWithoutServiceNestedInput
+    createdBy?: StaffUpdateOneWithoutServicesCreatedNestedInput
+    updatedBy?: StaffUpdateOneWithoutServicesUpdatedNestedInput
     subService?: SubServiceUpdateManyWithoutServiceNestedInput
+    projectLinks?: ProjectServiceLinkUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -158465,12 +169276,19 @@ export namespace Prisma {
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutServiceNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutServiceNestedInput
     subService?: SubServiceUncheckedUpdateManyWithoutServiceNestedInput
+    projectLinks?: ProjectServiceLinkUncheckedUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateManyWithoutPortfolioInput = {
     id?: StringFieldUpdateOperationsInput | string
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
     serviceName?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    updatedById?: NullableStringFieldUpdateOperationsInput | string | null
     iconUrl?: NullableStringFieldUpdateOperationsInput | string | null
     source?: StringFieldUpdateOperationsInput | string
     externalId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -158504,11 +169322,14 @@ export namespace Prisma {
     accounts?: AccountUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
     managedClients?: ClientUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     dynamicRole?: RoleUpdateOneWithoutUsersNestedInput
@@ -158516,6 +169337,8 @@ export namespace Prisma {
     transferredToTasks?: TaskTransferHistoryUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutPortfolioInput = {
@@ -158545,17 +169368,22 @@ export namespace Prisma {
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     managedClients?: ClientUncheckedUpdateManyWithoutAccountManagerNestedInput
+    clientsCreated?: ClientUncheckedUpdateManyWithoutCreatedByNestedInput
     contentRequestAssignments?: ContentRequestAssigneeUncheckedUpdateManyWithoutUserNestedInput
     contentRequestsCreated?: ContentRequestUncheckedUpdateManyWithoutCreatedByNestedInput
     uploadedContractDocuments?: ContractDocumentUncheckedUpdateManyWithoutUploadedByNestedInput
     createdContracts?: ContractUncheckedUpdateManyWithoutCreatedByNestedInput
     createdProjects?: ProjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesCreated?: ServiceUncheckedUpdateManyWithoutCreatedByNestedInput
+    servicesUpdated?: ServiceUncheckedUpdateManyWithoutUpdatedByNestedInput
     assignedRecurringSteps?: RecurringScheduleStepUncheckedUpdateManyWithoutAssigneeNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     transferredFromTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutFromAssigneeNestedInput
     transferredToTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutToAssigneeNestedInput
     transferredByTasks?: TaskTransferHistoryUncheckedUpdateManyWithoutTransferredByNestedInput
     assignedTasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    projectSubAssignments?: ProjectSubServiceUncheckedUpdateManyWithoutAssigneeNestedInput
+    projectExtraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutRequestedByNestedInput
   }
 
   export type StaffUncheckedUpdateManyWithoutPortfolioInput = {
@@ -158592,6 +169420,8 @@ export namespace Prisma {
     progressAtTransfer?: number
     deadlineAtTransfer?: Date | string | null
     transferredById?: string | null
+    reason?: string | null
+    note?: string | null
   }
 
   export type ClientTaskUpdateWithoutTaskInput = {
@@ -158614,6 +169444,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     progressAtTransfer?: IntFieldUpdateOperationsInput | number
     deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
     fromAssignee?: StaffUpdateOneRequiredWithoutTransferredFromTasksNestedInput
     toAssignee?: StaffUpdateOneRequiredWithoutTransferredToTasksNestedInput
     transferredBy?: StaffUpdateOneWithoutTransferredByTasksNestedInput
@@ -158627,6 +169459,8 @@ export namespace Prisma {
     progressAtTransfer?: IntFieldUpdateOperationsInput | number
     deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredById?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type TaskTransferHistoryUncheckedUpdateManyWithoutTaskInput = {
@@ -158637,6 +169471,8 @@ export namespace Prisma {
     progressAtTransfer?: IntFieldUpdateOperationsInput | number
     deadlineAtTransfer?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transferredById?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type IncomeTransactionCreateManyIncomeInput = {
@@ -159298,6 +170134,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     contractNumber: string
+    title?: string | null
+    duration?: string | null
     startDate?: Date | string | null
     endDate?: Date | string | null
     renewalDate?: Date | string | null
@@ -159309,6 +170147,8 @@ export namespace Prisma {
     portfolioId?: string | null
     createdById?: string | null
     billingDay?: number | null
+    billingPeriodMonths?: number | null
+    contractType?: string | null
     monthlyAmount?: number | null
   }
 
@@ -159340,6 +170180,29 @@ export namespace Prisma {
     startDate?: Date | string | null
     features?: NullableJsonNullValueInput | InputJsonValue
     progressNotes?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type ProjectServiceLinkCreateManyProjectInput = {
+    id: string
+    serviceId: string
+  }
+
+  export type ProjectCycleCreateManyProjectInput = {
+    id: string
+    label: string
+    startDate: Date | string
+    endDate: Date | string
+    createdAt?: Date | string
+  }
+
+  export type ProjectExtraRequestCreateManyProjectInput = {
+    id: string
+    subServiceId: string
+    quantity: number
+    description?: string | null
+    status?: string
+    requestedById?: string | null
+    createdAt?: Date | string
   }
 
   export type IncomeServiceAgreementUpdateWithoutProjectInput = {
@@ -159451,6 +170314,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -159459,12 +170324,15 @@ export namespace Prisma {
     status?: EnumContractStatusFieldUpdateOperationsInput | $Enums.ContractStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     installments?: ClientInstallmentUpdateManyWithoutContractNestedInput
     documents?: ContractDocumentUpdateManyWithoutContractNestedInput
     portfolio?: PortfolioUpdateOneWithoutContractsNestedInput
     client?: ClientUpdateOneRequiredWithoutContractsNestedInput
     createdBy?: StaffUpdateOneWithoutCreatedContractsNestedInput
+    primaryForProjects?: ProjectUpdateManyWithoutPrimaryContractNestedInput
   }
 
   export type ContractUncheckedUpdateWithoutProjectInput = {
@@ -159472,6 +170340,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -159483,9 +170353,12 @@ export namespace Prisma {
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     installments?: ClientInstallmentUncheckedUpdateManyWithoutContractNestedInput
     documents?: ContractDocumentUncheckedUpdateManyWithoutContractNestedInput
+    primaryForProjects?: ProjectUncheckedUpdateManyWithoutPrimaryContractNestedInput
   }
 
   export type ContractUncheckedUpdateManyWithoutProjectInput = {
@@ -159493,6 +170366,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     contractNumber?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     renewalDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -159504,6 +170379,8 @@ export namespace Prisma {
     portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
     createdById?: NullableStringFieldUpdateOperationsInput | string | null
     billingDay?: NullableIntFieldUpdateOperationsInput | number | null
+    billingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    contractType?: NullableStringFieldUpdateOperationsInput | string | null
     monthlyAmount?: NullableFloatFieldUpdateOperationsInput | number | null
   }
 
@@ -159603,6 +170480,159 @@ export namespace Prisma {
     progressNotes?: NullableJsonNullValueInput | InputJsonValue
   }
 
+  export type ProjectServiceLinkUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    service?: ServiceUpdateOneRequiredWithoutProjectLinksNestedInput
+    subServices?: ProjectSubServiceUpdateManyWithoutLinkNestedInput
+  }
+
+  export type ProjectServiceLinkUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    subServices?: ProjectSubServiceUncheckedUpdateManyWithoutLinkNestedInput
+  }
+
+  export type ProjectServiceLinkUncheckedUpdateManyWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ProjectCycleUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProjectCycleUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProjectCycleUncheckedUpdateManyWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    label?: StringFieldUpdateOperationsInput | string
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProjectExtraRequestUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    subService?: ProjectSubServiceUpdateOneRequiredWithoutExtraRequestsNestedInput
+    requestedBy?: StaffUpdateOneWithoutProjectExtraRequestsNestedInput
+  }
+
+  export type ProjectExtraRequestUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subServiceId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    requestedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProjectExtraRequestUncheckedUpdateManyWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    subServiceId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    requestedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProjectSubServiceCreateManyLinkInput = {
+    id: string
+    name: string
+    description?: string | null
+    quantity?: number
+    unit?: string
+    targetQuantity?: number
+    assigneeId?: string | null
+  }
+
+  export type ProjectSubServiceUpdateWithoutLinkInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unit?: StringFieldUpdateOperationsInput | string
+    targetQuantity?: IntFieldUpdateOperationsInput | number
+    assignee?: StaffUpdateOneWithoutProjectSubAssignmentsNestedInput
+    extraRequests?: ProjectExtraRequestUpdateManyWithoutSubServiceNestedInput
+  }
+
+  export type ProjectSubServiceUncheckedUpdateWithoutLinkInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unit?: StringFieldUpdateOperationsInput | string
+    targetQuantity?: IntFieldUpdateOperationsInput | number
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+    extraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutSubServiceNestedInput
+  }
+
+  export type ProjectSubServiceUncheckedUpdateManyWithoutLinkInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    quantity?: IntFieldUpdateOperationsInput | number
+    unit?: StringFieldUpdateOperationsInput | string
+    targetQuantity?: IntFieldUpdateOperationsInput | number
+    assigneeId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ProjectExtraRequestCreateManySubServiceInput = {
+    id: string
+    projectId: string
+    quantity: number
+    description?: string | null
+    status?: string
+    requestedById?: string | null
+    createdAt?: Date | string
+  }
+
+  export type ProjectExtraRequestUpdateWithoutSubServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutExtraRequestsNestedInput
+    requestedBy?: StaffUpdateOneWithoutProjectExtraRequestsNestedInput
+  }
+
+  export type ProjectExtraRequestUncheckedUpdateWithoutSubServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    requestedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProjectExtraRequestUncheckedUpdateManyWithoutSubServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    requestedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ClientInstallmentCreateManyContractInput = {
     id?: string
     createdAt?: Date | string
@@ -159616,6 +170646,9 @@ export namespace Prisma {
     status?: $Enums.InstallmentStatus
     notes?: string | null
     clientId: string
+    installmentNumber?: number | null
+    percentage?: number | null
+    dueMilestone?: string | null
   }
 
   export type ContractDocumentCreateManyContractInput = {
@@ -159627,6 +170660,28 @@ export namespace Prisma {
     fileSize?: number | null
     mimeType?: string
     uploadedById?: string | null
+  }
+
+  export type ProjectCreateManyPrimaryContractInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    description?: string | null
+    projectType?: $Enums.ContentType
+    status?: $Enums.ProjectStatus
+    priority?: $Enums.ProjectPriority
+    startDate?: Date | string | null
+    dueDate?: Date | string | null
+    clientId: string
+    portfolioId?: string | null
+    createdById?: string | null
+    projectCode?: string | null
+    billingMode?: string
+    lifecycleStatus?: string
+    archived?: boolean
+    isDraft?: boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ClientInstallmentUpdateWithoutContractInput = {
@@ -159641,6 +170696,9 @@ export namespace Prisma {
     paidAmount?: FloatFieldUpdateOperationsInput | number
     status?: EnumInstallmentStatusFieldUpdateOperationsInput | $Enums.InstallmentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    installmentNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueMilestone?: NullableStringFieldUpdateOperationsInput | string | null
     client?: ClientUpdateOneRequiredWithoutInstallmentsNestedInput
   }
 
@@ -159657,6 +170715,9 @@ export namespace Prisma {
     status?: EnumInstallmentStatusFieldUpdateOperationsInput | $Enums.InstallmentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: StringFieldUpdateOperationsInput | string
+    installmentNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueMilestone?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ClientInstallmentUncheckedUpdateManyWithoutContractInput = {
@@ -159672,6 +170733,9 @@ export namespace Prisma {
     status?: EnumInstallmentStatusFieldUpdateOperationsInput | $Enums.InstallmentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: StringFieldUpdateOperationsInput | string
+    installmentNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    percentage?: NullableFloatFieldUpdateOperationsInput | number | null
+    dueMilestone?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ContractDocumentUpdateWithoutContractInput = {
@@ -159705,6 +170769,86 @@ export namespace Prisma {
     fileSize?: NullableIntFieldUpdateOperationsInput | number | null
     mimeType?: StringFieldUpdateOperationsInput | string
     uploadedById?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type ProjectUpdateWithoutPrimaryContractInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    projectType?: EnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+    priority?: EnumProjectPriorityFieldUpdateOperationsInput | $Enums.ProjectPriority
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutProjectNestedInput
+    contentRequests?: ContentRequestUpdateManyWithoutProjectNestedInput
+    contracts?: ContractUpdateManyWithoutProjectNestedInput
+    portfolio?: PortfolioUpdateOneWithoutProjectsNestedInput
+    client?: ClientUpdateOneRequiredWithoutProjectsNestedInput
+    createdBy?: StaffUpdateOneWithoutCreatedProjectsNestedInput
+    tasks?: TaskUpdateManyWithoutProjectNestedInput
+    serviceLinks?: ProjectServiceLinkUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutPrimaryContractInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    projectType?: EnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+    priority?: EnumProjectPriorityFieldUpdateOperationsInput | $Enums.ProjectPriority
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    clientId?: StringFieldUpdateOperationsInput | string
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
+    serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutProjectNestedInput
+    contentRequests?: ContentRequestUncheckedUpdateManyWithoutProjectNestedInput
+    contracts?: ContractUncheckedUpdateManyWithoutProjectNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutProjectNestedInput
+    serviceLinks?: ProjectServiceLinkUncheckedUpdateManyWithoutProjectNestedInput
+    cycles?: ProjectCycleUncheckedUpdateManyWithoutProjectNestedInput
+    extraRequests?: ProjectExtraRequestUncheckedUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectUncheckedUpdateManyWithoutPrimaryContractInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    projectType?: EnumContentTypeFieldUpdateOperationsInput | $Enums.ContentType
+    status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+    priority?: EnumProjectPriorityFieldUpdateOperationsInput | $Enums.ProjectPriority
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    clientId?: StringFieldUpdateOperationsInput | string
+    portfolioId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdById?: NullableStringFieldUpdateOperationsInput | string | null
+    projectCode?: NullableStringFieldUpdateOperationsInput | string | null
+    billingMode?: StringFieldUpdateOperationsInput | string
+    lifecycleStatus?: StringFieldUpdateOperationsInput | string
+    archived?: BoolFieldUpdateOperationsInput | boolean
+    isDraft?: BoolFieldUpdateOperationsInput | boolean
+    scheduleConfig?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ContentRequestAssigneeCreateManyContentRequestInput = {
@@ -168210,6 +179354,14 @@ export namespace Prisma {
      */
     export type ProjectCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ProjectCountOutputTypeDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use ProjectServiceLinkCountOutputTypeDefaultArgs instead
+     */
+    export type ProjectServiceLinkCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ProjectServiceLinkCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ProjectSubServiceCountOutputTypeDefaultArgs instead
+     */
+    export type ProjectSubServiceCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ProjectSubServiceCountOutputTypeDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use ContractCountOutputTypeDefaultArgs instead
      */
     export type ContractCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ContractCountOutputTypeDefaultArgs<ExtArgs>
@@ -168461,6 +179613,22 @@ export namespace Prisma {
      * @deprecated Use ProjectDefaultArgs instead
      */
     export type ProjectArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ProjectDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ProjectServiceLinkDefaultArgs instead
+     */
+    export type ProjectServiceLinkArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ProjectServiceLinkDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ProjectSubServiceDefaultArgs instead
+     */
+    export type ProjectSubServiceArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ProjectSubServiceDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ProjectCycleDefaultArgs instead
+     */
+    export type ProjectCycleArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ProjectCycleDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ProjectExtraRequestDefaultArgs instead
+     */
+    export type ProjectExtraRequestArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ProjectExtraRequestDefaultArgs<ExtArgs>
     /**
      * @deprecated Use ContractDefaultArgs instead
      */

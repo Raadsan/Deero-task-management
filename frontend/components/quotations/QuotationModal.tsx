@@ -2,6 +2,7 @@
 
 import {
   accountingDialogXWideClass,
+  accountingFormFieldClass,
   accountingToast,
   btnFormCancel,
   btnFormSubmit,
@@ -9,7 +10,7 @@ import {
   configDialogFooterClass,
   configDialogHeaderClass,
 } from "@/lib/accounting-ui";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, type FormEvent } from "react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +28,7 @@ import {
   Phone,
   Mail,
   User,
+  UserPlus,
   Hash,
   Layers,
   FileText,
@@ -40,6 +42,7 @@ import { useBranchTheme } from "@/components/branding/BranchThemeProvider";
 import { resolveBranchLogoUrl } from "@/lib/portfolio-branding";
 import axiosClient from "@/lib/apis/axios";
 import A4QuotationSheet from "./A4QuotationSheet";
+import { AccountingFieldLabel, AccountingFormDialog } from "@/components/accounting/AccountingFormDialog";
 
 interface ClientOption {
   id: string;
@@ -185,6 +188,75 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
     { id: "pm-6", label: "E-DAHAB", value: "0628553566" },
   ];
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethodItem[]>(defaultPaymentMethods);
+  const [addCustomerOpen, setAddCustomerOpen] = useState(false);
+  const [savingCustomer, setSavingCustomer] = useState(false);
+  const [newCustomer, setNewCustomer] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    address: "",
+    opening_balance: "0",
+    is_active: true,
+  });
+
+  const reloadCustomers = async () => {
+    try {
+      const res: any = await accountingCustomerApi.getAll();
+      if (Array.isArray(res)) setCustomers(res);
+      else if (res?.data && Array.isArray(res.data)) setCustomers(res.data);
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const openAddCustomer = () => {
+    setNewCustomer({
+      name: quotationTo.trim() || "",
+      phone: contactPhone.trim() || "",
+      email: contactEmail.trim() || "",
+      address: "",
+      opening_balance: "0",
+      is_active: true,
+    });
+    setAddCustomerOpen(true);
+  };
+
+  const saveNewCustomer = async (event: FormEvent) => {
+    event.preventDefault();
+    const name = newCustomer.name.trim();
+    if (!name) {
+      accountingToast("Customer name is required", "error");
+      return;
+    }
+    setSavingCustomer(true);
+    try {
+      const created: any = await accountingCustomerApi.create({
+        name,
+        phone: newCustomer.phone.trim() || undefined,
+        email: newCustomer.email.trim() || undefined,
+        address: newCustomer.address.trim() || undefined,
+        opening_balance: Number(newCustomer.opening_balance || 0),
+        is_active: newCustomer.is_active,
+      });
+      await reloadCustomers();
+      const id = Number(created?.id);
+      if (id) {
+        setSelectedPartner(`customer:${id}`);
+        setCustomerId(id);
+        setClientId(created.clientId ? String(created.clientId) : "");
+        setQuotationTo(String(created.name || name));
+        setContactPerson(String(created.name || name));
+        if (created.email || newCustomer.email) setContactEmail(String(created.email || newCustomer.email));
+        if (created.phone || newCustomer.phone) setContactPhone(String(created.phone || newCustomer.phone));
+      }
+      accountingToast(`Customer "${name}" registered successfully`);
+      setAddCustomerOpen(false);
+    } catch (err: any) {
+      accountingToast(err?.response?.data?.message || err?.message || "Failed to create customer", "error");
+    } finally {
+      setSavingCustomer(false);
+    }
+  };
 
   useEffect(() => {
     if (open) {
@@ -197,13 +269,7 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
         .catch(() => {});
 
       // Fetch Accounting customers list
-      accountingCustomerApi
-        .getAll()
-        .then((res: any) => {
-          if (Array.isArray(res)) setCustomers(res);
-          else if (res?.data && Array.isArray(res.data)) setCustomers(res.data);
-        })
-        .catch(() => {});
+      void reloadCustomers();
 
       // Fetch all quotation templates
       documentTemplateApi
@@ -933,16 +999,25 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
   }, [previewPdfUrl]);
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={`${accountingDialogXWideClass} max-w-5xl p-0 overflow-hidden`}>
         <DialogHeader className={`${configDialogHeaderClass} px-6 py-4 flex flex-row items-center justify-between`}>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Calculator className="size-5" style={{ color: brandSecondary }} />
             <DialogTitle className="text-lg font-bold text-zinc-900">
               {quotation
                 ? `Edit Quotation (${quotation.quotation_number})`
                 : "Create Quotation"}
             </DialogTitle>
+            <button
+              type="button"
+              onClick={openAddCustomer}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-[#6e0002] px-3 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-[#8a0a0c]"
+            >
+              <UserPlus className="size-3.5" />
+              Add customer
+            </button>
           </div>
           <div className="flex items-center gap-2">
             {availableTemplates.length > 0 && (
@@ -1599,5 +1674,73 @@ export default function QuotationModal({ open, onOpenChange, quotation, onSucces
         </form>
       </DialogContent>
     </Dialog>
+
+    <AccountingFormDialog
+      open={addCustomerOpen}
+      onOpenChange={setAddCustomerOpen}
+      saving={savingCustomer}
+      onSubmit={saveNewCustomer}
+      title="Add customer"
+      description="This record is available across accounting workflows."
+      submitLabel="Add customer"
+    >
+      <AccountingFieldLabel label="Name *">
+        <input
+          required
+          autoFocus
+          value={newCustomer.name}
+          onChange={(e) => setNewCustomer((c) => ({ ...c, name: e.target.value }))}
+          className={accountingFormFieldClass}
+        />
+      </AccountingFieldLabel>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <AccountingFieldLabel label="Phone">
+          <input
+            value={newCustomer.phone}
+            onChange={(e) => setNewCustomer((c) => ({ ...c, phone: e.target.value }))}
+            placeholder="+252..."
+            className={accountingFormFieldClass}
+          />
+        </AccountingFieldLabel>
+        <AccountingFieldLabel label="Email">
+          <input
+            type="email"
+            value={newCustomer.email}
+            onChange={(e) => setNewCustomer((c) => ({ ...c, email: e.target.value }))}
+            placeholder="vendor@company.com"
+            className={accountingFormFieldClass}
+          />
+        </AccountingFieldLabel>
+      </div>
+      <AccountingFieldLabel label="Address">
+        <input
+          value={newCustomer.address}
+          onChange={(e) => setNewCustomer((c) => ({ ...c, address: e.target.value }))}
+          placeholder="e.g. Digfer, Hodan, Mogadishu"
+          className={accountingFormFieldClass}
+        />
+      </AccountingFieldLabel>
+      <AccountingFieldLabel label="Opening Balance">
+        <input
+          type="number"
+          min={0}
+          step="0.01"
+          value={newCustomer.opening_balance}
+          onChange={(e) => setNewCustomer((c) => ({ ...c, opening_balance: e.target.value }))}
+          placeholder="0.00"
+          className={accountingFormFieldClass}
+        />
+      </AccountingFieldLabel>
+      <label className="flex items-center gap-2 text-sm text-zinc-700 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={newCustomer.is_active}
+          onChange={(e) => setNewCustomer((c) => ({ ...c, is_active: e.target.checked }))}
+          className="size-4 rounded border-zinc-300 accent-primary"
+        />
+        Active
+      </label>
+    </AccountingFormDialog>
+    </>
   );
 }

@@ -11,7 +11,7 @@ import {
 
 export const authClient = createAuthClient({
   basePath: "/api/auth",
-  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
+  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:7003",
   plugins: [
     inferAdditionalFields<typeof auth>(),
     nextCookies(),

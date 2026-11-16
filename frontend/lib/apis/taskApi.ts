@@ -84,6 +84,38 @@ export async function getTaskById(
   }
 }
 
+export async function holdTask(taskId: string, reason: string): Promise<ActionResponse> {
+  try {
+    const response = await api.post(`/api/tasks/${taskId}/hold`, { reason });
+    if (response.data.success) {
+      revalidatePath(ROUTES.tasks);
+      revalidatePath(ROUTES["my-tasks"]);
+      revalidatePath(ROUTES["my-tasks-board"]);
+      revalidatePath(ROUTES["my-tasks-today"]);
+      return { success: true, data: response.data.data };
+    }
+    return { success: false, errors: { message: response.data.error } };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}
+
+export async function resumeTask(taskId: string): Promise<ActionResponse> {
+  try {
+    const response = await api.post(`/api/tasks/${taskId}/resume`, {});
+    if (response.data.success) {
+      revalidatePath(ROUTES.tasks);
+      revalidatePath(ROUTES["my-tasks"]);
+      revalidatePath(ROUTES["my-tasks-board"]);
+      revalidatePath(ROUTES["my-tasks-today"]);
+      return { success: true, data: response.data.data };
+    }
+    return { success: false, errors: { message: response.data.error } };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}
+
 export async function editTask(params: any): Promise<ActionResponse> {
   try {
     const { taskId, ...data } = params;

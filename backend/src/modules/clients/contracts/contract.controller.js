@@ -9,6 +9,12 @@ import {
   resolveWritableBranchId,
 } from "../../../lib/portfolio-scope.js";
 import { saveContractFile, deleteContractFileFromDisk } from "../../../lib/contract-files.js";
+import { validateContractRegistration } from "../../../lib/contract-dates.js";
+import { paymentTermsNeedReview, syncContractInstallments } from "../../../lib/contract-installments.js";
+import {
+  decorateContractInstallments,
+  generateReadyInstallmentInvoices,
+} from "../../../lib/contract-invoice-scheduler.js";
 
 const contractInclude = {
   client: { select: { id: true, institution: true, companyName: true, phone: true } },
@@ -19,13 +25,30 @@ const contractInclude = {
     orderBy: { version: "desc" },
     include: { uploadedBy: { select: { id: true, name: true } } },
   },
+  installments: {
+    orderBy: [{ installmentNumber: "asc" }, { dueDate: "asc" }],
+  },
 };
 
 async function findAccessibleContract(scope, id, include = contractInclude) {
-  return prisma.contract.findFirst({
+  const contract = await prisma.contract.findFirst({
     where: mergeWhere({ id }, contractBranchWhere(scope)),
     include,
   });
+  if (contract?.installments) await decorateContractInstallments(contract);
+  if (contract) contract.paymentTermsNeedsReview = paymentTermsNeedReview(contract);
+  return contract;
+}
+
+async function issueContractStartInvoice(contract) {
+  if (!contract || contract.status === "DRAFT" || contract.status === "CANCELLED" || contract.status === "TERMINATED") {
+    return;
+  }
+  try {
+    await generateReadyInstallmentInvoices({ contractId: contract.id, onlyContractStart: true });
+  } catch (error) {
+    console.error("[contract-invoice] Invoice 01 was not created:", error?.message || error);
+  }
 }
 
 export const getAllContracts = async (req, res) => {
@@ -50,6 +73,8 @@ export const getAllContracts = async (req, res) => {
       orderBy: { createdAt: "desc" },
     });
 
+    await decorateContractInstallments(contracts);
+    for (const contract of contracts) contract.paymentTermsNeedsReview = paymentTermsNeedReview(contract);
     res.json({ success: true, data: contracts });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -92,6 +117,13 @@ export const createContract = async (req, res) => {
       }
     }
 
+    const validation = validateContractRegistration(data);
+    if (validation.errors.length) {
+      return res.status(400).json({ success: false, error: validation.errors[0] });
+    }
+
+    const resolvedEndDate = validation.endDate;
+
     const result = await prisma.$transaction(async (tx) => {
       const id = await generateCustomId({ entityTybe: "contracts", prisma: tx });
       const contractNumber =
@@ -102,13 +134,17 @@ export const createContract = async (req, res) => {
         data: {
           id,
           contractNumber,
-          startDate: data.startDate ? new Date(data.startDate) : null,
-          endDate: data.endDate ? new Date(data.endDate) : null,
-          renewalDate: data.renewalDate ? new Date(data.renewalDate) : null,
-          totalAmount:
-            data.totalAmount !== undefined && data.totalAmount !== null
-              ? Number(data.totalAmount)
+          title: String(data.title).trim(),
+          contractType: validation.contractType,
+          duration: validation.contractType === "ONE_TIME" ? null : data.duration ?? null,
+          billingPeriodMonths:
+            data.billingPeriodMonths != null && data.billingPeriodMonths !== ""
+              ? Number(data.billingPeriodMonths)
               : null,
+          startDate: data.startDate ? new Date(data.startDate) : null,
+          endDate: resolvedEndDate,
+          renewalDate: data.renewalDate ? new Date(data.renewalDate) : null,
+          totalAmount: Number(data.totalAmount),
           monthlyAmount:
             data.monthlyAmount !== undefined && data.monthlyAmount !== null
               ? Number(data.monthlyAmount)
@@ -118,7 +154,7 @@ export const createContract = async (req, res) => {
               ? Number(data.billingDay)
               : 1,
           paymentTerms: data.paymentTerms ?? null,
-          status: data.status ?? "ACTIVE",
+          status: data.status ?? "DRAFT",
           notes: data.notes ?? null,
           clientId: client.id,
           projectId: data.projectId ?? null,
@@ -144,9 +180,12 @@ export const createContract = async (req, res) => {
         });
       }
 
+      await syncContractInstallments(tx, contract, data.installments);
+
       return { contract, document };
     });
 
+    await issueContractStartInvoice(result.contract);
     const full = await findAccessibleContract(scope, result.contract.id);
     res.status(201).json({ success: true, data: full });
   } catch (error) {
@@ -164,46 +203,110 @@ export const updateContract = async (req, res) => {
       return res.status(404).json({ success: false, error: "Contract not found" });
     }
 
-    const contract = await prisma.contract.update({
-      where: { id: existing.id },
-      data: {
-        ...(data.contractNumber !== undefined
-          ? { contractNumber: String(data.contractNumber).trim() }
-          : {}),
-        ...(data.startDate !== undefined
-          ? { startDate: data.startDate ? new Date(data.startDate) : null }
-          : {}),
-        ...(data.endDate !== undefined
-          ? { endDate: data.endDate ? new Date(data.endDate) : null }
-          : {}),
-        ...(data.renewalDate !== undefined
-          ? { renewalDate: data.renewalDate ? new Date(data.renewalDate) : null }
-          : {}),
-        ...(data.totalAmount !== undefined
-          ? {
-              totalAmount:
-                data.totalAmount !== null ? Number(data.totalAmount) : null,
-            }
-          : {}),
-        ...(data.monthlyAmount !== undefined
-          ? {
-              monthlyAmount:
-                data.monthlyAmount !== null ? Number(data.monthlyAmount) : null,
-            }
-          : {}),
-        ...(data.billingDay !== undefined
-          ? {
-              billingDay:
-                data.billingDay !== null ? Number(data.billingDay) : 1,
-            }
-          : {}),
-        ...(data.paymentTerms !== undefined ? { paymentTerms: data.paymentTerms } : {}),
-        ...(data.status !== undefined ? { status: data.status } : {}),
-        ...(data.notes !== undefined ? { notes: data.notes } : {}),
-        ...(data.projectId !== undefined ? { projectId: data.projectId || null } : {}),
+    const validation = validateContractRegistration(
+      {
+        clientId: existing.clientId,
+        title: data.title ?? existing.title,
+        duration: data.duration ?? existing.duration,
+        startDate:
+          data.startDate !== undefined
+            ? data.startDate
+            : existing.startDate?.toISOString?.() ?? existing.startDate,
+        endDate: data.endDate,
+        totalAmount:
+          data.totalAmount !== undefined ? data.totalAmount : existing.totalAmount,
+        paymentTerms: data.paymentTerms ?? existing.paymentTerms,
+        status: data.status ?? existing.status,
+        contractType: data.contractType ?? existing.contractType,
+        billingPeriodMonths: data.billingPeriodMonths ?? existing.billingPeriodMonths,
+        installments: data.installments,
+        endDate: data.endDate !== undefined ? data.endDate : existing.endDate,
       },
+      { isUpdate: true },
+    );
+    if (validation.errors.length) {
+      return res.status(400).json({ success: false, error: validation.errors[0] });
+    }
+
+    const nextDuration = data.duration ?? existing.duration;
+    const nextStart =
+      data.startDate !== undefined
+        ? data.startDate
+          ? new Date(data.startDate)
+          : null
+        : existing.startDate;
+    const nextEnd =
+      data.duration !== undefined || data.startDate !== undefined
+        ? validation.endDate
+        : data.endDate !== undefined
+          ? data.endDate
+            ? new Date(data.endDate)
+            : null
+          : existing.endDate;
+
+    const contract = await prisma.$transaction(async (tx) => {
+      const updated = await tx.contract.update({
+        where: { id: existing.id },
+        data: {
+          ...(data.title !== undefined ? { title: String(data.title).trim() || null } : {}),
+          contractType: validation.contractType,
+          ...(validation.contractType === "ONE_TIME"
+            ? { duration: null }
+            : data.duration !== undefined
+              ? { duration: data.duration || null }
+              : {}),
+          ...(data.billingPeriodMonths !== undefined
+            ? {
+                billingPeriodMonths:
+                  data.billingPeriodMonths != null && data.billingPeriodMonths !== ""
+                    ? Number(data.billingPeriodMonths)
+                    : null,
+              }
+            : {}),
+          ...(data.contractNumber !== undefined
+            ? { contractNumber: String(data.contractNumber).trim() }
+            : {}),
+          ...(data.startDate !== undefined
+            ? { startDate: data.startDate ? new Date(data.startDate) : null }
+            : {}),
+          ...(data.duration !== undefined || data.startDate !== undefined || data.endDate !== undefined
+            ? { endDate: nextEnd }
+            : {}),
+          ...(data.renewalDate !== undefined
+            ? { renewalDate: data.renewalDate ? new Date(data.renewalDate) : null }
+            : {}),
+          ...(data.totalAmount !== undefined
+            ? {
+                totalAmount:
+                  data.totalAmount !== null ? Number(data.totalAmount) : null,
+              }
+            : {}),
+          ...(data.monthlyAmount !== undefined
+            ? {
+                monthlyAmount:
+                  data.monthlyAmount !== null ? Number(data.monthlyAmount) : null,
+              }
+            : {}),
+          ...(data.billingDay !== undefined
+            ? {
+                billingDay:
+                  data.billingDay !== null ? Number(data.billingDay) : 1,
+              }
+            : {}),
+          ...(data.paymentTerms !== undefined ? { paymentTerms: data.paymentTerms } : {}),
+          ...(data.status !== undefined ? { status: data.status } : {}),
+          ...(data.notes !== undefined ? { notes: data.notes } : {}),
+          ...(data.projectId !== undefined ? { projectId: data.projectId || null } : {}),
+        },
+      });
+
+      await syncContractInstallments(tx, updated, data.installments);
+      return updated;
     });
 
+    if (existing.status === "DRAFT" && contract.status !== "DRAFT") {
+      await issueContractStartInvoice(contract);
+    }
     const full = await findAccessibleContract(scope, contract.id);
     res.json({ success: true, data: full });
   } catch (error) {

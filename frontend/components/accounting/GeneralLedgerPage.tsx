@@ -300,10 +300,37 @@ function EntryFields({
 }) {
   const set = (key: keyof EntryForm, value: string) => setForm((current) => ({ ...current, [key]: value }));
 
+  /** Remaining imbalance excluding one line — used to auto-fill the opposite side. */
+  const imbalanceExcluding = (lines: Line[], excludeIndex: number) => {
+    let d = 0;
+    let c = 0;
+    for (let i = 0; i < lines.length; i += 1) {
+      if (i === excludeIndex) continue;
+      d += Number(lines[i].debit || 0);
+      c += Number(lines[i].credit || 0);
+    }
+    return Number((d - c).toFixed(2));
+  };
+
+  const applyBalanceToEmptyLine = (lines: Line[], excludeIndex: number) => {
+    const diff = imbalanceExcluding(lines, excludeIndex);
+    if (Math.abs(diff) < 0.005) return lines;
+    const emptyIdx = lines.findIndex(
+      (line, i) => i !== excludeIndex && Number(line.debit || 0) === 0 && Number(line.credit || 0) === 0
+    );
+    if (emptyIdx === -1) return lines;
+    const next = [...lines];
+    if (diff > 0) {
+      next[emptyIdx] = { ...next[emptyIdx], credit: String(diff), debit: '0' };
+    } else {
+      next[emptyIdx] = { ...next[emptyIdx], debit: String(Math.abs(diff)), credit: '0' };
+    }
+    return next;
+  };
+
   const updateLine = (index: number, key: keyof Line, value: string) =>
-    setForm((current) => ({
-      ...current,
-      lines: current.lines.map((line, i) => {
+    setForm((current) => {
+      let lines = current.lines.map((line, i) => {
         if (i !== index) return line;
         const numVal = Number(value || 0);
         if (key === 'debit') {
@@ -313,8 +340,13 @@ function EntryFields({
           return { ...line, credit: value, debit: numVal > 0 ? '0' : line.debit };
         }
         return { ...line, [key]: value };
-      }),
-    }));
+      });
+      // Debit 100 → empty credit line becomes 100 (and vice versa)
+      if (key === 'debit' || key === 'credit') {
+        lines = applyBalanceToEmptyLine(lines, index);
+      }
+      return { ...current, lines };
+    });
 
   const selectAccount = (index: number, accountId: string, forcedCat?: string) => {
     const account = accounts.find((item) => String(item.id) === accountId);
@@ -326,21 +358,25 @@ function EntryFields({
       return;
     }
     const cat = forcedCat || getAccountCategory(account);
-    const isExpense = cat === 'expense';
-    const isLiability = cat === 'liability';
 
     setForm((current) => {
       const prevLine = current.lines[index];
       let newDebit = prevLine.debit;
       let newCredit = prevLine.credit;
+      const lineEmpty = Number(prevLine.debit || 0) === 0 && Number(prevLine.credit || 0) === 0;
 
-      if (isExpense && Number(prevLine.credit || 0) > 0 && Number(prevLine.debit || 0) === 0) {
-        newDebit = prevLine.credit;
-        newCredit = '0';
-      }
-      if (isLiability && Number(prevLine.debit || 0) > 0 && Number(prevLine.credit || 0) === 0) {
-        newCredit = prevLine.debit;
-        newDebit = '0';
+      // Select credit account after debit is filled → auto-fill balancing credit (and reverse)
+      if (lineEmpty) {
+        const diff = imbalanceExcluding(current.lines, index);
+        if (Math.abs(diff) >= 0.005) {
+          if (diff > 0) {
+            newCredit = String(diff);
+            newDebit = '0';
+          } else {
+            newDebit = String(Math.abs(diff));
+            newCredit = '0';
+          }
+        }
       }
 
       return {

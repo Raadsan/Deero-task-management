@@ -83,6 +83,7 @@ interface A4InvoiceSheetProps {
   vatPercent?: number;
   taxAmount: number | string;
   paidAmount?: number | string;
+  advanceCreditApplied?: number | string;
   grandTotal: number | string;
   paymentAdvance?: string;
   paymentCompletion?: string;
@@ -121,6 +122,7 @@ export default function A4InvoiceSheet({
   vatPercent = 5,
   taxAmount,
   paidAmount = "0.00",
+  advanceCreditApplied = 0,
   grandTotal,
   paymentAdvance = "70% of charge paid in advance.",
   paymentCompletion = "30% of charge paid after the project Completion",
@@ -138,6 +140,8 @@ export default function A4InvoiceSheet({
   const formattedSubtotal = Number(subtotal || 0).toFixed(2);
   const formattedTax = Number(taxAmount || 0).toFixed(2);
   const formattedPaid = Number(paidAmount || 0).toFixed(2);
+  const formattedAdvance = Number(advanceCreditApplied || 0).toFixed(2);
+  const showAdvance = Number(advanceCreditApplied || 0) > 0.004;
   const formattedGrandTotal = Number(grandTotal || 0).toFixed(2);
 
   // Split payment methods into rows of 3 columns each per specification
@@ -425,6 +429,10 @@ export default function A4InvoiceSheet({
               </tr>`
             : ""
         }
+        ${showAdvance ? `<tr>
+          <td style="background:#fff;color:#111;padding:6px 12px;font-size:12px;font-weight:700;border:1.5px solid #222;">Advance credit applied</td>
+          <td style="background:#fff;color:#111;padding:6px 12px;font-size:12px;font-weight:700;text-align:right;border:1.5px solid #222;">$${formattedAdvance}</td>
+        </tr>` : ""}
         <tr>
           <td style="background:${primary};color:#fff;padding:6px 12px;font-size:12px;font-weight:800;border:1.5px solid #222;letter-spacing:0.5px;">PAID</td>
           <td style="background:${primary};color:#fff;padding:6px 12px;font-size:12px;font-weight:800;text-align:right;border:1.5px solid #222;">$${formattedPaid}</td>
@@ -983,6 +991,16 @@ export default function A4InvoiceSheet({
                       </td>
                     </tr>
                   )}
+                  {showAdvance ? (
+                    <tr>
+                      <td style={{ background: "#fff", color: "#111", padding: "6px 12px", fontSize: "12px", fontWeight: 700, border: "1.5px solid #222" }}>
+                        Advance credit applied
+                      </td>
+                      <td style={{ background: "#fff", color: "#111", padding: "6px 12px", fontSize: "12px", fontWeight: 700, textAlign: "right", border: "1.5px solid #222" }}>
+                        ${formattedAdvance}
+                      </td>
+                    </tr>
+                  ) : null}
                   <tr>
                     <td
                       style={{

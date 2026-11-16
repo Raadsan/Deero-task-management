@@ -17,14 +17,31 @@ export type ContractDocument = {
   uploadedBy?: { id: string; name: string } | null;
 };
 
+export type ContractInstallmentRecord = {
+  id: string;
+  installmentNumber?: number | null;
+  dueDate: string;
+  dueAmount: number;
+  paidAmount?: number;
+  percentage?: number | null;
+  dueMilestone?: string | null;
+  status: string;
+};
+
 export type ContractRecord = {
   id: string;
   contractNumber: string;
+  title?: string | null;
+  contractType?: string | null;
+  billingPeriodMonths?: number | null;
+  duration?: string | null;
+  installments?: ContractInstallmentRecord[];
   startDate?: string | null;
   endDate?: string | null;
   renewalDate?: string | null;
   totalAmount?: number | null;
   paymentTerms?: string | null;
+  paymentTermsNeedsReview?: boolean;
   status: string;
   notes?: string | null;
   clientId: string;
@@ -91,16 +108,21 @@ export async function getProjectsForClient(
 
 export async function createContract(payload: {
   clientId: string;
+  title: string;
+  contractType?: string;
+  duration?: string | null;
+  startDate: string;
+  endDate?: string | null;
+  totalAmount: number;
+  paymentTerms: string;
+  billingPeriodMonths?: number | null;
+  installments?: Array<{ percentage: number; milestone: string; dueDate?: string | null }>;
+  status?: string;
   projectId?: string;
   contractNumber?: string;
-  startDate?: string;
-  endDate?: string;
   renewalDate?: string;
-  totalAmount?: number;
   monthlyAmount?: number;
   billingDay?: number;
-  paymentTerms?: string;
-  status?: string;
   notes?: string;
   file?: ContractFilePayload;
 }): Promise<ActionResponse<ContractRecord>> {
@@ -119,6 +141,11 @@ export async function createContract(payload: {
 export async function updateContract(
   id: string,
   payload: Partial<{
+    title: string;
+    contractType: string;
+    duration: string | null;
+    billingPeriodMonths: number | null;
+    installments: Array<{ percentage: number; milestone: string; dueDate?: string | null }>;
     contractNumber: string;
     startDate: string | null;
     endDate: string | null;

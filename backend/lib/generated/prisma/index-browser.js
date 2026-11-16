@@ -193,13 +193,16 @@ exports.Prisma.VerificationScalarFieldEnum = {
 
 exports.Prisma.ClientScalarFieldEnum = {
   id: 'id',
+  clientCode: 'clientCode',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   institution: 'institution',
   email: 'email',
   phone: 'phone',
+  alternativePhone: 'alternativePhone',
   source: 'source',
   accountManagerId: 'accountManagerId',
+  createdById: 'createdById',
   address: 'address',
   portfolioId: 'portfolioId',
   clientType: 'clientType',
@@ -215,8 +218,14 @@ exports.Prisma.ClientScalarFieldEnum = {
 
 exports.Prisma.ServiceScalarFieldEnum = {
   id: 'id',
+  serviceCode: 'serviceCode',
   serviceName: 'serviceName',
   description: 'description',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdById: 'createdById',
+  updatedById: 'updatedById',
   portfolioId: 'portfolioId',
   iconUrl: 'iconUrl',
   source: 'source',
@@ -308,7 +317,9 @@ exports.Prisma.TaskTransferHistoryScalarFieldEnum = {
   toAssigneeId: 'toAssigneeId',
   progressAtTransfer: 'progressAtTransfer',
   deadlineAtTransfer: 'deadlineAtTransfer',
-  transferredById: 'transferredById'
+  transferredById: 'transferredById',
+  reason: 'reason',
+  note: 'note'
 };
 
 exports.Prisma.ClientTaskScalarFieldEnum = {
@@ -521,7 +532,51 @@ exports.Prisma.ProjectScalarFieldEnum = {
   dueDate: 'dueDate',
   clientId: 'clientId',
   portfolioId: 'portfolioId',
-  createdById: 'createdById'
+  createdById: 'createdById',
+  projectCode: 'projectCode',
+  billingMode: 'billingMode',
+  lifecycleStatus: 'lifecycleStatus',
+  contractId: 'contractId',
+  archived: 'archived',
+  isDraft: 'isDraft',
+  scheduleConfig: 'scheduleConfig'
+};
+
+exports.Prisma.ProjectServiceLinkScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  serviceId: 'serviceId'
+};
+
+exports.Prisma.ProjectSubServiceScalarFieldEnum = {
+  id: 'id',
+  projectServiceId: 'projectServiceId',
+  name: 'name',
+  description: 'description',
+  quantity: 'quantity',
+  unit: 'unit',
+  targetQuantity: 'targetQuantity',
+  assigneeId: 'assigneeId'
+};
+
+exports.Prisma.ProjectCycleScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  label: 'label',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.ProjectExtraRequestScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  subServiceId: 'subServiceId',
+  quantity: 'quantity',
+  description: 'description',
+  status: 'status',
+  requestedById: 'requestedById',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.ContractScalarFieldEnum = {
@@ -529,6 +584,8 @@ exports.Prisma.ContractScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   contractNumber: 'contractNumber',
+  title: 'title',
+  duration: 'duration',
   startDate: 'startDate',
   endDate: 'endDate',
   renewalDate: 'renewalDate',
@@ -541,6 +598,8 @@ exports.Prisma.ContractScalarFieldEnum = {
   portfolioId: 'portfolioId',
   createdById: 'createdById',
   billingDay: 'billingDay',
+  billingPeriodMonths: 'billingPeriodMonths',
+  contractType: 'contractType',
   monthlyAmount: 'monthlyAmount'
 };
 
@@ -557,7 +616,10 @@ exports.Prisma.ClientInstallmentScalarFieldEnum = {
   status: 'status',
   notes: 'notes',
   clientId: 'clientId',
-  contractId: 'contractId'
+  contractId: 'contractId',
+  installmentNumber: 'installmentNumber',
+  percentage: 'percentage',
+  dueMilestone: 'dueMilestone'
 };
 
 exports.Prisma.ContractDocumentScalarFieldEnum = {
@@ -1271,7 +1333,8 @@ exports.ContractStatus = exports.$Enums.ContractStatus = {
   ACTIVE: 'ACTIVE',
   EXPIRED: 'EXPIRED',
   TERMINATED: 'TERMINATED',
-  RENEWED: 'RENEWED'
+  RENEWED: 'RENEWED',
+  CANCELLED: 'CANCELLED'
 };
 
 exports.InstallmentStatus = exports.$Enums.InstallmentStatus = {
@@ -1494,6 +1557,10 @@ exports.Prisma.ModelName = {
   RoleSubMenuAccess: 'RoleSubMenuAccess',
   AuditLog: 'AuditLog',
   Project: 'Project',
+  ProjectServiceLink: 'ProjectServiceLink',
+  ProjectSubService: 'ProjectSubService',
+  ProjectCycle: 'ProjectCycle',
+  ProjectExtraRequest: 'ProjectExtraRequest',
   Contract: 'Contract',
   ClientInstallment: 'ClientInstallment',
   ContractDocument: 'ContractDocument',

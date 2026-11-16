@@ -448,12 +448,13 @@ export default function CreditNotesPage() {
       />
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-h-[94vh] max-w-[calc(100vw-2rem)] overflow-y-auto xl:max-w-[1400px]">
-          <DialogHeader>
+        <DialogContent className="flex max-h-[88vh] w-[min(100vw-2rem,52rem)] max-w-[52rem] flex-col gap-0 overflow-hidden p-0 sm:max-w-[52rem]">
+          <DialogHeader className="shrink-0 border-b border-zinc-100 px-5 py-4 pr-12 text-left sm:px-6">
             <DialogTitle>{viewOnly ? 'Credit note' : selected ? 'Edit draft credit note' : 'New credit note'}</DialogTitle>
             <DialogDescription>A draft does not affect the invoice, customer balance, or General Ledger until posted.</DialogDescription>
           </DialogHeader>
-          <form onSubmit={save} className="space-y-5">
+          <form onSubmit={save} className="flex min-h-0 flex-1 flex-col">
+            <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-4 sm:px-6">
             <div className="grid gap-4 rounded-xl border bg-muted/30 p-4 md:grid-cols-3">
               <div>
                 <p className="text-xs font-semibold uppercase text-muted-foreground">Credit Note Number</p>
@@ -599,9 +600,10 @@ export default function CreditNotesPage() {
                 Credit total cannot exceed the remaining creditable amount of {money(availableCredit(original), original.currencies?.code)}.
               </p>
             )}
+            </div>
 
-            <DialogFooter>
-              <button type="button" onClick={() => setOpen(false)} className="rounded-xl border px-5 py-2.5">
+            <DialogFooter className="shrink-0 border-t border-zinc-100 px-5 py-3 sm:px-6">
+              <button type="button" onClick={() => setOpen(false)} className="rounded-lg border px-4 py-2 text-sm">
                 Close
               </button>
               {!viewOnly && (
@@ -612,7 +614,7 @@ export default function CreditNotesPage() {
                     totals.total <= 0 ||
                     Boolean(original && totals.total > availableCredit(original) + 0.005)
                   }
-                  className="rounded-xl bg-primary px-5 py-2.5 font-semibold text-primary-foreground disabled:opacity-50"
+                  className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50"
                 >
                   {saving ? 'Saving…' : 'Save draft credit note'}
                 </button>

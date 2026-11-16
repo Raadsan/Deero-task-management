@@ -26,6 +26,7 @@ import {
 } from "./staff/staff.routes.js";
 import utilRoutes from "./shared/utils/util.routes.js";
 import vendorsRoutes from "./shared/vendors/vendor.routes.js";
+import reportRoutes from "./reports/reports.routes.js";
 
 export {
   // Accounting Module (includes Quotations & Document Templates)
@@ -55,4 +56,5 @@ export {
   notificationRoutes,
   // Shared Module
   utilRoutes,
+  reportRoutes,
 };

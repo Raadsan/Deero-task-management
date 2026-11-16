@@ -587,6 +587,13 @@ export const post = async (req, res) => {
     }, transactionOptions)
     const data = await prisma.customer_receipts.findUnique({ where: { id: receiptId }, include })
     await logAudit({ userId: req.user?.id, action: 'Posted', entity: 'CustomerReceipt', entityId: receiptId, description: `Posted receipt "${data.receipt_number}"` })
+    const invoiceIds = (data?.receipt_allocations || []).map((row) => row.invoice_id || row.customer_invoices?.id)
+    try {
+      const { syncInstallmentPayments } = await import('../../../../lib/contract-invoice-scheduler.js')
+      await syncInstallmentPayments(invoiceIds)
+    } catch (syncError) {
+      console.error('[contract-invoice] payment sync failed:', syncError?.message || syncError)
+    }
     res.json({ success: true, message: 'Customer receipt posted successfully', data })
   } catch (error) { fail(res, error, 'Failed to post customer receipt') }
 }
