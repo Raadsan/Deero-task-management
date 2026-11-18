@@ -31,6 +31,7 @@ const ACCOUNTS = [
   { code: '2120', name: 'Taxes Payable', type: 'Liabilities', parentCode: '2100', posting: true },
   { code: '2130', name: 'Accrued Expenses', type: 'Liabilities', parentCode: '2100', posting: true },
   { code: '2140', name: 'Customer Advances', type: 'Liabilities', parentCode: '2100', posting: true, reconcilable: true },
+  { code: '2150', name: 'Customer Refund Payable', type: 'Liabilities', parentCode: '2100', posting: true, reconcilable: true },
 
   { code: '3000', name: 'Equity', type: 'Equity', parentCode: null, posting: false },
   { code: '3100', name: "Owner's Equity", type: 'Equity', parentCode: '3000', posting: true },

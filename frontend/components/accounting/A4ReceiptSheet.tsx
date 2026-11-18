@@ -86,6 +86,142 @@ export function numberToWords(amount: number): string {
   return result.charAt(0).toUpperCase() + result.slice(1);
 }
 
+export type ContractPaymentScheduleRow = {
+  installment_number: number;
+  milestone_label: string;
+  percentage: number | null;
+  amount: number;
+  due_date: string | null;
+  status: string;
+  is_current?: boolean;
+};
+
+export type ContractPaymentSchedule = {
+  available: boolean;
+  message?: string;
+  contract_number?: string | null;
+  installments?: ContractPaymentScheduleRow[];
+};
+
+function scheduleUnavailable(schedule?: ContractPaymentSchedule | null) {
+  if (!schedule?.available) {
+    return schedule?.message || "Payment Structure Not Available";
+  }
+  return null;
+}
+
+function renderScheduleTableHtml(
+  schedule: ContractPaymentSchedule | undefined,
+  currencySymbol: string,
+  primary: string,
+) {
+  const unavailable = scheduleUnavailable(schedule);
+  if (unavailable) {
+    return `<span style="font-size:11.5px;font-weight:600;color:#444;">${unavailable}</span>`;
+  }
+  const rows = schedule?.installments || [];
+  const head = `
+    <tr>
+      <th style="background:${primary};color:#fff;padding:4px 5px;font-size:9px;text-align:left;border:1px solid #ddd;">Milestone</th>
+      <th style="background:${primary};color:#fff;padding:4px 5px;font-size:9px;text-align:right;border:1px solid #ddd;">%</th>
+      <th style="background:${primary};color:#fff;padding:4px 5px;font-size:9px;text-align:right;border:1px solid #ddd;">Amount</th>
+      <th style="background:${primary};color:#fff;padding:4px 5px;font-size:9px;text-align:center;border:1px solid #ddd;">Due</th>
+      <th style="background:${primary};color:#fff;padding:4px 5px;font-size:9px;text-align:center;border:1px solid #ddd;">Status</th>
+    </tr>`;
+  const body = rows
+    .map((row) => {
+      const highlight = row.is_current
+        ? "background:#fff7ed;font-weight:700;"
+        : "background:#fff;";
+      const pct = row.percentage != null ? `${Number(row.percentage).toFixed(0)}%` : "—";
+      const amt = `${currencySymbol}${Number(row.amount || 0).toFixed(2)}`;
+      const due = row.due_date || "—";
+      const mark = row.is_current ? " ★" : "";
+      return `<tr style="${highlight}">
+        <td style="padding:4px 5px;font-size:9.5px;border:1px solid #ddd;">${row.milestone_label || "—"}${mark}</td>
+        <td style="padding:4px 5px;font-size:9.5px;text-align:right;border:1px solid #ddd;">${pct}</td>
+        <td style="padding:4px 5px;font-size:9.5px;text-align:right;border:1px solid #ddd;">${amt}</td>
+        <td style="padding:4px 5px;font-size:9.5px;text-align:center;border:1px solid #ddd;">${due}</td>
+        <td style="padding:4px 5px;font-size:9px;text-align:center;border:1px solid #ddd;">${row.status || "—"}</td>
+      </tr>`;
+    })
+    .join("");
+  return `<table style="width:100%;border-collapse:collapse;margin:0;">
+    <thead>${head}</thead>
+    <tbody>${body}</tbody>
+  </table>`;
+}
+
+function PaymentStructurePanel({
+  schedule,
+  currencySymbol,
+  primary,
+}: {
+  schedule?: ContractPaymentSchedule | null;
+  currencySymbol: string;
+  primary: string;
+}) {
+  const unavailable = scheduleUnavailable(schedule);
+  if (unavailable) {
+    return (
+      <span style={{ fontSize: "11.5px", fontWeight: 600, color: "#444" }}>{unavailable}</span>
+    );
+  }
+  const rows = schedule?.installments || [];
+  return (
+    <table style={{ width: "100%", borderCollapse: "collapse", margin: 0 }}>
+      <thead>
+        <tr>
+          {["Milestone", "%", "Amount", "Due", "Status"].map((label, idx) => (
+            <th
+              key={label}
+              style={{
+                background: primary,
+                color: "#fff",
+                padding: "4px 5px",
+                fontSize: "9px",
+                textAlign: idx === 0 ? "left" : idx < 3 ? "right" : "center",
+                border: "1px solid #ddd",
+              }}
+            >
+              {label}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row) => (
+          <tr
+            key={row.installment_number}
+            style={{
+              background: row.is_current ? "#fff7ed" : "#fff",
+              fontWeight: row.is_current ? 700 : 400,
+            }}
+          >
+            <td style={{ padding: "4px 5px", fontSize: "9.5px", border: "1px solid #ddd" }}>
+              {row.milestone_label || "—"}
+              {row.is_current ? " ★" : ""}
+            </td>
+            <td style={{ padding: "4px 5px", fontSize: "9.5px", textAlign: "right", border: "1px solid #ddd" }}>
+              {row.percentage != null ? `${Number(row.percentage).toFixed(0)}%` : "—"}
+            </td>
+            <td style={{ padding: "4px 5px", fontSize: "9.5px", textAlign: "right", border: "1px solid #ddd" }}>
+              {currencySymbol}
+              {Number(row.amount || 0).toFixed(2)}
+            </td>
+            <td style={{ padding: "4px 5px", fontSize: "9.5px", textAlign: "center", border: "1px solid #ddd" }}>
+              {row.due_date || "—"}
+            </td>
+            <td style={{ padding: "4px 5px", fontSize: "9px", textAlign: "center", border: "1px solid #ddd" }}>
+              {row.status || "—"}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
 export interface A4ReceiptSheetProps {
   contactPerson?: string;
   receiptNo: string;
@@ -98,8 +234,7 @@ export interface A4ReceiptSheetProps {
   currencySymbol?: string;
   currencyCode?: string;
   amountInWords?: string;
-  paymentAdvance?: string;
-  paymentCompletion?: string;
+  contractPaymentSchedule?: ContractPaymentSchedule | null;
   nbText?: string;
   paymentMethods?: PaymentMethodEntry[];
   showStamp?: boolean;
@@ -121,8 +256,7 @@ export default function A4ReceiptSheet({
   currencySymbol = "$",
   currencyCode = "USD",
   amountInWords,
-  paymentAdvance = "70% of charge paid in advance.",
-  paymentCompletion = "30% of charge paid after completion of the project",
+  contractPaymentSchedule = null,
   nbText = "NB: the advance amount should be paid when you get the invoice.",
   paymentMethods = DEFAULT_PAYMENT_METHODS,
   showStamp = true,
@@ -379,9 +513,8 @@ export default function A4ReceiptSheet({
               ${
                 isFirst
                   ? `
-                <td rowspan="${methodRowspan}" style="padding:10px 12px;font-size:11.5px;line-height:1.7;border:1.5px solid #222;vertical-align:top;background:#fff;width:48%;">
-                  <div style="margin-bottom:4px;">&bull; &nbsp;${paymentAdvance}</div>
-                  <div>&bull; &nbsp;${paymentCompletion}</div>
+                <td rowspan="${methodRowspan}" style="padding:8px 10px;font-size:11.5px;line-height:1.5;border:1.5px solid #222;vertical-align:top;background:#fff;width:48%;">
+                  ${renderScheduleTableHtml(contractPaymentSchedule || undefined, currencySymbol, primary)}
                 </td>`
                   : ""
               }
@@ -880,10 +1013,11 @@ export default function A4ReceiptSheet({
                               width: "48%",
                             }}
                           >
-                            <div style={{ marginBottom: "4px" }}>
-                              &bull; &nbsp;{paymentAdvance}
-                            </div>
-                            <div>&bull; &nbsp;{paymentCompletion}</div>
+                            <PaymentStructurePanel
+                              schedule={contractPaymentSchedule}
+                              currencySymbol={currencySymbol}
+                              primary={primary}
+                            />
                           </td>
                         )}
                         {row.map((pm, cIdx) => (

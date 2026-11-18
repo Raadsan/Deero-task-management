@@ -1,5 +1,6 @@
 import prisma from '../../../../config/db.js'
 import { logAudit } from '../../../../utils/auditHelper.js'
+import { attachReceiptContractPaymentSchedule } from '../../../../lib/receipt-contract-payment-schedule.js'
 
 const transactionOptions = { maxWait: 10000, timeout: 30000 }
 const include = {
@@ -28,7 +29,20 @@ const include = {
     },
   },
   receipt_allocations: {
-    include: { customer_invoices: { select: { id: true, invoice_number: true, invoice_date: true, amount_total: true, amount_due: true, payment_state: true } } },
+    include: {
+      customer_invoices: {
+        select: {
+          id: true,
+          invoice_number: true,
+          invoice_date: true,
+          amount_total: true,
+          amount_due: true,
+          payment_state: true,
+          notes: true,
+          customer_reference: true,
+        },
+      },
+    },
   },
 }
 const asId = (value) => {
@@ -437,7 +451,8 @@ export const getById = async (req, res) => {
   try {
     const data = await prisma.customer_receipts.findUnique({ where: { id: receiptId }, include })
     if (!data) return res.status(404).json({ success: false, message: 'Customer receipt not found' })
-    res.json({ success: true, data })
+    const contract_payment_schedule = await attachReceiptContractPaymentSchedule(data)
+    res.json({ success: true, data: { ...data, contract_payment_schedule } })
   } catch (error) { fail(res, error, 'Failed to fetch customer receipt') }
 }
 

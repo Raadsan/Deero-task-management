@@ -166,6 +166,7 @@ export default function ReceiptViewModal({
               amount={current.amount}
               currencySymbol={current.currencies?.symbol || "$"}
               currencyCode={current.currencies?.code || "USD"}
+              contractPaymentSchedule={current.contract_payment_schedule ?? null}
               showStamp={true}
               brandPrimary={brandPrimary}
               brandSecondary={brandSecondary}

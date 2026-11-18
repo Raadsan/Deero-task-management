@@ -1114,6 +1114,8 @@ export async function applyCustomerAdvances(tx, invoice, postedAt) {
     const allocation = await tx.receipt_allocations.create({
       data: { receipt_id: receipt.id, invoice_id: invoice.id, allocated_amount: applied },
     })
+    const { syncCreditNoteFromAdvanceReceipt } = await import('../creditNotes/creditNote.controller.js')
+    await syncCreditNoteFromAdvanceReceipt(tx, receipt.id, applied, postedAt)
 
     const baseAmount = Math.round(applied * Number(invoice.exchange_rate) * 100) / 100
     // Use a reserved source_id range so we never collide with the original receipt JE (source_id = receipt.id).

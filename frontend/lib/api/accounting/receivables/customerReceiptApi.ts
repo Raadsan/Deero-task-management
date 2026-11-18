@@ -5,7 +5,37 @@ export type ReceiptAllocation = {
   id?: number;
   invoice_id: number;
   allocated_amount: number;
-  customer_invoices?: { id: number; invoice_number?: string; amount_total: number; amount_due: number };
+  customer_invoices?: {
+    id: number;
+    invoice_number?: string;
+    amount_total: number;
+    amount_due: number;
+    installment_id?: string | null;
+    notes?: string | null;
+    customer_reference?: string | null;
+  };
+};
+
+export type ContractPaymentScheduleRow = {
+  installment_number: number;
+  milestone_label: string;
+  percentage: number | null;
+  amount: number;
+  due_date: string | null;
+  status: string;
+  is_current?: boolean;
+};
+
+export type ContractPaymentSchedule = {
+  available: boolean;
+  message?: string;
+  contract_id?: string;
+  contract_number?: string | null;
+  payment_terms?: string | null;
+  contract_amount?: number;
+  highlighted_installment_number?: number | null;
+  linked_invoice_id?: number;
+  installments?: ContractPaymentScheduleRow[];
 };
 
 export type CustomerReceipt = AccountingRecord & {
@@ -37,6 +67,7 @@ export type CustomerReceipt = AccountingRecord & {
   journals?: { id: number; name: string; code: string };
   payment_methods?: { id: number; name: string; code: string };
   receipt_allocations?: ReceiptAllocation[];
+  contract_payment_schedule?: ContractPaymentSchedule | null;
   journal_entries?: {
     journal_items?: Array<{ account_id: number; chart_of_accounts?: { id: number; code: string; name: string } }>;
   };
