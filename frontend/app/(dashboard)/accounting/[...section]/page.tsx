@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { Landmark } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import ConfigurationCrudPage from '@/components/accounting/ConfigurationCrudPage';
@@ -149,7 +150,11 @@ export default async function AccountingDynamicSectionPage({ params }: Props) {
 
   if (['reports', 'general-ledger', 'trial-balance', 'profit-and-loss', 'balance-sheet', 'cash-flow', 'journal-report'].includes(key)) {
     const reportKind = key === 'reports' ? 'general-ledger' : key;
-    return <FinancialReportsPage kind={reportKind as FinancialReportKind} />;
+    return (
+      <Suspense fallback={<div className="p-6 text-sm text-zinc-500">Loading report…</div>}>
+        <FinancialReportsPage kind={reportKind as FinancialReportKind} />
+      </Suspense>
+    );
   }
 
   return (

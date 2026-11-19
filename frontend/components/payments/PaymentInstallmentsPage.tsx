@@ -35,6 +35,8 @@ import {
   dashboardTableWrapClass,
   dashboardTextPrimary,
 } from "@/lib/dashboard-ui";
+import { paymentStatusLabel } from "@/lib/contract-utils";
+import { normalizeInstallmentScheduleStatus } from "@/lib/installment-schedule-status";
 import { cn, formatDate } from "@/lib/utils";
 import { Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -50,28 +52,18 @@ const compactInputClass =
 const STATUS_OPTIONS = [
   { value: "all", label: "All statuses" },
   { value: "PAID", label: "Paid" },
-  { value: "PARTIAL", label: "Partial" },
-  { value: "PENDING", label: "Unpaid" },
-  { value: "OVERDUE", label: "Overdue" },
+  { value: "PENDING", label: "Pending" },
+  { value: "UNPAID", label: "Unpaid" },
 ] as const;
 
-function statusLabel(status: ClientInstallmentRow["status"]) {
-  switch (status) {
-    case "PAID":
-      return "Paid";
-    case "PARTIAL":
-      return "Partial";
-    case "OVERDUE":
-      return "Overdue";
-    default:
-      return "Unpaid";
-  }
+function displayStatus(status: ClientInstallmentRow["status"]) {
+  return normalizeInstallmentScheduleStatus(status);
 }
 
 function statusClass(status: ClientInstallmentRow["status"]) {
-  if (status === "PAID") return "bg-emerald-100 text-emerald-800";
-  if (status === "PARTIAL") return "bg-blue-100 text-blue-800";
-  if (status === "OVERDUE") return "bg-red-100 text-red-800";
+  const key = displayStatus(status);
+  if (key === "PAID") return "bg-emerald-100 text-emerald-800";
+  if (key === "UNPAID") return "bg-red-100 text-red-800";
   return "bg-amber-100 text-amber-800";
 }
 
@@ -104,12 +96,8 @@ export default function PaymentInstallmentsPage({
   const filteredRows = useMemo(() => {
     const query = search.toLowerCase();
     return rows.filter((row) => {
-      if (statusFilter !== "all") {
-        if (statusFilter === "PARTIAL") {
-          if (!(row.paidAmount > 0 && row.status !== "PAID")) return false;
-        } else if (row.status !== statusFilter) {
-          return false;
-        }
+      if (statusFilter !== "all" && displayStatus(row.status) !== statusFilter) {
+        return false;
       }
 
       const due = new Date(row.dueDate).getTime();
@@ -300,7 +288,7 @@ export default function PaymentInstallmentsPage({
                       </TableCell>
                       <TableCell className={dashboardTableCellClass}>
                         <span className={cn(dashboardStatusBadgeClass, statusClass(row.status))}>
-                          {statusLabel(row.status)}
+                          {paymentStatusLabel(displayStatus(row.status))}
                         </span>
                       </TableCell>
                       {showRecordPayment && (

@@ -17,7 +17,8 @@ export type ClientInstallmentRow = {
   dueAmount: number;
   paidAmount: number;
   balance: number;
-  status: "PENDING" | "PARTIAL" | "PAID" | "OVERDUE";
+  status: "PENDING" | "UNPAID" | "PAID";
+  paidAt?: string | null;
   notes: string | null;
 };
 
@@ -26,6 +27,8 @@ export type InstallmentSummary = {
   paid: number;
   unpaid: number;
   partial: number;
+  pending?: number;
+  unpaidDue?: number;
   totalDue: number;
   totalPaid: number;
   totalBalance: number;

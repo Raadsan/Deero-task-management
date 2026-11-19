@@ -2,7 +2,9 @@
 
 import { accountingToast } from '@/lib/accounting-ui';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import {
   Download,
@@ -16,6 +18,7 @@ import {
   AlertCircle,
   ArrowUpRight,
   ArrowDownRight,
+  ArrowLeft,
   Layers,
   PieChart,
   Wallet,
@@ -59,8 +62,28 @@ const descriptions: Record<FinancialReportKind, string> = {
   'journal-report': 'Audit posted journal entries and their balanced accounting lines.',
 };
 
+const TB_RETURN_KEY = 'accounting-trial-balance-return';
+
 const today = () => new Date().toISOString().slice(0, 10);
 const yearStart = () => `${new Date().getFullYear()}-01-01`;
+
+function buildReportQuery(params: {
+  companyId: string;
+  accountId?: string;
+  startDate?: string;
+  endDate?: string;
+  periodId?: string;
+  from?: string;
+}) {
+  const qs = new URLSearchParams();
+  if (params.companyId) qs.set('company', params.companyId);
+  if (params.accountId) qs.set('account', params.accountId);
+  if (params.periodId) qs.set('periodId', params.periodId);
+  if (!params.periodId && params.startDate) qs.set('startDate', params.startDate);
+  if (!params.periodId && params.endDate) qs.set('endDate', params.endDate);
+  if (params.from) qs.set('from', params.from);
+  return qs.toString();
+}
 const dateValue = (value: unknown) => (value ? new Date(String(value)).toISOString().slice(0, 10) : '');
 const money = (value: unknown) => Number(value || 0).toFixed(2);
 const message = (error: unknown) =>
@@ -79,6 +102,9 @@ function asWarnings(data: unknown): Warning[] {
 }
 
 export default function FinancialReportsPage({ kind }: { kind: FinancialReportKind }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const fromTrialBalance = kind === 'general-ledger' && searchParams.get('from') === 'trial-balance';
   const [companies, setCompanies] = useState<Row[]>([]);
   const [accounts, setAccounts] = useState<Row[]>([]);
   const [periods, setPeriods] = useState<Row[]>([]);
@@ -92,6 +118,32 @@ export default function FinancialReportsPage({ kind }: { kind: FinancialReportKi
   const [journalId, setJournalId] = useState('');
   const [data, setData] = useState<unknown>(null);
   const [loading, setLoading] = useState(false);
+  const [catalogReady, setCatalogReady] = useState(false);
+
+  const navigateToGeneralLedger = useCallback(
+    (accountId: number) => {
+      if (!companyId || !accountId) return;
+      sessionStorage.setItem(
+        TB_RETURN_KEY,
+        JSON.stringify({
+          companyId,
+          startDate,
+          endDate,
+          periodId,
+        }),
+      );
+      const query = buildReportQuery({
+        companyId,
+        accountId: String(accountId),
+        startDate,
+        endDate,
+        periodId,
+        from: 'trial-balance',
+      });
+      router.push(`/accounting/general-ledger?${query}`);
+    },
+    [companyId, endDate, periodId, router, startDate],
+  );
 
   useEffect(() => {
     Promise.all([
@@ -107,12 +159,65 @@ export default function FinancialReportsPage({ kind }: { kind: FinancialReportKi
         setPeriods(periodRows);
         setYears(yearRows);
         setJournals(journalRows);
-        if (companyRows.length > 0) {
-          setCompanyId(String(companyRows[0].id));
-        }
+        setCatalogReady(true);
       })
       .catch((error) => accountingToast(message(error), 'error'));
   }, []);
+
+  const filtersBootstrapped = useRef(false);
+
+  useEffect(() => {
+    if (!catalogReady) return;
+
+    const companyParam = searchParams.get('company') || searchParams.get('companyId');
+    const accountParam = searchParams.get('account') || searchParams.get('accountId');
+    const periodParam = searchParams.get('periodId');
+    const startParam = searchParams.get('startDate');
+    const endParam = searchParams.get('endDate');
+
+    if (companyParam) setCompanyId(companyParam);
+    if (kind === 'general-ledger' && accountParam) setAccountId(accountParam);
+    if (periodParam) setPeriodId(periodParam);
+    if (startParam) setStartDate(startParam);
+    if (endParam) setEndDate(endParam);
+  }, [catalogReady, kind, searchParams]);
+
+  useEffect(() => {
+    if (!catalogReady || filtersBootstrapped.current) return;
+
+    const companyParam = searchParams.get('company') || searchParams.get('companyId');
+    const periodParam = searchParams.get('periodId');
+    const startParam = searchParams.get('startDate');
+    const endParam = searchParams.get('endDate');
+    const hasUrlFilters = Boolean(companyParam || periodParam || startParam || endParam);
+
+    if (hasUrlFilters) {
+      filtersBootstrapped.current = true;
+      return;
+    }
+
+    if (kind === 'trial-balance') {
+      const stored = sessionStorage.getItem(TB_RETURN_KEY);
+      if (stored) {
+        try {
+          const storedFilters = JSON.parse(stored) as Record<string, string>;
+          if (storedFilters.companyId) setCompanyId(String(storedFilters.companyId));
+          if (storedFilters.periodId) setPeriodId(String(storedFilters.periodId));
+          if (storedFilters.startDate) setStartDate(String(storedFilters.startDate));
+          if (storedFilters.endDate) setEndDate(String(storedFilters.endDate));
+        } catch {
+          /* ignore invalid session payload */
+        }
+        sessionStorage.removeItem(TB_RETURN_KEY);
+      } else if (companies.length) {
+        setCompanyId(String(companies[0].id));
+      }
+    } else if (companies.length) {
+      setCompanyId(String(companies[0].id));
+    }
+
+    filtersBootstrapped.current = true;
+  }, [catalogReady, companies, kind, searchParams]);
 
   const load = useCallback(async () => {
     if (!companyId) {
@@ -155,9 +260,10 @@ export default function FinancialReportsPage({ kind }: { kind: FinancialReportKi
   }, [accountId, companyId, endDate, journalId, kind, periodId, startDate]);
 
   useEffect(() => {
+    if (kind === 'general-ledger' && fromTrialBalance && !accountId) return;
     const timer = window.setTimeout(() => void load(), 0);
     return () => window.clearTimeout(timer);
-  }, [load]);
+  }, [accountId, fromTrialBalance, kind, load]);
 
   const companyPeriods = periods.filter(
     (period) =>
@@ -166,6 +272,11 @@ export default function FinancialReportsPage({ kind }: { kind: FinancialReportKi
   const companyAccounts = accounts.filter((row) => Number(row.company_id) === Number(companyId));
   const companyJournals = journals.filter((row) => Number(row.company_id) === Number(companyId));
   const companyName = String(companies.find((row) => String(row.id) === companyId)?.name || '');
+  const periodLabel = kind === 'balance-sheet'
+    ? `As of ${endDate}`
+    : periodId
+      ? `Fiscal period #${periodId}`
+      : `${startDate} → ${endDate}`;
   const exportRows = useMemo(() => flattenForExport(kind, data), [data, kind]);
   const warnings = asWarnings(data);
 
@@ -192,6 +303,22 @@ export default function FinancialReportsPage({ kind }: { kind: FinancialReportKi
       className="print:border-0 print:shadow-none"
     >
       <div className="space-y-5">
+        {fromTrialBalance ? (
+          <Link
+            href={`/accounting/trial-balance?${buildReportQuery({ companyId, startDate, endDate, periodId })}`}
+            className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 print:hidden"
+            onClick={() => {
+              sessionStorage.setItem(
+                TB_RETURN_KEY,
+                JSON.stringify({ companyId, startDate, endDate, periodId }),
+              );
+            }}
+          >
+            <ArrowLeft className="size-4" />
+            Back to Trial Balance
+          </Link>
+        ) : null}
+
         {data ? <ReportMetrics kind={kind} data={data} /> : null}
 
         {warnings.length > 0 && (
@@ -274,7 +401,11 @@ export default function FinancialReportsPage({ kind }: { kind: FinancialReportKi
           ) : !data ? (
             <Empty text="No report data available." />
           ) : (
-            <ReportContent kind={kind} data={data} />
+            <ReportContent
+              kind={kind}
+              data={data}
+              onTrialBalanceAccountNavigate={kind === 'trial-balance' ? navigateToGeneralLedger : undefined}
+            />
           )}
         </section>
       </div>
@@ -432,7 +563,15 @@ function ReportMetrics({ kind, data }: { kind: FinancialReportKind; data: unknow
   );
 }
 
-function ReportContent({ kind, data }: { kind: FinancialReportKind; data: unknown }) {
+function ReportContent({
+  kind,
+  data,
+  onTrialBalanceAccountNavigate,
+}: {
+  kind: FinancialReportKind;
+  data: unknown;
+  onTrialBalanceAccountNavigate?: (accountId: number) => void;
+}) {
   if (kind === 'general-ledger') {
     const report = data as {
       accounts?: Array<{
@@ -500,27 +639,8 @@ function ReportContent({ kind, data }: { kind: FinancialReportKind; data: unknow
   }
 
   if (kind === 'trial-balance') {
-    const report = data as {
-      accounts?: Row[];
-      totals?: { debit?: number; credit?: number };
-      is_balanced?: boolean;
-    };
-    const rows = report.accounts || [];
-    const debit = Number(report.totals?.debit ?? rows.reduce((s, row) => s + Number(row.debit ?? 0), 0));
-    const credit = Number(report.totals?.credit ?? rows.reduce((s, row) => s + Number(row.credit ?? 0), 0));
-
     return (
-      <ReportTable
-        headers={['Code', 'Account Name', 'Account Type', 'Debit', 'Credit']}
-        rows={rows.map((row) => [
-          row.account_code,
-          row.account_name,
-          row.account_type || '—',
-          money(row.debit ?? row.total_debit),
-          money(row.credit ?? row.total_credit),
-        ])}
-        footer={['', 'Totals', '', money(debit), money(credit)]}
-      />
+      <TrialBalanceReportTable data={data} onAccountNavigate={onTrialBalanceAccountNavigate} />
     );
   }
 
@@ -528,21 +648,50 @@ function ReportContent({ kind, data }: { kind: FinancialReportKind; data: unknow
     const report = data as {
       income: { total: number; accounts: Row[] };
       expense: { total: number; accounts: Row[] };
+      revenue?: { total: number; accounts: Row[] };
+      cost_of_sales?: { total: number; accounts: Row[] };
+      operating_expenses?: { total: number; accounts: Row[] };
+      other_income?: { total: number; accounts: Row[] };
+      other_expenses?: { total: number; accounts: Row[] };
+      gross_profit?: number;
       net_income: number;
     };
     const incomeTotal = Number(report.income?.total || 0);
     const expenseTotal = Number(report.expense?.total || 0);
     const netIncome = Number(report.net_income || 0);
+    const revenueRows = report.revenue?.accounts?.length ? report.revenue.accounts : report.income?.accounts || [];
+    const revenueTotal = Number(report.revenue?.total ?? incomeTotal);
+    const cogsTotal = Number(report.cost_of_sales?.total || 0);
+    const operatingRows = report.operating_expenses?.accounts?.length
+      ? report.operating_expenses.accounts
+      : report.expense?.accounts || [];
+    const operatingTotal = Number(report.operating_expenses?.total ?? expenseTotal);
+    const grossProfit = Number(report.gross_profit ?? revenueTotal - cogsTotal);
 
     return (
       <div className="p-5 space-y-6">
         <div className="grid gap-6 lg:grid-cols-2">
           <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-xs">
-            <Statement title="Revenue" rows={report.income?.accounts || []} total={incomeTotal} />
+            <Statement title="Revenue" rows={revenueRows} total={revenueTotal} />
+            {cogsTotal > 0.005 ? (
+              <div className="mt-4 border-t border-zinc-100 pt-4">
+                <Statement title="Cost of Sales" rows={report.cost_of_sales?.accounts || []} total={cogsTotal} />
+              </div>
+            ) : null}
           </div>
           <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-xs">
-            <Statement title="Expenses" rows={report.expense?.accounts || []} total={expenseTotal} />
+            <Statement title="Operating Expenses" rows={operatingRows} total={operatingTotal} />
+            {(report.other_expenses?.accounts?.length || 0) > 0 ? (
+              <div className="mt-4 border-t border-zinc-100 pt-4">
+                <Statement title="Other Expenses" rows={report.other_expenses?.accounts || []} total={Number(report.other_expenses?.total || 0)} />
+              </div>
+            ) : null}
           </div>
+        </div>
+
+        <div className="flex justify-between items-center rounded-xl border border-zinc-200 bg-zinc-50 px-5 py-3 text-sm font-semibold text-zinc-800">
+          <span>Gross Profit</span>
+          <span>{money(grossProfit)}</span>
         </div>
 
         <div
@@ -714,6 +863,149 @@ function ReportContent({ kind, data }: { kind: FinancialReportKind; data: unknow
         </div>
       ))}
     </div>
+  );
+}
+
+type TrialBalanceTableRow = {
+  id: number;
+  account_id?: number;
+  account_code: string;
+  account_name: string;
+  account_type: string;
+  debit: number;
+  credit: number;
+};
+
+function TrialBalanceReportTable({
+  data,
+  onAccountNavigate,
+}: {
+  data: unknown;
+  onAccountNavigate?: (accountId: number) => void;
+}) {
+  const report = data as {
+    accounts?: Row[];
+    totals?: { debit?: number; credit?: number };
+  };
+  const rows = report.accounts || [];
+  const totalDebit = Number(report.totals?.debit ?? rows.reduce((s, row) => s + Number(row.debit ?? 0), 0));
+  const totalCredit = Number(report.totals?.credit ?? rows.reduce((s, row) => s + Number(row.credit ?? 0), 0));
+
+  const tableRows = useMemo<TrialBalanceTableRow[]>(
+    () =>
+      rows.map((row, index) => ({
+        id: Number(row.account_id ?? index + 1),
+        account_id: row.account_id as number | undefined,
+        account_code: String(row.account_code ?? ''),
+        account_name: String(row.account_name ?? ''),
+        account_type: String(row.account_type || '—'),
+        debit: Number(row.debit ?? row.total_debit ?? 0),
+        credit: Number(row.credit ?? row.total_credit ?? 0),
+      })),
+    [rows],
+  );
+
+  const openAccount = (row: TrialBalanceTableRow) => {
+    if (!onAccountNavigate || !row.account_id) return;
+    onAccountNavigate(row.account_id);
+  };
+
+  const openAccountFromEvent = (event: MouseEvent, row: TrialBalanceTableRow) => {
+    event.stopPropagation();
+    openAccount(row);
+  };
+
+  const columns = useMemo<DashboardTableColumn<TrialBalanceTableRow>[]>(
+    () => [
+      {
+        key: 'code',
+        header: 'Code',
+        cell: (row) => (
+          <button
+            type="button"
+            className="text-left font-medium text-primary hover:underline"
+            onClick={(event) => openAccountFromEvent(event, row)}
+          >
+            {row.account_code}
+          </button>
+        ),
+      },
+      {
+        key: 'name',
+        header: 'Account Name',
+        cell: (row) => (
+          <button
+            type="button"
+            className="text-left text-primary hover:underline"
+            onClick={(event) => openAccountFromEvent(event, row)}
+          >
+            {row.account_name}
+          </button>
+        ),
+      },
+      { key: 'type', header: 'Account Type', cell: (row) => row.account_type },
+      {
+        key: 'debit',
+        header: 'Debit',
+        align: 'right',
+        cell: (row) =>
+          row.debit > 0 ? (
+            <button
+              type="button"
+              className="tabular-nums text-primary hover:underline"
+              onClick={(event) => openAccountFromEvent(event, row)}
+            >
+              {money(row.debit)}
+            </button>
+          ) : (
+            money(row.debit)
+          ),
+      },
+      {
+        key: 'credit',
+        header: 'Credit',
+        align: 'right',
+        cell: (row) =>
+          row.credit > 0 ? (
+            <button
+              type="button"
+              className="tabular-nums text-primary hover:underline"
+              onClick={(event) => openAccountFromEvent(event, row)}
+            >
+              {money(row.credit)}
+            </button>
+          ) : (
+            money(row.credit)
+          ),
+      },
+    ],
+    [onAccountNavigate],
+  );
+
+  const footer = (
+    <tfoot className="border-t-2 bg-muted/30 font-bold">
+      <tr>
+        <td className="px-4 py-3" colSpan={3}>
+          Totals
+        </td>
+        <td className="px-4 py-3 text-right tabular-nums">{money(totalDebit)}</td>
+        <td className="px-4 py-3 text-right tabular-nums">{money(totalCredit)}</td>
+      </tr>
+    </tfoot>
+  );
+
+  return (
+    <DashboardDataTable
+      className="border-0 shadow-none rounded-none"
+      rows={tableRows}
+      columns={columns}
+      searchPlaceholder="Search trial balance accounts..."
+      emptyText="No accounts with balances for this period."
+      minWidth="720px"
+      pageSizes={[10, 25, 50, 100]}
+      footer={footer}
+      onRowClick={onAccountNavigate ? (row) => openAccount(row) : undefined}
+    />
   );
 }
 

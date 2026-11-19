@@ -1,4 +1,8 @@
 import { prisma } from "./prisma.js";
+import {
+  presentInstallmentScheduleStatus,
+  storedInstallmentStatus,
+} from "./contract-installment-status.js";
 
 function startOfDay(date = new Date()) {
   const d = new Date(date);
@@ -55,11 +59,13 @@ function isContractBillable(contract, year, month) {
 }
 
 function computeStatus(dueAmount, paidAmount, dueDate, now = new Date()) {
-  if (paidAmount >= dueAmount) return "PAID";
-  if (paidAmount > 0) {
-    return startOfDay(now) > startOfDay(dueDate) ? "OVERDUE" : "PARTIAL";
-  }
-  return startOfDay(now) > startOfDay(dueDate) ? "OVERDUE" : "PENDING";
+  return storedInstallmentStatus(
+    presentInstallmentScheduleStatus(
+      { dueAmount, paidAmount, dueDate },
+      null,
+      now,
+    ),
+  );
 }
 
 /**
@@ -223,19 +229,42 @@ export async function generateMonthlyInstallments({ runDate = new Date() } = {})
     }
   }
 
-  const overdueCandidates = await prisma.clientInstallment.findMany({
+  const pastDueCandidates = await prisma.clientInstallment.findMany({
     where: {
-      status: { in: ["PENDING", "PARTIAL"] },
+      status: { in: ["PENDING", "OVERDUE"] },
       dueDate: { lt: startOfDay(now) },
+      paidAmount: 0,
     },
   });
 
-  for (const row of overdueCandidates) {
-    await prisma.clientInstallment.update({
-      where: { id: row.id },
-      data: { status: "OVERDUE" },
-    });
-    updated += 1;
+  for (const row of pastDueCandidates) {
+    const status = computeStatus(row.dueAmount, row.paidAmount, row.dueDate, now);
+    if (status !== row.status) {
+      await prisma.clientInstallment.update({
+        where: { id: row.id },
+        data: { status },
+      });
+      updated += 1;
+    }
+  }
+
+  const unpaidPartialCandidates = await prisma.clientInstallment.findMany({
+    where: {
+      status: "PENDING",
+      dueDate: { lt: startOfDay(now) },
+      paidAmount: { gt: 0 },
+    },
+  });
+
+  for (const row of unpaidPartialCandidates) {
+    const status = computeStatus(row.dueAmount, row.paidAmount, row.dueDate, now);
+    if (status !== row.status) {
+      await prisma.clientInstallment.update({
+        where: { id: row.id },
+        data: { status },
+      });
+      updated += 1;
+    }
   }
 
   return {

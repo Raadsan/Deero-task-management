@@ -36,7 +36,7 @@ import {
 } from "./modules/index.js";
 import { attachSessionScope } from "./middlewares/session-scope.js";
 import { prisma } from "./lib/prisma.js";
-import { syncOverdueTasks } from "./lib/task-status.js";
+import { runTaskStatusMaintenance, requestTaskStatusMaintenance } from "./lib/task-status-maintenance.js";
 
 const app = express();
 const port = process.env.PORT || 7003;
@@ -135,13 +135,13 @@ app.get("/", (req, res) => {
   res.send("Deero Management API is running...");
 });
 
-const runOverdueSync = () => {
-  void syncOverdueTasks(prisma).catch((error) => {
-    console.error("[overdue-job] Failed:", error.message);
+const runMaintenance = () => {
+  void runTaskStatusMaintenance(prisma).catch((error) => {
+    console.error("[task-maintenance] Failed:", error.message);
   });
 };
-setTimeout(runOverdueSync, 30_000);
-setInterval(runOverdueSync, 5 * 60 * 1000);
+setTimeout(runMaintenance, 30_000);
+setInterval(runMaintenance, 60 * 1000);
 
 // 👇 muhiim
 app.listen(port, async () => {
@@ -192,29 +192,32 @@ app.listen(port, async () => {
 
     // Auto-notify assignees when pending task startDate is reached
     const { prisma } = await import("./lib/prisma.js");
+    const { objectFeatures } = await import("./lib/scheduled-task-window.js");
     const autoTransitionJob = async () => {
       try {
         const now = new Date();
-        const startingTasks = await prisma.task.findMany({
+        const candidateTasks = await prisma.task.findMany({
           where: {
             status: "pending",
             workflowStage: "pending",
             startDate: { lte: now },
             progress: 0,
           },
-          select: { id: true, assgineeId: true, serviceInformation: true, description: true, deadline: true },
-          take: 30,
+          select: {
+            id: true,
+            assgineeId: true,
+            serviceInformation: true,
+            description: true,
+            deadline: true,
+            features: true,
+          },
+          take: 50,
         });
+        const startingTasks = candidateTasks.filter(
+          (task) => !objectFeatures(task.features)?.holdActive,
+        );
         if (startingTasks.length > 0) {
-          const ids = startingTasks.map((t) => t.id);
-          // Flip all to in_progress via workflowStage (status enum has no in_progress)
-          await prisma.task.updateMany({
-            where: { id: { in: ids } },
-            data: { workflowStage: "in_progress" },
-          });
-          console.log(`[auto-transition] Transitioned ${ids.length} task(s) to in_progress`);
-
-          // Send notification to each assignee
+          // Status transitions are handled by task-status-maintenance; notify only.
           for (const task of startingTasks) {
             try {
               const existingNotif = await prisma.notification.findFirst({
@@ -307,22 +310,4 @@ app.listen(port, async () => {
     console.error("Failed to start overdue task checker:", error);
   }
 
-  try {
-    const { syncScheduledTaskActivation } = await import("./lib/scheduled-task-window.js");
-    const { prisma } = await import("./lib/prisma.js");
-    const runScheduleJob = async () => {
-      try {
-        const updated = await syncScheduledTaskActivation(prisma);
-        if (updated > 0) {
-          console.log(`[schedule-job] Updated ${updated} scheduled task(s)`);
-        }
-      } catch (err) {
-        console.error("[schedule-job] Failed:", err.message);
-      }
-    };
-    await runScheduleJob();
-    setInterval(runScheduleJob, 30 * 1000);
-  } catch (error) {
-    console.error("Failed to start scheduled task activation:", error);
-  }
 });

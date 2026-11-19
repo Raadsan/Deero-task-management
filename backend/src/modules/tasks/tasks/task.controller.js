@@ -12,6 +12,15 @@ import {
   normalizeTaskWriteStatus,
 } from "../../../lib/task-status.js";
 import {
+  buildManagementTaskWhere,
+  enrichManagementTask,
+  filterTasksByManagementStatus,
+  managementDisplayStatus,
+  managementTaskInclude,
+  taskMatchesManagementSearch,
+} from "../../../lib/task-management-filters.js";
+import { initialPersistedStatusForCreate } from "../../../lib/task-lifecycle.js";
+import {
   appendProgressHistory,
   applyScheduledFeatures,
   evaluateScheduledTask,
@@ -27,58 +36,88 @@ import {
 
 export const getAllTasks = async (req, res) => {
   try {
+    const { requestTaskStatusMaintenance } = await import("../../../lib/task-status-maintenance.js");
+    requestTaskStatusMaintenance(prisma);
     const scope = getScope(req);
-    const tasks = await prisma.task.findMany({
-      where: mergeWhere({ isPersonal: false }, taskBranchWhere(scope)),
-      include: {
-        user: { select: { id: true, name: true, portfolioId: true, image: true, jobTitle: true } },
-        clientTask: {
-          include: {
-            Client: {
-              select: {
-                id: true,
-                institution: true,
-                clientSubService: {
-                  select: { subService: { select: { id: true, name: true } } },
-                },
+    const managementMode = String(req.query.management) === "1";
+    const hasManagementFilters = managementMode || [
+      "status",
+      "taskType",
+      "task_type",
+      "clientId",
+      "client_id",
+      "projectId",
+      "project_id",
+      "serviceId",
+      "service_id",
+      "employeeId",
+      "employee_id",
+      "assgineeId",
+      "scheduledFrom",
+      "scheduled_from",
+      "dateFrom",
+      "scheduledTo",
+      "scheduled_to",
+      "dateTo",
+      "search",
+    ].some((key) => req.query[key] != null && String(req.query[key]).trim() !== "" && String(req.query[key]) !== "all");
+
+    const where = hasManagementFilters
+      ? buildManagementTaskWhere(scope, req.query)
+      : mergeWhere({ isPersonal: false }, taskBranchWhere(scope));
+
+  const include = hasManagementFilters ? managementTaskInclude : {
+      user: { select: { id: true, name: true, portfolioId: true, image: true, jobTitle: true } },
+      project: {
+        select: {
+          id: true,
+          name: true,
+          clientId: true,
+          client: { select: { id: true, institution: true } },
+        },
+      },
+      clientTask: {
+        include: {
+          Client: {
+            select: {
+              id: true,
+              institution: true,
+              clientSubService: {
+                select: { subService: { select: { id: true, name: true } } },
               },
             },
           },
         },
-        transferHistory: {
-          include: {
-            fromAssignee: { select: { id: true, name: true, portfolioId: true } },
-            toAssignee: { select: { id: true, name: true, portfolioId: true } },
-            transferredBy: { select: { id: true, name: true } },
-          },
-          orderBy: { createdAt: "asc" },
-        },
       },
+      transferHistory: {
+        include: {
+          fromAssignee: { select: { id: true, name: true, portfolioId: true } },
+          toAssignee: { select: { id: true, name: true, portfolioId: true } },
+          transferredBy: { select: { id: true, name: true } },
+        },
+        orderBy: { createdAt: "asc" },
+      },
+    };
+
+    let tasks = await prisma.task.findMany({
+      where,
+      include,
       orderBy: { createdAt: "desc" },
     });
 
-    // Attach siblings to each task in-memory (0 extra DB queries)
-    const enriched = tasks.map((task) => {
-      if (!task.createdAt) return { ...task, siblings: [] };
-      const taskTime = task.createdAt instanceof Date ? task.createdAt.getTime() : new Date(task.createdAt).getTime();
-      const window = 5 * 60 * 1000;
-      const siblings = tasks
-        .filter((t) => {
-          if (t.id === task.id) return false;
-          if (t.description !== task.description || t.serviceInformation !== task.serviceInformation) return false;
-          if (!t.createdAt) return false;
-          const tTime = t.createdAt instanceof Date ? t.createdAt.getTime() : new Date(t.createdAt).getTime();
-          return Math.abs(tTime - taskTime) <= window;
-        })
-        .map((t) => ({
-          id: t.id,
-          assgineeId: t.assgineeId,
-          user: t.user ? { id: t.user.id, name: t.user.name } : null,
-        }));
-      return { ...task, siblings };
-    });
+    const statusFilter = String(req.query.status || "all").toLowerCase();
+    const search = req.query.search;
+    const now = new Date();
+    if (hasManagementFilters) {
+      if (search) {
+        tasks = tasks.filter((task) => taskMatchesManagementSearch(task, search));
+      }
+      tasks = filterTasksByManagementStatus(tasks, statusFilter, now);
+    }
 
-    res.json({ success: true, data: enriched });
+    const enriched = tasks.map((task) => enrichManagementTask(task, tasks));
+
+    res.json({ success: true, data: enriched, meta: hasManagementFilters ? { filtered: true, count: enriched.length } : undefined });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -273,15 +312,27 @@ export const createTask = async (req, res) => {
         extraTimeMinutes: data.extraTimeMinutes,
         currentStatus: "pending",
         currentProgress: data.progress ?? 0,
+        isCreate: true,
       });
       if (normalized.error) {
         return res.status(400).json({ success: false, error: normalized.error });
       }
 
+      const initialStatus = initialPersistedStatusForCreate(
+        {
+          progress: normalized.progress,
+          deadline: data.deadline ? new Date(data.deadline) : null,
+          startDate: data.startDate ? new Date(data.startDate) : null,
+          extraTimeMinutes: Math.max(0, Number(data.extraTimeMinutes) || 0),
+          features: Array.isArray(data.features) ? data.features : data.features,
+        },
+        new Date(),
+      );
+
       const taskData = {
         id: taskId,
         description: data.description,
-        status: normalized.status,
+        status: initialStatus,
         priority: data.priority?.toLowerCase(),
         department: data.department || "General",
         deadline: data.deadline ? new Date(data.deadline) : null,
@@ -834,47 +885,69 @@ export const getDashboardMetrics = async (req, res) => {
 export const getTasksReport = async (req, res) => {
   const { userIdForTaskReport, startDate, endDate } = req.query;
   try {
+    const { requestTaskStatusMaintenance } = await import("../../../lib/task-status-maintenance.js");
+    requestTaskStatusMaintenance(prisma);
     const scope = getScope(req);
     const from = startDate ? new Date(startDate) : undefined;
     const to = endDate ? new Date(endDate) : undefined;
-    const where = mergeWhere({ isPersonal: false }, taskBranchWhere(scope), {
-      assgineeId: userIdForTaskReport,
-    });
+    const useManagementWhere = [
+      "status",
+      "taskType",
+      "clientId",
+      "projectId",
+      "serviceId",
+      "employeeId",
+      "scheduledFrom",
+      "scheduledTo",
+      "search",
+    ].some((key) => req.query[key] && String(req.query[key]) !== "all");
+
+    let where = useManagementWhere
+      ? buildManagementTaskWhere(scope, { ...req.query, employeeId: req.query.employeeId || userIdForTaskReport })
+      : mergeWhere({ isPersonal: false }, taskBranchWhere(scope), userIdForTaskReport ? { assgineeId: userIdForTaskReport } : {});
+
     if (from || to) {
-      where.createdAt = { gte: from, lte: to };
+      where.createdAt = { ...(where.createdAt || {}), ...(from ? { gte: from } : {}), ...(to ? { lte: to } : {}) };
     }
 
-    const tasks = await prisma.task.findMany({
+    let tasks = await prisma.task.findMany({
       where,
-      include: {
-        clientTask: { include: { Client: { include: { clientSubService: { include: { subService: true } } } } } },
-      },
+      include: managementTaskInclude,
       orderBy: { createdAt: "desc" },
     });
 
-    const user = await prisma.staff.findUnique({ where: { id: userIdForTaskReport } });
+    const statusFilter = String(req.query.status || "all").toLowerCase();
+    const search = req.query.search;
+    const now = new Date();
+    if (search) tasks = tasks.filter((task) => taskMatchesManagementSearch(task, search));
+    tasks = filterTasksByManagementStatus(tasks, statusFilter, now);
+
+    const employeeId = userIdForTaskReport || req.query.employeeId;
+    const user = employeeId ? await prisma.staff.findUnique({ where: { id: String(employeeId) } }) : null;
 
     const data = {
       meta: {
-        userName: user?.name || "Unknown User",
+        userName: user?.name || "All Employees",
         userEmail: user?.email || "",
         period: startDate && endDate ? `From ${startDate} to ${endDate}` : "All Time",
         totalTasks: tasks.length,
-        completedTasks: tasks.filter((t) => t.status === "completed").length,
-        pending: tasks.filter((t) => t.status === "pending").length,
-        overdue: tasks.filter((t) => t.status === "overdue").length,
+        completedTasks: tasks.filter((t) => managementDisplayStatus(t, now) === "completed").length,
+        pending: tasks.filter((t) => managementDisplayStatus(t, now) === "pending").length,
+        overdue: tasks.filter((t) => managementDisplayStatus(t, now) === "overdue").length,
       },
-      tasks: tasks.map(t => ({
+      tasks: tasks.map((t) => ({
         id: t.id,
         description: t.description,
-        status: evaluateScheduledTask(t).status === "on_hold" ? "ON_HOLD" : t.status,
+        taskType: t.projectId ? "project" : "standalone",
+        project: t.project?.name || "N/A",
+        status: managementDisplayStatus(t, now),
         priority: t.priority,
         startDate: t.startDate,
         deadline: t.deadline,
         createdAt: t.createdAt,
-        client: t.clientTask[0]?.Client?.institution || "N/A",
-        progress: t.progress
-      }))
+        client: t.project?.client?.institution || t.clientTask[0]?.Client?.institution || "N/A",
+        progress: t.progress,
+      })),
     };
 
     res.json({ success: true, data });

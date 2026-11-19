@@ -81,10 +81,11 @@ export function paymentStatusLabel(value?: string | null) {
   const map: Record<string, string> = {
     PENDING: "Pending",
     UNPAID: "Unpaid",
-    PARTIAL: "Partially paid",
-    PARTIALLY_PAID: "Partially paid",
     PAID: "Paid",
-    OVERDUE: "Overdue",
+    PARTIAL: "Unpaid",
+    PARTIALLY_PAID: "Unpaid",
+    OVERDUE: "Unpaid",
   };
-  return value ? map[value] ?? value : "Pending";
+  const key = String(value || "PENDING").toUpperCase();
+  return map[key] ?? "Pending";
 }

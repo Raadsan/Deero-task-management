@@ -11,6 +11,13 @@ import {
   applyOpeningDebtToInvoice,
   ensureClientOpeningSchema,
 } from "./client-opening-balance.js";
+import {
+  presentInstallmentScheduleStatus,
+  presentInstallmentStatus,
+  storedInstallmentStatus,
+} from "./contract-installment-status.js";
+
+export { presentInstallmentStatus, presentInstallmentScheduleStatus };
 
 const INVOICEABLE_CONTRACT_STATUSES = new Set(["ACTIVE", "EXPIRED", "RENEWED"]);
 const invoiceTransactionOptions = { maxWait: 10000, timeout: 30000 };
@@ -50,24 +57,6 @@ function isoDay(value) {
   return zonedNowParts(value instanceof Date ? value : new Date(value)).date;
 }
 
-export function presentInstallmentStatus(installment, invoice, now = new Date()) {
-  const dueAmount = money(installment.dueAmount);
-  const paid = money(invoice ? invoice.paid_amount : installment.paidAmount);
-  if (dueAmount > 0 && paid + 0.005 >= dueAmount) return "PAID";
-  if (paid > 0.005) return "PARTIALLY_PAID";
-  if (!invoice || invoice.state === "cancelled") return "PENDING";
-  const dueAt = new Date(installment.dueDate).getTime();
-  if (!Number.isNaN(dueAt) && now.getTime() > dueAt) return "OVERDUE";
-  return "UNPAID";
-}
-
-function storedStatus(display) {
-  if (display === "PAID") return "PAID";
-  if (display === "PARTIALLY_PAID") return "PARTIAL";
-  if (display === "OVERDUE") return "OVERDUE";
-  return "PENDING";
-}
-
 async function loadInvoiceMap(sourceKeys) {
   if (!sourceKeys.length) return new Map();
   await ensureInstallmentLink();
@@ -91,7 +80,7 @@ export async function decorateContractInstallments(contracts) {
   for (const installment of installments) {
     const invoice = invoices.get(installment.sourceKey) || null;
     installment.invoiceId = invoice ? Number(invoice.id) : null;
-    installment.status = presentInstallmentStatus(installment, invoice, now);
+    installment.status = presentInstallmentScheduleStatus(installment, invoice, now);
   }
   return contracts;
 }
@@ -404,7 +393,7 @@ export async function syncInstallmentPayments(invoiceIds) {
   if (!ids.length) return;
   await ensureInstallmentLink();
   const invoices = await prisma.$queryRawUnsafe(
-    `SELECT id, installment_id, paid_amount, amount_total, amount_due, state
+    `SELECT id, installment_id, paid_amount, amount_total, amount_due, state, updated_at
      FROM customer_invoices
      WHERE id IN (${ids.map(() => "?").join(",")}) AND installment_id IS NOT NULL`,
     ...ids,
@@ -413,10 +402,24 @@ export async function syncInstallmentPayments(invoiceIds) {
   for (const invoice of invoices) {
     const installment = await prisma.clientInstallment.findFirst({ where: { sourceKey: invoice.installment_id } });
     if (!installment) continue;
-    const display = presentInstallmentStatus(installment, invoice.state === "cancelled" ? null : invoice, now);
+    const display = presentInstallmentScheduleStatus(
+      installment,
+      invoice.state === "cancelled" ? null : invoice,
+      now,
+    );
+    const paidAmount = money(invoice.paid_amount);
+    const data = {
+      paidAmount,
+      status: storedInstallmentStatus(display),
+    };
+    if (display === "PAID") {
+      data.paidAt = invoice.updated_at ? new Date(invoice.updated_at) : now;
+    } else if (paidAmount <= 0.005) {
+      data.paidAt = null;
+    }
     await prisma.clientInstallment.update({
       where: { id: installment.id },
-      data: { paidAmount: money(invoice.paid_amount), status: storedStatus(display) },
+      data,
     });
   }
 }

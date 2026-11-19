@@ -145,24 +145,30 @@ export function resolveTaskDisplayStatus(
 
   if (task.status === "transferred") return "transferred";
   const scheduled = evaluateScheduledTask(task, nowMs);
-  if (scheduled.scheduled && scheduled.status) return scheduled.status;
+  if (scheduled.onHold || scheduled.status === "on_hold") return "on_hold";
   const progress = Number(task.progress ?? 0);
   if (task.status === "completed" || progress >= 100) return "completed";
+  if (scheduled.scheduled && scheduled.status) return scheduled.status;
+
   const extraMinutes = Number(task.extraTimeMinutes ?? (Number(task.extraTimeHours ?? 0) * 60));
-  if (task.deadline && isTaskPastDeadline(task.deadline, extraMinutes)) return "overdue";
+  const start = task.startDate ? new Date(task.startDate) : null;
+  const end = task.deadline ? new Date(task.deadline) : null;
+  const moment = nowMs;
 
-  if (task.status === "overdue") {
-    return task.startDate && new Date(task.startDate).getTime() > Date.now()
-      ? "pending"
-      : "in_progress";
+  if (start && !Number.isNaN(start.getTime()) && moment < start.getTime()) {
+    return "pending";
   }
-
-  // If start date is reached, display as in_progress
-  if (task.startDate && new Date(task.startDate).getTime() <= Date.now()) {
+  if (end && isTaskPastDeadline(end, extraMinutes) && progress < 100) {
+    return "overdue";
+  }
+  if (start && !Number.isNaN(start.getTime()) && moment >= start.getTime()) {
     return "in_progress";
   }
 
-  return task.status || "pending";
+  const status = String(task.status || "pending").toLowerCase();
+  if (status === "in_progress") return "in_progress";
+  if (status === "overdue") return "overdue";
+  return "pending";
 }
 
 function scheduleRecord(features: unknown) {

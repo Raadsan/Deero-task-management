@@ -15,6 +15,7 @@ import { getDashboardSession } from "@/lib/apis/portfolioApi";
 import { getAllTasks } from "@/lib/apis/taskApi";
 import { getAllUsers } from "@/lib/apis/userApi";
 import { clientTypeLabel } from "@/lib/client-types";
+import { normalizeInstallmentScheduleStatus } from "@/lib/installment-schedule-status";
 import { resolveBranchLogoUrl } from "@/lib/portfolio-branding";
 import {
   exportCsv,
@@ -384,7 +385,12 @@ export default function DeeroReportPage({ type, chartsOnly = false }: { type: De
 
   const filteredPaymentRows = useMemo(() => {
     return paymentRows.filter((row) => {
-      if (statusFilter !== "all" && row.status !== statusFilter) return false;
+      if (
+        statusFilter !== "all"
+        && normalizeInstallmentScheduleStatus(row.status) !== statusFilter
+      ) {
+        return false;
+      }
       return inDateRange(row.dueDate, startDate, endDate);
     });
   }, [paymentRows, startDate, endDate, statusFilter]);
@@ -432,18 +438,20 @@ export default function DeeroReportPage({ type, chartsOnly = false }: { type: De
 
   const summaryItems: SummaryItem[] = useMemo(() => {
     if (type === "payments") {
-      const paid = filteredPaymentRows.filter((r) => r.status === "PAID");
-      const unpaid = filteredPaymentRows.filter((r) =>
-        ["PENDING", "OVERDUE"].includes(r.status),
+      const paid = filteredPaymentRows.filter(
+        (r) => normalizeInstallmentScheduleStatus(r.status) === "PAID",
       );
-      const partial = filteredPaymentRows.filter(
-        (r) => r.paidAmount > 0 && r.status !== "PAID",
+      const pending = filteredPaymentRows.filter(
+        (r) => normalizeInstallmentScheduleStatus(r.status) === "PENDING",
+      );
+      const unpaid = filteredPaymentRows.filter(
+        (r) => normalizeInstallmentScheduleStatus(r.status) === "UNPAID",
       );
       return [
         { label: "Total bills", value: filteredPaymentRows.length, icon: ReceiptText },
         { label: "Paid", value: paid.length, icon: BadgeCheck },
-        { label: "Unpaid", value: unpaid.length, icon: Timer },
-        { label: "Partial", value: partial.length, icon: CircleAlert },
+        { label: "Pending", value: pending.length, icon: Timer },
+        { label: "Unpaid", value: unpaid.length, icon: CircleAlert },
         {
           label: "Collected",
           value: filteredPaymentRows.reduce((s, r) => s + r.paidAmount, 0),
@@ -538,24 +546,26 @@ export default function DeeroReportPage({ type, chartsOnly = false }: { type: De
         byMonth[key].balance += row.balance;
       }
       const monthList = Object.values(byMonth).slice(0, 8);
-      const paidCount = filteredPaymentRows.filter((r) => r.status === "PAID").length;
-      const unpaidCount = filteredPaymentRows.filter((r) =>
-        ["PENDING", "OVERDUE"].includes(r.status),
+      const paidCount = filteredPaymentRows.filter(
+        (r) => normalizeInstallmentScheduleStatus(r.status) === "PAID",
       ).length;
-      const partialCount = filteredPaymentRows.filter(
-        (r) => r.paidAmount > 0 && r.status !== "PAID",
+      const pendingCount = filteredPaymentRows.filter(
+        (r) => normalizeInstallmentScheduleStatus(r.status) === "PENDING",
+      ).length;
+      const unpaidCount = filteredPaymentRows.filter(
+        (r) => normalizeInstallmentScheduleStatus(r.status) === "UNPAID",
       ).length;
       return {
         areaData: monthList.map((m) => ({ name: m.label, value: m.paid })),
         barData: [
           { name: "Paid", value: paidCount },
+          { name: "Pending", value: pendingCount },
           { name: "Unpaid", value: unpaidCount },
-          { name: "Partial", value: partialCount },
         ],
         pieData: [
           { name: "Paid", value: paidCount },
+          { name: "Pending", value: pendingCount },
           { name: "Unpaid", value: unpaidCount },
-          { name: "Partial", value: partialCount },
         ],
         lineData: monthList.slice(0, 6).map((m) => ({
           name: m.label,
@@ -728,9 +738,8 @@ export default function DeeroReportPage({ type, chartsOnly = false }: { type: De
       return [
         { value: "all", label: "All statuses" },
         { value: "PAID", label: "Paid" },
-        { value: "PARTIAL", label: "Partial" },
-        { value: "PENDING", label: "Unpaid" },
-        { value: "OVERDUE", label: "Overdue" },
+        { value: "PENDING", label: "Pending" },
+        { value: "UNPAID", label: "Unpaid" },
       ];
     }
     if (type === "clients") {

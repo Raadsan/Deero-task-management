@@ -815,6 +815,7 @@ model ClientInstallment {
   dueDate     DateTime
   dueAmount   Float
   paidAmount  Float             @default(0)
+  paidAt      DateTime?
   status      InstallmentStatus @default(PENDING)
   notes       String?           @db.Text
   clientId           String

@@ -17,7 +17,7 @@ import { exportExcel, exportPdf, printReport, type ReportSection } from "@/lib/r
 import { cn } from "@/lib/utils";
 import { Download, FileText, Printer } from "lucide-react";
 import { ReactNode } from "react";
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import toast from "react-hot-toast";
 
 export const STATUS_LABEL: Record<string, string> = {
@@ -133,6 +133,83 @@ export function ReportTable({
         </TableBody>
       </Table>
     </div>
+  );
+}
+
+export function EmployeeWorkloadChart({
+  data,
+}: {
+  data: Array<{ name: string; total: number; completed: number; pending: number; inProgress: number; overdue: number }>;
+}) {
+  if (!data.length) return <p className="px-4 py-6 text-xs text-zinc-500">No workload data for this period.</p>;
+  return (
+    <div className="h-64 px-2">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 48 }}>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e4e4e7" />
+          <XAxis dataKey="name" tick={{ fontSize: 10 }} angle={-25} textAnchor="end" height={60} interval={0} />
+          <YAxis allowDecimals={false} tick={{ fontSize: 11 }} width={32} />
+          <Tooltip />
+          <Legend wrapperStyle={{ fontSize: 11 }} />
+          <Bar dataKey="completed" stackId="a" fill={STATUS_COLOR.Completed} name="Completed" />
+          <Bar dataKey="inProgress" stackId="a" fill={STATUS_COLOR["In Progress"]} name="In Progress" />
+          <Bar dataKey="pending" stackId="a" fill={STATUS_COLOR.Pending} name="Pending" />
+          <Bar dataKey="overdue" stackId="a" fill={STATUS_COLOR.Overdue} name="Overdue" />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+export function TaskTypeComparisonChart({
+  project,
+  standalone,
+}: {
+  project: { total: number; pending: number; inProgress: number; completed: number; overdue: number; onHold: number };
+  standalone: { total: number; pending: number; inProgress: number; completed: number; overdue: number; onHold: number };
+}) {
+  const data = [
+  { type: "Project-Based", total: project.total, pending: project.pending, inProgress: project.inProgress, completed: project.completed, overdue: project.overdue, onHold: project.onHold },
+  { type: "Standalone", total: standalone.total, pending: standalone.pending, inProgress: standalone.inProgress, completed: standalone.completed, overdue: standalone.overdue, onHold: standalone.onHold },
+  ];
+  if (!project.total && !standalone.total) return <p className="px-4 py-6 text-xs text-zinc-500">No tasks in this period.</p>;
+  return (
+    <div className="h-56 px-2">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e4e4e7" />
+          <XAxis dataKey="type" tick={{ fontSize: 11 }} />
+          <YAxis allowDecimals={false} tick={{ fontSize: 11 }} width={32} />
+          <Tooltip />
+          <Legend wrapperStyle={{ fontSize: 11 }} />
+          <Bar dataKey="completed" stackId="a" fill={STATUS_COLOR.Completed} name="Completed" />
+          <Bar dataKey="inProgress" stackId="a" fill={STATUS_COLOR["In Progress"]} name="In Progress" />
+          <Bar dataKey="pending" stackId="a" fill={STATUS_COLOR.Pending} name="Pending" />
+          <Bar dataKey="overdue" stackId="a" fill={STATUS_COLOR.Overdue} name="Overdue" />
+          <Bar dataKey="onHold" stackId="a" fill={STATUS_COLOR["On Hold"]} name="On Hold" />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+export function StatusDistributionTable({
+  items,
+}: {
+  items: Array<{ status: string; count: number; percent: number }>;
+}) {
+  if (!items.some((item) => item.count > 0)) return <p className="text-xs text-zinc-500">No status data.</p>;
+  return (
+    <ul className="space-y-2 text-xs text-zinc-600">
+      {items.map((item) => (
+        <li key={item.status} className="flex items-center justify-between gap-3 border-b border-zinc-50 pb-2 last:border-0">
+          <span className="font-medium text-zinc-800">{statusLabel(item.status)}</span>
+          <span className="tabular-nums text-zinc-500">
+            {item.count} <span className="text-zinc-400">({item.percent}%)</span>
+          </span>
+        </li>
+      ))}
+    </ul>
   );
 }
 

@@ -299,19 +299,6 @@ export default function TaskForm({
 
   useEffect(() => {
     if (!isCreate) return;
-    if (isDeadlinePast) {
-      if (watchedStatus === TaskStatus.pending || watchedStatus === TaskStatus.in_progress) {
-        setValue("status", TaskStatus.overdue, { shouldValidate: true });
-      }
-    } else {
-      if (watchedStatus !== TaskStatus.pending) {
-        setValue("status", TaskStatus.pending, { shouldValidate: true });
-      }
-    }
-  }, [isCreate, isDeadlinePast, watchedStatus, setValue]);
-
-  useEffect(() => {
-    if (!isCreate) return;
     if (watchedStatus === TaskStatus.completed && Number(watchedProgress) !== 100) {
       setValue("progress", 100, { shouldValidate: true });
     }
@@ -518,7 +505,7 @@ export default function TaskForm({
             assgineeId: targetAssignees[0],
             assigneeIds: targetAssignees,
             description: createData.description,
-            status: createData.status,
+            status: TaskStatus.pending,
             department: createData.department,
             priority: createData.priority,
             supervisor: createData.supervisor?.trim() || "",

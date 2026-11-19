@@ -1,5 +1,6 @@
 import prisma from "../config/db.js";
 import { decorateContractInstallments } from "./contract-invoice-scheduler.js";
+import { installmentScheduleDisplayLabel } from "./contract-installment-status.js";
 
 const MILESTONE_LABELS = {
   CONTRACT_START: "Contract Start",
@@ -42,8 +43,7 @@ function milestoneLabel(code) {
 }
 
 function formatStatus(status) {
-  if (!status) return "PENDING";
-  return String(status).replace(/_/g, " ").toUpperCase();
+  return installmentScheduleDisplayLabel(status);
 }
 
 function unavailable(message = "Payment Structure Not Available") {

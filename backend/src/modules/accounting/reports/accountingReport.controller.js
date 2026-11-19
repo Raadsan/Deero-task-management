@@ -112,9 +112,42 @@ const balancedPostedEntryFilter = (companyId, entryFilter, unbalancedIds) => ({
   ...(unbalancedIds.length ? { id: { notIn: unbalancedIds } } : {}),
 });
 
+const classifyPnLBucket = (account) => {
+  const group = String(account.account_types?.internal_group || '').toLowerCase();
+  const typeName = String(account.account_types?.name || '').toLowerCase();
+  const name = String(account.name || '').toLowerCase();
+  const code = String(account.code || '');
+  const text = `${typeName} ${name}`;
+
+  if (group === 'income') {
+    if (text.includes('other income') || code.startsWith('49')) return 'other_income';
+    return 'revenue';
+  }
+  if (group === 'expense') {
+    if (
+      text.includes('cost of')
+      || text.includes('cogs')
+      || text.includes('direct cost')
+      || code.startsWith('51')
+    ) {
+      return 'cost_of_sales';
+    }
+    if (text.includes('other expense') || code.startsWith('59')) return 'other_expense';
+    return 'operating_expense';
+  }
+  return null;
+};
+
 const computePnLFromGroups = (result, accounts) => {
-  let totalIncome = 0;
-  let totalExpense = 0;
+  const buckets = {
+    revenue: { total: 0, accounts: [] },
+    cost_of_sales: { total: 0, accounts: [] },
+    operating_expense: { total: 0, accounts: [] },
+    other_income: { total: 0, accounts: [] },
+    other_expense: { total: 0, accounts: [] },
+  };
+  let legacyIncome = 0;
+  let legacyExpense = 0;
   const incomeAccounts = [];
   const expenseAccounts = [];
 
@@ -124,30 +157,142 @@ const computePnLFromGroups = (result, accounts) => {
     const debit = Number(item._sum.debit || 0);
     const credit = Number(item._sum.credit || 0);
     const balance = signedBalance(debit, credit, account.account_types.normal_balance);
+    if (Math.abs(balance) <= EPS) continue;
     const entry = {
       account_id: account.id,
       account_code: account.code,
       account_name: account.name,
       balance: round2(balance),
     };
+    const bucketKey = classifyPnLBucket(account);
     if (account.account_types.internal_group === 'income') {
-      totalIncome += balance;
+      legacyIncome += balance;
       incomeAccounts.push(entry);
+      if (bucketKey && buckets[bucketKey]) {
+        buckets[bucketKey].total += balance;
+        buckets[bucketKey].accounts.push(entry);
+      }
     } else if (account.account_types.internal_group === 'expense') {
-      totalExpense += balance;
+      legacyExpense += balance;
       expenseAccounts.push(entry);
+      if (bucketKey && buckets[bucketKey]) {
+        buckets[bucketKey].total += balance;
+        buckets[bucketKey].accounts.push(entry);
+      }
     }
   }
 
-  incomeAccounts.sort((a, b) => String(a.account_code).localeCompare(String(b.account_code)));
-  expenseAccounts.sort((a, b) => String(a.account_code).localeCompare(String(b.account_code)));
+  const sortRows = (rows) =>
+    rows.sort((a, b) => String(a.account_code).localeCompare(String(b.account_code)));
+  sortRows(incomeAccounts);
+  sortRows(expenseAccounts);
+  for (const bucket of Object.values(buckets)) {
+    sortRows(bucket.accounts);
+    bucket.total = round2(bucket.total);
+  }
+
+  const totalRevenue = buckets.revenue.total + buckets.other_income.total;
+  const totalExpense =
+    buckets.cost_of_sales.total
+    + buckets.operating_expense.total
+    + buckets.other_expense.total;
+  const grossProfit = round2(buckets.revenue.total - buckets.cost_of_sales.total);
 
   return {
-    income: { total: round2(totalIncome), accounts: incomeAccounts },
-    expense: { total: round2(totalExpense), accounts: expenseAccounts },
-    net_income: round2(totalIncome - totalExpense),
+    income: { total: round2(legacyIncome), accounts: incomeAccounts },
+    expense: { total: round2(legacyExpense), accounts: expenseAccounts },
+    revenue: buckets.revenue,
+    cost_of_sales: buckets.cost_of_sales,
+    operating_expenses: buckets.operating_expense,
+    other_income: buckets.other_income,
+    other_expenses: buckets.other_expense,
+    gross_profit: grossProfit,
+    net_income: round2(totalRevenue - totalExpense),
   };
 };
+
+async function groupJournalSumsByAccount(companyId, entryFilter, unbalancedIds) {
+  const postedFilter = {
+    company_id: companyId,
+    state: 'posted',
+    ...entryFilter,
+    ...(unbalancedIds.length ? { id: { notIn: unbalancedIds } } : {}),
+  };
+  return prisma.journal_items.groupBy({
+    by: ['account_id'],
+    where: { journal_entries: postedFilter },
+    _sum: { debit: true, credit: true },
+  });
+}
+
+async function resolveReportPeriodStart(periodId) {
+  if (!periodId) return null;
+  const period = await prisma.fiscal_periods.findUnique({
+    where: { id: parseInt(periodId, 10) },
+    select: { start_date: true },
+  });
+  return period?.start_date ? parseDateOnly(period.start_date, false) : null;
+}
+
+function mergeDebitCreditGroups(...groupLists) {
+  const merged = new Map();
+  for (const groups of groupLists) {
+    for (const row of groups || []) {
+      const prev = merged.get(row.account_id) || { debit: 0, credit: 0 };
+      merged.set(row.account_id, {
+        debit: prev.debit + Number(row._sum?.debit || 0),
+        credit: prev.credit + Number(row._sum?.credit || 0),
+      });
+    }
+  }
+  return merged;
+}
+
+async function loadPartnerNameMap(items) {
+  const customerIds = new Set();
+  const vendorIds = new Set();
+  for (const item of items) {
+    if (item.partner_type === 'customer' && item.partner_id) customerIds.add(item.partner_id);
+    if (item.partner_type === 'vendor' && item.partner_id) vendorIds.add(item.partner_id);
+  }
+  const [customers, vendors] = await Promise.all([
+    customerIds.size
+      ? prisma.customers.findMany({
+        where: { id: { in: [...customerIds] } },
+        select: { id: true, name: true },
+      })
+      : [],
+    vendorIds.size
+      ? prisma.vendors.findMany({
+        where: { id: { in: [...vendorIds] } },
+        select: { id: true, name: true },
+      })
+      : [],
+  ]);
+  const map = new Map();
+  for (const row of customers) map.set(`customer:${row.id}`, row.name);
+  for (const row of vendors) map.set(`vendor:${row.id}`, row.name);
+  return map;
+}
+
+function trialBalanceRowFromSums(account, sums) {
+  const debit = Number(sums.debit || 0);
+  const credit = Number(sums.credit || 0);
+  const rawNet = debit - credit;
+  const balance = signedBalance(debit, credit, account.account_types?.normal_balance);
+  return {
+    account_id: account.id,
+    account_code: account.code,
+    account_name: account.name,
+    account_type: account.account_types?.name || account.account_types?.internal_group,
+    normal_balance: account.account_types?.normal_balance,
+    total_debit: round2(debit),
+    total_credit: round2(credit),
+    debit: rawNet > EPS ? round2(rawNet) : 0,
+    credit: rawNet < -EPS ? round2(Math.abs(rawNet)) : 0,
+    balance: round2(balance),
+  };
+}
 
 // GET General Ledger
 export const getGeneralLedger = async (req, res) => {
@@ -158,7 +303,7 @@ export const getGeneralLedger = async (req, res) => {
     const entryFilter = getEntryFilter(start_date, end_date, period_id);
     if (journal_id) entryFilter.journal_id = parseInt(journal_id, 10);
 
-    const unbalanced = await findUnbalancedPostedEntryIds(companyId, entryFilter);
+    const unbalanced = await findUnbalancedPostedEntryIds(companyId, {});
     const unbalancedIds = unbalanced.map((u) => u.entry_id);
     const postedFilter = balancedPostedEntryFilter(companyId, entryFilter, unbalancedIds);
 
@@ -176,16 +321,25 @@ export const getGeneralLedger = async (req, res) => {
         { sequence: 'asc' },
         { id: 'asc' },
       ],
-      include: {
+      select: {
+        id: true,
+        account_id: true,
+        entry_id: true,
+        debit: true,
+        credit: true,
+        label: true,
+        partner_type: true,
+        partner_id: true,
         journal_entries: {
           select: {
             id: true,
+            journal_id: true,
             entry_date: true,
             entry_number: true,
             reference: true,
             narration: true,
             source_type: true,
-            journals: { select: { id: true, code: true, name: true } },
+            journals: { select: { id: true, code: true, name: true, journal_type: true } },
           },
         },
         chart_of_accounts: {
@@ -200,8 +354,10 @@ export const getGeneralLedger = async (req, res) => {
       },
     });
 
-    // Opening balances (activity before start_date) when using a date range
-    const start = !period_id && start_date ? parseDateOnly(start_date, false) : null;
+    const partnerNames = await loadPartnerNameMap(items);
+
+    const periodStart = period_id && !start_date ? await resolveReportPeriodStart(period_id) : null;
+    const start = start_date ? parseDateOnly(start_date, false) : periodStart;
     let openingByAccount = new Map();
     if (start) {
       const openingWhere = {
@@ -263,8 +419,14 @@ export const getGeneralLedger = async (req, res) => {
         group.normal_balance
       );
       const entry = item.journal_entries;
+      const partnerKey = item.partner_type && item.partner_id
+        ? `${item.partner_type}:${item.partner_id}`
+        : null;
       group.lines.push({
         id: item.id,
+        entry_id: entry?.id ?? item.entry_id,
+        journal_id: entry?.journal_id ?? entry?.journals?.id ?? null,
+        journal_type: entry?.journals?.journal_type || null,
         date: entry?.entry_date,
         journal: entry?.journals?.name || null,
         journal_code: entry?.journals?.code || null,
@@ -273,6 +435,9 @@ export const getGeneralLedger = async (req, res) => {
         source: sourceLabel(entry?.source_type),
         source_type: entry?.source_type,
         description: item.label || entry?.narration || null,
+        partner_type: item.partner_type || null,
+        partner_id: item.partner_id || null,
+        partner_name: partnerKey ? partnerNames.get(partnerKey) || null : null,
         debit: round2(debit),
         credit: round2(credit),
         running_balance: round2(group.closing_balance),
@@ -388,19 +553,26 @@ export const getTrialBalance = async (req, res) => {
     const companyId = parseInt(company_id, 10);
     const entryFilter = getEntryFilter(start_date, end_date, period_id);
 
-    const unbalanced = await findUnbalancedPostedEntryIds(companyId, entryFilter);
-    const unbalancedIds = unbalanced.map((u) => u.entry_id);
-    const postedFilter = balancedPostedEntryFilter(companyId, entryFilter, unbalancedIds);
+    const periodStart = period_id && !start_date ? await resolveReportPeriodStart(period_id) : null;
+    const rangeStart = start_date ? parseDateOnly(start_date, false) : periodStart;
 
-    const where = { journal_entries: postedFilter };
-    const result = await prisma.journal_items.groupBy({
-      by: ['account_id'],
-      where,
-      _sum: { debit: true, credit: true },
-    });
+    const unbalanced = await findUnbalancedPostedEntryIds(companyId, {});
+    const unbalancedIds = unbalanced.map((u) => u.entry_id);
+
+    const periodGroups = await groupJournalSumsByAccount(companyId, entryFilter, unbalancedIds);
+    let openingGroups = [];
+    if (rangeStart) {
+      openingGroups = await groupJournalSumsByAccount(
+        companyId,
+        { entry_date: { lt: rangeStart } },
+        unbalancedIds,
+      );
+    }
+    const mergedSums = mergeDebitCreditGroups(periodGroups, openingGroups);
+    const accountIdList = [...mergedSums.keys()];
 
     const accounts = await prisma.chart_of_accounts.findMany({
-      where: { id: { in: result.map((r) => r.account_id) }, company_id: companyId },
+      where: { id: { in: accountIdList }, company_id: companyId },
       select: {
         id: true,
         code: true,
@@ -410,31 +582,15 @@ export const getTrialBalance = async (req, res) => {
       },
     });
 
-    const data = result
-      .map((item) => {
-        const account = accounts.find((a) => a.id === item.account_id);
+    const data = accountIdList
+      .map((accountId) => {
+        const account = accounts.find((a) => a.id === accountId);
         if (!account) return null;
-        const debit = Number(item._sum.debit || 0);
-        const credit = Number(item._sum.credit || 0);
-        const rawNet = debit - credit; // classical TB uses raw net, not signed by normal balance
-        const balance = signedBalance(debit, credit, account.account_types?.normal_balance);
-        const debitBalance = rawNet > EPS ? round2(rawNet) : 0;
-        const creditBalance = rawNet < -EPS ? round2(Math.abs(rawNet)) : 0;
-        return {
-          account_id: item.account_id,
-          account_code: account.code,
-          account_name: account.name,
-          account_type: account.account_types?.name || account.account_types?.internal_group,
-          normal_balance: account.account_types?.normal_balance,
-          total_debit: round2(debit),
-          total_credit: round2(credit),
-          debit: debitBalance,
-          credit: creditBalance,
-          balance: round2(balance),
-        };
+        const row = trialBalanceRowFromSums(account, mergedSums.get(accountId));
+        if (Math.abs(row.debit) <= EPS && Math.abs(row.credit) <= EPS) return null;
+        return row;
       })
       .filter(Boolean)
-      .filter((row) => Math.abs(row.debit) > EPS || Math.abs(row.credit) > EPS)
       .sort((a, b) => String(a.account_code).localeCompare(String(b.account_code)));
 
     const totalDebit = round2(data.reduce((s, r) => s + r.debit, 0));

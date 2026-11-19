@@ -995,18 +995,34 @@ export const post = async (req, res) => {
       })
       if (claimedInvoice.count !== 1) throw inputError('Only draft invoices can be posted')
 
+      const invoiceNotes = parseInvoiceNotes(invoice.notes)
+      const installmentNumber = Number(invoiceNotes?.installment_number || 0) || 1
+      const { applyOpeningDebtToInvoice } = await import('../../../../lib/client-opening-balance.js')
+      await applyOpeningDebtToInvoice(
+        tx,
+        {
+          ...invoice,
+          state: 'posted',
+          journal_id: invoice.journal_id,
+          receivable_account_id: invoice.receivable_account_id,
+        },
+        installmentNumber,
+        postedAt,
+      )
+
       // Auto-apply real posted customer advances (unallocated receipts). Never invent advances from quotation text.
-      const postedInvoice = { ...invoice, state: 'posted', payment_state: 'not_paid', paid_amount: 0, amount_due: invoice.amount_total }
-      const appliedAdvance = await applyCustomerAdvances(tx, postedInvoice, postedAt)
+      const postedInvoice = await tx.customer_invoices.findUnique({ where: { id: invoiceId } })
+      const postedInvoiceView = { ...postedInvoice, state: 'posted', payment_state: postedInvoice.payment_state, paid_amount: Number(postedInvoice.paid_amount || 0), amount_due: Number(postedInvoice.amount_due ?? postedInvoice.amount_total) }
+      const appliedAdvance = await applyCustomerAdvances(tx, postedInvoiceView, postedAt)
       const { applyOpeningCreditToInvoice } = await import('../../../../lib/client-opening-balance.js')
       const appliedOpening = await applyOpeningCreditToInvoice(tx, {
-        ...postedInvoice,
-        amount_due: Math.max(0, Math.round((Number(invoice.amount_total) - Number(appliedAdvance || 0)) * 100) / 100),
+        ...postedInvoiceView,
+        amount_due: Math.max(0, Math.round((Number(postedInvoiceView.amount_total) - Number(appliedAdvance || 0)) * 100) / 100),
       }, postedAt)
       const appliedCredit = Math.round((Number(appliedAdvance || 0) + Number(appliedOpening || 0)) * 100) / 100
       if (appliedCredit > 0.005) {
         const paidAmount = Math.round(appliedCredit * 100) / 100
-        const amountDue = Math.max(0, Math.round((Number(invoice.amount_total) - paidAmount) * 100) / 100)
+        const amountDue = Math.max(0, Math.round((Number(postedInvoiceView.amount_total) - paidAmount) * 100) / 100)
         await tx.customer_invoices.update({
           where: { id: invoiceId },
           data: {

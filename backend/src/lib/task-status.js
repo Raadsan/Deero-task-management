@@ -23,25 +23,30 @@ export async function syncOverdueTasks(prisma) {
 
   overdueSyncPromise = (async () => {
     const now = new Date();
-    await Promise.all([
-      // Mark as overdue: deadline passed AND no extra time
-      prisma.task.updateMany({
+    try {
+      await prisma.task.updateMany({
         where: {
           status: { in: ACTIVE_STATUSES },
           deadline: { not: null, lt: now },
           extraTimeMinutes: { lte: 0 },
+          OR: [{ startDate: null }, { startDate: { lte: now } }],
         },
         data: { status: "overdue" },
-      }),
-      // Mark as overdue: deadline+extraTime window also expired
-      prisma.$executeRawUnsafe(
+      });
+      await prisma.$executeRawUnsafe(
         `UPDATE tasks SET status = 'overdue'
          WHERE status IN ('pending','in_progress','overdue')
            AND deadline IS NOT NULL
            AND extraTimeMinutes > 0
+           AND (startDate IS NULL OR startDate <= NOW())
            AND DATE_ADD(deadline, INTERVAL extraTimeMinutes MINUTE) < NOW()`,
-      ).catch(() => { }), // non-fatal if raw fails on non-MySQL
-    ]);
+      ).catch(() => { });
+    } catch (error) {
+      const message = String(error?.message || "");
+      if (!message.includes("Lock wait timeout") && !message.includes("1205")) {
+        throw error;
+      }
+    }
     lastOverdueSyncAt = Date.now();
   })();
 
@@ -60,14 +65,32 @@ export function normalizeTaskWriteStatus({
   extraTimeMinutes,
   currentStatus,
   currentProgress,
+  isCreate = false,
 }) {
   const nextProgress =
     progress !== undefined ? Number(progress) : Number(currentProgress ?? 0);
   let nextStatus = (status ?? currentStatus ?? "pending").toLowerCase();
   const nextDeadline = deadline ? new Date(deadline) : null;
   const nextStartDate = startDate ? new Date(startDate) : null;
+  const now = new Date();
   const hasActiveDeadlineExtension =
     nextDeadline && !isTaskPastDeadline(nextDeadline, extraTimeMinutes);
+
+  if (isCreate) {
+    if (nextProgress >= 100) {
+      return { status: "completed", progress: 100 };
+    }
+    if (nextStartDate && !Number.isNaN(nextStartDate.getTime()) && nextStartDate > now) {
+      return { status: "pending", progress: nextProgress };
+    }
+    if (nextDeadline && isTaskPastDeadline(nextDeadline, extraTimeMinutes)) {
+      return { status: "overdue", progress: nextProgress };
+    }
+    if (nextStartDate && !Number.isNaN(nextStartDate.getTime()) && nextStartDate <= now) {
+      return { status: "in_progress", progress: nextProgress };
+    }
+    return { status: "pending", progress: nextProgress };
+  }
 
   if (
     currentStatus === "overdue" &&

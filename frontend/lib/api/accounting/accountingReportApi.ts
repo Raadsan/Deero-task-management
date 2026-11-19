@@ -15,9 +15,13 @@ const reportParams = (filters: AccountingReportFilters) => ({
 });
 
 export const accountingReportApi = {
-  getGeneralLedger: async (filters: AccountingReportFilters & { accountId?: number }) => {
+  getGeneralLedger: async (filters: AccountingReportFilters & { accountId?: number; journalId?: number }) => {
     const response = await api.get('/accounting/reports/general-ledger', {
-      params: { ...reportParams(filters), account_id: filters.accountId },
+      params: {
+        ...reportParams(filters),
+        account_id: filters.accountId,
+        journal_id: filters.journalId,
+      },
     });
     return response.data.data;
   },

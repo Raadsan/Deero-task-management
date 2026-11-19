@@ -438,7 +438,7 @@ export default function ContractForm({
             ) : null}
           </div>
         </div>
-
+ 
         {isEndless && paymentTerms && paymentTerms !== "CUSTOM" ? (
           <div>
             <FieldLabel>Billing period *</FieldLabel>

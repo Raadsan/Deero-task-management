@@ -1,4 +1,5 @@
 import { evaluateScheduledTask, zonedNowParts } from "./scheduled-task-window.js";
+import { evaluateTaskLifecycle } from "./task-lifecycle.js";
 
 export function isoDay(value) {
   if (!value) return "";
@@ -18,27 +19,28 @@ export function normName(value) {
   return String(value || "").trim().toLowerCase();
 }
 
-export function reportStatus(task) {
-  const evaluation = evaluateScheduledTask(task, new Date());
-  if (evaluation?.scheduled && evaluation.status) {
-    if (evaluation.status === "on_hold") return "ON_HOLD";
-    if (evaluation.status === "completed") return "COMPLETED";
-    if (evaluation.status === "overdue") return "OVERDUE";
-    if (evaluation.status === "in_progress") return "IN_PROGRESS";
-    return "PENDING";
-  }
-  const stored = String(task?.features?.projectStatus || "").toUpperCase();
-  const base = String(task?.status || "").toLowerCase();
+const LIFECYCLE_TO_REPORT = {
+  pending: "PENDING",
+  in_progress: "IN_PROGRESS",
+  completed: "COMPLETED",
+  overdue: "OVERDUE",
+  on_hold: "ON_HOLD",
+};
+
+export function reportStatus(task, now = new Date()) {
+  const features = task?.features;
+  const stored = String(typeof features === "object" && features ? features.projectStatus || "" : "").toUpperCase();
   if (stored === "CANCELLED" || stored === "REJECTED") return stored;
-  if (base === "completed" || stored === "COMPLETED") return "COMPLETED";
-  if (base === "overdue" || stored === "OVERDUE") return "OVERDUE";
-  if (stored === "ON_HOLD" || task?.features?.holdActive) return "ON_HOLD";
-  if (stored === "UNDER_REVIEW" || base === "in_progress" || stored === "IN_PROGRESS") return "IN_PROGRESS";
-  return "PENDING";
+  const life = evaluateTaskLifecycle(task, now);
+  return LIFECYCLE_TO_REPORT[life.displayStatus] || "PENDING";
 }
 
 export function isQuantityComplete(task) {
   return task.status === "COMPLETED" && Number(task.progress) >= 100;
+}
+
+function taskKind(task) {
+  return task?.projectId ? "project" : "standalone";
 }
 
 export function countStatuses(tasks) {
@@ -141,10 +143,18 @@ function unscheduledBelongsToPeriod(task, project, query, scope, today) {
 
 export function taskInReport(task, project, query, today = todayIso()) {
   if (task.status === "CANCELLED" || task.status === "REJECTED") return false;
+  const kind = taskKind(task);
+  if (query.taskType === "project" && kind !== "project") return false;
+  if (query.taskType === "standalone" && kind !== "standalone") return false;
   if (query.status && task.status !== query.status) return false;
   if (query.employeeId && task.assigneeId !== query.employeeId) return false;
   if (query.projectId && task.projectId !== query.projectId) return false;
   if (query.clientId && task.clientId !== query.clientId) return false;
+  if (query.priority && query.priority !== "all") {
+    const wanted = String(query.priority).toLowerCase();
+    const actual = String(task.priority || "normal").toLowerCase();
+    if (actual !== wanted) return false;
+  }
   if (query.serviceId && task.serviceId !== query.serviceId && normName(task.serviceName) !== normName(query.serviceName)) return false;
   if (query.subServiceId && task.subServiceId !== query.subServiceId && normName(task.subServiceName) !== normName(query.subServiceName)) return false;
 

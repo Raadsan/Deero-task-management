@@ -3,6 +3,102 @@ import { formatDate, formatPhoneNumber } from "@/lib/utils";
 
 import { API_URL } from "./config";
 
+export type ManagementTaskFilters = {
+  status?: string;
+  taskType?: string;
+  clientId?: string;
+  projectId?: string;
+  serviceId?: string;
+  employeeId?: string;
+  scheduledFrom?: string;
+  scheduledTo?: string;
+  search?: string;
+};
+
+function mapTaskRow(task: any): Task {
+  return {
+    ...task,
+    progressNotes: (() => {
+      if (Array.isArray(task.progressNotes)) return task.progressNotes;
+      if (typeof task.progressNotes === "string" && task.progressNotes.trim()) {
+        try {
+          const parsed = JSON.parse(task.progressNotes);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      }
+      return [];
+    })(),
+    assignedTo: task.user?.id
+      ? {
+          id: task.user.id,
+          name: task.user.name ?? "Unassigned",
+          portfolioId: task.user.portfolioId ?? null,
+          image: task.user.image ?? null,
+          jobTitle: task.user.jobTitle ?? null,
+        }
+      : { id: "", name: "Unassigned", portfolioId: null, image: null, jobTitle: null },
+    isPersonal: Boolean(task.isPersonal),
+    projectId: task.projectId ?? null,
+    project: task.project
+      ? {
+          id: task.project.id,
+          name: task.project.name,
+          clientId: task.project.clientId,
+          client: task.project.client,
+        }
+      : null,
+    taskType: task.taskType ?? (task.projectId ? "project" : "standalone"),
+    displayStatus: task.displayStatus,
+    siblings: (task.siblings ?? []).map((s: any) => ({
+      id: s.id,
+      assgineeId: s.assgineeId,
+      user: s.user,
+    })),
+    institutions: (task.clientTask ?? []).map((item: any) => ({
+      ...item.Client,
+      services:
+        item.Client?.clientSubService
+          ?.map((entry: any) => entry.subService?.name)
+          .filter(Boolean) ?? [],
+    })),
+  } as Task;
+}
+
+export async function getManagementTasksClient(
+  filters: ManagementTaskFilters = {},
+): Promise<ActionResponse<Task[]>> {
+  try {
+    const params = new URLSearchParams();
+    params.set("management", "1");
+    if (filters.status && filters.status !== "all") params.set("status", filters.status);
+    if (filters.taskType && filters.taskType !== "all") params.set("taskType", filters.taskType);
+    if (filters.clientId && filters.clientId !== "all") params.set("clientId", filters.clientId);
+    if (filters.projectId && filters.projectId !== "all") params.set("projectId", filters.projectId);
+    if (filters.serviceId && filters.serviceId !== "all") params.set("serviceId", filters.serviceId);
+    if (filters.employeeId && filters.employeeId !== "all") params.set("employeeId", filters.employeeId);
+    if (filters.scheduledFrom) params.set("scheduledFrom", filters.scheduledFrom);
+    if (filters.scheduledTo) params.set("scheduledTo", filters.scheduledTo);
+    if (filters.search?.trim()) params.set("search", filters.search.trim());
+
+    const response = await fetch(`${API_URL}/api/tasks?${params.toString()}`, {
+      credentials: "include",
+      cache: "no-store",
+    });
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+      return { success: false, errors: { message: result.error || "Failed to fetch tasks" } };
+    }
+    return {
+      success: true,
+      data: result.data.map(mapTaskRow),
+    };
+  } catch {
+    return { success: false, errors: { message: "Failed to fetch tasks" } };
+  }
+}
+
 export async function getAllTasksClient(): Promise<ActionResponse<Task[]>> {
   try {
     const response = await fetch(`${API_URL}/api/tasks`, {
@@ -16,43 +112,7 @@ export async function getAllTasksClient(): Promise<ActionResponse<Task[]>> {
 
     return {
       success: true,
-      data: result.data.map((task: any) => ({
-        ...task,
-        progressNotes: (() => {
-          if (Array.isArray(task.progressNotes)) return task.progressNotes;
-          if (typeof task.progressNotes === "string" && task.progressNotes.trim()) {
-            try {
-              const parsed = JSON.parse(task.progressNotes);
-              return Array.isArray(parsed) ? parsed : [];
-            } catch {
-              return [];
-            }
-          }
-          return [];
-        })(),
-        assignedTo: task.user?.id
-          ? {
-              id: task.user.id,
-              name: task.user.name ?? "Unassigned",
-              portfolioId: task.user.portfolioId ?? null,
-              image: task.user.image ?? null,
-              jobTitle: task.user.jobTitle ?? null,
-            }
-          : { id: "", name: "Unassigned", portfolioId: null, image: null, jobTitle: null },
-        isPersonal: Boolean(task.isPersonal),
-        siblings: (task.siblings ?? []).map((s: any) => ({
-          id: s.id,
-          assgineeId: s.assgineeId,
-          user: s.user,
-        })),
-        institutions: (task.clientTask ?? []).map((item: any) => ({
-          ...item.Client,
-          services:
-            item.Client?.clientSubService
-              ?.map((entry: any) => entry.subService?.name)
-              .filter(Boolean) ?? [],
-        })),
-      })),
+      data: result.data.map(mapTaskRow),
     };
   } catch {
     return { success: false, errors: { message: "Failed to fetch tasks" } };

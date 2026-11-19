@@ -33,35 +33,22 @@ import {
   dashboardTextPrimary,
   dashboardTextSecondary,
 } from "@/lib/dashboard-ui";
+import { normalizeInstallmentScheduleStatus } from "@/lib/installment-schedule-status";
+import { paymentStatusLabel } from "@/lib/contract-utils";
 import { cn, formatDate } from "@/lib/utils";
 import { AlertCircle, CheckCircle2, Clock, DollarSign, WalletCards } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { mutate } from "swr";
 
-function statusLabel(status: ClientInstallmentRow["status"]) {
-  switch (status) {
-    case "PAID":
-      return "Paid";
-    case "PARTIAL":
-      return "Partial";
-    case "OVERDUE":
-      return "Overdue";
-    default:
-      return "Unpaid";
-  }
+function displayStatus(status: ClientInstallmentRow["status"]) {
+  return normalizeInstallmentScheduleStatus(status);
 }
 
 function statusClass(status: ClientInstallmentRow["status"]) {
-  if (status === "PAID") {
-    return "bg-emerald-100 text-emerald-800";
-  }
-  if (status === "PARTIAL") {
-    return "bg-blue-100 text-blue-800";
-  }
-  if (status === "OVERDUE") {
-    return "bg-red-100 text-red-800";
-  }
+  const key = displayStatus(status);
+  if (key === "PAID") return "bg-emerald-100 text-emerald-800";
+  if (key === "UNPAID") return "bg-red-100 text-red-800";
   return "bg-amber-100 text-amber-800";
 }
 
@@ -95,15 +82,9 @@ export function InstallmentSummaryCards({ summary }: SummaryProps) {
     },
     {
       label: "Unpaid",
-      value: summary.unpaid,
+      value: (summary.unpaidDue ?? summary.unpaid ?? 0) + (summary.partial ?? 0),
       icon: AlertCircle,
-      color: "bg-amber-50 text-amber-700",
-    },
-    {
-      label: "Partial",
-      value: summary.partial,
-      icon: Clock,
-      color: "bg-blue-50 text-blue-700",
+      color: "bg-red-50 text-red-700",
     },
     {
       label: "Collected",
@@ -120,7 +101,7 @@ export function InstallmentSummaryCards({ summary }: SummaryProps) {
   ];
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
       {cards.map((card) => {
         const Icon = card.icon;
         return (
@@ -245,12 +226,12 @@ export default function ClientInstallmentsTable({
                   </TableCell>
                   <TableCell className={dashboardTableCellClass}>
                     <span className={cn(dashboardStatusBadgeClass, statusClass(row.status))}>
-                      {statusLabel(row.status)}
+                      {paymentStatusLabel(displayStatus(row.status))}
                     </span>
                   </TableCell>
                   {showRecordPayment && (
                     <TableCell className={cn(dashboardTableCellClass, "text-right")}>
-                      {row.status !== "PAID" && (
+                      {displayStatus(row.status) !== "PAID" && (
                         <Button
                           size="sm"
                           variant="outline"

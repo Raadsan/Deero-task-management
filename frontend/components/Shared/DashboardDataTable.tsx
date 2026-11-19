@@ -40,6 +40,7 @@ type Props<T extends { id: number | string }> = {
   pageSizes?: number[];
   footer?: ReactNode;
   className?: string;
+  onRowClick?: (row: T) => void;
 };
 
 export default function DashboardDataTable<T extends { id: number | string }>({
@@ -56,6 +57,7 @@ export default function DashboardDataTable<T extends { id: number | string }>({
   pageSizes = [10, 25, 50, 100],
   footer,
   className,
+  onRowClick,
 }: Props<T>) {
   const [pageSize, setPageSize] = useState(pageSizes[0] || 10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -104,7 +106,11 @@ export default function DashboardDataTable<T extends { id: number | string }>({
                   {columns.map((column) => <td key={column.key} className={dashboardTableCellClass}><div className="h-4 animate-pulse rounded bg-zinc-100" /></td>)}
                 </tr>
               )) : pageRows.length ? pageRows.map((row) => (
-                <tr key={row.id} className={dashboardTableBodyRowClass}>
+                <tr
+                  key={row.id}
+                  className={cn(dashboardTableBodyRowClass, onRowClick && 'cursor-pointer hover:bg-zinc-50/80')}
+                  onClick={onRowClick ? () => onRowClick(row) : undefined}
+                >
                   {columns.map((column) => <td key={column.key} className={`${dashboardTableCellClass} ${align(column.align)} ${column.className || ''}`}>{column.cell(row)}</td>)}
                 </tr>
               )) : (

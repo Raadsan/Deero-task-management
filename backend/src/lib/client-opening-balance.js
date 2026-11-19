@@ -702,36 +702,16 @@ export async function applyOpeningDebtToInvoice(tx, invoice, installmentNumber, 
   );
   if (!Number(reserved)) return 0;
 
-  const sampleLine = await tx.customer_invoice_lines.findFirst({
-    where: { invoice_id: invoice.id },
-    orderBy: { sequence: "asc" },
-    select: { income_account_id: true },
-  });
-  if (!sampleLine?.income_account_id) return 0;
-
-  await tx.customer_invoice_lines.create({
-    data: {
-      invoice_id: invoice.id,
-      sequence: 5,
-      description: "Previous outstanding balance",
-      quantity: 1,
-      unit_price: debt,
-      discount_percent: 0,
-      income_account_id: sampleLine.income_account_id,
-      subtotal: debt,
-    },
-  });
-
   const meta = parseOpeningInvoiceNotes(invoice.notes);
   const installmentAmount = round2(meta.contract_installment_amount || invoice.amount_total);
   const paid = round2(invoice.paid_amount || 0);
-  const newTotal = round2(Number(invoice.amount_total) + debt);
+  // Invoice total includes prior AR for collection; GL stays at installment revenue only (opening was posted separately).
+  const newTotal = round2(installmentAmount + debt);
   const newDue = round2(Math.max(0, newTotal - paid));
 
   await tx.customer_invoices.update({
     where: { id: invoice.id },
     data: {
-      amount_untaxed: round2(Number(invoice.amount_untaxed || 0) + debt),
       amount_total: newTotal,
       amount_due: newDue,
       payment_state: newDue <= 0.005 && newTotal > 0.005 ? "paid" : paid > 0.005 ? "partial" : "not_paid",

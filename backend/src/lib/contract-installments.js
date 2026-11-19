@@ -1,4 +1,8 @@
 import { zonedInstant } from "./scheduled-task-window.js";
+import {
+  presentInstallmentScheduleStatus,
+  storedInstallmentStatus,
+} from "./contract-installment-status.js";
 
 const CONTRACT_DURATION_MONTHS = {
   ONE_MONTH: 1,
@@ -408,9 +412,14 @@ export async function syncContractInstallments(tx, contract, customInstallments)
     if (protectedNumbers.has(item.installmentNumber)) continue;
 
     const due = item.dueDate;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const initialStatus = item.dueAmount > 0 && due < today ? "OVERDUE" : "PENDING";
+    const now = new Date();
+    const initialStatus = storedInstallmentStatus(
+      presentInstallmentScheduleStatus(
+        { dueAmount: item.dueAmount, paidAmount: 0, dueDate: due },
+        null,
+        now,
+      ),
+    );
     const sourceKey = `contract:${contract.id}:i:${item.installmentNumber}`;
     const periodYear = due.getFullYear();
     const periodMonth = due.getMonth() + 1;

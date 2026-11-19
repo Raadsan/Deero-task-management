@@ -13,8 +13,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAllTasksClient, getAllUsersClient } from "@/lib/apis/readApi";
-import { ROUTES, SWR_CACH_KEYS } from "@/lib/constants";
+import { getAllProjects } from "@/lib/apis/projectApi";
+import { getAllServices } from "@/lib/apis/serviceApi";
+import {
+  getAllClientsClient,
+  getManagementTasksClient,
+  type ManagementTaskFilters,
+  getAllUsersClient,
+} from "@/lib/apis/readApi";
+import { ROUTES } from "@/lib/constants";
 import { Task } from "@/lib/types";
 import {
   actionBtnDelete,
@@ -38,7 +45,7 @@ import {
 } from "@/lib/dashboard-ui";
 import { useNow } from "@/lib/use-now";
 import { cn, formatScheduledTask, formatTaskDeadline, getTaskTableLabels, isTaskNotesUnseen, resolveTaskDisplayStatus } from "@/lib/utils";
-import { CalendarDays, Edit, Eye, Plus, Search } from "lucide-react";
+import { CalendarDays, Download, Edit, Eye, Plus, Search, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
@@ -63,6 +70,10 @@ function getServiceBadgeClass(serviceName: string) {
   return "bg-violet-50 text-violet-600";
 }
 
+function managementTaskDisplayStatus(task: Task, now: number) {
+  return task.displayStatus || resolveTaskDisplayStatus(task, undefined, now);
+}
+
 function taskDeadlineDate(task: Task) {
   const baseDate = task.status === "completed" && task.completedAt
     ? new Date(task.completedAt)
@@ -83,9 +94,16 @@ import { useLiveTimer } from "@/hooks/useLiveTimer";
 export default function TasksManagementPage() {
   const [mounted, setMounted] = useState(false);
   const now = useNow();
-  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [taskTypeFilter, setTaskTypeFilter] = useState("all");
+  const [clientFilter, setClientFilter] = useState("all");
+  const [projectFilter, setProjectFilter] = useState("all");
+  const [serviceFilter, setServiceFilter] = useState("all");
   const [userFilter, setUserFilter] = useState("all");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [viewingTask, setViewingTask] = useState<Task | null>(null);
@@ -104,14 +122,44 @@ export default function TasksManagementPage() {
   }, []);
 
   useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedSearch(searchInput.trim()), 300);
+    return () => window.clearTimeout(timer);
+  }, [searchInput]);
+
+  useEffect(() => {
     function onSeen() { setSeenTick((t) => t + 1); }
     window.addEventListener("task-notes-seen-updated", onSeen);
     return () => window.removeEventListener("task-notes-seen-updated", onSeen);
   }, []);
 
+  const managementFilters = useMemo<ManagementTaskFilters>(
+    () => ({
+      status: statusFilter,
+      taskType: taskTypeFilter,
+      clientId: clientFilter,
+      projectId: projectFilter,
+      serviceId: serviceFilter,
+      employeeId: userFilter,
+      scheduledFrom: dateFrom || undefined,
+      scheduledTo: dateTo || undefined,
+      search: debouncedSearch || undefined,
+    }),
+    [
+      statusFilter,
+      taskTypeFilter,
+      clientFilter,
+      projectFilter,
+      serviceFilter,
+      userFilter,
+      dateFrom,
+      dateTo,
+      debouncedSearch,
+    ],
+  );
+
   const { data: tasksRes, isLoading, mutate: mutateTasks } = useSWR(
-    SWR_CACH_KEYS.tasks.key,
-    getAllTasksClient,
+    ["tasks-management", managementFilters],
+    () => getManagementTasksClient(managementFilters),
     {
       revalidateOnFocus: true,
       revalidateOnMount: true,
@@ -136,50 +184,24 @@ export default function TasksManagementPage() {
     };
   }, [mutateTasks]);
 
-  const { data: usersRes } = useSWR(
-    "tasks-users-filter",
-    getAllUsersClient,
-  );
+  const { data: usersRes } = useSWR("tasks-users-filter", getAllUsersClient);
+  const { data: clientsRes } = useSWR("tasks-clients-filter", getAllClientsClient);
+  const { data: projectsRes } = useSWR("tasks-projects-filter", () => getAllProjects());
+  const { data: servicesRes } = useSWR("tasks-services-filter", () => getAllServices());
 
-  const tasksRaw = (tasksRes?.data as Task[]) ?? [];
-  const usersRaw = usersRes?.data ?? [];
-  const tasks = tasksRaw;
-  const users = usersRaw;
+  const tasks = (tasksRes?.data as Task[]) ?? [];
+  const users = usersRes?.data ?? [];
+  const clients = clientsRes?.data ?? [];
+  const projects = projectsRes?.data ?? [];
+  const services = servicesRes?.data ?? [];
+
+  const projectOptions = useMemo(() => {
+    if (clientFilter === "all") return projects;
+    return projects.filter((project) => String(project.clientId) === clientFilter);
+  }, [projects, clientFilter]);
 
   const isTasksLoading = !mounted || isLoading;
-
-  const filteredTasks = useMemo(() => {
-    return tasks.filter((task) => {
-      const query = search.toLowerCase();
-      const assignedName = task.assignedTo?.name?.toLowerCase() ?? "";
-      const serviceInfo = (
-        task.serviceInformation ??
-        task.institutions?.[0]?.institution ??
-        ""
-      ).toLowerCase();
-      const description = task.description?.toLowerCase() ?? "";
-      const taskId = String(task.id ?? "").toLowerCase();
-
-      const matchesSearch =
-        !query ||
-        assignedName.includes(query) ||
-        serviceInfo.includes(query) ||
-        description.includes(query) ||
-        taskId.includes(query);
-
-      const displayStatus = resolveTaskDisplayStatus(task, undefined, now);
-
-      const matchesStatus =
-        statusFilter === "all" ||
-        displayStatus.toLowerCase() === statusFilter.toLowerCase();
-
-      const matchesUser =
-        userFilter === "all" ||
-        String(task.assignedTo?.id ?? "") === userFilter;
-
-      return matchesSearch && matchesStatus && matchesUser;
-    });
-  }, [tasks, search, statusFilter, userFilter, now]);
+  const filteredTasks = tasks;
 
   const totalPages = Math.ceil(filteredTasks.length / pageSize) || 1;
   const paginatedTasks = useMemo(() => {
@@ -189,7 +211,95 @@ export default function TasksManagementPage() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, pageSize, statusFilter, userFilter]);
+  }, [
+    debouncedSearch,
+    pageSize,
+    statusFilter,
+    taskTypeFilter,
+    clientFilter,
+    projectFilter,
+    serviceFilter,
+    userFilter,
+    dateFrom,
+    dateTo,
+  ]);
+
+  function clearFilters() {
+    setSearchInput("");
+    setDebouncedSearch("");
+    setStatusFilter("all");
+    setTaskTypeFilter("all");
+    setClientFilter("all");
+    setProjectFilter("all");
+    setServiceFilter("all");
+    setUserFilter("all");
+    setDateFrom("");
+    setDateTo("");
+    setCurrentPage(1);
+  }
+
+  function taskTypeLabel(task: Task) {
+    return task.projectId || (task as any).taskType === "project" ? "Project Task" : "Standalone Task";
+  }
+
+  function taskProjectName(task: Task) {
+    const project = (task as any).project;
+    if (task.projectId || project) return project?.name || "—";
+    return "N/A";
+  }
+
+  function taskClientName(task: Task) {
+    const projectClient = (task as any).project?.client?.institution;
+    if (projectClient) return projectClient;
+    return getTaskTableLabels(task).clientName;
+  }
+
+  function downloadFilteredReport() {
+    const header = [
+      "Task ID",
+      "Task Name",
+      "Task Type",
+      "Client",
+      "Project",
+      "Employee",
+      "Service",
+      "Progress",
+      "Scheduled Date",
+      "Start - End",
+      "Status",
+    ];
+    const rows = filteredTasks.map((task) => {
+      const { taskName, serviceName } = getTaskTableLabels(task);
+      const displayStatus = managementTaskDisplayStatus(task, now);
+      const schedule = formatScheduledTask(task);
+      return [
+        task.id,
+        taskName,
+        taskTypeLabel(task),
+        taskClientName(task),
+        taskProjectName(task),
+        task.assignedTo?.name || "Unassigned",
+        serviceName,
+        `${task.progress ?? 0}%`,
+        schedule?.date ||
+          (task.startDate
+            ? new Date(String(task.startDate)).toISOString().slice(0, 10)
+            : "—"),
+        schedule?.time || "—",
+        formatStatusLabel(displayStatus),
+      ];
+    });
+    const csv = [header, ...rows]
+      .map((row) => row.map((cell) => `"${String(cell ?? "").replaceAll('"', '""')}"`).join(","))
+      .join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `tasks-management-report-${new Date().toISOString().slice(0, 10)}.csv`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }
 
 
   function openViewModal(task: Task) {
@@ -215,128 +325,211 @@ export default function TasksManagementPage() {
       subtitle="Manage and track all tasks in one place."
     >
       <div className={dashboardCardClass}>
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-50 px-4 py-3">
-          <div className={cn("flex items-center gap-2", dashboardLabelClass)}>
-            <span>Show</span>
-            <select
-              value={pageSize}
-              onChange={(e) => setPageSize(Number(e.target.value))}
-              className={cn("w-16", compactSelectClass)}
+        <div className="space-y-2 border-b border-zinc-50 px-4 py-3">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <div className={cn("flex items-center gap-2", dashboardLabelClass)}>
+              <span>Show</span>
+              <select
+                value={pageSize}
+                onChange={(e) => setPageSize(Number(e.target.value))}
+                className={cn("w-16", compactSelectClass)}
+              >
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
+
+            <div className="group relative w-full sm:w-52">
+              <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-400" />
+              <input
+                type="text"
+                placeholder="Search tasks..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className={compactInputClass}
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="inline-flex h-9 items-center gap-1 rounded-md border border-zinc-200 px-3 text-xs font-semibold text-zinc-600 hover:bg-zinc-50"
             >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-              <option value={100}>100</option>
-            </select>
+              <X className="size-3.5" />
+              Clear filters
+            </button>
+
+            {filteredTasks.length > 0 && (
+              <button
+                type="button"
+                onClick={downloadFilteredReport}
+                className="inline-flex h-9 items-center gap-1 rounded-md border border-emerald-200 bg-emerald-50 px-3 text-xs font-semibold text-emerald-700 hover:bg-emerald-100"
+              >
+                <Download className="size-3.5" />
+                Download report
+              </button>
+            )}
+
+            {userFilter !== "all" && (
+              <Link
+                href={ROUTES.taskReport(userFilter)}
+                className="text-xs font-semibold text-emerald-600 hover:underline"
+              >
+                Employee PDF report
+              </Link>
+            )}
+
+            <div className="min-w-4 flex-1" />
+
+            <Button
+              type="button"
+              onClick={openCreateModal}
+              className={cn(btnCreatePage, "h-9 w-full sm:w-auto px-4 text-sm")}
+            >
+              <Plus className="size-4" />
+              Create Task
+            </Button>
           </div>
 
-          <div className={cn("flex items-center gap-2", dashboardLabelClass)}>
-            <span>Status</span>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <select
+              aria-label="Status filter"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className={cn("w-32 px-2", compactSelectClass)}
+              className={cn("min-w-[9.5rem]", compactSelectClass)}
             >
-              <option value="all">All Status</option>
-              <option value="pending">Processing</option>
+              <option value="all">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="in_progress">In Progress</option>
               <option value="completed">Completed</option>
               <option value="overdue">Overdue</option>
+              <option value="on_hold">On Hold</option>
             </select>
-          </div>
 
-          <div className={cn("flex items-center gap-2", dashboardLabelClass)}>
-            <span>User</span>
             <select
+              aria-label="Task type filter"
+              value={taskTypeFilter}
+              onChange={(e) => setTaskTypeFilter(e.target.value)}
+              className={cn("min-w-[9.5rem]", compactSelectClass)}
+            >
+              <option value="all">All Types</option>
+              <option value="project">Project Task</option>
+              <option value="standalone">Standalone Task</option>
+            </select>
+
+            <select
+              aria-label="Client filter"
+              value={clientFilter}
+              onChange={(e) => {
+                setClientFilter(e.target.value);
+                setProjectFilter("all");
+              }}
+              className={cn("min-w-[11rem] max-w-[14rem]", compactSelectClass)}
+            >
+              <option value="all">All Clients</option>
+              {clients.map((client) => (
+                <option key={client.id} value={String(client.id)}>
+                  {client.institution}
+                </option>
+              ))}
+            </select>
+
+            <select
+              aria-label="Project filter"
+              value={projectFilter}
+              onChange={(e) => setProjectFilter(e.target.value)}
+              className={cn("min-w-[11rem] max-w-[14rem]", compactSelectClass)}
+            >
+              <option value="all">All Projects</option>
+              {projectOptions.map((project) => (
+                <option key={project.id} value={String(project.id)}>
+                  {project.name}
+                </option>
+              ))}
+            </select>
+
+            <select
+              aria-label="Service filter"
+              value={serviceFilter}
+              onChange={(e) => setServiceFilter(e.target.value)}
+              className={cn("min-w-[10rem] max-w-[14rem]", compactSelectClass)}
+            >
+              <option value="all">All Services</option>
+              {services.map((service) => (
+                <option key={service.id} value={String(service.id)}>
+                  {service.serviceName}
+                </option>
+              ))}
+            </select>
+
+            <select
+              aria-label="Employee filter"
               value={userFilter}
               onChange={(e) => setUserFilter(e.target.value)}
-              className={cn("w-36 px-2", compactSelectClass)}
+              className={cn("min-w-[10rem] max-w-[14rem]", compactSelectClass)}
             >
-              <option value="all">All Users</option>
+              <option value="all">All Employees</option>
               {users.map((user) => (
                 <option key={user.id} value={String(user.id)}>
                   {user.name}
                 </option>
               ))}
             </select>
-          </div>
 
-          {userFilter !== "all" && tasks.length > 0 && (
-            <Link
-              href={ROUTES.taskReport(userFilter)}
-              className="text-xs font-semibold text-emerald-600 hover:underline"
-            >
-              Download report
-            </Link>
-          )}
-
-          <div className="min-w-4 flex-1" />
-
-          <div className="group relative w-full sm:w-52">
-            <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-400" />
             <input
-              type="text"
-              placeholder="Search tasks..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className={compactInputClass}
+              aria-label="Scheduled date from"
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className={cn("w-[9.5rem]", compactSelectClass)}
+            />
+            <input
+              aria-label="Scheduled date to"
+              type="date"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              className={cn("w-[9.5rem]", compactSelectClass)}
             />
           </div>
-
-          <Button
-            type="button"
-            onClick={openCreateModal}
-            className={cn(btnCreatePage, "h-9 w-full sm:w-auto px-4 text-sm")}
-          >
-            <Plus className="size-4" />
-            Create Task
-          </Button>
         </div>
 
         <div className={dashboardTableWrapClass}>
-          <Table className="w-full min-w-[1290px] table-fixed [&_td]:px-3.5 [&_th]:px-3.5">
+          <Table className="w-full min-w-[1500px] table-fixed [&_td]:px-3.5 [&_th]:px-3.5">
             <colgroup>
-              <col className="w-[75px]" />
-              <col className="w-[240px]" />
-              <col className="w-[230px]" />
+              <col className="w-[82px]" />
               <col className="w-[200px]" />
-              <col className="w-[140px]" />
-              <col className="w-[175px]" />
-              <col className="w-[115px]" />
-              <col className="w-[115px]" />
+              <col className="w-[110px]" />
+              <col className="w-[150px]" />
+              <col className="w-[150px]" />
+              <col className="w-[170px]" />
+              <col className="w-[160px]" />
+              <col className="w-[110px]" />
+              <col className="w-[150px]" />
+              <col className="w-[105px]" />
+              <col className="w-[108px]" />
             </colgroup>
             <TableHeader className={dashboardTableHeaderClass}>
               <TableRow className={dashboardTableHeadRowClass}>
-                <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                  No
-                </TableHead>
-                <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                  Task
-                </TableHead>
-                <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                  Assigned To
-                </TableHead>
-                <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                  Service Info
-                </TableHead>
-                <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                  Progress
-                </TableHead>
-                <TableHead className={cn(dashboardTableHeadClass, "text-left")}>
-                  Schedule
-                </TableHead>
-                <TableHead className={cn(dashboardTableHeadClass, "text-center")}>
-                  Status
-                </TableHead>
-                <TableHead className={cn(dashboardTableHeadClass, "text-center")}>
-                  Actions
-                </TableHead>
+                <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Task ID</TableHead>
+                <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Task Name</TableHead>
+                <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Task Type</TableHead>
+                <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Client</TableHead>
+                <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Project</TableHead>
+                <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Assigned Employee</TableHead>
+                <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Service</TableHead>
+                <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Progress</TableHead>
+                <TableHead className={cn(dashboardTableHeadClass, "text-left")}>Scheduled Date</TableHead>
+                <TableHead className={cn(dashboardTableHeadClass, "text-center")}>Status</TableHead>
+                <TableHead className={cn(dashboardTableHeadClass, "text-center")}>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isTasksLoading ? (
                 [...Array(5)].map((_, i) => (
                   <TableRow key={i} className="h-14 animate-pulse">
-                    {[...Array(8)].map((_, j) => (
+                    {[...Array(11)].map((_, j) => (
                       <TableCell key={j} className="px-6 py-4">
                         <div className="h-4 w-full rounded bg-zinc-100" />
                       </TableCell>
@@ -346,7 +539,7 @@ export default function TasksManagementPage() {
               ) : paginatedTasks.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={8}
+                    colSpan={11}
                     className="px-6 py-10 text-center text-muted-foreground"
                   >
                     No tasks found
@@ -354,9 +547,9 @@ export default function TasksManagementPage() {
                 </TableRow>
               ) : (
                 paginatedTasks.map((task) => {
-                  const { taskName, clientName, serviceName } = getTaskTableLabels(task);
-                  // Display status
-                  const displayStatus = resolveTaskDisplayStatus(task, undefined, now);
+                  const { taskName, serviceName } = getTaskTableLabels(task);
+                  const clientName = taskClientName(task);
+                  const displayStatus = managementTaskDisplayStatus(task, now);
                   const progress = task.progress ?? 0;
                   // Assignee info
                   const assignedName = task.assignedTo?.name || "Unassigned";
@@ -379,16 +572,32 @@ export default function TasksManagementPage() {
                         </span>
                       </TableCell>
 
-                      {/* Task */}
                       <TableCell className={dashboardTableCellClass}>
-                        <div className="flex flex-col gap-0.5">
-                          <span
-                            className={cn(dashboardTextPrimary, "font-medium leading-snug line-clamp-2")}
-                            title={taskName}
-                          >
-                            {taskName}
-                          </span>
-                        </div>
+                        <span
+                          className={cn(dashboardTextPrimary, "font-medium leading-snug line-clamp-2")}
+                          title={taskName}
+                        >
+                          {taskName}
+                        </span>
+                      </TableCell>
+
+                      <TableCell className={dashboardTableCellClass}>
+                        <span
+                          className={cn(
+                            "inline-flex rounded px-2 py-0.5 text-[10px] font-bold uppercase",
+                            task.projectId ? "bg-sky-50 text-sky-700" : "bg-zinc-100 text-zinc-700",
+                          )}
+                        >
+                          {taskTypeLabel(task)}
+                        </span>
+                      </TableCell>
+
+                      <TableCell className={cn(dashboardTableCellClass, "truncate")} title={clientName}>
+                        {clientName}
+                      </TableCell>
+
+                      <TableCell className={cn(dashboardTableCellClass, "truncate")} title={taskProjectName(task)}>
+                        {taskProjectName(task)}
                       </TableCell>
 
                       {/* Assigned To — avatar + name + job title */}
@@ -425,25 +634,16 @@ export default function TasksManagementPage() {
                         </div>
                       </TableCell>
 
-                      {/* Service Info — client name */}
                       <TableCell className={dashboardTableCellClass}>
-                        <div className="flex min-w-0 flex-col gap-1">
-                          <span
-                            className={cn(dashboardTextPrimary, "truncate text-sm font-medium")}
-                            title={clientName}
-                          >
-                            {clientName}
-                          </span>
-                          <span
-                            className={cn(
-                              "w-fit max-w-full truncate rounded px-2 py-0.5 text-[10.5px] font-semibold",
-                              getServiceBadgeClass(serviceName),
-                            )}
-                            title={serviceName}
-                          >
-                            {serviceName}
-                          </span>
-                        </div>
+                        <span
+                          className={cn(
+                            "inline-flex max-w-full truncate rounded px-2 py-0.5 text-[10.5px] font-semibold",
+                            getServiceBadgeClass(serviceName),
+                          )}
+                          title={serviceName}
+                        >
+                          {serviceName}
+                        </span>
                       </TableCell>
 
                       {/* Progress */}

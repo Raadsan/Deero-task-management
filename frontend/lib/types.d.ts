@@ -78,6 +78,15 @@ interface Task {
   supervisor: string;
   isAssignedToCurrentUser?: boolean;
   isPersonal?: boolean;
+  projectId?: string | null;
+  project?: {
+    id: string;
+    name: string;
+    clientId?: string;
+    client?: { id: string; institution?: string };
+  } | null;
+  taskType?: "project" | "standalone";
+  displayStatus?: string;
   createdAt?: string | Date;
   progress: number;
   serviceInformation?: string;

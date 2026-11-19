@@ -1,4 +1,8 @@
 import type { ContractDuration } from "@/lib/client-types";
+import {
+  computeInstallmentScheduleStatus,
+  type InstallmentScheduleStatus,
+} from "@/lib/installment-schedule-status";
 
 const DURATION_MONTHS: Record<string, number> = {
   ONE_MONTH: 1,
@@ -71,7 +75,7 @@ export type InstallmentPreviewRow = {
   percentage: number;
   dueMilestone: string;
   dueTime?: string;
-  status: "PENDING" | "OVERDUE";
+  status: InstallmentScheduleStatus;
 };
 
 function roundMoney(value: number) {
@@ -131,12 +135,12 @@ function milestoneDate(milestone: string, start: Date, end: Date | null) {
   return addMonths(start, months);
 }
 
-function scheduleStatus(dueDate: string): "PENDING" | "OVERDUE" {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const due = parseDate(dueDate);
-  if (due && due < today) return "OVERDUE";
-  return "PENDING";
+function scheduleStatus(dueDate: string, dueAmount: number): InstallmentScheduleStatus {
+  return computeInstallmentScheduleStatus({
+    dueAmount,
+    paidAmount: 0,
+    dueDate,
+  });
 }
 
 export function getValidPaymentTermsForDuration(duration: string, contractType = "MONTHLY") {
@@ -293,7 +297,7 @@ export function buildInstallmentPreview(input: {
       percentage: row.percentage,
       dueMilestone: row.milestone,
       dueTime: "dueTime" in row ? row.dueTime : undefined,
-      status: scheduleStatus(dueDate),
+      status: scheduleStatus(dueDate, row.amount),
     };
   });
   return {
