@@ -16,6 +16,12 @@ import {
   syncDraftTasks,
   tasksMatch,
 } from "@/lib/project-schedule";
+import {
+  DEFAULT_COMPANY_WORKING_DAYS,
+  FRIDAY_NON_WORKING_DAY_MESSAGE,
+  isFridayIsoDate,
+  normalizeCompanyWorkingDays,
+} from "@/lib/company-working-days";
 import { changedScheduleError, PAST_SCHEDULE_MESSAGE, scheduleSignature, zonedNowParts } from "@/lib/scheduled-task-window";
 import { useNow } from "@/lib/use-now";
 import { cn } from "@/lib/utils";
@@ -90,7 +96,7 @@ export default function ProjectRegistrationForm({ onClose, projectId }: Props) {
   const [endDate, setEndDate] = useState("");
   const [description, setDescription] = useState("");
   const [lifecycleStatus, setLifecycleStatus] = useState("ACTIVE");
-  const [workingDays, setWorkingDays] = useState<number[]>([1, 2, 3, 4, 5]);
+  const [workingDays, setWorkingDays] = useState<number[]>([...DEFAULT_COMPANY_WORKING_DAYS]);
   const [hours, setHours] = useState("09:00-17:00");
   const [notes, setNotes] = useState("");
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
@@ -326,7 +332,7 @@ export default function ProjectRegistrationForm({ onClose, projectId }: Props) {
       setProjectSaved(!(project.isDraft || project.lifecycleStatus === "DRAFT"));
       setDescription(project.description || "");
       setLifecycleStatus(project.lifecycleStatus || project.status || "ACTIVE");
-      setWorkingDays(Array.isArray(schedule.workingDays) ? schedule.workingDays : [1, 2, 3, 4, 5]);
+      setWorkingDays(normalizeCompanyWorkingDays(schedule.workingDays));
       setHours(schedule.hours || "09:00-17:00");
       setNotes(schedule.notes || "");
       setSelectedServices(Object.keys(nextSubs));
@@ -514,7 +520,7 @@ export default function ProjectRegistrationForm({ onClose, projectId }: Props) {
       schedule: {
         startDate: startDate || null,
         endDate: resolvedEndDate,
-        workingDays,
+        workingDays: normalizeCompanyWorkingDays(workingDays),
         hours,
         notes,
         holidays: [],
@@ -791,7 +797,7 @@ export default function ProjectRegistrationForm({ onClose, projectId }: Props) {
             workingDays={workingDays}
             hours={hours}
             notes={notes}
-            onWorkingDaysChange={setWorkingDays}
+            onWorkingDaysChange={(days) => setWorkingDays(normalizeCompanyWorkingDays(days))}
             onHoursChange={setHours}
             onNotesChange={setNotes}
             onTasksChange={setTasks}
@@ -836,7 +842,24 @@ export default function ProjectRegistrationForm({ onClose, projectId }: Props) {
                             {namedTasks.some((other) => other.clientKey !== task.clientKey && other.assigneeId && other.assigneeId === task.assigneeId && other.scheduledDate && other.scheduledDate === task.scheduledDate && task.startTime && task.endTime && other.startTime && other.endTime && task.startTime < other.endTime && other.startTime < task.endTime) ? <p className="text-xs text-amber-600">Overlapping time for this employee</p> : null}
                           </td>
                           <td className="pr-2">
-                            <input type="date" min={todayParts.date} className={fieldClass} value={task.scheduledDate} onChange={(e) => setTasks((current) => current.map((item) => item.clientKey === task.clientKey ? { ...item, scheduledDate: e.target.value } : item))} />
+                            <input
+                              type="date"
+                              min={todayParts.date}
+                              className={fieldClass}
+                              value={task.scheduledDate}
+                              onChange={(e) => {
+                                const next = e.target.value;
+                                if (isFridayIsoDate(next)) {
+                                  toast.error(FRIDAY_NON_WORKING_DAY_MESSAGE);
+                                  return;
+                                }
+                                setTasks((current) =>
+                                  current.map((item) =>
+                                    item.clientKey === task.clientKey ? { ...item, scheduledDate: next } : item,
+                                  ),
+                                );
+                              }}
+                            />
                             {changedScheduleError(task, originalSchedules, now) === PAST_SCHEDULE_MESSAGE ? <p className="text-xs text-red-600">{PAST_SCHEDULE_MESSAGE}</p> : null}
                           </td>
                           <td className="pr-2">

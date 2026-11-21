@@ -22,6 +22,7 @@ import {
 } from "@/lib/dashboard-ui";
 import { resolveBranchLogoUrl } from "@/lib/portfolio-branding";
 import { exportCsv, exportPdf, printReport, reportDateRangeLabel } from "@/lib/report-export";
+import { TASK_STATUS_FILTER_OPTIONS } from "@/lib/task-status";
 import { cn, resolveTaskDisplayStatus } from "@/lib/utils";
 import { AlertCircle, BarChart3, CheckCircle2, Clock, Download, Eye, FileText, Hourglass, Printer, Search, TimerReset, X } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -346,7 +347,11 @@ export default function StaffTasksSummaryReport({ personalOnly = false }: { pers
             <label className="flex flex-col gap-1 text-xs font-semibold text-zinc-500"><span>End date</span><input type="date" value={endDate} onChange={(event) => { setEndDate(event.target.value); setCurrentPage(1); }} className="h-10 rounded-md border border-zinc-200 px-3 text-sm" /></label>
           </>}
           <label className="flex flex-col gap-1 text-xs font-semibold text-zinc-500"><span>Role</span><select value={roleFilter} onChange={(event) => { setRoleFilter(event.target.value); setCurrentPage(1); }} className="h-10 min-w-40 rounded-md border border-zinc-200 bg-white px-3 text-sm capitalize text-slate-700"><option value="all">All roles</option>{roleOptions.map((role) => <option key={role} value={role}>{role}</option>)}</select></label>
-          <label className="flex flex-col gap-1 text-xs font-semibold text-zinc-500"><span>Status</span><select value={statusFilter} onChange={(event) => { setStatusFilter(event.target.value); setCurrentPage(1); }} className="h-10 min-w-36 rounded-md border border-zinc-200 bg-white px-3 text-sm text-slate-700"><option value="all">All statuses</option><option value="pending">Processing</option><option value="completed">Completed</option><option value="overdue">Overdue</option></select></label>
+          <label className="flex flex-col gap-1 text-xs font-semibold text-zinc-500"><span>Status</span><select value={statusFilter} onChange={(event) => { setStatusFilter(event.target.value); setCurrentPage(1); }} className="h-10 min-w-36 rounded-md border border-zinc-200 bg-white px-3 text-sm text-slate-700">{TASK_STATUS_FILTER_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label === "All" ? "All statuses" : option.label}
+                </option>
+              ))}</select></label>
           <div className="min-w-4 flex-1" />
           <div className="relative w-full sm:w-56"><Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-400" /><input value={search} onChange={(event) => { setSearch(event.target.value); setCurrentPage(1); }} placeholder="Search staff..." className={cn(dashboardInputClass, "w-full pl-10")} /></div>
           <Button type="button" variant="outline" onClick={exportSummaryCsv}><Download className="mr-2 size-4" />CSV</Button>
@@ -447,7 +452,11 @@ export default function StaffTasksSummaryReport({ personalOnly = false }: { pers
               <div className="mb-4 flex flex-wrap items-end gap-3 px-6">
                 <h3 className="mr-auto text-sm font-bold uppercase tracking-wider text-primary">Task Breakdown</h3>
                 <div className="relative w-full sm:w-64"><Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-zinc-400" /><input value={detailSearch} onChange={(event) => { setDetailSearch(event.target.value); setDetailPage(1); }} placeholder="Search tasks..." className={cn(dashboardInputClass, "w-full pl-10")} /></div>
-                <select value={detailStatus} onChange={(event) => { setDetailStatus(event.target.value); setDetailPage(1); }} className="h-10 rounded-md border border-zinc-200 bg-white px-3 text-sm text-slate-700"><option value="all">All statuses</option><option value="pending">Processing</option><option value="completed">Completed</option><option value="overdue">Overdue</option></select>
+                <select value={detailStatus} onChange={(event) => { setDetailStatus(event.target.value); setDetailPage(1); }} className="h-10 rounded-md border border-zinc-200 bg-white px-3 text-sm text-slate-700">{TASK_STATUS_FILTER_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label === "All" ? "All statuses" : option.label}
+                  </option>
+                ))}</select>
               </div>
               <div className="w-full overflow-x-auto border-y border-zinc-200">
                 <Table className="min-w-[1500px]">

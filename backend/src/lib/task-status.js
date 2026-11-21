@@ -1,3 +1,5 @@
+import { isTerminalStatus, normalizeDbStatus } from "./task-status-workflow.js";
+
 const ACTIVE_STATUSES = ["pending", "in_progress", "overdue"];
 const OVERDUE_SYNC_INTERVAL_MS = 60_000;
 let overdueSyncPromise = null;
@@ -11,9 +13,10 @@ export function isTaskPastDeadline(deadline, extraTimeMinutes = 0) {
 }
 
 export function resolveTaskStatus(task) {
-  if (task.status === "completed") return "completed";
+  const db = normalizeDbStatus(task.status);
+  if (db === "completed" || db === "pending_review" || db === "on_hold") return db;
   if (isTaskPastDeadline(task.deadline, task.extraTimeMinutes)) return "overdue";
-  return task.status || "pending";
+  return db || "pending";
 }
 
 export async function syncOverdueTasks(prisma) {
@@ -57,6 +60,9 @@ export async function syncOverdueTasks(prisma) {
   }
 }
 
+/**
+ * Normalize status/progress on write. Never auto-completes from progress alone.
+ */
 export function normalizeTaskWriteStatus({
   status,
   progress,
@@ -66,34 +72,51 @@ export function normalizeTaskWriteStatus({
   currentStatus,
   currentProgress,
   isCreate = false,
+  isManager = false,
 }) {
   const nextProgress =
     progress !== undefined ? Number(progress) : Number(currentProgress ?? 0);
-  let nextStatus = (status ?? currentStatus ?? "pending").toLowerCase();
+  let nextStatus = normalizeDbStatus(status ?? currentStatus ?? "pending");
+  const current = normalizeDbStatus(currentStatus);
   const nextDeadline = deadline ? new Date(deadline) : null;
   const nextStartDate = startDate ? new Date(startDate) : null;
   const now = new Date();
   const hasActiveDeadlineExtension =
     nextDeadline && !isTaskPastDeadline(nextDeadline, extraTimeMinutes);
 
+  if (!isManager && nextStatus !== current && status !== undefined && status !== null) {
+    return { error: "Employees cannot change task status directly." };
+  }
+
   if (isCreate) {
-    if (nextProgress >= 100) {
-      return { status: "completed", progress: 100 };
+    if (nextProgress >= 100 && !isManager) {
+      return { error: "Set progress below 100% when creating a task; employees submit for review to finish." };
+    }
+    if (isManager && nextStatus === "completed" && nextProgress < 100) {
+      return { error: "Task cannot be marked completed until progress is 100%." };
     }
     if (nextStartDate && !Number.isNaN(nextStartDate.getTime()) && nextStartDate > now) {
-      return { status: "pending", progress: nextProgress };
+      return { status: "pending", progress: Math.min(100, Math.max(0, nextProgress)) };
     }
     if (nextDeadline && isTaskPastDeadline(nextDeadline, extraTimeMinutes)) {
-      return { status: "overdue", progress: nextProgress };
+      return { status: "overdue", progress: Math.min(100, Math.max(0, nextProgress)) };
     }
     if (nextStartDate && !Number.isNaN(nextStartDate.getTime()) && nextStartDate <= now) {
-      return { status: "in_progress", progress: nextProgress };
+      return { status: "in_progress", progress: Math.min(100, Math.max(0, nextProgress)) };
     }
-    return { status: "pending", progress: nextProgress };
+    return { status: "pending", progress: Math.min(100, Math.max(0, nextProgress)) };
+  }
+
+  if (isTerminalStatus(current) && nextStatus !== "completed") {
+    return { error: "Completed tasks cannot be reopened from this endpoint." };
+  }
+
+  if (current === "pending_review" && nextProgress !== Number(currentProgress ?? 0)) {
+    return { error: "Progress is locked while this task is pending review." };
   }
 
   if (
-    currentStatus === "overdue" &&
+    current === "overdue" &&
     nextProgress !== Number(currentProgress ?? 0) &&
     !hasActiveDeadlineExtension
   ) {
@@ -108,19 +131,25 @@ export function normalizeTaskWriteStatus({
     };
   }
 
-  if (nextProgress >= 100) {
-    nextStatus = "completed";
-  } else if (nextStatus === "completed") {
-    return {
-      error: "Task cannot be marked completed until progress is 100%",
-    };
-  } else if (nextDeadline && isTaskPastDeadline(nextDeadline, extraTimeMinutes)) {
-    nextStatus = "overdue";
+  if (nextStatus === "completed" && !isManager) {
+    return { error: "Only a manager can approve and complete a task." };
+  }
+
+  if (nextProgress >= 100 && nextStatus !== "completed" && nextStatus !== "pending_review") {
+    nextStatus = current === "pending_review" ? "pending_review" : current;
+  }
+
+  if (nextDeadline && isTaskPastDeadline(nextDeadline, extraTimeMinutes)) {
+    if (current === "pending_review" || current === "on_hold" || current === "completed") {
+      // frozen statuses are not overwritten by deadline evaluation here
+    } else {
+      nextStatus = "overdue";
+    }
   } else if (nextStatus === "overdue" && hasActiveDeadlineExtension) {
     nextStatus = nextStartDate && nextStartDate.getTime() > Date.now()
       ? "pending"
       : "in_progress";
   }
 
-  return { status: nextStatus, progress: nextProgress };
+  return { status: nextStatus, progress: Math.min(100, Math.max(0, nextProgress)) };
 }

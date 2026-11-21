@@ -9,6 +9,7 @@ import {
 import { ROUTES, SWR_CACH_KEYS, TASK_PRIORITIES } from "@/lib/constants";
 import { btnFormCancel, btnFormSubmit } from "@/lib/dashboard-ui";
 import { evaluateScheduledTask, holdSnapshot } from "@/lib/scheduled-task-window";
+import { hasTransferHistory, transferProgressFloor } from "@/lib/task-transfer";
 import { useNow } from "@/lib/use-now";
 import { cn, getTaskStatus, resolveTaskDisplayStatus } from "@/lib/utils";
 import { ArrowRightLeft, CheckSquare, Clock, Lock, MessageSquareText, Plus, UserCheck, Users, X } from "lucide-react";
@@ -313,14 +314,6 @@ export default function TaskForm({
     }
   }, [formType, watchedStatus, setValue, getValues]);
 
-  useEffect(() => {
-    if (formType === "create") return;
-    if (Number(watchedProgress) >= 100) {
-      if (getValues("status") !== TaskStatus.completed) {
-        setValue("status", TaskStatus.completed, { shouldValidate: true });
-      }
-    }
-  }, [formType, watchedProgress, setValue, getValues]);
 
   useEffect(() => {
     if (!isCreate) return;
@@ -393,9 +386,7 @@ export default function TaskForm({
       const doneCount = updated.filter((f) => f.done).length;
       const newProgress = Math.round((doneCount / updated.length) * 100);
       setValue("progress", newProgress, { shouldValidate: true });
-      if (newProgress === 100) {
-        setValue("status", TaskStatus.completed, { shouldValidate: true });
-      } else if (newProgress > 0 && watchedStatus !== TaskStatus.completed) {
+      if (newProgress > 0 && watchedStatus === TaskStatus.pending) {
         setValue("status", TaskStatus.in_progress, { shouldValidate: true });
       }
     }
@@ -1220,17 +1211,20 @@ export default function TaskForm({
                   </div>
                 ) : null}
 
-                {Number(currentTask?.transferredFromProgress) > 0 && (
+                {currentTask && hasTransferHistory(currentTask) && (
                   <div className="flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 p-3 text-xs font-semibold text-indigo-900">
                     <ArrowRightLeft className="size-4 shrink-0 text-indigo-600" />
-                    <span>Task was transferred! Work completed before transfer: {currentTask?.transferredFromProgress}%. Minimal progress rate: {currentTask?.transferredFromProgress}%.</span>
+                    <span>
+                      Task was transferred! Progress at transfer: {transferProgressFloor(currentTask)}%. Current completion:{" "}
+                      {Number(currentTask.progress ?? 0)}%.
+                    </span>
                   </div>
                 )}
 
                 <TextInput
                   labelId="progress"
-                  labelText={`Completion Percentage (%) ${Number(currentTask?.transferredFromProgress) > 0 ? `(Min: ${currentTask?.transferredFromProgress}%)` : ""}`}
-                  placeholder={`Enter percentage (${Number(currentTask?.transferredFromProgress) || 0}-100)`}
+                  labelText={`Completion Percentage (%) ${currentTask && hasTransferHistory(currentTask) ? `(Min: ${transferProgressFloor(currentTask)}%)` : ""}`}
+                  placeholder={`Enter percentage (${currentTask ? transferProgressFloor(currentTask) : 0}-100)`}
                   type="number"
                   defaultValue={String(getValues("progress"))}
                   otherProps={{
@@ -1238,7 +1232,7 @@ export default function TaskForm({
                       valueAsNumber: true,
                       onChange: (e) => {
                         const val = Number(e.target.value);
-                        const minVal = Number(currentTask?.transferredFromProgress) || 0;
+                        const minVal = currentTask ? transferProgressFloor(currentTask) : 0;
                         const isAdmin = session.data?.user?.role === "admin" || session.data?.user?.role === "superadmin";
                         if (!isAdmin && val < minVal) {
                           setValue("progress", minVal, { shouldValidate: true });

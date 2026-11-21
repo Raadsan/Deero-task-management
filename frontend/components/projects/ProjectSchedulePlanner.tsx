@@ -3,6 +3,17 @@
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import {
+  FRIDAY_DAY_INDEX,
+  FRIDAY_LEGACY_SCHEDULE_WARNING,
+  FRIDAY_NON_WORKING_DAY_MESSAGE,
+  fridayLegacyScheduleWarning,
+  isCompanyWorkingDayIndex,
+  isFridayIsoDate,
+  normalizeCompanyWorkingDays,
+  SELECTABLE_WORKING_DAY_INDICES,
+  WEEKDAY_SHORT,
+} from "@/lib/company-working-days";
+import {
   DraftService,
   DraftTask,
   formatIsoDate,
@@ -13,7 +24,6 @@ import { useNow } from "@/lib/use-now";
 import { cn } from "@/lib/utils";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const PALETTE = [
   "bg-rose-100 text-rose-800",
   "bg-sky-100 text-sky-800",
@@ -145,7 +155,9 @@ export default function ProjectSchedulePlanner({
       const notesForTask: string[] = [];
       if (task.scheduledDate) {
         const day = parseIsoDate(task.scheduledDate)?.getDay();
-        if (day != null && workingDays.length && !workingDays.includes(day)) {
+        const legacyFriday = fridayLegacyScheduleWarning(task);
+        if (legacyFriday) notesForTask.push(legacyFriday);
+        else if (day != null && !isCompanyWorkingDayIndex(day, workingDays)) {
           notesForTask.push("Non-working day");
         }
         if (rangeStart && task.scheduledDate < rangeStart) notesForTask.push("Before the project starts");
@@ -166,8 +178,28 @@ export default function ProjectSchedulePlanner({
     onTasksChange(tasks.map((task) => (task.clientKey === clientKey ? { ...task, ...patch } : task)));
   }
 
+  function applyScheduledDate(clientKey: string, date: string) {
+    if (!date) {
+      patchTask(clientKey, { scheduledDate: "" });
+      return;
+    }
+    if (isFridayIsoDate(date)) {
+      toast.error(FRIDAY_NON_WORKING_DAY_MESSAGE);
+      return;
+    }
+    if (date < todayParts.date) {
+      toast.error(PAST_SCHEDULE_MESSAGE);
+      return;
+    }
+    patchTask(clientKey, { scheduledDate: date });
+  }
+
   function placeOnDate(clientKey: string, date: string) {
     if (!clientKey) return;
+    if (isFridayIsoDate(date)) {
+      toast.error(FRIDAY_NON_WORKING_DAY_MESSAGE);
+      return;
+    }
     if (date < todayParts.date) {
       toast.error(PAST_SCHEDULE_MESSAGE);
       return;
@@ -254,24 +286,33 @@ export default function ProjectSchedulePlanner({
     <div className="space-y-5">
       <div className="rounded-lg border border-zinc-200 p-4">
         <p className="mb-3 text-xs font-medium uppercase tracking-wide text-zinc-500">Schedule settings</p>
-        <div className="flex flex-wrap gap-2">
-          {DAYS.map((day, index) => (
+        <div className="flex flex-wrap items-center gap-2">
+          {SELECTABLE_WORKING_DAY_INDICES.map((index) => (
             <button
-              key={day}
+              key={WEEKDAY_SHORT[index]}
               type="button"
-              onClick={() =>
+              onClick={() => {
+                const normalized = normalizeCompanyWorkingDays(workingDays);
                 onWorkingDaysChange(
-                  workingDays.includes(index) ? workingDays.filter((value) => value !== index) : [...workingDays, index],
-                )
-              }
+                  normalized.includes(index)
+                    ? normalized.filter((value) => value !== index)
+                    : [...normalized, index].sort((a, b) => a - b),
+                );
+              }}
               className={cn(
                 "rounded-md border px-3 py-1 text-sm",
                 workingDays.includes(index) ? "border-primary bg-primary text-white" : "border-zinc-200",
               )}
             >
-              {day}
+              {WEEKDAY_SHORT[index]}
             </button>
           ))}
+          <span
+            className="rounded-md border border-zinc-200 bg-zinc-100 px-3 py-1 text-sm font-medium text-zinc-500"
+            title="Friday is always a non-working day"
+          >
+            {WEEKDAY_SHORT[FRIDAY_DAY_INDEX]} — OFF
+          </span>
         </div>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <label className="text-sm text-zinc-600">Working hours
@@ -328,7 +369,11 @@ export default function ProjectSchedulePlanner({
             <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-xs" onClick={() => showMonth(1)}>Next</Button>
           </div>
           <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-medium text-zinc-500 sm:gap-1.5 sm:text-[11px]">
-            {DAYS.map((day) => <div key={day} className="truncate">{day}</div>)}
+            {WEEKDAY_SHORT.map((day, index) => (
+              <div key={day} className={cn("truncate", index === FRIDAY_DAY_INDEX && "text-zinc-400")}>
+                {day}
+              </div>
+            ))}
           </div>
           <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
             {cells.map((cell) => {
@@ -336,7 +381,9 @@ export default function ProjectSchedulePlanner({
               const visibleTasks = dayTasksForCell.slice(0, 2);
               const hiddenCount = dayTasksForCell.length - visibleTasks.length;
               const inRange = (!rangeStart || cell.date >= rangeStart) && (!rangeEnd || cell.date <= rangeEnd);
-              const working = !workingDays.length || workingDays.includes(parseIsoDate(cell.date)?.getDay() ?? -1);
+              const dayIndex = parseIsoDate(cell.date)?.getDay() ?? -1;
+              const isFridayOff = dayIndex === FRIDAY_DAY_INDEX;
+              const working = isCompanyWorkingDayIndex(dayIndex, workingDays);
               return (
                 <div key={cell.date} className={cn("relative min-w-0", moreDate === cell.date && "z-30")}>
                   <div
@@ -355,10 +402,16 @@ export default function ProjectSchedulePlanner({
                       cell.inMonth ? "bg-white" : "bg-zinc-50 text-zinc-400",
                       !inRange && "opacity-60",
                       cell.date < todayParts.date && "opacity-70",
-                      !working && "bg-zinc-50",
+                      isFridayOff && cell.inMonth && "bg-zinc-100",
+                      !working && !isFridayOff && "bg-zinc-50",
                     )}
                   >
-                    <div className="text-[10px] font-medium leading-none sm:text-[11px]">{Number(cell.date.slice(8))}</div>
+                    <div className="flex items-center justify-between gap-0.5 text-[10px] font-medium leading-none sm:text-[11px]">
+                      <span>{Number(cell.date.slice(8))}</span>
+                      {isFridayOff && cell.inMonth ? (
+                        <span className="truncate text-[8px] font-semibold uppercase text-zinc-500 sm:text-[9px]">OFF</span>
+                      ) : null}
+                    </div>
                     <div className="mt-1 space-y-0.5">
                       {visibleTasks.map((task) => (
                         <button
@@ -426,7 +479,7 @@ export default function ProjectSchedulePlanner({
                   type="button"
                   size="sm"
                   variant="outline"
-                  disabled={!placeKey}
+                  disabled={!placeKey || isFridayIsoDate(selectedDate)}
                   onClick={() => placeOnDate(placeKey, selectedDate)}
                 >
                   Add to this date
@@ -434,6 +487,9 @@ export default function ProjectSchedulePlanner({
               </div>
             </div>
             {selectedDate < todayParts.date ? <p className="mt-2 text-xs text-red-600">{PAST_SCHEDULE_MESSAGE}</p> : null}
+            {isFridayIsoDate(selectedDate) ? (
+              <p className="mt-2 text-xs text-amber-700">{FRIDAY_NON_WORKING_DAY_MESSAGE}</p>
+            ) : null}
             {focusKey ? (
               <div className="mt-3 space-y-3">
                 {tasks.filter((task) => task.clientKey === focusKey).map((task) => (
@@ -446,7 +502,15 @@ export default function ProjectSchedulePlanner({
                     warnings={warnings.get(task.clientKey) ?? []}
                     minDate={todayParts.date}
                     minStartTime={task.scheduledDate === todayParts.date ? nextMinute(todayParts.time) : ""}
-                    onChange={(patch) => patchTask(task.clientKey, patch)}
+                    onChange={(patch) => {
+                      if (patch.scheduledDate) {
+                        applyScheduledDate(task.clientKey, patch.scheduledDate);
+                        const { scheduledDate: _omit, ...rest } = patch;
+                        if (Object.keys(rest).length) patchTask(task.clientKey, rest);
+                        return;
+                      }
+                      patchTask(task.clientKey, patch);
+                    }}
                     onClear={() => {
                       patchTask(task.clientKey, { scheduledDate: "" });
                       setFocusKey("");
@@ -487,13 +551,29 @@ export default function ProjectSchedulePlanner({
                 {filtered.map((task) => (
                   <tr key={task.clientKey} className="border-t border-zinc-100 align-top">
                     <td className="py-2 pr-2">
-                      <input type="date" min={todayParts.date} className={fieldClass} value={task.scheduledDate} onChange={(event) => patchTask(task.clientKey, { scheduledDate: event.target.value })} />
+                      <input
+                        type="date"
+                        min={todayParts.date}
+                        className={fieldClass}
+                        value={task.scheduledDate}
+                        onChange={(event) => applyScheduledDate(task.clientKey, event.target.value)}
+                      />
                     </td>
                     <td className="pr-2">
                       <div>{taskLabel(task, services)}</div>
                       <input className={cn(fieldClass, "mt-1")} placeholder="Notes" value={task.notes} onChange={(event) => patchTask(task.clientKey, { notes: event.target.value })} />
                       {(warnings.get(task.clientKey) ?? []).map((warning) => (
-                        <p key={warning} className={cn("text-xs", warning === PAST_SCHEDULE_MESSAGE ? "text-red-600" : "text-amber-600")}>{warning}</p>
+                        <p
+                          key={warning}
+                          className={cn(
+                            "text-xs",
+                            warning === PAST_SCHEDULE_MESSAGE || warning === FRIDAY_NON_WORKING_DAY_MESSAGE
+                              ? "text-red-600"
+                              : "text-amber-600",
+                          )}
+                        >
+                          {warning}
+                        </p>
                       ))}
                     </td>
                     <td className="pr-2">{task.serviceName}</td>
@@ -578,10 +658,37 @@ function TaskEditor({
         </label>
       </div>
       <label className="mt-2 block text-xs text-zinc-500">Scheduled date
-        <input className={fieldClass} type="date" min={minDate} value={task.scheduledDate} onChange={(event) => onChange({ scheduledDate: event.target.value })} />
+        <input
+          className={fieldClass}
+          type="date"
+          min={minDate}
+          value={task.scheduledDate}
+          onChange={(event) => {
+            const next = event.target.value;
+            if (isFridayIsoDate(next)) {
+              toast.error(FRIDAY_NON_WORKING_DAY_MESSAGE);
+              return;
+            }
+            onChange({ scheduledDate: next });
+          }}
+        />
       </label>
       <input className={cn(fieldClass, "mt-2")} placeholder="Schedule notes" value={task.notes} onChange={(event) => onChange({ notes: event.target.value })} />
-      {warnings.map((warning) => <p key={warning} className={cn("mt-1 text-xs", warning === PAST_SCHEDULE_MESSAGE ? "text-red-600" : "text-amber-600")}>{warning}</p>)}
+      {warnings.map((warning) => (
+        <p
+          key={warning}
+          className={cn(
+            "mt-1 text-xs",
+            warning === PAST_SCHEDULE_MESSAGE || warning === FRIDAY_NON_WORKING_DAY_MESSAGE
+              ? "text-red-600"
+              : warning === FRIDAY_LEGACY_SCHEDULE_WARNING
+                ? "text-amber-700"
+                : "text-amber-600",
+          )}
+        >
+          {warning}
+        </p>
+      ))}
     </div>
   );
 }

@@ -22,6 +22,7 @@ export function normName(value) {
 const LIFECYCLE_TO_REPORT = {
   pending: "PENDING",
   in_progress: "IN_PROGRESS",
+  pending_review: "PENDING_REVIEW",
   completed: "COMPLETED",
   overdue: "OVERDUE",
   on_hold: "ON_HOLD",
@@ -44,12 +45,21 @@ function taskKind(task) {
 }
 
 export function countStatuses(tasks) {
-  const summary = { total: 0, completed: 0, inProgress: 0, pending: 0, overdue: 0, onHold: 0 };
+  const summary = {
+    total: 0,
+    completed: 0,
+    inProgress: 0,
+    pending: 0,
+    pendingReview: 0,
+    overdue: 0,
+    onHold: 0,
+  };
   for (const task of tasks) {
     if (task.status === "CANCELLED" || task.status === "REJECTED") continue;
     summary.total += 1;
     if (task.status === "COMPLETED") summary.completed += 1;
     else if (task.status === "IN_PROGRESS") summary.inProgress += 1;
+    else if (task.status === "PENDING_REVIEW") summary.pendingReview += 1;
     else if (task.status === "OVERDUE") summary.overdue += 1;
     else if (task.status === "ON_HOLD") summary.onHold += 1;
     else summary.pending += 1;

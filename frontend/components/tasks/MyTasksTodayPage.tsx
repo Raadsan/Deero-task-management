@@ -12,10 +12,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { editTask } from "@/lib/apis/taskApi";
+import { editTask, submitTaskForReview } from "@/lib/apis/taskApi";
 import { isBoardOnlyTask, normalizeMyTasksList } from "@/lib/my-task-filters";
 import { fetchMyCompanyTasks } from "@/lib/apis/myTasksApi";
 import { SWR_CACH_KEYS } from "@/lib/constants";
+import { TASK_STATUS_FILTER_OPTIONS } from "@/lib/task-status";
 import {
   actionBtnView,
   dashboardCardClass,
@@ -203,19 +204,23 @@ export default function MyTasksTodayPage() {
 
     setUpdatingTaskId(String(processTarget.id));
     try {
-      const result = await editTask({
-        taskId: processTarget.id,
-        status: isCompleted ? "completed" : "pending",
-        progress,
-        notes: noteText || undefined,
-      });
+      const result = isCompleted
+        ? await submitTaskForReview(String(processTarget.id), {
+            progress: 100,
+            notes: noteText || undefined,
+          })
+        : await editTask({
+            taskId: processTarget.id,
+            progress,
+            notes: noteText || undefined,
+          });
       if (result.success) {
         toast.success(
-          noteText && !isCompleted
-            ? "Message sent successfully"
-            : isCompleted
-            ? "Task completed successfully"
-            : "Message sent successfully",
+          isCompleted
+            ? "Task submitted for review"
+            : noteText
+              ? "Message sent successfully"
+              : "Progress saved",
         );
         await mutate(SWR_CACH_KEYS.myTasks.key);
         await mutate(SWR_CACH_KEYS.myTasksList.key);
@@ -273,10 +278,11 @@ export default function MyTasksTodayPage() {
               onChange={(e) => setStatusFilter(e.target.value)}
               className={cn("w-32 px-2", compactSelectClass)}
             >
-              <option value="all">All Status</option>
-              <option value="pending">Processing</option>
-              <option value="completed">Completed</option>
-              <option value="overdue">Overdue</option>
+              {TASK_STATUS_FILTER_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label === "All" ? "All Status" : option.label}
+                </option>
+              ))}
             </select>
           </div>
 

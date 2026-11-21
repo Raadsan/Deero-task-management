@@ -13,7 +13,13 @@ import { getTaskFormBranchOptions } from "@/lib/apis/sharedApi";
 import { editTask } from "@/lib/apis/taskApi";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import TaskHoldPanel from "@/components/tasks/TaskHoldControls";
+import TaskReviewActions from "@/components/tasks/TaskReviewActions";
+import TaskTransferModal from "@/components/tasks/TaskTransferModal";
+import { getBackendSessionClient } from "@/lib/apis/readApi";
+import { authClient } from "@/lib/auth-client";
+import { canTransferTaskForUser, originalAssigneeName } from "@/lib/task-transfer";
 import { formatStatusLabel } from "@/lib/dashboard-ui";
+import { getTaskDetailScheduleDisplay } from "@/lib/task-detail-schedule";
 import { formatScheduledTask, getTaskTableLabels, markTaskNotesSeen, resolveTaskDisplayStatus } from "@/lib/utils";
 import { btnFormSubmit } from "@/lib/dashboard-ui";
 import { Task } from "@/lib/types";
@@ -41,6 +47,7 @@ interface Props {
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   pending: { bg: "bg-yellow-100", text: "text-yellow-800" },
   in_progress: { bg: "bg-amber-100", text: "text-amber-800" },
+  pending_review: { bg: "bg-sky-100", text: "text-sky-800" },
   overdue: { bg: "bg-red-100", text: "text-red-800" },
   on_hold: { bg: "bg-violet-100", text: "text-violet-800" },
   completed: { bg: "bg-green-100", text: "text-green-800" },
@@ -56,6 +63,9 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
   const { mutate } = useSWRConfig();
   const [newNote, setNewNote] = useState("");
   const [savingNote, setSavingNote] = useState(false);
+  const [transferOpen, setTransferOpen] = useState(false);
+  const session = authClient.useSession();
+  const { data: backendSession } = useSWR(open ? "task-view-session" : null, getBackendSessionClient);
   const { data: branchOptionsRes } = useSWR(
     open && task ? "task-view-portfolios" : null,
     getTaskFormBranchOptions,
@@ -78,6 +88,38 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
       markTaskNotesSeen(currentTask.id);
     }
   }, [open, currentTask?.id]);
+
+  const scheduleDisplay = useMemo(
+    () =>
+      currentTask
+        ? getTaskDetailScheduleDisplay(currentTask)
+        : {
+            originalDueDate: "N/A",
+            updatedEndingDueDate: "N/A",
+            extraTimeAdded: "0 minutes",
+            reason: "N/A",
+          },
+    [currentTask],
+  );
+
+  const transferHistory = useMemo(() => {
+    const list = Array.isArray((currentTask as Task & { transferHistory?: unknown[] })?.transferHistory)
+      ? [...((currentTask as Task & { transferHistory: unknown[] }).transferHistory)]
+      : [];
+    return list.sort(
+      (a, b) =>
+        new Date(String((a as { createdAt?: string }).createdAt)).getTime() -
+        new Date(String((b as { createdAt?: string }).createdAt)).getTime(),
+    );
+  }, [currentTask]);
+
+  const actor = (backendSession?.data?.user ?? session.data?.user) as
+    | { id?: string; name?: string; role?: string }
+    | undefined;
+
+  const allowTransfer = task
+    ? canTransferTaskForUser(task, actor)
+    : false;
 
   async function saveNote() {
     const text = newNote.trim();
@@ -251,64 +293,46 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
                 <InfoItem icon={Clock} label="End Time" value={String(formatScheduledTask(currentTask)?.time || "").split("–")[1]?.trim() || "N/A"} />
               </>
             ) : (
-              <>
-            <InfoItem
-              icon={Calendar}
-              label="Start Date"
-              value={
-                currentTask.startDate
-                  ? new Date(currentTask.startDate).toLocaleString("en-US", {
-                      month: "short",
-                      day: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })
-                  : "N/A"
-              }
-            />
+              <InfoItem
+                icon={Calendar}
+                label="Start Date"
+                value={
+                  currentTask.startDate
+                    ? new Date(currentTask.startDate).toLocaleString("en-US", {
+                        month: "short",
+                        day: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : "N/A"
+                }
+              />
+            )}
             <InfoItem
               icon={Calendar}
               label="Original Due Date"
-              value={
-                currentTask.originalDeadline || currentTask.deadline
-                  ? new Date(currentTask.originalDeadline ?? currentTask.deadline!).toLocaleString("en-US", {
-                      month: "short",
-                      day: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })
-                  : "N/A"
-              }
+              value={scheduleDisplay.originalDueDate}
             />
-              </>
-            )}
             <InfoItem
               icon={Clock}
               label="Extra Time Added"
-              value={
-                Number(currentTask.extraTimeMinutes) > 0
-                  ? `${Math.floor(Number(currentTask.extraTimeMinutes) / 60)}h ${Number(currentTask.extraTimeMinutes) % 60}m`
-                  : "0h 0m"
-              }
+              value={scheduleDisplay.extraTimeAdded}
             />
             <InfoItem
               icon={Calendar}
               label="Updated Ending Due Date"
-              value={
-                Number(currentTask.extraTimeMinutes) > 0 && currentTask.deadline
-                  ? new Date(new Date(currentTask.deadline).getTime() + Number(currentTask.extraTimeMinutes) * 60_000).toLocaleString("en-US", {
-                      month: "short",
-                      day: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })
-                  : "N/A"
-              }
+              value={scheduleDisplay.updatedEndingDueDate}
             />
           </div>
+
+          <InfoItem
+            icon={MessageSquareText}
+            label="Reason"
+            value={scheduleDisplay.reason}
+            multiline
+            className="w-full"
+          />
 
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2">
@@ -328,6 +352,13 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
               </span>
             </div>
           </div>
+
+          <TaskReviewActions
+            task={currentTask}
+            onDone={async () => {
+              await Promise.all([mutate(SWR_CACH_KEYS.tasks.key), mutate(SWR_CACH_KEYS.myTasksList.key)]);
+            }}
+          />
 
           <TaskHoldPanel task={currentTask} />
 
@@ -370,71 +401,126 @@ export default function TaskViewModal({ open, onOpenChange, task }: Props) {
             </div>
           ) : null}
 
-          {(currentTask as any).transferHistory?.length > 0 && (
-            <div className="rounded-lg border border-indigo-100 bg-indigo-50/50 p-4">
-              <div className="mb-3 flex items-center gap-2">
-                <ArrowRightLeft className="size-4 text-indigo-600" />
-                <p className="text-xs font-bold uppercase tracking-wide text-indigo-700">
-                  Transfer History
-                </p>
-              </div>
+          <div className="rounded-lg border border-indigo-100 bg-indigo-50/50 p-4">
+            <div className="mb-3 flex items-center gap-2">
+              <ArrowRightLeft className="size-4 text-indigo-600" />
+              <p className="text-xs font-bold uppercase tracking-wide text-indigo-700">
+                Assignment History
+              </p>
+            </div>
+            <div className="mb-4 grid gap-2 rounded-lg border border-indigo-200/60 bg-white p-3 text-xs sm:grid-cols-2">
+              <p>
+                <span className="font-semibold text-zinc-500">Original assignee: </span>
+                <span className="font-semibold text-indigo-800">
+                  {originalAssigneeName(currentTask, transferHistory as Array<{ fromAssignee?: { name?: string } }>)}
+                </span>
+              </p>
+              <p>
+                <span className="font-semibold text-zinc-500">Current assignee: </span>
+                <span className="font-semibold text-indigo-800">
+                  {currentTask.assignedTo?.name || "Unassigned"}
+                </span>
+              </p>
+            </div>
+            {transferHistory.length ? (
               <div className="space-y-3">
-                {(task as any).transferHistory.map((transfer: any, idx: number) => (
-                  <div
-                    key={transfer.id ?? idx}
-                    className="relative flex items-start gap-3 rounded-lg border border-indigo-200/60 bg-white p-3"
-                  >
-                    <div className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-[10px] font-bold text-indigo-700">
-                      {idx + 1}
-                    </div>
-                    <div className="min-w-0 flex-1 space-y-1">
-                      <p className="text-xs font-semibold text-slate-800">
-                        <span className="text-indigo-700">{transfer.fromAssignee?.name ?? "Unknown"}</span>
-                        {" â†’ "}
-                        <span className="text-indigo-700">{transfer.toAssignee?.name ?? "Unknown"}</span>
-                      </p>
-                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-zinc-500">
-                        <span>
-                          Progress at transfer:{" "}
-                          <strong className="text-slate-700">{transfer.progressAtTransfer ?? 0}%</strong>
-                        </span>
-                        <span>
-                          Date:{" "}
-                          <strong className="text-slate-700">
-                            {new Date(transfer.createdAt).toLocaleString("en-US", {
-                              month: "short",
-                              day: "2-digit",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </strong>
-                        </span>
-                        {transfer.transferredBy?.name && (
+                {transferHistory.map((transfer, idx) => {
+                  const row = transfer as {
+                    id?: string;
+                    fromAssignee?: { name?: string };
+                    toAssignee?: { name?: string };
+                    reason?: string;
+                    note?: string;
+                    progressAtTransfer?: number;
+                    createdAt?: string;
+                    transferredBy?: { name?: string };
+                  };
+                  return (
+                    <div
+                      key={row.id ?? idx}
+                      className="relative flex items-start gap-3 rounded-lg border border-indigo-200/60 bg-white p-3"
+                    >
+                      <div className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-[10px] font-bold text-indigo-700">
+                        {idx + 1}
+                      </div>
+                      <div className="min-w-0 flex-1 space-y-1.5">
+                        <p className="text-xs font-semibold text-slate-800">
+                          <span className="text-indigo-700">{row.fromAssignee?.name ?? "Unknown"}</span>
+                          {" → "}
+                          <span className="text-indigo-700">{row.toAssignee?.name ?? "Unknown"}</span>
+                        </p>
+                        {row.reason ? (
+                          <p className="text-xs text-zinc-700">
+                            <span className="font-semibold text-zinc-500">Reason: </span>
+                            {row.reason}
+                          </p>
+                        ) : null}
+                        {row.note ? (
+                          <p className="text-xs text-zinc-600">
+                            <span className="font-semibold text-zinc-500">Notes: </span>
+                            {row.note}
+                          </p>
+                        ) : null}
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-zinc-500">
                           <span>
-                            By: <strong className="text-slate-700">{transfer.transferredBy.name}</strong>
+                            Progress at transfer:{" "}
+                            <strong className="text-slate-700">{row.progressAtTransfer ?? 0}%</strong>
                           </span>
-                        )}
+                          <span>
+                            Date:{" "}
+                            <strong className="text-slate-700">
+                              {row.createdAt
+                                ? new Date(row.createdAt).toLocaleString("en-US", {
+                                    month: "short",
+                                    day: "2-digit",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })
+                                : "—"}
+                            </strong>
+                          </span>
+                          {row.transferredBy?.name ? (
+                            <span>
+                              By: <strong className="text-slate-700">{row.transferredBy.name}</strong>
+                            </span>
+                          ) : null}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
-            </div>
-          )}
+            ) : (
+              <p className="text-xs text-zinc-500">No transfers recorded for this task.</p>
+            )}
+          </div>
         </div>
 
         <div className="shrink-0 border-t border-zinc-100 px-6 py-4">
-          <div className="flex justify-end">
-            <Button
-              type="button"
-              onClick={() => onOpenChange(false)}
-              className={btnFormSubmit}
-            >
+          <div className="flex flex-wrap justify-end gap-2">
+            {allowTransfer ? (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setTransferOpen(true)}
+                className="h-10 border-indigo-200 text-xs font-semibold text-indigo-800"
+              >
+                <ArrowRightLeft className="mr-2 size-4" />
+                Transfer Task
+              </Button>
+            ) : null}
+            <Button type="button" onClick={() => onOpenChange(false)} className={btnFormSubmit}>
               Close
             </Button>
           </div>
         </div>
+
+        <TaskTransferModal
+          open={transferOpen}
+          onOpenChange={setTransferOpen}
+          task={currentTask}
+        />
       </DialogContent>
     </Dialog>
   );
@@ -444,19 +530,31 @@ function InfoItem({
   icon: Icon,
   label,
   value,
+  multiline,
+  className,
 }: {
   icon: typeof User;
   label: string;
   value: string;
+  multiline?: boolean;
+  className?: string;
 }) {
   return (
-    <div className="flex items-start gap-3 rounded-lg border border-zinc-100 bg-zinc-50 p-3">
+    <div
+      className={`flex items-start gap-3 rounded-lg border border-zinc-100 bg-zinc-50 p-3 ${className || ""}`}
+    >
       <Icon className="mt-0.5 size-4 shrink-0 text-zinc-400" />
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <p className="text-xs font-semibold uppercase tracking-wide text-zinc-400">
           {label}
         </p>
-        <p className="truncate text-sm font-medium text-zinc-800">{value}</p>
+        <p
+          className={`text-sm font-medium text-zinc-800 ${
+            multiline ? "whitespace-pre-wrap break-words" : "truncate"
+          }`}
+        >
+          {value}
+        </p>
       </div>
     </div>
   );

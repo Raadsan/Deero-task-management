@@ -22,6 +22,7 @@ import {
   getAllUsersClient,
 } from "@/lib/apis/readApi";
 import { ROUTES } from "@/lib/constants";
+import { TASK_STATUS_FILTER_OPTIONS } from "@/lib/task-status";
 import { Task } from "@/lib/types";
 import {
   actionBtnDelete,
@@ -400,12 +401,11 @@ export default function TasksManagementPage() {
               onChange={(e) => setStatusFilter(e.target.value)}
               className={cn("min-w-[9.5rem]", compactSelectClass)}
             >
-              <option value="all">All Statuses</option>
-              <option value="pending">Pending</option>
-              <option value="in_progress">In Progress</option>
-              <option value="completed">Completed</option>
-              <option value="overdue">Overdue</option>
-              <option value="on_hold">On Hold</option>
+              {TASK_STATUS_FILTER_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </select>
 
             <select

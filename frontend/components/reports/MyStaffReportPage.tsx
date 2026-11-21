@@ -16,6 +16,7 @@ import {
   formatStatusLabel,
   getTaskStatusBadgeClass,
 } from "@/lib/dashboard-ui";
+import { TASK_STATUS_FILTER_OPTIONS } from "@/lib/task-status";
 import { cn, getTaskTableLabels, resolveTaskDisplayStatus } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -544,10 +545,11 @@ export default function MyStaffReportPage() {
               }}
               className="h-9 rounded-md border border-zinc-200 bg-white px-3 text-xs font-semibold text-zinc-700 outline-none focus:border-primary"
             >
-              <option value="all">All statuses</option>
-              <option value="pending">Processing</option>
-              <option value="completed">Completed</option>
-              <option value="overdue">Overdue</option>
+              {TASK_STATUS_FILTER_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label === "All" ? "All statuses" : option.label}
+                </option>
+              ))}
             </select>
           </div>
         </div>

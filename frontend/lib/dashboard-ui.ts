@@ -95,6 +95,9 @@ export function getTaskStatusBadgeClass(status: string): string {
     case "todo":
     case "to do":
       return "bg-primary text-white font-bold";
+    case "pending_review":
+    case "pending review":
+      return "bg-sky-600 text-white font-bold";
     case "overdue":
       return "bg-[#e6005c] text-white font-bold";
     case "on_hold":
@@ -116,6 +119,7 @@ export function formatStatusLabel(status: string): string {
   if (lower === "completed" || lower === "complete" || lower === "done") return "Completed";
   if (lower === "overdue") return "Overdue";
   if (lower === "on_hold" || lower === "on hold") return "On Hold";
+  if (lower === "pending_review" || lower === "pending review") return "Pending Review";
   return status.charAt(0).toUpperCase() + status.slice(1);
 }
 

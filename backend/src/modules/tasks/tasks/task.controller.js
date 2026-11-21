@@ -19,7 +19,17 @@ import {
   managementTaskInclude,
   taskMatchesManagementSearch,
 } from "../../../lib/task-management-filters.js";
-import { initialPersistedStatusForCreate } from "../../../lib/task-lifecycle.js";
+import { evaluateTaskLifecycle, initialPersistedStatusForCreate } from "../../../lib/task-lifecycle.js";
+import { assertTransferPreservesTaskState, canTransferTask, mergeAssignedByOnCreate } from "../../../lib/task-transfer.js";
+import { fridayScheduleErrorForReschedule } from "../../../lib/company-working-days.js";
+import {
+  appendReviewSubmission,
+  assertEmployeeMaySetStatus,
+  assertEmployeeMayUpdateProgress,
+  canReviewTask,
+  recordStatusTransition,
+  settleReviewSubmission,
+} from "../../../lib/task-status-workflow.js";
 import {
   appendProgressHistory,
   applyScheduledFeatures,
@@ -125,6 +135,8 @@ export const getAllTasks = async (req, res) => {
 
 export const getMyTasks = async (req, res) => {
   try {
+    const { requestTaskStatusMaintenance } = await import("../../../lib/task-status-maintenance.js");
+    requestTaskStatusMaintenance(prisma);
     const scope = getScope(req);
     // Fallback: if scope.user is null (transient error), use raw session user
     const userId = scope.user?.id ?? req.session?.user?.id;
@@ -313,6 +325,7 @@ export const createTask = async (req, res) => {
         currentStatus: "pending",
         currentProgress: data.progress ?? 0,
         isCreate: true,
+        isManager: isScheduleManager(scope.user?.role ?? req.session?.user?.role),
       });
       if (normalized.error) {
         return res.status(400).json({ success: false, error: normalized.error });
@@ -345,7 +358,9 @@ export const createTask = async (req, res) => {
         progress: normalized.progress,
         serviceInformation: data.serviceInformation || "",
         isPersonal: Boolean(data.isPersonal),
-        features: Array.isArray(data.features) ? data.features : null,
+        features: Array.isArray(data.features)
+          ? data.features
+          : mergeAssignedByOnCreate(data.features, scope.user?.id ?? req.session?.user?.id),
       };
 
       if (!data.clientId) {
@@ -446,6 +461,12 @@ export const updateTask = async (req, res) => {
       return res.status(403).json({ success: false, error: "You do not have permission to add notes to this task" });
     }
     const manager = isScheduleManager(actorRole);
+    if (!manager && status !== undefined) {
+      const statusError = assertEmployeeMaySetStatus(status, false);
+      if (statusError) {
+        return res.status(403).json({ success: false, error: statusError });
+      }
+    }
     const originalFeatures = objectFeatures(originalTask.features);
     const incomingFeatures = objectFeatures(features);
     const scheduleIsChanging = Boolean(incomingFeatures && originalFeatures && scheduleChanged(originalFeatures, incomingFeatures));
@@ -462,6 +483,8 @@ export const updateTask = async (req, res) => {
         originalFeatures,
         mergeScheduleChange(originalFeatures, incomingFeatures, originalTask.status),
       );
+      const friday = fridayScheduleErrorForReschedule(originalFeatures, workingFeatures);
+      if (friday) return res.status(400).json({ success: false, error: friday });
       const past = pastScheduleError(workingFeatures);
       if (past) return res.status(400).json({ success: false, error: past });
     }
@@ -470,6 +493,12 @@ export const updateTask = async (req, res) => {
     const progressProvided = progress !== undefined && progress !== null && progress !== "";
     const nextProgressNumber = progressProvided ? Number(progress) : Number(originalTask.progress ?? 0);
     const progressChanged = progressProvided && nextProgressNumber !== Number(originalTask.progress ?? 0);
+    if (progressChanged && !manager) {
+      const progressError = assertEmployeeMayUpdateProgress(originalTask, scope.user, { isManager: false });
+      if (progressError) {
+        return res.status(403).json({ success: false, error: progressError });
+      }
+    }
     if (scheduleGate.scheduled && !scheduleGate.canUpdateProgress && (progressChanged || noteText)) {
       return res.status(403).json({ success: false, error: scheduleGate.reason });
     }
@@ -505,9 +534,9 @@ export const updateTask = async (req, res) => {
     if (Array.isArray(features) && features.length > 0) {
       const doneCount = features.filter((f) => Boolean(f.done || f.completed)).length;
       calculatedProgress = Math.round((doneCount / features.length) * 100);
-      if (calculatedProgress === 100) {
+      if (calculatedProgress === 100 && manager) {
         calculatedStatus = "completed";
-      } else if (calculatedProgress > 0 && status !== "completed") {
+      } else if (calculatedProgress > 0) {
         calculatedStatus = "in_progress";
       }
     }
@@ -522,6 +551,7 @@ export const updateTask = async (req, res) => {
         : originalTask.extraTimeMinutes,
       currentStatus: originalTask.status,
       currentProgress: originalTask.progress,
+      isManager: manager,
     });
 
     if (normalized.error && !scheduledEvaluation.scheduled) {
@@ -529,13 +559,19 @@ export const updateTask = async (req, res) => {
     }
 
     const writeStatus = scheduledEvaluation.status === "on_hold"
-      ? (originalTask.status === "pending" ? "pending" : "in_progress")
-      : scheduledEvaluation.scheduled && scheduledEvaluation.status
-        ? scheduledEvaluation.status
-        : normalized.status;
+      ? "on_hold"
+      : scheduledEvaluation.status === "pending_review"
+        ? "pending_review"
+        : scheduledEvaluation.scheduled && scheduledEvaluation.status
+          ? scheduledEvaluation.status
+          : normalized.status;
     const writeProgress = scheduledEvaluation.scheduled
-      ? Math.min(100, Math.max(0, scheduledEvaluation.status === "completed" ? 100 : nextProgressNumber))
+      ? Math.min(100, Math.max(0, nextProgressNumber))
       : normalized.progress;
+
+    if (writeStatus === "completed" && !manager) {
+      return res.status(403).json({ success: false, error: "Only a manager can approve and complete a task." });
+    }
 
     // Find siblings (tasks created at the same time with same details)
     let siblings = [];
@@ -933,6 +969,7 @@ export const getTasksReport = async (req, res) => {
         totalTasks: tasks.length,
         completedTasks: tasks.filter((t) => managementDisplayStatus(t, now) === "completed").length,
         pending: tasks.filter((t) => managementDisplayStatus(t, now) === "pending").length,
+        pendingReview: tasks.filter((t) => managementDisplayStatus(t, now) === "pending_review").length,
         overdue: tasks.filter((t) => managementDisplayStatus(t, now) === "overdue").length,
       },
       tasks: tasks.map((t) => ({
@@ -963,7 +1000,7 @@ function holdActor(scope, req) {
   };
 }
 
-async function applyHoldChange(scope, taskId, change) {
+async function applyHoldChange(scope, taskId, change, actor) {
   const accessible = await findAccessibleTask(scope, taskId, { user: true });
   if (!accessible) return { status: 404, body: { success: false, error: "Task not found" } };
   try {
@@ -983,15 +1020,23 @@ async function applyHoldChange(scope, taskId, change) {
       const now = new Date();
       const evaluation = evaluateScheduledTask({ ...task, features: outcome.features, progress: task.progress }, now);
       const features = applyScheduledFeatures(outcome.features, evaluation, now);
-      const status = evaluation.status === "on_hold"
-        ? (task.status === "pending" ? "pending" : "in_progress")
+      let status = evaluation.status === "on_hold"
+        ? "on_hold"
         : evaluation.status || task.status;
+      if (evaluation.status !== "on_hold") {
+        const life = evaluateTaskLifecycle({ ...task, features, status: task.status }, now);
+        status = life.persistStatus;
+      }
+      const nextFeatures = recordStatusTransition(features, task, {
+        toStatus: status,
+        user: { id: actor?.userId, name: actor?.userName },
+        reason: evaluation.status === "on_hold" ? "Task placed on hold" : "Task resumed from hold",
+      });
       return tx.task.update({
         where: { id: task.id },
         data: {
-          features,
+          features: nextFeatures,
           status,
-          ...(evaluation.status === "completed" ? { completedAt: task.completedAt || now } : {}),
         },
       });
     });
@@ -1016,7 +1061,7 @@ export const holdTask = async (req, res) => {
     taskStatus: task.status,
     taskId: task.id,
     now: new Date(),
-  }));
+  }), actor);
   return res.status(result.status).json(result.body);
 };
 
@@ -1031,6 +1076,430 @@ export const resumeTask = async (req, res) => {
     userName: actor.userName,
     taskId: task.id,
     now: new Date(),
-  }));
+  }), actor);
   return res.status(result.status).json(result.body);
+};
+
+async function notifyReviewer(task, reviewerUserId, type, message) {
+  if (!reviewerUserId) return;
+  try {
+    const notifId = Math.random().toString(36).substring(2, 15);
+    await prisma.$executeRawUnsafe(
+      `INSERT INTO notifications (id, taskId, taskName, assigneeName, deadline, type, userId, isSeen) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      notifId,
+      task.id,
+      message.substring(0, 120),
+      task.user?.name || "User",
+      task.deadline || new Date(),
+      type,
+      reviewerUserId,
+      0,
+    );
+  } catch (error) {
+    console.error("Failed to create review notification:", error);
+  }
+}
+
+export const submitTaskForReview = async (req, res) => {
+  const { id } = req.params;
+  const scope = getScope(req);
+  const userId = scope.user?.id ?? req.session?.user?.id;
+  if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
+
+  try {
+    const task = await findAccessibleTask(scope, id, { user: true });
+    if (!task) return res.status(404).json({ success: false, error: "Task not found" });
+    if (task.assgineeId !== userId) {
+      return res.status(403).json({ success: false, error: "Only the assignee can submit this task for review." });
+    }
+    if (String(task.status).toLowerCase() === "pending_review") {
+      return res.status(400).json({ success: false, error: "This task is already pending review." });
+    }
+  if (String(task.status).toLowerCase() === "completed") {
+      return res.status(400).json({ success: false, error: "This task is already completed." });
+    }
+    const progress = Math.min(100, Math.max(0, Number(req.body?.progress ?? task.progress ?? 0)));
+    if (progress < 100) {
+      return res.status(400).json({ success: false, error: "Set progress to 100% before submitting for review." });
+    }
+
+    const gate = evaluateScheduledTask(task, new Date());
+    if (gate.scheduled && !gate.canUpdateProgress && gate.status !== "in_progress" && gate.status !== "overdue") {
+      return res.status(403).json({ success: false, error: gate.reason || "Cannot submit this task yet." });
+    }
+
+    const submissionId = `sub-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const submission = {
+      id: submissionId,
+      progress: 100,
+      notes: String(req.body?.notes || "").trim(),
+      attachments: Array.isArray(req.body?.attachments) ? req.body.attachments : [],
+      employeeId: userId,
+      employeeName: scope.user?.name || req.session?.user?.name || "Employee",
+      submittedAt: new Date().toISOString(),
+      decision: "pending",
+    };
+
+    const appended = appendReviewSubmission(task.features, submission);
+    if (appended.error) {
+      return res.status(400).json({ success: false, error: appended.error });
+    }
+
+    const nextFeatures = recordStatusTransition(appended.features, task, {
+      toStatus: "pending_review",
+      user: { id: userId, name: submission.employeeName },
+      reason: submission.notes || "Submitted for review",
+      reviewDecision: "submitted",
+    });
+
+    const updated = await prisma.task.update({
+      where: { id: task.id },
+      data: {
+        status: "pending_review",
+        progress: 100,
+        progressUpdatedAt: new Date(),
+        features: nextFeatures,
+      },
+      include: { user: true },
+    });
+
+    const supervisorId = String(task.supervisor || "").trim();
+    const reviewerId = supervisorId && supervisorId.length > 20 ? supervisorId : null;
+    void notifyReviewer(
+      updated,
+      reviewerId,
+      "task-review",
+      `Task submitted for review: ${updated.serviceInformation || updated.description}`,
+    );
+
+    return res.json({ success: true, data: updated });
+  } catch (error) {
+    console.error("submitTaskForReview:", error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const approveTask = async (req, res) => {
+  const { id } = req.params;
+  const scope = getScope(req);
+  const actor = scope.user ?? req.session?.user;
+  if (!actor?.id) return res.status(401).json({ success: false, error: "Unauthorized" });
+
+  try {
+    const task = await findAccessibleTask(scope, id, { user: true });
+    if (!task) return res.status(404).json({ success: false, error: "Task not found" });
+    if (!canReviewTask(actor, task)) {
+      return res.status(403).json({ success: false, error: "You are not authorized to approve this task." });
+    }
+    if (String(task.status).toLowerCase() !== "pending_review") {
+      return res.status(400).json({ success: false, error: "Only tasks pending review can be approved." });
+    }
+
+    const settled = settleReviewSubmission(task.features, {
+      decision: "approved",
+      reviewerId: actor.id,
+      reviewerName: actor.name || "Reviewer",
+      comments: String(req.body?.comments || "").trim(),
+    });
+    if (settled.error) return res.status(400).json({ success: false, error: settled.error });
+
+    const now = new Date();
+    const nextFeatures = recordStatusTransition(settled.features, task, {
+      toStatus: "completed",
+      user: { id: actor.id, name: actor.name },
+      reason: settled.submission?.notes || "Approved",
+      reviewDecision: "approved",
+    });
+
+    const updated = await prisma.task.update({
+      where: { id: task.id },
+      data: {
+        status: "completed",
+        progress: 100,
+        completedAt: now,
+        features: applyScheduledFeatures(nextFeatures, { scheduled: true, status: "completed", projectStatus: "COMPLETED" }, now),
+      },
+      include: { user: true },
+    });
+
+    void notifyReviewer(
+      updated,
+      updated.assgineeId,
+      "task-approved",
+      `Your task was approved: ${updated.serviceInformation || updated.description}`,
+    );
+
+    return res.json({ success: true, data: updated });
+  } catch (error) {
+    console.error("approveTask:", error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const rejectTask = async (req, res) => {
+  const { id } = req.params;
+  const scope = getScope(req);
+  const actor = scope.user ?? req.session?.user;
+  if (!actor?.id) return res.status(401).json({ success: false, error: "Unauthorized" });
+
+  const comments = String(req.body?.comments || req.body?.reason || "").trim();
+  if (!comments) {
+    return res.status(400).json({ success: false, error: "Revision comments are required when rejecting a submission." });
+  }
+
+  try {
+    const task = await findAccessibleTask(scope, id, { user: true });
+    if (!task) return res.status(404).json({ success: false, error: "Task not found" });
+    if (!canReviewTask(actor, task)) {
+      return res.status(403).json({ success: false, error: "You are not authorized to reject this task." });
+    }
+    if (String(task.status).toLowerCase() !== "pending_review") {
+      return res.status(400).json({ success: false, error: "Only tasks pending review can be rejected." });
+    }
+
+    const settled = settleReviewSubmission(task.features, {
+      decision: "rejected",
+      reviewerId: actor.id,
+      reviewerName: actor.name || "Reviewer",
+      comments,
+    });
+    if (settled.error) return res.status(400).json({ success: false, error: settled.error });
+
+    const grantMinutes = Math.max(0, Number(req.body?.extraTimeMinutes ?? req.body?.additionalMinutes ?? 0) || 0);
+    const nextExtra = Math.max(0, Number(task.extraTimeMinutes || 0)) + grantMinutes;
+
+    const now = new Date();
+    let nextFeatures = recordStatusTransition(settled.features, task, {
+      toStatus: "in_progress",
+      user: { id: actor.id, name: actor.name },
+      reason: comments,
+      reviewDecision: "rejected",
+    });
+
+    if (grantMinutes > 0) {
+      const schedule = { ...(objectFeatures(nextFeatures) || {}) };
+      const history = Array.isArray(schedule.scheduleAdjustments) ? schedule.scheduleAdjustments : [];
+      nextFeatures = {
+        ...schedule,
+        scheduleAdjustments: [
+          ...history,
+          {
+            type: "extra_time_granted",
+            minutes: grantMinutes,
+            grantedAt: now.toISOString(),
+            grantedById: actor.id,
+            grantedByName: actor.name,
+            originalDeadline: task.deadline,
+            originalExtraMinutes: task.extraTimeMinutes,
+          },
+        ],
+      };
+    }
+
+    const life = evaluateTaskLifecycle(
+      {
+        ...task,
+        status: "in_progress",
+        progress: task.progress,
+        extraTimeMinutes: nextExtra,
+        features: nextFeatures,
+      },
+      now,
+    );
+
+    const updated = await prisma.task.update({
+      where: { id: task.id },
+      data: {
+        status: life.persistStatus,
+        extraTimeMinutes: nextExtra,
+        features: nextFeatures,
+      },
+      include: { user: true },
+    });
+
+    void notifyReviewer(
+      updated,
+      updated.assgineeId,
+      "task-rejected",
+      `Your submission needs revisions: ${updated.serviceInformation || updated.description}`,
+    );
+
+    return res.json({ success: true, data: updated });
+  } catch (error) {
+    console.error("rejectTask:", error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+async function notifyAssigneeTransfer({ task, userId, title, type }) {
+  if (!userId) return;
+  try {
+    const notifId = Math.random().toString(36).substring(2, 15);
+    await prisma.$executeRawUnsafe(
+      `INSERT INTO notifications (id, taskId, taskName, assigneeName, deadline, type, userId, isSeen) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      notifId,
+      task.id,
+      title.substring(0, 120),
+      task.user?.name || "User",
+      task.deadline || new Date(),
+      type,
+      userId,
+      0,
+    );
+  } catch (error) {
+    console.error("Failed to create transfer notification:", error);
+  }
+}
+
+export const transferTask = async (req, res) => {
+  const { id } = req.params;
+  const scope = getScope(req);
+  const actor = {
+    id: scope.user?.id ?? req.session?.user?.id,
+    name: scope.user?.name ?? req.session?.user?.name,
+    role: scope.user?.role ?? req.session?.user?.role,
+  };
+  if (!actor.id) {
+    return res.status(401).json({ success: false, error: "Unauthorized" });
+  }
+
+  const toAssigneeId = String(req.body?.assigneeId || req.body?.newAssigneeId || "").trim();
+  const reason = String(req.body?.reason || "").trim();
+  const note = String(req.body?.note || req.body?.notes || "").trim();
+
+  if (!toAssigneeId) {
+    return res.status(400).json({ success: false, error: "New employee is required" });
+  }
+  if (!reason) {
+    return res.status(400).json({ success: false, error: "Transfer reason is required" });
+  }
+  if (reason.length > 500) {
+    return res.status(400).json({ success: false, error: "Reason must be 500 characters or fewer" });
+  }
+
+  try {
+    const task = await prisma.task.findFirst({
+      where: mergeWhere({ id }, taskBranchWhere(scope)),
+      select: {
+        id: true,
+        assgineeId: true,
+        status: true,
+        progress: true,
+        deadline: true,
+        startDate: true,
+        extraTimeMinutes: true,
+        originalDeadline: true,
+        completedAt: true,
+        description: true,
+        serviceInformation: true,
+        supervisor: true,
+        features: true,
+        user: { select: { id: true, name: true, email: true } },
+        transferHistory: { orderBy: { createdAt: "asc" } },
+      },
+    });
+    if (!task) {
+      return res.status(404).json({ success: false, error: "Task not found" });
+    }
+
+    if (!canTransferTask(actor, task)) {
+      return res.status(403).json({ success: false, error: "You are not authorized to transfer this task" });
+    }
+
+    if (String(task.status).toLowerCase() === "completed") {
+      return res.status(400).json({ success: false, error: "Completed tasks cannot be reassigned" });
+    }
+
+    if (task.assgineeId === toAssigneeId) {
+      return res.status(400).json({ success: false, error: "Select a different employee than the current assignee" });
+    }
+
+    const newAssignee = await prisma.staff.findUnique({
+      where: { id: toAssigneeId },
+      select: { id: true, name: true, email: true, banned: true, portfolioId: true },
+    });
+    if (!newAssignee || newAssignee.banned) {
+      return res.status(400).json({ success: false, error: "The selected employee is not available for assignment" });
+    }
+    if (denyIfOutOfScope(res, scope, newAssignee.portfolioId)) return;
+
+    const fromAssigneeId = task.assgineeId;
+    const progressAtTransfer = Number(task.progress ?? 0);
+    const snapshot = {
+      progress: task.progress,
+      status: task.status,
+      deadline: task.deadline,
+      startDate: task.startDate,
+      extraTimeMinutes: task.extraTimeMinutes,
+      originalDeadline: task.originalDeadline,
+      completedAt: task.completedAt,
+    };
+
+    const updated = await prisma.$transaction(async (tx) => {
+      await tx.taskTransferHistory.create({
+        data: {
+          taskId: task.id,
+          fromAssigneeId,
+          toAssigneeId,
+          progressAtTransfer,
+          deadlineAtTransfer: task.deadline,
+          transferredById: actor.id,
+          reason,
+          note: note || null,
+        },
+      });
+
+      const row = await tx.task.update({
+        where: { id: task.id },
+        data: { assgineeId: toAssigneeId },
+        include: {
+          user: { select: { id: true, name: true, email: true, portfolioId: true } },
+          transferHistory: {
+            include: {
+              fromAssignee: { select: { id: true, name: true } },
+              toAssignee: { select: { id: true, name: true } },
+              transferredBy: { select: { id: true, name: true } },
+            },
+            orderBy: { createdAt: "asc" },
+          },
+        },
+      });
+
+      const integrityError = assertTransferPreservesTaskState(snapshot, row);
+      if (integrityError) {
+        throw new Error(integrityError);
+      }
+      return row;
+    });
+
+    const taskTitle = updated.serviceInformation || updated.description || "Task";
+    void notifyAssigneeTransfer({
+      task: updated,
+      userId: toAssigneeId,
+      title: `Task transferred to you: ${taskTitle}`,
+      type: "new-assignment",
+    });
+    void notifyAssigneeTransfer({
+      task: { ...updated, user: task.user },
+      userId: fromAssigneeId,
+      title: `Task transferred away: ${taskTitle}`,
+      type: "task-transfer",
+    });
+
+    if (newAssignee.email) {
+      void sendTaskAssignmentEmail({
+        toEmail: newAssignee.email,
+        assigneeName: newAssignee.name,
+        taskTitle,
+        taskDescription: updated.description,
+        deadline: updated.deadline,
+        creatorName: actor.name || "Management",
+      }).catch(console.error);
+    }
+
+    return res.json({ success: true, data: updated });
+  } catch (error) {
+    console.error("transferTask:", error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
 };

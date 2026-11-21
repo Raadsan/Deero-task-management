@@ -26,7 +26,12 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useSWR, { useSWRConfig } from "swr";
 
-const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+import {
+  FRIDAY_NON_WORKING_DAY_MESSAGE,
+  isFridayIsoDate,
+  normalizeCompanyWorkingDays,
+  WEEKDAY_SHORT,
+} from "@/lib/company-working-days";
 
 function cycleOptionLabel(cycle: { label: string; startDate?: string | null; endDate?: string | null }) {
   const format = (value?: string | null) => {
@@ -143,6 +148,10 @@ export default function ProjectDetailsModal({
 
   async function decideExtra(requestId: string, decision: "APPROVED" | "REJECTED") {
     if (!project) return;
+    if (decision === "APPROVED" && decisionSlot.scheduledDate && isFridayIsoDate(decisionSlot.scheduledDate)) {
+      toast.error(FRIDAY_NON_WORKING_DAY_MESSAGE);
+      return;
+    }
     setSavingExtra(true);
     const result = await decideProjectExtra(project.id, requestId, decision === "APPROVED" ? {
       decision,
@@ -164,6 +173,11 @@ export default function ProjectDetailsModal({
   }
 
   async function saveExtraSchedule(task: NonNullable<ProjectRecord["tasks"]>[number]) {
+    const existing = String(task.features?.scheduledDate || "").slice(0, 10);
+    if (slot.scheduledDate && isFridayIsoDate(slot.scheduledDate) && slot.scheduledDate !== existing) {
+      toast.error(FRIDAY_NON_WORKING_DAY_MESSAGE);
+      return;
+    }
     const result = await editTask({
       taskId: task.id,
       assgineeId: slot.assigneeId || task.assgineeId,
@@ -320,7 +334,20 @@ export default function ProjectDetailsModal({
               </div>
               {scheduleTaskId === task.id ? (
                 <div className="mt-2 grid gap-2 sm:grid-cols-4">
-                  <input className="h-10 rounded-md border px-3" type="date" value={slot.scheduledDate} onChange={(event) => setSlot({ ...slot, scheduledDate: event.target.value })} />
+                  <input
+                    className="h-10 rounded-md border px-3"
+                    type="date"
+                    value={slot.scheduledDate}
+                    onChange={(event) => {
+                      const next = event.target.value;
+                      const existing = String(task.features?.scheduledDate || "").slice(0, 10);
+                      if (isFridayIsoDate(next) && next !== existing) {
+                        toast.error(FRIDAY_NON_WORKING_DAY_MESSAGE);
+                        return;
+                      }
+                      setSlot({ ...slot, scheduledDate: next });
+                    }}
+                  />
                   <input className="h-10 rounded-md border px-3" type="time" value={slot.startTime} onChange={(event) => setSlot({ ...slot, startTime: event.target.value })} />
                   <input className="h-10 rounded-md border px-3" type="time" value={slot.endTime} onChange={(event) => setSlot({ ...slot, endTime: event.target.value })} />
                   <select className="h-10 rounded-md border px-3" value={slot.assigneeId} onChange={(event) => setSlot({ ...slot, assigneeId: event.target.value })}>
@@ -396,7 +423,9 @@ function ProjectOverview({
     hours?: string;
     notes?: string;
   };
-  const workingDays = (schedule.workingDays ?? []).map((day) => DAYS[day]).filter(Boolean);
+  const normalizedDays = normalizeCompanyWorkingDays(schedule.workingDays);
+  const workingDays = normalizedDays.map((day) => WEEKDAY_SHORT[day]).filter(Boolean);
+  const workingDaysLabel = workingDays.length ? `${workingDays.join(", ")}, Fri (OFF)` : "Fri (OFF)";
   const services = project.serviceLinks ?? [];
   const claimedTaskIds = new Set<string>();
   const employees = Array.from(
@@ -466,7 +495,7 @@ function ProjectOverview({
       <section className="rounded-lg border border-zinc-100 p-4">
         <h3 className="mb-3 text-sm font-semibold text-zinc-800">Schedule</h3>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Field label="Working days" value={workingDays.length ? workingDays.join(", ") : "—"} />
+          <Field label="Working days" value={workingDaysLabel} />
           <Field label="Working hours" value={schedule.hours || "—"} />
           <Field label="Notes" value={schedule.notes || "—"} className="sm:col-span-2" />
           <Field label="Employees" value={employees.length ? employees.join(", ") : "—"} className="sm:col-span-2" />
@@ -578,7 +607,19 @@ function ExtraRequestList({
                         <option value="">Default employee</option>
                         {staff.map((person) => <option key={person.id} value={person.id}>{person.name}</option>)}
                       </select>
-                      <input className="h-10 rounded-md border px-3" type="date" value={decisionSlot.scheduledDate} onChange={(event) => onSlotChange({ ...decisionSlot, scheduledDate: event.target.value })} />
+                      <input
+                        className="h-10 rounded-md border px-3"
+                        type="date"
+                        value={decisionSlot.scheduledDate}
+                        onChange={(event) => {
+                          const next = event.target.value;
+                          if (isFridayIsoDate(next)) {
+                            toast.error(FRIDAY_NON_WORKING_DAY_MESSAGE);
+                            return;
+                          }
+                          onSlotChange({ ...decisionSlot, scheduledDate: next });
+                        }}
+                      />
                       <input className="h-10 rounded-md border px-3" type="time" value={decisionSlot.startTime} onChange={(event) => onSlotChange({ ...decisionSlot, startTime: event.target.value })} />
                       <input className="h-10 rounded-md border px-3" type="time" value={decisionSlot.endTime} onChange={(event) => onSlotChange({ ...decisionSlot, endTime: event.target.value })} />
                     </div>

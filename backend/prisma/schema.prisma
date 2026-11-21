@@ -1863,7 +1863,9 @@ model document_templates {
 enum TaskStatus {
   pending
   in_progress
+  pending_review
   overdue
+  on_hold
   completed
 }
 

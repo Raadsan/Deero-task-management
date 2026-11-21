@@ -1,5 +1,6 @@
 import { evaluateScheduledTask, objectFeatures } from "./scheduled-task-window.js";
 import { isTaskPastDeadline } from "./task-status.js";
+import { normalizeDbStatus, isTerminalStatus } from "./task-status-workflow.js";
 
 function scheduledSlotFromFeatures(features) {
   const source = objectFeatures(features) || {};
@@ -9,14 +10,13 @@ function scheduledSlotFromFeatures(features) {
 
 /**
  * Authoritative lifecycle for display + persisted status (standalone and scheduled).
- * Project tasks with features.scheduledDate keep using evaluateScheduledTask rules.
  */
 export function evaluateTaskLifecycle(task, now = new Date()) {
   const moment = now instanceof Date ? now : new Date(now);
   const progress = Number(task?.progress ?? 0);
-  const dbStatus = String(task?.status || "pending").toLowerCase();
+  const dbStatus = normalizeDbStatus(task?.status);
 
-  if (progress >= 100 || dbStatus === "completed") {
+  if (isTerminalStatus(dbStatus)) {
     return {
       displayStatus: "completed",
       persistStatus: "completed",
@@ -25,12 +25,21 @@ export function evaluateTaskLifecycle(task, now = new Date()) {
     };
   }
 
+  if (dbStatus === "pending_review") {
+    return {
+      displayStatus: "pending_review",
+      persistStatus: "pending_review",
+      onHold: false,
+      scheduled: Boolean(scheduledSlotFromFeatures(task?.features)),
+    };
+  }
+
   const scheduledEval = evaluateScheduledTask(task, moment);
-  if (scheduledEval.onHold || scheduledEval.status === "on_hold") {
-    const persist = dbStatus === "pending" ? "pending" : "in_progress";
+
+  if (dbStatus === "on_hold" || scheduledEval.onHold || scheduledEval.status === "on_hold") {
     return {
       displayStatus: "on_hold",
-      persistStatus: persist,
+      persistStatus: "on_hold",
       onHold: true,
       scheduled: Boolean(scheduledEval.scheduled),
     };
@@ -101,7 +110,7 @@ export function initialPersistedStatusForCreate(task, now = new Date()) {
     progress: Number(task?.progress ?? 0),
   };
   const life = evaluateTaskLifecycle(draft, now);
-  if (life.onHold) return "pending";
+  if (life.onHold) return "on_hold";
   return life.persistStatus;
 }
 
@@ -141,9 +150,6 @@ export async function syncTaskLifecycleStatuses(prisma, now = new Date()) {
         where: { id: task.id },
         data: {
           status: life.persistStatus,
-          ...(life.persistStatus === "completed"
-            ? { progress: 100, completedAt: task.completedAt || now }
-            : {}),
         },
       });
       updated += 1;

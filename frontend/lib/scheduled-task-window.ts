@@ -1,10 +1,12 @@
 /** Wall-clock schedule for project tasks. Keep in sync with backend/src/lib/scheduled-task-window.js */
 
+import { fridayScheduleErrorForChange } from "@/lib/company-working-days";
+
 export const APP_TIMEZONE = process.env.NEXT_PUBLIC_APP_TIMEZONE || "Africa/Mogadishu";
 
 export type ScheduledEvaluation = {
   scheduled: boolean;
-  status: "pending" | "in_progress" | "completed" | "overdue" | "on_hold" | null;
+  status: "pending" | "in_progress" | "pending_review" | "completed" | "overdue" | "on_hold" | null;
   canUpdateProgress: boolean;
   reason: string;
   startAt: Date | null;
@@ -192,6 +194,8 @@ export function changedScheduleError(
 ) {
   if (!task.scheduledDate) return "";
   if (task.id && originalSchedules[task.id] === scheduleSignature(task)) return "";
+  const friday = fridayScheduleErrorForChange(task, originalSchedules, scheduleSignature);
+  if (friday) return friday;
   return pastScheduleError(task, now);
 }
 
@@ -236,7 +240,11 @@ export function evaluateScheduledTask(
   const endDate = String(features?.endDate || date).slice(0, 10);
   const startAt = /^\d{4}-\d{2}-\d{2}$/.test(date) ? zonedInstant(date, startTime) : null;
   const endAt = /^\d{4}-\d{2}-\d{2}$/.test(endDate) ? zonedInstant(endDate, endTime) : null;
-  if (features?.holdActive) {
+  const extraMs = Math.max(0, Number((task as { extraTimeMinutes?: number })?.extraTimeMinutes || 0)) * 60_000;
+  const effectiveEndAt = endAt ? new Date(endAt.getTime() + extraMs) : null;
+  const dbStatus = String(task?.status || "pending").toLowerCase();
+
+  if (features?.holdActive || dbStatus === "on_hold") {
     return {
       scheduled: true,
       status: "on_hold",
@@ -244,31 +252,56 @@ export function evaluateScheduledTask(
       canUpdateProgress: false,
       reason: "This task is on hold. Progress updates are locked until a manager resumes it.",
       startAt,
-      endAt,
+      endAt: effectiveEndAt,
       dateLabel: dateLabel(date),
       startLabel: clockLabel(startTime),
       endLabel: clockLabel(endTime),
     };
   }
-  if (!startAt || !endAt || endAt <= startAt) return empty;
+
+  if (dbStatus === "pending_review") {
+    return {
+      scheduled: true,
+      status: "pending_review",
+      canUpdateProgress: false,
+      reason: "This task is awaiting manager review.",
+      startAt,
+      endAt: effectiveEndAt,
+      dateLabel: dateLabel(date),
+      startLabel: clockLabel(startTime),
+      endLabel: clockLabel(endTime),
+    };
+  }
+
+  if (dbStatus === "completed") {
+    return {
+      scheduled: true,
+      status: "completed",
+      canUpdateProgress: false,
+      reason: "This task is completed. Progress can no longer be changed.",
+      startAt,
+      endAt: effectiveEndAt,
+      dateLabel: dateLabel(date),
+      startLabel: clockLabel(startTime),
+      endLabel: clockLabel(endTime),
+    };
+  }
+
+  if (!startAt || !effectiveEndAt || effectiveEndAt <= startAt) return empty;
 
   const moment = now instanceof Date ? now : new Date(now);
   const progress = Number(task?.progress ?? 0);
   let status: ScheduledEvaluation["status"] = "in_progress";
   let canUpdateProgress = true;
   let reason = "";
-  if (progress >= 100 || String(task?.status || "").toLowerCase() === "completed") {
-    status = "completed";
-    canUpdateProgress = false;
-    reason = "This task is completed. Progress can no longer be changed.";
-  } else if (moment < startAt) {
+  if (moment < startAt) {
     status = "pending";
     canUpdateProgress = false;
     reason = "Progress updates are locked until the scheduled start time.";
-  } else if (moment >= endAt) {
+  } else if (moment >= effectiveEndAt && progress < 100) {
     status = "overdue";
     canUpdateProgress = false;
-    reason = "This task is overdue. A manager must reschedule it before progress can be updated.";
+    reason = "This task is overdue. A manager must reschedule or grant extra time before progress can be updated.";
   }
 
   return {
@@ -277,7 +310,7 @@ export function evaluateScheduledTask(
     canUpdateProgress,
     reason,
     startAt,
-    endAt,
+    endAt: effectiveEndAt,
     dateLabel: dateLabel(date),
     startLabel: clockLabel(startTime),
     endLabel: clockLabel(endTime),

@@ -213,7 +213,30 @@ exports.Prisma.ClientScalarFieldEnum = {
   isActive: 'isActive',
   monthlyBudget: 'monthlyBudget',
   notes: 'notes',
+  openingBalanceAmount: 'openingBalanceAmount',
+  openingBalanceType: 'openingBalanceType',
+  openingBalanceDate: 'openingBalanceDate',
+  openingBalanceNotes: 'openingBalanceNotes',
+  openingJournalEntryId: 'openingJournalEntryId',
   isDraft: 'isDraft'
+};
+
+exports.Prisma.ClientOpeningBalanceHistoryScalarFieldEnum = {
+  id: 'id',
+  clientId: 'clientId',
+  previousAmount: 'previousAmount',
+  previousType: 'previousType',
+  previousDate: 'previousDate',
+  previousNotes: 'previousNotes',
+  amount: 'amount',
+  balanceType: 'balanceType',
+  balanceDate: 'balanceDate',
+  notes: 'notes',
+  journalEntryId: 'journalEntryId',
+  action: 'action',
+  changedById: 'changedById',
+  changedByName: 'changedByName',
+  changedAt: 'changedAt'
 };
 
 exports.Prisma.ServiceScalarFieldEnum = {
@@ -613,6 +636,7 @@ exports.Prisma.ClientInstallmentScalarFieldEnum = {
   dueDate: 'dueDate',
   dueAmount: 'dueAmount',
   paidAmount: 'paidAmount',
+  paidAt: 'paidAt',
   status: 'status',
   notes: 'notes',
   clientId: 'clientId',
@@ -1262,7 +1286,9 @@ exports.ServiceType = exports.$Enums.ServiceType = {
 exports.TaskStatus = exports.$Enums.TaskStatus = {
   pending: 'pending',
   in_progress: 'in_progress',
+  pending_review: 'pending_review',
   overdue: 'overdue',
+  on_hold: 'on_hold',
   completed: 'completed'
 };
 
@@ -1530,6 +1556,7 @@ exports.Prisma.ModelName = {
   Account: 'Account',
   Verification: 'Verification',
   Client: 'Client',
+  ClientOpeningBalanceHistory: 'ClientOpeningBalanceHistory',
   Service: 'Service',
   SubService: 'SubService',
   Portfolio: 'Portfolio',

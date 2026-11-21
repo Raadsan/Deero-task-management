@@ -322,7 +322,7 @@ export default function TasksPerformanceReport() {
           <Field label="Status">
             <Select value={filters.status} onChange={(value) => set("status", value)}>
               <option value="">All statuses</option>
-              {(data?.filters.statuses || ["PENDING", "IN_PROGRESS", "COMPLETED", "OVERDUE", "ON_HOLD"]).map((status) => (
+              {(data?.filters.statuses || ["PENDING", "IN_PROGRESS", "PENDING_REVIEW", "COMPLETED", "OVERDUE", "ON_HOLD"]).map((status) => (
                 <option key={status} value={status}>
                   {statusLabel(status)}
                 </option>

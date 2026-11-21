@@ -146,8 +146,11 @@ export function resolveTaskDisplayStatus(
   if (task.status === "transferred") return "transferred";
   const scheduled = evaluateScheduledTask(task, nowMs);
   if (scheduled.onHold || scheduled.status === "on_hold") return "on_hold";
+  const dbStatus = String(task.status || "pending").toLowerCase();
+  if (dbStatus === "completed") return "completed";
+  if (dbStatus === "pending_review") return "pending_review";
+  if (dbStatus === "on_hold") return "on_hold";
   const progress = Number(task.progress ?? 0);
-  if (task.status === "completed" || progress >= 100) return "completed";
   if (scheduled.scheduled && scheduled.status) return scheduled.status;
 
   const extraMinutes = Number(task.extraTimeMinutes ?? (Number(task.extraTimeHours ?? 0) * 60));

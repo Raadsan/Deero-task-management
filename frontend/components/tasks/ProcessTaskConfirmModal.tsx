@@ -83,13 +83,15 @@ export default function ProcessTaskConfirmModal({
   const displayStatus = task
     ? resolveTaskDisplayStatus(scheduleLocked ? task : { ...task, progress }, undefined, now)
     : "";
-  const isCompleted = progress >= 100;
+  const awaitingReview = String(task?.status || "").toLowerCase() === "pending_review";
+  const isCompleted = progress >= 100 && !awaitingReview;
   const isOverdue = scheduleGate.scheduled
     ? scheduleGate.status === "overdue"
     : task
       ? resolveTaskDisplayStatus(task, undefined, now) === "overdue"
       : false;
-  const progressLocked = scheduleLocked || (!scheduleGate.scheduled && isOverdue);
+  const progressLocked =
+    scheduleLocked || awaitingReview || (!scheduleGate.scheduled && isOverdue);
   const extraMinutes = Number(task?.extraTimeMinutes ?? 0);
   const hasExtraTime = extraMinutes > 0;
 
@@ -110,7 +112,7 @@ export default function ProcessTaskConfirmModal({
       >
         <DialogHeader className={cn(configDialogHeaderClass, "bg-zinc-50/70")}>
           <DialogTitle className="text-xl font-bold text-[#1e293b]">
-            {isCompleted ? "Complete Task" : "Update Task Progress"}
+            {isCompleted ? "Submit Task for Review" : "Update Task Progress"}
           </DialogTitle>
           <DialogDescription className="text-xs text-zinc-500">
             Review the task details and update the completion progress.
@@ -312,7 +314,7 @@ export default function ProcessTaskConfirmModal({
             ) : isOverdue ? (
               "Send Message"
             ) : isCompleted ? (
-              "Complete & Save"
+              "Submit for Review"
             ) : (
               "Save Progress"
             )}

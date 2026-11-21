@@ -218,8 +218,9 @@ export function putTaskOnHold(features, input) {
   if (!reason) return { ok: false, status: 400, error: "A reason is required" };
   if (reason.length > 500) return { ok: false, status: 400, error: "Reason must be 500 characters or fewer" };
   if (source.holdActive) return { ok: false, status: 400, error: "This task is already on hold" };
-  if (Number(input.progress ?? 0) >= 100 || String(input.taskStatus || "").toLowerCase() === "completed") {
-    return { ok: false, status: 400, error: "Completed tasks cannot be put on hold" };
+  const inputStatus = String(input.taskStatus || "").toLowerCase();
+  if (Number(input.progress ?? 0) >= 100 || inputStatus === "completed" || inputStatus === "pending_review") {
+    return { ok: false, status: 400, error: "Completed or review-pending tasks cannot be put on hold" };
   }
   const slot = scheduledSlot(source);
   if (!slot.startAt || !slot.endAt || slot.endAt <= slot.startAt) {
@@ -308,11 +309,20 @@ export function resumeTaskHold(features, input) {
  * Progress of 100% completes the task even before the end time.
  * A task on hold never becomes overdue.
  */
+function withExtraDeadline(endAt, extraTimeMinutes) {
+  if (!endAt) return null;
+  const extraMs = Math.max(0, Number(extraTimeMinutes || 0)) * 60_000;
+  return new Date(endAt.getTime() + extraMs);
+}
+
 export function evaluateScheduledTask(task, now = new Date()) {
   const features = objectFeatures(task?.features);
   const slot = scheduledSlot(features || {});
-  const { startAt, endAt } = slot;
-  if (features?.holdActive) {
+  const { startAt, endAt: slotEndAt } = slot;
+  const endAt = withExtraDeadline(slotEndAt, task?.extraTimeMinutes);
+  const dbStatus = String(task?.status || "pending").toLowerCase();
+
+  if (features?.holdActive || dbStatus === "on_hold") {
     return {
       scheduled: true,
       status: "on_hold",
@@ -324,6 +334,33 @@ export function evaluateScheduledTask(task, now = new Date()) {
       projectStatus: "ON_HOLD",
     };
   }
+
+  if (dbStatus === "pending_review") {
+    return {
+      scheduled: true,
+      status: "pending_review",
+      onHold: false,
+      canUpdateProgress: false,
+      reason: "This task is awaiting manager review.",
+      startAt,
+      endAt,
+      projectStatus: "PENDING_REVIEW",
+    };
+  }
+
+  if (dbStatus === "completed") {
+    return {
+      scheduled: true,
+      status: "completed",
+      onHold: false,
+      canUpdateProgress: false,
+      reason: "This task is completed. Progress can no longer be changed.",
+      startAt,
+      endAt,
+      projectStatus: "COMPLETED",
+    };
+  }
+
   const progress = Number(task?.progress ?? 0);
   if (!startAt || !endAt || endAt <= startAt) {
     return { scheduled: false, canUpdateProgress: true, status: null, reason: "", startAt: null, endAt: null, projectStatus: null, onHold: false };
@@ -333,18 +370,14 @@ export function evaluateScheduledTask(task, now = new Date()) {
   let status = "in_progress";
   let canUpdateProgress = true;
   let reason = "";
-  if (progress >= 100 || String(task?.status || "").toLowerCase() === "completed") {
-    status = "completed";
-    canUpdateProgress = false;
-    reason = "This task is completed. Progress can no longer be changed.";
-  } else if (moment < startAt) {
+  if (moment < startAt) {
     status = "pending";
     canUpdateProgress = false;
     reason = "Progress updates are locked until the scheduled start time.";
-  } else if (moment >= endAt) {
+  } else if (moment >= endAt && progress < 100) {
     status = "overdue";
     canUpdateProgress = false;
-    reason = "This task is overdue. A manager must reschedule it before progress can be updated.";
+    reason = "This task is overdue. A manager must reschedule or grant extra time before progress can be updated.";
   }
 
   return {
@@ -412,7 +445,7 @@ export function applyScheduledFeatures(features, evaluation, now = new Date()) {
 export async function syncScheduledTaskActivation(prisma, now = new Date()) {
   const tasks = await prisma.task.findMany({
     where: {
-      status: { in: ["pending", "in_progress", "overdue"] },
+      status: { in: ["pending", "in_progress", "overdue", "on_hold"] },
       projectId: { not: null },
     },
     select: { id: true, status: true, progress: true, features: true, completedAt: true, startDate: true },
@@ -424,16 +457,18 @@ export async function syncScheduledTaskActivation(prisma, now = new Date()) {
     const evaluation = evaluateScheduledTask(task, now);
     if (evaluation.status === "on_hold") {
       const features = applyScheduledFeatures(task.features, evaluation, now);
-      const status = task.status === "pending" ? "pending" : "in_progress";
       const previousStatus = String(objectFeatures(task.features)?.projectStatus || "");
-      if (task.status === status && previousStatus === "ON_HOLD") continue;
+      if (task.status === "on_hold" && previousStatus === "ON_HOLD") continue;
       await prisma.task.update({
         where: { id: task.id },
-        data: { status, features },
+        data: { status: "on_hold", features },
       });
       updated += 1;
       continue;
     }
+
+    if (evaluation.status === "pending_review" || evaluation.status === "completed") continue;
+
     if (!evaluation.scheduled) continue;
     const features = applyScheduledFeatures(task.features, evaluation, now);
     const previousStatus = String(objectFeatures(task.features)?.projectStatus || "");
@@ -445,9 +480,6 @@ export async function syncScheduledTaskActivation(prisma, now = new Date()) {
         status: evaluation.status,
         features,
         startDate: evaluation.startAt,
-        ...(evaluation.status === "completed"
-          ? { completedAt: task.completedAt || now, progress: 100 }
-          : {}),
       },
     });
     updated += 1;

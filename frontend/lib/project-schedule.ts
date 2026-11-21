@@ -1,3 +1,4 @@
+import { resolveCompanyWorkingDays } from "@/lib/company-working-days";
 import { evaluateScheduledTask, zonedNowParts } from "@/lib/scheduled-task-window";
 
 export type DraftSubService = {
@@ -52,7 +53,7 @@ export function parseIsoDate(value: string) {
 }
 
 export function workingDates(start: string, end: string, workingDays: number[]) {
-  const days = new Set(workingDays.length ? workingDays : [1, 2, 3, 4, 5]);
+  const days = new Set(resolveCompanyWorkingDays(workingDays));
   const dates: string[] = [];
   const cursor = parseIsoDate(start);
   const last = parseIsoDate(end) ?? cursor;

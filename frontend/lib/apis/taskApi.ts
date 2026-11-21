@@ -100,6 +100,75 @@ export async function holdTask(taskId: string, reason: string): Promise<ActionRe
   }
 }
 
+export async function submitTaskForReview(
+  taskId: string,
+  payload: { progress?: number; notes?: string; attachments?: unknown[] } = {},
+): Promise<ActionResponse> {
+  try {
+    const response = await api.post(`/api/tasks/${taskId}/submit-review`, payload);
+    if (response.data.success) {
+      revalidatePath(ROUTES.tasks);
+      revalidatePath(ROUTES["my-tasks"]);
+      revalidatePath(ROUTES["my-tasks-board"]);
+      revalidatePath(ROUTES["my-tasks-today"]);
+      return { success: true, data: response.data.data };
+    }
+    return { success: false, errors: { message: response.data.error } };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}
+
+export async function transferTask(
+  taskId: string,
+  payload: { assigneeId: string; reason: string; note?: string },
+): Promise<ActionResponse> {
+  try {
+    const response = await api.post(`/api/tasks/${taskId}/transfer`, payload);
+    if (response.data.success) {
+      revalidatePath(ROUTES.tasks);
+      revalidatePath(ROUTES["my-tasks"]);
+      revalidatePath(ROUTES["my-tasks-board"]);
+      revalidatePath(ROUTES["my-tasks-today"]);
+      return { success: true, data: response.data.data };
+    }
+    return { success: false, errors: { message: response.data.error } };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}
+
+export async function approveTask(taskId: string, comments?: string): Promise<ActionResponse> {
+  try {
+    const response = await api.post(`/api/tasks/${taskId}/approve`, { comments });
+    if (response.data.success) {
+      revalidatePath(ROUTES.tasks);
+      revalidatePath(ROUTES["my-tasks"]);
+      return { success: true, data: response.data.data };
+    }
+    return { success: false, errors: { message: response.data.error } };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}
+
+export async function rejectTask(
+  taskId: string,
+  payload: { comments: string; extraTimeMinutes?: number },
+): Promise<ActionResponse> {
+  try {
+    const response = await api.post(`/api/tasks/${taskId}/reject`, payload);
+    if (response.data.success) {
+      revalidatePath(ROUTES.tasks);
+      revalidatePath(ROUTES["my-tasks"]);
+      return { success: true, data: response.data.data };
+    }
+    return { success: false, errors: { message: response.data.error } };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}
+
 export async function resumeTask(taskId: string): Promise<ActionResponse> {
   try {
     const response = await api.post(`/api/tasks/${taskId}/resume`, {});

@@ -44,6 +44,11 @@ export type Verification = $Result.DefaultSelection<Prisma.$VerificationPayload>
  */
 export type Client = $Result.DefaultSelection<Prisma.$ClientPayload>
 /**
+ * Model ClientOpeningBalanceHistory
+ * 
+ */
+export type ClientOpeningBalanceHistory = $Result.DefaultSelection<Prisma.$ClientOpeningBalanceHistoryPayload>
+/**
  * Model Service
  * 
  */
@@ -438,7 +443,9 @@ export type ServiceType = (typeof ServiceType)[keyof typeof ServiceType]
 export const TaskStatus: {
   pending: 'pending',
   in_progress: 'in_progress',
+  pending_review: 'pending_review',
   overdue: 'overdue',
+  on_hold: 'on_hold',
   completed: 'completed'
 };
 
@@ -1149,6 +1156,16 @@ export class PrismaClient<
     * ```
     */
   get client(): Prisma.ClientDelegate<ExtArgs>;
+
+  /**
+   * `prisma.clientOpeningBalanceHistory`: Exposes CRUD operations for the **ClientOpeningBalanceHistory** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ClientOpeningBalanceHistories
+    * const clientOpeningBalanceHistories = await prisma.clientOpeningBalanceHistory.findMany()
+    * ```
+    */
+  get clientOpeningBalanceHistory(): Prisma.ClientOpeningBalanceHistoryDelegate<ExtArgs>;
 
   /**
    * `prisma.service`: Exposes CRUD operations for the **Service** model.
@@ -2336,6 +2353,7 @@ export namespace Prisma {
     Account: 'Account',
     Verification: 'Verification',
     Client: 'Client',
+    ClientOpeningBalanceHistory: 'ClientOpeningBalanceHistory',
     Service: 'Service',
     SubService: 'SubService',
     Portfolio: 'Portfolio',
@@ -2425,7 +2443,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "role" | "staff" | "session" | "account" | "verification" | "client" | "service" | "subService" | "portfolio" | "clientSubService" | "clientService" | "task" | "taskTransferHistory" | "clientTask" | "counter" | "income" | "expense" | "incomeTransaction" | "expenseTransaction" | "incomeTransactionDetails" | "userFiles" | "incomeServiceAgreement" | "expenseServiceAgreement" | "expenseTransactionDetails" | "userSalary" | "userSalaryDetails" | "notification" | "navMenu" | "navSubMenu" | "roleMenuAccess" | "roleSubMenuAccess" | "auditLog" | "project" | "projectServiceLink" | "projectSubService" | "projectCycle" | "projectExtraRequest" | "contract" | "clientInstallment" | "contractDocument" | "contentRequest" | "contentRequestAssignee" | "recurringSchedule" | "recurringScheduleStep" | "recurringTaskOccurrence" | "contentCycle" | "workflowTemplate" | "workflowTemplateStep" | "account_types" | "bank_accounts" | "banks" | "chart_of_accounts" | "companies" | "currencies" | "customer_invoice_lines" | "customer_invoices" | "customer_receipts" | "customers" | "fiscal_periods" | "fiscal_years" | "journal_entries" | "journal_items" | "journals" | "payment_allocations" | "payment_methods" | "payment_term_lines" | "payment_terms" | "product_categories" | "products" | "receipt_allocations" | "taxes" | "vendor_bill_lines" | "vendor_bills" | "vendor_payments" | "vendor_advances" | "vendor_advance_applications" | "vendors" | "quotations" | "quotation_lines" | "document_templates"
+      modelProps: "role" | "staff" | "session" | "account" | "verification" | "client" | "clientOpeningBalanceHistory" | "service" | "subService" | "portfolio" | "clientSubService" | "clientService" | "task" | "taskTransferHistory" | "clientTask" | "counter" | "income" | "expense" | "incomeTransaction" | "expenseTransaction" | "incomeTransactionDetails" | "userFiles" | "incomeServiceAgreement" | "expenseServiceAgreement" | "expenseTransactionDetails" | "userSalary" | "userSalaryDetails" | "notification" | "navMenu" | "navSubMenu" | "roleMenuAccess" | "roleSubMenuAccess" | "auditLog" | "project" | "projectServiceLink" | "projectSubService" | "projectCycle" | "projectExtraRequest" | "contract" | "clientInstallment" | "contractDocument" | "contentRequest" | "contentRequestAssignee" | "recurringSchedule" | "recurringScheduleStep" | "recurringTaskOccurrence" | "contentCycle" | "workflowTemplate" | "workflowTemplateStep" | "account_types" | "bank_accounts" | "banks" | "chart_of_accounts" | "companies" | "currencies" | "customer_invoice_lines" | "customer_invoices" | "customer_receipts" | "customers" | "fiscal_periods" | "fiscal_years" | "journal_entries" | "journal_items" | "journals" | "payment_allocations" | "payment_methods" | "payment_term_lines" | "payment_terms" | "product_categories" | "products" | "receipt_allocations" | "taxes" | "vendor_bill_lines" | "vendor_bills" | "vendor_payments" | "vendor_advances" | "vendor_advance_applications" | "vendors" | "quotations" | "quotation_lines" | "document_templates"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2822,6 +2840,72 @@ export namespace Prisma {
           count: {
             args: Prisma.ClientCountArgs<ExtArgs>
             result: $Utils.Optional<ClientCountAggregateOutputType> | number
+          }
+        }
+      }
+      ClientOpeningBalanceHistory: {
+        payload: Prisma.$ClientOpeningBalanceHistoryPayload<ExtArgs>
+        fields: Prisma.ClientOpeningBalanceHistoryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ClientOpeningBalanceHistoryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientOpeningBalanceHistoryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ClientOpeningBalanceHistoryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientOpeningBalanceHistoryPayload>
+          }
+          findFirst: {
+            args: Prisma.ClientOpeningBalanceHistoryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientOpeningBalanceHistoryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ClientOpeningBalanceHistoryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientOpeningBalanceHistoryPayload>
+          }
+          findMany: {
+            args: Prisma.ClientOpeningBalanceHistoryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientOpeningBalanceHistoryPayload>[]
+          }
+          create: {
+            args: Prisma.ClientOpeningBalanceHistoryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientOpeningBalanceHistoryPayload>
+          }
+          createMany: {
+            args: Prisma.ClientOpeningBalanceHistoryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.ClientOpeningBalanceHistoryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientOpeningBalanceHistoryPayload>
+          }
+          update: {
+            args: Prisma.ClientOpeningBalanceHistoryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientOpeningBalanceHistoryPayload>
+          }
+          deleteMany: {
+            args: Prisma.ClientOpeningBalanceHistoryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ClientOpeningBalanceHistoryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ClientOpeningBalanceHistoryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientOpeningBalanceHistoryPayload>
+          }
+          aggregate: {
+            args: Prisma.ClientOpeningBalanceHistoryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateClientOpeningBalanceHistory>
+          }
+          groupBy: {
+            args: Prisma.ClientOpeningBalanceHistoryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ClientOpeningBalanceHistoryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ClientOpeningBalanceHistoryCountArgs<ExtArgs>
+            result: $Utils.Optional<ClientOpeningBalanceHistoryCountAggregateOutputType> | number
           }
         }
       }
@@ -15955,10 +16039,14 @@ export namespace Prisma {
 
   export type ClientAvgAggregateOutputType = {
     monthlyBudget: number | null
+    openingBalanceAmount: Decimal | null
+    openingJournalEntryId: number | null
   }
 
   export type ClientSumAggregateOutputType = {
     monthlyBudget: number | null
+    openingBalanceAmount: Decimal | null
+    openingJournalEntryId: number | null
   }
 
   export type ClientMinAggregateOutputType = {
@@ -15983,6 +16071,11 @@ export namespace Prisma {
     isActive: boolean | null
     monthlyBudget: number | null
     notes: string | null
+    openingBalanceAmount: Decimal | null
+    openingBalanceType: string | null
+    openingBalanceDate: Date | null
+    openingBalanceNotes: string | null
+    openingJournalEntryId: number | null
     isDraft: boolean | null
   }
 
@@ -16008,6 +16101,11 @@ export namespace Prisma {
     isActive: boolean | null
     monthlyBudget: number | null
     notes: string | null
+    openingBalanceAmount: Decimal | null
+    openingBalanceType: string | null
+    openingBalanceDate: Date | null
+    openingBalanceNotes: string | null
+    openingJournalEntryId: number | null
     isDraft: boolean | null
   }
 
@@ -16033,6 +16131,11 @@ export namespace Prisma {
     isActive: number
     monthlyBudget: number
     notes: number
+    openingBalanceAmount: number
+    openingBalanceType: number
+    openingBalanceDate: number
+    openingBalanceNotes: number
+    openingJournalEntryId: number
     isDraft: number
     _all: number
   }
@@ -16040,10 +16143,14 @@ export namespace Prisma {
 
   export type ClientAvgAggregateInputType = {
     monthlyBudget?: true
+    openingBalanceAmount?: true
+    openingJournalEntryId?: true
   }
 
   export type ClientSumAggregateInputType = {
     monthlyBudget?: true
+    openingBalanceAmount?: true
+    openingJournalEntryId?: true
   }
 
   export type ClientMinAggregateInputType = {
@@ -16068,6 +16175,11 @@ export namespace Prisma {
     isActive?: true
     monthlyBudget?: true
     notes?: true
+    openingBalanceAmount?: true
+    openingBalanceType?: true
+    openingBalanceDate?: true
+    openingBalanceNotes?: true
+    openingJournalEntryId?: true
     isDraft?: true
   }
 
@@ -16093,6 +16205,11 @@ export namespace Prisma {
     isActive?: true
     monthlyBudget?: true
     notes?: true
+    openingBalanceAmount?: true
+    openingBalanceType?: true
+    openingBalanceDate?: true
+    openingBalanceNotes?: true
+    openingJournalEntryId?: true
     isDraft?: true
   }
 
@@ -16118,6 +16235,11 @@ export namespace Prisma {
     isActive?: true
     monthlyBudget?: true
     notes?: true
+    openingBalanceAmount?: true
+    openingBalanceType?: true
+    openingBalanceDate?: true
+    openingBalanceNotes?: true
+    openingJournalEntryId?: true
     isDraft?: true
     _all?: true
   }
@@ -16230,6 +16352,11 @@ export namespace Prisma {
     isActive: boolean
     monthlyBudget: number | null
     notes: string | null
+    openingBalanceAmount: Decimal
+    openingBalanceType: string | null
+    openingBalanceDate: Date | null
+    openingBalanceNotes: string | null
+    openingJournalEntryId: number | null
     isDraft: boolean
     _count: ClientCountAggregateOutputType | null
     _avg: ClientAvgAggregateOutputType | null
@@ -16274,6 +16401,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: boolean
     notes?: boolean
+    openingBalanceAmount?: boolean
+    openingBalanceType?: boolean
+    openingBalanceDate?: boolean
+    openingBalanceNotes?: boolean
+    openingJournalEntryId?: boolean
     isDraft?: boolean
     clientSubService?: boolean | Client$clientSubServiceArgs<ExtArgs>
     serviceAgreements?: boolean | Client$serviceAgreementsArgs<ExtArgs>
@@ -16317,6 +16449,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: boolean
     notes?: boolean
+    openingBalanceAmount?: boolean
+    openingBalanceType?: boolean
+    openingBalanceDate?: boolean
+    openingBalanceNotes?: boolean
+    openingJournalEntryId?: boolean
     isDraft?: boolean
   }
 
@@ -16382,6 +16519,11 @@ export namespace Prisma {
       isActive: boolean
       monthlyBudget: number | null
       notes: string | null
+      openingBalanceAmount: Prisma.Decimal
+      openingBalanceType: string | null
+      openingBalanceDate: Date | null
+      openingBalanceNotes: string | null
+      openingJournalEntryId: number | null
       isDraft: boolean
     }, ExtArgs["result"]["client"]>
     composites: {}
@@ -16789,6 +16931,11 @@ export namespace Prisma {
     readonly isActive: FieldRef<"Client", 'Boolean'>
     readonly monthlyBudget: FieldRef<"Client", 'Float'>
     readonly notes: FieldRef<"Client", 'String'>
+    readonly openingBalanceAmount: FieldRef<"Client", 'Decimal'>
+    readonly openingBalanceType: FieldRef<"Client", 'String'>
+    readonly openingBalanceDate: FieldRef<"Client", 'DateTime'>
+    readonly openingBalanceNotes: FieldRef<"Client", 'String'>
+    readonly openingJournalEntryId: FieldRef<"Client", 'Int'>
     readonly isDraft: FieldRef<"Client", 'Boolean'>
   }
     
@@ -17400,6 +17547,994 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ClientInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ClientOpeningBalanceHistory
+   */
+
+  export type AggregateClientOpeningBalanceHistory = {
+    _count: ClientOpeningBalanceHistoryCountAggregateOutputType | null
+    _avg: ClientOpeningBalanceHistoryAvgAggregateOutputType | null
+    _sum: ClientOpeningBalanceHistorySumAggregateOutputType | null
+    _min: ClientOpeningBalanceHistoryMinAggregateOutputType | null
+    _max: ClientOpeningBalanceHistoryMaxAggregateOutputType | null
+  }
+
+  export type ClientOpeningBalanceHistoryAvgAggregateOutputType = {
+    id: number | null
+    previousAmount: Decimal | null
+    amount: Decimal | null
+    journalEntryId: number | null
+  }
+
+  export type ClientOpeningBalanceHistorySumAggregateOutputType = {
+    id: number | null
+    previousAmount: Decimal | null
+    amount: Decimal | null
+    journalEntryId: number | null
+  }
+
+  export type ClientOpeningBalanceHistoryMinAggregateOutputType = {
+    id: number | null
+    clientId: string | null
+    previousAmount: Decimal | null
+    previousType: string | null
+    previousDate: Date | null
+    previousNotes: string | null
+    amount: Decimal | null
+    balanceType: string | null
+    balanceDate: Date | null
+    notes: string | null
+    journalEntryId: number | null
+    action: string | null
+    changedById: string | null
+    changedByName: string | null
+    changedAt: Date | null
+  }
+
+  export type ClientOpeningBalanceHistoryMaxAggregateOutputType = {
+    id: number | null
+    clientId: string | null
+    previousAmount: Decimal | null
+    previousType: string | null
+    previousDate: Date | null
+    previousNotes: string | null
+    amount: Decimal | null
+    balanceType: string | null
+    balanceDate: Date | null
+    notes: string | null
+    journalEntryId: number | null
+    action: string | null
+    changedById: string | null
+    changedByName: string | null
+    changedAt: Date | null
+  }
+
+  export type ClientOpeningBalanceHistoryCountAggregateOutputType = {
+    id: number
+    clientId: number
+    previousAmount: number
+    previousType: number
+    previousDate: number
+    previousNotes: number
+    amount: number
+    balanceType: number
+    balanceDate: number
+    notes: number
+    journalEntryId: number
+    action: number
+    changedById: number
+    changedByName: number
+    changedAt: number
+    _all: number
+  }
+
+
+  export type ClientOpeningBalanceHistoryAvgAggregateInputType = {
+    id?: true
+    previousAmount?: true
+    amount?: true
+    journalEntryId?: true
+  }
+
+  export type ClientOpeningBalanceHistorySumAggregateInputType = {
+    id?: true
+    previousAmount?: true
+    amount?: true
+    journalEntryId?: true
+  }
+
+  export type ClientOpeningBalanceHistoryMinAggregateInputType = {
+    id?: true
+    clientId?: true
+    previousAmount?: true
+    previousType?: true
+    previousDate?: true
+    previousNotes?: true
+    amount?: true
+    balanceType?: true
+    balanceDate?: true
+    notes?: true
+    journalEntryId?: true
+    action?: true
+    changedById?: true
+    changedByName?: true
+    changedAt?: true
+  }
+
+  export type ClientOpeningBalanceHistoryMaxAggregateInputType = {
+    id?: true
+    clientId?: true
+    previousAmount?: true
+    previousType?: true
+    previousDate?: true
+    previousNotes?: true
+    amount?: true
+    balanceType?: true
+    balanceDate?: true
+    notes?: true
+    journalEntryId?: true
+    action?: true
+    changedById?: true
+    changedByName?: true
+    changedAt?: true
+  }
+
+  export type ClientOpeningBalanceHistoryCountAggregateInputType = {
+    id?: true
+    clientId?: true
+    previousAmount?: true
+    previousType?: true
+    previousDate?: true
+    previousNotes?: true
+    amount?: true
+    balanceType?: true
+    balanceDate?: true
+    notes?: true
+    journalEntryId?: true
+    action?: true
+    changedById?: true
+    changedByName?: true
+    changedAt?: true
+    _all?: true
+  }
+
+  export type ClientOpeningBalanceHistoryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ClientOpeningBalanceHistory to aggregate.
+     */
+    where?: ClientOpeningBalanceHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ClientOpeningBalanceHistories to fetch.
+     */
+    orderBy?: ClientOpeningBalanceHistoryOrderByWithRelationInput | ClientOpeningBalanceHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ClientOpeningBalanceHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ClientOpeningBalanceHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ClientOpeningBalanceHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ClientOpeningBalanceHistories
+    **/
+    _count?: true | ClientOpeningBalanceHistoryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ClientOpeningBalanceHistoryAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ClientOpeningBalanceHistorySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ClientOpeningBalanceHistoryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ClientOpeningBalanceHistoryMaxAggregateInputType
+  }
+
+  export type GetClientOpeningBalanceHistoryAggregateType<T extends ClientOpeningBalanceHistoryAggregateArgs> = {
+        [P in keyof T & keyof AggregateClientOpeningBalanceHistory]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateClientOpeningBalanceHistory[P]>
+      : GetScalarType<T[P], AggregateClientOpeningBalanceHistory[P]>
+  }
+
+
+
+
+  export type ClientOpeningBalanceHistoryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ClientOpeningBalanceHistoryWhereInput
+    orderBy?: ClientOpeningBalanceHistoryOrderByWithAggregationInput | ClientOpeningBalanceHistoryOrderByWithAggregationInput[]
+    by: ClientOpeningBalanceHistoryScalarFieldEnum[] | ClientOpeningBalanceHistoryScalarFieldEnum
+    having?: ClientOpeningBalanceHistoryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ClientOpeningBalanceHistoryCountAggregateInputType | true
+    _avg?: ClientOpeningBalanceHistoryAvgAggregateInputType
+    _sum?: ClientOpeningBalanceHistorySumAggregateInputType
+    _min?: ClientOpeningBalanceHistoryMinAggregateInputType
+    _max?: ClientOpeningBalanceHistoryMaxAggregateInputType
+  }
+
+  export type ClientOpeningBalanceHistoryGroupByOutputType = {
+    id: number
+    clientId: string
+    previousAmount: Decimal
+    previousType: string | null
+    previousDate: Date | null
+    previousNotes: string | null
+    amount: Decimal
+    balanceType: string | null
+    balanceDate: Date | null
+    notes: string | null
+    journalEntryId: number | null
+    action: string
+    changedById: string | null
+    changedByName: string | null
+    changedAt: Date
+    _count: ClientOpeningBalanceHistoryCountAggregateOutputType | null
+    _avg: ClientOpeningBalanceHistoryAvgAggregateOutputType | null
+    _sum: ClientOpeningBalanceHistorySumAggregateOutputType | null
+    _min: ClientOpeningBalanceHistoryMinAggregateOutputType | null
+    _max: ClientOpeningBalanceHistoryMaxAggregateOutputType | null
+  }
+
+  type GetClientOpeningBalanceHistoryGroupByPayload<T extends ClientOpeningBalanceHistoryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ClientOpeningBalanceHistoryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ClientOpeningBalanceHistoryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ClientOpeningBalanceHistoryGroupByOutputType[P]>
+            : GetScalarType<T[P], ClientOpeningBalanceHistoryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ClientOpeningBalanceHistorySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    clientId?: boolean
+    previousAmount?: boolean
+    previousType?: boolean
+    previousDate?: boolean
+    previousNotes?: boolean
+    amount?: boolean
+    balanceType?: boolean
+    balanceDate?: boolean
+    notes?: boolean
+    journalEntryId?: boolean
+    action?: boolean
+    changedById?: boolean
+    changedByName?: boolean
+    changedAt?: boolean
+  }, ExtArgs["result"]["clientOpeningBalanceHistory"]>
+
+
+  export type ClientOpeningBalanceHistorySelectScalar = {
+    id?: boolean
+    clientId?: boolean
+    previousAmount?: boolean
+    previousType?: boolean
+    previousDate?: boolean
+    previousNotes?: boolean
+    amount?: boolean
+    balanceType?: boolean
+    balanceDate?: boolean
+    notes?: boolean
+    journalEntryId?: boolean
+    action?: boolean
+    changedById?: boolean
+    changedByName?: boolean
+    changedAt?: boolean
+  }
+
+
+  export type $ClientOpeningBalanceHistoryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ClientOpeningBalanceHistory"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      clientId: string
+      previousAmount: Prisma.Decimal
+      previousType: string | null
+      previousDate: Date | null
+      previousNotes: string | null
+      amount: Prisma.Decimal
+      balanceType: string | null
+      balanceDate: Date | null
+      notes: string | null
+      journalEntryId: number | null
+      action: string
+      changedById: string | null
+      changedByName: string | null
+      changedAt: Date
+    }, ExtArgs["result"]["clientOpeningBalanceHistory"]>
+    composites: {}
+  }
+
+  type ClientOpeningBalanceHistoryGetPayload<S extends boolean | null | undefined | ClientOpeningBalanceHistoryDefaultArgs> = $Result.GetResult<Prisma.$ClientOpeningBalanceHistoryPayload, S>
+
+  type ClientOpeningBalanceHistoryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ClientOpeningBalanceHistoryFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ClientOpeningBalanceHistoryCountAggregateInputType | true
+    }
+
+  export interface ClientOpeningBalanceHistoryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ClientOpeningBalanceHistory'], meta: { name: 'ClientOpeningBalanceHistory' } }
+    /**
+     * Find zero or one ClientOpeningBalanceHistory that matches the filter.
+     * @param {ClientOpeningBalanceHistoryFindUniqueArgs} args - Arguments to find a ClientOpeningBalanceHistory
+     * @example
+     * // Get one ClientOpeningBalanceHistory
+     * const clientOpeningBalanceHistory = await prisma.clientOpeningBalanceHistory.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ClientOpeningBalanceHistoryFindUniqueArgs>(args: SelectSubset<T, ClientOpeningBalanceHistoryFindUniqueArgs<ExtArgs>>): Prisma__ClientOpeningBalanceHistoryClient<$Result.GetResult<Prisma.$ClientOpeningBalanceHistoryPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one ClientOpeningBalanceHistory that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ClientOpeningBalanceHistoryFindUniqueOrThrowArgs} args - Arguments to find a ClientOpeningBalanceHistory
+     * @example
+     * // Get one ClientOpeningBalanceHistory
+     * const clientOpeningBalanceHistory = await prisma.clientOpeningBalanceHistory.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ClientOpeningBalanceHistoryFindUniqueOrThrowArgs>(args: SelectSubset<T, ClientOpeningBalanceHistoryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ClientOpeningBalanceHistoryClient<$Result.GetResult<Prisma.$ClientOpeningBalanceHistoryPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first ClientOpeningBalanceHistory that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClientOpeningBalanceHistoryFindFirstArgs} args - Arguments to find a ClientOpeningBalanceHistory
+     * @example
+     * // Get one ClientOpeningBalanceHistory
+     * const clientOpeningBalanceHistory = await prisma.clientOpeningBalanceHistory.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ClientOpeningBalanceHistoryFindFirstArgs>(args?: SelectSubset<T, ClientOpeningBalanceHistoryFindFirstArgs<ExtArgs>>): Prisma__ClientOpeningBalanceHistoryClient<$Result.GetResult<Prisma.$ClientOpeningBalanceHistoryPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first ClientOpeningBalanceHistory that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClientOpeningBalanceHistoryFindFirstOrThrowArgs} args - Arguments to find a ClientOpeningBalanceHistory
+     * @example
+     * // Get one ClientOpeningBalanceHistory
+     * const clientOpeningBalanceHistory = await prisma.clientOpeningBalanceHistory.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ClientOpeningBalanceHistoryFindFirstOrThrowArgs>(args?: SelectSubset<T, ClientOpeningBalanceHistoryFindFirstOrThrowArgs<ExtArgs>>): Prisma__ClientOpeningBalanceHistoryClient<$Result.GetResult<Prisma.$ClientOpeningBalanceHistoryPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more ClientOpeningBalanceHistories that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClientOpeningBalanceHistoryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ClientOpeningBalanceHistories
+     * const clientOpeningBalanceHistories = await prisma.clientOpeningBalanceHistory.findMany()
+     * 
+     * // Get first 10 ClientOpeningBalanceHistories
+     * const clientOpeningBalanceHistories = await prisma.clientOpeningBalanceHistory.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const clientOpeningBalanceHistoryWithIdOnly = await prisma.clientOpeningBalanceHistory.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ClientOpeningBalanceHistoryFindManyArgs>(args?: SelectSubset<T, ClientOpeningBalanceHistoryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientOpeningBalanceHistoryPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a ClientOpeningBalanceHistory.
+     * @param {ClientOpeningBalanceHistoryCreateArgs} args - Arguments to create a ClientOpeningBalanceHistory.
+     * @example
+     * // Create one ClientOpeningBalanceHistory
+     * const ClientOpeningBalanceHistory = await prisma.clientOpeningBalanceHistory.create({
+     *   data: {
+     *     // ... data to create a ClientOpeningBalanceHistory
+     *   }
+     * })
+     * 
+     */
+    create<T extends ClientOpeningBalanceHistoryCreateArgs>(args: SelectSubset<T, ClientOpeningBalanceHistoryCreateArgs<ExtArgs>>): Prisma__ClientOpeningBalanceHistoryClient<$Result.GetResult<Prisma.$ClientOpeningBalanceHistoryPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many ClientOpeningBalanceHistories.
+     * @param {ClientOpeningBalanceHistoryCreateManyArgs} args - Arguments to create many ClientOpeningBalanceHistories.
+     * @example
+     * // Create many ClientOpeningBalanceHistories
+     * const clientOpeningBalanceHistory = await prisma.clientOpeningBalanceHistory.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ClientOpeningBalanceHistoryCreateManyArgs>(args?: SelectSubset<T, ClientOpeningBalanceHistoryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a ClientOpeningBalanceHistory.
+     * @param {ClientOpeningBalanceHistoryDeleteArgs} args - Arguments to delete one ClientOpeningBalanceHistory.
+     * @example
+     * // Delete one ClientOpeningBalanceHistory
+     * const ClientOpeningBalanceHistory = await prisma.clientOpeningBalanceHistory.delete({
+     *   where: {
+     *     // ... filter to delete one ClientOpeningBalanceHistory
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ClientOpeningBalanceHistoryDeleteArgs>(args: SelectSubset<T, ClientOpeningBalanceHistoryDeleteArgs<ExtArgs>>): Prisma__ClientOpeningBalanceHistoryClient<$Result.GetResult<Prisma.$ClientOpeningBalanceHistoryPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one ClientOpeningBalanceHistory.
+     * @param {ClientOpeningBalanceHistoryUpdateArgs} args - Arguments to update one ClientOpeningBalanceHistory.
+     * @example
+     * // Update one ClientOpeningBalanceHistory
+     * const clientOpeningBalanceHistory = await prisma.clientOpeningBalanceHistory.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ClientOpeningBalanceHistoryUpdateArgs>(args: SelectSubset<T, ClientOpeningBalanceHistoryUpdateArgs<ExtArgs>>): Prisma__ClientOpeningBalanceHistoryClient<$Result.GetResult<Prisma.$ClientOpeningBalanceHistoryPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more ClientOpeningBalanceHistories.
+     * @param {ClientOpeningBalanceHistoryDeleteManyArgs} args - Arguments to filter ClientOpeningBalanceHistories to delete.
+     * @example
+     * // Delete a few ClientOpeningBalanceHistories
+     * const { count } = await prisma.clientOpeningBalanceHistory.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ClientOpeningBalanceHistoryDeleteManyArgs>(args?: SelectSubset<T, ClientOpeningBalanceHistoryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ClientOpeningBalanceHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClientOpeningBalanceHistoryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ClientOpeningBalanceHistories
+     * const clientOpeningBalanceHistory = await prisma.clientOpeningBalanceHistory.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ClientOpeningBalanceHistoryUpdateManyArgs>(args: SelectSubset<T, ClientOpeningBalanceHistoryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ClientOpeningBalanceHistory.
+     * @param {ClientOpeningBalanceHistoryUpsertArgs} args - Arguments to update or create a ClientOpeningBalanceHistory.
+     * @example
+     * // Update or create a ClientOpeningBalanceHistory
+     * const clientOpeningBalanceHistory = await prisma.clientOpeningBalanceHistory.upsert({
+     *   create: {
+     *     // ... data to create a ClientOpeningBalanceHistory
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ClientOpeningBalanceHistory we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ClientOpeningBalanceHistoryUpsertArgs>(args: SelectSubset<T, ClientOpeningBalanceHistoryUpsertArgs<ExtArgs>>): Prisma__ClientOpeningBalanceHistoryClient<$Result.GetResult<Prisma.$ClientOpeningBalanceHistoryPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of ClientOpeningBalanceHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClientOpeningBalanceHistoryCountArgs} args - Arguments to filter ClientOpeningBalanceHistories to count.
+     * @example
+     * // Count the number of ClientOpeningBalanceHistories
+     * const count = await prisma.clientOpeningBalanceHistory.count({
+     *   where: {
+     *     // ... the filter for the ClientOpeningBalanceHistories we want to count
+     *   }
+     * })
+    **/
+    count<T extends ClientOpeningBalanceHistoryCountArgs>(
+      args?: Subset<T, ClientOpeningBalanceHistoryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ClientOpeningBalanceHistoryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ClientOpeningBalanceHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClientOpeningBalanceHistoryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ClientOpeningBalanceHistoryAggregateArgs>(args: Subset<T, ClientOpeningBalanceHistoryAggregateArgs>): Prisma.PrismaPromise<GetClientOpeningBalanceHistoryAggregateType<T>>
+
+    /**
+     * Group by ClientOpeningBalanceHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClientOpeningBalanceHistoryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ClientOpeningBalanceHistoryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ClientOpeningBalanceHistoryGroupByArgs['orderBy'] }
+        : { orderBy?: ClientOpeningBalanceHistoryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ClientOpeningBalanceHistoryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetClientOpeningBalanceHistoryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ClientOpeningBalanceHistory model
+   */
+  readonly fields: ClientOpeningBalanceHistoryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ClientOpeningBalanceHistory.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ClientOpeningBalanceHistoryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ClientOpeningBalanceHistory model
+   */ 
+  interface ClientOpeningBalanceHistoryFieldRefs {
+    readonly id: FieldRef<"ClientOpeningBalanceHistory", 'Int'>
+    readonly clientId: FieldRef<"ClientOpeningBalanceHistory", 'String'>
+    readonly previousAmount: FieldRef<"ClientOpeningBalanceHistory", 'Decimal'>
+    readonly previousType: FieldRef<"ClientOpeningBalanceHistory", 'String'>
+    readonly previousDate: FieldRef<"ClientOpeningBalanceHistory", 'DateTime'>
+    readonly previousNotes: FieldRef<"ClientOpeningBalanceHistory", 'String'>
+    readonly amount: FieldRef<"ClientOpeningBalanceHistory", 'Decimal'>
+    readonly balanceType: FieldRef<"ClientOpeningBalanceHistory", 'String'>
+    readonly balanceDate: FieldRef<"ClientOpeningBalanceHistory", 'DateTime'>
+    readonly notes: FieldRef<"ClientOpeningBalanceHistory", 'String'>
+    readonly journalEntryId: FieldRef<"ClientOpeningBalanceHistory", 'Int'>
+    readonly action: FieldRef<"ClientOpeningBalanceHistory", 'String'>
+    readonly changedById: FieldRef<"ClientOpeningBalanceHistory", 'String'>
+    readonly changedByName: FieldRef<"ClientOpeningBalanceHistory", 'String'>
+    readonly changedAt: FieldRef<"ClientOpeningBalanceHistory", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ClientOpeningBalanceHistory findUnique
+   */
+  export type ClientOpeningBalanceHistoryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOpeningBalanceHistory
+     */
+    select?: ClientOpeningBalanceHistorySelect<ExtArgs> | null
+    /**
+     * Filter, which ClientOpeningBalanceHistory to fetch.
+     */
+    where: ClientOpeningBalanceHistoryWhereUniqueInput
+  }
+
+  /**
+   * ClientOpeningBalanceHistory findUniqueOrThrow
+   */
+  export type ClientOpeningBalanceHistoryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOpeningBalanceHistory
+     */
+    select?: ClientOpeningBalanceHistorySelect<ExtArgs> | null
+    /**
+     * Filter, which ClientOpeningBalanceHistory to fetch.
+     */
+    where: ClientOpeningBalanceHistoryWhereUniqueInput
+  }
+
+  /**
+   * ClientOpeningBalanceHistory findFirst
+   */
+  export type ClientOpeningBalanceHistoryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOpeningBalanceHistory
+     */
+    select?: ClientOpeningBalanceHistorySelect<ExtArgs> | null
+    /**
+     * Filter, which ClientOpeningBalanceHistory to fetch.
+     */
+    where?: ClientOpeningBalanceHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ClientOpeningBalanceHistories to fetch.
+     */
+    orderBy?: ClientOpeningBalanceHistoryOrderByWithRelationInput | ClientOpeningBalanceHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ClientOpeningBalanceHistories.
+     */
+    cursor?: ClientOpeningBalanceHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ClientOpeningBalanceHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ClientOpeningBalanceHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ClientOpeningBalanceHistories.
+     */
+    distinct?: ClientOpeningBalanceHistoryScalarFieldEnum | ClientOpeningBalanceHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * ClientOpeningBalanceHistory findFirstOrThrow
+   */
+  export type ClientOpeningBalanceHistoryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOpeningBalanceHistory
+     */
+    select?: ClientOpeningBalanceHistorySelect<ExtArgs> | null
+    /**
+     * Filter, which ClientOpeningBalanceHistory to fetch.
+     */
+    where?: ClientOpeningBalanceHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ClientOpeningBalanceHistories to fetch.
+     */
+    orderBy?: ClientOpeningBalanceHistoryOrderByWithRelationInput | ClientOpeningBalanceHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ClientOpeningBalanceHistories.
+     */
+    cursor?: ClientOpeningBalanceHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ClientOpeningBalanceHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ClientOpeningBalanceHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ClientOpeningBalanceHistories.
+     */
+    distinct?: ClientOpeningBalanceHistoryScalarFieldEnum | ClientOpeningBalanceHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * ClientOpeningBalanceHistory findMany
+   */
+  export type ClientOpeningBalanceHistoryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOpeningBalanceHistory
+     */
+    select?: ClientOpeningBalanceHistorySelect<ExtArgs> | null
+    /**
+     * Filter, which ClientOpeningBalanceHistories to fetch.
+     */
+    where?: ClientOpeningBalanceHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ClientOpeningBalanceHistories to fetch.
+     */
+    orderBy?: ClientOpeningBalanceHistoryOrderByWithRelationInput | ClientOpeningBalanceHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ClientOpeningBalanceHistories.
+     */
+    cursor?: ClientOpeningBalanceHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ClientOpeningBalanceHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ClientOpeningBalanceHistories.
+     */
+    skip?: number
+    distinct?: ClientOpeningBalanceHistoryScalarFieldEnum | ClientOpeningBalanceHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * ClientOpeningBalanceHistory create
+   */
+  export type ClientOpeningBalanceHistoryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOpeningBalanceHistory
+     */
+    select?: ClientOpeningBalanceHistorySelect<ExtArgs> | null
+    /**
+     * The data needed to create a ClientOpeningBalanceHistory.
+     */
+    data: XOR<ClientOpeningBalanceHistoryCreateInput, ClientOpeningBalanceHistoryUncheckedCreateInput>
+  }
+
+  /**
+   * ClientOpeningBalanceHistory createMany
+   */
+  export type ClientOpeningBalanceHistoryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ClientOpeningBalanceHistories.
+     */
+    data: ClientOpeningBalanceHistoryCreateManyInput | ClientOpeningBalanceHistoryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ClientOpeningBalanceHistory update
+   */
+  export type ClientOpeningBalanceHistoryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOpeningBalanceHistory
+     */
+    select?: ClientOpeningBalanceHistorySelect<ExtArgs> | null
+    /**
+     * The data needed to update a ClientOpeningBalanceHistory.
+     */
+    data: XOR<ClientOpeningBalanceHistoryUpdateInput, ClientOpeningBalanceHistoryUncheckedUpdateInput>
+    /**
+     * Choose, which ClientOpeningBalanceHistory to update.
+     */
+    where: ClientOpeningBalanceHistoryWhereUniqueInput
+  }
+
+  /**
+   * ClientOpeningBalanceHistory updateMany
+   */
+  export type ClientOpeningBalanceHistoryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ClientOpeningBalanceHistories.
+     */
+    data: XOR<ClientOpeningBalanceHistoryUpdateManyMutationInput, ClientOpeningBalanceHistoryUncheckedUpdateManyInput>
+    /**
+     * Filter which ClientOpeningBalanceHistories to update
+     */
+    where?: ClientOpeningBalanceHistoryWhereInput
+  }
+
+  /**
+   * ClientOpeningBalanceHistory upsert
+   */
+  export type ClientOpeningBalanceHistoryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOpeningBalanceHistory
+     */
+    select?: ClientOpeningBalanceHistorySelect<ExtArgs> | null
+    /**
+     * The filter to search for the ClientOpeningBalanceHistory to update in case it exists.
+     */
+    where: ClientOpeningBalanceHistoryWhereUniqueInput
+    /**
+     * In case the ClientOpeningBalanceHistory found by the `where` argument doesn't exist, create a new ClientOpeningBalanceHistory with this data.
+     */
+    create: XOR<ClientOpeningBalanceHistoryCreateInput, ClientOpeningBalanceHistoryUncheckedCreateInput>
+    /**
+     * In case the ClientOpeningBalanceHistory was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ClientOpeningBalanceHistoryUpdateInput, ClientOpeningBalanceHistoryUncheckedUpdateInput>
+  }
+
+  /**
+   * ClientOpeningBalanceHistory delete
+   */
+  export type ClientOpeningBalanceHistoryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOpeningBalanceHistory
+     */
+    select?: ClientOpeningBalanceHistorySelect<ExtArgs> | null
+    /**
+     * Filter which ClientOpeningBalanceHistory to delete.
+     */
+    where: ClientOpeningBalanceHistoryWhereUniqueInput
+  }
+
+  /**
+   * ClientOpeningBalanceHistory deleteMany
+   */
+  export type ClientOpeningBalanceHistoryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ClientOpeningBalanceHistories to delete
+     */
+    where?: ClientOpeningBalanceHistoryWhereInput
+  }
+
+  /**
+   * ClientOpeningBalanceHistory without action
+   */
+  export type ClientOpeningBalanceHistoryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOpeningBalanceHistory
+     */
+    select?: ClientOpeningBalanceHistorySelect<ExtArgs> | null
   }
 
 
@@ -49019,6 +50154,7 @@ export namespace Prisma {
     dueDate: Date | null
     dueAmount: number | null
     paidAmount: number | null
+    paidAt: Date | null
     status: $Enums.InstallmentStatus | null
     notes: string | null
     clientId: string | null
@@ -49038,6 +50174,7 @@ export namespace Prisma {
     dueDate: Date | null
     dueAmount: number | null
     paidAmount: number | null
+    paidAt: Date | null
     status: $Enums.InstallmentStatus | null
     notes: string | null
     clientId: string | null
@@ -49057,6 +50194,7 @@ export namespace Prisma {
     dueDate: number
     dueAmount: number
     paidAmount: number
+    paidAt: number
     status: number
     notes: number
     clientId: number
@@ -49096,6 +50234,7 @@ export namespace Prisma {
     dueDate?: true
     dueAmount?: true
     paidAmount?: true
+    paidAt?: true
     status?: true
     notes?: true
     clientId?: true
@@ -49115,6 +50254,7 @@ export namespace Prisma {
     dueDate?: true
     dueAmount?: true
     paidAmount?: true
+    paidAt?: true
     status?: true
     notes?: true
     clientId?: true
@@ -49134,6 +50274,7 @@ export namespace Prisma {
     dueDate?: true
     dueAmount?: true
     paidAmount?: true
+    paidAt?: true
     status?: true
     notes?: true
     clientId?: true
@@ -49240,6 +50381,7 @@ export namespace Prisma {
     dueDate: Date
     dueAmount: number
     paidAmount: number
+    paidAt: Date | null
     status: $Enums.InstallmentStatus
     notes: string | null
     clientId: string
@@ -49278,6 +50420,7 @@ export namespace Prisma {
     dueDate?: boolean
     dueAmount?: boolean
     paidAmount?: boolean
+    paidAt?: boolean
     status?: boolean
     notes?: boolean
     clientId?: boolean
@@ -49300,6 +50443,7 @@ export namespace Prisma {
     dueDate?: boolean
     dueAmount?: boolean
     paidAmount?: boolean
+    paidAt?: boolean
     status?: boolean
     notes?: boolean
     clientId?: boolean
@@ -49330,6 +50474,7 @@ export namespace Prisma {
       dueDate: Date
       dueAmount: number
       paidAmount: number
+      paidAt: Date | null
       status: $Enums.InstallmentStatus
       notes: string | null
       clientId: string
@@ -49717,6 +50862,7 @@ export namespace Prisma {
     readonly dueDate: FieldRef<"ClientInstallment", 'DateTime'>
     readonly dueAmount: FieldRef<"ClientInstallment", 'Float'>
     readonly paidAmount: FieldRef<"ClientInstallment", 'Float'>
+    readonly paidAt: FieldRef<"ClientInstallment", 'DateTime'>
     readonly status: FieldRef<"ClientInstallment", 'InstallmentStatus'>
     readonly notes: FieldRef<"ClientInstallment", 'String'>
     readonly clientId: FieldRef<"ClientInstallment", 'String'>
@@ -94898,10 +96044,36 @@ export namespace Prisma {
     isActive: 'isActive',
     monthlyBudget: 'monthlyBudget',
     notes: 'notes',
+    openingBalanceAmount: 'openingBalanceAmount',
+    openingBalanceType: 'openingBalanceType',
+    openingBalanceDate: 'openingBalanceDate',
+    openingBalanceNotes: 'openingBalanceNotes',
+    openingJournalEntryId: 'openingJournalEntryId',
     isDraft: 'isDraft'
   };
 
   export type ClientScalarFieldEnum = (typeof ClientScalarFieldEnum)[keyof typeof ClientScalarFieldEnum]
+
+
+  export const ClientOpeningBalanceHistoryScalarFieldEnum: {
+    id: 'id',
+    clientId: 'clientId',
+    previousAmount: 'previousAmount',
+    previousType: 'previousType',
+    previousDate: 'previousDate',
+    previousNotes: 'previousNotes',
+    amount: 'amount',
+    balanceType: 'balanceType',
+    balanceDate: 'balanceDate',
+    notes: 'notes',
+    journalEntryId: 'journalEntryId',
+    action: 'action',
+    changedById: 'changedById',
+    changedByName: 'changedByName',
+    changedAt: 'changedAt'
+  };
+
+  export type ClientOpeningBalanceHistoryScalarFieldEnum = (typeof ClientOpeningBalanceHistoryScalarFieldEnum)[keyof typeof ClientOpeningBalanceHistoryScalarFieldEnum]
 
 
   export const ServiceScalarFieldEnum: {
@@ -95397,6 +96569,7 @@ export namespace Prisma {
     dueDate: 'dueDate',
     dueAmount: 'dueAmount',
     paidAmount: 'paidAmount',
+    paidAt: 'paidAt',
     status: 'status',
     notes: 'notes',
     clientId: 'clientId',
@@ -96212,6 +97385,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Decimal'
+   */
+  export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
    * Reference to a field of type 'ServiceType'
    */
   export type EnumServiceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServiceType'>
@@ -96222,13 +97409,6 @@ export namespace Prisma {
    * Reference to a field of type 'Json'
    */
   export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
     
 
 
@@ -96341,13 +97521,6 @@ export namespace Prisma {
    * Reference to a field of type 'account_types_report_type'
    */
   export type Enumaccount_types_report_typeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'account_types_report_type'>
-    
-
-
-  /**
-   * Reference to a field of type 'Decimal'
-   */
-  export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
     
 
 
@@ -97021,6 +98194,11 @@ export namespace Prisma {
     isActive?: BoolFilter<"Client"> | boolean
     monthlyBudget?: FloatNullableFilter<"Client"> | number | null
     notes?: StringNullableFilter<"Client"> | string | null
+    openingBalanceAmount?: DecimalFilter<"Client"> | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: StringNullableFilter<"Client"> | string | null
+    openingBalanceDate?: DateTimeNullableFilter<"Client"> | Date | string | null
+    openingBalanceNotes?: StringNullableFilter<"Client"> | string | null
+    openingJournalEntryId?: IntNullableFilter<"Client"> | number | null
     isDraft?: BoolFilter<"Client"> | boolean
     clientSubService?: ClientSubServiceListRelationFilter
     serviceAgreements?: IncomeServiceAgreementListRelationFilter
@@ -97062,6 +98240,11 @@ export namespace Prisma {
     isActive?: SortOrder
     monthlyBudget?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
+    openingBalanceAmount?: SortOrder
+    openingBalanceType?: SortOrderInput | SortOrder
+    openingBalanceDate?: SortOrderInput | SortOrder
+    openingBalanceNotes?: SortOrderInput | SortOrder
+    openingJournalEntryId?: SortOrderInput | SortOrder
     isDraft?: SortOrder
     clientSubService?: ClientSubServiceOrderByRelationAggregateInput
     serviceAgreements?: IncomeServiceAgreementOrderByRelationAggregateInput
@@ -97106,6 +98289,11 @@ export namespace Prisma {
     isActive?: BoolFilter<"Client"> | boolean
     monthlyBudget?: FloatNullableFilter<"Client"> | number | null
     notes?: StringNullableFilter<"Client"> | string | null
+    openingBalanceAmount?: DecimalFilter<"Client"> | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: StringNullableFilter<"Client"> | string | null
+    openingBalanceDate?: DateTimeNullableFilter<"Client"> | Date | string | null
+    openingBalanceNotes?: StringNullableFilter<"Client"> | string | null
+    openingJournalEntryId?: IntNullableFilter<"Client"> | number | null
     isDraft?: BoolFilter<"Client"> | boolean
     clientSubService?: ClientSubServiceListRelationFilter
     serviceAgreements?: IncomeServiceAgreementListRelationFilter
@@ -97147,6 +98335,11 @@ export namespace Prisma {
     isActive?: SortOrder
     monthlyBudget?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
+    openingBalanceAmount?: SortOrder
+    openingBalanceType?: SortOrderInput | SortOrder
+    openingBalanceDate?: SortOrderInput | SortOrder
+    openingBalanceNotes?: SortOrderInput | SortOrder
+    openingJournalEntryId?: SortOrderInput | SortOrder
     isDraft?: SortOrder
     _count?: ClientCountOrderByAggregateInput
     _avg?: ClientAvgOrderByAggregateInput
@@ -97180,7 +98373,116 @@ export namespace Prisma {
     isActive?: BoolWithAggregatesFilter<"Client"> | boolean
     monthlyBudget?: FloatNullableWithAggregatesFilter<"Client"> | number | null
     notes?: StringNullableWithAggregatesFilter<"Client"> | string | null
+    openingBalanceAmount?: DecimalWithAggregatesFilter<"Client"> | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: StringNullableWithAggregatesFilter<"Client"> | string | null
+    openingBalanceDate?: DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
+    openingBalanceNotes?: StringNullableWithAggregatesFilter<"Client"> | string | null
+    openingJournalEntryId?: IntNullableWithAggregatesFilter<"Client"> | number | null
     isDraft?: BoolWithAggregatesFilter<"Client"> | boolean
+  }
+
+  export type ClientOpeningBalanceHistoryWhereInput = {
+    AND?: ClientOpeningBalanceHistoryWhereInput | ClientOpeningBalanceHistoryWhereInput[]
+    OR?: ClientOpeningBalanceHistoryWhereInput[]
+    NOT?: ClientOpeningBalanceHistoryWhereInput | ClientOpeningBalanceHistoryWhereInput[]
+    id?: IntFilter<"ClientOpeningBalanceHistory"> | number
+    clientId?: StringFilter<"ClientOpeningBalanceHistory"> | string
+    previousAmount?: DecimalFilter<"ClientOpeningBalanceHistory"> | Decimal | DecimalJsLike | number | string
+    previousType?: StringNullableFilter<"ClientOpeningBalanceHistory"> | string | null
+    previousDate?: DateTimeNullableFilter<"ClientOpeningBalanceHistory"> | Date | string | null
+    previousNotes?: StringNullableFilter<"ClientOpeningBalanceHistory"> | string | null
+    amount?: DecimalFilter<"ClientOpeningBalanceHistory"> | Decimal | DecimalJsLike | number | string
+    balanceType?: StringNullableFilter<"ClientOpeningBalanceHistory"> | string | null
+    balanceDate?: DateTimeNullableFilter<"ClientOpeningBalanceHistory"> | Date | string | null
+    notes?: StringNullableFilter<"ClientOpeningBalanceHistory"> | string | null
+    journalEntryId?: IntNullableFilter<"ClientOpeningBalanceHistory"> | number | null
+    action?: StringFilter<"ClientOpeningBalanceHistory"> | string
+    changedById?: StringNullableFilter<"ClientOpeningBalanceHistory"> | string | null
+    changedByName?: StringNullableFilter<"ClientOpeningBalanceHistory"> | string | null
+    changedAt?: DateTimeFilter<"ClientOpeningBalanceHistory"> | Date | string
+  }
+
+  export type ClientOpeningBalanceHistoryOrderByWithRelationInput = {
+    id?: SortOrder
+    clientId?: SortOrder
+    previousAmount?: SortOrder
+    previousType?: SortOrderInput | SortOrder
+    previousDate?: SortOrderInput | SortOrder
+    previousNotes?: SortOrderInput | SortOrder
+    amount?: SortOrder
+    balanceType?: SortOrderInput | SortOrder
+    balanceDate?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    journalEntryId?: SortOrderInput | SortOrder
+    action?: SortOrder
+    changedById?: SortOrderInput | SortOrder
+    changedByName?: SortOrderInput | SortOrder
+    changedAt?: SortOrder
+  }
+
+  export type ClientOpeningBalanceHistoryWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: ClientOpeningBalanceHistoryWhereInput | ClientOpeningBalanceHistoryWhereInput[]
+    OR?: ClientOpeningBalanceHistoryWhereInput[]
+    NOT?: ClientOpeningBalanceHistoryWhereInput | ClientOpeningBalanceHistoryWhereInput[]
+    clientId?: StringFilter<"ClientOpeningBalanceHistory"> | string
+    previousAmount?: DecimalFilter<"ClientOpeningBalanceHistory"> | Decimal | DecimalJsLike | number | string
+    previousType?: StringNullableFilter<"ClientOpeningBalanceHistory"> | string | null
+    previousDate?: DateTimeNullableFilter<"ClientOpeningBalanceHistory"> | Date | string | null
+    previousNotes?: StringNullableFilter<"ClientOpeningBalanceHistory"> | string | null
+    amount?: DecimalFilter<"ClientOpeningBalanceHistory"> | Decimal | DecimalJsLike | number | string
+    balanceType?: StringNullableFilter<"ClientOpeningBalanceHistory"> | string | null
+    balanceDate?: DateTimeNullableFilter<"ClientOpeningBalanceHistory"> | Date | string | null
+    notes?: StringNullableFilter<"ClientOpeningBalanceHistory"> | string | null
+    journalEntryId?: IntNullableFilter<"ClientOpeningBalanceHistory"> | number | null
+    action?: StringFilter<"ClientOpeningBalanceHistory"> | string
+    changedById?: StringNullableFilter<"ClientOpeningBalanceHistory"> | string | null
+    changedByName?: StringNullableFilter<"ClientOpeningBalanceHistory"> | string | null
+    changedAt?: DateTimeFilter<"ClientOpeningBalanceHistory"> | Date | string
+  }, "id">
+
+  export type ClientOpeningBalanceHistoryOrderByWithAggregationInput = {
+    id?: SortOrder
+    clientId?: SortOrder
+    previousAmount?: SortOrder
+    previousType?: SortOrderInput | SortOrder
+    previousDate?: SortOrderInput | SortOrder
+    previousNotes?: SortOrderInput | SortOrder
+    amount?: SortOrder
+    balanceType?: SortOrderInput | SortOrder
+    balanceDate?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    journalEntryId?: SortOrderInput | SortOrder
+    action?: SortOrder
+    changedById?: SortOrderInput | SortOrder
+    changedByName?: SortOrderInput | SortOrder
+    changedAt?: SortOrder
+    _count?: ClientOpeningBalanceHistoryCountOrderByAggregateInput
+    _avg?: ClientOpeningBalanceHistoryAvgOrderByAggregateInput
+    _max?: ClientOpeningBalanceHistoryMaxOrderByAggregateInput
+    _min?: ClientOpeningBalanceHistoryMinOrderByAggregateInput
+    _sum?: ClientOpeningBalanceHistorySumOrderByAggregateInput
+  }
+
+  export type ClientOpeningBalanceHistoryScalarWhereWithAggregatesInput = {
+    AND?: ClientOpeningBalanceHistoryScalarWhereWithAggregatesInput | ClientOpeningBalanceHistoryScalarWhereWithAggregatesInput[]
+    OR?: ClientOpeningBalanceHistoryScalarWhereWithAggregatesInput[]
+    NOT?: ClientOpeningBalanceHistoryScalarWhereWithAggregatesInput | ClientOpeningBalanceHistoryScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"ClientOpeningBalanceHistory"> | number
+    clientId?: StringWithAggregatesFilter<"ClientOpeningBalanceHistory"> | string
+    previousAmount?: DecimalWithAggregatesFilter<"ClientOpeningBalanceHistory"> | Decimal | DecimalJsLike | number | string
+    previousType?: StringNullableWithAggregatesFilter<"ClientOpeningBalanceHistory"> | string | null
+    previousDate?: DateTimeNullableWithAggregatesFilter<"ClientOpeningBalanceHistory"> | Date | string | null
+    previousNotes?: StringNullableWithAggregatesFilter<"ClientOpeningBalanceHistory"> | string | null
+    amount?: DecimalWithAggregatesFilter<"ClientOpeningBalanceHistory"> | Decimal | DecimalJsLike | number | string
+    balanceType?: StringNullableWithAggregatesFilter<"ClientOpeningBalanceHistory"> | string | null
+    balanceDate?: DateTimeNullableWithAggregatesFilter<"ClientOpeningBalanceHistory"> | Date | string | null
+    notes?: StringNullableWithAggregatesFilter<"ClientOpeningBalanceHistory"> | string | null
+    journalEntryId?: IntNullableWithAggregatesFilter<"ClientOpeningBalanceHistory"> | number | null
+    action?: StringWithAggregatesFilter<"ClientOpeningBalanceHistory"> | string
+    changedById?: StringNullableWithAggregatesFilter<"ClientOpeningBalanceHistory"> | string | null
+    changedByName?: StringNullableWithAggregatesFilter<"ClientOpeningBalanceHistory"> | string | null
+    changedAt?: DateTimeWithAggregatesFilter<"ClientOpeningBalanceHistory"> | Date | string
   }
 
   export type ServiceWhereInput = {
@@ -99858,6 +101160,7 @@ export namespace Prisma {
     dueDate?: DateTimeFilter<"ClientInstallment"> | Date | string
     dueAmount?: FloatFilter<"ClientInstallment"> | number
     paidAmount?: FloatFilter<"ClientInstallment"> | number
+    paidAt?: DateTimeNullableFilter<"ClientInstallment"> | Date | string | null
     status?: EnumInstallmentStatusFilter<"ClientInstallment"> | $Enums.InstallmentStatus
     notes?: StringNullableFilter<"ClientInstallment"> | string | null
     clientId?: StringFilter<"ClientInstallment"> | string
@@ -99879,6 +101182,7 @@ export namespace Prisma {
     dueDate?: SortOrder
     dueAmount?: SortOrder
     paidAmount?: SortOrder
+    paidAt?: SortOrderInput | SortOrder
     status?: SortOrder
     notes?: SortOrderInput | SortOrder
     clientId?: SortOrder
@@ -99904,6 +101208,7 @@ export namespace Prisma {
     dueDate?: DateTimeFilter<"ClientInstallment"> | Date | string
     dueAmount?: FloatFilter<"ClientInstallment"> | number
     paidAmount?: FloatFilter<"ClientInstallment"> | number
+    paidAt?: DateTimeNullableFilter<"ClientInstallment"> | Date | string | null
     status?: EnumInstallmentStatusFilter<"ClientInstallment"> | $Enums.InstallmentStatus
     notes?: StringNullableFilter<"ClientInstallment"> | string | null
     clientId?: StringFilter<"ClientInstallment"> | string
@@ -99925,6 +101230,7 @@ export namespace Prisma {
     dueDate?: SortOrder
     dueAmount?: SortOrder
     paidAmount?: SortOrder
+    paidAt?: SortOrderInput | SortOrder
     status?: SortOrder
     notes?: SortOrderInput | SortOrder
     clientId?: SortOrder
@@ -99952,6 +101258,7 @@ export namespace Prisma {
     dueDate?: DateTimeWithAggregatesFilter<"ClientInstallment"> | Date | string
     dueAmount?: FloatWithAggregatesFilter<"ClientInstallment"> | number
     paidAmount?: FloatWithAggregatesFilter<"ClientInstallment"> | number
+    paidAt?: DateTimeNullableWithAggregatesFilter<"ClientInstallment"> | Date | string | null
     status?: EnumInstallmentStatusWithAggregatesFilter<"ClientInstallment"> | $Enums.InstallmentStatus
     notes?: StringNullableWithAggregatesFilter<"ClientInstallment"> | string | null
     clientId?: StringWithAggregatesFilter<"ClientInstallment"> | string
@@ -104856,6 +106163,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
@@ -104897,6 +106209,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
@@ -104932,6 +106249,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
@@ -104973,6 +106295,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
@@ -105011,6 +106338,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
   }
 
@@ -105033,6 +106365,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -105058,7 +106395,135 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type ClientOpeningBalanceHistoryCreateInput = {
+    clientId: string
+    previousAmount?: Decimal | DecimalJsLike | number | string
+    previousType?: string | null
+    previousDate?: Date | string | null
+    previousNotes?: string | null
+    amount?: Decimal | DecimalJsLike | number | string
+    balanceType?: string | null
+    balanceDate?: Date | string | null
+    notes?: string | null
+    journalEntryId?: number | null
+    action: string
+    changedById?: string | null
+    changedByName?: string | null
+    changedAt?: Date | string
+  }
+
+  export type ClientOpeningBalanceHistoryUncheckedCreateInput = {
+    id?: number
+    clientId: string
+    previousAmount?: Decimal | DecimalJsLike | number | string
+    previousType?: string | null
+    previousDate?: Date | string | null
+    previousNotes?: string | null
+    amount?: Decimal | DecimalJsLike | number | string
+    balanceType?: string | null
+    balanceDate?: Date | string | null
+    notes?: string | null
+    journalEntryId?: number | null
+    action: string
+    changedById?: string | null
+    changedByName?: string | null
+    changedAt?: Date | string
+  }
+
+  export type ClientOpeningBalanceHistoryUpdateInput = {
+    clientId?: StringFieldUpdateOperationsInput | string
+    previousAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    previousType?: NullableStringFieldUpdateOperationsInput | string | null
+    previousDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    previousNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    balanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    journalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
+    action?: StringFieldUpdateOperationsInput | string
+    changedById?: NullableStringFieldUpdateOperationsInput | string | null
+    changedByName?: NullableStringFieldUpdateOperationsInput | string | null
+    changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClientOpeningBalanceHistoryUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    clientId?: StringFieldUpdateOperationsInput | string
+    previousAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    previousType?: NullableStringFieldUpdateOperationsInput | string | null
+    previousDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    previousNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    balanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    journalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
+    action?: StringFieldUpdateOperationsInput | string
+    changedById?: NullableStringFieldUpdateOperationsInput | string | null
+    changedByName?: NullableStringFieldUpdateOperationsInput | string | null
+    changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClientOpeningBalanceHistoryCreateManyInput = {
+    id?: number
+    clientId: string
+    previousAmount?: Decimal | DecimalJsLike | number | string
+    previousType?: string | null
+    previousDate?: Date | string | null
+    previousNotes?: string | null
+    amount?: Decimal | DecimalJsLike | number | string
+    balanceType?: string | null
+    balanceDate?: Date | string | null
+    notes?: string | null
+    journalEntryId?: number | null
+    action: string
+    changedById?: string | null
+    changedByName?: string | null
+    changedAt?: Date | string
+  }
+
+  export type ClientOpeningBalanceHistoryUpdateManyMutationInput = {
+    clientId?: StringFieldUpdateOperationsInput | string
+    previousAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    previousType?: NullableStringFieldUpdateOperationsInput | string | null
+    previousDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    previousNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    balanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    journalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
+    action?: StringFieldUpdateOperationsInput | string
+    changedById?: NullableStringFieldUpdateOperationsInput | string | null
+    changedByName?: NullableStringFieldUpdateOperationsInput | string | null
+    changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClientOpeningBalanceHistoryUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    clientId?: StringFieldUpdateOperationsInput | string
+    previousAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    previousType?: NullableStringFieldUpdateOperationsInput | string | null
+    previousDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    previousNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    balanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    balanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    journalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
+    action?: StringFieldUpdateOperationsInput | string
+    changedById?: NullableStringFieldUpdateOperationsInput | string | null
+    changedByName?: NullableStringFieldUpdateOperationsInput | string | null
+    changedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ServiceCreateInput = {
@@ -107879,6 +109344,7 @@ export namespace Prisma {
     dueDate: Date | string
     dueAmount: number
     paidAmount?: number
+    paidAt?: Date | string | null
     status?: $Enums.InstallmentStatus
     notes?: string | null
     installmentNumber?: number | null
@@ -107898,6 +109364,7 @@ export namespace Prisma {
     dueDate: Date | string
     dueAmount: number
     paidAmount?: number
+    paidAt?: Date | string | null
     status?: $Enums.InstallmentStatus
     notes?: string | null
     clientId: string
@@ -107917,6 +109384,7 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dueAmount?: FloatFieldUpdateOperationsInput | number
     paidAmount?: FloatFieldUpdateOperationsInput | number
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumInstallmentStatusFieldUpdateOperationsInput | $Enums.InstallmentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     installmentNumber?: NullableIntFieldUpdateOperationsInput | number | null
@@ -107936,6 +109404,7 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dueAmount?: FloatFieldUpdateOperationsInput | number
     paidAmount?: FloatFieldUpdateOperationsInput | number
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumInstallmentStatusFieldUpdateOperationsInput | $Enums.InstallmentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: StringFieldUpdateOperationsInput | string
@@ -107955,6 +109424,7 @@ export namespace Prisma {
     dueDate: Date | string
     dueAmount: number
     paidAmount?: number
+    paidAt?: Date | string | null
     status?: $Enums.InstallmentStatus
     notes?: string | null
     clientId: string
@@ -107974,6 +109444,7 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dueAmount?: FloatFieldUpdateOperationsInput | number
     paidAmount?: FloatFieldUpdateOperationsInput | number
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumInstallmentStatusFieldUpdateOperationsInput | $Enums.InstallmentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     installmentNumber?: NullableIntFieldUpdateOperationsInput | number | null
@@ -107991,6 +109462,7 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dueAmount?: FloatFieldUpdateOperationsInput | number
     paidAmount?: FloatFieldUpdateOperationsInput | number
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumInstallmentStatusFieldUpdateOperationsInput | $Enums.InstallmentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: StringFieldUpdateOperationsInput | string
@@ -113048,6 +114520,28 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
+  export type DecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type ClientSubServiceListRelationFilter = {
     every?: ClientSubServiceWhereInput
     some?: ClientSubServiceWhereInput
@@ -113170,11 +114664,18 @@ export namespace Prisma {
     isActive?: SortOrder
     monthlyBudget?: SortOrder
     notes?: SortOrder
+    openingBalanceAmount?: SortOrder
+    openingBalanceType?: SortOrder
+    openingBalanceDate?: SortOrder
+    openingBalanceNotes?: SortOrder
+    openingJournalEntryId?: SortOrder
     isDraft?: SortOrder
   }
 
   export type ClientAvgOrderByAggregateInput = {
     monthlyBudget?: SortOrder
+    openingBalanceAmount?: SortOrder
+    openingJournalEntryId?: SortOrder
   }
 
   export type ClientMaxOrderByAggregateInput = {
@@ -113199,6 +114700,11 @@ export namespace Prisma {
     isActive?: SortOrder
     monthlyBudget?: SortOrder
     notes?: SortOrder
+    openingBalanceAmount?: SortOrder
+    openingBalanceType?: SortOrder
+    openingBalanceDate?: SortOrder
+    openingBalanceNotes?: SortOrder
+    openingJournalEntryId?: SortOrder
     isDraft?: SortOrder
   }
 
@@ -113224,11 +114730,18 @@ export namespace Prisma {
     isActive?: SortOrder
     monthlyBudget?: SortOrder
     notes?: SortOrder
+    openingBalanceAmount?: SortOrder
+    openingBalanceType?: SortOrder
+    openingBalanceDate?: SortOrder
+    openingBalanceNotes?: SortOrder
+    openingJournalEntryId?: SortOrder
     isDraft?: SortOrder
   }
 
   export type ClientSumOrderByAggregateInput = {
     monthlyBudget?: SortOrder
+    openingBalanceAmount?: SortOrder
+    openingJournalEntryId?: SortOrder
   }
 
   export type EnumClientTypeWithAggregatesFilter<$PrismaModel = never> = {
@@ -113255,6 +114768,133 @@ export namespace Prisma {
     _sum?: NestedFloatNullableFilter<$PrismaModel>
     _min?: NestedFloatNullableFilter<$PrismaModel>
     _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type ClientOpeningBalanceHistoryCountOrderByAggregateInput = {
+    id?: SortOrder
+    clientId?: SortOrder
+    previousAmount?: SortOrder
+    previousType?: SortOrder
+    previousDate?: SortOrder
+    previousNotes?: SortOrder
+    amount?: SortOrder
+    balanceType?: SortOrder
+    balanceDate?: SortOrder
+    notes?: SortOrder
+    journalEntryId?: SortOrder
+    action?: SortOrder
+    changedById?: SortOrder
+    changedByName?: SortOrder
+    changedAt?: SortOrder
+  }
+
+  export type ClientOpeningBalanceHistoryAvgOrderByAggregateInput = {
+    id?: SortOrder
+    previousAmount?: SortOrder
+    amount?: SortOrder
+    journalEntryId?: SortOrder
+  }
+
+  export type ClientOpeningBalanceHistoryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    clientId?: SortOrder
+    previousAmount?: SortOrder
+    previousType?: SortOrder
+    previousDate?: SortOrder
+    previousNotes?: SortOrder
+    amount?: SortOrder
+    balanceType?: SortOrder
+    balanceDate?: SortOrder
+    notes?: SortOrder
+    journalEntryId?: SortOrder
+    action?: SortOrder
+    changedById?: SortOrder
+    changedByName?: SortOrder
+    changedAt?: SortOrder
+  }
+
+  export type ClientOpeningBalanceHistoryMinOrderByAggregateInput = {
+    id?: SortOrder
+    clientId?: SortOrder
+    previousAmount?: SortOrder
+    previousType?: SortOrder
+    previousDate?: SortOrder
+    previousNotes?: SortOrder
+    amount?: SortOrder
+    balanceType?: SortOrder
+    balanceDate?: SortOrder
+    notes?: SortOrder
+    journalEntryId?: SortOrder
+    action?: SortOrder
+    changedById?: SortOrder
+    changedByName?: SortOrder
+    changedAt?: SortOrder
+  }
+
+  export type ClientOpeningBalanceHistorySumOrderByAggregateInput = {
+    id?: SortOrder
+    previousAmount?: SortOrder
+    amount?: SortOrder
+    journalEntryId?: SortOrder
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type EnumServiceTypeFilter<$PrismaModel = never> = {
@@ -113380,17 +115020,6 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
   export type ServiceRelationFilter = {
     is?: ServiceWhereInput
     isNot?: ServiceWhereInput
@@ -113473,22 +115102,6 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedJsonNullableFilter<$PrismaModel>
     _max?: NestedJsonNullableFilter<$PrismaModel>
-  }
-
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type PortfolioCountOrderByAggregateInput = {
@@ -115032,17 +116645,6 @@ export namespace Prisma {
     not?: NestedEnumContractStatusFilter<$PrismaModel> | $Enums.ContractStatus
   }
 
-  export type IntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type ContractCountOrderByAggregateInput = {
     id?: SortOrder
     createdAt?: SortOrder
@@ -115139,22 +116741,6 @@ export namespace Prisma {
     _max?: NestedEnumContractStatusFilter<$PrismaModel>
   }
 
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
-  }
-
   export type EnumInstallmentStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.InstallmentStatus | EnumInstallmentStatusFieldRefInput<$PrismaModel>
     in?: $Enums.InstallmentStatus[]
@@ -115178,6 +116764,7 @@ export namespace Prisma {
     dueDate?: SortOrder
     dueAmount?: SortOrder
     paidAmount?: SortOrder
+    paidAt?: SortOrder
     status?: SortOrder
     notes?: SortOrder
     clientId?: SortOrder
@@ -115206,6 +116793,7 @@ export namespace Prisma {
     dueDate?: SortOrder
     dueAmount?: SortOrder
     paidAmount?: SortOrder
+    paidAt?: SortOrder
     status?: SortOrder
     notes?: SortOrder
     clientId?: SortOrder
@@ -115225,6 +116813,7 @@ export namespace Prisma {
     dueDate?: SortOrder
     dueAmount?: SortOrder
     paidAmount?: SortOrder
+    paidAt?: SortOrder
     status?: SortOrder
     notes?: SortOrder
     clientId?: SortOrder
@@ -116401,17 +117990,6 @@ export namespace Prisma {
     decimal_places?: SortOrder
   }
 
-  export type DecimalFilter<$PrismaModel = never> = {
-    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
-    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
-    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
-  }
-
   export type DecimalNullableFilter<$PrismaModel = never> = {
     equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
     in?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
@@ -116509,22 +118087,6 @@ export namespace Prisma {
     tax_id?: SortOrder
     income_account_id?: SortOrder
     subtotal?: SortOrder
-  }
-
-  export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
-    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
-    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedDecimalFilter<$PrismaModel>
-    _sum?: NestedDecimalFilter<$PrismaModel>
-    _min?: NestedDecimalFilter<$PrismaModel>
-    _max?: NestedDecimalFilter<$PrismaModel>
   }
 
   export type DecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -120197,6 +121759,22 @@ export namespace Prisma {
     divide?: number
   }
 
+  export type DecimalFieldUpdateOperationsInput = {
+    set?: Decimal | DecimalJsLike | number | string
+    increment?: Decimal | DecimalJsLike | number | string
+    decrement?: Decimal | DecimalJsLike | number | string
+    multiply?: Decimal | DecimalJsLike | number | string
+    divide?: Decimal | DecimalJsLike | number | string
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type ClientSubServiceUpdateManyWithoutClientNestedInput = {
     create?: XOR<ClientSubServiceCreateWithoutClientInput, ClientSubServiceUncheckedCreateWithoutClientInput> | ClientSubServiceCreateWithoutClientInput[] | ClientSubServiceUncheckedCreateWithoutClientInput[]
     connectOrCreate?: ClientSubServiceCreateOrConnectWithoutClientInput | ClientSubServiceCreateOrConnectWithoutClientInput[]
@@ -120583,6 +122161,14 @@ export namespace Prisma {
     deleteMany?: RecurringScheduleScalarWhereInput | RecurringScheduleScalarWhereInput[]
   }
 
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type IncomeServiceAgreementCreateNestedManyWithoutServiceInput = {
     create?: XOR<IncomeServiceAgreementCreateWithoutServiceInput, IncomeServiceAgreementUncheckedCreateWithoutServiceInput> | IncomeServiceAgreementCreateWithoutServiceInput[] | IncomeServiceAgreementUncheckedCreateWithoutServiceInput[]
     connectOrCreate?: IncomeServiceAgreementCreateOrConnectWithoutServiceInput | IncomeServiceAgreementCreateOrConnectWithoutServiceInput[]
@@ -120835,14 +122421,6 @@ export namespace Prisma {
     connectOrCreate?: IncomeServiceAgreementCreateOrConnectWithoutSubServiceInput | IncomeServiceAgreementCreateOrConnectWithoutSubServiceInput[]
     createMany?: IncomeServiceAgreementCreateManySubServiceInputEnvelope
     connect?: IncomeServiceAgreementWhereUniqueInput | IncomeServiceAgreementWhereUniqueInput[]
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type ClientSubServiceUpdateManyWithoutSubServiceNestedInput = {
@@ -123037,14 +124615,6 @@ export namespace Prisma {
 
   export type EnumContractStatusFieldUpdateOperationsInput = {
     set?: $Enums.ContractStatus
-  }
-
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type ClientInstallmentUpdateManyWithoutContractNestedInput = {
@@ -125873,14 +127443,6 @@ export namespace Prisma {
     create?: XOR<taxesCreateWithoutCustomer_invoice_linesInput, taxesUncheckedCreateWithoutCustomer_invoice_linesInput>
     connectOrCreate?: taxesCreateOrConnectWithoutCustomer_invoice_linesInput
     connect?: taxesWhereUniqueInput
-  }
-
-  export type DecimalFieldUpdateOperationsInput = {
-    set?: Decimal | DecimalJsLike | number | string
-    increment?: Decimal | DecimalJsLike | number | string
-    decrement?: Decimal | DecimalJsLike | number | string
-    multiply?: Decimal | DecimalJsLike | number | string
-    divide?: Decimal | DecimalJsLike | number | string
   }
 
   export type NullableDecimalFieldUpdateOperationsInput = {
@@ -129777,6 +131339,17 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
+  export type NestedDecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
   export type NestedEnumClientTypeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.ClientType | EnumClientTypeFieldRefInput<$PrismaModel>
     in?: $Enums.ClientType[]
@@ -129801,6 +131374,65 @@ export namespace Prisma {
     _sum?: NestedFloatNullableFilter<$PrismaModel>
     _min?: NestedFloatNullableFilter<$PrismaModel>
     _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
   }
 
   export type NestedEnumServiceTypeFilter<$PrismaModel = never> = {
@@ -129840,33 +131472,6 @@ export namespace Prisma {
     gt?: InputJsonValue
     gte?: InputJsonValue
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
-  }
-
-  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
-  }
-
-  export type NestedFloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[]
-    notIn?: number[]
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
   }
 
   export type NestedEnumTaskStatusFilter<$PrismaModel = never> = {
@@ -130038,22 +131643,6 @@ export namespace Prisma {
     _max?: NestedEnumContractStatusFilter<$PrismaModel>
   }
 
-  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
-  }
-
   export type NestedEnumInstallmentStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.InstallmentStatus | EnumInstallmentStatusFieldRefInput<$PrismaModel>
     in?: $Enums.InstallmentStatus[]
@@ -130207,17 +131796,6 @@ export namespace Prisma {
     _max?: NestedEnumaccount_types_report_typeFilter<$PrismaModel>
   }
 
-  export type NestedDecimalFilter<$PrismaModel = never> = {
-    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
-    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
-    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
-  }
-
   export type NestedDecimalNullableFilter<$PrismaModel = never> = {
     equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
     in?: Decimal[] | DecimalJsLike[] | number[] | string[] | null
@@ -130227,22 +131805,6 @@ export namespace Prisma {
     gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
-  }
-
-  export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    in?: Decimal[] | DecimalJsLike[] | number[] | string[]
-    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[]
-    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedDecimalFilter<$PrismaModel>
-    _sum?: NestedDecimalFilter<$PrismaModel>
-    _min?: NestedDecimalFilter<$PrismaModel>
-    _max?: NestedDecimalFilter<$PrismaModel>
   }
 
   export type NestedDecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -131097,6 +132659,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
@@ -131136,6 +132703,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
@@ -131181,6 +132753,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
@@ -131220,6 +132797,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
@@ -132232,6 +133814,11 @@ export namespace Prisma {
     isActive?: BoolFilter<"Client"> | boolean
     monthlyBudget?: FloatNullableFilter<"Client"> | number | null
     notes?: StringNullableFilter<"Client"> | string | null
+    openingBalanceAmount?: DecimalFilter<"Client"> | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: StringNullableFilter<"Client"> | string | null
+    openingBalanceDate?: DateTimeNullableFilter<"Client"> | Date | string | null
+    openingBalanceNotes?: StringNullableFilter<"Client"> | string | null
+    openingJournalEntryId?: IntNullableFilter<"Client"> | number | null
     isDraft?: BoolFilter<"Client"> | boolean
   }
 
@@ -133312,6 +134899,7 @@ export namespace Prisma {
     dueDate: Date | string
     dueAmount: number
     paidAmount?: number
+    paidAt?: Date | string | null
     status?: $Enums.InstallmentStatus
     notes?: string | null
     installmentNumber?: number | null
@@ -133330,6 +134918,7 @@ export namespace Prisma {
     dueDate: Date | string
     dueAmount: number
     paidAmount?: number
+    paidAt?: Date | string | null
     status?: $Enums.InstallmentStatus
     notes?: string | null
     contractId?: string | null
@@ -134165,6 +135754,7 @@ export namespace Prisma {
     dueDate?: DateTimeFilter<"ClientInstallment"> | Date | string
     dueAmount?: FloatFilter<"ClientInstallment"> | number
     paidAmount?: FloatFilter<"ClientInstallment"> | number
+    paidAt?: DateTimeNullableFilter<"ClientInstallment"> | Date | string | null
     status?: EnumInstallmentStatusFilter<"ClientInstallment"> | $Enums.InstallmentStatus
     notes?: StringNullableFilter<"ClientInstallment"> | string | null
     clientId?: StringFilter<"ClientInstallment"> | string
@@ -135675,6 +137265,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
@@ -135714,6 +137309,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
@@ -136239,6 +137839,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
@@ -136279,6 +137884,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
@@ -136360,6 +137970,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
@@ -136400,6 +138015,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
@@ -136471,6 +138091,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
@@ -136511,6 +138136,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
@@ -136608,6 +138238,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
@@ -136648,6 +138283,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
@@ -138237,6 +139877,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
@@ -138277,6 +139922,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
@@ -138398,6 +140048,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
@@ -138438,6 +140093,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
@@ -139657,6 +141317,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     clientService?: ClientServiceCreateNestedManyWithoutClientInput
@@ -139697,6 +141362,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     clientService?: ClientServiceUncheckedCreateNestedManyWithoutClientInput
@@ -140010,6 +141680,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUpdateManyWithoutClientNestedInput
@@ -140050,6 +141725,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     clientService?: ClientServiceUncheckedUpdateManyWithoutClientNestedInput
@@ -141910,6 +143590,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
@@ -141950,6 +143635,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
@@ -142421,6 +144111,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
@@ -142461,6 +144156,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
@@ -143745,6 +145445,7 @@ export namespace Prisma {
     dueDate: Date | string
     dueAmount: number
     paidAmount?: number
+    paidAt?: Date | string | null
     status?: $Enums.InstallmentStatus
     notes?: string | null
     installmentNumber?: number | null
@@ -143763,6 +145464,7 @@ export namespace Prisma {
     dueDate: Date | string
     dueAmount: number
     paidAmount?: number
+    paidAt?: Date | string | null
     status?: $Enums.InstallmentStatus
     notes?: string | null
     clientId: string
@@ -143887,6 +145589,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
@@ -143927,6 +145634,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
@@ -144296,6 +146008,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
@@ -144336,6 +146053,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
@@ -144556,6 +146278,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
@@ -144596,6 +146323,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
@@ -144703,6 +146435,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
@@ -144743,6 +146480,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
@@ -145235,6 +146977,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
@@ -145275,6 +147022,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
@@ -145636,6 +147388,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
@@ -145676,6 +147433,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
@@ -146309,6 +148071,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
@@ -146349,6 +148116,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
@@ -146492,6 +148264,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
@@ -146532,6 +148309,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
@@ -147205,6 +148987,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
@@ -147245,6 +149032,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
@@ -147410,6 +149202,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
@@ -147450,6 +149247,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
@@ -152884,6 +154686,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
@@ -152924,6 +154731,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
@@ -153603,6 +155415,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
@@ -153643,6 +155460,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
@@ -155119,6 +156941,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
@@ -155159,6 +156986,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
@@ -155494,6 +157326,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
@@ -155534,6 +157371,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
@@ -165250,6 +167092,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementCreateNestedManyWithoutClientInput
@@ -165290,6 +167137,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
     clientSubService?: ClientSubServiceUncheckedCreateNestedManyWithoutClientInput
     serviceAgreements?: IncomeServiceAgreementUncheckedCreateNestedManyWithoutClientInput
@@ -165484,6 +167336,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
@@ -165524,6 +167381,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
@@ -166248,6 +168110,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
   }
 
@@ -166272,6 +168139,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
   }
 
@@ -166792,6 +168664,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
@@ -166831,6 +168708,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
@@ -166868,6 +168750,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -166890,6 +168777,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
@@ -166929,6 +168821,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
@@ -166966,6 +168863,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -167736,6 +169638,7 @@ export namespace Prisma {
     dueDate: Date | string
     dueAmount: number
     paidAmount?: number
+    paidAt?: Date | string | null
     status?: $Enums.InstallmentStatus
     notes?: string | null
     contractId?: string | null
@@ -167985,6 +169888,7 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dueAmount?: FloatFieldUpdateOperationsInput | number
     paidAmount?: FloatFieldUpdateOperationsInput | number
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumInstallmentStatusFieldUpdateOperationsInput | $Enums.InstallmentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     installmentNumber?: NullableIntFieldUpdateOperationsInput | number | null
@@ -168003,6 +169907,7 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dueAmount?: FloatFieldUpdateOperationsInput | number
     paidAmount?: FloatFieldUpdateOperationsInput | number
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumInstallmentStatusFieldUpdateOperationsInput | $Enums.InstallmentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     contractId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -168021,6 +169926,7 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dueAmount?: FloatFieldUpdateOperationsInput | number
     paidAmount?: FloatFieldUpdateOperationsInput | number
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumInstallmentStatusFieldUpdateOperationsInput | $Enums.InstallmentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     contractId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -168774,6 +170680,11 @@ export namespace Prisma {
     isActive?: boolean
     monthlyBudget?: number | null
     notes?: string | null
+    openingBalanceAmount?: Decimal | DecimalJsLike | number | string
+    openingBalanceType?: string | null
+    openingBalanceDate?: Date | string | null
+    openingBalanceNotes?: string | null
+    openingJournalEntryId?: number | null
     isDraft?: boolean
   }
 
@@ -168908,6 +170819,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUpdateManyWithoutClientNestedInput
@@ -168947,6 +170863,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
     clientSubService?: ClientSubServiceUncheckedUpdateManyWithoutClientNestedInput
     serviceAgreements?: IncomeServiceAgreementUncheckedUpdateManyWithoutClientNestedInput
@@ -168984,6 +170905,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     monthlyBudget?: NullableFloatFieldUpdateOperationsInput | number | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceAmount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    openingBalanceType?: NullableStringFieldUpdateOperationsInput | string | null
+    openingBalanceDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    openingBalanceNotes?: NullableStringFieldUpdateOperationsInput | string | null
+    openingJournalEntryId?: NullableIntFieldUpdateOperationsInput | number | null
     isDraft?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -170643,6 +172569,7 @@ export namespace Prisma {
     dueDate: Date | string
     dueAmount: number
     paidAmount?: number
+    paidAt?: Date | string | null
     status?: $Enums.InstallmentStatus
     notes?: string | null
     clientId: string
@@ -170694,6 +172621,7 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dueAmount?: FloatFieldUpdateOperationsInput | number
     paidAmount?: FloatFieldUpdateOperationsInput | number
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumInstallmentStatusFieldUpdateOperationsInput | $Enums.InstallmentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     installmentNumber?: NullableIntFieldUpdateOperationsInput | number | null
@@ -170712,6 +172640,7 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dueAmount?: FloatFieldUpdateOperationsInput | number
     paidAmount?: FloatFieldUpdateOperationsInput | number
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumInstallmentStatusFieldUpdateOperationsInput | $Enums.InstallmentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: StringFieldUpdateOperationsInput | string
@@ -170730,6 +172659,7 @@ export namespace Prisma {
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dueAmount?: FloatFieldUpdateOperationsInput | number
     paidAmount?: FloatFieldUpdateOperationsInput | number
+    paidAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     status?: EnumInstallmentStatusFieldUpdateOperationsInput | $Enums.InstallmentStatus
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     clientId?: StringFieldUpdateOperationsInput | string
@@ -179505,6 +181435,10 @@ export namespace Prisma {
      * @deprecated Use ClientDefaultArgs instead
      */
     export type ClientArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ClientDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ClientOpeningBalanceHistoryDefaultArgs instead
+     */
+    export type ClientOpeningBalanceHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ClientOpeningBalanceHistoryDefaultArgs<ExtArgs>
     /**
      * @deprecated Use ServiceDefaultArgs instead
      */

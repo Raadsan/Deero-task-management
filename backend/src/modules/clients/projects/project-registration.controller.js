@@ -17,6 +17,13 @@ import {
   zonedNowParts,
 } from "../../../lib/scheduled-task-window.js";
 import { addDays, addMonths, buildMonthlyCycles, contractProjectType, firstMonthlyCycle, isoDate } from "../../../lib/project-cycles.js";
+import { assertTransferPreservesTaskState } from "../../../lib/task-transfer.js";
+import {
+  fridayScheduleErrorForReschedule,
+  fridayScheduleErrorForTask,
+  normalizeCompanyWorkingDays,
+  workingDatesFromRange,
+} from "../../../lib/company-working-days.js";
 
 const LIFECYCLE = new Set(["ACTIVE", "ON_HOLD", "COMPLETED", "CANCELLED", "DRAFT"]);
 
@@ -35,17 +42,7 @@ function mapTaskStatus(value) {
 }
 
 function workingDates(start, end, workingDays) {
-  const days = new Set((workingDays?.length ? workingDays : [1, 2, 3, 4, 5]).map(Number));
-  const dates = [];
-  const cursor = new Date(start);
-  cursor.setHours(12, 0, 0, 0);
-  const last = new Date(end);
-  last.setHours(12, 0, 0, 0);
-  while (cursor <= last && dates.length < 400) {
-    if (days.has(cursor.getDay())) dates.push(new Date(cursor));
-    cursor.setDate(cursor.getDate() + 1);
-  }
-  return dates.length ? dates : [new Date(start)];
+  return workingDatesFromRange(start, end, workingDays);
 }
 
 function scheduleInstant(dateValue, timeValue) {
@@ -229,10 +226,15 @@ export const registerProject = async (req, res) => {
       const features = task.features && typeof task.features === "object" ? task.features : {};
       return [task.id, scheduleSignature(features)];
     }));
+    if (data.schedule && typeof data.schedule === "object") {
+      data.schedule.workingDays = normalizeCompanyWorkingDays(data.schedule.workingDays);
+    }
     const slotError = tasks.map((task) => {
       const timing = validateTaskSlot(task);
       if (timing) return timing;
       if (task.id && savedSchedules.get(String(task.id)) === scheduleSignature(task)) return "";
+      const friday = fridayScheduleErrorForTask(task, savedSchedules, scheduleSignature);
+      if (friday) return `${task.name || "A task"}: ${friday}`;
       const past = pastScheduleError(task);
       return past ? `${task.name || "A task"}: ${past}` : "";
     }).find(Boolean);
@@ -487,6 +489,19 @@ export const reassignProjectTask = async (req, res) => {
     if (task.assgineeId === assigneeId) {
       return res.status(400).json({ success: false, error: "Task is already assigned to this employee" });
     }
+    if (String(task.status).toLowerCase() === "completed") {
+      return res.status(400).json({ success: false, error: "Completed tasks cannot be reassigned" });
+    }
+
+    const snapshot = {
+      progress: task.progress,
+      status: task.status,
+      deadline: task.deadline,
+      startDate: task.startDate,
+      extraTimeMinutes: task.extraTimeMinutes,
+      originalDeadline: task.originalDeadline,
+      completedAt: task.completedAt,
+    };
 
     const updated = await prisma.$transaction(async (tx) => {
       await tx.taskTransferHistory.create({
@@ -501,11 +516,14 @@ export const reassignProjectTask = async (req, res) => {
           note: note || null,
         },
       });
-      return tx.task.update({
+      const row = await tx.task.update({
         where: { id: task.id },
         data: { assgineeId: assigneeId },
         include: { user: { select: { id: true, name: true } } },
       });
+      const integrityError = assertTransferPreservesTaskState(snapshot, row);
+      if (integrityError) throw new Error(integrityError);
+      return row;
     });
     res.json({ success: true, data: updated });
   } catch (error) {
@@ -673,6 +691,8 @@ export const decideExtraRequest = async (req, res) => {
       return res.status(400).json({ success: false, error: "Scheduled date, start time, and end time are all required" });
     }
     if (hasSchedule) {
+      const friday = fridayScheduleErrorForReschedule(null, { scheduledDate: date });
+      if (friday) return res.status(400).json({ success: false, error: friday });
       const past = pastScheduleError({ scheduledDate: date, startTime: start, endTime: end });
       if (past) return res.status(400).json({ success: false, error: past });
     }

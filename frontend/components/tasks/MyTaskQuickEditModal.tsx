@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { editTask } from "@/lib/apis/taskApi";
+import { editTask, submitTaskForReview } from "@/lib/apis/taskApi";
 import { SWR_CACH_KEYS } from "@/lib/constants";
 import {
   configCompactInputClass,
@@ -23,6 +23,7 @@ import { taskTitle } from "@/lib/my-task-filters";
 import { Task } from "@/lib/types";
 import { evaluateScheduledTask } from "@/lib/scheduled-task-window";
 import { useNow } from "@/lib/use-now";
+import { hasTransferHistory, transferProgressFloor } from "@/lib/task-transfer";
 import { cn, formatTaskDeadline, resolveTaskDisplayStatus } from "@/lib/utils";
 import { ArrowRightLeft, Clock, Lock } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -65,15 +66,19 @@ export default function MyTaskQuickEditModal({
       const nextProgress = clampProgress(Number(progress));
       const isCompleted = nextProgress >= 100;
 
-      const result = await editTask({
-        taskId: task.id,
-        progress: nextProgress,
-        status: isCompleted ? "completed" : "in_progress",
-        notes: notes.trim() || undefined,
-      });
+      const result = isCompleted
+        ? await submitTaskForReview(String(task.id), {
+            progress: 100,
+            notes: notes.trim() || undefined,
+          })
+        : await editTask({
+            taskId: task.id,
+            progress: nextProgress,
+            notes: notes.trim() || undefined,
+          });
 
       if (result.success) {
-        toast.success(isCompleted ? "Task completed" : "Task progress saved");
+        toast.success(isCompleted ? "Task submitted for review" : "Task progress saved");
         await mutate(SWR_CACH_KEYS.myTasks.key);
         await mutate(SWR_CACH_KEYS.myTasksList.key);
         await mutate(SWR_CACH_KEYS.myTasksToday.key);
@@ -102,6 +107,7 @@ export default function MyTaskQuickEditModal({
   const displayStatus = task
     ? resolveTaskDisplayStatus(scheduleLocked ? task : { ...task, progress }, undefined, now)
     : "";
+  const progressFloor = task ? transferProgressFloor(task) : 0;
   const isCompleted = progress >= 100;
 
   return (
@@ -211,17 +217,19 @@ export default function MyTaskQuickEditModal({
               </div>
             ) : null}
 
-            {Number(task.transferredFromProgress) > 0 && (
+            {task && hasTransferHistory(task) && (
               <div className="flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 p-3 text-xs font-semibold text-indigo-900">
                 <ArrowRightLeft className="size-4 shrink-0 text-indigo-600" />
-                <span>Task was transferred! Previous assignee completed {task.transferredFromProgress}%. You can update progress from {task.transferredFromProgress}% to 100%.</span>
+                <span>
+                  Task was transferred! Progress at transfer: {progressFloor}%. Current completion: {Number(task.progress ?? 0)}%. You can update progress from {progressFloor}% to 100%.
+                </span>
               </div>
             )}
 
             <div className="rounded-lg border border-zinc-100 bg-white p-4">
               <div className="mb-2 flex items-center justify-between">
                 <label className="text-xs font-bold tracking-wide text-zinc-600 uppercase">
-                  Progress Percentage {Number(task.transferredFromProgress) > 0 ? `(Min: ${task.transferredFromProgress}%)` : ""}
+                  Progress Percentage {hasTransferHistory(task) ? `(Min: ${progressFloor}%)` : ""}
                 </label>
                 <span className="text-primary text-sm font-bold">
                   {progress}%
@@ -230,26 +238,24 @@ export default function MyTaskQuickEditModal({
               <div className="flex items-center gap-4">
                 <input
                   type="range"
-                  min={Number(task.transferredFromProgress) || 0}
+                  min={progressFloor}
                   max={100}
                   value={progress}
                   onChange={(event) => {
                     const val = clampProgress(Number(event.target.value));
-                    const minVal = Number(task.transferredFromProgress) || 0;
-                    setProgress(Math.max(minVal, val));
+                    setProgress(Math.max(progressFloor, val));
                   }}
                   className="accent-primary h-2 w-full cursor-pointer appearance-none rounded-lg bg-zinc-200 disabled:opacity-40 disabled:cursor-not-allowed"
                   disabled={saving || progressLocked}
                 />
                 <input
                   type="number"
-                  min={Number(task.transferredFromProgress) || 0}
+                  min={progressFloor}
                   max={100}
                   value={progress}
                   onChange={(event) => {
                     const val = clampProgress(Number(event.target.value));
-                    const minVal = Number(task.transferredFromProgress) || 0;
-                    setProgress(Math.max(minVal, val));
+                    setProgress(Math.max(progressFloor, val));
                   }}
                   className={cn(configCompactInputClass, "w-20 text-center disabled:opacity-40")}
                   disabled={saving || progressLocked}

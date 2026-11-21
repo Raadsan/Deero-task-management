@@ -380,7 +380,7 @@ function buildFilters({ projects, tasks, staff, contracts, catalogServices }, qu
     cycles,
     services: services.sort((a, b) => a.name.localeCompare(b.name)),
     subServices,
-    statuses: ["PENDING", "IN_PROGRESS", "COMPLETED", "OVERDUE", "ON_HOLD"],
+    statuses: ["PENDING", "IN_PROGRESS", "PENDING_REVIEW", "COMPLETED", "OVERDUE", "ON_HOLD"],
     priorities: ["low", "normal", "high", "urgent"],
     taskTypes: ["all", "project", "standalone"],
     projectStatuses: [...new Set(projects.map((project) => String(project.lifecycleStatus || project.status || "").toUpperCase()).filter(Boolean))],
