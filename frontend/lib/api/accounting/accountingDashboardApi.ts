@@ -91,7 +91,7 @@ function periodRange(period = 'This Month', customStart?: string, customEnd?: st
   };
 }
 
-function emptyDashboard(): AccountingDashboardData {
+export function emptyAccountingDashboard(): AccountingDashboardData {
   return {
     totalRevenue: 0,
     expenses: 0,
@@ -137,7 +137,7 @@ export const accountingDashboardApi = {
     const companies = await companyApi.getAll();
     const company = companies.find((item) => item.is_active !== false) ?? companies[0];
     if (!company) {
-      return emptyDashboard();
+      return emptyAccountingDashboard();
     }
 
     const companyId = Number(company.id);

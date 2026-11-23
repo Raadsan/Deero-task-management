@@ -124,8 +124,9 @@ export const createContract = async (req, res) => {
 
     const resolvedEndDate = validation.endDate;
 
-    const result = await prisma.$transaction(async (tx) => {
-      const id = await generateCustomId({ entityTybe: "contracts", prisma: tx });
+    const result = await prisma.$transaction(
+      async (tx) => {
+        const id = await generateCustomId({ entityTybe: "contracts", prisma: tx });
       const contractNumber =
         data.contractNumber?.trim() ||
         id.replace(/^DCT/, "CTR-");
@@ -180,10 +181,12 @@ export const createContract = async (req, res) => {
         });
       }
 
-      await syncContractInstallments(tx, contract, data.installments);
+        await syncContractInstallments(tx, contract, data.installments);
 
-      return { contract, document };
-    });
+        return { contract, document };
+      },
+      { timeout: 30_000 },
+    );
 
     await issueContractStartInvoice(result.contract);
     const full = await findAccessibleContract(scope, result.contract.id);
@@ -302,7 +305,7 @@ export const updateContract = async (req, res) => {
 
       await syncContractInstallments(tx, updated, data.installments);
       return updated;
-    });
+    }, { timeout: 30_000 });
 
     if (existing.status === "DRAFT" && contract.status !== "DRAFT") {
       await issueContractStartInvoice(contract);

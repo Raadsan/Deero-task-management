@@ -22,7 +22,6 @@ import creditNotesRoutes from './receivables/creditNotes/creditNote.routes.js'
 import vendorBillsRoutes from './payables/vendorBills/vendorBill.routes.js'
 import vendorPaymentsRoutes from './payables/vendorPayments/vendorPayment.routes.js'
 import reportsRoutes from './reports/accountingReport.routes.js'
-import sharedRoutes from './shared/shared.routes.js'
 import posOrderAccountingRoutes from './services/posOrderAccounting.routes.js'
 import quotationRoutes from './receivables/quotations/quotation.routes.js'
 import documentTemplateRoutes from './configuration/documentTemplates/documentTemplate.routes.js'
@@ -64,7 +63,6 @@ router.use('/quotations', quotationRoutes)
 router.use('/document-templates', documentTemplateRoutes)
 router.use('/configuration/document-templates', documentTemplateRoutes)
 router.use('/reports', reportsRoutes)
-router.use('/shared', sharedRoutes)
 router.use('/pos-orders', posOrderAccountingRoutes)
 
 export default router

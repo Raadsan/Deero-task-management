@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   accountingDashboardApi,
+  emptyAccountingDashboard,
   type AccountingDashboardData,
 } from "@/lib/api/accounting/accountingDashboardApi";
 import {
@@ -28,18 +29,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  ArrowDownRight,
-  ArrowUpRight,
   CalendarDays,
-  CircleDollarSign,
   DollarSign,
   Landmark,
   Percent,
-  Receipt,
   ReceiptText,
   RefreshCw,
-  TrendingDown,
-  TrendingUp,
   Wallet,
 } from "lucide-react";
 import {
@@ -106,101 +101,54 @@ export default function AccountingDashboard() {
   const [customFrom, setCustomFrom] = useState(todayValue);
   const [customTo, setCustomTo] = useState(todayValue);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [data, setData] = useState<AccountingDashboardData | null>(null);
 
   const fetchDashboardData = async () => {
     setIsLoading(true);
+    setLoadError(null);
     try {
-      const label =
-        period === "today"
-          ? "Today"
-          : period === "yesterday"
-          ? "Yesterday"
-          : period === "week"
-          ? "This Week"
-          : "This Month";
-      const result = await accountingDashboardApi.getSummary(label);
+      let label = "This Month";
+      let customStart: string | undefined;
+      let customEnd: string | undefined;
+
+      if (period === "today") label = "Today";
+      else if (period === "yesterday") label = "Yesterday";
+      else if (period === "week") label = "This Week";
+      else if (period === "month") label = "Last Month";
+      else if (period === "custom") {
+        label = "Custom";
+        customStart = customFrom;
+        customEnd = customTo;
+      }
+
+      const result = await accountingDashboardApi.getSummary(label, customStart, customEnd);
       setData(result);
-    } catch {
-      // Fallback
+    } catch (error) {
+      setData(emptyAccountingDashboard());
+      setLoadError(
+        error instanceof Error ? error.message : "Failed to load accounting data"
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchDashboardData();
-  }, [period]);
+    void fetchDashboardData();
+  }, [period, customFrom, customTo]);
 
-  const totalRevenue = data?.totalRevenue || 8172.5;
-  const expenses = data?.expenses || 1801.3;
-  const netProfit = data?.netProfit || 6371.2;
-  const cashBalance = data?.cashBalance || 4416.0;
-  const bankBalance = data?.bankBalance || 9215.4;
+  const totalRevenue = data?.totalRevenue ?? 0;
+  const expenses = data?.expenses ?? 0;
+  const netProfit = data?.netProfit ?? 0;
+  const cashBalance = data?.cashBalance ?? 0;
+  const bankBalance = data?.bankBalance ?? 0;
 
-  const chartData = useMemo(() => {
-    if (data?.chartData?.length) return data.chartData;
-    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-    return days.map((day, idx) => ({
-      date: day,
-      revenue: [1200, 1800, 2400, 1900, 2800, 2100, 3100][idx],
-      expense: [400, 650, 800, 500, 750, 600, 900][idx],
-      cashIn: [1100, 1600, 2200, 1700, 2500, 1900, 2800][idx],
-      cashOut: [350, 600, 700, 450, 700, 550, 850][idx],
-    }));
-  }, [data]);
-
-  const expenseBreakdown = useMemo(() => {
-    if (data?.expenseBreakdown?.length) return data.expenseBreakdown;
-    return [
-      { name: "Rent & Utilities", value: 40, amount: 720, color: "var(--color-brand-primary, #5f3a16)" },
-      { name: "Salaries", value: 30, amount: 540, color: "var(--color-brand-secondary, #c3986b)" },
-      { name: "Hosting & Tools", value: 15, amount: 270, color: "color-mix(in srgb, var(--color-brand-primary, #5f3a16) 65%, white)" },
-      { name: "Marketing", value: 15, amount: 270, color: "color-mix(in srgb, var(--color-brand-secondary, #c3986b) 70%, white)" },
-    ];
-  }, [data]);
-
-  const recentTransactions = useMemo(() => {
-    if (data?.recentTransactions?.length) return data.recentTransactions;
-    return [
-      {
-        id: 1,
-        date: "2026-08-25",
-        type: "Customer Invoice",
-        description: "INV-2026-001 Web & Brand Retainer",
-        account: "Accounts Receivable",
-        amount: 2400,
-        status: "Posted",
-      },
-      {
-        id: 2,
-        date: "2026-08-24",
-        type: "Customer Receipt",
-        description: "REC-2026-089 Direct Wire Transfer",
-        account: "Bank Account (USD)",
-        amount: 2400,
-        status: "Posted",
-      },
-      {
-        id: 3,
-        date: "2026-08-24",
-        type: "Vendor Bill",
-        description: "BILL-2026-042 Cloud Hosting Infrastructure",
-        account: "Accounts Payable",
-        amount: 450,
-        status: "Posted",
-      },
-      {
-        id: 4,
-        date: "2026-08-23",
-        type: "Vendor Payment",
-        description: "PAY-2026-015 Office Supplies & Tech",
-        account: "Main Cash Vault",
-        amount: 180,
-        status: "Posted",
-      },
-    ];
-  }, [data]);
+  const chartData = useMemo(() => data?.chartData ?? [], [data]);
+  const expenseBreakdown = useMemo(() => data?.expenseBreakdown ?? [], [data]);
+  const recentTransactions = useMemo(() => data?.recentTransactions ?? [], [data]);
+  const hasChartPoints = chartData.length > 0;
+  const hasExpenseBreakdown = expenseBreakdown.length > 0;
 
   return (
     <div className={cn(dashboardPageClass, "space-y-6")} style={dashboardPageStyle}>
@@ -271,6 +219,12 @@ export default function AccountingDashboard() {
         </div>
       </div>
 
+      {loadError && (
+        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-800">
+          {loadError}. Figures below show zeros until reports load successfully.
+        </div>
+      )}
+
       {/* ── 5 KPI Stat Cards ── */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {/* Total Revenue */}
@@ -285,12 +239,11 @@ export default function AccountingDashboard() {
           </div>
           <div className="mt-3 flex items-end justify-between">
             <div>
-              <h3 className="text-2xl font-bold text-[#0f172a]">{formatMoney(totalRevenue)}</h3>
-              <span className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600">
-                <TrendingUp className="size-3" /> +16.1% vs last month
-              </span>
+              <h3 className={cn("text-2xl font-bold text-[#0f172a]", isLoading && "animate-pulse text-zinc-400")}>
+                {isLoading && !data ? "—" : formatMoney(totalRevenue)}
+              </h3>
             </div>
-            <MiniSparkline color={BRAND_PRIMARY} />
+            {hasChartPoints ? <MiniSparkline points={chartData.map((p) => p.revenue)} color={BRAND_PRIMARY} /> : null}
           </div>
         </div>
 
@@ -306,12 +259,11 @@ export default function AccountingDashboard() {
           </div>
           <div className="mt-3 flex items-end justify-between">
             <div>
-              <h3 className="text-2xl font-bold text-[#0f172a]">{formatMoney(expenses)}</h3>
-              <span className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-rose-500">
-                <TrendingDown className="size-3" /> -4.2% vs last month
-              </span>
+              <h3 className={cn("text-2xl font-bold text-[#0f172a]", isLoading && "animate-pulse text-zinc-400")}>
+                {isLoading && !data ? "—" : formatMoney(expenses)}
+              </h3>
             </div>
-            <MiniSparkline color={ROSE} />
+            {hasChartPoints ? <MiniSparkline points={chartData.map((p) => p.expense)} color={ROSE} /> : null}
           </div>
         </div>
 
@@ -327,12 +279,16 @@ export default function AccountingDashboard() {
           </div>
           <div className="mt-3 flex items-end justify-between">
             <div>
-              <h3 className="text-2xl font-bold text-[#0f172a]">{formatMoney(netProfit)}</h3>
-              <span className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600">
-                <TrendingUp className="size-3" /> +20.4% vs last month
-              </span>
+              <h3 className={cn("text-2xl font-bold text-[#0f172a]", isLoading && "animate-pulse text-zinc-400")}>
+                {isLoading && !data ? "—" : formatMoney(netProfit)}
+              </h3>
             </div>
-            <MiniSparkline color={EMERALD} />
+            {hasChartPoints ? (
+              <MiniSparkline
+                points={chartData.map((p) => p.revenue - p.expense)}
+                color={EMERALD}
+              />
+            ) : null}
           </div>
         </div>
 
@@ -348,12 +304,11 @@ export default function AccountingDashboard() {
           </div>
           <div className="mt-3 flex items-end justify-between">
             <div>
-              <h3 className="text-2xl font-bold text-[#0f172a]">{formatMoney(cashBalance)}</h3>
-              <span className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600">
-                <TrendingUp className="size-3" /> +18.2% vs last month
-              </span>
+              <h3 className={cn("text-2xl font-bold text-[#0f172a]", isLoading && "animate-pulse text-zinc-400")}>
+                {isLoading && !data ? "—" : formatMoney(cashBalance)}
+              </h3>
             </div>
-            <MiniSparkline color={BRAND_SECONDARY} />
+            {hasChartPoints ? <MiniSparkline points={chartData.map((p) => p.cashIn)} color={BRAND_SECONDARY} /> : null}
           </div>
         </div>
 
@@ -369,12 +324,11 @@ export default function AccountingDashboard() {
           </div>
           <div className="mt-3 flex items-end justify-between">
             <div>
-              <h3 className="text-2xl font-bold text-[#0f172a]">{formatMoney(bankBalance)}</h3>
-              <span className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600">
-                <TrendingUp className="size-3" /> +7.6% vs last month
-              </span>
+              <h3 className={cn("text-2xl font-bold text-[#0f172a]", isLoading && "animate-pulse text-zinc-400")}>
+                {isLoading && !data ? "—" : formatMoney(bankBalance)}
+              </h3>
             </div>
-            <MiniSparkline color={SKY} />
+            {hasChartPoints ? <MiniSparkline points={chartData.map((p) => p.cashIn - p.cashOut)} color={SKY} /> : null}
           </div>
         </div>
       </div>
@@ -403,6 +357,9 @@ export default function AccountingDashboard() {
           </div>
 
           <div className="mt-4 h-[280px] w-full">
+            {!hasChartPoints ? (
+              <ChartEmptyState loading={isLoading} />
+            ) : (
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
@@ -423,6 +380,7 @@ export default function AccountingDashboard() {
                 <Area type="monotone" dataKey="expense" stroke="var(--color-brand-secondary, #c3986b)" strokeWidth={2} fillOpacity={1} fill="url(#accExpGrad)" />
               </AreaChart>
             </ResponsiveContainer>
+            )}
           </div>
         </div>
 
@@ -448,6 +406,9 @@ export default function AccountingDashboard() {
           </div>
 
           <div className="mt-4 h-[280px] w-full">
+            {!hasChartPoints ? (
+              <ChartEmptyState loading={isLoading} />
+            ) : (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -458,6 +419,7 @@ export default function AccountingDashboard() {
                 <Bar dataKey="cashOut" fill="var(--color-brand-secondary, #c3986b)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
+            )}
           </div>
         </div>
 
@@ -473,6 +435,9 @@ export default function AccountingDashboard() {
           </div>
 
           <div className="mt-4 h-[280px] w-full">
+            {!hasExpenseBreakdown ? (
+              <ChartEmptyState loading={isLoading} message="No expense postings in this period." />
+            ) : (
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -491,6 +456,7 @@ export default function AccountingDashboard() {
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
+            )}
           </div>
         </div>
       </div>
@@ -518,30 +484,50 @@ export default function AccountingDashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {recentTransactions.map((tx) => (
-                <TableRow key={tx.id} className={dashboardTableBodyRowClass}>
-                  <TableCell className={dashboardTableCellClass}>
-                    <span className="text-xs font-semibold text-zinc-600">{tx.date.slice(0, 10)}</span>
-                  </TableCell>
-                  <TableCell className={dashboardTableCellClass}>
-                    <span className="font-semibold text-zinc-800">{tx.type}</span>
-                  </TableCell>
-                  <TableCell className={dashboardTableCellClass}>
-                    <span className="text-zinc-600">{tx.description}</span>
-                  </TableCell>
-                  <TableCell className={dashboardTableCellClass}>
-                    <span className="text-zinc-600">{tx.account}</span>
-                  </TableCell>
-                  <TableCell className={cn(dashboardTableCellClass, "font-bold text-[#0f172a]")}>
-                    {formatMoney(tx.amount)}
-                  </TableCell>
-                  <TableCell className={dashboardTableCellClass}>
-                    <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700">
-                      {tx.status}
-                    </span>
+              {recentTransactions.length === 0 ? (
+                <TableRow className={dashboardTableBodyRowClass}>
+                  <TableCell
+                    colSpan={6}
+                    className={cn(dashboardTableCellClass, "py-10 text-center text-sm text-zinc-500")}
+                  >
+                    {isLoading
+                      ? "Loading journal activity…"
+                      : "No posted journal entries for the selected period."}
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                recentTransactions.map((tx) => (
+                  <TableRow key={tx.id} className={dashboardTableBodyRowClass}>
+                    <TableCell className={dashboardTableCellClass}>
+                      <span className="text-xs font-semibold text-zinc-600">{tx.date.slice(0, 10)}</span>
+                    </TableCell>
+                    <TableCell className={dashboardTableCellClass}>
+                      <span className="font-semibold text-zinc-800">{tx.type}</span>
+                    </TableCell>
+                    <TableCell className={dashboardTableCellClass}>
+                      <span className="text-zinc-600">{tx.description}</span>
+                    </TableCell>
+                    <TableCell className={dashboardTableCellClass}>
+                      <span className="text-zinc-600">{tx.account}</span>
+                    </TableCell>
+                    <TableCell className={cn(dashboardTableCellClass, "font-bold text-[#0f172a]")}>
+                      {formatMoney(tx.amount)}
+                    </TableCell>
+                    <TableCell className={dashboardTableCellClass}>
+                      <span
+                        className={cn(
+                          "rounded-full px-2.5 py-0.5 text-[10px] font-bold",
+                          tx.status.toLowerCase() === "posted"
+                            ? "bg-emerald-50 text-emerald-700"
+                            : "bg-zinc-100 text-zinc-600"
+                        )}
+                      >
+                        {tx.status}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>
@@ -550,15 +536,45 @@ export default function AccountingDashboard() {
   );
 }
 
-function MiniSparkline({ color }: { color: string }) {
+function ChartEmptyState({
+  loading,
+  message = "No journal activity for the selected period.",
+}: {
+  loading: boolean;
+  message?: string;
+}) {
   return (
-    <svg width="60" height="24" viewBox="0 0 60 24" fill="none" className="shrink-0 opacity-85">
-      <path
-        d="M2 18 L15 14 L28 19 L40 6 L58 12"
+    <div className="flex h-full min-h-[240px] items-center justify-center rounded-xl border border-dashed border-zinc-200 bg-zinc-50/80 px-4 text-center text-sm font-medium text-zinc-500">
+      {loading ? "Loading…" : message}
+    </div>
+  );
+}
+
+function MiniSparkline({ points, color }: { points: number[]; color: string }) {
+  if (points.length < 2) return null;
+
+  const width = 60;
+  const height = 24;
+  const pad = 2;
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const span = max - min || 1;
+
+  const coords = points.map((value, index) => {
+    const x = pad + (index / (points.length - 1)) * (width - pad * 2);
+    const y = pad + (1 - (value - min) / span) * (height - pad * 2);
+    return `${x.toFixed(1)} ${y.toFixed(1)}`;
+  });
+
+  return (
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} fill="none" className="shrink-0 opacity-85">
+      <polyline
+        points={coords.join(" ")}
         stroke={color}
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeLinejoin="round"
+        fill="none"
       />
     </svg>
   );
