@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { API_URL } from "@/lib/apis/config";
 import { APP_SYSTEM_NAME, APP_VERSION, ROUTES } from "@/lib/constants";
 import { loginSchema } from "@/lib/validations";
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
@@ -44,8 +45,7 @@ export default function LoginPage() {
   async function submitForm(data: z.infer<typeof loginSchema>) {
     setSubmitting(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:7003";
-      const response = await fetch(`${apiUrl}/api/auth/sign-in/email`, {
+      const response = await fetch(`${API_URL}/api/auth/sign-in/email`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

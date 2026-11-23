@@ -1,5 +1,7 @@
 export const API_URL = (
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:7003"
+  process.env.NEXT_PUBLIC_API_URL ||
+  process.env.BETTER_AUTH_URL ||
+  "http://localhost:7003"
 ).replace(/[\'\"]/g, "");
 
 export function resolveApiAssetUrl(path?: string | null): string {

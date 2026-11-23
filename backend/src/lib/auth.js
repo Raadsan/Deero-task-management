@@ -12,9 +12,14 @@ import {
 import { sendPasswordResetEmail } from "./email.js";
 import { createNotificationForAdmins } from "./notifications.js";
 
+const authBaseUrl =
+  process.env.BETTER_AUTH_URL ||
+  `http://localhost:${process.env.PORT || 7003}`;
+
 export const auth = betterAuth({
   basePath: "/api/auth",
-  baseURL: process.env.BETTER_AUTH_URL,
+  baseURL: authBaseUrl,
+  secret: process.env.BETTER_AUTH_SECRET,
   database: prismaAdapter(prisma, {
     provider: "mysql",
   }),
@@ -28,15 +33,24 @@ export const auth = betterAuth({
     "http://localhost:2000",
     "http://127.0.0.1:2000",
     "http://localhost:2003",
+    "http://127.0.0.1:2003",
     "http://178.18.241.5:2000",
     "https://178.18.241.5:2000",
+    "http://167.86.104.132:7003",
+    "http://167.86.104.132:2003",
     process.env.FRONTEND_URL,
     process.env.FRONTEND_URL_PROD,
+    process.env.APP_PUBLIC_URL,
+    authBaseUrl,
   ].filter(Boolean),
   advanced: {
-    useSecureCookies: process.env.BETTER_AUTH_URL?.startsWith("https") === true,
+    useSecureCookies: authBaseUrl.startsWith("https"),
     database: {
       generateId: false,
+    },
+    defaultCookieAttributes: {
+      sameSite: "lax",
+      maxAge: 8 * 60 * 60,
     },
   },
 
@@ -96,12 +110,6 @@ export const auth = betterAuth({
     expiresIn: 8 * 60 * 60, // 8 hours
     updateAge: 60 * 60, // refresh session age every 1 hour when active
     dontRememberMaxAge: 8 * 60 * 60, // persistent cookie (8 hours)
-  },
-  advanced: {
-    defaultCookieAttributes: {
-      sameSite: "lax",
-      maxAge: 8 * 60 * 60, // 8 hours
-    },
   },
 
   user: {

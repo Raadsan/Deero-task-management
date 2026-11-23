@@ -12,10 +12,20 @@ import {
   userRole,
 } from "./permissions";
 
+const authBaseUrl =
+  process.env.BETTER_AUTH_URL ||
+  process.env.NEXT_PUBLIC_BETTER_AUTH_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://127.0.0.1:7003";
+
 export const auth = betterAuth({
   basePath: "/api/auth",
-  baseURL: process.env.BETTER_AUTH_URL,
-  // Database removed from frontend - auth is handled by backend
+  baseURL: authBaseUrl,
+  secret:
+    process.env.BETTER_AUTH_SECRET ||
+    process.env.AUTH_SECRET ||
+    "set-BETTER_AUTH_SECRET-in-env",
+  // Database removed from frontend — real auth runs on the Express backend (Prisma).
   // database: prismaAdapter(prisma, {
   //   provider: "postgresql",
   // }),

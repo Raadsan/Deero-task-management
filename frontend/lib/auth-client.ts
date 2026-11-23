@@ -1,6 +1,7 @@
 import { adminClient, inferAdditionalFields } from "better-auth/client/plugins";
 import { nextCookies } from "better-auth/next-js";
 import { createAuthClient } from "better-auth/react";
+import { API_URL } from "@/lib/apis/config";
 import { auth } from "./auth";
 import {
   accessControl,
@@ -11,7 +12,10 @@ import {
 
 export const authClient = createAuthClient({
   basePath: "/api/auth",
-  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:7003",
+  baseURL:
+    process.env.NEXT_PUBLIC_BETTER_AUTH_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    API_URL,
   plugins: [
     inferAdditionalFields<typeof auth>(),
     nextCookies(),
