@@ -226,7 +226,7 @@ type ErrorResponse<T = undefined> = ActionResponse<T> & {
 
 type APIResponse<T = null> = NextResponse<SuccessResponse<T> | ErrorResponse>;
 
-type AuthSession = {
+export type AuthSession = {
   session: Session;
   user: {
     id: string;
@@ -253,7 +253,8 @@ type TableType =
   | "contracts"
   | "my-tasks"
   | "incomes"
-  | "expenses";
+  | "expenses"
+  | "services";
 
 type PrefixType =
   | "users"

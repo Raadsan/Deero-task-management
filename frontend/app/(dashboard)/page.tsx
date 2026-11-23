@@ -774,10 +774,7 @@ function AdminDashboard({
 
   const allClients = (bundleRes?.data?.clients ?? []) as Array<{ id?: string; institution?: string; companyName?: string }>;
 
-  const isTaskInProgress = (t: any) => {
-    const s = resolveTaskDisplayStatus(t);
-    return s === "in_progress" || s === "in progress" || s === "inprocess" || s === "in process";
-  };
+  const isTaskInProgress = (t: any) => resolveTaskDisplayStatus(t) === "in_progress";
 
   const totalTasksCount = allTasks.length;
   const completedCount = allTasks.filter((t) => resolveTaskDisplayStatus(t) === "completed").length;
@@ -1084,7 +1081,7 @@ function AdminDashboard({
         const statusTone =
           status === "completed"
             ? "maroon"
-            : (status === "in progress" || status === "in_progress" || isTaskInProgress(t))
+            : isTaskInProgress(t)
             ? "coral"
             : status === "overdue"
             ? "red"

@@ -99,7 +99,7 @@ export default function ClientViewModal({ open, onOpenChange, clientId }: Props)
     () => getClientById(clientId!),
   );
 
-  const client = data?.data as
+  const client = data?.data as unknown as
     | (Record<string, unknown> & {
         institution?: string;
         contactPerson?: string;

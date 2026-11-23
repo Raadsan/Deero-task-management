@@ -1,4 +1,4 @@
-import type { ActionResponse, AllClients, Task, TaskNotification } from "@/lib/types";
+import type { ActionResponse, AllClients, AuthSession, Task, TaskNotification } from "@/lib/types";
 import { formatDate, formatPhoneNumber } from "@/lib/utils";
 
 import { API_URL } from "./config";

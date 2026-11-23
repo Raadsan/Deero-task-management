@@ -874,7 +874,7 @@ export default function CreditNotesPage() {
                 <option value="">Select method</option>
                 {paymentMethods.map((method) => (
                   <option key={method.id} value={method.id}>
-                    {method.name} ({String((method as any).payment_type)})
+                    {`${String(method.name ?? "")} (${String((method as Record<string, unknown>).payment_type ?? "")})`}
                   </option>
                 ))}
               </select>

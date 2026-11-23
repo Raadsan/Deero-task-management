@@ -449,7 +449,19 @@ export default function EmployeesPerformanceReport() {
             </ReportPanel>
             <ReportPanel title="Task status distribution">
               <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2">
-                <StatusChart summary={selectedEmployee ? data.summary : { ...data.organization, total: data.organization.totalAssignedTasks }} />
+                <StatusChart
+                  summary={
+                    selectedEmployee
+                      ? data.summary
+                      : {
+                          completed: data.organization.completed,
+                          inProgress: data.organization.inProgress,
+                          pending: data.organization.pending,
+                          overdue: data.organization.overdue,
+                          onHold: data.organization.onHold,
+                        }
+                  }
+                />
                 <StatusDistributionTable items={data.statusDistribution} />
               </div>
             </ReportPanel>

@@ -905,6 +905,18 @@ function TrialBalanceReportTable({
     [rows],
   );
 
+  const [searchValue, setSearchValue] = useState('');
+  const filteredTableRows = useMemo(() => {
+    const query = searchValue.trim().toLowerCase();
+    if (!query) return tableRows;
+    return tableRows.filter(
+      (row) =>
+        row.account_code.toLowerCase().includes(query) ||
+        row.account_name.toLowerCase().includes(query) ||
+        row.account_type.toLowerCase().includes(query),
+    );
+  }, [searchValue, tableRows]);
+
   const openAccount = (row: TrialBalanceTableRow) => {
     if (!onAccountNavigate || !row.account_id) return;
     onAccountNavigate(row.account_id);
@@ -997,8 +1009,10 @@ function TrialBalanceReportTable({
   return (
     <DashboardDataTable
       className="border-0 shadow-none rounded-none"
-      rows={tableRows}
+      rows={filteredTableRows}
       columns={columns}
+      searchValue={searchValue}
+      onSearchChange={setSearchValue}
       searchPlaceholder="Search trial balance accounts..."
       emptyText="No accounts with balances for this period."
       minWidth="720px"

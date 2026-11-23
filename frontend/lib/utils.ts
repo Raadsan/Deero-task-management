@@ -116,6 +116,15 @@ export function isTaskPastDeadline(deadline: Date | string, extraTimeMinutes: nu
   return (deadlineMs + extraMs) < Date.now();
 }
 
+export type TaskDisplayStatus =
+  | "transferred"
+  | "on_hold"
+  | "completed"
+  | "pending_review"
+  | "pending"
+  | "overdue"
+  | "in_progress";
+
 export function resolveTaskDisplayStatus(
   task: {
     status?: string;
@@ -132,7 +141,7 @@ export function resolveTaskDisplayStatus(
   },
   currentUserId?: string,
   nowMs: number = Date.now(),
-) {
+): TaskDisplayStatus {
   const currentAssigneeId = task.assgineeId ?? task.assignedToId ?? task.assignedTo?.id;
   if (
     currentUserId &&
@@ -151,7 +160,9 @@ export function resolveTaskDisplayStatus(
   if (dbStatus === "pending_review") return "pending_review";
   if (dbStatus === "on_hold") return "on_hold";
   const progress = Number(task.progress ?? 0);
-  if (scheduled.scheduled && scheduled.status) return scheduled.status;
+  if (scheduled.scheduled && scheduled.status) {
+    return scheduled.status as TaskDisplayStatus;
+  }
 
   const extraMinutes = Number(task.extraTimeMinutes ?? (Number(task.extraTimeHours ?? 0) * 60));
   const start = task.startDate ? new Date(task.startDate) : null;

@@ -426,6 +426,27 @@ export default function ClientCreateWizard({
     setStep((s) => Math.min(s + 1, totalSteps));
   }
 
+  function resolveContractTitle(clientId: string) {
+    if (institution.trim()) return institution.trim();
+    const fromList = filteredClients.find((client) => String(client.id) === clientId);
+    if (fromList?.institution) return String(fromList.institution);
+    if (serviceName.trim()) return `${serviceName.trim()} contract`;
+    return "Client contract";
+  }
+
+  function buildContractPayload(clientId: string, file?: ContractFilePayload) {
+    return {
+      clientId,
+      title: resolveContractTitle(clientId),
+      startDate: contractStartDate || new Date().toISOString().slice(0, 10),
+      endDate: contractEndDate || undefined,
+      totalAmount: Number(base) * (1 - (Number(discount) || 0) / 100),
+      paymentTerms: contractTerms.trim() || "MONTHLY",
+      status: "ACTIVE",
+      file,
+    };
+  }
+
   function goBack() {
     if (step === 1) {
       setFlowMode(null);
@@ -456,14 +477,7 @@ export default function ClientCreateWizard({
       if (result.success) {
         if (includeContract) {
           const file = contractFile ? await fileToContractPayload(contractFile) : undefined;
-          const contract = await createContract({
-            clientId: existingClientId,
-            startDate: contractStartDate || undefined,
-            endDate: contractEndDate || undefined,
-            totalAmount: Number(base) * (1 - (Number(discount) || 0) / 100),
-            status: "ACTIVE",
-            file,
-          });
+          const contract = await createContract(buildContractPayload(existingClientId, file));
           if (!contract.success) {
             toast.error(contract.errors?.message ?? "Service saved, but contract failed");
             return;
@@ -584,14 +598,7 @@ export default function ClientCreateWizard({
       const clientId = (result.data as { client?: { id?: string } })?.client?.id;
       if (includeContract && clientId) {
         const file = contractFile ? await fileToContractPayload(contractFile) : undefined;
-        const contract = await createContract({
-          clientId,
-          startDate: contractStartDate || undefined,
-          endDate: contractEndDate || undefined,
-          totalAmount: Number(base) * (1 - (Number(discount) || 0) / 100),
-          status: "ACTIVE",
-          file,
-        });
+        const contract = await createContract(buildContractPayload(clientId, file));
         if (!contract.success) {
           toast.error(contract.errors?.message ?? "Client saved, but contract failed");
           return;
@@ -687,14 +694,7 @@ export default function ClientCreateWizard({
         await attachExtrasAfterSave(draftClientId);
         if (includeContract) {
           const file = contractFile ? await fileToContractPayload(contractFile) : undefined;
-          const contract = await createContract({
-            clientId: draftClientId,
-            startDate: contractStartDate || undefined,
-            endDate: contractEndDate || undefined,
-            totalAmount: Number(base) * (1 - (Number(discount) || 0) / 100),
-            status: "ACTIVE",
-            file,
-          });
+          const contract = await createContract(buildContractPayload(draftClientId, file));
           if (!contract.success) {
             toast.error(contract.errors?.message ?? "Client saved, but contract failed");
             return;

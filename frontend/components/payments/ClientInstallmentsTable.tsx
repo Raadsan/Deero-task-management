@@ -82,7 +82,7 @@ export function InstallmentSummaryCards({ summary }: SummaryProps) {
     },
     {
       label: "Unpaid",
-      value: (summary.unpaidDue ?? summary.unpaid ?? 0) + (summary.partial ?? 0),
+      value: (summary.unpaid ?? 0) + (summary.partial ?? 0),
       icon: AlertCircle,
       color: "bg-red-50 text-red-700",
     },

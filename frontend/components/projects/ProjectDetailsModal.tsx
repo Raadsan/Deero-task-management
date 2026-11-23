@@ -205,7 +205,10 @@ export default function ProjectDetailsModal({
       toast.error(result.errors?.message || "Could not start the next cycle");
       return;
     }
-    const created = result.data && typeof result.data === "object" && "created" in result.data ? result.data.created : true;
+    const created =
+      result.data && typeof result.data === "object"
+        ? (result.data as { created?: boolean }).created ?? true
+        : true;
     toast.success(created === false ? "Tasks added to the next monthly cycle" : "New monthly cycle created");
     await reload();
   }
