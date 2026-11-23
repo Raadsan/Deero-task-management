@@ -41,25 +41,23 @@ import { runTaskStatusMaintenance, requestTaskStatusMaintenance } from "./lib/ta
 const app = express();
 const port = process.env.PORT || 7003;
 
+const corsAllowlist = [
+  frontendUrl,
+  process.env.FRONTEND_URL,
+  process.env.FRONTEND_URL_PROD,
+].filter(Boolean);
+
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow non-browser requests (like curl, postman, server-to-server)
     if (!origin) return callback(null, true);
-
-    const allowedHosts = [
-      "localhost",
-      "127.0.0.1",
-      "178.18.241.5",
-      "deero.so",
-    ];
-
-    const isAllowed = allowedHosts.some((host) => origin.includes(host)) || origin === frontendUrl;
-    if (isAllowed) {
+    if (corsAllowlist.includes(origin)) return callback(null, true);
+    if (/^(https?:\/\/)(localhost|127\.0\.0\.1|167\.86\.104\.132)(:\d+)?$/.test(origin)) {
       return callback(null, true);
     }
+    if (origin.includes("deero.so")) return callback(null, true);
     return callback(null, true);
   },
-  credentials: true
+  credentials: true,
 }));
 
 app.use(express.json({ limit: "50mb" }));
