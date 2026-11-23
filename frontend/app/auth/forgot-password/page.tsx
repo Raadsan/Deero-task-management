@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Mail } from "lucide-react";
+import { API_URL } from "@/lib/apis/config";
 import { ROUTES } from "@/lib/constants";
 
 const LOGIN_LOGO_SRC = "/logo-02.png";
@@ -17,9 +18,8 @@ export default function ForgotPasswordPage() {
     event.preventDefault();
     const normalizedEmail = email.trim().toLowerCase();
     setSubmitting(true);
-    const apiUrl = process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:7003";
     try {
-      const check = await fetch(`${apiUrl}/api/auth-custom/password-reset/check-email`, {
+      const check = await fetch(`${API_URL}/api/auth-custom/password-reset/check-email`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: normalizedEmail }),
@@ -27,7 +27,7 @@ export default function ForgotPasswordPage() {
       const checked = await check.json().catch(() => null);
       if (!check.ok) return toast.error(checked?.message || "This email address is not registered.");
 
-      const response = await fetch(`${apiUrl}/api/auth/request-password-reset`, {
+      const response = await fetch(`${API_URL}/api/auth/request-password-reset`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
