@@ -1,4 +1,4 @@
-import { createAccountingCrudApi, type AccountingRecord } from '../accountingCrud';
+import { accountingApiPath, createAccountingCrudApi, type AccountingRecord } from '../accountingCrud';
 export type CustomerInvoiceLine = {
   id?: number;
   product_id?: number | null;
@@ -61,7 +61,9 @@ const crud = createAccountingCrudApi<CustomerInvoice>('/accounting/customer-invo
 export const customerInvoiceApi = {
   ...crud,
   post: async (id: number): Promise<CustomerInvoice> => {
-    const response = await (await import('../../axios')).default.post(`/accounting/customer-invoices/${id}/post`);
+    const response = await (await import('../../axios')).default.post(
+      accountingApiPath(`/accounting/customer-invoices/${id}/post`),
+    );
     return response.data.data;
   },
 };

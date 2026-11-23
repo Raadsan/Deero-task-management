@@ -1,4 +1,4 @@
-import { createAccountingCrudApi, type AccountingRecord } from '../accountingCrud';
+import { accountingApiPath, createAccountingCrudApi, type AccountingRecord } from '../accountingCrud';
 export type VendorBillLine = {
   id?: number;
   product_id?: number | null;
@@ -67,7 +67,10 @@ const bills = createAccountingCrudApi<VendorBill>('/accounting/vendor-bills');
 export const vendorBillApi = {
   ...bills,
   post: async (id: number, payment: { advance_amount?: number; pay_vendor_now?: boolean; payment_method_id?: number; bank_account_id?: number; amount_paid?: number; payment_reference?: string } = {}): Promise<VendorBill> => {
-    const response = await (await import('../../axios')).default.post(`/accounting/vendor-bills/${id}/post`, payment);
+    const response = await (await import('../../axios')).default.post(
+      accountingApiPath(`/accounting/vendor-bills/${id}/post`),
+      payment,
+    );
     return response.data.data;
   },
 };
@@ -75,13 +78,16 @@ const refunds = createAccountingCrudApi<VendorBill>('/accounting/vendor-bills/re
 export const vendorRefundApi = {
   ...refunds,
   getRefundable: async (billId: number, excludeRefundId?: number): Promise<VendorRefundable> => {
-    const response = await (await import('../../axios')).default.get(`/accounting/vendor-bills/refunds/refundable/${billId}`, {
-      params: excludeRefundId ? { exclude_refund_id: excludeRefundId } : undefined,
-    });
+    const response = await (await import('../../axios')).default.get(
+      accountingApiPath(`/accounting/vendor-bills/refunds/refundable/${billId}`),
+      { params: excludeRefundId ? { exclude_refund_id: excludeRefundId } : undefined },
+    );
     return response.data.data;
   },
   post: async (id: number): Promise<VendorBill> => {
-    const response = await (await import('../../axios')).default.post(`/accounting/vendor-bills/refunds/${id}/post`);
+    const response = await (await import('../../axios')).default.post(
+      accountingApiPath(`/accounting/vendor-bills/refunds/${id}/post`),
+    );
     return response.data.data;
   },
 };

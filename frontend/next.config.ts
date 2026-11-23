@@ -17,7 +17,8 @@ const apiPublicUrl =
 const frontendOrigin =
   process.env.FRONTEND_URL?.replace(/\/$/, "") || "http://localhost:2003";
 
-const backendPort = process.env.PORT || "7003";
+// Never use `PORT` here — `next dev -p 2003` sets PORT to the frontend port.
+const backendPort = process.env.BACKEND_PORT || "7003";
 const backendRewriteTarget = (
   process.env.API_INTERNAL_URL ||
   `http://127.0.0.1:${backendPort}`
@@ -47,10 +48,15 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // Remote DB + heavy accounting list routes can exceed the default 30s rewrite proxy.
   experimental: {
     serverActions: {
       bodySizeLimit: "10mb",
     },
+    proxyTimeout: 120_000,
+  },
+  httpAgentOptions: {
+    keepAlive: false,
   },
   images: {
     remotePatterns: [

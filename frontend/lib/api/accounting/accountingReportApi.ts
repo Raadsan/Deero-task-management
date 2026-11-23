@@ -1,4 +1,5 @@
 import api from '../axios';
+import { accountingApiPath } from './accountingCrud';
 
 export interface AccountingReportFilters {
   companyId: number;
@@ -16,7 +17,7 @@ const reportParams = (filters: AccountingReportFilters) => ({
 
 export const accountingReportApi = {
   getGeneralLedger: async (filters: AccountingReportFilters & { accountId?: number; journalId?: number }) => {
-    const response = await api.get('/accounting/reports/general-ledger', {
+    const response = await api.get(accountingApiPath('/accounting/reports/general-ledger'), {
       params: {
         ...reportParams(filters),
         account_id: filters.accountId,
@@ -27,33 +28,35 @@ export const accountingReportApi = {
   },
 
   getTrialBalance: async (filters: AccountingReportFilters) => {
-    const response = await api.get('/accounting/reports/trial-balance', {
+    const response = await api.get(accountingApiPath('/accounting/reports/trial-balance'), {
       params: reportParams(filters),
     });
     return response.data.data;
   },
 
   getProfitAndLoss: async (filters: AccountingReportFilters) => {
-    const response = await api.get('/accounting/reports/profit-and-loss', {
+    const response = await api.get(accountingApiPath('/accounting/reports/profit-and-loss'), {
       params: reportParams(filters),
     });
     return response.data.data;
   },
 
   getBalanceSheet: async (companyId: number, asOfDate?: string) => {
-    const response = await api.get('/accounting/reports/balance-sheet', {
+    const response = await api.get(accountingApiPath('/accounting/reports/balance-sheet'), {
       params: { company_id: companyId, as_of_date: asOfDate },
     });
     return response.data.data;
   },
 
   getCashFlow: async (filters: AccountingReportFilters) => {
-    const response = await api.get('/accounting/reports/cash-flow', { params: reportParams(filters) });
+    const response = await api.get(accountingApiPath('/accounting/reports/cash-flow'), {
+      params: reportParams(filters),
+    });
     return response.data.data;
   },
 
   getJournalReport: async (filters: AccountingReportFilters & { journalId?: number }) => {
-    const response = await api.get('/accounting/reports/journal-report', {
+    const response = await api.get(accountingApiPath('/accounting/reports/journal-report'), {
       params: { ...reportParams(filters), journal_id: filters.journalId },
     });
     return response.data.data;

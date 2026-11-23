@@ -204,35 +204,49 @@ export default function CustomerInvoicesPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
+      const invoiceRows = await customerInvoiceApi.getAll();
+      setInvoices(invoiceRows);
+
       const [
-        productRows,
-        invoiceRows,
-        customerRows,
-        taxRows,
-        currencyRows,
-        termRows,
-        methodRows,
-        serviceRes,
-        quotationRows,
-      ] = await Promise.all([
+        productSettled,
+        customerSettled,
+        taxSettled,
+        currencySettled,
+        termSettled,
+        methodSettled,
+        serviceSettled,
+        quotationSettled,
+      ] = await Promise.allSettled([
         accountingProductApi.getAll(),
-        customerInvoiceApi.getAll(),
         accountingCustomerApi.getAll(),
         accountingTaxApi.getAll(),
         currencyApi.getAll(),
         paymentTermApi.getAll(),
         accountingPaymentMethodApi.getAll(),
-        getAllServices().catch(() => ({ success: false, data: [] as ServiceRecord[] })),
-        quotationApi.getAcceptedForInvoice().catch(() => [] as Quotation[]),
+        getAllServices(),
+        quotationApi.getAcceptedForInvoice(),
       ]);
-      setInvoices(invoiceRows); setCustomers(customerRows); setProducts(productRows); setTaxes(taxRows); setCurrencies(currencyRows);
-      setTerms(termRows);
-      setPaymentMethods(methodRows);
-      if (serviceRes && (serviceRes as any).success && Array.isArray((serviceRes as any).data)) {
-        setAvailableServices((serviceRes as any).data);
+
+      if (productSettled.status === 'fulfilled') setProducts(productSettled.value);
+      if (customerSettled.status === 'fulfilled') setCustomers(customerSettled.value);
+      if (taxSettled.status === 'fulfilled') setTaxes(taxSettled.value);
+      if (currencySettled.status === 'fulfilled') setCurrencies(currencySettled.value);
+      if (termSettled.status === 'fulfilled') setTerms(termSettled.value);
+      if (methodSettled.status === 'fulfilled') setPaymentMethods(methodSettled.value);
+      if (serviceSettled.status === 'fulfilled') {
+        const serviceRes = serviceSettled.value;
+        if (serviceRes && (serviceRes as { success?: boolean }).success && Array.isArray((serviceRes as { data?: unknown }).data)) {
+          setAvailableServices((serviceRes as { data: ServiceRecord[] }).data);
+        }
       }
-      setQuotations(Array.isArray(quotationRows) ? quotationRows : []);
-    } catch (error) { accountingToast(errorMessage(error), 'error'); } finally { setLoading(false); }
+      if (quotationSettled.status === 'fulfilled') {
+        setQuotations(Array.isArray(quotationSettled.value) ? quotationSettled.value : []);
+      }
+    } catch (error) {
+      accountingToast(errorMessage(error), 'error');
+    } finally {
+      setLoading(false);
+    }
   }, []);
   useEffect(() => { const timer = window.setTimeout(() => void load(), 0); return () => window.clearTimeout(timer); }, [load]);
 

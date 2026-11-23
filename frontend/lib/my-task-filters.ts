@@ -105,3 +105,31 @@ export function taskOnDate(task: Task, date: Date): boolean {
 export function taskTitle(task: Task) {
   return task.serviceInformation || task.description || "Untitled task";
 }
+
+export type MyTaskTypeFilter = "all" | "project" | "standalone";
+
+export const MY_TASK_TYPE_FILTER_OPTIONS: { value: MyTaskTypeFilter; label: string }[] = [
+  { value: "all", label: "All Types" },
+  { value: "project", label: "Project Task" },
+  { value: "standalone", label: "Standalone Task" },
+];
+
+export function resolveMyTaskType(task: Task): "project" | "standalone" {
+  const features =
+    task.features && typeof task.features === "object" && !Array.isArray(task.features)
+      ? (task.features as { projectTask?: boolean })
+      : null;
+  if (
+    task.projectId ||
+    features?.projectTask ||
+    (task as Task & { taskType?: string }).taskType === "project"
+  ) {
+    return "project";
+  }
+  return "standalone";
+}
+
+export function matchesMyTaskTypeFilter(task: Task, filter: MyTaskTypeFilter): boolean {
+  if (filter === "all") return true;
+  return resolveMyTaskType(task) === filter;
+}

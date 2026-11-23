@@ -1,5 +1,5 @@
 import api from '../../axios';
-import { createAccountingCrudApi } from '../accountingCrud';
+import { accountingApiPath, createAccountingCrudApi } from '../accountingCrud';
 import type { CustomerInvoice } from './customerInvoiceApi';
 
 export type CreditNote = CustomerInvoice & {
@@ -82,24 +82,24 @@ const crud = createAccountingCrudApi<CreditNote>('/accounting/credit-notes');
 export const creditNoteApi = {
   ...crud,
   getCreditableInvoice: async (invoiceId: number, excludeCreditId?: number): Promise<CreditableInvoicePayload> => {
-    const response = await api.get(`/accounting/credit-notes/creditable-invoices/${invoiceId}`, {
+    const response = await api.get(accountingApiPath(`/accounting/credit-notes/creditable-invoices/${invoiceId}`), {
       params: excludeCreditId ? { exclude_credit_id: excludeCreditId } : undefined,
     });
     return response.data.data;
   },
   post: async (id: number): Promise<CreditNote> => {
-    const response = await api.patch(`/accounting/credit-notes/${id}/post`);
+    const response = await api.patch(accountingApiPath(`/accounting/credit-notes/${id}/post`));
     return response.data.data;
   },
   cancel: async (id: number): Promise<CreditNote> => {
-    const response = await api.patch(`/accounting/credit-notes/${id}/cancel`);
+    const response = await api.patch(accountingApiPath(`/accounting/credit-notes/${id}/cancel`));
     return response.data.data;
   },
   recordRefund: async (
     id: number,
     payload: { amount: number; payment_date: string; payment_method_id: number; reference?: string; notes?: string }
   ): Promise<CreditNote> => {
-    const response = await api.post(`/accounting/credit-notes/${id}/refund`, payload);
+    const response = await api.post(accountingApiPath(`/accounting/credit-notes/${id}/refund`), payload);
     return response.data.data;
   },
 };

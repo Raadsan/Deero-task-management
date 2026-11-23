@@ -1,5 +1,5 @@
 import api from '../../axios';
-import { createAccountingCrudApi, type AccountingRecord } from '../accountingCrud';
+import { accountingApiPath, createAccountingCrudApi, type AccountingRecord } from '../accountingCrud';
 
 export type ReceiptAllocation = {
   id?: number;
@@ -77,14 +77,16 @@ const crud = createAccountingCrudApi<CustomerReceipt>('/accounting/customer-rece
 export const customerReceiptApi = {
   ...crud,
   options: async (params: { customer_id: number; payment_method_id: number; currency_id?: number }) => {
-    const response = await api.get('/accounting/customer-receipts/options', { params });
+    const response = await api.get(accountingApiPath('/accounting/customer-receipts/options'), { params });
     return response.data.data as {
       channel: string; company_currency_id: number; currency_id: number; selected_account_id?: number | null;
       accounts: Array<{ id: number; code: string; name: string; account_name: string; journal_id: number; journal_name: string; journal_code: string }>;
     };
   },
   outstandingInvoices: async (customerId: number) => {
-    const response = await api.get('/accounting/customer-receipts/outstanding-invoices', { params: { customer_id: customerId } });
+    const response = await api.get(accountingApiPath('/accounting/customer-receipts/outstanding-invoices'), {
+      params: { customer_id: customerId },
+    });
     return response.data.data as Array<import('./customerInvoiceApi').CustomerInvoice & {
       advance_paid?: number;
       previously_paid?: number;
@@ -92,7 +94,7 @@ export const customerReceiptApi = {
     }>;
   },
   availableAdvances: async (customerId: number, currencyId?: number) => {
-    const response = await api.get('/accounting/customer-receipts/advances/available', {
+    const response = await api.get(accountingApiPath('/accounting/customer-receipts/advances/available'), {
       params: { customer_id: customerId, ...(currencyId ? { currency_id: currencyId } : {}) },
     });
     return response.data as {
@@ -102,7 +104,7 @@ export const customerReceiptApi = {
     };
   },
   post: async (id: number): Promise<CustomerReceipt> => {
-    const response = await api.patch(`/accounting/customer-receipts/${id}/post`);
+    const response = await api.patch(accountingApiPath(`/accounting/customer-receipts/${id}/post`));
     return response.data.data;
   },
 };

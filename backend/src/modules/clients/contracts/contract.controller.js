@@ -40,14 +40,24 @@ async function findAccessibleContract(scope, id, include = contractInclude) {
   return contract;
 }
 
-async function issueContractStartInvoice(contract) {
+async function issueDueContractInvoices(contract) {
   if (!contract || contract.status === "DRAFT" || contract.status === "CANCELLED" || contract.status === "TERMINATED") {
     return;
   }
   try {
-    await generateReadyInstallmentInvoices({ contractId: contract.id, onlyContractStart: true });
+    const start = await generateReadyInstallmentInvoices({
+      contractId: contract.id,
+      onlyContractStart: true,
+    });
+    const due = await generateReadyInstallmentInvoices({ contractId: contract.id });
+    const created = (start.created || 0) + (due.created || 0);
+    if (created > 0) {
+      console.log(
+        `[contract-invoice] Created ${created} invoice(s) for contract ${contract.contractNumber || contract.id}`,
+      );
+    }
   } catch (error) {
-    console.error("[contract-invoice] Invoice 01 was not created:", error?.message || error);
+    console.error("[contract-invoice] Installment invoice(s) were not created:", error?.message || error);
   }
 }
 
@@ -188,7 +198,7 @@ export const createContract = async (req, res) => {
       { timeout: 30_000 },
     );
 
-    await issueContractStartInvoice(result.contract);
+    await issueDueContractInvoices(result.contract);
     const full = await findAccessibleContract(scope, result.contract.id);
     res.status(201).json({ success: true, data: full });
   } catch (error) {
@@ -307,9 +317,7 @@ export const updateContract = async (req, res) => {
       return updated;
     }, { timeout: 30_000 });
 
-    if (existing.status === "DRAFT" && contract.status !== "DRAFT") {
-      await issueContractStartInvoice(contract);
-    }
+    await issueDueContractInvoices(contract);
     const full = await findAccessibleContract(scope, contract.id);
     res.json({ success: true, data: full });
   } catch (error) {

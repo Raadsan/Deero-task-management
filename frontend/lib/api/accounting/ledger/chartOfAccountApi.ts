@@ -1,4 +1,4 @@
-import { createAccountingCrudApi, type AccountingRecord } from '../accountingCrud';
+import { accountingApiPath, createAccountingCrudApi, type AccountingRecord } from '../accountingCrud';
 import api from '../../axios';
 
 export type ChartOfAccount = AccountingRecord & {
@@ -15,7 +15,7 @@ export type ChartOfAccount = AccountingRecord & {
 export const chartOfAccountApi = {
   ...createAccountingCrudApi<ChartOfAccount>('/accounting/chart-of-accounts'),
   remove: async (id: number): Promise<{ message?: string }> => {
-    const response = await api.delete(`/accounting/chart-of-accounts/${id}`);
+    const response = await api.delete(accountingApiPath(`/accounting/chart-of-accounts/${id}`));
     return response.data;
   },
 };

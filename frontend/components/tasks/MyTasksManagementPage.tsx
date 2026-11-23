@@ -15,7 +15,13 @@ import {
 import { editTask, submitTaskForReview } from "@/lib/apis/taskApi";
 import { TASK_STATUS_FILTER_OPTIONS } from "@/lib/task-status";
 import { ROUTES, SWR_CACH_KEYS } from "@/lib/constants";
-import { isBoardOnlyTask, normalizeMyTasksList } from "@/lib/my-task-filters";
+import {
+  isBoardOnlyTask,
+  matchesMyTaskTypeFilter,
+  MY_TASK_TYPE_FILTER_OPTIONS,
+  normalizeMyTasksList,
+  type MyTaskTypeFilter,
+} from "@/lib/my-task-filters";
 import { fetchMyCompanyTasks } from "@/lib/apis/myTasksApi";
 import {
   actionBtnView,
@@ -100,6 +106,7 @@ export default function MyTasksManagementPage() {
   const tasks = normalizeMyTasksList(tasksRaw).filter((task) => !isBoardOnlyTask(task));
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [taskTypeFilter, setTaskTypeFilter] = useState<MyTaskTypeFilter>("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [processTarget, setProcessTarget] = useState<Task | null>(null);
@@ -129,9 +136,11 @@ export default function MyTasksManagementPage() {
         statusFilter === "all" ||
         displayStatus.toLowerCase() === statusFilter.toLowerCase();
 
-      return matchesSearch && matchesStatus;
+      const matchesTaskType = matchesMyTaskTypeFilter(task, taskTypeFilter);
+
+      return matchesSearch && matchesStatus && matchesTaskType;
     });
-  }, [tasks, search, statusFilter, now]);
+  }, [tasks, search, statusFilter, taskTypeFilter, now]);
 
   const totalPages = Math.ceil(filteredTasks.length / pageSize) || 1;
   const paginatedTasks = useMemo(() => {
@@ -147,7 +156,7 @@ export default function MyTasksManagementPage() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, pageSize, statusFilter]);
+  }, [search, pageSize, statusFilter, taskTypeFilter]);
 
   function openProcessDialog(task: Task) {
     setProcessTarget(task);
@@ -230,6 +239,22 @@ export default function MyTasksManagementPage() {
               {TASK_STATUS_FILTER_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label === "All" ? "All Status" : option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className={cn("flex items-center gap-2", dashboardLabelClass)}>
+            <span>Task type</span>
+            <select
+              aria-label="Task type filter"
+              value={taskTypeFilter}
+              onChange={(e) => setTaskTypeFilter(e.target.value as MyTaskTypeFilter)}
+              className={cn("w-36 px-2", compactSelectClass)}
+            >
+              {MY_TASK_TYPE_FILTER_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
                 </option>
               ))}
             </select>

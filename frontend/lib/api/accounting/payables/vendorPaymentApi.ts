@@ -1,4 +1,4 @@
-import { createAccountingCrudApi, type AccountingRecord } from '../accountingCrud';
+import { accountingApiPath, createAccountingCrudApi, type AccountingRecord } from '../accountingCrud';
 export type VendorPayment = AccountingRecord & {
   payment_number?: string; vendor_id: number; journal_id: number; payment_method_id: number; bank_account_id?: number;
   payment_date: string; currency_id: number; exchange_rate: number; amount: number; unallocated_amount: number;
@@ -15,12 +15,16 @@ const crud = createAccountingCrudApi<VendorPayment>('/accounting/vendor-payments
 export const vendorPaymentApi = {
   ...crud,
   post: async (id: number): Promise<VendorPayment> => {
-    const response = await (await import('../../axios')).default.post(`/accounting/vendor-payments/${id}/post`);
+    const response = await (await import('../../axios')).default.post(
+      accountingApiPath(`/accounting/vendor-payments/${id}/post`),
+    );
     return response.data.data;
   },
   getAdvances: async (vendorId: number, currencyId?: number): Promise<{ rows: VendorAdvance[]; balance: number }> => {
     const api = (await import('../../axios')).default;
-    const response = await api.get('/accounting/vendor-payments/advances/available', { params: { vendor_id: vendorId, currency_id: currencyId } });
+    const response = await api.get(accountingApiPath('/accounting/vendor-payments/advances/available'), {
+      params: { vendor_id: vendorId, currency_id: currencyId },
+    });
     return { rows: response.data.data || [], balance: Number(response.data.summary?.advance_balance || 0) };
   },
 };
