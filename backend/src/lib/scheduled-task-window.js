@@ -51,6 +51,14 @@ export function zonedInstant(dateStr, timeStr, timeZone = APP_TIMEZONE) {
 
 export const PAST_SCHEDULE_MESSAGE = "You cannot schedule a task in the past. Please select a future date and time.";
 
+export const PROJECT_REGISTRATION_SCHEDULE_OPTIONS = { allowHistoricalDates: true };
+
+export function isHistoricalScheduledDate(dateStr, now = new Date()) {
+  const date = String(dateStr || "").slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
+  return date < zonedNowParts(now).date;
+}
+
 export function zonedNowParts(now = new Date(), timeZone = APP_TIMEZONE) {
   const instant = now instanceof Date ? now : new Date(now);
   try {
@@ -85,14 +93,17 @@ export function scheduleSignature(task) {
 }
 
 /** Empty string when the slot is allowed. Unscheduled tasks are allowed. */
-export function pastScheduleError(task, now = new Date()) {
+export function pastScheduleError(task, now = new Date(), options = {}) {
   const date = String(task?.scheduledDate || "").slice(0, 10);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return "";
   const start = String(task?.startTime || "").slice(0, 5);
   const end = String(task?.endTime || "").slice(0, 5);
   if (start && end && end <= start) return "End time must be later than the start time.";
   const current = zonedNowParts(now);
-  if (date < current.date) return PAST_SCHEDULE_MESSAGE;
+  if (date < current.date) {
+    if (options.allowHistoricalDates) return "";
+    return PAST_SCHEDULE_MESSAGE;
+  }
   if (date === current.date && (!/^\d{2}:\d{2}$/.test(start) || start <= current.time)) return PAST_SCHEDULE_MESSAGE;
   return "";
 }

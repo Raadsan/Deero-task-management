@@ -138,6 +138,17 @@ export function zonedInstant(dateStr: string, timeStr: string, timeZone = APP_TI
 
 export const PAST_SCHEDULE_MESSAGE = "You cannot schedule a task in the past. Please select a future date and time.";
 
+/** Project register / edit scheduling — allow calendar dates before today. */
+export const PROJECT_REGISTRATION_SCHEDULE_OPTIONS = { allowHistoricalDates: true } as const;
+
+export type PastScheduleOptions = { allowHistoricalDates?: boolean };
+
+export function isHistoricalScheduledDate(dateStr: string, now: number | Date = Date.now()) {
+  const date = String(dateStr || "").slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
+  return date < zonedNowParts(now).date;
+}
+
 export function zonedNowParts(now: number | Date = Date.now(), timeZone = APP_TIMEZONE) {
   const instant = now instanceof Date ? now : new Date(now);
   try {
@@ -175,6 +186,7 @@ export function scheduleSignature(task: { scheduledDate?: string; startTime?: st
 export function pastScheduleError(
   task: { scheduledDate?: string; startTime?: string; endTime?: string },
   now: number | Date = Date.now(),
+  options: PastScheduleOptions = {},
 ) {
   const date = String(task.scheduledDate || "").slice(0, 10);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return "";
@@ -182,7 +194,10 @@ export function pastScheduleError(
   const end = String(task.endTime || "").slice(0, 5);
   if (start && end && end <= start) return "End time must be later than the start time.";
   const current = zonedNowParts(now);
-  if (date < current.date) return PAST_SCHEDULE_MESSAGE;
+  if (date < current.date) {
+    if (options.allowHistoricalDates) return "";
+    return PAST_SCHEDULE_MESSAGE;
+  }
   if (date === current.date && (!/^\d{2}:\d{2}$/.test(start) || start <= current.time)) return PAST_SCHEDULE_MESSAGE;
   return "";
 }
@@ -191,12 +206,13 @@ export function changedScheduleError(
   task: { id?: string; scheduledDate?: string; startTime?: string; endTime?: string },
   originalSchedules: Record<string, string>,
   now: number | Date = Date.now(),
+  options: PastScheduleOptions = {},
 ) {
   if (!task.scheduledDate) return "";
   if (task.id && originalSchedules[task.id] === scheduleSignature(task)) return "";
   const friday = fridayScheduleErrorForChange(task, originalSchedules, scheduleSignature);
   if (friday) return friday;
-  return pastScheduleError(task, now);
+  return pastScheduleError(task, now, options);
 }
 
 function clockLabel(value: string) {

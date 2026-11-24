@@ -12,7 +12,9 @@ import {
   evaluateScheduledTask,
   isScheduleManager,
   mergeScheduleChange,
+  isHistoricalScheduledDate,
   pastScheduleError,
+  PROJECT_REGISTRATION_SCHEDULE_OPTIONS,
   scheduleSignature,
   zonedNowParts,
 } from "../../../lib/scheduled-task-window.js";
@@ -235,7 +237,7 @@ export const registerProject = async (req, res) => {
       if (task.id && savedSchedules.get(String(task.id)) === scheduleSignature(task)) return "";
       const friday = fridayScheduleErrorForTask(task, savedSchedules, scheduleSignature);
       if (friday) return `${task.name || "A task"}: ${friday}`;
-      const past = pastScheduleError(task);
+      const past = pastScheduleError(task, new Date(), PROJECT_REGISTRATION_SCHEDULE_OPTIONS);
       return past ? `${task.name || "A task"}: ${past}` : "";
     }).find(Boolean);
     if (slotError) return res.status(400).json({ success: false, error: slotError });
@@ -343,21 +345,50 @@ export const registerProject = async (req, res) => {
 
       const editingSaved = Boolean(existing && !existing.isDraft && !data.regenerateTasks);
       const shouldGenerate = !isDraft && !editingSaved;
+      function historicalCompletedAt(task) {
+        return (
+          scheduleInstant(task.scheduledDate, task.endTime || task.startTime)
+          || scheduleInstant(task.scheduledDate, task.startTime)
+          || new Date(`${String(task.scheduledDate).slice(0, 10)}T23:59:00`)
+        );
+      }
+
       async function createProjectTask(task) {
         const taskId = await generateCustomId({ entityTybe: "tasks", prisma: tx });
         const assigneeId = task.assigneeId || fallbackAssignee;
         if (!assigneeId) return;
         const fields = projectTaskFields(task, assigneeId, project.id, cycleId, subIdByKey);
-        const evaluation = evaluateScheduledTask({ ...fields, progress: 0, status: "pending" }, new Date());
-        await tx.task.create({
-          data: {
-            id: taskId,
-            ...fields,
-            status: evaluation.scheduled ? evaluation.status : mapTaskStatus(task.status),
-            startDate: evaluation.startAt || fields.startDate,
-            features: evaluation.scheduled ? applyScheduledFeatures(fields.features, evaluation) : fields.features,
-          },
-        });
+        const historical = isHistoricalScheduledDate(task.scheduledDate, new Date());
+        if (historical) {
+          const completedAt = historicalCompletedAt(task);
+          const features = {
+            ...fields.features,
+            projectStatus: "COMPLETED",
+          };
+          await tx.task.create({
+            data: {
+              id: taskId,
+              ...fields,
+              status: "completed",
+              progress: 100,
+              completedAt,
+              progressUpdatedAt: completedAt,
+              startDate: fields.startDate || completedAt,
+              features,
+            },
+          });
+        } else {
+          const evaluation = evaluateScheduledTask({ ...fields, progress: 0, status: "pending" }, new Date());
+          await tx.task.create({
+            data: {
+              id: taskId,
+              ...fields,
+              status: evaluation.scheduled ? evaluation.status : mapTaskStatus(task.status),
+              startDate: evaluation.startAt || fields.startDate,
+              features: evaluation.scheduled ? applyScheduledFeatures(fields.features, evaluation) : fields.features,
+            },
+          });
+        }
         await tx.clientTask.create({
           data: { clientId: client.id, taskId },
         });
@@ -378,6 +409,8 @@ export const registerProject = async (req, res) => {
           const keptCycleId = previousFeatures.cycleId || cycleId;
           const nextFields = projectTaskFields(task, assigneeId, project.id, keptCycleId, subIdByKey);
           const mergedFeatures = mergeScheduleChange(previousFeatures, nextFields.features, current.status);
+          const scheduleUnchanged =
+            task.id && savedSchedules.get(String(task.id)) === scheduleSignature(task);
           const evaluation = evaluateScheduledTask({
             ...current,
             ...nextFields,
@@ -388,12 +421,29 @@ export const registerProject = async (req, res) => {
             where: { id: current.id },
             data: {
               ...nextFields,
-              status: evaluation.scheduled ? evaluation.status : current.status,
-              startDate: evaluation.startAt || nextFields.startDate,
-              completedAt: evaluation.status === "completed" ? (current.completedAt || new Date()) : current.completedAt,
-              features: evaluation.scheduled
-                ? applyScheduledFeatures({ ...previousFeatures, ...mergedFeatures }, evaluation)
-                : { ...previousFeatures, ...nextFields.features, projectStatus: previousFeatures.projectStatus || nextFields.features.projectStatus },
+              progress: current.progress ?? 0,
+              status: scheduleUnchanged
+                ? current.status
+                : evaluation.scheduled
+                  ? evaluation.status
+                  : current.status,
+              startDate: scheduleUnchanged
+                ? current.startDate
+                : evaluation.startAt || nextFields.startDate,
+              completedAt: current.completedAt,
+              features: scheduleUnchanged
+                ? {
+                    ...previousFeatures,
+                    ...nextFields.features,
+                    projectStatus: previousFeatures.projectStatus || nextFields.features.projectStatus,
+                  }
+                : evaluation.scheduled
+                  ? applyScheduledFeatures({ ...previousFeatures, ...mergedFeatures }, evaluation)
+                  : {
+                      ...previousFeatures,
+                      ...nextFields.features,
+                      projectStatus: previousFeatures.projectStatus || nextFields.features.projectStatus,
+                    },
             },
           });
         }

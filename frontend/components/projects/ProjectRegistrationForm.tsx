@@ -22,7 +22,12 @@ import {
   isFridayIsoDate,
   normalizeCompanyWorkingDays,
 } from "@/lib/company-working-days";
-import { changedScheduleError, PAST_SCHEDULE_MESSAGE, scheduleSignature, zonedNowParts } from "@/lib/scheduled-task-window";
+import {
+  changedScheduleError,
+  PROJECT_REGISTRATION_SCHEDULE_OPTIONS,
+  scheduleSignature,
+  zonedNowParts,
+} from "@/lib/scheduled-task-window";
 import { useNow } from "@/lib/use-now";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
@@ -436,9 +441,13 @@ export default function ProjectRegistrationForm({ onClose, projectId }: Props) {
   }
 
   function scheduleIsValid(list: DraftTask[] = tasks) {
-    const pastTask = list.find((task) => changedScheduleError(task, originalSchedules, now));
+    const pastTask = list.find((task) =>
+      changedScheduleError(task, originalSchedules, now, PROJECT_REGISTRATION_SCHEDULE_OPTIONS),
+    );
     if (!pastTask) return true;
-    toast.error(`${pastTask.name}: ${changedScheduleError(pastTask, originalSchedules, now)}`);
+    toast.error(
+      `${pastTask.name}: ${changedScheduleError(pastTask, originalSchedules, now, PROJECT_REGISTRATION_SCHEDULE_OPTIONS)}`,
+    );
     return false;
   }
 
@@ -476,9 +485,13 @@ export default function ProjectRegistrationForm({ onClose, projectId }: Props) {
       return;
     }
     const tasksToSave = prepared.tasks;
-    const invalidSlot = tasksToSave.find((task) => changedScheduleError(task, originalSchedules));
+    const invalidSlot = tasksToSave.find((task) =>
+      changedScheduleError(task, originalSchedules, Date.now(), PROJECT_REGISTRATION_SCHEDULE_OPTIONS),
+    );
     if (!isDraft && invalidSlot) {
-      toast.error(`${invalidSlot.name}: ${changedScheduleError(invalidSlot, originalSchedules)}`);
+      toast.error(
+        `${invalidSlot.name}: ${changedScheduleError(invalidSlot, originalSchedules, Date.now(), PROJECT_REGISTRATION_SCHEDULE_OPTIONS)}`,
+      );
       setTab(2);
       return;
     }
@@ -844,7 +857,6 @@ export default function ProjectRegistrationForm({ onClose, projectId }: Props) {
                           <td className="pr-2">
                             <input
                               type="date"
-                              min={todayParts.date}
                               className={fieldClass}
                               value={task.scheduledDate}
                               onChange={(e) => {
@@ -860,7 +872,11 @@ export default function ProjectRegistrationForm({ onClose, projectId }: Props) {
                                 );
                               }}
                             />
-                            {changedScheduleError(task, originalSchedules, now) === PAST_SCHEDULE_MESSAGE ? <p className="text-xs text-red-600">{PAST_SCHEDULE_MESSAGE}</p> : null}
+                            {changedScheduleError(task, originalSchedules, now, PROJECT_REGISTRATION_SCHEDULE_OPTIONS) ? (
+                              <p className="text-xs text-red-600">
+                                {changedScheduleError(task, originalSchedules, now, PROJECT_REGISTRATION_SCHEDULE_OPTIONS)}
+                              </p>
+                            ) : null}
                           </td>
                           <td className="pr-2">
                             <input type="time" min={task.scheduledDate === todayParts.date ? nextClockMinute(todayParts.time) : undefined} className={fieldClass} value={task.startTime} onChange={(e) => setTasks((current) => current.map((item) => item.clientKey === task.clientKey ? { ...item, startTime: e.target.value } : item))} />

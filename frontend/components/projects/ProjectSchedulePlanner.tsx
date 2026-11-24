@@ -19,7 +19,13 @@ import {
   formatIsoDate,
   parseIsoDate,
 } from "@/lib/project-schedule";
-import { changedScheduleError, PAST_SCHEDULE_MESSAGE, zonedNowParts } from "@/lib/scheduled-task-window";
+import {
+  changedScheduleError,
+  isHistoricalScheduledDate,
+  PAST_SCHEDULE_MESSAGE,
+  PROJECT_REGISTRATION_SCHEDULE_OPTIONS,
+  zonedNowParts,
+} from "@/lib/scheduled-task-window";
 import { useNow } from "@/lib/use-now";
 import { cn } from "@/lib/utils";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -112,7 +118,7 @@ export default function ProjectSchedulePlanner({
   const now = useNow();
   const todayParts = zonedNowParts(now);
   const initial = parseIsoDate(startDate) ?? new Date();
-  const openingDay = startDate && startDate >= zonedNowParts().date ? startDate : zonedNowParts().date;
+  const openingDay = startDate || zonedNowParts().date;
   const opening = parseIsoDate(openingDay) ?? initial;
   const [cursor, setCursor] = useState(() => new Date(opening.getFullYear(), opening.getMonth(), 1));
   const [selectedDate, setSelectedDate] = useState(openingDay);
@@ -128,7 +134,7 @@ export default function ProjectSchedulePlanner({
 
   useEffect(() => {
     const today = zonedNowParts().date;
-    const day = startDate && startDate >= today ? startDate : today;
+    const day = startDate || today;
     const next = parseIsoDate(day);
     if (!next) return;
     setCursor(new Date(next.getFullYear(), next.getMonth(), 1));
@@ -165,8 +171,11 @@ export default function ProjectSchedulePlanner({
         if (task.startTime && task.endTime && task.endTime <= task.startTime) {
           notesForTask.push("End time must be later than the start time");
         }
-        const past = changedScheduleError(task, originalSchedules, now);
+        const past = changedScheduleError(task, originalSchedules, now, PROJECT_REGISTRATION_SCHEDULE_OPTIONS);
         if (past && past !== "End time must be later than the start time.") notesForTask.push(past);
+        if (isHistoricalScheduledDate(task.scheduledDate, now) && !task.id) {
+          notesForTask.push("Will be saved as completed (100%)");
+        }
         if (tasks.some((other) => timesOverlap(task, other))) notesForTask.push("This time overlaps another task for the same employee");
       }
       if (notesForTask.length) messages.set(task.clientKey, notesForTask);
@@ -187,10 +196,6 @@ export default function ProjectSchedulePlanner({
       toast.error(FRIDAY_NON_WORKING_DAY_MESSAGE);
       return;
     }
-    if (date < todayParts.date) {
-      toast.error(PAST_SCHEDULE_MESSAGE);
-      return;
-    }
     patchTask(clientKey, { scheduledDate: date });
   }
 
@@ -198,10 +203,6 @@ export default function ProjectSchedulePlanner({
     if (!clientKey) return;
     if (isFridayIsoDate(date)) {
       toast.error(FRIDAY_NON_WORKING_DAY_MESSAGE);
-      return;
-    }
-    if (date < todayParts.date) {
-      toast.error(PAST_SCHEDULE_MESSAGE);
       return;
     }
     patchTask(clientKey, { scheduledDate: date });
@@ -486,7 +487,9 @@ export default function ProjectSchedulePlanner({
                 </Button>
               </div>
             </div>
-            {selectedDate < todayParts.date ? <p className="mt-2 text-xs text-red-600">{PAST_SCHEDULE_MESSAGE}</p> : null}
+            {selectedDate < todayParts.date ? (
+              <p className="mt-2 text-xs text-zinc-600">Past date — new tasks save as completed.</p>
+            ) : null}
             {isFridayIsoDate(selectedDate) ? (
               <p className="mt-2 text-xs text-amber-700">{FRIDAY_NON_WORKING_DAY_MESSAGE}</p>
             ) : null}
@@ -500,7 +503,7 @@ export default function ProjectSchedulePlanner({
                     staff={staff}
                     highlighted
                     warnings={warnings.get(task.clientKey) ?? []}
-                    minDate={todayParts.date}
+                    minDate=""
                     minStartTime={task.scheduledDate === todayParts.date ? nextMinute(todayParts.time) : ""}
                     onChange={(patch) => {
                       if (patch.scheduledDate) {
@@ -553,7 +556,6 @@ export default function ProjectSchedulePlanner({
                     <td className="py-2 pr-2">
                       <input
                         type="date"
-                        min={todayParts.date}
                         className={fieldClass}
                         value={task.scheduledDate}
                         onChange={(event) => applyScheduledDate(task.clientKey, event.target.value)}
@@ -631,7 +633,7 @@ function TaskEditor({
   staff: Staff[];
   warnings: string[];
   highlighted?: boolean;
-  minDate: string;
+  minDate?: string;
   minStartTime: string;
   onChange: (patch: Partial<DraftTask>) => void;
   onClear: () => void;
@@ -661,7 +663,7 @@ function TaskEditor({
         <input
           className={fieldClass}
           type="date"
-          min={minDate}
+          min={minDate || undefined}
           value={task.scheduledDate}
           onChange={(event) => {
             const next = event.target.value;
