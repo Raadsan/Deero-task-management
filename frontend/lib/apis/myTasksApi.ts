@@ -45,7 +45,12 @@ function mapMyTask(task: Record<string, unknown>): Task {
           id: project.id,
           name: project.name ?? "",
           clientId: project.clientId,
-          client: project.client,
+          client: project.client?.id
+            ? {
+                id: project.client.id,
+                institution: project.client.institution,
+              }
+            : undefined,
         }
       : null,
     institutions: clientTask.map((ct) => ({
