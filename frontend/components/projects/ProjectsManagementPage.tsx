@@ -260,8 +260,13 @@ export default function ProjectsManagementPage() {
             }
             toast.success("Project and related tasks deleted");
             setDeleteTarget(null);
-            await mutate();
-            await globalMutate("project-summary");
+            await mutate(undefined, { revalidate: true });
+            await globalMutate("project-summary", undefined, { revalidate: true });
+            await globalMutate(
+              (key) => typeof key === "string" && key.includes("project"),
+              undefined,
+              { revalidate: true },
+            );
             await globalMutate(SWR_CACH_KEYS.tasks.key);
             await globalMutate(SWR_CACH_KEYS.myTasks.key);
             await globalMutate(SWR_CACH_KEYS.myTasksList.key);

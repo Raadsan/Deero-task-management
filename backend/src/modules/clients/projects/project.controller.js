@@ -296,18 +296,46 @@ export const deleteProject = async (req, res) => {
   }
   try {
     const scope = getScope(req);
-    const existing = await findAccessibleProject(scope, id, { id: true, name: true });
+    const existing = await findAccessibleProject(scope, id, {
+      id: true,
+      name: true,
+      projectCode: true,
+      contractId: true,
+    });
     if (!existing) {
       return res.status(404).json({ success: false, error: "Project not found" });
     }
 
     await prisma.$transaction(async (tx) => {
-      await tx.task.deleteMany({ where: { projectId: id } });
+      const taskRows = await tx.task.findMany({
+        where: { projectId: id },
+        select: { id: true },
+      });
+      const taskIds = taskRows.map((row) => row.id);
+      if (taskIds.length) {
+        await tx.clientTask.deleteMany({ where: { taskId: { in: taskIds } } });
+        await tx.taskTransferHistory.deleteMany({ where: { taskId: { in: taskIds } } });
+        await tx.recurringTaskOccurrence.deleteMany({ where: { taskId: { in: taskIds } } });
+        await tx.task.deleteMany({ where: { id: { in: taskIds } } });
+      }
+
+      await tx.projectExtraRequest.deleteMany({ where: { projectId: id } });
+      await tx.projectSubService.deleteMany({ where: { link: { projectId: id } } });
+      await tx.projectServiceLink.deleteMany({ where: { projectId: id } });
+      await tx.projectCycle.deleteMany({ where: { projectId: id } });
+
       await tx.contract.updateMany({ where: { projectId: id }, data: { projectId: null } });
+      if (existing.contractId) {
+        await tx.contract.updateMany({
+          where: { id: existing.contractId },
+          data: { projectId: null },
+        });
+      }
       await tx.contentRequest.updateMany({ where: { projectId: id }, data: { projectId: null } });
       await tx.incomeServiceAgreement.updateMany({ where: { projectId: id }, data: { projectId: null } });
+      await tx.project.update({ where: { id }, data: { contractId: null } });
       await tx.project.delete({ where: { id } });
-    });
+    }, { timeout: 120_000 });
 
     res.json({
       success: true,
@@ -315,6 +343,12 @@ export const deleteProject = async (req, res) => {
     });
   } catch (error) {
     console.error("deleteProject error:", error);
-    res.status(500).json({ success: false, error: error.message || "Could not delete project" });
+    const message = String(error?.message || "Could not delete project");
+    const friendly = message.includes("Foreign key constraint")
+      ? "This project is still linked to other records. Unlink the contract or remove related data, then try again."
+      : message.includes("prisma.")
+        ? "Could not delete this project. Restart the backend after updating, or contact support."
+        : message;
+    res.status(500).json({ success: false, error: friendly });
   }
 };

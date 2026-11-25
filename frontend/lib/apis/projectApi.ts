@@ -163,10 +163,29 @@ export async function archiveProject(id: string): Promise<ActionResponse> {
 export async function deleteProject(id: string): Promise<ActionResponse> {
   try {
     const response = await api.delete(`/api/projects/${id}`);
-    if (response.data.success) return { success: true };
-    return { success: false, errors: { message: response.data.error || "Could not delete project" } };
+    if (response.data?.success) return { success: true };
+    return { success: false, errors: { message: response.data?.error || "Could not delete project" } };
   } catch (error) {
-    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+    const formatted = handleError({ errors: error, type: "server" }) as ErrorResponse;
+    const raw =
+      typeof error === "object" &&
+      error !== null &&
+      "response" in error &&
+      typeof (error as { response?: { data?: { error?: string } } }).response?.data?.error === "string"
+        ? (error as { response: { data: { error: string } } }).response.data.error
+        : "";
+    if (raw && !raw.includes("prisma.")) {
+      return { success: false, errors: { message: raw } };
+    }
+    return {
+      success: false,
+      errors: {
+        message:
+          formatted.errors?.message?.includes("while saving")
+            ? "Could not delete this project. Remove or unlink related records and try again."
+            : formatted.errors?.message || "Could not delete project",
+      },
+    };
   }
 }
 
