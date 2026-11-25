@@ -14,10 +14,14 @@ import {
 } from "@/components/ui/table";
 import { editTask, submitTaskForReview } from "@/lib/apis/taskApi";
 import {
+  collectMyTaskClientFilterOptions,
   isBoardOnlyTask,
+  matchesMyTaskClientFilter,
   matchesMyTaskTypeFilter,
   MY_TASK_TYPE_FILTER_OPTIONS,
   normalizeMyTasksList,
+  resolveMyTaskClientLabel,
+  type MyTaskClientFilter,
   type MyTaskTypeFilter,
 } from "@/lib/my-task-filters";
 import { fetchMyCompanyTasks } from "@/lib/apis/myTasksApi";
@@ -128,6 +132,7 @@ export default function MyTasksTodayPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [taskTypeFilter, setTaskTypeFilter] = useState<MyTaskTypeFilter>("all");
+  const [clientFilter, setClientFilter] = useState<MyTaskClientFilter>("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [processTarget, setProcessTarget] = useState<Task | null>(null);
@@ -157,9 +162,15 @@ export default function MyTasksTodayPage() {
     });
   }, [allTasks]);
 
+  const clientFilterOptions = useMemo(
+    () => collectMyTaskClientFilterOptions(todayTasks),
+    [todayTasks],
+  );
+
   const filteredTasks = useMemo(() => {
     return todayTasks.filter((task) => {
       const query = search.toLowerCase();
+      const clientName = resolveMyTaskClientLabel(task).toLowerCase();
       const serviceInfo = (
         task.serviceInformation ??
         task.institutions?.[0]?.institution ??
@@ -172,7 +183,8 @@ export default function MyTasksTodayPage() {
         !query ||
         serviceInfo.includes(query) ||
         description.includes(query) ||
-        taskId.includes(query);
+        taskId.includes(query) ||
+        clientName.includes(query);
 
       const displayStatus = resolveTaskDisplayStatus(task, undefined, now);
       const matchesStatus =
@@ -180,10 +192,11 @@ export default function MyTasksTodayPage() {
         displayStatus.toLowerCase() === statusFilter.toLowerCase();
 
       const matchesTaskType = matchesMyTaskTypeFilter(task, taskTypeFilter);
+      const matchesClient = matchesMyTaskClientFilter(task, clientFilter);
 
-      return matchesSearch && matchesStatus && matchesTaskType;
+      return matchesSearch && matchesStatus && matchesTaskType && matchesClient;
     });
-  }, [todayTasks, search, statusFilter, taskTypeFilter, now]);
+  }, [todayTasks, search, statusFilter, taskTypeFilter, clientFilter, now]);
 
   const totalPages = Math.ceil(filteredTasks.length / pageSize) || 1;
   const paginatedTasks = useMemo(() => {
@@ -199,7 +212,13 @@ export default function MyTasksTodayPage() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, pageSize, statusFilter, taskTypeFilter]);
+  }, [search, pageSize, statusFilter, taskTypeFilter, clientFilter]);
+
+  useEffect(() => {
+    if (clientFilter === "all") return;
+    if (clientFilterOptions.some((option) => option.value === clientFilter)) return;
+    setClientFilter("all");
+  }, [clientFilter, clientFilterOptions]);
 
   function openProcessDialog(task: Task) {
     setProcessTarget(task);
@@ -311,6 +330,22 @@ export default function MyTasksTodayPage() {
             </select>
           </div>
 
+          <div className={cn("flex items-center gap-2", dashboardLabelClass)}>
+            <span>Client</span>
+            <select
+              aria-label="Client filter"
+              value={clientFilter}
+              onChange={(e) => setClientFilter(e.target.value)}
+              className={cn("max-w-[11rem] min-w-[8rem] px-2", compactSelectClass)}
+            >
+              {clientFilterOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div className="min-w-4 flex-1" />
 
           <div className="group relative w-full sm:w-52">
@@ -415,9 +450,9 @@ export default function MyTasksTodayPage() {
                             </span>
                             <small
                               className="truncate text-[11px] text-zinc-400"
-                              title={task.institutions?.[0]?.institution || "Internal"}
+                              title={resolveMyTaskClientLabel(task)}
                             >
-                              Client: {task.institutions?.[0]?.institution || "Internal"}
+                              Client: {resolveMyTaskClientLabel(task)}
                             </small>
                           </div>
                         </TableCell>

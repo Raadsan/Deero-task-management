@@ -16,10 +16,14 @@ import { editTask, submitTaskForReview } from "@/lib/apis/taskApi";
 import { TASK_STATUS_FILTER_OPTIONS } from "@/lib/task-status";
 import { ROUTES, SWR_CACH_KEYS } from "@/lib/constants";
 import {
+  collectMyTaskClientFilterOptions,
   isBoardOnlyTask,
+  matchesMyTaskClientFilter,
   matchesMyTaskTypeFilter,
   MY_TASK_TYPE_FILTER_OPTIONS,
   normalizeMyTasksList,
+  resolveMyTaskClientLabel,
+  type MyTaskClientFilter,
   type MyTaskTypeFilter,
 } from "@/lib/my-task-filters";
 import { fetchMyCompanyTasks } from "@/lib/apis/myTasksApi";
@@ -107,6 +111,7 @@ export default function MyTasksManagementPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [taskTypeFilter, setTaskTypeFilter] = useState<MyTaskTypeFilter>("all");
+  const [clientFilter, setClientFilter] = useState<MyTaskClientFilter>("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [processTarget, setProcessTarget] = useState<Task | null>(null);
@@ -114,9 +119,15 @@ export default function MyTasksManagementPage() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null);
 
+  const clientFilterOptions = useMemo(
+    () => collectMyTaskClientFilterOptions(tasks),
+    [tasks],
+  );
+
   const filteredTasks = useMemo(() => {
     return tasks.filter((task) => {
       const query = search.toLowerCase();
+      const clientName = resolveMyTaskClientLabel(task).toLowerCase();
       const serviceInfo = (
         task.serviceInformation ??
         task.institutions?.[0]?.institution ??
@@ -129,7 +140,8 @@ export default function MyTasksManagementPage() {
         !query ||
         serviceInfo.includes(query) ||
         description.includes(query) ||
-        taskId.includes(query);
+        taskId.includes(query) ||
+        clientName.includes(query);
 
       const displayStatus = resolveTaskDisplayStatus(task, undefined, now);
       const matchesStatus =
@@ -137,10 +149,11 @@ export default function MyTasksManagementPage() {
         displayStatus.toLowerCase() === statusFilter.toLowerCase();
 
       const matchesTaskType = matchesMyTaskTypeFilter(task, taskTypeFilter);
+      const matchesClient = matchesMyTaskClientFilter(task, clientFilter);
 
-      return matchesSearch && matchesStatus && matchesTaskType;
+      return matchesSearch && matchesStatus && matchesTaskType && matchesClient;
     });
-  }, [tasks, search, statusFilter, taskTypeFilter, now]);
+  }, [tasks, search, statusFilter, taskTypeFilter, clientFilter, now]);
 
   const totalPages = Math.ceil(filteredTasks.length / pageSize) || 1;
   const paginatedTasks = useMemo(() => {
@@ -156,7 +169,13 @@ export default function MyTasksManagementPage() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, pageSize, statusFilter, taskTypeFilter]);
+  }, [search, pageSize, statusFilter, taskTypeFilter, clientFilter]);
+
+  useEffect(() => {
+    if (clientFilter === "all") return;
+    if (clientFilterOptions.some((option) => option.value === clientFilter)) return;
+    setClientFilter("all");
+  }, [clientFilter, clientFilterOptions]);
 
   function openProcessDialog(task: Task) {
     setProcessTarget(task);
@@ -253,6 +272,22 @@ export default function MyTasksManagementPage() {
               className={cn("w-36 px-2", compactSelectClass)}
             >
               {MY_TASK_TYPE_FILTER_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className={cn("flex items-center gap-2", dashboardLabelClass)}>
+            <span>Client</span>
+            <select
+              aria-label="Client filter"
+              value={clientFilter}
+              onChange={(e) => setClientFilter(e.target.value)}
+              className={cn("max-w-[11rem] min-w-[8rem] px-2", compactSelectClass)}
+            >
+              {clientFilterOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -365,9 +400,9 @@ export default function MyTasksManagementPage() {
                             </span>
                             <small
                               className="truncate text-[11px] text-zinc-400"
-                              title={task.institutions?.[0]?.institution || "Internal"}
+                              title={resolveMyTaskClientLabel(task)}
                             >
-                              Client: {task.institutions?.[0]?.institution || "Internal"}
+                              Client: {resolveMyTaskClientLabel(task)}
                             </small>
                           </div>
                         </TableCell>

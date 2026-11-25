@@ -18,6 +18,15 @@ function mapMyTask(task: Record<string, unknown>): Task {
     (task.clientTask as Array<{
       Client?: { id?: string; institution?: string };
     }>) ?? [];
+  const project = task.project as
+    | {
+        id?: string;
+        name?: string;
+        clientId?: string;
+        client?: { id?: string; institution?: string };
+      }
+    | null
+    | undefined;
 
   return {
     ...(task as unknown as Task),
@@ -30,6 +39,15 @@ function mapMyTask(task: Record<string, unknown>): Task {
     },
     isAssignedToCurrentUser: true,
     isPersonal: Boolean(task.isPersonal),
+    projectId: (task.projectId as string | null | undefined) ?? null,
+    project: project?.id
+      ? {
+          id: project.id,
+          name: project.name ?? "",
+          clientId: project.clientId,
+          client: project.client,
+        }
+      : null,
     institutions: clientTask.map((ct) => ({
       id: ct.Client?.id ?? "",
       institution: ct.Client?.institution ?? "",

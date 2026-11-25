@@ -133,3 +133,67 @@ export function matchesMyTaskTypeFilter(task: Task, filter: MyTaskTypeFilter): b
   if (filter === "all") return true;
   return resolveMyTaskType(task) === filter;
 }
+
+export const MY_TASK_CLIENT_INTERNAL = "__internal__";
+
+export type MyTaskClientFilter = "all" | string;
+
+export function resolveMyTaskClientId(task: Task): string {
+  const institutionId = String(task.institutions?.[0]?.id ?? "").trim();
+  if (institutionId) return institutionId;
+
+  const projectClientId = String(
+    task.project?.clientId ?? task.project?.client?.id ?? "",
+  ).trim();
+  if (projectClientId) return projectClientId;
+
+  return MY_TASK_CLIENT_INTERNAL;
+}
+
+export function resolveMyTaskClientLabel(task: Task): string {
+  const institution = String(task.institutions?.[0]?.institution ?? "").trim();
+  if (institution) return institution;
+
+  const projectClient = String(task.project?.client?.institution ?? "").trim();
+  if (projectClient) return projectClient;
+
+  return "Internal";
+}
+
+export function collectMyTaskClientFilterOptions(
+  tasks: Task[],
+): { value: string; label: string }[] {
+  const labelsById = new Map<string, string>();
+
+  for (const task of tasks) {
+    const id = resolveMyTaskClientId(task);
+    const label = resolveMyTaskClientLabel(task);
+    const existing = labelsById.get(id);
+    if (!existing || (existing === "Internal" && label !== "Internal")) {
+      labelsById.set(id, label);
+    }
+  }
+
+  const options: { value: string; label: string }[] = [
+    { value: "all", label: "All Clients" },
+  ];
+
+  const clientEntries = [...labelsById.entries()]
+    .filter(([id]) => id !== MY_TASK_CLIENT_INTERNAL)
+    .sort((a, b) => a[1].localeCompare(b[1], undefined, { sensitivity: "base" }));
+
+  for (const [value, label] of clientEntries) {
+    options.push({ value, label });
+  }
+
+  if (labelsById.has(MY_TASK_CLIENT_INTERNAL)) {
+    options.push({ value: MY_TASK_CLIENT_INTERNAL, label: "Internal" });
+  }
+
+  return options;
+}
+
+export function matchesMyTaskClientFilter(task: Task, filter: MyTaskClientFilter): boolean {
+  if (filter === "all") return true;
+  return resolveMyTaskClientId(task) === filter;
+}

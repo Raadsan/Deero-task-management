@@ -165,6 +165,14 @@ export const getMyTasks = async (req, res) => {
             Client: { select: { id: true, institution: true } },
           },
         },
+        project: {
+          select: {
+            id: true,
+            name: true,
+            clientId: true,
+            client: { select: { id: true, institution: true } },
+          },
+        },
         transferHistory: {
           include: {
             fromAssignee: { select: { id: true, name: true, portfolioId: true } },
