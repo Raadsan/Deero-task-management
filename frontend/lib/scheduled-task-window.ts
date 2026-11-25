@@ -155,7 +155,7 @@ export function isHistoricalScheduledDate(dateStr: string, now: number | Date = 
   return date < zonedNowParts(now).date;
 }
 
-/** Initial status only — when a new project task should be created as completed (100%). Keep in sync with backend. */
+/** Initial status only — scheduled work period already ended when the project task is first saved. Keep in sync with backend. */
 export function shouldAutoCompleteNewProjectTask(
   task: { scheduledDate?: string | null; endTime?: string | null },
   now: number | Date = Date.now(),
@@ -167,8 +167,11 @@ export function shouldAutoCompleteNewProjectTask(
   const current = zonedNowParts(now);
   if (date !== current.date) return false;
 
-  const endTime = String(task?.endTime || "").slice(0, 5);
+  const endMatch = /^(\d{2}:\d{2})/.exec(String(task?.endTime || ""));
+  const endTime = endMatch?.[1] || "";
   if (!/^\d{2}:\d{2}$/.test(endTime)) return false;
+
+  if (current.time >= endTime) return true;
 
   const endAt = zonedInstant(date, endTime);
   if (!endAt) return false;
@@ -334,10 +337,26 @@ export function evaluateScheduledTask(
     };
   }
 
+  const progress = Number(task?.progress ?? 0);
+  const isProjectTask =
+    Boolean((task as { projectId?: string | null })?.projectId) || Boolean(features?.projectTask);
+  if (isProjectTask && progress >= 100) {
+    return {
+      scheduled: true,
+      status: "completed",
+      canUpdateProgress: false,
+      reason: "This task is completed. Progress can no longer be changed.",
+      startAt,
+      endAt: effectiveEndAt,
+      dateLabel: dateLabel(date),
+      startLabel: clockLabel(startTime),
+      endLabel: clockLabel(endTime),
+    };
+  }
+
   if (!startAt || !effectiveEndAt || effectiveEndAt <= startAt) return empty;
 
   const moment = now instanceof Date ? now : new Date(now);
-  const progress = Number(task?.progress ?? 0);
   let status: ScheduledEvaluation["status"] = "in_progress";
   let canUpdateProgress = true;
   let reason = "";

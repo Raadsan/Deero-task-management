@@ -357,3 +357,70 @@ export function summarizeProjectTasks(tasks: CountableTask[], now: number | Date
 export function taskProgress(tasks: CountableTask[], now: number | Date = Date.now()) {
   return summarizeProjectTasks(tasks, now);
 }
+
+export function normalizeScheduleClock(value: string | null | undefined) {
+  const match = /^(\d{1,2}):(\d{2})/.exec(String(value ?? "").trim());
+  if (!match) return "";
+  const hours = Math.min(23, Math.max(0, Number(match[1])));
+  const minutes = Math.min(59, Math.max(0, Number(match[2])));
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+}
+
+export function scheduleClockMinutes(value: string | null | undefined): number | null {
+  const normalized = normalizeScheduleClock(value);
+  if (!/^\d{2}:\d{2}$/.test(normalized)) return null;
+  const [hours, minutes] = normalized.split(":").map(Number);
+  return hours * 60 + minutes;
+}
+
+export type ScheduleOverlapTask = {
+  clientKey?: string;
+  id?: string;
+  assigneeId?: string;
+  scheduledDate?: string;
+  startTime?: string;
+  endTime?: string;
+  name?: string;
+};
+
+/** True when intervals overlap: startA < endB AND endA > startB (touching ends do not overlap). */
+export function projectTaskScheduleIntervalsOverlap(
+  left: ScheduleOverlapTask,
+  right: ScheduleOverlapTask,
+): boolean {
+  if (!left.assigneeId || left.assigneeId !== right.assigneeId) return false;
+
+  const leftDate = String(left.scheduledDate || "").slice(0, 10);
+  const rightDate = String(right.scheduledDate || "").slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(leftDate) || leftDate !== rightDate) return false;
+
+  if (left.clientKey && right.clientKey && left.clientKey === right.clientKey) return false;
+  if (left.id && right.id && String(left.id) === String(right.id)) return false;
+
+  const startA = scheduleClockMinutes(left.startTime);
+  const endA = scheduleClockMinutes(left.endTime);
+  const startB = scheduleClockMinutes(right.startTime);
+  const endB = scheduleClockMinutes(right.endTime);
+  if (startA == null || endA == null || startB == null || endB == null) return false;
+  if (endA <= startA || endB <= startB) return false;
+
+  return startA < endB && endA > startB;
+}
+
+export function findOverlappingProjectTasks(
+  task: ScheduleOverlapTask,
+  tasks: ScheduleOverlapTask[],
+): ScheduleOverlapTask[] {
+  return tasks.filter((other) => projectTaskScheduleIntervalsOverlap(task, other));
+}
+
+export function projectTaskOverlapWarning(task: ScheduleOverlapTask, tasks: ScheduleOverlapTask[]) {
+  const overlaps = findOverlappingProjectTasks(task, tasks);
+  if (!overlaps.length) return "";
+  const first = overlaps[0];
+  const label = String(first.name || "another task").trim();
+  const start = normalizeScheduleClock(first.startTime);
+  const end = normalizeScheduleClock(first.endTime);
+  const range = start && end ? ` (${start}–${end})` : "";
+  return `Overlaps with "${label}"${range}`;
+}

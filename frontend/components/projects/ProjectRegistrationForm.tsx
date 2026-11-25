@@ -13,6 +13,7 @@ import ProjectSchedulePlanner from "@/components/projects/ProjectSchedulePlanner
 import {
   DraftService,
   DraftTask,
+  projectTaskOverlapWarning,
   syncDraftTasks,
   tasksMatch,
 } from "@/lib/project-schedule";
@@ -845,7 +846,12 @@ export default function ProjectRegistrationForm({ onClose, projectId }: Props) {
                               ))}
                             </select>
                             {task.startTime && task.endTime && task.endTime <= task.startTime ? <p className="text-xs text-amber-600">End time must be later than the start time</p> : null}
-                            {namedTasks.some((other) => other.clientKey !== task.clientKey && other.assigneeId && other.assigneeId === task.assigneeId && other.scheduledDate && other.scheduledDate === task.scheduledDate && task.startTime && task.endTime && other.startTime && other.endTime && task.startTime < other.endTime && other.startTime < task.endTime) ? <p className="text-xs text-amber-600">Overlapping time for this employee</p> : null}
+                            {(() => {
+                              const overlapWarning = projectTaskOverlapWarning(task, namedTasks);
+                              return overlapWarning ? (
+                                <p className="text-xs text-amber-600">{overlapWarning}</p>
+                              ) : null;
+                            })()}
                           </td>
                           <td className="pr-2">
                             <input

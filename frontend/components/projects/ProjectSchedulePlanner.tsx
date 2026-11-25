@@ -18,6 +18,7 @@ import {
   DraftTask,
   formatIsoDate,
   parseIsoDate,
+  projectTaskOverlapWarning,
 } from "@/lib/project-schedule";
 import {
   changedScheduleError,
@@ -70,14 +71,6 @@ function serviceColor(serviceId: string) {
 
 function staffName(staff: Staff[], id: string) {
   return staff.find((person) => person.id === id)?.name || "Unassigned";
-}
-
-function timesOverlap(left: DraftTask, right: DraftTask) {
-  if (!left.assigneeId || left.assigneeId !== right.assigneeId) return false;
-  if (!left.scheduledDate || left.scheduledDate !== right.scheduledDate) return false;
-  if (left.clientKey === right.clientKey) return false;
-  if (!left.startTime || !left.endTime || !right.startTime || !right.endTime) return false;
-  return left.startTime < right.endTime && right.startTime < left.endTime;
 }
 
 function buildMonthCells(cursor: Date) {
@@ -176,7 +169,8 @@ export default function ProjectSchedulePlanner({
         if (isHistoricalScheduledDate(task.scheduledDate, now) && !task.id) {
           notesForTask.push("Will be saved as completed (100%)");
         }
-        if (tasks.some((other) => timesOverlap(task, other))) notesForTask.push("This time overlaps another task for the same employee");
+        const overlapWarning = projectTaskOverlapWarning(task, tasks);
+        if (overlapWarning) notesForTask.push(overlapWarning);
       }
       if (notesForTask.length) messages.set(task.clientKey, notesForTask);
     });

@@ -62,7 +62,7 @@ export function isHistoricalScheduledDate(dateStr, now = new Date()) {
   return date < zonedNowParts(now).date;
 }
 
-/** Initial status only — when a new project task should be created as completed (100%). */
+/** Initial status only — scheduled work period already ended when the project task is first saved. */
 export function shouldAutoCompleteNewProjectTask(task, now = new Date()) {
   const date = String(task?.scheduledDate || "").slice(0, 10);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
@@ -71,8 +71,11 @@ export function shouldAutoCompleteNewProjectTask(task, now = new Date()) {
   const current = zonedNowParts(now);
   if (date !== current.date) return false;
 
-  const endTime = String(task?.endTime || "").slice(0, 5);
+  const endMatch = /^(\d{2}:\d{2})/.exec(String(task?.endTime || ""));
+  const endTime = endMatch?.[1] || "";
   if (!/^\d{2}:\d{2}$/.test(endTime)) return false;
+
+  if (current.time >= endTime) return true;
 
   const endAt = zonedInstant(date, endTime);
   if (!endAt) return false;
@@ -398,6 +401,20 @@ export function evaluateScheduledTask(task, now = new Date()) {
   }
 
   const progress = Number(task?.progress ?? 0);
+  const isProjectTask = Boolean(task?.projectId) || Boolean(features?.projectTask);
+  if (isProjectTask && progress >= 100) {
+    return {
+      scheduled: true,
+      status: "completed",
+      onHold: false,
+      canUpdateProgress: false,
+      reason: "This task is completed. Progress can no longer be changed.",
+      startAt,
+      endAt,
+      projectStatus: "COMPLETED",
+    };
+  }
+
   if (!startAt || !endAt || endAt <= startAt) {
     return { scheduled: false, canUpdateProgress: true, status: null, reason: "", startAt: null, endAt: null, projectStatus: null, onHold: false };
   }
@@ -503,7 +520,23 @@ export async function syncScheduledTaskActivation(prisma, now = new Date()) {
       continue;
     }
 
-    if (evaluation.status === "pending_review" || evaluation.status === "completed") continue;
+    if (evaluation.status === "pending_review") continue;
+
+    if (evaluation.status === "completed") {
+      const features = applyScheduledFeatures(task.features, evaluation, now);
+      const previousStatus = String(objectFeatures(task.features)?.projectStatus || "");
+      if (String(task.status).toLowerCase() === "completed" && previousStatus === "COMPLETED") continue;
+      await prisma.task.update({
+        where: { id: task.id },
+        data: {
+          status: "completed",
+          features,
+          completedAt: task.completedAt || (now instanceof Date ? now : new Date(now)),
+        },
+      });
+      updated += 1;
+      continue;
+    }
 
     if (!evaluation.scheduled) continue;
     const features = applyScheduledFeatures(task.features, evaluation, now);
