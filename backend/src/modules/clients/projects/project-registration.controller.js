@@ -12,7 +12,7 @@ import {
   evaluateScheduledTask,
   isScheduleManager,
   mergeScheduleChange,
-  isHistoricalScheduledDate,
+  shouldAutoCompleteNewProjectTask,
   pastScheduleError,
   PROJECT_REGISTRATION_SCHEDULE_OPTIONS,
   scheduleSignature,
@@ -358,8 +358,8 @@ export const registerProject = async (req, res) => {
         const assigneeId = task.assigneeId || fallbackAssignee;
         if (!assigneeId) return;
         const fields = projectTaskFields(task, assigneeId, project.id, cycleId, subIdByKey);
-        const historical = isHistoricalScheduledDate(task.scheduledDate, new Date());
-        if (historical) {
+        const autoComplete = shouldAutoCompleteNewProjectTask(task, new Date());
+        if (autoComplete) {
           const completedAt = historicalCompletedAt(task);
           const features = {
             ...fields.features,

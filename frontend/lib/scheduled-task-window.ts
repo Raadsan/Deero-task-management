@@ -155,6 +155,28 @@ export function isHistoricalScheduledDate(dateStr: string, now: number | Date = 
   return date < zonedNowParts(now).date;
 }
 
+/** Initial status only — when a new project task should be created as completed (100%). Keep in sync with backend. */
+export function shouldAutoCompleteNewProjectTask(
+  task: { scheduledDate?: string | null; endTime?: string | null },
+  now: number | Date = Date.now(),
+) {
+  const date = String(task?.scheduledDate || "").slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
+  if (isHistoricalScheduledDate(date, now)) return true;
+
+  const current = zonedNowParts(now);
+  if (date !== current.date) return false;
+
+  const endTime = String(task?.endTime || "").slice(0, 5);
+  if (!/^\d{2}:\d{2}$/.test(endTime)) return false;
+
+  const endAt = zonedInstant(date, endTime);
+  if (!endAt) return false;
+
+  const moment = now instanceof Date ? now : new Date(now);
+  return moment.getTime() >= endAt.getTime();
+}
+
 export function zonedNowParts(now: number | Date = Date.now(), timeZone = APP_TIMEZONE) {
   const instant = now instanceof Date ? now : new Date(now);
   try {
