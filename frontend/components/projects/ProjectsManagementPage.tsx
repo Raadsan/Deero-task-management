@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import {
   archiveProject,
+  deleteProject,
   getAllProjects,
   getProjectSummary,
   ProjectRecord,
@@ -39,15 +40,16 @@ import {
 import { currentProjectCycleId, summarizeProjectTasks, tasksForProjectCycle } from "@/lib/project-schedule";
 import { useNow } from "@/lib/use-now";
 import { cn, formatDate } from "@/lib/utils";
-import { Archive, Eye, Pencil, Plus, Search } from "lucide-react";
+import { Archive, Eye, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 
 const selectClass =
   "h-9 cursor-pointer rounded-md border border-zinc-200 bg-white px-2 text-sm text-zinc-600 outline-none";
 
 export default function ProjectsManagementPage() {
+  const { mutate: globalMutate } = useSWRConfig();
   const { data: projectsRes, isLoading, mutate } = useSWR(SWR_CACH_KEYS.projects.key, getAllProjects, { refreshInterval: 15000 });
   const now = useNow();
   const { data: summaryRes } = useSWR("project-summary", getProjectSummary);
@@ -67,6 +69,8 @@ export default function ProjectsManagementPage() {
   const [editId, setEditId] = useState<string | undefined>();
   const [viewId, setViewId] = useState<string | undefined>();
   const [archiveId, setArchiveId] = useState<ProjectRecord | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<ProjectRecord | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -176,7 +180,19 @@ export default function ProjectsManagementPage() {
                       <div className="flex justify-end gap-1">
                         <Button type="button" variant="ghost" size="sm" className={actionBtnView} onClick={() => setViewId(project.id)}><Eye className="size-4" /></Button>
                         <Button type="button" variant="ghost" size="sm" className={actionBtnEdit} onClick={() => setEditId(project.id)}><Pencil className="size-4" /></Button>
-                        <Button type="button" variant="ghost" size="sm" className={actionBtnDelete} onClick={() => setArchiveId(project)}><Archive className="size-4" /></Button>
+                        <Button type="button" variant="ghost" size="sm" className={actionBtnView} onClick={() => setArchiveId(project)} title="Archive project">
+                          <Archive className="size-4" />
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className={actionBtnDelete}
+                          title="Delete project"
+                          onClick={() => setDeleteTarget(project)}
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -219,9 +235,54 @@ export default function ProjectsManagementPage() {
             toast.success("Project archived");
             setArchiveId(null);
             await mutate();
+            await globalMutate("project-summary");
           }
         }}
       />
+      <ConfirmDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => {
+          if (!open && !deleteLoading) setDeleteTarget(null);
+        }}
+        title="Delete Project?"
+        destructive
+        loading={deleteLoading}
+        confirmLabel="Delete Project"
+        cancelLabel="Cancel"
+        onConfirm={async () => {
+          if (!deleteTarget || deleteLoading) return;
+          setDeleteLoading(true);
+          try {
+            const result = await deleteProject(deleteTarget.id);
+            if (!result.success) {
+              toast.error(result.errors?.message || "Could not delete project");
+              return;
+            }
+            toast.success("Project and related tasks deleted");
+            setDeleteTarget(null);
+            await mutate();
+            await globalMutate("project-summary");
+            await globalMutate(SWR_CACH_KEYS.tasks.key);
+            await globalMutate(SWR_CACH_KEYS.myTasks.key);
+            await globalMutate(SWR_CACH_KEYS.myTasksList.key);
+            await globalMutate(SWR_CACH_KEYS.myTasksToday.key);
+            await globalMutate(SWR_CACH_KEYS.myTasksBoard.key);
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(new CustomEvent("task-updated"));
+              localStorage.setItem("deero-task-updated", String(Date.now()));
+            }
+          } finally {
+            setDeleteLoading(false);
+          }
+        }}
+      >
+        {deleteTarget ? (
+          <p>
+            Are you sure you want to delete <span className="font-semibold text-zinc-800">{deleteTarget.name}</span>?
+            This action will permanently delete the project and all tasks associated with it. This cannot be undone.
+          </p>
+        ) : null}
+      </ConfirmDialog>
     </ManagementPageShell>
   );
 }

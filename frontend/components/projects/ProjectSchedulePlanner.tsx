@@ -504,7 +504,7 @@ export default function ProjectSchedulePlanner({
                     highlighted
                     warnings={warnings.get(task.clientKey) ?? []}
                     minDate=""
-                    minStartTime={task.scheduledDate === todayParts.date ? nextMinute(todayParts.time) : ""}
+                    minStartTime=""
                     onChange={(patch) => {
                       if (patch.scheduledDate) {
                         applyScheduledDate(task.clientKey, patch.scheduledDate);
@@ -586,7 +586,7 @@ export default function ProjectSchedulePlanner({
                         {staff.map((person) => <option key={person.id} value={person.id}>{person.name}</option>)}
                       </select>
                     </td>
-                    <td className="pr-2"><input type="time" min={task.scheduledDate === todayParts.date ? nextMinute(todayParts.time) : undefined} className={fieldClass} value={task.startTime} onChange={(event) => patchTask(task.clientKey, { startTime: event.target.value })} /></td>
+                    <td className="pr-2"><input type="time" className={fieldClass} value={task.startTime} onChange={(event) => patchTask(task.clientKey, { startTime: event.target.value })} /></td>
                     <td className="pr-2"><input type="time" className={fieldClass} value={task.endTime} onChange={(event) => patchTask(task.clientKey, { endTime: event.target.value })} /></td>
                     <td>
                       <button type="button" className="text-xs text-zinc-500 hover:underline" onClick={() => patchTask(task.clientKey, { scheduledDate: "" })}>Clear date</button>
@@ -608,13 +608,6 @@ function taskLabel(task: DraftTask, services: DraftService[]) {
   if (!label) return task.name;
   const number = (/(\d+)\s*$/.exec(task.name)?.[1] ?? "1").padStart(2, "0");
   return `${task.isExtra ? "Extra " : ""}${label} ${number}`;
-}
-
-function nextMinute(time: string) {
-  const [hour, minute] = time.split(":").map(Number);
-  const total = hour * 60 + minute + 1;
-  if (!Number.isFinite(total) || total >= 24 * 60) return "23:59";
-  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
 }
 
 function TaskEditor({

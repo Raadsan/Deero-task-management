@@ -138,10 +138,16 @@ export function zonedInstant(dateStr: string, timeStr: string, timeZone = APP_TI
 
 export const PAST_SCHEDULE_MESSAGE = "You cannot schedule a task in the past. Please select a future date and time.";
 
-/** Project register / edit scheduling — allow calendar dates before today. */
-export const PROJECT_REGISTRATION_SCHEDULE_OPTIONS = { allowHistoricalDates: true } as const;
+/** Project register / edit scheduling — past dates + any start/end time on today. */
+export const PROJECT_REGISTRATION_SCHEDULE_OPTIONS = {
+  allowHistoricalDates: true,
+  allowEarlierTodayTimes: true,
+} as const;
 
-export type PastScheduleOptions = { allowHistoricalDates?: boolean };
+export type PastScheduleOptions = {
+  allowHistoricalDates?: boolean;
+  allowEarlierTodayTimes?: boolean;
+};
 
 export function isHistoricalScheduledDate(dateStr: string, now: number | Date = Date.now()) {
   const date = String(dateStr || "").slice(0, 10);
@@ -198,7 +204,10 @@ export function pastScheduleError(
     if (options.allowHistoricalDates) return "";
     return PAST_SCHEDULE_MESSAGE;
   }
-  if (date === current.date && (!/^\d{2}:\d{2}$/.test(start) || start <= current.time)) return PAST_SCHEDULE_MESSAGE;
+  if (date === current.date) {
+    if (options.allowEarlierTodayTimes) return "";
+    if (!/^\d{2}:\d{2}$/.test(start) || start <= current.time) return PAST_SCHEDULE_MESSAGE;
+  }
   return "";
 }
 

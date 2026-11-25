@@ -290,17 +290,31 @@ export const generateProjectTasks = async (req, res) => {
 };
 
 export const deleteProject = async (req, res) => {
-  const { id } = req.params;
+  const id = String(req.params.id || "").trim();
+  if (!id) {
+    return res.status(400).json({ success: false, error: "Project id is required" });
+  }
   try {
     const scope = getScope(req);
-    const existing = await findAccessibleProject(scope, id);
+    const existing = await findAccessibleProject(scope, id, { id: true, name: true });
     if (!existing) {
       return res.status(404).json({ success: false, error: "Project not found" });
     }
 
-    await prisma.project.delete({ where: { id } });
-    res.json({ success: true, message: "Project deleted" });
+    await prisma.$transaction(async (tx) => {
+      await tx.task.deleteMany({ where: { projectId: id } });
+      await tx.contract.updateMany({ where: { projectId: id }, data: { projectId: null } });
+      await tx.contentRequest.updateMany({ where: { projectId: id }, data: { projectId: null } });
+      await tx.incomeServiceAgreement.updateMany({ where: { projectId: id }, data: { projectId: null } });
+      await tx.project.delete({ where: { id } });
+    });
+
+    res.json({
+      success: true,
+      message: `Project "${existing.name}" and its tasks were deleted`,
+    });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    console.error("deleteProject error:", error);
+    res.status(500).json({ success: false, error: error.message || "Could not delete project" });
   }
 };

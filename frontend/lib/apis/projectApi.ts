@@ -160,6 +160,16 @@ export async function archiveProject(id: string): Promise<ActionResponse> {
   }
 }
 
+export async function deleteProject(id: string): Promise<ActionResponse> {
+  try {
+    const response = await api.delete(`/api/projects/${id}`);
+    if (response.data.success) return { success: true, message: response.data.message };
+    return { success: false, errors: { message: response.data.error || "Could not delete project" } };
+  } catch (error) {
+    return handleError({ errors: error, type: "server" }) as ErrorResponse;
+  }
+}
+
 export async function reassignProjectTask(
   projectId: string,
   taskId: string,

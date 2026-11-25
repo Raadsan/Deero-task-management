@@ -60,13 +60,6 @@ type Props = {
   projectId?: string;
 };
 
-function nextClockMinute(time: string) {
-  const [hour, minute] = time.split(":").map(Number);
-  const total = hour * 60 + minute + 1;
-  if (!Number.isFinite(total) || total >= 24 * 60) return "23:59";
-  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
-}
-
 function dateInputValue(value?: string | null) {
   if (!value) return "";
   const date = new Date(value);
@@ -879,7 +872,7 @@ export default function ProjectRegistrationForm({ onClose, projectId }: Props) {
                             ) : null}
                           </td>
                           <td className="pr-2">
-                            <input type="time" min={task.scheduledDate === todayParts.date ? nextClockMinute(todayParts.time) : undefined} className={fieldClass} value={task.startTime} onChange={(e) => setTasks((current) => current.map((item) => item.clientKey === task.clientKey ? { ...item, startTime: e.target.value } : item))} />
+                            <input type="time" className={fieldClass} value={task.startTime} onChange={(e) => setTasks((current) => current.map((item) => item.clientKey === task.clientKey ? { ...item, startTime: e.target.value } : item))} />
                           </td>
                           <td className="pr-2">
                             <input type="time" className={fieldClass} value={task.endTime} onChange={(e) => setTasks((current) => current.map((item) => item.clientKey === task.clientKey ? { ...item, endTime: e.target.value } : item))} />
